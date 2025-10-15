@@ -1,0 +1,50 @@
+﻿<%@ Master Language="VB" CodeFile="Error.master.vb" Inherits="Errors" %>
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - My Online Order</title>
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <link href="./Content/dist/css/tabler.min.css?1692870487" rel="stylesheet"/>
+    <link href="./Content/dist/css/tabler-flags.min.css?1692870487" rel="stylesheet"/>
+    <link href="./Content/dist/css/tabler-payments.min.css?1692870487" rel="stylesheet"/>
+    <link href="./Content/dist/css/tabler-vendors.min.css?1692870487" rel="stylesheet"/>
+    <link href="./Content/dist/css/demo.min.css?1692870487" rel="stylesheet"/>
+    <link rel="icon" type="image/x-icon" href="Content/static/favicon.ico" />
+    
+    <style>
+        @import url('https://rsms.me/inter/inter.css');
+        :root {
+            --tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+            }
+        body { font-feature-settings: "cv03", "cv04", "cv11"; }
+    </style>
+</head>
+<body class="border-top-wide border-primary d-flex flex-column">
+    <form runat="server">
+        <asp:ScriptManager runat="server">
+            <Scripts>
+                <asp:ScriptReference Path="~/Content/dist/jquery/jquery.min.js" />
+                <asp:ScriptReference Path="~/Content/dist/js/demo-theme.min.js?1692870487" />
+                <asp:ScriptReference Path="~/Content/dist/js/tabler.min.js?1692870487" />
+                <asp:ScriptReference Path="~/Content/dist/js/demo.min.js?1692870487" />
+            </Scripts>
+        </asp:ScriptManager>
+
+        <div class="page page-center">
+            <div class="container-tight py-4">
+                <div class="empty">
+                    <asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

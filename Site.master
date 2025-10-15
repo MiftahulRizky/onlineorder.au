@@ -1,0 +1,453 @@
+﻿<%@ Master Language="VB" AutoEventWireup="true" CodeFile="Site.master.vb" Inherits="SiteMaster" %>
+
+<!DOCTYPE html>
+
+<html lang="en" data-bs-theme="light">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - Sunlight Online Order</title>
+
+    <asp:PlaceHolder runat="server">
+        <%: Scripts.Render("~/bundles/modernizr") %>
+    </asp:PlaceHolder>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <link href="./Content/dist/css/tabler.min.css?1692870487" rel="stylesheet"/>
+    <link href="./Content/dist/css/tabler-flags.min.css?1692870487" rel="stylesheet"/>
+    <link href="./Content/dist/css/tabler-payments.min.css?1692870487" rel="stylesheet"/>
+    <link href="./Content/dist/css/tabler-vendors.min.css?1692870487" rel="stylesheet"/>
+    <link href="./Content/dist/css/demo.min.css?1692870487" rel="stylesheet"/>
+    <link rel="icon" type="image/x-icon" href="Content/static/new-favicon.png" />
+    <link href="./Content/dist/fontawesome/css/all.min.css?1692870487" rel="stylesheet"/>
+    <link href="./Content/dist/my-style/style.css?1692870487" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+    <style>
+        .hiddencol { display:none; }
+        .liSize { font-size:large; }
+        button.dropdown-toggle::after {display: none;}
+         .rounded-start-pill {
+        border-top-left-radius: 50rem !important;
+        border-bottom-left-radius: 50rem !important;
+        }
+
+        .rounded-end-pill {
+        border-top-right-radius: 50rem !important;
+        border-bottom-right-radius: 50rem !important;
+        }
+
+        #loading-overlay {
+            transition: opacity 0.5s ease;
+            opacity: 1;
+        }
+        #loading-overlay.fade-out {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <form runat="server">
+        <asp:ScriptManager runat="server" EnablePageMethods="true">
+            <Scripts>
+                <asp:ScriptReference Name="MsAjaxBundle" />
+                <asp:ScriptReference Name="jquery" />
+                <asp:ScriptReference Name="respond" />
+                <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
+                <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
+                <asp:ScriptReference Name="MenuStandards.js" Assembly="System.Web" Path="~/Scripts/WebForms/MenuStandards.js" />
+                <asp:ScriptReference Name="GridView.js" Assembly="System.Web" Path="~/Scripts/WebForms/GridView.js" />
+                <asp:ScriptReference Name="DetailsView.js" Assembly="System.Web" Path="~/Scripts/WebForms/DetailsView.js" />
+                <asp:ScriptReference Name="TreeView.js" Assembly="System.Web" Path="~/Scripts/WebForms/TreeView.js" />
+                <asp:ScriptReference Name="WebParts.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebParts.js" />
+                <asp:ScriptReference Name="Focus.js" Assembly="System.Web" Path="~/Scripts/WebForms/Focus.js" />
+                <asp:ScriptReference Name="WebFormsBundle" />
+
+                <asp:ScriptReference Path="~/Content/dist/js/tom-select.base.min.js?1692870487" />
+                <asp:ScriptReference Path="~/Content/dist/js/demo-theme.min.js?1692870487" />
+                <asp:ScriptReference Path="~/Content/dist/js/tabler.min.js?1692870487" />
+                <asp:ScriptReference Path="~/Content/dist/js/demo.min.js?1692870487" />
+                <asp:ScriptReference Path="~/Content/dist/js/demo-theme.min.js?1692870487" />
+                <asp:ScriptReference Path="~/Scripts/jquery-3.7.0.min.js?1692870487" />
+                <asp:ScriptReference Path="https://cdn.jsdelivr.net/npm/sweetalert2@11" />
+                <asp:ScriptReference Path="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" />
+                <asp:ScriptReference Path="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js" />
+            </Scripts>
+        </asp:ScriptManager>
+
+         <script type="text/javascript">
+
+            document.addEventListener("DOMContentLoaded", () => {
+                setSessionAlive();
+            })
+
+            const colourTablerTheme = () => {
+                const theme = localStorage.getItem("tablerTheme") == "dark";
+                return theme;
+            }
+
+            const isDark = colourTablerTheme();
+            
+            const isSuccess = (msg) => {
+                return Swal.fire({
+                    title: "Success!",
+                    html: msg,
+                    icon: "success",
+                    customClass: {
+                        popup: isDark ? "bg-dark text-white" : "bg-white text-dark"
+                    }
+                });
+            }
+
+            const isError = (msg) => {
+                return Swal.fire({
+                    title: "Oops!",
+                    html: msg,
+                    icon: "error",
+                    customClass: {
+                        popup: isDark ? "bg-dark text-white" : "bg-white text-dark"
+                    }
+                });
+            }
+
+            const swalLoadingShow = (msg) => {
+                Swal.fire({
+                    title: "Processing...",
+                    html: msg,
+                    customClass: {
+                        popup: isDark ? "bg-dark text-white" : "bg-white text-dark"
+                    },
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+            }
+            
+            const loaderFadeOut = () => {
+                const overlay = document.getElementById("loading-overlay");
+                overlay.classList.add("fade-out"); // mulai fade-out
+                setTimeout(() => {
+                    overlay.classList.add("d-none");
+                    overlay.classList.remove("d-flex", "fade-out");
+                }, 500); // waktu harus sama dengan di CSS
+            }
+
+            const setSessionAlive = () => {
+                setInterval(() => {
+                    fetch("/Account/KeepSessionAlive.aspx", {
+                    method: "POST",
+                    credentials: "include",
+                    }).then((res) => {
+                    if (res.status === 401) {
+                        // session expired, redirect to login?
+                        window.location.href = "/Account/Login.aspx";
+                    }
+                    console.log(res.status);
+                    });
+                }, 180000); // 3 menit
+            }
+        </script>
+
+        <div class="page">
+            <div class="sticky-top">
+                <header class="navbar navbar-expand-md sticky-top d-print-none">
+                    <div class="container-xl">
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        
+                        <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+                            <a runat="server" href="~/">
+                                <asp:Image runat="server" ID="imgLogo" ImageUrl="~/Content/static/new-icon.png" CssClass="navbar-brand-image" Width="75px" Height="35" style="filter: invert(0);" />
+                            </a>
+                        </h1>
+                        
+                        <div class="navbar-nav flex-row order-md-last">
+                            <div class="d-none d-md-flex me-3">
+                                <a href="?theme=dark" class="nav-link px-0 hide-theme-dark" title="Enable dark mode"
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                    <i class="ti ti-moon fs-2" width="24" height="24"></i>
+                                </a>
+                                <a href="?theme=light" class="nav-link px-0 hide-theme-light" title="Enable light mode"
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                    <i class="ti ti-sun fs-2" width="24" height="24"></i>
+                                </a>
+                            </div>
+
+                            <div class="nav-item dropdown">
+                                <a href="javascript:void(0)" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
+                                    <span class="avatar avatar-sm rounded-circle" style="background-image: url(http://10.0.209.168:8888/Content/static/new-avatar.png)"></span>
+                                    <div class="d-none d-xl-block ps-2">
+                                        <div><%: Session("UserName") %></div>
+                                        <div class="mt-1 small text-secondary"><%: Session("RoleName") %></div>
+                                    </div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                    <a runat="server" href="~/account/" class="dropdown-item">
+                                        <i class="bi bi-person-circle me-2"></i> Profile
+                                    </a>
+                                    <asp:LinkButton runat="server" ID="linkLogout" CssClass="dropdown-item" Text="" OnClick="linkLogout_Click">
+                                        <i class="bi bi-arrow-return-right me-2"></i> Logout
+                                    </asp:LinkButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                
+                <header class="navbar-expand-md d-print-none">
+                    <div class="collapse navbar-collapse" id="navbar-menu">
+                        <div class="navbar">
+                            <div class="container-xl">
+                                <ul class="navbar-nav">
+                                
+                                    <li runat="server" id="liHome" class="nav-item">
+                                        <a runat="server" class="nav-link" href="~/">
+                                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                    <path d="M5 12l-2 0l9 -9l9 9l-2 0"></path>
+                                                    <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"></path>
+                                                    <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"></path>
+                                                </svg>
+                                            </span>
+                                            <span class="nav-link-title">Home</span>
+                                        </a>
+                                    </li>
+
+                                    <li runat="server" id="liOrder" class="nav-item">
+                                        <a runat="server" class="nav-link" href="~/order">
+                                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-bag">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                    <path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304z" />
+                                                    <path d="M9 11v-5a3 3 0 0 1 6 0v5" />
+                                                </svg>
+                                            </span>
+                                            <span class="nav-link-title">Create & View Order</span>
+                                        </a>
+                                    </li>
+
+                                    <li runat="server" id="liExport" class="nav-item">
+                                        <a runat="server" class="nav-link" href="~/export/">
+                                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                    <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
+                                                    <path d="M7 11l5 5l5 -5"></path>
+                                                    <path d="M12 4l0 12"></path>
+                                                </svg>
+                                            </span>
+                                            <span class="nav-link-title">Export</span>
+                                        </a>
+                                    </li>
+
+                                    <li runat="server" id="liImport" class="nav-item">
+                                        <a runat="server" class="nav-link" href="~/import/">
+                                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-upload" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                    <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
+                                                    <path d="M7 9l5 -5l5 5"></path>
+                                                    <path d="M12 4l0 12"></path>
+                                                </svg>
+                                            </span>
+                                            <span class="nav-link-title">Import</span>
+                                        </a>
+                                    </li>
+
+                                    <li runat="server" id="liStatistic" class="nav-item">
+                                        <a runat="server" class="nav-link" href="~/statistic/">
+                                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chart-arrows-vertical">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                    <path d="M18 21v-14" />
+                                                    <path d="M9 15l3 -3l3 3" />
+                                                    <path d="M15 10l3 -3l3 3" />
+                                                    <path d="M3 21l18 0" />
+                                                    <path d="M12 21l0 -9" />
+                                                    <path d="M3 6l3 -3l3 3" />
+                                                    <path d="M6 21v-18" />
+                                                </svg>
+                                            </span>
+                                            <span class="nav-link-title">Statistic</span>
+                                        </a>
+                                    </li>
+
+                                    <li runat="server" id="liTutorial" class="nav-item">
+                                        <a runat="server" class="nav-link" href="~/tutorial/">
+                                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-book" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                    <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0"></path>
+                                                    <path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0"></path>
+                                                    <path d="M3 6l0 13"></path>
+                                                    <path d="M12 6l0 13"></path>
+                                                    <path d="M21 6l0 13"></path>
+                                                </svg>
+                                            </span>
+                                            <span class="nav-link-title">Tutorial</span>
+                                        </a>
+                                    </li>
+
+                                    <li runat="server" id="liSetting" class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#navbar-extra" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
+                                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                    <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"></path>
+                                                    <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
+                                                </svg>
+                                            </span>
+                                            <span class="nav-link-title">Setting</span>
+                                        </a>
+                                        <div class="dropdown-menu ">
+                                            <div class="dropdown-menu-columns">
+                                                <div class="dropdown-menu-column">
+                                                    <a runat="server" id="aApplication" class="dropdown-item" href="~/setting/application">Application</a>
+                                                    <a runat="server" id="aEmail" class="dropdown-item" href="~/setting/email">Mail Configuration</a>
+
+                                                    <div class="dropend" runat="server" id="divUsers">
+                                                        <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">Master Users</a>
+                                                        <div class="dropdown-menu">
+                                                            <a runat="server" id="aStore" class="dropdown-item" href="~/setting/store">Store</a>
+                                                            <a runat="server" id="aMembership" class="dropdown-item" href="~/setting/member">Membership</a>
+                                                            <div runat="server" id="dividerUsers" class="dropdown-divider"></div>
+                                                            <a runat="server" id="aRole" class="dropdown-item" href="~/setting/role">Role</a>
+                                                            <a runat="server" id="aMemberLevel" class="dropdown-item" href="~/setting/memberlevel">Level</a>
+                                                            <a runat="server" id="aRegion" class="dropdown-item" href="~/setting/region">Region</a>
+                                                            <a runat="server" id="aCompany" class="dropdown-item" href="~/setting/company">Company</a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="dropend" runat="server" id="divProduct">
+                                                        <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">Master Product</a>
+                                                        <div class="dropdown-menu">
+                                                            <a runat="server" id="aDesign" class="dropdown-item" href="~/setting/design">Design Type</a>
+                                                            <a runat="server" id="aBlind" class="dropdown-item" href="~/setting/blind">Blind Type</a>
+                                                            <a runat="server" id="aKit" class="dropdown-item" href="~/setting/kit">Hardware Kit</a>
+                                                            <a runat="server" id="aFabric" class="dropdown-item" href="~/setting/fabric">Fabric</a>
+                                                            <a runat="server" id="aChain" class="dropdown-item" href="~/setting/chain">Chain</a>
+                                                            <a runat="server" id="aBottom" class="dropdown-item" href="~/setting/bottom">Bottom Rail</a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="dropend" runat="server" id="divPrice">
+                                                        <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">Master Price</a>
+                                                        <div class="dropdown-menu">
+                                                            <a runat="server" id="aPriceGroup" class="dropdown-item" href="~/setting/pricegroup">Price Group</a>
+                                                            <a runat="server" id="aPriceMatrix" class="dropdown-item" href="~/setting/pricematrix">Price Matrix</a>
+                                                            <a runat="server" id="aCassetteExtra" class="dropdown-item" href="~/setting/cassetteextra">Cassette Extra</a>
+                                                            <a runat="server" id="aSurcharge" class="dropdown-item" href="~/setting/surcharge">Surcharge</a>
+                                                            <a runat="server" id="aDiscount" class="dropdown-item" href="~/setting/discount">Discount</a>
+                                                            <a runat="server" id="aCusDiscount" class="dropdown-item" href="~/setting/customdiscount">Custom Discount</a>
+                                                        </div>
+                                                    </div>
+                                                    <a runat="server" id="aFeedback" class="dropdown-item" href="~/setting/feedback">FeedBack</a>
+                                                    <a runat="server" id="aDeleteFile" class="dropdown-item" href="~/setting/deletefile">Delete File</a>
+                                                    <a runat="server" id="aDeleteOrder" class="dropdown-item" href="~/setting/deleteorder">Delete Order</a>
+                                                    <a runat="server" id="aQuery" class="dropdown-item" href="~/setting/query">Run Query</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                
+                                <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last" style="display:none;">
+                                    <div class="input-icon">
+                                        <asp:Panel runat="server">
+                                            <span class="input-icon-addon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                                    <path d="M21 21l-6 -6"></path>
+                                                </svg>
+                                            </span>
+                                            <asp:TextBox runat="server" ID="txtSearchMaster" CssClass="form-control" placeholder="Search…" autocomplete="off" ReadOnly="true"></asp:TextBox>
+                                            <asp:Button runat="server" ID="btnSearchAll" Visible="false" OnClick="btnSearchAll_Click" />
+                                        </asp:Panel>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            </div>
+            
+            <div class="page-wrapper">
+
+                <!-- Loader -->
+                <div id="loading-overlay"
+                    class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-body bg-opacity-85"
+                    style="z-index: 1050;">
+                    <div class="page page-center w-100 h-100">
+                        <div class="container container-slim py-4 h-100 d-flex flex-column justify-content-center">
+                            <div class="text-center">
+                                <div class="mb-3">
+                                    <a href="javascript:void(0)" class="navbar-brand navbar-brand-autodark">
+                                        <img src="/Content/static/new-icon.png" height="36" alt="">
+                                    </a>
+                                </div>
+                                <div class="text-secondary mb-3">Preparing application</div>
+                                <div class="progress progress-sm">
+                                    <div class="progress-bar progress-bar-indeterminate"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>
+                
+                <footer class="footer footer-transparent d-print-none">
+                    <div class="container-xl">
+                        <div class="row text-center align-items-center flex-row-reverse">
+                            <div class="col-lg-auto ms-lg-auto">
+                                <ul class="list-inline list-inline-dots mb-0">
+                                    <li class="list-inline-item"><a runat="server" href="~/about" class="link-secondary" rel="noopener">About Us</a></li>
+
+                                    <li class="list-inline-item"><a runat="server" href="~/contact" class="link-secondary" rel="noopener">Contact Us</a></li>
+
+                                    <li class="list-inline-item"><a runat="server" href="~/faq" class="link-secondary" rel="noopener">FAQ</a></li>
+
+                                    <li class="list-inline-item"><a runat="server" href="~/activity" class="link-secondary" rel="noopener">My Activity</a></li>
+                                </ul>
+                            </div>
+                            
+                            <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+                                <ul class="list-inline list-inline-dots mb-0">
+                                    <li class="list-inline-item">
+                                        Copyright &copy; 2024
+                                        <a target="_blank" href="https://wa.me/085215043355" class="link-secondary">Reza Andika Pratama</a>.
+                                        All rights reserved.
+                                    </li>
+                                    
+                                    <li class="list-inline-item">
+                                        <%: Session("AppName") %>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+
+        <div runat="server" visible="false">
+            <asp:Label runat="server" ID="lblUserId"></asp:Label>
+            <asp:SqlDataSource ID="sdsLastLogin" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" UpdateCommand="UPDATE Memberships SET LastActivityDate=GETDATE() WHERE UserId=@UserId">
+                <UpdateParameters>
+                    <asp:ControlParameter ControlID="lblUserId" Name="UserId" PropertyName="Text" />
+                </UpdateParameters>
+            </asp:SqlDataSource>
+        </div>
+    </form>
+   
+</body>
+</html>
