@@ -18,7 +18,7 @@
                     <div class="col-12">
                         <div class="card" runat="server" id="divNewsletter">
                             <div class="card-header">
-                                <h3 class="card-title">Latest Update & News App</h3>
+                                <h3 class="card-title">Latest Update & News</h3>
                             </div>
 
                             <div class="card-body">

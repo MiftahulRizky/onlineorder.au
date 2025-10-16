@@ -242,6 +242,7 @@ const submitChangeStatus = async () => {
     } else {
       await isSuccess(resData.success);
       handlerHideBSModal("modalChangeStatus");
+      tableData.ajax.reload();
     }
   } catch (err) {
     const msg =
