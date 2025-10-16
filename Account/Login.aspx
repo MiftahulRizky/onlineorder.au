@@ -111,21 +111,26 @@
             </div>
         </div>
         <script>
-            const username = document.getElementById("txtUserLogin");
-            username.addEventListener("keyup", function (e) {
-                e.target.classList.remove("is-invalid");
-            })
-            const password = document.getElementById("txtPassword");
-            password.addEventListener("keyup", function (e) {
-                e.target.classList.remove("is-invalid");
+            document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+                el.addEventListener("input", (e) => {
+                    e.target.classList.remove("is-invalid");
+                })
             })
 
+            const colourTablerTheme = () => {
+                const theme = localStorage.getItem("tablerTheme") == "dark";
+                return theme;
+            }
 
+            const isDark = colourTablerTheme();
             const showMessageError = (msg, input) => {
                 Swal.fire({
                     icon: "error",
                     title: "Oops...",
-                    html: msg
+                    html: msg,
+                    customClass: {
+                        popup: isDark ? "bg-dark text-white" : "bg-white text-dark"
+                    }
                 }).then(() => {
                     document.getElementById(input).focus();
                 })

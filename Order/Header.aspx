@@ -129,14 +129,20 @@
     </div>
 
     <!-- custom js -->
-    <script type="text/javascript" src="http://10.0.209.168:8888/Content/dist/js/my/header.js"></script>
+    <script type="text/javascript" src="/Content/dist/js/my/header.js"></script>
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            loaderFadeOut();
+        })
         // Function untuk menampilkan pesan error dari code-behind
         function showMessageError(msg){
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 html: msg,
+                customClass: {
+                    popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+                },
             });
         }
     </script>

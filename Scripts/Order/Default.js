@@ -15,145 +15,185 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // --------------------------------------------||cardOrder Event ||-------------------------------------------
 // CHANGE FILTER STATUS
-$("#cardOrder #status").on("change", function () {
-  const status = $(this).val();
-  const active = $("#cardOrder #active").val();
-  const storetype = $("#cardOrder #storetype").val();
+document.querySelector("#cardOrder #status").addEventListener("change", (e) => {
+  const status = e.target.value;
+  const active = document.querySelector("#cardOrder #active").value;
+  const storetype = document.querySelector("#cardOrder #storetype").value;
 
   // Simpan ke localStorage
-  setState("filter_status", status);
-  setState("filter_active", active);
-  setState("filter_storetype", storetype);
+  setState("filter_orders_status", status);
+  setState("filter_orders_active", active);
+  setState("filter_orders_storetype", storetype);
 
   bindOrders(status, active, storetype);
 });
 
 // BUTTON CREATE ORDER
-$("#cardOrder #btnCreateNewOrder").on("click", function () {
-  handlerCreateNewOrder();
-});
+document
+  .querySelector("#cardOrder #btnCreateNewOrder")
+  .addEventListener("click", () => {
+    handlerCreateNewOrder();
+  });
 
 // CHANGE FILTER ACTIVE
-$("#cardOrder #active").on("change", function () {
-  const status = $("#cardOrder #status").val();
-  const active = $(this).val();
-  const storetype = $("#cardOrder #storetype").val();
+document.querySelector("#cardOrder #active").addEventListener("change", (e) => {
+  const status = document.querySelector("#cardOrder #status").value;
+  const active = e.target.value;
+  const storetype = document.querySelector("#cardOrder #storetype").value;
 
   // Simpan ke localStorage
-  setState("filter_status", status);
-  setState("filter_active", active);
-  setState("filter_storetype", storetype);
+  setState("filter_orders_status", status);
+  setState("filter_orders_active", active);
+  setState("filter_orders_storetype", storetype);
 
   bindOrders(status, active, storetype);
 });
 
 // CHANGE FILTER STORE TYPE
-$("#cardOrder #storetype").on("change", function () {
-  const status = $("#cardOrder #status").val();
-  const active = $("#cardOrder #active").val();
-  const storetype = $(this).val();
+document
+  .querySelector("#cardOrder #storetype")
+  .addEventListener("change", (e) => {
+    const status = document.querySelector("#cardOrder #status").value;
+    const active = document.querySelector("#cardOrder #active").value;
+    const storetype = e.target.value;
 
-  // Simpan ke localStorage
-  setState("filter_status", status);
-  setState("filter_active", active);
-  setState("filter_storetype", storetype);
+    // Simpan ke localStorage
+    setState("filter_orders_status", status);
+    setState("filter_orders_active", active);
+    setState("filter_orders_storetype", storetype);
 
-  bindOrders(status, active, storetype);
-});
+    bindOrders(status, active, storetype);
+  });
 
 // BUTTON DETAIL ORDER
-$("#tableAjax").on("click", "#btnDetailOrder", function () {
-  const id = $(this).data("id");
-  handlerOpenDetailOrder(id);
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnDetailOrder") {
+    const id = e.target.dataset.id;
+    handlerOpenDetailOrder(id);
+  }
 });
 
 // BUTTON DATE INFO
-$("#tableAjax").on("click", "#btnDateInfo", function () {
-  const id = $(this).data("id");
-  handlerDateInfo(id);
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnDateInfo") {
+    const id = e.target.dataset.id;
+    handlerDateInfo(id);
+  }
 });
 
 // BUTTON CHANGE STATUS
-$("#tableAjax").on("click", "#btnChangeStatus", function () {
-  handlerResetFormError(
-    "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
-  );
-  const id = $(this).data("id");
-  handlerChangeStatus(id);
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnChangeStatus") {
+    document
+      .querySelectorAll(
+        "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
+      )
+      .forEach((el) => {
+        el.classList.remove("is-invalid");
+      });
+    const id = e.target.dataset.id;
+    handlerChangeStatus(id);
+  }
 });
 
 // BUTTON DELLETE ORDER
-$("#tableAjax").on("click", "#btnDeleteOrder", function () {
-  const id = $(this).data("id");
-  const name = $(this).data("name");
-  const order = $(this).data("order");
-  const ref = $(this).data("ref");
-  const del = $(this).data("del");
-  handlerSwitch(id, name, order, ref, del, "delete");
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnDeleteOrder") {
+    const id = e.target.dataset.id;
+    const name = e.target.dataset.name;
+    const order = e.target.dataset.order;
+    const ref = e.target.dataset.ref;
+    const del = e.target.dataset.del;
+    handlerSwitch(id, name, order, ref, del, "delete");
+  }
 });
 
 // BUTTON RESTORE ORDER
-$("#tableAjax").on("click", "#btnRestoreOrder", function () {
-  const id = $(this).data("id");
-  const name = $(this).data("name");
-  const order = $(this).data("order");
-  const ref = $(this).data("ref");
-  const del = $(this).data("del");
-  handlerSwitch(id, name, order, ref, del, "restore");
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnRestoreOrder") {
+    const id = e.target.dataset.id;
+    const name = e.target.dataset.name;
+    const order = e.target.dataset.order;
+    const ref = e.target.dataset.ref;
+    const del = e.target.dataset.del;
+    handlerSwitch(id, name, order, ref, del, "restore");
+  }
 });
 
 // BUTTON DOWNLOAD CSV
-$("#tableAjax").on("click", "#btnDownloadCsv", function () {
-  const id = $(this).data("id");
-  if (roleName !== "Administrator") {
-    //  buat sweetalert jika bukan admin dengan pesan, "aksi ini akan segera hadir"
-    Swal.fire({
-      icon: "info",
-      title: "Information",
-      text: "This feature will be available soon",
-      customClass: {
-        popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-      },
-    });
-    return;
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnDownloadCsv") {
+    const id = e.target.dataset.id;
+    if (roleName !== "Administrator") {
+      //  buat sweetalert jika bukan admin dengan pesan, "aksi ini akan segera hadir"
+      Swal.fire({
+        icon: "info",
+        title: "Information",
+        text: "This feature will be available soon",
+        customClass: {
+          popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+        },
+      });
+      return;
+    }
+    handlerDownloadCSV(id);
   }
-  handlerDownloadCSV(id);
 });
 // --------------------------------------------||modalChangeStatus Event ||-------------------------------------------
 // CHANGE STATUS
-$("#modalChangeStatus #status").on("change", function () {
-  handlerResetFormError(
+document
+  .querySelector("#modalChangeStatus #status")
+  .addEventListener("change", (e) => {
+    document
+      .querySelectorAll(
+        "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
+      )
+      .forEach((el) => {
+        el.classList.remove("is-invalid");
+      });
+    const status = e.target.value;
+    hanlderDisplayElementModalChangeStatus(status);
+  });
+
+document
+  .querySelectorAll(
     "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
-  );
-  const status = $(this).val();
-  hanlderDisplayElementModalChangeStatus(status);
-});
-// CHANGE SUBMITTED DATE
-$("#modalChangeStatus #submitteddate").on("change", function () {
-  $(this).removeClass("is-invalid");
-});
-// CHANGE CANCELED DATE
-$("#modalChangeStatus #canceleddate").on("change", function () {
-  $(this).removeClass("is-invalid");
-});
-// INPUT DESCRIPTION
-$("#modalChangeStatus #description").on("change", function () {
-  $(this).removeClass("is-invalid");
-});
+  )
+  .forEach((el) => {
+    el.addEventListener("change", () => {
+      el.classList.remove("is-invalid");
+    });
+    el.addEventListener("input", () => {
+      el.classList.remove("is-invalid");
+    });
+  });
 
 // TOOLTIP DESCRIPTION CLICK
-$("#modalChangeStatus #tooltipDescription").on("click", function () {
-  const status = $("#modalChangeStatus #status").val();
-  handlerTooltip("modalChangeStatus", status);
-});
+document
+  .querySelector("#modalChangeStatus #tooltipDescription")
+  .addEventListener("click", (e) => {
+    const status = document.querySelector("#modalChangeStatus #status").value;
+    handlerTooltip("modalChangeStatus", status);
+  });
 // BUTTON SUBMIT CHANGE STATUS
-$("#modalChangeStatus #submitChangeStatus").on("click", submitChangeStatus);
+document
+  .querySelector("#modalChangeStatus #submitChangeStatus")
+  .addEventListener("click", () => {
+    submitChangeStatus();
+  });
 // ==================================================FUNCTIONS===============================================
 // --------------------------------------------||Submit Function ||-------------------------------------------
-function submitChangeStatus() {
-  handlerResetFormError(
-    "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
-  );
+const submitChangeStatus = async () => {
+  // Hapus class invalid saat user ubah input
+  document
+    .querySelectorAll(
+      "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
+    )
+    .forEach((el) => {
+      ["change", "input"].forEach((evt) =>
+        el.addEventListener(evt, () => el.classList.remove("is-invalid"))
+      );
+    });
 
   const fields = [
     "id",
@@ -164,67 +204,64 @@ function submitChangeStatus() {
     "canceleddate",
     "description",
   ];
+
   const paramsChangeStatus = { username: userName };
-
-  fields.forEach((field) => {
-    paramsChangeStatus[field] = document.querySelector(
-      "#modalChangeStatus #" + field
-    ).value;
-  });
-
-  $.ajax({
-    type: "post",
-    url: uriMethod + "/UpdateStatusOrder",
-    data: JSON.stringify({ data: paramsChangeStatus }),
-    dataType: "json",
-    contentType: "application/json; charset=utf-8",
-    beforeSend: function () {
-      $("#modalChangeStatus #submitChangeStatus").attr("disable", "disable");
-      $("#modalChangeStatus #submitChangeStatus").html(
-        '<i class="fa fa-spin fa-spinner"</i>'
-      );
-      swalLoadingShow("Please wait while we update the status.");
-    },
-    complete: function () {
-      $("#modalChangeStatus #submitChangeStatus").removeAttr("disable");
-      $("#modalChangeStatus #submitChangeStatus").html(
-        `<i class="fa-solid fa-cloud-arrow-up me-2"></i> Submit `
-      );
-    },
-    success: function (response) {
-      const result = response.d || response;
-      // Swal.close();
-      if (result.error) {
-        isError(result.error.message.toUpperCase()).then(() => {
-          const fieldElement = document.querySelector(result.error.field);
-          if (fieldElement) {
-            fieldElement.focus();
-            fieldElement.classList.add("is-invalid");
-          }
-        });
-      } else {
-        isSuccess(result.success).then(() => {
-          handlerHideBSModal("modalChangeStatus");
-        });
-      }
-    },
-    error: function (xhr, ajaxOptions, thrownError) {
-      var msg =
-        roleName === "Administrator"
-          ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-          : "Something went wrong, please try again!";
-      isError(msg);
-    },
-  });
-  return false;
-}
-// --------------------------------------------||Binding Function ||-------------------------------------------
-// BIND ORDERS
-function bindOrders(status, active, storetype) {
-  if ($.fn.DataTable.isDataTable("#tableAjax")) {
-    $("#tableAjax").DataTable().destroy(); // Hancurkan instance DataTables yang ada
+  for (const field of fields) {
+    const el = document.querySelector(`#modalChangeStatus #${field}`);
+    paramsChangeStatus[field] = el ? el.value : "";
   }
 
+  const btnSubmit = document.querySelector(
+    "#modalChangeStatus #submitChangeStatus"
+  );
+
+  try {
+    // === sebelum kirim ===
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = '<i class="fa fa-spin fa-spinner"></i>';
+    swalLoadingShow("Please wait while we update the status.");
+
+    // === kirim request ===
+    const response = await fetch(`${uriMethod}/UpdateStatusOrder`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ data: paramsChangeStatus }),
+    });
+
+    const result = await response.json();
+    const resData = result.d || result;
+
+    // === tangani hasil ===
+    if (resData.error) {
+      await isError(resData.error.message.toUpperCase());
+      const fieldElement = document.querySelector(resData.error.field);
+      if (fieldElement) {
+        fieldElement.focus();
+        fieldElement.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(resData.success);
+      handlerHideBSModal("modalChangeStatus");
+    }
+  } catch (err) {
+    const msg =
+      roleName === "Administrator"
+        ? `${err.message}`
+        : "Something went wrong, please try again!";
+    isError(msg);
+  } finally {
+    // === setelah selesai ===
+    btnSubmit.disabled = false;
+    btnSubmit.innerHTML = `<i class="fa-solid fa-cloud-arrow-up me-2"></i> Submit`;
+  }
+
+  return false;
+};
+
+// --------------------------------------------||Binding Function ||-------------------------------------------
+// BIND ORDERS
+let tableData;
+const bindOrders = (status, active, storetype) => {
   const paramData = {
     storeid: storeId,
     storecompany: storeCompany,
@@ -238,26 +275,23 @@ function bindOrders(status, active, storetype) {
 
   tableData = $("#tableAjax").DataTable({
     processing: true,
-    serverSide: true, // <<< INI KUNCI PENTINGNYA
-    order: [], // Tetap bisa set default order di sini
-    // -----------------|| Save State Default DataTables ||-----------------//
+    serverSide: true,
+    order: [],
     stateSave: true,
     stateDuration: -1,
     pageLength: 10,
-    // -----------------|| /Save State ||-----------------//
     language: {
       search: "",
-      lengthMenu: "_MENU_", // hanya dropdown, tanpa "Show entries"
+      lengthMenu: "_MENU_",
     },
     bPaginate: true,
     bInfo: true,
-    bFilter: true, // Ini mengaktifkan global search box
+    bFilter: true,
     bDestroy: true,
     initComplete: function () {
-      // 1. Styling kolom search
       const input = $("#tableAjax_filter input");
       input
-        .addClass("form-control form-control-sm") // ganti lg -> sm
+        .addClass("form-control form-control-sm")
         .attr("placeholder", "🔍 Type here to search...")
         .css({
           width: "250px",
@@ -266,13 +300,12 @@ function bindOrders(status, active, storetype) {
           display: "inline-block",
         });
 
-      // 2. Styling dropdown "Show entries"
       const lengthSelect = $("#tableAjax_length select");
       lengthSelect.addClass("form-select form-select-sm").css({
         width: "65px",
         fontSize: "15px",
         height: "40px",
-      }); // ganti lg -> sm
+      });
     },
     ajax: {
       url: uriMethod + "/BindOrders",
@@ -280,11 +313,9 @@ function bindOrders(status, active, storetype) {
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       data: function (d) {
-        // 'd' adalah objek parameter DataTables
-        // Gabungkan parameter Anda dengan parameter DataTables
         return JSON.stringify({
           params: {
-            ...paramData, // Parameter filter Anda
+            ...paramData,
             draw: d.draw,
             start: d.start,
             length: d.length,
@@ -295,30 +326,23 @@ function bindOrders(status, active, storetype) {
         });
       },
       dataSrc: function (json) {
-        // Pastikan struktur respons cocok dengan DataTableResponse Anda
-        // json.d.data = array data
-        // json.d.recordsTotal = total records tanpa filter
-        // json.d.recordsFiltered = total records setelah filter
         json.recordsTotal = json.d.recordsTotal;
         json.recordsFiltered = json.d.recordsFiltered;
         return json.d.data;
       },
       complete: function () {
-        loaderFadeOut(); // Loader disembunyikan setelah data Ajax berhasil
+        loaderFadeOut();
       },
       error: function (xhr, thrownError, ajaxOptions) {
         var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
-        isError(msg); // Asumsikan isError adalah fungsi penanganan error Anda
+        isError(msg);
       },
     },
     columns: [
       {
         data: "No",
-        orderable: false, // Kolom nomor urut biasanya tidak bisa diurutkan
+        orderable: false,
         render: function (data, type, row, meta) {
-          // Jika Anda ingin nomor urut dihitung di client
-          // return meta.row + meta.settings._iDisplayStart + 1;
-          // Jika Anda mengambil 'No' dari server:
           return `<div class="text-center">${data}</div>`;
         },
       },
@@ -333,10 +357,10 @@ function bindOrders(status, active, storetype) {
       },
       { data: "StoreName" },
       { data: "OrderNo" },
-      { data: "OrderCust" }, // As Reference
+      { data: "OrderCust" },
       {
         data: null,
-        orderable: false, // Kolom aksi tidak bisa diurutkan
+        orderable: false,
         render: function (data, type, row) {
           let findDelivery = `<span class='badge bg-cyan-lt'><i class='bi bi-box-seam'></i> ${row.Delivery}</span>`;
           if (row.Delivery === "Pick Up") {
@@ -347,7 +371,7 @@ function bindOrders(status, active, storetype) {
       },
       {
         data: null,
-        orderable: false, // Kolom aksi tidak bisa diurutkan
+        orderable: false,
         render: function (data, type, row) {
           let icon;
           switch (row.Status) {
@@ -376,7 +400,7 @@ function bindOrders(status, active, storetype) {
       },
       {
         data: null,
-        orderable: false, // Kolom aksi tidak bisa diurutkan
+        orderable: false,
         render: function (data, type, row) {
           // --------------------|| Visible Button ||--------------------#
           let displayDelete = "d-none";
@@ -392,13 +416,14 @@ function bindOrders(status, active, storetype) {
             }
           }
           // if (roleName === "Administrator" && row.Status !== "Canceled") {
-          if (roleName === "Administrator") {
-            displayDelete = "";
-          }
+          if (roleName === "Administrator") displayDelete = "";
 
           if (roleName === "Manager" || roleName === "Account") {
             displayDelete = "d-none";
           }
+
+          if (row.Active === "False" || row.Active === "0")
+            displayDelete = "d-none";
 
           // DISPLAY BUTTON CHANGE STATUS
           if (roleName === "Administrator" || roleName === "PPIC & DE") {
@@ -469,10 +494,10 @@ function bindOrders(status, active, storetype) {
       },
     ],
   });
-}
+};
 // --------------------------------------------||Handler Function ||-------------------------------------------
 // HANDLER HIDE BOOTSTRAP MODAL
-function handlerHideBSModal(id) {
+const handlerHideBSModal = (id) => {
   var modalEl = document.getElementById(id);
   var modalInstance = bootstrap.Modal.getInstance(modalEl);
 
@@ -483,205 +508,198 @@ function handlerHideBSModal(id) {
     modalInstance = new bootstrap.Modal(modalEl);
     modalInstance.hide();
   }
-}
+};
 
 // HANDLER SHOW BOOTSTRAP MODAL
-function handlerShowBSModal(params) {
+const handlerShowBSModal = (params) => {
   var myModal = new bootstrap.Modal(document.getElementById(params), {
     keyboard: false,
   });
   myModal.show();
-}
+};
 
 // HANDLER CELECT STSTUS
-function handlerSelStatus(params, statusNow) {
-  return new Promise((resolve, reject) => {
-    const sel = document.querySelector(params);
-    sel.innerHTML = ""; //reset
+const handlerSelStatus = async (params, statusNow) => {
+  if (!params) return;
 
-    if (!params) return resolve();
+  const sel = document.querySelector(params);
+  if (!sel) return;
 
-    let data = [];
+  sel.innerHTML = ""; // Reset options
 
-    // for cardOrder => status
-    if (params === "#cardOrder #status") {
-      if (roleName === "PPIC & DE") {
+  let data = [];
+
+  // === cardOrder => status ===
+  if (params === "#cardOrder #status") {
+    if (roleName === "PPIC & DE") {
+      data = [
+        { value: "all", text: "All" },
+        { value: "New Order", text: "New Order" },
+        { value: "In Production", text: "In Production" },
+        { value: "On Hold", text: "On Hold" },
+        { value: "Completed", text: "Completed" },
+        { value: "Canceled", text: "Canceled" },
+      ];
+    } else {
+      data = [
+        { value: "all", text: "All" },
+        { value: "Draft", text: "Draft" },
+        { value: "New Order", text: "New Order" },
+        { value: "In Production", text: "In Production" },
+        { value: "On Hold", text: "On Hold" },
+        { value: "Completed", text: "Completed" },
+        { value: "Canceled", text: "Canceled" },
+      ];
+    }
+  }
+
+  // === modalChangeStatus => status ===
+  if (params === "#modalChangeStatus #status" && statusNow) {
+    switch (statusNow) {
+      case "Draft":
         data = [
-          { value: "all", text: "All" },
-          // { value: "Draft", text: "Draft" },
+          { value: "New Order", text: "New Order" },
+          { value: "Canceled", text: "Canceled" },
+        ];
+        if (roleName !== "Administrator") {
+          data.unshift({ value: "Draft", text: "Draft" });
+        }
+        break;
+
+      case "New Order":
+        data = [
           { value: "New Order", text: "New Order" },
           { value: "In Production", text: "In Production" },
           { value: "On Hold", text: "On Hold" },
-          { value: "Completed", text: "Completed" },
           { value: "Canceled", text: "Canceled" },
         ];
-      } else {
+        break;
+
+      case "In Production":
         data = [
-          { value: "all", text: "All" },
-          { value: "Draft", text: "Draft" },
-          { value: "New Order", text: "New Order" },
           { value: "In Production", text: "In Production" },
-          { value: "On Hold", text: "On Hold" },
           { value: "Completed", text: "Completed" },
           { value: "Canceled", text: "Canceled" },
         ];
-      }
+        break;
     }
 
-    // for cardChangeStatus => status
-    if (params === "#modalChangeStatus #status" && statusNow) {
-      switch (statusNow) {
-        case "Draft":
-          data = [
-            { value: "New Order", text: "New Order" },
-            { value: "Canceled", text: "Canceled" },
-          ];
-
-          if (roleName !== "Administrator") {
-            // Tambahkan Draft di awal (unshift) atau akhir (push)
-            data.unshift({ value: "Draft", text: "Draft" }); // Menambahkan di awal
-          }
-          break;
-        case "New Order":
-          data = [
-            { value: "New Order", text: "New Order" },
-            { value: "In Production", text: "In Production" },
-            { value: "On Hold", text: "On Hold" },
-            { value: "Canceled", text: "Canceled" },
-          ];
-          break;
-        case "In Production":
-          data = [
-            { value: "In Production", text: "In Production" },
-            { value: "Completed", text: "Completed" },
-            { value: "Canceled", text: "Canceled" },
-          ];
-          break;
-      }
-      if (roleName === "Administrator") {
-        // Tambahkan Draft di awal (unshift) atau akhir (push)
-        data.unshift({ value: "Draft", text: "Draft" }); // Menambahkan di awal
-      }
+    if (roleName === "Administrator") {
+      data.unshift({ value: "Draft", text: "Draft" });
     }
+  }
 
-    data.forEach((item) => {
-      const option = document.createElement("option");
-      option.value = item.value;
-      option.text = item.text.toUpperCase();
-      sel.appendChild(option);
-    });
+  // === render option ===
+  for (const { value, text } of data) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = text.toUpperCase();
+    sel.appendChild(option);
+  }
 
-    // for cardOrder => status
-    if (params === "#cardOrder #status") {
-      // ambil value filter default ketika load
-      const uiStatus = sel.options[sel.selectedIndex].value;
-      const uiActive = document.querySelector("#cardOrder #active").value;
-      const uiStoreType = document.querySelector("#cardOrder #storetype").value;
+  // === cardOrder behavior ===
+  if (params === "#cardOrder #status") {
+    const uiStatus = sel.options[sel.selectedIndex]?.value || "";
+    const uiActive = document.querySelector("#cardOrder #active")?.value || "";
+    const uiStoreType =
+      document.querySelector("#cardOrder #storetype")?.value || "";
 
-      // jika ada state makan gunakan state
-      let statusToUse = getState("filter_status") || uiStatus;
-      let activeToUse = getState("filter_active") || uiActive;
-      let storeTypeToUse = getState("filter_storetype") || uiStoreType;
+    const statusToUse = getState("filter_orders_status") || uiStatus;
+    const activeToUse = getState("filter_orders_active") || uiActive;
+    const storeTypeToUse = getState("filter_orders_storetype") || uiStoreType;
 
-      // set value filter
-      setFilterValues(statusToUse, activeToUse, storeTypeToUse);
+    // Update filter UI
+    setFilterValues(statusToUse, activeToUse, storeTypeToUse);
 
-      // bind orders
-      bindOrders(statusToUse, activeToUse, storeTypeToUse);
-    }
-
-    resolve();
-  });
-}
+    // Jika bindOrders adalah fungsi async, kita tunggu dulu
+    await bindOrders(statusToUse, activeToUse, storeTypeToUse);
+  }
+};
 
 // HANDLER CREATE NEW ORDER
-function handlerCreateNewOrder() {
-  $.ajax({
-    type: "POST",
-    url: uriMethod + "/SetHeaderAction",
-    contentType: "application/json; charset=utf-8",
-    data: JSON.stringify({ action: "AddHeader" }),
-    success: function () {
-      window.location.href = "/order/header";
-    },
-    error: function (xhr, status, error) {
-      isError("Gagal menyetel session: " + error);
-    },
-  });
-}
+const handlerCreateNewOrder = async () => {
+  try {
+    const response = await fetch(`${uriMethod}/SetHeaderAction`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ action: "AddHeader" }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+    }
+
+    // Jika sukses, langsung arahkan ke halaman order header
+    window.location.href = "/order/header";
+  } catch (error) {
+    isError("Gagal menyetel session: " + error.message);
+  }
+};
 
 // HANDLER OPEN DETAIL ORDER
-function handlerOpenDetailOrder(headerid) {
-  $.ajax({
-    type: "POST",
-    url: uriMethod + "/SetSessionOpenOrderDetail",
-    contentType: "application/json; charset=utf-8",
-    data: JSON.stringify({ headerid: headerid }),
-    success: function () {
-      window.location.href = "/order/detail";
-    },
-    error: function (xhr, status, error) {
-      isError("Gagal menyetel session: " + error);
-    },
-  });
-}
+const handlerOpenDetailOrder = async (headerid) => {
+  try {
+    const response = await fetch(`${uriMethod}/SetSessionOpenOrderDetail`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ headerid }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+    }
+
+    // Jika sukses, arahkan ke halaman detail order
+    window.location.href = "/order/detail";
+  } catch (error) {
+    isError("Gagal menyetel session: " + error.message);
+  }
+};
 
 // HANDLER CHANGE STATUS
-function handlerChangeStatus(headerid) {
-  return new Promise((resolve, reject) => {
-    if (!headerid) return resolve();
-    // console.log("bindItemOrder", headerid);
+const handlerChangeStatus = async (headerid) => {
+  if (!headerid) return;
 
-    $.ajax({
-      type: "POST",
-      url: uriMethod + "/BindOrderId",
-      data: JSON.stringify({
-        headerid: headerid,
-      }),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (response) {
-        const data = response.d;
-
-        if (!data || data.length === 0) {
-          var msg =
-            roleName === "Administrator"
-              ? "No data returned from server : handlerChangeStatus"
-              : "Please contact our IT team at support@onlineorder.au";
-          reject(isError(msg));
-          return;
-        }
-
-        const promises = data.map((item) => {
-          return Promise.resolve()
-            .then(() =>
-              handlerSelStatus("#modalChangeStatus #status", item.Status)
-            )
-            .then(() => setValueModalChangeStatus(item))
-            .then(() => hanlderDisplayElementModalChangeStatus(item.Status))
-            .then(() => {
-              return Promise.all([handlerShowBSModal("modalChangeStatus")])
-                .then(resolve)
-                .catch(reject);
-            });
-        });
-
-        Promise.all(promises)
-          .then(() => resolve())
-          .catch((error) => reject(error));
-      },
-      error: function (xhr, status, error, thrownError) {
-        var msg =
-          roleName === "Administrator"
-            ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-            : "Please contact our IT team at support@onlineorder.au";
-        reject(isError(msg));
-      },
+  try {
+    const response = await fetch(`${uriMethod}/BindOrderId`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ headerid }),
     });
-  });
-}
 
-function setValueModalChangeStatus(itemData) {
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    const data = result.d;
+
+    if (!data || data.length === 0) {
+      const msg =
+        roleName === "Administrator"
+          ? "No data returned from server : handlerChangeStatus"
+          : "Please contact our IT team at support@onlineorder.au";
+      await isError(msg);
+      return;
+    }
+
+    // Jalankan tiap item secara berurutan
+    for (const item of data) {
+      await handlerSelStatus("#modalChangeStatus #status", item.Status);
+      await setValueModalChangeStatus(item);
+      await hanlderDisplayElementModalChangeStatus(item.Status);
+      await handlerShowBSModal("modalChangeStatus");
+    }
+  } catch (error) {
+    const msg =
+      roleName === "Administrator"
+        ? error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    await isError(msg);
+  }
+};
+
+const setValueModalChangeStatus = async (itemData) => {
   const mapping = {
     id: "Id",
     status: "Status",
@@ -693,105 +711,84 @@ function setValueModalChangeStatus(itemData) {
   };
 
   Object.keys(mapping).forEach((id) => {
-    const el = document.querySelector("#modalChangeStatus #" + id);
+    const el = document.querySelector(`#modalChangeStatus #${id}`);
     if (!el) {
       console.warn(`Elemen '${id}' tidak ditemukan.`);
       return;
     }
 
-    let value = itemData[mapping[id]];
+    let value = itemData[mapping[id]] ?? "";
 
-    // Jika kosong/null/undefined, langsung set sebagai empty string
-    if (!value) {
-      el.value = "";
-      return;
-    }
-
-    // Jika input type date dan format tanggal dd/mm/yyyy hh:mm:ss
+    // Jika input bertipe date dan format dd/mm/yyyy hh:mm:ss → ubah ke yyyy-mm-dd
     if (el.type === "date" && typeof value === "string") {
-      const datePart = value.split(" ")[0]; // contoh: "16/07/2025"
+      const [datePart] = value.split(" "); // contoh: "16/07/2025"
       const parts = datePart.split("/"); // hasil: ["16", "07", "2025"]
       if (parts.length === 3) {
         value = `${parts[2]}-${parts[1]}-${parts[0]}`;
       } else {
         console.warn(`Format tanggal tidak sesuai: ${value}`);
-        value = ""; // fallback kosong agar tidak error
+        value = "";
       }
     }
 
-    // Khusus untuk description, potong setelah "Notes from the office:<br />"
+    // Jika description: ambil teks setelah "Notes from the office:<br />" dan bersihkan tag HTML
     if (id === "description" && typeof value === "string") {
       const marker = "Notes from the office:<br />";
       if (value.includes(marker)) {
         value = value.split(marker)[1] || "";
-        // Hapus tag HTML jika masih ada
-        value = value.replace(/<[^>]*>/g, "");
       }
+      // Hapus tag HTML dengan regex agar tidak ikut tampil
+      value = value.replace(/<[^>]*>/g, "").trim();
     }
 
+    // Set nilai ke elemen input / textarea
     el.value = value;
   });
-}
-
-function handlerResetFormError(params) {
-  // params : "#modalSaveData .form-control, #modalSaveData .form-select"
-  document.querySelectorAll(params).forEach((element) => {
-    element.classList.remove("is-invalid");
-  });
-}
+};
 
 // HANDLER DATE INFORMATION
-function handlerDateInfo(headerid) {
-  return new Promise((resolve, reject) => {
-    if (!headerid) return resolve();
-    // console.log("bindItemOrder", headerid);
+const handlerDateInfo = async (headerid) => {
+  if (!headerid) return;
 
-    $.ajax({
-      type: "POST",
-      url: uriMethod + "/BindOrderId",
-      data: JSON.stringify({
-        headerid: headerid,
-      }),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (response) {
-        const data = response.d;
-
-        if (!data || data.length === 0) {
-          var msg =
-            roleName === "Administrator"
-              ? "No data returned from server : handlerChangeStatus"
-              : "Please contact our IT team at support@onlineorder.au";
-          reject(isError(msg));
-          return;
-        }
-
-        const promises = data.map((item) => {
-          return Promise.resolve()
-            .then(() => setValueModalDateInfo(item))
-            .then(() => {
-              return Promise.all([handlerShowBSModal("modalDateInfo")])
-                .then(resolve)
-                .catch(reject);
-            });
-        });
-
-        Promise.all(promises)
-          .then(() => resolve())
-          .catch((error) => reject(error));
+  try {
+    const response = await fetch(`${uriMethod}/BindOrderId`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
       },
-      error: function (xhr, status, error, thrownError) {
-        var msg =
-          roleName === "Administrator"
-            ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-            : "Please contact our IT team at support@onlineorder.au";
-        reject(isError(msg));
-      },
+      body: JSON.stringify({ headerid }),
     });
-  });
-}
 
-function setValueModalDateInfo(itemData) {
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const data = result.d;
+
+    if (!data || data.length === 0) {
+      const msg =
+        roleName === "Administrator"
+          ? "No data returned from server : handlerDateInfo"
+          : "Please contact our IT team at support@onlineorder.au";
+      await isError(msg);
+      return;
+    }
+
+    for (const item of data) {
+      await setValueModalDateInfo(item);
+      await handlerShowBSModal("modalDateInfo");
+    }
+  } catch (error) {
+    const msg =
+      roleName === "Administrator"
+        ? error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    await isError(msg);
+  }
+};
+
+const setValueModalDateInfo = (itemData) => {
   const mapping = {
     createddate: "CreatedDate",
     submitteddate: "SubmittedDate",
@@ -839,9 +836,9 @@ function setValueModalDateInfo(itemData) {
 
     el.value = value;
   });
-}
+};
 
-function parseCustomDate(value) {
+const parseCustomDate = (value) => {
   if (!value || typeof value !== "string") return null;
 
   // Format ISO: 2025-07-10 08:42:01.653
@@ -880,24 +877,22 @@ function parseCustomDate(value) {
   }
 
   return null;
-}
+};
 
 // HANDLER DELETE & RESTORE ORDER
-function handlerSwitch(id, name, order, ref, del, act) {
-  let title = act === "delete" ? "delete" : "restore";
-  let textButton = act === "delete" ? "Yes, delete it!" : "Yes, restore it!";
-  let icon = act === "delete" ? "warning" : "question";
-  Swal.fire({
+const handlerSwitch = async (id, name, order, ref, del, act) => {
+  const title = act === "delete" ? "delete" : "restore";
+  const textButton = act === "delete" ? "Yes, delete it!" : "Yes, restore it!";
+  const icon = act === "delete" ? "warning" : "question";
+
+  const result = await Swal.fire({
     title: name,
-    html:
-      "Sure to " +
-      title +
-      " this data? <br/><br/> <b>Order No :</b>" +
-      order +
-      " <b>Ref :</b>" +
-      ref +
-      " <b>Del :</b>" +
-      del,
+    html: `
+      Sure to ${title} this data?<br/><br/>
+      <b>Order No :</b> ${order}
+      <b>Ref :</b> ${ref}
+      <b>Del :</b> ${del}
+    `,
     icon: icon,
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
@@ -906,108 +901,106 @@ function handlerSwitch(id, name, order, ref, del, act) {
     customClass: {
       popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
     },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      $.ajax({
-        type: "post",
-        url: uriMethod + "/SwitchOrder",
-        data: JSON.stringify({
-          id: id,
-          action: act,
-        }),
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
-
-        success: function (response) {
-          const result = response.d || response;
-          if (result.error) {
-            isError(result.error.message.toUpperCase());
-          } else {
-            isSuccess(result.success);
-          }
-        },
-        error: function (xhr, ajaxOptions, thrownError) {
-          var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
-          isError(msg);
-        },
-      });
-    }
   });
-}
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const response = await fetch(`${uriMethod}/SwitchOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ id, action: act }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const resultData = data.d || data;
+
+    if (resultData.error) {
+      await isError(resultData.error.message.toUpperCase());
+    } else {
+      await isSuccess(resultData.success);
+    }
+  } catch (error) {
+    const msg = `${error.message || error}`;
+    await isError(msg);
+  }
+};
 
 // HANDLER DOWLOAD CSV ORDER
-function handlerDownloadCSV(headerId) {
-  return new Promise((resolve, reject) => {
-    let timerInterval;
-    Swal.fire({
-      title: "Downloading...",
-      html: "Is downloading, i will close in <b></b> milliseconds.",
-      timer: 2000,
-      timerProgressBar: true,
-      customClass: {
-        popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-      },
-      didOpen: () => {
-        Swal.showLoading();
-        const timer = Swal.getPopup().querySelector("b");
-        timerInterval = setInterval(() => {
-          timer.textContent = `${Swal.getTimerLeft()}`;
-        }, 100);
-      },
-      willClose: () => {
-        clearInterval(timerInterval);
-      },
-    }).then((result) => {
-      /* Read more about handling dismissals below */
-      if (result.dismiss === Swal.DismissReason.timer) {
-        $.ajax({
-          type: "POST",
-          url: uriMethod + "/DownloadCSVOrder",
-          data: JSON.stringify({
-            HeaderId: headerId, // harus huruf besar H agar cocok dengan server-side
-          }),
-          contentType: "application/json; charset=utf-8",
-          dataType: "json",
-          success: function (response) {
-            // Membuat Blob dari string CSV
-            const csvString = response.d;
-            const blob = new Blob([csvString], {
-              type: "text/csv;charset=utf-8;",
-            });
+const handlerDownloadCSV = async (headerId) => {
+  let timerInterval;
 
-            // Buat URL blob
-            const url = URL.createObjectURL(blob);
-
-            // Buat elemen link sementara
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", "-SPOD-ID-" + headerId + ".csv");
-            document.body.appendChild(link);
-            link.click();
-
-            // Bersihkan
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-
-            resolve();
-          },
-          error: function (xhr, status, error, thrownError) {
-            reject(
-              new Error(
-                xhr.responseJSON?.error
-                  ? xhr.responseJSON.error
-                  : xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-              )
-            );
-          },
-        });
-      }
-    });
+  const result = await Swal.fire({
+    title: "Downloading...",
+    html: "Is downloading, I will close in <b></b> milliseconds.",
+    timer: 2000,
+    timerProgressBar: true,
+    customClass: {
+      popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+    },
+    didOpen: () => {
+      Swal.showLoading();
+      const timer = Swal.getPopup().querySelector("b");
+      timerInterval = setInterval(() => {
+        timer.textContent = `${Swal.getTimerLeft()}`;
+      }, 100);
+    },
+    willClose: () => {
+      clearInterval(timerInterval);
+    },
   });
-}
+
+  // hanya lanjut download jika Swal ditutup oleh timer
+  if (result.dismiss === Swal.DismissReason.timer) {
+    try {
+      const response = await fetch(`${uriMethod}/DownloadCSVOrder`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({ HeaderId: headerId }), // huruf besar 'H' sesuai server
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+
+      // jika response JSON, ambil nilai string CSV
+      const resultData = await response.json();
+      const csvString = resultData.d || resultData;
+
+      // buat blob file CSV
+      const blob = new Blob([csvString], {
+        type: "text/csv;charset=utf-8;",
+      });
+
+      // buat URL blob sementara
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `-SPOD-ID-${headerId}.csv`;
+      document.body.appendChild(link);
+      link.click();
+
+      // bersihkan URL blob dan elemen link
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      const msg =
+        roleName === "Administrator"
+          ? error.message
+          : "Something went wrong while downloading the CSV.";
+      await isError(msg);
+    }
+  }
+};
 
 // HANDLER DISPLAY ELEMENT MODAL CHANGE STATUS
-function hanlderDisplayElementModalChangeStatus(status) {
+const hanlderDisplayElementModalChangeStatus = (status) => {
   // INITIALIZE ELEMENT
   const divSubmittedDate = document.getElementById("divSubmittedDate");
   const divCompletedDate = document.getElementById("divCompletedDate");
@@ -1036,10 +1029,10 @@ function hanlderDisplayElementModalChangeStatus(status) {
         break;
     }
   }
-}
+};
 
 // HANDLER TOOLTIP
-function handlerTooltip(modalName, params) {
+const handlerTooltip = (modalName, params) => {
   // INITIALIZE MESSAGE
   let title = "Tooltip";
   let msg = "This message is a tooltip";
@@ -1064,27 +1057,25 @@ function handlerTooltip(modalName, params) {
       popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
     },
   });
-}
+};
 // --------------------------------------------||Other Function ||-------------------------------------------
 // CHECK SESSION
-function checkSession() {
-  setSessionAlive();
-
+const checkSession = () => {
   handlerSelStatus("#cardOrder #status", null);
-}
+};
 
-function setState(name, value) {
+const setState = (name, value) => {
   if (!name && !value) return console.warn("setState: name and value required");
   localStorage.setItem(name, value);
-}
+};
 
-function getState(name) {
+const getState = (name) => {
   if (!name) return console.warn("getState: name required");
   return localStorage.getItem(name);
-}
+};
 
-function setFilterValues(status, active, storeType) {
+const setFilterValues = (status, active, storeType) => {
   document.querySelector("#cardOrder #status").value = status;
   document.querySelector("#cardOrder #active").value = active;
   document.querySelector("#cardOrder #storetype").value = storeType;
-}
+};
