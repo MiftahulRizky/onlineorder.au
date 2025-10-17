@@ -140,14 +140,15 @@ Public Class PrintConfig
         Dim storeId As String = headerData.Tables(0).Rows(0).Item("StoreId").ToString()
         Dim storeName As String = headerData.Tables(0).Rows(0).Item("StoreName").ToString()
 
-        Dim request As HttpRequest = HttpContext.Current.Request
-        Dim baseUrl As String = request.Url.Scheme & "://" & request.Url.Authority & request.ApplicationPath.TrimEnd("/"c)
+        Dim imagePath As String = HttpContext.Current.Server.MapPath("~/Content/static/new-icon.png")
+        Dim imageBytes As Byte() = File.ReadAllBytes(imagePath)
+        Dim base64String As String = Convert.ToBase64String(imageBytes)
 
 
         result += "<table style='width:100%;margin-bottom:10px;margin-top:25px;font-size:smaller;'>"
         result += trStart
         result += "<td style='vertical-align:top;width:40%;font-size:small;'>"
-        result += "<img width='100%' src='" & baseUrl & "/Content/static/new-icon.png' alt='Your Logo'/>"
+        result += "<img width='100%' src='data:image/png;base64," & base64String & "' alt='Your Logo'/>"
         result += "<br />"
         result += "<p style='font-size:small;'>"
         result += "<b>Sunlight Products Pty Ltd</b>"
