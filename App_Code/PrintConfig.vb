@@ -5,6 +5,7 @@ Imports System.IO
 Imports iTextSharp.text
 Imports iTextSharp.text.pdf
 Imports iTextSharp.tool.xml
+Imports iTextSharp.tool.xml.pipeline.html
 Imports Microsoft.VisualBasic
 
 Public Class PrintConfig
@@ -114,15 +115,32 @@ Public Class PrintConfig
         'result += Print_CassetteMotorised(HeaderId)
 
         Using stream As FileStream = New FileStream(Directories + "/" + FileName, FileMode.Create)
-            Dim pdfDoc As Document = New Document(PageSize.A4.Rotate)
+            Dim pdfDoc As New Document(PageSize.A4.Rotate)
             Dim writer As PdfWriter = PdfWriter.GetInstance(pdfDoc, stream)
             pdfDoc.Open()
-            Dim sr As StringReader = New StringReader(result)
-            XMLWorkerHelper.GetInstance().ParseXHtml(writer, pdfDoc, sr)
-            pdfDoc.NewPage()
+
+            Dim sr As New StringReader(result)
+
+            ' Siapkan Image Provider
+            Dim htmlContext As New HtmlPipelineContext(Nothing)
+            htmlContext.SetImageProvider(New CustomImageProvider())
+
+            Dim cssResolver As iTextSharp.tool.xml.pipeline.css.ICSSResolver = _
+                iTextSharp.tool.xml.XMLWorkerHelper.GetInstance().GetDefaultCssResolver(True)
+
+            Dim pipeline As New iTextSharp.tool.xml.pipeline.html.HtmlPipeline(htmlContext, _
+                New iTextSharp.tool.xml.pipeline.end.PdfWriterPipeline(pdfDoc, writer))
+            Dim cssPipeline As New iTextSharp.tool.xml.pipeline.css.CssResolverPipeline(cssResolver, pipeline)
+
+            Dim worker As New iTextSharp.tool.xml.XMLWorker(cssPipeline, True)
+            Dim parser As New iTextSharp.tool.xml.parser.XMLParser(worker)
+
+            parser.Parse(sr)
+
             pdfDoc.Close()
             stream.Close()
         End Using
+
     End Sub
 
     Protected Function Print_HeaderTemplate(HeaderId As String) As String
