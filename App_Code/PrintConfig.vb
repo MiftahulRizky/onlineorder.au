@@ -143,11 +143,10 @@ Public Class PrintConfig
         Dim request As HttpRequest = HttpContext.Current.Request
         Dim baseUrl As String = request.Url.Scheme & "://" & request.Url.Authority & request.ApplicationPath.TrimEnd("/"c)
 
-
         result += "<table style='width:100%;margin-bottom:10px;margin-top:25px;font-size:smaller;'>"
         result += trStart
         result += "<td style='vertical-align:top;width:40%;font-size:small;'>"
-        result += "<img width='100%' src='" & baseUrl & "/Content/static/new-icon.png' alt='Your Logo'/>"
+        result += "<img width='100%' src='"& baseUrl &"/Content/static/new-icon.png' alt='Your Logo'/>"
         result += "<br />"
         result += "<p style='font-size:small;'>"
         result += "<b>Sunlight Products Pty Ltd</b>"

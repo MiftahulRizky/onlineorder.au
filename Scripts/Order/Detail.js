@@ -1,4 +1,4 @@
-$(document).ready(function () {
+window.addEventListener("DOMContentLoaded", function () {
   if (roleName == "Administrator") {
     console.log("Detail.js loaded successfully");
     console.log("roleName: " + roleName);
@@ -16,10 +16,12 @@ $(document).ready(function () {
 // ==================================================EVENTS==================================================
 // ------------------------------------------||Card 1 Event ||-------------------------------------------
 // BUTTON FINISH
-$("#btnFinish").on("click", () => (window.location.href = "/order"));
+document.querySelector("#btnFinish").addEventListener("click", () => {
+  window.location.href = "/order";
+});
 
 // BUTTON PREVIEW PRINT
-$("#btnPreviewPrint").on("click", function () {
+document.querySelector("#btnPreviewPrint").addEventListener("click", () => {
   handlerCreatePDFOrder(
     headerId,
     "preview",
@@ -28,7 +30,7 @@ $("#btnPreviewPrint").on("click", function () {
 });
 
 // BUTTON PREVIEW PDF
-$("#btnPreviewPDF").on("click", function () {
+document.querySelector("#btnPreviewPDF").addEventListener("click", () => {
   handlerCreatePDFOrder(
     headerId,
     "download",
@@ -37,17 +39,17 @@ $("#btnPreviewPDF").on("click", function () {
 });
 
 // BUTTON CONVERT TO JOB
-$("#btnConvertToJob").on("click", function () {
+document.querySelector("#btnConvertToJob").addEventListener("click", () => {
   handlerConvertToJob(headerId, "convert", "Please wait while we convert...");
 });
 
 // BUTTON RE PRINT JOB SHEET
-$("#btnReprintJobSheet").on("click", function () {
+document.querySelector("#btnReprintJobSheet").addEventListener("click", () => {
   handlerCreateJOBOrder(headerId, "reprint", "Please wait while we reprint...");
 });
 
 // BUTTON SUBMIT ORDER
-$("#btnSubmit").on("click", function () {
+document.querySelector("#btnSubmit").addEventListener("click", () => {
   handlerSubmitOrder(
     headerId,
     "submit",
@@ -56,17 +58,17 @@ $("#btnSubmit").on("click", function () {
 });
 
 // BUTTON EDIT HEADER
-$("#btnEditHeader").on("click", function () {
+document.querySelector("#btnEditHeader").addEventListener("click", () => {
   handlerEditHeader(headerId);
 });
 
 // BUTTON DELETE HEADER
-$("#btnDeleteHeader").on("click", function () {
+document.querySelector("#btnDeleteHeader").addEventListener("click", () => {
   handlerDeleteHeader(headerId);
 });
 
 // BUTTON QUOTE DETAIL
-$("#btnQuoteDetail").on("click", function () {
+document.querySelector("#btnQuoteDetail").addEventListener("click", () => {
   handlerCreatePDFQuote(
     headerId,
     userName,
@@ -76,7 +78,7 @@ $("#btnQuoteDetail").on("click", function () {
 });
 
 // BUTTON DOWNLOAD QUOTE
-$("#btnDownloadQuote").on("click", function () {
+document.querySelector("#btnDownloadQuote").addEventListener("click", () => {
   handlerCreatePDFQuote(
     headerId,
     userName,
@@ -86,15 +88,19 @@ $("#btnDownloadQuote").on("click", function () {
 });
 
 // BUTTON CHANGE STSTUS
-$("#btnChangeStatus").on("click", function () {
-  handlerResetFormError(
-    "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
-  );
+document.querySelector("#btnChangeStatus").addEventListener("click", () => {
+  document
+    .querySelectorAll(
+      "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
+    )
+    .forEach((e) => {
+      e.classList.remove("is-invalid");
+    });
   handlerChangeStatus(headerId);
 });
 
 // BUTTON SEND MANUAL ORDER
-$("#btnSendOrderMail").on("click", function () {
+document.querySelector("#btnSendOrderMail").addEventListener("click", () => {
   handlerCreatePDFOrder(
     headerId,
     "mail",
@@ -103,126 +109,145 @@ $("#btnSendOrderMail").on("click", function () {
 });
 
 // BTN RELOAD PRICING
-$("#btnReloadPricing").on("click", function () {
+document.querySelector("#btnReloadPricing").addEventListener("click", () => {
   const statusOrder = document.getElementById("spanStatusOrder").innerHTML;
   handlerReloadPricing(headerId, statusOrder, "click");
 });
 
 // BUTTON ADD ITEMS
-$("#btnAddItem").on("click", function () {
-  handlerResetFormError(
-    "#modalAddItem .form-control, #modalAddItem .form-select"
-  );
+document.querySelector("#btnAddItem").addEventListener("click", () => {
+  document
+    .querySelectorAll("#modalAddItem .form-control, #modalAddItem .form-select")
+    .forEach((e) => {
+      e.classList.remove("is-invalid");
+    });
+
   handlerSelDesignType("#modalAddItem #designid");
   handlerShowBSModal("modalAddItem");
 });
 
 // ------------------------------------------||modalAddItem Event ||------------------------------------
 // CHANGE DESIGN TYPE
-$("#modalAddItem #designid").on("change", function () {
-  $(this).removeClass("is-invalid");
+document.querySelectorAll("#modalAddItem .form-select").forEach((e) => {
+  e.addEventListener("change", (e) => {
+    e.target.classList.remove("is-invalid");
+  });
 });
 
 // BUTTON SUBMIT ADD ITEM
-$("#modalAddItem #submitAddItem").on("click", function () {
-  const designId = $("#modalAddItem #designid").val();
-  const action = "AddItem";
-  submitSelectProduct(headerId, action, designId);
-});
+document
+  .querySelector("#modalAddItem #submitAddItem")
+  .addEventListener("click", () => {
+    const designId = document.querySelector("#modalAddItem #designid").value;
+    const action = "AddItem";
+    submitSelectProduct(headerId, action, designId);
+  });
 
 // ------------------------------------------||modalChangeStatus Event ||------------------------------------
 // CHANGE STATUS
-$("#modalChangeStatus #status").on("change", function () {
-  handlerResetFormError(
+document
+  .querySelector("#modalChangeStatus #status")
+  .addEventListener("change", (e) => {
+    const status = e.target.value;
+    hanlderDisplayElementModalChangeStatus(status);
+  });
+
+document
+  .querySelectorAll(
     "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
-  );
-  const status = $(this).val();
-  hanlderDisplayElementModalChangeStatus(status);
-});
-
-// CHANGE SUBMITTED DATE
-$("#modalChangeStatus #submitteddate").on("change", function () {
-  $(this).removeClass("is-invalid");
-});
-
-// CHANGE COMPLETED DATE
-$("#modalChangeStatus #completeddate").on("change", function () {
-  $(this).removeClass("is-invalid");
-});
-
-// CHANGE CANCELED DATE
-$("#modalChangeStatus #canceleddate").on("change", function () {
-  $(this).removeClass("is-invalid");
-});
-
-// INPUT DESCRIPTION
-$("#modalChangeStatus #description").on("input", function () {
-  $(this).removeClass("is-invalid");
-});
+  )
+  .forEach((e) => {
+    e.addEventListener("change", (e) => {
+      e.target.classList.remove("is-invalid");
+    });
+    e.addEventListener("input", (e) => {
+      e.target.classList.remove("is-invalid");
+    });
+  });
 
 // TOOLTIP DESCRIPTION CLICK
-$("#modalChangeStatus #tooltipDescription").on("click", function () {
-  const status = $("#modalChangeStatus #status").val();
-  handlerTooltip("modalChangeStatus", status);
-});
+document
+  .querySelector("#modalChangeStatus #tooltipDescription")
+  .addEventListener("click", () => {
+    const status = document.querySelector("#modalChangeStatus #status").value;
+    handlerTooltip("modalChangeStatus", status);
+  });
 
 // BUTTON SUBMIT CHANGE STATUS
-$("#modalChangeStatus #submitChangeStatus").on("click", submitChangeStatus);
+document
+  .querySelector("#modalChangeStatus #submitChangeStatus")
+  .addEventListener("click", () => {
+    submitChangeStatus();
+  });
 
 // ------------------------------------------||tableAjax Event ||------------------------------------
 // BUTTON DETAIL ITEM
-$("#tableAjax").on("click", "#btnDetailItem", function () {
-  const id = $(this).data("id");
-  const designid = $(this).data("designid");
-  const headerid = $(this).data("headerid");
-  handlerEditItem(id, headerid, "ViewItem", designid);
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnDetailItem") {
+    const id = e.target.dataset.id;
+    const designid = e.target.dataset.designid;
+    const headerid = e.target.dataset.headerid;
+    handlerEditItem(id, headerid, "ViewItem", designid);
+  }
 });
 
-// BUTTON EDIT ITEM
-$("#tableAjax").on("click", "#btnEditItem", function () {
-  const id = $(this).data("id");
-  const designid = $(this).data("designid");
-  const headerid = $(this).data("headerid");
-  handlerEditItem(id, headerid, "EditItem", designid);
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnEditItem") {
+    const id = e.target.dataset.id;
+    const designid = e.target.dataset.designid;
+    const headerid = e.target.dataset.headerid;
+    handlerEditItem(id, headerid, "EditItem", designid);
+  }
 });
 
 // BUTTON COPY ITEM
-$("#tableAjax").on("click", "#btnCopyItem", function () {
-  const id = $(this).data("id");
-  const product = $(this).data("product");
-  handlerCopyItem(id, product, "Please wait while we copy the item...");
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnCopyItem") {
+    const id = e.target.dataset.id;
+    const product = e.target.dataset.product;
+    handlerCopyItem(id, product, "Please wait while we copy the item...");
+  }
 });
 
 // BUTTON DELETE ITEM
-$("#tableAjax").on("click", "#btnDeleteItem", function () {
-  const id = $(this).data("id");
-  const product = $(this).data("product");
-  handlerDeleteItem(id, product, "Please wait while we delete the item...");
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnDeleteItem") {
+    const id = e.target.dataset.id;
+    const product = e.target.dataset.product;
+    handlerDeleteItem(id, product, "Please wait while we delete the item...");
+  }
 });
 
 // BUTTON PRICING ITEM
-$("#tableAjax").on("click", "#btnPricingItem", function () {
-  const id = $(this).data("id");
-  // console.log(id);
-  // return;
-  handlerPricingItem(id);
-  handlerShowBSModal("modalPricingItem");
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnPricingItem") {
+    const id = e.target.dataset.id;
+    handlerPricingItem(id);
+    handlerShowBSModal("modalPricingItem");
+  }
 });
 
 // HANDLER NEXT ITEM
-$("#tableAjax").on("click", "#btnNextItem", function () {
-  const id = $(this).data("id");
-  const designId = $(this).data("designid");
-  const msgBody = $(this).data("next");
-  handlerNextItem(id, headerId, "NextItem", designId, msgBody);
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnNextItem") {
+    const id = e.target.dataset.id;
+    const designId = e.target.dataset.designid;
+    const msgBody = e.target.dataset.next;
+    handlerNextItem(id, headerId, "NextItem", designId, msgBody);
+  }
 });
 
 // ==================================================FUNCTION================================================
 // --------------------------------------------||Submit Function ||-------------------------------------------
 // SUBMIT CHANGE STATUS
-function submitChangeStatus() {
-  handlerResetFormError(
-    "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
+const submitChangeStatus = async () => {
+  // Hapus semua tanda invalid di awal
+  document
+    .querySelectorAll("#modalChangeStatus .form-control")
+    .forEach((e) => e.classList.remove("is-invalid"));
+
+  const btnSubmit = document.querySelector(
+    "#modalChangeStatus #submitChangeStatus"
   );
 
   const fields = [
@@ -234,64 +259,66 @@ function submitChangeStatus() {
     "canceleddate",
     "description",
   ];
+
   const paramsChangeStatus = { username: userName };
 
   fields.forEach((field) => {
-    paramsChangeStatus[field] = document.querySelector(
-      "#modalChangeStatus #" + field
-    ).value;
+    const el = document.querySelector(`#modalChangeStatus #${field}`);
+    paramsChangeStatus[field] = el ? el.value : "";
   });
 
-  $.ajax({
-    type: "post",
-    url: uriMethod + "/UpdateStatusOrder",
-    data: JSON.stringify({ data: paramsChangeStatus }),
-    dataType: "json",
-    contentType: "application/json; charset=utf-8",
-    beforeSend: function () {
-      $("#modalChangeStatus #submitChangeStatus").attr("disable", "disable");
-      $("#modalChangeStatus #submitChangeStatus").html(
-        '<i class="fa fa-spin fa-spinner"</i>'
-      );
-      swalLoadingShow("Please wait while we update the status.");
-    },
-    complete: function () {
-      $("#modalChangeStatus #submitChangeStatus").removeAttr("disable");
-      $("#modalChangeStatus #submitChangeStatus").html(
-        `<i class="fa-solid fa-cloud-arrow-up me-2"></i> Submit `
-      );
-    },
-    success: function (response) {
-      const result = response.d || response;
-      // Swal.close();
-      if (result.error) {
-        isError(result.error.message.toUpperCase()).then(() => {
-          const fieldElement = document.querySelector(result.error.field);
-          if (fieldElement) {
-            fieldElement.focus();
-            fieldElement.classList.add("is-invalid");
-          }
-        });
-      } else {
-        isSuccess(result.success.message).then(() => {
-          handlerHideBSModal("modalChangeStatus");
-          location.reload();
-        });
+  try {
+    // === Sebelum request ===
+    btnSubmit.setAttribute("disabled", "disabled");
+    btnSubmit.innerHTML = '<i class="fa fa-spin fa-spinner"></i>';
+    swalLoadingShow("Please wait while we update the status.");
+
+    // === Kirim request ===
+    const response = await fetch(`${uriMethod}/UpdateStatusOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: paramsChangeStatus }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const data = result.d || result;
+
+    // === Setelah sukses ===
+    if (data.error) {
+      await isError(data.error.message.toUpperCase());
+      const fieldElement = document.querySelector(data.error.field);
+      if (fieldElement) {
+        fieldElement.focus();
+        fieldElement.classList.add("is-invalid");
       }
-    },
-    error: function (xhr, ajaxOptions, thrownError) {
-      var msg =
-        roleName === "Administrator"
-          ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-          : "Something went wrong, please try again!";
-      isError(msg);
-    },
-  });
+    } else {
+      await isSuccess(data.success.message);
+      handlerHideBSModal("modalChangeStatus");
+      location.reload();
+    }
+  } catch (error) {
+    const msg =
+      roleName === "Administrator"
+        ? error.message
+        : "Something went wrong, please try again!";
+    await isError(msg);
+  } finally {
+    // === Setelah request selesai (sukses atau error) ===
+    btnSubmit.removeAttribute("disabled");
+    btnSubmit.innerHTML = `<i class="fa-solid fa-cloud-arrow-up me-2"></i> Submit`;
+  }
+
   return false;
-}
+};
 
 // SUBMIT SELECT PRODUCT
-function submitSelectProduct(headerid, action, designid) {
+const submitSelectProduct = (headerid, action, designid) => {
   // VALIDATE FORM
   if (!headerid || !action || !designid) {
     if (roleName === "Administrator") {
@@ -386,11 +413,11 @@ function submitSelectProduct(headerid, action, designid) {
       isError("Please contact our IT team at support@onlineorder.au");
     },
   });
-}
+};
 
 // ------------------------------------------||Handler Function ||-------------------------------------------
 // HANDLER HIDE BOOTSTRAP MODAL
-function handlerHideBSModal(id) {
+const handlerHideBSModal = (id) => {
   var modalEl = document.getElementById(id);
   var modalInstance = bootstrap.Modal.getInstance(modalEl);
 
@@ -401,25 +428,18 @@ function handlerHideBSModal(id) {
     modalInstance = new bootstrap.Modal(modalEl);
     modalInstance.hide();
   }
-}
+};
 
 // HANDLER SHOW BOOTSTRAP MODAL
-function handlerShowBSModal(params) {
+const handlerShowBSModal = (params) => {
   var myModal = new bootstrap.Modal(document.getElementById(params), {
     keyboard: false,
   });
   myModal.show();
-}
-
-function handlerResetFormError(params) {
-  // params : "#modalSaveData .form-control, #modalSaveData .form-select"
-  document.querySelectorAll(params).forEach((element) => {
-    element.classList.remove("is-invalid");
-  });
-}
+};
 
 // HANDLER DISPLAY ELEMENT
-function handlerDisplayElement(item) {
+const handlerDisplayElement = (item) => {
   // INITIALIZE ELEMENTS
   const btnJobSheet = document.getElementById("btnJobSheet");
   const btnReprintJobSheet = document.getElementById("btnReprintJobSheet");
@@ -531,10 +551,10 @@ function handlerDisplayElement(item) {
       }
     }
   }
-}
+};
 
 // HANDLER HEADER INFO
-function handlerHeaderInfo(item) {
+const handlerHeaderInfo = (item) => {
   // INITIALIZE ELEMENTS
   // CARD 1
   spanJoNumber = document.getElementById("spanJoNumber");
@@ -711,55 +731,57 @@ function handlerHeaderInfo(item) {
       },
     });
   }
-}
+};
 
 // HANDLER PREVIEW PRINT ORDER
-function handlerCreatePDFOrder(headerid, action, msgloading) {
-  // Tampilkan loading SweetAlert sebelum AJAX
+const handlerCreatePDFOrder = async (headerid, action, msgloading) => {
+  // Tampilkan loading SweetAlert
   swalLoadingShow(msgloading);
 
-  $.ajax({
-    type: "post",
-    url: uriMethod + "/CreatePDFOrder",
-    data: JSON.stringify({
-      headerid: headerid,
-      action: action,
-    }),
-    dataType: "json",
-    contentType: "application/json; charset=utf-8",
+  try {
+    const response = await fetch(`${uriMethod}/CreatePDFOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        headerid: headerid,
+        action: action,
+      }),
+    });
 
-    success: function (response) {
-      Swal.close(); // Tutup loading Swal saat sukses
+    Swal.close(); // Tutup loading Swal setelah respons diterima
 
-      const result = response.d || response;
-      if (result.error) {
-        isError(result.error.message.toUpperCase()).then(() => {
-          location.reload();
-        });
-      } else {
-        isSuccess(result.success.message).then(() => {
-          if (action === "download") {
-            window.location.href = result.success.url;
-          } else if (action === "preview") {
-            window.open(result.success.url, "_blank");
-          } else if (action === "submit" || action === "mail") {
-            location.reload();
-          }
-        });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result = data.d || data;
+
+    if (result.error) {
+      await isError(result.error.message.toUpperCase());
+      location.reload();
+    } else {
+      await isSuccess(result.success.message);
+
+      if (action === "download") {
+        window.location.href = result.success.url;
+      } else if (action === "preview") {
+        window.open(result.success.url, "_blank");
+      } else if (action === "submit" || action === "mail") {
+        location.reload();
       }
-    },
-
-    error: function (xhr, ajaxOptions, thrownError) {
-      Swal.close(); // Tutup loading Swal saat error
-
-      var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
-      isError(msg);
-    },
-  });
-}
+    }
+  } catch (error) {
+    Swal.close(); // Tutup loading Swal saat error
+    const msg = error.message || "Something went wrong while creating the PDF.";
+    isError(msg);
+  }
+};
 
 // HANDLER SUBMIT ORDER HEADER
-function handlerSubmitOrder(headerid, action, msgloading) {
+const handlerSubmitOrder = async (headerid, action, msgloading) => {
   Swal.fire({
     title: "Are you sure?",
     html:
@@ -774,37 +796,46 @@ function handlerSubmitOrder(headerid, action, msgloading) {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, " + action + " it!",
-  }).then((result) => {
+  }).then(async (result) => {
     if (result.isConfirmed) {
-      $.ajax({
-        type: "post",
-        url: uriMethod + "/SubmitOrder",
-        data: JSON.stringify({
-          headerid: headerid,
-        }),
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
+      try {
+        const response = await fetch(`${uriMethod}/SubmitOrder`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+          },
+          body: JSON.stringify({
+            headerid: headerid,
+          }),
+        });
 
-        success: function (response) {
-          const result = response.d || response;
-          if (result.error) {
-            isError(result.error.message.toUpperCase(), result.error.field);
-          } else {
-            handlerCreatePDFOrder(headerid, action, msgloading);
-          }
-        },
-        error: function (xhr, ajaxOptions, thrownError) {
-          var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
-          isError(msg);
-        },
-      });
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const resultData = data.d || data;
+
+        if (resultData.error) {
+          isError(
+            resultData.error.message.toUpperCase(),
+            resultData.error.field
+          );
+        } else {
+          handlerCreatePDFOrder(headerid, action, msgloading);
+        }
+      } catch (error) {
+        const msg =
+          error.message || "Something went wrong while submitting the order.";
+        isError(msg);
+      }
     }
   });
-}
+};
 
 // HANDLER CONVERT TO JOB
-function handlerConvertToJob(headerid, action, msgloading) {
-  Swal.fire({
+const handlerConvertToJob = async (headerid, action, msgloading) => {
+  const result = await Swal.fire({
     title: "Are you sure?",
     html: "Sure to convert this order to a job? <br /> This action cannot be undone.",
     icon: "question",
@@ -815,88 +846,100 @@ function handlerConvertToJob(headerid, action, msgloading) {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, convert it!",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const statusOrder = document.getElementById("spanStatusOrder").innerHTML;
-      if (
-        statusOrder === "Draft" ||
-        statusOrder === "Completed" ||
-        statusOrder === "Canceled"
-      ) {
-        isError(
-          "Cannot convert this order as the status is <b>" +
-            statusOrder +
-            "</b>"
-        );
-      } else {
-        handlerCreateJOBOrder(headerid, action, msgloading);
-      }
-    }
   });
-}
+
+  if (!result.isConfirmed) return;
+
+  const statusOrder = document
+    .getElementById("spanStatusOrder")
+    ?.innerHTML?.trim();
+
+  if (!statusOrder) {
+    return isError("Order status not found.");
+  }
+
+  if (["Draft", "Completed", "Canceled"].includes(statusOrder)) {
+    await isError(
+      `Cannot convert this order as the status is <b>${statusOrder}</b>`
+    );
+    return;
+  }
+
+  // Jika semua valid → lanjut buat job
+  await handlerCreateJOBOrder(headerid, action, msgloading);
+};
 
 // HANDLER CREATE JOB
-function handlerCreateJOBOrder(headerid, action, msgloading) {
-  // Tampilkan loading SweetAlert sebelum AJAX
+const handlerCreateJOBOrder = async (headerid, action, msgloading) => {
+  // Tampilkan loading SweetAlert sebelum request
   swalLoadingShow(msgloading);
 
-  $.ajax({
-    type: "post",
-    url: uriMethod + "/CreateJOBOrder",
-    data: JSON.stringify({
-      headerid: headerid,
-      action: action,
-    }),
-    dataType: "json",
-    contentType: "application/json; charset=utf-8",
+  try {
+    const response = await fetch(`${uriMethod}/CreateJOBOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        headerid: headerid,
+        action: action,
+      }),
+    });
 
-    success: function (response) {
-      Swal.close(); // Tutup loading Swal saat sukses
+    // Tutup loading setelah menerima response
+    Swal.close();
 
-      const result = response.d || response;
-      if (result.error) {
-        isError(result.error.message.toUpperCase(), result.error.field);
-      } else {
-        isSuccess(result.success.message).then(() => {
-          if (action === "download") {
-            window.location.href = result.success.url;
-          } else if (action === "reprint" || action === "preview") {
-            window.open(result.success.url, "_blank");
-          } else if (action === "convert") {
-            location.reload();
-          }
-        });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result = data.d || data;
+
+    if (result.error) {
+      isError(result.error.message.toUpperCase(), result.error.field);
+    } else {
+      await isSuccess(result.success.message);
+
+      if (action === "download") {
+        window.location.href = result.success.url;
+      } else if (action === "reprint" || action === "preview") {
+        window.open(result.success.url, "_blank");
+      } else if (action === "convert") {
+        location.reload();
       }
-    },
-
-    error: function (xhr, ajaxOptions, thrownError) {
-      Swal.close(); // Tutup loading Swal saat error
-
-      var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
-      isError(msg);
-    },
-  });
-}
+    }
+  } catch (error) {
+    Swal.close();
+    const msg =
+      error.message || "Something went wrong while creating JOB Order.";
+    isError(msg);
+  }
+};
 
 // HANDLER EDIT HEADER
-function handlerEditHeader(headerid) {
-  $.ajax({
-    type: "POST",
-    url: uriMethod + "/SetSessionOpenEditOrderHeader",
-    contentType: "application/json; charset=utf-8",
-    data: JSON.stringify({ headerid: headerid }),
-    success: function () {
-      window.location.href = "/order/header";
-    },
-    error: function (xhr, status, error) {
-      isError("Gagal menyetel session: " + error);
-    },
-  });
-}
+const handlerEditHeader = async (headerid) => {
+  try {
+    const response = await fetch(`${uriMethod}/SetSessionOpenEditOrderHeader`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ headerid }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    // Jika sukses, arahkan ke halaman edit order
+    window.location.href = "/order/header";
+  } catch (error) {
+    isError("Gagal menyetel session: " + error.message);
+  }
+};
 
 // HANDLER DELETE HEADER
-function handlerDeleteHeader(headerid) {
-  Swal.fire({
+const handlerDeleteHeader = async (headerid) => {
+  const result = await Swal.fire({
     title: "Are you sure?",
     html: "Sure to delete this order?",
     icon: "warning",
@@ -907,204 +950,192 @@ function handlerDeleteHeader(headerid) {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, delete it!",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      swalLoadingShow("Please wait while we delete the order.");
-      $.ajax({
-        type: "post",
-        url: uriMethod + "/DeleteOrderHeader",
-        data: JSON.stringify({
-          id: headerid,
-        }),
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
-
-        success: function (response) {
-          const result = response.d || response;
-          if (result.error) {
-            isError(result.error.message.toUpperCase(), result.error.field);
-          } else {
-            isSuccess(result.success.message).the(() => {
-              window.location.href = "/order";
-            });
-          }
-        },
-        error: function (xhr, ajaxOptions, thrownError) {
-          var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
-          isError(msg);
-        },
-      });
-    }
   });
-}
+
+  if (!result.isConfirmed) return;
+
+  swalLoadingShow("Please wait while we delete the order.");
+
+  try {
+    const response = await fetch(`${uriMethod}/DeleteOrderHeader`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ id: headerid }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const resultData = data.d || data;
+
+    if (resultData.error) {
+      await isError(
+        resultData.error.message.toUpperCase(),
+        resultData.error.field
+      );
+    } else {
+      await isSuccess(resultData.success.message);
+      window.location.href = "/order";
+    }
+  } catch (error) {
+    const msg =
+      error.message || "Something went wrong while deleting the order.";
+    isError(msg);
+  }
+};
 
 // HANDLER CREATE PDF QUOTE
-function handlerCreatePDFQuote(headerid, username, action, msgloading) {
-  // Tampilkan loading SweetAlert sebelum AJAX
-  swalLoadingShow(msgloading);
+const handlerCreatePDFQuote = async (
+  headerid,
+  username,
+  action,
+  msgloading
+) => {
+  try {
+    // Tampilkan loading SweetAlert
+    swalLoadingShow(msgloading);
 
-  $.ajax({
-    type: "post",
-    url: uriMethod + "/CreatePDFQuote",
-    data: JSON.stringify({
-      headerid: headerid,
-      username: username,
-      action: action,
-    }),
-    dataType: "json",
-    contentType: "application/json; charset=utf-8",
+    const response = await fetch(`${uriMethod}/CreatePDFQuote`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ headerid, username, action }),
+    });
 
-    success: function (response) {
-      Swal.close(); // Tutup loading Swal saat sukses
+    Swal.close(); // Tutup loading Swal setelah respons diterima
 
-      const result = response.d || response;
-      if (result.error) {
-        isError(result.error.message.toUpperCase(), result.error.field);
-      } else {
-        isSuccess(result.success.message).then(() => {
-          if (action === "download") {
-            window.location.href = result.success.url;
-          } else if (action === "preview") {
-            window.open(result.success.url, "_blank");
-          }
-        });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const result = await response.json();
+    const data = result.d || result;
+
+    if (data.error) {
+      isError(data.error.message.toUpperCase(), data.error.field);
+    } else {
+      await isSuccess(data.success.message);
+
+      if (action === "download") {
+        window.location.href = data.success.url;
+      } else if (action === "preview") {
+        window.open(data.success.url, "_blank");
       }
-    },
-
-    error: function (xhr, ajaxOptions, thrownError) {
-      Swal.close(); // Tutup loading Swal saat error
-
-      var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
-      isError(msg);
-    },
-  });
-}
+    }
+  } catch (error) {
+    Swal.close(); // Tutup loading Swal jika error
+    isError(`Gagal membuat PDF Quote: ${error.message}`);
+  }
+};
 
 // HANDLER CHANGE STATUS
-function handlerChangeStatus(headerid) {
-  return new Promise((resolve, reject) => {
-    if (!headerid) return resolve();
-    // console.log("bindItemOrder", headerid);
+const handlerChangeStatus = async (headerid) => {
+  try {
+    if (!headerid) return;
 
-    $.ajax({
-      type: "POST",
-      url: uriMethod + "/BindOrderHeaderByID",
-      data: JSON.stringify({
-        headerid: headerid,
-      }),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (response) {
-        const data = response.d;
-
-        if (!data || data.length === 0) {
-          var msg =
-            roleName === "Administrator"
-              ? "No data returned from server : handlerChangeStatus"
-              : "Please contact our IT team at support@onlineorder.au";
-          reject(isError(msg));
-          return;
-        }
-
-        const promises = data.map((item) => {
-          return Promise.resolve()
-            .then(() =>
-              handlerSelStatus("#modalChangeStatus #status", item.Status)
-            )
-            .then(() => setValueModalChangeStatus(item))
-            .then(() => hanlderDisplayElementModalChangeStatus(item.Status))
-            .then(() => {
-              return Promise.all([handlerShowBSModal("modalChangeStatus")])
-                .then(resolve)
-                .catch(reject);
-            });
-        });
-
-        Promise.all(promises)
-          .then(() => resolve())
-          .catch((error) => reject(error));
-      },
-      error: function (xhr, status, error, thrownError) {
-        var msg =
-          roleName === "Administrator"
-            ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-            : "Please contact our IT team at support@onlineorder.au";
-        reject(isError(msg));
-      },
+    const response = await fetch(`${uriMethod}/BindOrderHeaderByID`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ headerid }),
     });
-  });
-}
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    const data = result.d;
+
+    if (!data || data.length === 0) {
+      const msg =
+        roleName === "Administrator"
+          ? "No data returned from server : handlerChangeStatus"
+          : "Please contact our IT team at support@onlineorder.au";
+      throw new Error(msg);
+    }
+
+    for (const item of data) {
+      await handlerSelStatus("#modalChangeStatus #status", item.Status);
+      await setValueModalChangeStatus(item);
+      await hanlderDisplayElementModalChangeStatus(item.Status);
+      await handlerShowBSModal("modalChangeStatus");
+    }
+  } catch (error) {
+    const msg =
+      roleName === "Administrator"
+        ? error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
 
 // HANDLER CELECT STSTUS
-function handlerSelStatus(params, statusNow) {
-  return new Promise((resolve, reject) => {
-    const sel = document.querySelector(params);
-    sel.innerHTML = ""; //reset
+const handlerSelStatus = async (params, statusNow) => {
+  const sel = document.querySelector(params);
+  sel.innerHTML = ""; // reset
 
-    if (!params) return resolve();
+  if (!params) return;
 
-    let data = [];
+  let data = [];
 
-    // for cardChangeStatus => status
-    if (params === "#modalChangeStatus #status" && statusNow) {
-      switch (statusNow) {
-        case "Draft":
-          data = [
-            { value: "New Order", text: "New Order" },
-            { value: "Canceled", text: "Canceled" },
-          ];
+  // for cardChangeStatus => status
+  if (params === "#modalChangeStatus #status" && statusNow) {
+    switch (statusNow) {
+      case "Draft":
+        data = [
+          { value: "New Order", text: "New Order" },
+          { value: "Canceled", text: "Canceled" },
+        ];
+        if (roleName !== "Administrator") {
+          data.unshift({ value: "Draft", text: "Draft" });
+        }
+        break;
 
-          if (roleName !== "Administrator") {
-            // Tambahkan Draft di awal (unshift) atau akhir (push)
-            data.unshift({ value: "Draft", text: "Draft" }); // Menambahkan di awal
-          }
-          break;
-        case "New Order":
-          data = [
-            { value: "New Order", text: "New Order" },
-            { value: "In Production", text: "In Production" },
-            { value: "On Hold", text: "On Hold" },
-            { value: "Canceled", text: "Canceled" },
-          ];
-          break;
-        case "In Production":
-          data = [
-            { value: "In Production", text: "In Production" },
-            { value: "Completed", text: "Completed" },
-            { value: "Canceled", text: "Canceled" },
-          ];
-          break;
-      }
-      if (roleName === "Administrator") {
-        // Tambahkan Draft di awal (unshift) atau akhir (push)
-        data.unshift({ value: "Draft", text: "Draft" }); // Menambahkan di awal
-      }
+      case "New Order":
+        data = [
+          { value: "New Order", text: "New Order" },
+          { value: "In Production", text: "In Production" },
+          { value: "On Hold", text: "On Hold" },
+          { value: "Canceled", text: "Canceled" },
+        ];
+        break;
+
+      case "In Production":
+        data = [
+          { value: "In Production", text: "In Production" },
+          { value: "Completed", text: "Completed" },
+          { value: "Canceled", text: "Canceled" },
+        ];
+        break;
     }
 
-    data.forEach((item) => {
-      const option = document.createElement("option");
-      option.value = item.value;
-      option.text = item.text.toUpperCase();
-      sel.appendChild(option);
-    });
-
-    // for cardOrder => status
-    if (params === "#cardOrder #status") {
-      const status = sel.options[sel.selectedIndex].value;
-      const active = document.querySelector("#cardOrder #active").value;
-      const storeType = document.querySelector("#cardOrder #storetype").value;
-      // console.log("status: " + status);
-      // console.log("active: " + active);
-      // console.log("storeType: " + storeType);
-      bindOrders(status, active, storeType);
+    if (roleName === "Administrator") {
+      data.unshift({ value: "Draft", text: "Draft" });
     }
+  }
 
-    resolve();
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    sel.appendChild(option);
   });
-}
+
+  // for cardOrder => status
+  if (params === "#cardOrder #status") {
+    const status = sel.options[sel.selectedIndex].value;
+    const active = document.querySelector("#cardOrder #active").value;
+    const storeType = document.querySelector("#cardOrder #storetype").value;
+
+    await bindOrders(status, active, storeType);
+  }
+};
 
 // SET VALUE MODAL CHANGE STATUS
-function setValueModalChangeStatus(itemData) {
+const setValueModalChangeStatus = (itemData) => {
   const mapping = {
     id: "Id",
     status: "Status",
@@ -1154,10 +1185,10 @@ function setValueModalChangeStatus(itemData) {
 
     el.value = value;
   });
-}
+};
 
 // HANDLER DISPLAY ELEMENT MODAL CHANGE STATUS
-function hanlderDisplayElementModalChangeStatus(status) {
+const hanlderDisplayElementModalChangeStatus = (status) => {
   // INITIALIZE ELEMENT
   const divSubmittedDate = document.getElementById("divSubmittedDate");
   const divCompletedDate = document.getElementById("divCompletedDate");
@@ -1186,10 +1217,10 @@ function hanlderDisplayElementModalChangeStatus(status) {
         break;
     }
   }
-}
+};
 
 // HANDLER TOOLTIP
-function handlerTooltip(modalName, params) {
+const handlerTooltip = (modalName, params) => {
   // INITIALIZE MESSAGE
   let title = "Tooltip";
   let msg = "This message is a tooltip";
@@ -1214,181 +1245,186 @@ function handlerTooltip(modalName, params) {
     },
     icon: "question",
   });
-}
+};
 
 // HANDLER RELOAD PRICING
-function handlerReloadPricing(headerid, status, action) {
-  Swal.fire({
-    title: "Are you sure?",
-    text: "Sure to reload the pricing?",
-    icon: "warning",
-    showCancelButton: true,
-    customClass: {
-      popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-    },
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, reload it!",
-  }).then((result) => {
+const handlerReloadPricing = async (headerid, status, action) => {
+  try {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Sure to reload the pricing?",
+      icon: "warning",
+      showCancelButton: true,
+      customClass: {
+        popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+      },
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, reload it!",
+    });
+
     if (result.isConfirmed) {
-      handlerReloadPricingOnReadyPage(headerid, status, action);
+      await handlerReloadPricingOnReadyPage(headerid, status, action);
     }
-  });
-}
+  } catch (error) {
+    console.error("Error reloading pricing:", error);
+    isError("Failed to reload pricing: " + error.message);
+  }
+};
 
 // HANDLER RELOAD PRICING ON READY PAGE
-function handlerReloadPricingOnReadyPage(headerid, status, action) {
-  return new Promise((resolve, reject) => {
-    if (!headerid) return resolve();
+const handlerReloadPricingOnReadyPage = async (headerid, status, action) => {
+  if (!headerid) return;
 
-    if (action === "binding" && status !== "Draft") {
-      return resolve();
-    }
-
-    if (action === "click") {
-      swalLoadingShow("Please wait while we reload the pricing.");
-    }
-
-    $.ajax({
-      type: "post",
-      url: uriMethod + "/ReloadPricing",
-      data: JSON.stringify({
-        headerid: headerid,
-      }),
-      dataType: "json",
-      contentType: "application/json; charset=utf-8",
-      success: function (response) {
-        const result = response.d || response;
-        if (result.error) {
-          resolve(result.error.message); //console.log(result.error.message);
-        } else {
-          if (action === "binding") {
-            if (roleName === "Administrator")
-              console.log("result.success.message");
-          } else if (action === "click") {
-            isSuccess(result.success.message).then(() => {
-              location.reload();
-            });
-          }
-          resolve();
-        }
-      },
-
-      error: function (xhr, ajaxOptions, thrownError) {
-        reject(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-      },
-    });
-  });
-}
-
-// HANDLER SELECT DESIGN TYPE
-function handlerSelDesignType(params) {
-  return new Promise((resolve, reject) => {
-    const sel = document.querySelector(params);
-    sel.innerHTML = ""; //reset
-
-    $.ajax({
-      type: "POST",
-      url: uriMethod + "/BindDesignType",
-      //   data: JSON.stringify({
-      //     designId: designId,
-      //   }),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (response) {
-        const data = response.d;
-
-        if (!data || data.length === 0) {
-          var msg =
-            roleName === "Administrator"
-              ? "No data returned from server : handlerSelDesignType"
-              : "Please contact our IT team at support@onlineorder.au";
-          reject(isError(msg));
-          return;
-        }
-
-        if (Array.isArray(data)) {
-          sel.innerHTML = ""; //reset
-
-          const defaultOption = document.createElement("option");
-          defaultOption.text = "";
-          defaultOption.value = "";
-          sel.add(defaultOption);
-
-          data.forEach(function (item) {
-            const option = document.createElement("option");
-            option.value = item.value;
-            option.text = item.text.toUpperCase();
-            // option.setAttribute("data-page", item.page);
-            sel.add(option);
-          });
-        }
-
-        resolve();
-      },
-      error: function (xhr, status, error, thrownError) {
-        var msg =
-          roleName === "Administrator"
-            ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-            : "Please contact our IT team at support@onlineorder.au";
-        reject(isError(msg));
-      },
-    });
-  });
-}
-
-// HANDLER EDIT ITEM
-function handlerEditItem(id, headerid, action, designid) {
-  // VALIDATE FORM
-  if (!id || !headerid || !action || !designid) {
-    if (roleName === "Administrator") {
-      if (!id) {
-        isError("ID NOT FOUND !");
-      }
-      if (!headerid) {
-        isError("HEADER ID NOT FOUND !");
-      }
-      if (!action) {
-        isError("ACTION NOT FOUND !");
-      }
-      if (!designid) {
-        isError("DESIGN ID NOT FOUND !");
-      }
-      return;
-    }
-    isError("Please contact our IT team at support@onlineorder.au");
+  if (action === "binding" && status !== "Draft") {
     return;
   }
 
-  $.ajax({
-    type: "POST",
-    url: uriMethod + "/SetSessionOpenPageInputItem",
-    contentType: "application/json; charset=utf-8",
-    data: JSON.stringify({
-      id: id,
-      headerid: headerid,
-      action: action,
-      designid: designid,
-    }),
-    success: function (response) {
-      const result = response.d || response;
-      var finePage = result.success.message.replace("~", "");
-      window.location.href = finePage;
-    },
-    error: function (xhr, status, error) {
-      if (roleName === "Administrator") {
-        isError("Gagal menyetel session: " + error);
-        return;
+  if (action === "click") {
+    swalLoadingShow("Please wait while we reload the pricing.");
+  }
+
+  try {
+    const response = await fetch(`${uriMethod}/ReloadPricing`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ headerid }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result = data.d || data;
+
+    if (result.error) {
+      return result.error.message; // sama seperti resolve(result.error.message)
+    } else {
+      if (action === "binding") {
+        if (roleName === "Administrator") {
+          console.log(result.success.message);
+        }
+      } else if (action === "click") {
+        await isSuccess(result.success.message);
+        location.reload();
       }
-      isError("Please contact our IT team at support@onlineorder.au");
-    },
-  });
-}
+    }
+  } catch (error) {
+    console.error("Reload pricing failed:", error);
+    isError(error.message);
+  }
+};
+
+// HANDLER SELECT DESIGN TYPE
+const handlerSelDesignType = async (params) => {
+  const sel = document.querySelector(params);
+  sel.innerHTML = ""; // reset
+
+  try {
+    const response = await fetch(`${uriMethod}/BindDesignType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result = data.d;
+
+    if (!result || result.length === 0) {
+      const msg =
+        roleName === "Administrator"
+          ? "No data returned from server : handlerSelDesignType"
+          : "Please contact our IT team at support@onlineorder.au";
+      await isError(msg);
+      return Promise.reject(msg);
+    }
+
+    if (Array.isArray(result)) {
+      sel.innerHTML = ""; // reset ulang
+
+      const defaultOption = document.createElement("option");
+      defaultOption.text = "";
+      defaultOption.value = "";
+      sel.add(defaultOption);
+
+      result.forEach((item) => {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        sel.add(option);
+      });
+    }
+
+    return Promise.resolve();
+  } catch (error) {
+    const msg =
+      roleName === "Administrator"
+        ? error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    await isError(msg);
+    return Promise.reject(msg);
+  }
+};
+
+// HANDLER EDIT ITEM
+const handlerEditItem = async (id, headerid, action, designid) => {
+  if (!id || !headerid || !action || !designid) {
+    if (roleName === "Administrator") {
+      if (!id) await isError("ID NOT FOUND!");
+      if (!headerid) await isError("HEADER ID NOT FOUND!");
+      if (!action) await isError("ACTION NOT FOUND!");
+      if (!designid) await isError("DESIGN ID NOT FOUND!");
+      return;
+    }
+
+    await isError("Please contact our IT team at support@onlineorder.au");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${uriMethod}/SetSessionOpenPageInputItem`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        id,
+        headerid,
+        action,
+        designid,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result = data.d || data;
+
+    const finePage = result.success.message.replace("~", "");
+    window.location.href = finePage;
+  } catch (error) {
+    const msg =
+      roleName === "Administrator"
+        ? "Gagal menyetel session: " + error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    await isError(msg);
+  }
+};
 
 // HANDLER COPY ITEM
-function handlerCopyItem(id, product, msgloading) {
-  Swal.fire({
-    title: "Copy this item ?",
+const handlerCopyItem = async (id, product, msgloading) => {
+  const result = await Swal.fire({
+    title: "Copy this item?",
     html: product,
     icon: "question",
     showCancelButton: true,
@@ -1398,40 +1434,52 @@ function handlerCopyItem(id, product, msgloading) {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, copy it!",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      swalLoadingShow(msgloading);
-      $.ajax({
-        type: "post",
-        url: uriMethod + "/CopyItem",
-        data: JSON.stringify({
-          id: id,
-        }),
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
-
-        success: function (response) {
-          const result = response.d || response;
-          if (result.error) {
-            isError(result.error.message.toUpperCase(), result.error.field);
-          } else {
-            isSuccess(result.success.message).then(() => {
-              location.reload();
-            });
-          }
-        },
-        error: function (xhr, ajaxOptions, thrownError) {
-          var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
-          isError(msg);
-        },
-      });
-    }
   });
-}
+
+  if (!result.isConfirmed) return;
+
+  swalLoadingShow(msgloading);
+
+  try {
+    const response = await fetch(`${uriMethod}/CopyItem`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const resultData = data.d || data;
+
+    Swal.close();
+
+    if (resultData.error) {
+      await isError(
+        resultData.error.message.toUpperCase(),
+        resultData.error.field
+      );
+    } else {
+      await isSuccess(resultData.success.message);
+      location.reload();
+    }
+  } catch (error) {
+    Swal.close();
+    const msg =
+      roleName === "Administrator"
+        ? error.message
+        : "Something went wrong, please try again!";
+    await isError(msg);
+  }
+};
 
 // HANDLER DELETE ITEM
-function handlerDeleteItem(id, product, msgloading) {
-  Swal.fire({
+async function handlerDeleteItem(id, product, msgloading) {
+  const result = await Swal.fire({
     title: "Sure delete this item ?",
     html: product,
     icon: "warning",
@@ -1442,59 +1490,60 @@ function handlerDeleteItem(id, product, msgloading) {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, delete it!",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      swalLoadingShow(msgloading);
-      $.ajax({
-        type: "post",
-        url: uriMethod + "/DeleteItem",
-        data: JSON.stringify({
-          id: id,
-        }),
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
-
-        success: function (response) {
-          const result = response.d || response;
-          if (result.error) {
-            isError(result.error.message.toUpperCase(), result.error.field);
-          } else {
-            isSuccess(result.success.message).then(() => {
-              location.reload();
-            });
-          }
-        },
-        error: function (xhr, ajaxOptions, thrownError) {
-          var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
-          isError(msg);
-        },
-      });
-    }
   });
+
+  if (!result.isConfirmed) return;
+
+  swalLoadingShow(msgloading);
+
+  try {
+    const response = await fetch(`${uriMethod}/DeleteItem`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    if (!response.ok) {
+      const msg = `${response.status}\n${response.statusText}`;
+      throw new Error(msg);
+    }
+
+    const data = await response.json();
+    const resultData = data.d || data;
+
+    if (resultData.error) {
+      isError(resultData.error.message.toUpperCase(), resultData.error.field);
+    } else {
+      await isSuccess(resultData.success.message);
+      location.reload();
+    }
+  } catch (error) {
+    isError(error.message || "An unexpected error occurred");
+  }
 }
 
 // HANDLER PRICING ITEM
-function handlerPricingItem(id) {
-  if ($.fn.DataTable.isDataTable("#tablePricingDetail")) {
-    $("#tablePricingDetail").DataTable().destroy(); // Hancurkan instance DataTables yang ada
-  }
-
+const handlerPricingItem = (id) => {
   const paramData = { id: id };
 
   const columnDefs = [
     {
+      width: "5%",
       data: "No",
       orderable: false,
       render: (data) => `<div class="text-center">${data}</div>`,
     },
     {
+      width: "5%",
       data: null,
       orderable: false,
       render: (row) => `<div class="text-center">${row.Qty}</div>`,
     },
-    { data: "Description" },
-    { data: "Cost" },
-    { data: "FinalCost" },
+    { width: "60%", data: "Description" },
+    { width: "15%", data: "Cost" },
+    { width: "15%", data: "FinalCost" },
   ];
 
   tablePricingData = $("#tablePricingDetail").DataTable({
@@ -1543,11 +1592,11 @@ function handlerPricingItem(id) {
     bDestroy: true,
     columns: columnDefs,
   });
-}
+};
 
 // HANDLER NEXT ITEM
-function handlerNextItem(id, headerid, action, designid, msgbody) {
-  Swal.fire({
+const handlerNextItem = async (id, headerid, action, designid, msgbody) => {
+  const result = await Swal.fire({
     title: "Information",
     html: msgbody,
     icon: "info",
@@ -1558,180 +1607,163 @@ function handlerNextItem(id, headerid, action, designid, msgbody) {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, do it!",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // VALIDATE FORM
-      if (!id || !headerid || !action || !designid) {
-        if (roleName === "Administrator") {
-          if (!id) {
-            isError("ID NOT FOUND !");
-          }
-          if (!headerid) {
-            isError("HEADER ID NOT FOUND !");
-          }
-          if (!action) {
-            isError("ACTION NOT FOUND !");
-          }
-          if (!designid) {
-            isError("DESIGN ID NOT FOUND !");
-          }
-          return;
-        }
-        isError("Please contact our IT team at support@onlineorder.au");
-        return;
-      }
+  });
 
-      $.ajax({
-        type: "POST",
-        url: uriMethod + "/SetSessionOpenPageInputItem",
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({
-          id: id,
-          headerid: headerid,
-          action: action,
-          designid: designid,
-        }),
-        success: function (response) {
-          const result = response.d || response;
-          var finePage = result.success.message.replace("~", "");
-          window.location.href = finePage;
+  if (!result.isConfirmed) return;
+
+  // VALIDATE FORM
+  if (!id || !headerid || !action || !designid) {
+    if (roleName === "Administrator") {
+      if (!id) isError("ID NOT FOUND !");
+      if (!headerid) isError("HEADER ID NOT FOUND !");
+      if (!action) isError("ACTION NOT FOUND !");
+      if (!designid) isError("DESIGN ID NOT FOUND !");
+      return;
+    }
+    isError("Please contact our IT team at support@onlineorder.au");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${uriMethod}/SetSessionOpenPageInputItem`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        id,
+        headerid,
+        action,
+        designid,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`${response.status} - ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const resultData = data.d || data;
+
+    const finePage = resultData.success.message.replace("~", "");
+    window.location.href = finePage;
+  } catch (error) {
+    if (roleName === "Administrator") {
+      isError("Gagal menyetel session: " + error.message);
+    } else {
+      isError("Please contact our IT team at support@onlineorder.au");
+    }
+  }
+};
+
+// HANDLER CHEKC ORDER
+const handlerCheckOrder = async (headerid, status, userid) => {
+  if (!headerid) return;
+
+  try {
+    const response = await fetch(`${uriMethod}/CheckOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        headerid,
+        status,
+        userid,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`${response.status} - ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const result = data.d || data;
+
+    if (result.error) {
+      console.log(result.error.message);
+      return;
+    }
+
+    if (result.success.url === "Yes") {
+      await Swal.fire({
+        title: "Order Information",
+        html: result.success.message,
+        icon: "info",
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
         },
-        error: function (xhr, status, error) {
-          if (roleName === "Administrator") {
-            isError("Gagal menyetel session: " + error);
-            return;
-          }
-          isError("Please contact our IT team at support@onlineorder.au");
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+        },
+        customClass: {
+          popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
         },
       });
     }
-  });
-}
-
-// HANDLER CHEKC ORDER
-function handlerCheckOrder(headerid, status, userid) {
-  return new Promise((resolve, reject) => {
-    if (!headerid) return resolve();
-
-    $.ajax({
-      type: "post",
-      url: uriMethod + "/CheckOrder",
-      data: JSON.stringify({
-        headerid: headerid,
-        status: status,
-        userid: userid,
-      }),
-      dataType: "json",
-      contentType: "application/json; charset=utf-8",
-      success: function (response) {
-        const result = response.d || response;
-        if (result.error) {
-          resolve(console.log(result.error.message));
-        } else {
-          if (result.success.url === "Yes") {
-            Swal.fire({
-              title: "Order Information",
-              showClass: {
-                popup: `
-                animate__animated
-                animate__fadeInUp
-                animate__faster
-              `,
-              },
-              hideClass: {
-                popup: `
-                animate__animated
-                animate__fadeOutDown
-                animate__faster
-              `,
-              },
-              customClass: {
-                popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-              },
-              html: result.success.message,
-              icon: "info",
-            });
-            return resolve();
-          }
-
-          resolve();
-        }
-      },
-
-      error: function (xhr, ajaxOptions, thrownError) {
-        reject(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-      },
-    });
-  });
-}
+  } catch (error) {
+    isError(`${error.message}`);
+  }
+};
 
 // ------------------------------------------||Binding Function ||-------------------------------------------
 // BIND ORDER HEADER
-function bindOrderHeaderByID(headerid) {
-  return new Promise((resolve, reject) => {
-    if (!headerid) return resolve();
-    // console.log("bindItemOrder", headerid);
+const bindOrderHeaderByID = async (headerid) => {
+  if (!headerid) return;
 
-    $.ajax({
-      type: "POST",
-      url: uriMethod + "/BindOrderHeaderByID",
-      data: JSON.stringify({
-        headerid: headerid,
-      }),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (response) {
-        const data = response.d;
-
-        if (!data || data.length === 0) {
-          var msg =
-            roleName === "Administrator"
-              ? "No data returned from server : bindOrderHeaderByID"
-              : "Please contact our IT team at support@onlineorder.au";
-          reject(isError(msg));
-          return;
-        }
-
-        const promises = data.map((item) => {
-          return (
-            Promise.resolve()
-              // .then(() =>
-              //   handlerReloadPricingOnReadyPage(item.Id, item.Status, "binding")
-              // )
-              .then(() => handlerDisplayElement(item))
-              .then(() => handlerHeaderInfo(item))
-              .then(() => bindDetails(item.Id, item.Status, item.UserId))
-              .then(() => {
-                return Promise.all([
-                  handlerCheckOrder(item.Id, item.Status, item.UserId),
-                ])
-                  .then(resolve)
-                  .catch(reject);
-              })
-          );
-        });
-
-        Promise.all(promises)
-          .then(() => resolve())
-          .catch((error) => reject(error));
+  try {
+    const response = await fetch(`${uriMethod}/BindOrderHeaderByID`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
       },
-      error: function (xhr, status, error, thrownError) {
-        var msg =
-          roleName === "Administrator"
-            ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-            : "Please contact our IT team at support@onlineorder.au";
-        reject(isError(msg));
-      },
+      body: JSON.stringify({ headerid }),
     });
-  });
-}
+
+    if (!response.ok) {
+      throw new Error(`${response.status} - ${response.statusText}`);
+    }
+
+    const dataResponse = await response.json();
+    const data = dataResponse.d;
+
+    if (!data || data.length === 0) {
+      const msg =
+        roleName === "Administrator"
+          ? "No data returned from server : bindOrderHeaderByID"
+          : "Please contact our IT team at support@onlineorder.au";
+      throw new Error(msg);
+    }
+
+    for (const item of data) {
+      // Jika kamu ingin mengaktifkan kembali reload pricing:
+      // await handlerReloadPricingOnReadyPage(item.Id, item.Status, "binding");
+      await handlerDisplayElement(item);
+      await handlerHeaderInfo(item);
+      await bindDetails(item.Id, item.Status, item.UserId);
+
+      await handlerCheckOrder(item.Id, item.Status, item.UserId);
+    }
+  } catch (error) {
+    const msg =
+      roleName === "Administrator"
+        ? error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
 
 // BIND ORDER DETAILS
-function bindDetails(headerid, status, userid) {
-  if ($.fn.DataTable.isDataTable("#tableAjax")) {
-    $("#tableAjax").DataTable().destroy(); // Hancurkan instance DataTables yang ada
-  }
-
+let tableData;
+const bindDetails = (headerid, status, userid) => {
   const paramData = {
     headerid: headerid,
     status: status,
@@ -1741,22 +1773,26 @@ function bindDetails(headerid, status, userid) {
   // render: function (data, type, row, meta)
   const columnDefs = [
     {
+      width: "5%",
       data: "No",
       orderable: false,
       render: (data) => `<div class="text-center">${data}</div>`,
     },
     {
+      width: "5%",
       data: null,
       orderable: true,
       render: (row) => `<div class="text-center">${row.Id}</div>`,
     },
     {
+      width: "5%",
       data: null,
       orderable: false,
       render: (row) => `<div class="text-center">${row.Qty}</div>`,
     },
-    { data: "Location" },
+    { width: "15%", data: "Location" },
     {
+      width: "50%",
       data: null,
       orderable: false,
       render: (row) => {
@@ -1772,17 +1808,18 @@ function bindDetails(headerid, status, userid) {
           `;
       },
     },
-    { data: "Cost" },
+    { width: "5%", data: "Cost" },
   ];
 
   const thMarkUp = document.querySelectorAll(".thMarkUp");
   thMarkUp.forEach((el) => el.setAttribute("hidden", true));
   if (markupAccess === "True") {
-    columnDefs.push({ data: "MarkUp" });
+    columnDefs.push({ width: "5%", data: "MarkUp" });
     thMarkUp.forEach((el) => el.removeAttribute("hidden"));
   }
 
   columnDefs.push({
+    width: "5%",
     data: null,
     orderable: false,
     render: (row) => {
@@ -1912,18 +1949,18 @@ function bindDetails(headerid, status, userid) {
     bDestroy: true,
     columns: columnDefs,
   });
-}
+};
 
 // --------------------------------------------||Other Function ||-------------------------------------------
 // CHECK SESSION
-function checkSession() {
+const checkSession = () => {
   setSessionAlive();
 
   bindOrderHeaderByID(headerId);
-}
+};
 
 // FORMAT DATE TIME
-function parseCustomDate(value) {
+const parseCustomDate = (value) => {
   if (!value || typeof value !== "string") return null;
 
   // Format ISO: 2025-07-10 08:42:01.653
@@ -1962,4 +1999,4 @@ function parseCustomDate(value) {
   }
 
   return null;
-}
+};

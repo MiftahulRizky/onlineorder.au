@@ -25,7 +25,7 @@ document.querySelector("#cardOrder #status").addEventListener("change", (e) => {
   setState("filter_orders_active", active);
   setState("filter_orders_storetype", storetype);
 
-  bindOrders(status, active, storetype);
+  bindOrders(status, active, storetype, "#cardOrder #tableAjax");
 });
 
 // BUTTON CREATE ORDER
@@ -46,7 +46,7 @@ document.querySelector("#cardOrder #active").addEventListener("change", (e) => {
   setState("filter_orders_active", active);
   setState("filter_orders_storetype", storetype);
 
-  bindOrders(status, active, storetype);
+  bindOrders(status, active, storetype, "#cardOrder #tableAjax");
 });
 
 // CHANGE FILTER STORE TYPE
@@ -62,7 +62,7 @@ document
     setState("filter_orders_active", active);
     setState("filter_orders_storetype", storetype);
 
-    bindOrders(status, active, storetype);
+    bindOrders(status, active, storetype, "#cardOrder #tableAjax");
   });
 
 // BUTTON DETAIL ORDER
@@ -262,7 +262,7 @@ const submitChangeStatus = async () => {
 // --------------------------------------------||Binding Function ||-------------------------------------------
 // BIND ORDERS
 let tableData;
-const bindOrders = (status, active, storetype) => {
+const bindOrders = (status, active, storetype, params) => {
   const paramData = {
     storeid: storeId,
     storecompany: storeCompany,
@@ -274,7 +274,7 @@ const bindOrders = (status, active, storetype) => {
     storetype: storetype,
   };
 
-  tableData = $("#tableAjax").DataTable({
+  tableData = $(params).DataTable({
     processing: true,
     serverSide: true,
     order: [],
@@ -290,23 +290,7 @@ const bindOrders = (status, active, storetype) => {
     bFilter: true,
     bDestroy: true,
     initComplete: function () {
-      const input = $("#tableAjax_filter input");
-      input
-        .addClass("form-control form-control-sm")
-        .attr("placeholder", "🔍 Type here to search...")
-        .css({
-          width: "250px",
-          height: "40px",
-          fontSize: "15px",
-          display: "inline-block",
-        });
-
-      const lengthSelect = $("#tableAjax_length select");
-      lengthSelect.addClass("form-select form-select-sm").css({
-        width: "65px",
-        fontSize: "15px",
-        height: "40px",
-      });
+      stylingColumnSearchAndPaging(params);
     },
     ajax: {
       url: uriMethod + "/BindOrders",
@@ -341,6 +325,7 @@ const bindOrders = (status, active, storetype) => {
     },
     columns: [
       {
+        width: "5%",
         data: "No",
         orderable: false,
         render: function (data, type, row, meta) {
@@ -348,6 +333,7 @@ const bindOrders = (status, active, storetype) => {
         },
       },
       {
+        width: "10%",
         data: null,
         render: function (data, type, row, meta) {
           let jobno = "";
@@ -356,10 +342,11 @@ const bindOrders = (status, active, storetype) => {
           return `<div class="text-center">${jobno}</div>`;
         },
       },
-      { data: "StoreName" },
-      { data: "OrderNo" },
-      { data: "OrderCust" },
+      { width: "30%", data: "StoreName" },
+      { width: "15%", data: "OrderNo" },
+      { width: "15%", data: "OrderCust" },
       {
+        width: "10%",
         data: null,
         orderable: false,
         render: function (data, type, row) {
@@ -371,6 +358,7 @@ const bindOrders = (status, active, storetype) => {
         },
       },
       {
+        width: "10%",
         data: null,
         orderable: false,
         render: function (data, type, row) {
@@ -396,10 +384,12 @@ const bindOrders = (status, active, storetype) => {
               break;
           }
 
-          return `<span class="badge bg-blue text-blue-fg">${icon} ${row.Status}</span></div>`;
+          // return `<span class="badge bg-blue text-blue-fg">${icon} ${row.Status}</span></div>`;
+          return icon + " " + row.Status;
         },
       },
       {
+        width: "5%",
         data: null,
         orderable: false,
         render: function (data, type, row) {
@@ -496,6 +486,27 @@ const bindOrders = (status, active, storetype) => {
     ],
   });
 };
+
+const stylingColumnSearchAndPaging = (params) => {
+  const input = $(params + "_filter input");
+  input
+    .addClass("form-control form-control-sm")
+    .attr("placeholder", "🔍 Type here to search...")
+    .css({
+      width: "250px",
+      height: "40px",
+      fontSize: "15px",
+      display: "inline-block",
+    });
+
+  const lengthSelect = $(params + "_length select");
+  lengthSelect.addClass("form-select form-select-sm").css({
+    width: "65px",
+    fontSize: "15px",
+    height: "40px",
+  });
+};
+
 // --------------------------------------------||Handler Function ||-------------------------------------------
 // HANDLER HIDE BOOTSTRAP MODAL
 const handlerHideBSModal = (id) => {
@@ -613,7 +624,12 @@ const handlerSelStatus = async (params, statusNow) => {
     setFilterValues(statusToUse, activeToUse, storeTypeToUse);
 
     // Jika bindOrders adalah fungsi async, kita tunggu dulu
-    await bindOrders(statusToUse, activeToUse, storeTypeToUse);
+    await bindOrders(
+      statusToUse,
+      activeToUse,
+      storeTypeToUse,
+      "#cardOrder #tableAjax"
+    );
   }
 };
 
