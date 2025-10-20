@@ -365,22 +365,22 @@ const bindOrders = (status, active, storetype, params) => {
           let icon;
           switch (row.Status) {
             case "Draft":
-              icon = `<i class="bi bi-stopwatch"></i>`;
+              icon = `<i class="bi opacity-50 bi-stopwatch"></i>`;
               break;
             case "New Order":
-              icon = `<i class="bi bi-clipboard-check"></i>`;
+              icon = `<i class="bi opacity-50 bi-clipboard-check"></i>`;
               break;
             case "In Production":
-              icon = `<i class="bi bi-hourglass-split"></i>`;
+              icon = `<i class="bi opacity-50 bi-hourglass-split"></i>`;
               break;
             case "On Hold":
-              icon = `<i class="bi bi-pause-circle"></i>`;
+              icon = `<i class="bi opacity-50 bi-pause-circle"></i>`;
               break;
             case "Canceled":
-              icon = `<i class="bi bi-x-circle"></i>`;
+              icon = `<i class="bi opacity-50 bi-x-circle"></i>`;
               break;
             case "Completed":
-              icon = `<i class="bi bi-check-circle"></i>`;
+              icon = `<i class="bi opacity-50 bi-check-circle"></i>`;
               break;
           }
 
