@@ -93,8 +93,14 @@ Public Class PrintConfig
         'ALUMINIUM
         result += Print_AluminiumBlinds(HeaderId)
 
-        'ALUMINIUM
+        'CELLORA
         result += Print_CelloraBlinds(HeaderId)
+
+        'PANEL GLIDES
+        result += Print_PanelGlides(HeaderId)
+
+        'ROMAN BLINDS
+        result += Print_RomanBlinds(HeaderId)
 
         'VENETIAN
         result += Print_VenetianBlinds(HeaderId)
@@ -412,6 +418,163 @@ Public Class PrintConfig
             End If
         Catch ex As Exception
             result = "ERROR CREATE PDF CELLORA BLINDS"
+        End Try
+        Return result
+    End Function
+
+    Protected Function Print_PanelGlides(HeaderId As String) As String
+        Dim result As String = String.Empty
+
+        Try
+            Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Panel Glides' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='19' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
+                result += spanStart & "PANEL GLIDES" & spanEnd
+                result += tableStart
+
+                result += trStart
+                result += thStartRowSpan2 & "No" & thEnd
+                result += thStartRowSpan2 & "ID" & thEnd
+                result += thStartRowSpan2 & "Qty" & thEnd
+                result += thStartRowSpan2 & "Product" & thEnd
+                result += thStartRowSpan2 & "Location" & thEnd
+                result += thStartRowSpan2 & "Mounting" & thEnd
+                result += thStartRowSpan2 & "Fabric" & thEnd
+                result += thStartRowSpan2 & "Width" & thEnd
+                result += thStartRowSpan2 & "Drop" & thEnd
+                result += thStartRowSpan2 & "Layout" & thEnd
+                result += thStartRowSpan2 & "No Panel" & thEnd
+                result += thStartColSpan2 & "Track" & thEnd
+                result += thStartColSpan3 & "Wand" & thEnd
+                result += thStartRowSpan2 & "Batten" & thEnd
+                result += thStartRowSpan2 & "Batten Colour" & thEnd
+                result += thStartRowSpan2 & "Fitting" & thEnd
+                result += trEnd
+
+                result += trStart
+                result += thStart & "Type" & thEnd
+                result += thStart & "Colour" & thEnd
+                result += thStart & "Position" & thEnd
+                result += thStart & "Length" & thEnd
+                result += thStart & "Colour" & thEnd
+                result += trEnd
+
+
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Layout").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("NumOfPanel").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("TrackType").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("TrackColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("WandPosition").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("WandLength").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("WandColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Batten").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BattenColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Fitting").ToString() & tdEnd
+                    result += trEnd
+
+
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result = "ERROR CREATE PDF PANEL GLIDES"
+        End Try
+        Return result
+    End Function
+
+    Protected Function Print_RomanBlinds(HeaderId As String) As String
+        Dim result As String = String.Empty
+
+        Try
+            Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roman Blinds' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='18' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
+                result += spanStart & "ROMAN BLINDS" & spanEnd
+                result += tableStart
+
+                result += trStart
+                result += thStartRowSpan2 & "No" & thEnd
+                result += thStartRowSpan2 & "ID" & thEnd
+                result += thStartRowSpan2 & "Qty" & thEnd
+                result += thStartRowSpan2 & "Product" & thEnd
+                result += thStartRowSpan2 & "Location" & thEnd
+                result += thStartRowSpan2 & "Mounting" & thEnd
+                result += thStartRowSpan2 & "Fabric" & thEnd
+                result += thStartRowSpan2 & "Width" & thEnd
+                result += thStartRowSpan2 & "Drop" & thEnd
+                result += thStartRowSpan2 & "Control Position" & thEnd
+                result += thStartColSpan3 & "Chain" & thEnd
+                result += thStartColSpan2 & "Cord" & thEnd
+                result += thStartRowSpan2 & "Batten Colour" & thEnd
+                result += thStartRowSpan2 & "Plastic Colour" & thEnd
+                result += thStartRowSpan2 & "Cleat" & thEnd
+                result += trEnd
+
+                result += trStart
+                result += thStart & "Material" & thEnd
+                result += thStart & "Colour" & thEnd
+                result += thStart & "Length" & thEnd
+                result += thStart & "Colour" & thEnd
+                result += thStart & "Length" & thEnd
+                result += trEnd
+
+
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("MaterialChain").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ChainColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ChainLength").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("CordColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("CordLength").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BattenColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("AcornPlasticColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Cleat").ToString() & tdEnd
+                    result += trEnd
+
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result = "ERROR CREATE PDF ROMAN BLINDS"
         End Try
         Return result
     End Function
