@@ -93,6 +93,9 @@ Public Class PrintConfig
         'ALUMINIUM
         result += Print_AluminiumBlinds(HeaderId)
 
+        'ALUMINIUM
+        result += Print_CelloraBlinds(HeaderId)
+
         'VENETIAN
         result += Print_VenetianBlinds(HeaderId)
 
@@ -351,6 +354,64 @@ Public Class PrintConfig
             End If
         Catch ex As Exception
             result = "ALUMINIUM BLINDS ERROR CREATE PDF"
+        End Try
+        Return result
+    End Function
+
+    Protected Function Print_CelloraBlinds(HeaderId As String) As String
+        Dim result As String = String.Empty
+
+        Try
+            Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Cellora Blinds' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='11' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
+                result += spanStart & "CELLORA BLINDS" & spanEnd
+                result += tableStart
+
+                result += trStart
+                result += thStart & "No" & thEnd
+                result += thStart & "ID" & thEnd
+                result += thStart & "Qty" & thEnd
+                result += thStart & "Product" & thEnd
+                result += thStart & "Location" & thEnd
+                result += thStart & "Mounting" & thEnd
+                result += thStart & "Width" & thEnd
+                result += thStart & "Drop" & thEnd
+                result += thStart & "Fabric" & thEnd
+                result += thStart & "Side" & thEnd
+                result += thStart & "Chain Length" & thEnd
+                result += trEnd
+
+
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ChainLength").ToString() & tdEnd
+                    result += trEnd
+
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result = "ERROR CREATE PDF CELLORA BLINDS"
         End Try
         Return result
     End Function
@@ -1374,24 +1435,33 @@ Public Class PrintConfig
 
         Dim separted As String = " | "
         Dim totalAluminium As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Aluminium Blinds' AND Active=1")
+        Dim totalCellora As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Cellora Blinds' AND Active=1")
+        Dim totalPG As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Panel Glides' AND Active=1")
         Dim totalVenetian As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Venetian Blinds' AND Active=1")
         Dim totalRoller As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roller Blinds' AND Active=1")
+        Dim totalRoman As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roman Blinds' AND Active=1")
         Dim totalVerishades As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Veri Shades' AND Active=1")
         Dim totalVertical As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Vertical Blinds' AND Active=1")
 
         If totalAluminium = "" Then : totalAluminium = "-" : End If
+        If totalCellora = "" Then : totalCellora = "-" : End If
+        If totalPG = "" Then : totalPG = "-" : End If
         If totalVenetian = "" Then : totalVenetian = "-" : End If
         If totalRoller = "" Then : totalRoller = "-" : End If
+        If totalRoman = "" Then : totalRoman = "-" : End If
         If totalVerishades = "" Then : totalVerishades = "-" : End If
         If totalVertical = "" Then : totalVertical = "-" : End If
 
         Dim aluminiumblinds As String = "<b>Aluminium Blinds: " & totalAluminium & "</b>"
+        Dim celloraBlinds As String = "<b>Cellora Blinds: " & totalCellora & "</b>"
+        Dim panelGlides As String = "<b>Panel Glides: " & totalPG & "</b>"
         Dim venetianblinds As String = "<b>Venetian Blinds:  " & totalVenetian & "</b>"
         Dim rollerblinds As String = "<b>Roller Blinds: " & totalRoller & "</b>"
+        Dim romanBlinds As String = "<b>Roman Blinds: " & totalRoman & "</b>"
         Dim verishades As String = "<b>Veri Shades: " & totalVerishades & "</b>"
         Dim verticalblinds As String = "<b>Vertical Blinds: " & totalVertical & "</b>"
 
-        result = aluminiumblinds & separted & venetianblinds & separted & rollerblinds & separted & verishades & separted & verticalblinds
+        result = aluminiumblinds & separted & celloraBlinds & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
         Return result
     End Function
 

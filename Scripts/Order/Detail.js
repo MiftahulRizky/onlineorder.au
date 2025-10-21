@@ -11,7 +11,7 @@ window.addEventListener("DOMContentLoaded", function () {
     console.log("Reprint: " + Reprint);
     console.log("uriMethod: " + uriMethod);
   }
-  checkSession();
+  checkSessionDetail();
 });
 // ==================================================EVENTS==================================================
 // ------------------------------------------||Card 1 Event ||-------------------------------------------
@@ -1869,29 +1869,30 @@ const bindDetails = (headerid, status, userid) => {
           <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
+          <span class="dropdown-header">Basic Action</span>
           <li ${hideDetail}>
             <a class="dropdown-item" href="javascript:void(0);" id="btnDetailItem" data-id="${row.Id}"" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}">
-              <i class="bi bi-info-circle me-2 opacity-50"></i>Detail
+              <i class="ti ti-info-square-rounded fs-2 me-1 opacity-50"></i>Detail
             </a>
           </li>
           <li ${hideEdit}>
             <a class="dropdown-item" href="javascript:void(0);" id="btnEditItem" data-id="${row.Id}" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}">
-              <i class="bi bi-pencil-square me-2 opacity-50"></i>Edit
+              <i class="ti ti-edit me-1 fs-2 opacity-50"></i>Edit
             </a>
           </li>
           <li ${hideCopy}>
             <a class="dropdown-item" href="javascript:void(0);" id="btnCopyItem" data-id="${row.Id}" data-product="${row.Product}">
-              <i class="bi bi-copy me-2 opacity-50"></i>Copy
+              <i class="ti ti-copy-plus fs-2 me-1 opacity-50"></i>Copy
             </a>
           </li>
           <li ${hideDelete}>
             <a class="dropdown-item text-danger" href="javascript:void(0);" id="btnDeleteItem" data-id="${row.Id}" data-product="${row.Product}">
-              <i class="bi bi-trash3 me-2"></i>Delete
+              <i class="ti ti-trash-x me-1 fs-2 opacity-50"></i>Delete
             </a>
           </li>
           <li>
             <a class="dropdown-item " href="javascript:void(0);" id="btnPricingItem" data-id="${row.Id}">
-              <i class="bi bi-tags me-2 opacity-50"></i>Pricing
+              <i class="ti ti-tags fs-1 me-1 opacity-50"></i>Pricing
             </a>
           </li>
         </ul>
@@ -1953,7 +1954,7 @@ const bindDetails = (headerid, status, userid) => {
 
 // --------------------------------------------||Other Function ||-------------------------------------------
 // CHECK SESSION
-const checkSession = () => {
+const checkSessionDetail = () => {
   setSessionAlive();
 
   bindOrderHeaderByID(headerId);

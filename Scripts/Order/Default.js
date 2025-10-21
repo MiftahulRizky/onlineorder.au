@@ -448,37 +448,43 @@ const bindOrders = (status, active, storetype, params) => {
               <button class="border-0 bg-transparent dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
               </button>
-              <ul class="dropdown-menu dropdown-menu-end">
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <span class="dropdown-header">Basic Action</span>
                 <li>
                   <a class="dropdown-item" href="javascript:void(0)" id="btnDetailOrder" data-id="${row.Id}">
-                    <i class="bi bi-info-circle me-2 opacity-50"></i>Detail
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnDateInfo" data-id="${row.Id}">
-                    <i class="bi bi-calendar4 me-2 opacity-50"></i>Date Information
+                    <i class="ti ti-edit me-1 fs-2 opacity-50"></i>Edit / Detail
                   </a>
                 </li>
                 <li class="${displayDelete}">
                   <a class="dropdown-item text-danger" href="javascript:void(0)" id="btnDeleteOrder" data-id="${row.Id}" data-name="${row.StoreName}" data-order="${row.OrderNo}" data-ref="${row.OrderCust}" data-del="${row.Delivery}">
-                    <i class="bi bi-trash3 me-2"></i>Delete
-                  </a>
-                </li>
-                <li class="${displayChangeStatus}">
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnChangeStatus" data-id="${row.Id}">
-                    <i class="bi bi-clipboard-check me-2 opacity-50"></i> Change Status
-                  </a>
-                </li>
-                <li class="${displayDownloadCSV}">
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnDownloadCsv" data-id="${row.Id}">
-                    <i class="bi bi-file-earmark-arrow-down me-2 opacity-50"></i> Download CSV Order 
+                    <i class="ti ti-trash-x me-1 fs-2 opacity-50"></i>Delete
                   </a>
                 </li>
                 <li class="${displayRestore}">
                   <a class="dropdown-item" href="javascript:void(0)" id="btnRestoreOrder" data-id="${row.Id}" data-name="${row.StoreName}" data-order="${row.OrderNo}" data-ref="${row.OrderCust}" data-del="${row.Delivery}">
-                    <i class="bi bi-arrow-repeat me-2 opacity-50"></i>Restore 
+                    <i class="ti ti-restore me-1 fs-2 opacity-50"></i>Restore 
                   </a>
                 </li>
+                <div class="dropdown-divider"></div>
+                <span class="dropdown-header">Config & info</span>
+                <li>
+                  <a class="dropdown-item" href="javascript:void(0)" id="btnDateInfo" data-id="${row.Id}">
+                    <i class="ti ti-calendar-event me-1 fs-2 opacity-50"></i>Date Information
+                  </a>
+                </li>
+                
+                <li class="${displayChangeStatus}">
+                  <a class="dropdown-item" href="javascript:void(0)" id="btnChangeStatus" data-id="${row.Id}">
+                    <i class="ti ti-checkup-list me-1 fs-2 opacity-50"></i>
+                    Change Status
+                  </a>
+                </li>
+                <li class="${displayDownloadCSV}">
+                  <a class="dropdown-item" href="javascript:void(0)" id="btnDownloadCsv" data-id="${row.Id}">
+                 <i class="ti ti-file-type-csv me-1 fs-2 opacity-50"></i>Download CSV Order 
+                  </a>
+                </li>
+                
               </ul>
             </div>`;
         },
