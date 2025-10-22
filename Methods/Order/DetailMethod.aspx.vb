@@ -1781,6 +1781,7 @@ Partial Class Methods_Order_DetailMethod
                     Dim NumBoldNuts As Integer = 0
                     Dim LinkBlind As String = String.Empty
                     Dim BlindName As String = row("BlindName").ToString()
+                    Dim KitName As String = row("KitName").ToString()
                     If Not String.IsNullOrEmpty(row("UniqueId").ToString()) Then
                         LinkBlind = "Linked"
                     End If
@@ -1789,6 +1790,22 @@ Partial Class Methods_Order_DetailMethod
 
                     '#--------------------------|| NumBoldNuts ||--------------------------#
                     NumBoldNuts = GetNumBoldNuts(row)
+
+                    If KitName.Contains("Roman") Then
+                        If BlindName.Contains("Plantation") Then
+                            BlindName = "Roman Plantation"
+                        ElseIf BlindName.Contains("Sewless") Then
+                            BlindName = "Roman Sewless"
+                        End If
+                    End If
+                    
+                    If KitName.Contains("Panel") Then
+                        If BlindName.Contains("Plantation") Then
+                            BlindName = "Panel Plantation"
+                        ElseIf BlindName.Contains("Sewless") Then
+                            BlindName = "Panel Sewless"
+                        End If
+                    End If
 
                     If BlindName.Contains("Aluminium") Then
                         BlindName = "Aluminium"
@@ -2094,6 +2111,7 @@ Partial Class Methods_Order_DetailMethod
         End Try
     End Function
 
+
     Private Shared Function CreateJobSheets(JobId As String) As String
         Try
             Dim JobHeaderData As DataSet = publicCfg.GetListData("SELECT * FROM JobHeaders WHERE Id='" & JobId & "'")
@@ -2134,7 +2152,7 @@ Partial Class Methods_Order_DetailMethod
                 thisConn.Open()
 
                 For Each group In grouped
-                    Dim tableName As String = "JobSheets"
+                    Dim tableName As String = String.Empty
                     Dim detailRows = group.ToList()
                     Dim blindName As String = group.Key
                     Dim designName As String = If(detailRows.Any(), detailRows(0).Field(Of String)("DesignName"), "")
@@ -2178,6 +2196,10 @@ Partial Class Methods_Order_DetailMethod
                                 fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "ControlPosition", "ControlLength", "WandLength", "BracketOption", "BottomHoldDown", "PelmetType", "PelmetWidth", "PelmetSize", "PelmetReturn", "PelmetReturnPosition", "PelmetReturnSize", "PelmetReturnSize2", "CutOut_LeftTop", "CutOut_RightTop", "CutOut_LeftBottom", "CutOut_RightBottom", "LHSWidth_Top", "LHSHeight_Top", "RHSWidth_Top", "RHSHeight_Top", "LHSWidth_Bottom", "LHSHeight_Bottom", "RHSWidth_Bottom", "RHSHeight_Bottom", "Notes", "KitName", "VenetianType", "ControlType", "ColourType"})
 
                                 tableName = "JobSheet_Venetian"
+                            Case Else
+                                fieldsToProcess.AddRange({"Line", "BlindNo", "LinkBlind", "Qty","Location","Mounting","Width","Drop","SemiInsideMount","LouvreSize","LouvrePosition","HingeColour","MidrailHeight1","MidrailHeight2","MidrailCritical","Layout","LayoutSpecial","CustomHeaderLength","FrameType","FrameLeft","FrameRight","FrameTop","FrameBottom","BottomTrackType","BottomTrackRecess","Buildout","BuildoutPosition","PanelQty","TrackQty","PanelSize","NumOfPanel","HingeQtyPerPanel","PanelQtyWithHinge","LocationTPost1","LocationTPost2","LocationTPost3","LocationTPost4","LocationTPost5","HorizontalTPost","HorizontalTPostHeight","JoinedPanels","ReverseHinged","PelmetFlat","ExtraFascia","HingesLoose","TiltrodType","TiltrodSplit","SplitHeight1","SplitHeight2","DoorCutOut","SpecialShape","TemplateProvided","SquareMetre","LinearMetre","StackPosition","TilterPosition","RollDirection","ControlPosition","ControlColour","ControlLength","ChainLength","MaterialChain","MotorStyle","MotorRemote","MotorRequired","MotorBattery","MotorCharger","Connector","AdditionalMotor","CableExitPoint","TrackType","TrackColour","TrackLength","NumOfWand","WandPosition","WandColour","WandLength","CordColour","CordLength","AcornPlasticColour","Accessory","SideBySide","SlatSize","SlatQty","TubeSize","Trim","Batten","BattenColour","BracketOption","BracketColour","BracketCover","BracketExtension","Fitting","FlatType","ChildSafe","Cleat","BottomHoldDown","HangerType","PelmetType","PelmetWidth","PelmetSize","PelmetReturn","PelmetReturnPosition","PelmetReturnSize","PelmetReturnSize2","CutOut_LeftTop","CutOut_RightTop","CutOut_LeftBottom","CutOut_RightBottom","LHSWidth_Top","LHSHeight_Top","RHSWidth_Top","RHSHeight_Top","LHSWidth_Bottom","LHSHeight_Bottom","RHSWidth_Bottom","RHSHeight_Bottom","BlindSize","Sloper","InsertInTrack","Notes","KitName","VenetianType","BracketType","TubeType","TubeSkinSize","NumBoldNuts","ControlType","ColourType","ChainName","ChainColour","CLength","BottomName","BottomType","BottomColour","FabricName","FabricType","FabricColour","FabricWidth"})
+
+                                tableName = "JobSheets"
                         End Select
 
                         ' Bangun bagian kolom dan parameter dari query INSERT secara dinamis
@@ -2277,6 +2299,7 @@ Partial Class Methods_Order_DetailMethod
             
              '{"TableNameOnDatabase", AddressOf PrintFunctionName},
             Dim jobSheetSources As New Dictionary(Of String, Func(Of DataRow, String)) From {
+                {"JobSheets", AddressOf JobSheets},
                 {"JobSheet_RollerBlinds", AddressOf JobSheetRollerBlinds},
                 {"JobSheet_Verishades", AddressOf JobSheetVerishades},
                 {"JobSheet_Verticals", AddressOf JobSheetVerticals},
@@ -2344,6 +2367,19 @@ Partial Class Methods_Order_DetailMethod
     Private Shared tableDetEnd As String = "</table>"
 
     '#------------------------------------------|| Rendering Print ||------------------------------------------#
+    Private Shared Function JobSheets(currentData As DataRow) As String
+        Dim result As String = String.Empty
+        
+        ' Select Case currentData("BlindName").ToString()
+        '     Case "Cassette"
+        '         result += PrintRollerCassette(currentData)
+        ' End Select
+        result+= SubstituteFabric()
+        result+= LineOptions(currentData)
+
+        Return result
+    End Function
+
     Private Shared Function JobSheetRollerBlinds(currentData As DataRow) As String
         Dim result As String = String.Empty
         
@@ -2422,6 +2458,20 @@ Partial Class Methods_Order_DetailMethod
 
         ' Dim BlindNameList As DataSet = Nothing
         '#-------------------------------|| Find Go With ||-------------------------------#
+        '#All
+        Dim all As DataSet = publicCfg.GetListData("SELECT DesignName, BlindName FROM Jobsheets WHERE JobId = '" & JobId & "'")
+        For i As Integer = 0 To all.Tables(0).Rows.Count - 1
+            Dim designName As String = all.Tables(0).Rows(i).Item("DesignName").ToString()
+            Select Case designName
+            Case "Cellora Blinds"
+                goWithList.Add("Cel")
+            Case "Roman Blinds"
+                goWithList.Add("Rom")
+            Case "Panel Glides"
+                goWithList.Add("PG")
+            End Select
+        Next
+
         '#Roller Blinds
         Dim rollerList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_RollerBlinds WHERE JobId = '" & JobId & "'")
         For i As Integer = 0 To rollerList.Tables(0).Rows.Count - 1
@@ -2574,6 +2624,18 @@ Partial Class Methods_Order_DetailMethod
                         ReportIcon = "VRt"
                         ReportType = "Verishade Track"
                 End Select
+            Case "Cellora Blinds"
+                ReportIcon = "CL"
+                ReportType = "Cellora"
+            Case "Roman Blinds"
+                ReportIcon = "R"
+                ReportType = "Roman"
+            Case "Panel Glides"
+                ReportIcon = "PG"
+                ReportType = "Panel Glide"
+            Case Else
+                ReportIcon = "NO"
+                ReportType = "Nulable"
         End Select
         
         If goWithList.Count > 0 Then
@@ -2591,7 +2653,7 @@ Partial Class Methods_Order_DetailMethod
         Dim Notes5 As String = currentData("Notes5").ToString()
         Dim Notes6 As String = currentData("Notes6").ToString()
         Dim hightColumnNotes As String = "height: 30px;"
-        If Not String.IsNullOrEmpty(Notes1) Or Not String.IsNullOrEmpty(Notes2) Or Not String.IsNullOrEmpty(Notes3) Or Not String.IsNullOrEmpty(Notes4) Or Not String.IsNullOrEmpty(Notes5) Or Not String.IsNullOrEmpty(Notes6) Then hightColumnNotes = ""
+        If Not (String.IsNullOrEmpty(Notes1) Or String.IsNullOrEmpty(Notes2) Or String.IsNullOrEmpty(Notes3) Or String.IsNullOrEmpty(Notes4) Or String.IsNullOrEmpty(Notes5) Or String.IsNullOrEmpty(Notes6)) Then hightColumnNotes = ""
         '#header
         result+= "<table style='width: 100%; border-collapse: collapse;'>"
             '#Go With, Icon, & Job No
@@ -2675,325 +2737,325 @@ Partial Class Methods_Order_DetailMethod
 
     '#------------------------------------------|| Print Detail - Aluminium Blinds||------------------------------------------#
     Private Shared Function PrintAluminium(currentData As DataRow) As String
-    Dim result As String = String.Empty
+        Dim result As String = String.Empty
 
-    Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
+        Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
 
-    '#line options
-    result+= LineOptions(currentData)
+        '#line options
+        result+= LineOptions(currentData)
 
-    '#Table Data
-    result+= tableDetStart
-        '#QTY
-        result+= trDetStart
-            result+= tdTitleStart & "Qty" & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty1").ToString()), "0", currentData("Qty1").ToString()) & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty2").ToString()), "0", currentData("Qty2").ToString()) & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty3").ToString()), "0", currentData("Qty3").ToString()) & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty4").ToString()), "0", currentData("Qty4").ToString()) & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty5").ToString()), "0", currentData("Qty5").ToString()) & tdDetEnd
-            result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Qty6").ToString()), "0", currentData("Qty6").ToString()) & tdDetEnd
-        result+= trDetEnd
+        '#Table Data
+        result+= tableDetStart
+            '#QTY
+            result+= trDetStart
+                result+= tdTitleStart & "Qty" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty1").ToString()), "0", currentData("Qty1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty2").ToString()), "0", currentData("Qty2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty3").ToString()), "0", currentData("Qty3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty4").ToString()), "0", currentData("Qty4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty5").ToString()), "0", currentData("Qty5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Qty6").ToString()), "0", currentData("Qty6").ToString()) & tdDetEnd
+            result+= trDetEnd
 
-        '#VenetianType
-        result+= trDetStart
-            result+= tdTitleStart & "Ven Type" & tdDetEnd
-            result+= tdDetStart & boldStart & fs11Start & currentData("VenetianType1").ToString() & fsEnd & boldEnd & tdDetEnd
-            result+= tdDetStart & boldStart & fs11Start & currentData("VenetianType2").ToString() & fsEnd & boldEnd & tdDetEnd
-            result+= tdDetStart & boldStart & fs11Start & currentData("VenetianType3").ToString() & fsEnd & boldEnd & tdDetEnd
-            result+= tdDetStart & boldStart & fs11Start & currentData("VenetianType4").ToString() & fsEnd & boldEnd & tdDetEnd
-            result+= tdDetStart & boldStart & fs11Start & currentData("VenetianType5").ToString() & fsEnd & boldEnd & tdDetEnd
-            result+= tdDetRight & boldStart & fs11Start & currentData("VenetianType6").ToString() & fsEnd & boldEnd & tdDetEnd
-        result+= trDetEnd
+            '#VenetianType
+            result+= trDetStart
+                result+= tdTitleStart & "Ven Type" & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("VenetianType1").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("VenetianType2").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("VenetianType3").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("VenetianType4").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("VenetianType5").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs11Start & currentData("VenetianType6").ToString() & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
 
-        '#Width
-        result+= trDetStart
-            result+= tdTitleStart & "Width (mm)" & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width1").ToString()), "0", currentData("Width1").ToString()) & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width2").ToString()), "0", currentData("Width2").ToString()) & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width3").ToString()), "0", currentData("Width3").ToString()) & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width4").ToString()), "0", currentData("Width4").ToString()) & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width5").ToString()), "0", currentData("Width5").ToString()) & tdDetEnd
-            result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Width6").ToString()), "0", currentData("Width6").ToString()) & tdDetEnd
-        result+= trDetEnd
+            '#Width
+            result+= trDetStart
+                result+= tdTitleStart & "Width (mm)" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width1").ToString()), "0", currentData("Width1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width2").ToString()), "0", currentData("Width2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width3").ToString()), "0", currentData("Width3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width4").ToString()), "0", currentData("Width4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width5").ToString()), "0", currentData("Width5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Width6").ToString()), "0", currentData("Width6").ToString()) & tdDetEnd
+            result+= trDetEnd
 
-        '#Drop
-        result+= trDetStart
-            result+= tdTitleStart & "Drop (mm)" & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop1").ToString()), "0", currentData("Drop1").ToString()) & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop2").ToString()), "0", currentData("Drop2").ToString()) & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop3").ToString()), "0", currentData("Drop3").ToString()) & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop4").ToString()), "0", currentData("Drop4").ToString()) & tdDetEnd
-            result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop5").ToString()), "0", currentData("Drop5").ToString()) & tdDetEnd
-            result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Drop6").ToString()), "0", currentData("Drop6").ToString()) & tdDetEnd
-        result+= trDetEnd
+            '#Drop
+            result+= trDetStart
+                result+= tdTitleStart & "Drop (mm)" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop1").ToString()), "0", currentData("Drop1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop2").ToString()), "0", currentData("Drop2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop3").ToString()), "0", currentData("Drop3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop4").ToString()), "0", currentData("Drop4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop5").ToString()), "0", currentData("Drop5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Drop6").ToString()), "0", currentData("Drop6").ToString()) & tdDetEnd
+            result+= trDetEnd
 
-        '#ColourType
-        result+= trDetStart
-            result+= tdTitleStart & "Colour" & tdDetEnd
-            result+= tdDetStart & currentData("ColourType1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("ColourType2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("ColourType3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("ColourType4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("ColourType5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("ColourType6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#ColourType
+            result+= trDetStart
+                result+= tdTitleStart & "Colour" & tdDetEnd
+                result+= tdDetStart & currentData("ColourType1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ColourType2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ColourType3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ColourType4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ColourType5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("ColourType6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#ControlPosition
-        result+= trDetStart
-            result+= tdTitleStart & "Control Position" & tdDetEnd
-            result+= tdDetStart & currentData("ControlPosition1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("ControlPosition2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("ControlPosition3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("ControlPosition4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("ControlPosition5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("ControlPosition6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#ControlPosition
+            result+= trDetStart
+                result+= tdTitleStart & "Control Position" & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("ControlPosition6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#WandLength
-        result+= trDetStart
-            result+= tdTitleStart & "Wand Length" & tdDetEnd
-            result+= tdDetStart & currentData("WandLength1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("WandLength2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("WandLength3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("WandLength4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("WandLength5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("WandLength6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#WandLength
+            result+= trDetStart
+                result+= tdTitleStart & "Wand Length" & tdDetEnd
+                result+= tdDetStart & currentData("WandLength1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("WandLength2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("WandLength3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("WandLength4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("WandLength5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("WandLength6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#BracketType
-        result+= trDetStart
-            result+= tdTitleStart & "Bracket Type" & tdDetEnd
-            result+= tdDetStart & currentData("BracketOption1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("BracketOption2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("BracketOption3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("BracketOption4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("BracketOption5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("BracketOption6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#BracketType
+            result+= trDetStart
+                result+= tdTitleStart & "Bracket Type" & tdDetEnd
+                result+= tdDetStart & currentData("BracketOption1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketOption2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketOption3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketOption4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketOption5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("BracketOption6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#Cutouts
-        result+= trDetStart
-            result+= tdTitleStart & boldStart & "Cut Outs" & boldEnd & tdDetEnd
-            result+= tdDetStart & boldStart & fs11Start & "" & fsEnd & boldEnd & tdDetEnd
-            result+= tdDetStart & boldStart & fs11Start & "" & fsEnd & boldEnd & tdDetEnd
-            result+= tdDetStart & boldStart & fs11Start & "" & fsEnd & boldEnd & tdDetEnd
-            result+= tdDetStart & boldStart & fs11Start & "" & fsEnd & boldEnd & tdDetEnd
-            result+= tdDetStart & boldStart & fs11Start & "" & fsEnd & boldEnd & tdDetEnd
-            result+= tdDetRight & boldStart & fs11Start & "" & fsEnd & boldEnd & tdDetEnd
-        result+= trDetEnd
+            '#Cutouts
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Cut Outs" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & "" & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & "" & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & "" & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & "" & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & "" & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs11Start & "" & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
 
-        '#---------------------------------|| Cut Outs ||-------------------------------------#
-        '#CutOut_LeftTop
-        result+= trDetStart
-            result+= tdTitleStart & "Top Left" & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_LeftTop1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_LeftTop2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_LeftTop3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_LeftTop4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_LeftTop5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("CutOut_LeftTop6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#---------------------------------|| Cut Outs ||-------------------------------------#
+            '#CutOut_LeftTop
+            result+= trDetStart
+                result+= tdTitleStart & "Top Left" & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_LeftTop1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_LeftTop2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_LeftTop3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_LeftTop4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_LeftTop5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("CutOut_LeftTop6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#CutOut_RightTop
-        result+= trDetStart
-            result+= tdTitleStart & "Top Right" & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_RightTop1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_RightTop2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_RightTop3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_RightTop4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_RightTop5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("CutOut_RightTop6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#CutOut_RightTop
+            result+= trDetStart
+                result+= tdTitleStart & "Top Right" & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_RightTop1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_RightTop2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_RightTop3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_RightTop4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_RightTop5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("CutOut_RightTop6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#CutOut_LeftBottom
-        result+= trDetStart
-            result+= tdTitleStart & "Bottom Left" & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_LeftBottom1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_LeftBottom2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_LeftBottom3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_LeftBottom4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_LeftBottom5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("CutOut_LeftBottom6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#CutOut_LeftBottom
+            result+= trDetStart
+                result+= tdTitleStart & "Bottom Left" & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_LeftBottom1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_LeftBottom2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_LeftBottom3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_LeftBottom4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_LeftBottom5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("CutOut_LeftBottom6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#CutOut_RightBottom
-        result+= trDetStart
-            result+= tdTitleStart & "Bottom Right" & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_RightBottom1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_RightBottom2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_RightBottom3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_RightBottom4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("CutOut_RightBottom5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("CutOut_RightBottom6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#CutOut_RightBottom
+            result+= trDetStart
+                result+= tdTitleStart & "Bottom Right" & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_RightBottom1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_RightBottom2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_RightBottom3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_RightBottom4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CutOut_RightBottom5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("CutOut_RightBottom6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#---------------------------------|| Top ||-------------------------------------#
-        '#LHSWidth_Top
-        result+= trDetStart
-            result+= tdTitleStart & "Top LHS Width" & tdDetEnd
-            result+= tdDetStart & currentData("LHSWidth_Top1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSWidth_Top2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSWidth_Top3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSWidth_Top4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSWidth_Top5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("LHSWidth_Top6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#---------------------------------|| Top ||-------------------------------------#
+            '#LHSWidth_Top
+            result+= trDetStart
+                result+= tdTitleStart & "Top LHS Width" & tdDetEnd
+                result+= tdDetStart & currentData("LHSWidth_Top1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSWidth_Top2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSWidth_Top3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSWidth_Top4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSWidth_Top5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("LHSWidth_Top6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#LHSHeight_Top
-        result+= trDetStart
-            result+= tdTitleStart & "Top LHS Height" & tdDetEnd
-            result+= tdDetStart & currentData("LHSHeight_Top1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSHeight_Top2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSHeight_Top3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSHeight_Top4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSHeight_Top5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("LHSHeight_Top6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#LHSHeight_Top
+            result+= trDetStart
+                result+= tdTitleStart & "Top LHS Height" & tdDetEnd
+                result+= tdDetStart & currentData("LHSHeight_Top1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSHeight_Top2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSHeight_Top3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSHeight_Top4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSHeight_Top5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("LHSHeight_Top6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#RHSWidth_Top
-        result+= trDetStart
-            result+= tdTitleStart & "Top RHS Width" & tdDetEnd
-            result+= tdDetStart & currentData("RHSWidth_Top1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSWidth_Top2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSWidth_Top3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSWidth_Top4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSWidth_Top5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("RHSWidth_Top6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#RHSWidth_Top
+            result+= trDetStart
+                result+= tdTitleStart & "Top RHS Width" & tdDetEnd
+                result+= tdDetStart & currentData("RHSWidth_Top1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSWidth_Top2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSWidth_Top3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSWidth_Top4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSWidth_Top5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("RHSWidth_Top6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#RHSHeight_Top
-        result+= trDetStart
-            result+= tdTitleStart & "Top RHS Height" & tdDetEnd
-            result+= tdDetStart & currentData("RHSHeight_Top1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSHeight_Top2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSHeight_Top3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSHeight_Top4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSHeight_Top5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("RHSHeight_Top6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#RHSHeight_Top
+            result+= trDetStart
+                result+= tdTitleStart & "Top RHS Height" & tdDetEnd
+                result+= tdDetStart & currentData("RHSHeight_Top1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSHeight_Top2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSHeight_Top3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSHeight_Top4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSHeight_Top5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("RHSHeight_Top6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#----------------------------------|| Bottom ||----------------------------------#
-        '#LHSWidth_Bottom
-        result+= trDetStart
-            result+= tdTitleStart & fs11Start & "Bottom LHS Width" & fsEnd & tdDetEnd
-            result+= tdDetStart & currentData("LHSWidth_Bottom1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSWidth_Bottom2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSWidth_Bottom3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSWidth_Bottom4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSWidth_Bottom5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("LHSWidth_Bottom6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#----------------------------------|| Bottom ||----------------------------------#
+            '#LHSWidth_Bottom
+            result+= trDetStart
+                result+= tdTitleStart & fs11Start & "Bottom LHS Width" & fsEnd & tdDetEnd
+                result+= tdDetStart & currentData("LHSWidth_Bottom1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSWidth_Bottom2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSWidth_Bottom3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSWidth_Bottom4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSWidth_Bottom5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("LHSWidth_Bottom6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#LHSHeight_Bottom
-        result+= trDetStart
-            result+= tdTitleStart & fs11Start & "Bottom LHS Height" & fsEnd & tdDetEnd
-            result+= tdDetStart & currentData("LHSHeight_Bottom1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSHeight_Bottom2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSHeight_Bottom3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSHeight_Bottom4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("LHSHeight_Bottom5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("LHSHeight_Bottom6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#LHSHeight_Bottom
+            result+= trDetStart
+                result+= tdTitleStart & fs11Start & "Bottom LHS Height" & fsEnd & tdDetEnd
+                result+= tdDetStart & currentData("LHSHeight_Bottom1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSHeight_Bottom2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSHeight_Bottom3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSHeight_Bottom4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LHSHeight_Bottom5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("LHSHeight_Bottom6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#RHSWidth_Bottom
-        result+= trDetStart
-            result+= tdTitleStart & fs11Start & "Bottom RHS Width" & fsEnd & tdDetEnd
-            result+= tdDetStart & currentData("RHSWidth_Bottom1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSWidth_Bottom2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSWidth_Bottom3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSWidth_Bottom4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSWidth_Bottom5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("RHSWidth_Bottom6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#RHSWidth_Bottom
+            result+= trDetStart
+                result+= tdTitleStart & fs11Start & "Bottom RHS Width" & fsEnd & tdDetEnd
+                result+= tdDetStart & currentData("RHSWidth_Bottom1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSWidth_Bottom2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSWidth_Bottom3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSWidth_Bottom4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSWidth_Bottom5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("RHSWidth_Bottom6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#RHSHeight_Bottom
-        result+= trDetStart
-            result+= tdTitleStart & fs11Start & "Bottom RHS Height" & fsEnd & tdDetEnd
-            result+= tdDetStart & currentData("RHSHeight_Bottom1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSHeight_Bottom2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSHeight_Bottom3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSHeight_Bottom4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("RHSHeight_Bottom5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("RHSHeight_Bottom6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#RHSHeight_Bottom
+            result+= trDetStart
+                result+= tdTitleStart & fs11Start & "Bottom RHS Height" & fsEnd & tdDetEnd
+                result+= tdDetStart & currentData("RHSHeight_Bottom1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSHeight_Bottom2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSHeight_Bottom3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSHeight_Bottom4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RHSHeight_Bottom5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("RHSHeight_Bottom6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#BottomHoldDown
-        result+= trDetStart
-            result+= tdTitleStart & "Holdown Colour" & tdDetEnd
-            result+= tdDetStart & currentData("BottomHoldDown1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("BottomHoldDown2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("BottomHoldDown3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("BottomHoldDown4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("BottomHoldDown5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("BottomHoldDown6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#BottomHoldDown
+            result+= trDetStart
+                result+= tdTitleStart & "Holdown Colour" & tdDetEnd
+                result+= tdDetStart & currentData("BottomHoldDown1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BottomHoldDown2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BottomHoldDown3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BottomHoldDown4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BottomHoldDown5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("BottomHoldDown6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#Location
-        result+= trDetStart
-            result+= tdTitleStart & "Location" & tdDetEnd
-            result+= tdDetStart & currentData("Location1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("Location2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("Location3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("Location4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("Location5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("Location6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#Location
+            result+= trDetStart
+                result+= tdTitleStart & "Location" & tdDetEnd
+                result+= tdDetStart & currentData("Location1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Location6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#Mounting
-        result+= trDetStart
-            result+= tdTitleStart & "Fixing" & tdDetEnd
-            result+= tdDetStart & currentData("Mounting1").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("Mounting2").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("Mounting3").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("Mounting4").ToString() & tdDetEnd
-            result+= tdDetStart & currentData("Mounting5").ToString() & tdDetEnd
-            result+= tdDetRight & currentData("Mounting6").ToString() & tdDetEnd
-        result+= trDetEnd
+            '#Mounting
+            result+= trDetStart
+                result+= tdTitleStart & "Fixing" & tdDetEnd
+                result+= tdDetStart & currentData("Mounting1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Mounting6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-        '#Line Blank
-        result+= BlankLineEachRow(5)
+            '#Line Blank
+            result+= BlankLineEachRow(5)
 
-    result+= tableDetEnd
+        result+= tableDetEnd
 
-    '#Footer
-    result+= "<table style='width: 100%; font-size:11px; border-collapse: collapse;'>"
-        '#Total Rollers
-        result+= trDetStart
-            result+= "<td style='width:100px; padding:5px 0px;'>" & "<span>Total Alu: </span><span style='color:white;'>------</span><span style='font-weight:bold;'>" & TotalBlind & "</span>" &  tdDetEnd
-            result+= tdDetFooterStart &  "H/RAILCUT" & tdDetEnd
-            result+= tdDetFooterStart &  "TAPE CUT" & tdDetEnd
-            result+= tdDetFooterStart &  "H/RAIL ASSEMBLING" & tdDetEnd
-            result+= tdDetFooterStart &  "SLAT CUT" & tdDetEnd
-            result+= tdDetFooterStart &  "BLIND FUNCH" & tdDetEnd
-            result+= tdDetFooterStart &  "FINISHING" & tdDetEnd
-            result+= tdDetFooterStart &  "VALANCE" & tdDetEnd
-            result+= tdDetFooterStart &  "PACKING" & tdDetEnd
-        result+= trDetEnd
-        '#Page
-        result+= trDetStart
-            result+= "<td rowspan='2' style='width:100px; padding:5px 2px; text-align:center;'>" &  "<div style='font-size:12px;'>Page </div><div style='padding-top:8px; font-size:12px;'>" & currentData("PageOf").ToString() &" OF "& currentData("AmountOfPage").ToString() & "</div>" & tdDetEnd
-            result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
-            result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
-            result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
-            result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
-            result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
-            result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
-        result+= trDetEnd
-        '#Of
-        result+= trDetStart
-            result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
-            result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
-            result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
-            result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
-            result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
-            result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
-            result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
-            result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
-        result+= trDetEnd
-    result+= tableDetEnd
+        '#Footer
+        result+= "<table style='width: 100%; font-size:11px; border-collapse: collapse;'>"
+            '#Total Rollers
+            result+= trDetStart
+                result+= "<td style='width:100px; padding:5px 0px;'>" & "<span>Total Alu: </span><span style='color:white;'>------</span><span style='font-weight:bold;'>" & TotalBlind & "</span>" &  tdDetEnd
+                result+= tdDetFooterStart &  "H/RAILCUT" & tdDetEnd
+                result+= tdDetFooterStart &  "TAPE CUT" & tdDetEnd
+                result+= tdDetFooterStart &  "H/RAIL ASSEMBLING" & tdDetEnd
+                result+= tdDetFooterStart &  "SLAT CUT" & tdDetEnd
+                result+= tdDetFooterStart &  "BLIND FUNCH" & tdDetEnd
+                result+= tdDetFooterStart &  "FINISHING" & tdDetEnd
+                result+= tdDetFooterStart &  "VALANCE" & tdDetEnd
+                result+= tdDetFooterStart &  "PACKING" & tdDetEnd
+            result+= trDetEnd
+            '#Page
+            result+= trDetStart
+                result+= "<td rowspan='2' style='width:100px; padding:5px 2px; text-align:center;'>" &  "<div style='font-size:12px;'>Page </div><div style='padding-top:8px; font-size:12px;'>" & currentData("PageOf").ToString() &" OF "& currentData("AmountOfPage").ToString() & "</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+            result+= trDetEnd
+            '#Of
+            result+= trDetStart
+                result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>____________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+            result+= trDetEnd
+        result+= tableDetEnd
 
-    Return result
+        Return result
     End Function
 
     '#------------------------------------------|| Print Detail - Venetian Blinds||------------------------------------------#
