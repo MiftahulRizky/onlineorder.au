@@ -156,7 +156,8 @@ Partial Class Methods_Setting_Fabric_FabricMethod
                 ' --- Tambahkan Global Search DataTables (jika ada) ---
                 If Not String.IsNullOrEmpty(params.search.value) Then
                     Dim searchValue As String = "%" & params.search.value.Trim() & "%"
-                    whereClause.AppendLine(" AND (Fabrics.Id LIKE @SearchValue OR Fabrics.Name LIKE @SearchValue OR Fabrics.Width LIKE @SearchValue OR Fabrics.Group LIKE @SearchValue)")
+                    ' whereClause.AppendLine(" AND ( Fabrics.Id LIKE @SearchValue OR Fabrics.Name LIKE @SearchValue OR Fabrics.Width LIKE @SearchValue OR Fabrics.Group LIKE @SearchValue )")
+                    whereClause.AppendLine(" AND ( Fabrics.Id LIKE @SearchValue OR Fabrics.Name LIKE @SearchValue OR Fabrics.Width LIKE @SearchValue OR Fabrics.[Group] LIKE @SearchValue)")
                     cmd.Parameters.AddWithValue("@SearchValue", searchValue)
                 End If
 

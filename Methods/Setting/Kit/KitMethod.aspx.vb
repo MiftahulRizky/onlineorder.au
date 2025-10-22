@@ -130,7 +130,7 @@ Partial Class Methods_Setting_Kit_KitMethod
                 ' --- Tambahkan Global Search DataTables (jika ada) ---
                 If Not String.IsNullOrEmpty(params.search.value) Then
                     Dim searchValue As String = "%" & params.search.value.Trim() & "%"
-                    whereClause.AppendLine(" AND (HardwareKits.SoeId LIKE @SearchValue OR HardwareKits.Name LIKE @SearchValue ")
+                    whereClause.AppendLine(" AND ( HardwareKits.SoeId LIKE @SearchValue OR HardwareKits.Name LIKE @SearchValue )")
                     cmd.Parameters.AddWithValue("@SearchValue", searchValue)
                 End If
 
