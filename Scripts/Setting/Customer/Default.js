@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   checkSessionCustomer();
+  console.log(uriMethod);
 });
 // ==================================================|| EVENTS ||==================================================
 // ==================================================|| FUNCTIONS ||===============================================
@@ -74,9 +75,9 @@ const bindCustomer = (params) => {
           return `<div class="text-center">${data}</div>`;
         },
       },
-      { data: "Id", width: "5%" },
+      { data: "Id", width: "10%" },
       { data: "ExactId", width: "10%" },
-      { data: "Name", width: "30%" },
+      { data: "Name", width: "35%" },
       // {
       //   data: "Name",
       //   width: "55%",
@@ -91,11 +92,11 @@ const bindCustomer = (params) => {
       //     return `<i class="ti fs-3 me-1 ${icn} ${color}"></i>${data}`;
       //   },
       // },
-      { data: "CustomerGroup", width: "15%" },
-      { data: "CustomerCashSale", width: "15%" },
-      { data: "CustomerOnStop", width: "15%" },
-      { data: "CustomerMinSurcharge", width: "15%" },
-      { data: "DataActive", width: "15%" },
+      { data: "CustomerGroup", width: "10%" },
+      { data: "CustomerCashSale", width: "5%" },
+      { data: "CustomerOnStop", width: "5%" },
+      { data: "CustomerMinSurcharge", width: "10%" },
+      { data: "DataActive", width: "5%" },
       {
         data: null,
         width: "5%",

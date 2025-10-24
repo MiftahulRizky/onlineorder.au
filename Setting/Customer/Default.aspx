@@ -29,7 +29,7 @@
                     </div>
                     <div class="card-body" id="table-default">
                         <table class="table table-hover table-vcenter card-table w-100" id="data-table">
-                            <thead>
+                            <thead class="h1">
                                 <tr>
                                     <th>#</th>
                                     <th>ID</th>

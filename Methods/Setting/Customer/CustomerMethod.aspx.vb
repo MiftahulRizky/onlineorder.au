@@ -120,7 +120,7 @@ Partial Class Methods_Setting_Cutomer_CustomerMethod
                 Dim sqlBuilder As New System.Text.StringBuilder()
                 sqlBuilder.AppendLine("SELECT Customers.*, CASE WHEN Customers.CashSale = 1 THEN 'Yes' ELSE 'No' END AS CustomerCashSale, CASE WHEN Customers.OnStop = 1 THEN 'Yes' ELSE 'No' END AS CustomerOnStop, CASE WHEN Customers.MinimumOrderSurcharge = 1 THEN 'Yes' ELSE 'No' END AS CustomerMinSurcharge, CustomerGroups.Name AS CustomerGroup, CASE WHEN Customers.Active = 1 THEN 'Yes' WHEN Customers.Active = 0 THEN 'No' ELSE 'Error' END AS DataActive")
                 sqlBuilder.AppendLine("FROM Customers LEFT JOIN CustomerGroups ON CustomerGroups.Id = Customers.[Group]")
-                ' sqlBuilder.AppendLine("WHERE HardwareKits.DesignId = @DesignId AND HardwareKits.BlindId = @BlindId")
+                ' sqlBuilder.AppendLine("WHERE")
 
                 Dim whereClause As New System.Text.StringBuilder()
                 Dim cmd As New SqlCommand(sqlBuilder.ToString(), conn)
@@ -132,7 +132,7 @@ Partial Class Methods_Setting_Cutomer_CustomerMethod
                 ' --- Tambahkan Global Search DataTables (jika ada) ---
                 If Not String.IsNullOrEmpty(params.search.value) Then
                     Dim searchValue As String = "%" & params.search.value.Trim() & "%"
-                    whereClause.AppendLine(" AND ( Customers.Id LIKE @SearchValue OR Customers.MicronetId LIKE @SearchValue OR Customers.ExactId LIKE @SearchValue OR Customers.Name LIKE @SearchValue OR Customers.Type LIKE @SearchValue OR Customers.Name LIKE @SearchValue) ")
+                    whereClause.AppendLine(" Where ( Customers.Id LIKE @SearchValue OR Customers.MicronetId LIKE @SearchValue OR Customers.ExactId LIKE @SearchValue OR Customers.Name LIKE @SearchValue OR Customers.Type LIKE @SearchValue OR Customers.Name LIKE @SearchValue)")
                     cmd.Parameters.AddWithValue("@SearchValue", searchValue)
                 End If
 
@@ -155,7 +155,7 @@ Partial Class Methods_Setting_Cutomer_CustomerMethod
                     Dim columnMap As New Dictionary(Of Integer, String) From { _
                         {0, "No"}, _
                         {1, "Id"}, _
-                        {2, "Name"}, _
+                        {2, "Name"} _
                     }
                     Dim orderColumnIndex As Integer = params.order(0).column
                     Dim orderDirection As String = params.order(0).dir.ToUpper()
