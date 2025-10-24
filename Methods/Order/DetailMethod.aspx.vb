@@ -1782,7 +1782,8 @@ Partial Class Methods_Order_DetailMethod
                     Dim LinkBlind As String = String.Empty
                     Dim BlindName As String = row("BlindName").ToString()
                     Dim KitName As String = row("KitName").ToString()
-                    If Not String.IsNullOrEmpty(row("UniqueId").ToString()) Then
+                    Dim BracketType As String = row("BracketType").ToString()
+                    If BracketType.Contains("Linked") Then
                         LinkBlind = "Linked"
                     End If
                     '#--------------------------|| TubeSkinSize ||--------------------------#
@@ -1819,7 +1820,7 @@ Partial Class Methods_Order_DetailMethod
                         BlindName = "Venetian"
                     End If
 
-                    Dim lineString As String = "Line " & counter.ToString()
+                    ' Dim lineString As String = "Line " & counter.ToString()
                     
 
 
@@ -1836,7 +1837,8 @@ Partial Class Methods_Order_DetailMethod
                         insertCmd.Parameters.AddWithValue("@HeaderId", row("HeaderId"))
                         insertCmd.Parameters.AddWithValue("@LinkBlind", LinkBlind)
                         insertCmd.Parameters.AddWithValue("@BlindNo", row("BlindNo"))
-                        insertCmd.Parameters.AddWithValue("@Line", lineString)
+                        ' insertCmd.Parameters.AddWithValue("@Line", lineString)
+                        insertCmd.Parameters.AddWithValue("@Line", DBNull.Value)
                         insertCmd.Parameters.AddWithValue("@Qty", row("Qty"))
                         insertCmd.Parameters.AddWithValue("@Location", row("Location"))
                         insertCmd.Parameters.AddWithValue("@Mounting", row("Mounting"))
@@ -2246,15 +2248,14 @@ Partial Class Methods_Order_DetailMethod
                                     Dim value As Object = DBNull.Value
                                     Dim globalLineNumber As Integer = (pageIndex * 6) + i + 1
 
-                                '     If fieldName = "Line" Then
-                                '         ' --- LOGIKA BARU UNTUK KOLOM "LINE" DIMULAI DI SINI ---
-                                '         If i < chunk.Count Then
-                                '             ' Hitung nomor baris global untuk BlindName ini
-                                '             value = "Line " & globalLineNumber.ToString()
-                                '         End If
-                                '         ' --- LOGIKA BARU UNTUK KOLOM "LINE" BERAKHIR DI SINI ---
-                                '    Else
-                                   If fieldName = "Notes" Then
+                                    If fieldName = "Line" Then
+                                        ' --- LOGIKA BARU UNTUK KOLOM "LINE" DIMULAI DI SINI ---
+                                        If i < chunk.Count Then
+                                            ' Hitung nomor baris global untuk BlindName ini
+                                            value = "Line " & globalLineNumber.ToString()
+                                        End If
+                                        ' --- LOGIKA BARU UNTUK KOLOM "LINE" BERAKHIR DI SINI ---
+                                   ElseIf fieldName = "Notes" Then
                                         If i < chunk.Count Then
                                             If chunk(i).Table.Columns.Contains(fieldName) AndAlso Not IsDBNull(chunk(i)(fieldName)) Then
                                                 value = "(Item " & globalLineNumber.ToString() & ") -" & CType(chunk(i)(fieldName), Object) & " |"
@@ -5067,12 +5068,12 @@ Partial Class Methods_Order_DetailMethod
             '#ControllType
             result+= trDetStart
                 result+= tdTitleStart & boldStart & "Control Type" & boldEnd & tdDetEnd
-                result+= tdDetStart & fs12Start & boldStart & currentData("ControlType1").ToString() & boldEnd & fsEnd & tdDetEnd
-                result+= tdDetStart & fs12Start & boldStart & currentData("ControlType2").ToString() & boldEnd & fsEnd & tdDetEnd
-                result+= tdDetStart & fs12Start & boldStart & currentData("ControlType3").ToString() & boldEnd & fsEnd & tdDetEnd
-                result+= tdDetStart & fs12Start & boldStart & currentData("ControlType4").ToString() & boldEnd & fsEnd & tdDetEnd
-                result+= tdDetStart & fs12Start & boldStart & currentData("ControlType5").ToString() & boldEnd & fsEnd & tdDetEnd
-                result+= tdDetRight & fs12Start & boldStart & currentData("ControlType6").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & currentData("TubeType1").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & currentData("TubeType2").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & currentData("TubeType3").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & currentData("TubeType4").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & currentData("TubeType5").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetRight & fs12Start & boldStart & currentData("TubeType6").ToString() & boldEnd & fsEnd & tdDetEnd
             result+= trDetEnd
 
             '#ControllColour
