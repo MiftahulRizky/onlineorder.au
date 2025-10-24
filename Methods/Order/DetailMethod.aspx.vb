@@ -1761,7 +1761,7 @@ Partial Class Methods_Order_DetailMethod
         Try
             Dim dt As New DataTable()
             Using thisConn As SqlConnection = New SqlConnection(myConn)
-                Dim selectQuery As String = "SELECT * FROM view_details WHERE HeaderId = @HeaderId AND Active = @Active"
+                Dim selectQuery As String = "SELECT * FROM view_details WHERE HeaderId = @HeaderId AND Active = @Active ORDER BY Id ASC"
                 Using da As New SqlDataAdapter(selectQuery, thisConn)
                     da.SelectCommand.Parameters.AddWithValue("@HeaderId", HeaderId)
                     da.SelectCommand.Parameters.AddWithValue("@Active", 1)
