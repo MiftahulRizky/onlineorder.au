@@ -1820,7 +1820,7 @@ Partial Class Methods_Order_DetailMethod
                         BlindName = "Venetian"
                     End If
 
-                    ' Dim lineString As String = "Line " & counter.ToString()
+                    Dim lineString As String = "Line " & counter.ToString()
                     
 
 
@@ -1837,8 +1837,7 @@ Partial Class Methods_Order_DetailMethod
                         insertCmd.Parameters.AddWithValue("@HeaderId", row("HeaderId"))
                         insertCmd.Parameters.AddWithValue("@LinkBlind", LinkBlind)
                         insertCmd.Parameters.AddWithValue("@BlindNo", row("BlindNo"))
-                        ' insertCmd.Parameters.AddWithValue("@Line", lineString)
-                        insertCmd.Parameters.AddWithValue("@Line", DBNull.Value)
+                        insertCmd.Parameters.AddWithValue("@Line", lineString)
                         insertCmd.Parameters.AddWithValue("@Qty", row("Qty"))
                         insertCmd.Parameters.AddWithValue("@Location", row("Location"))
                         insertCmd.Parameters.AddWithValue("@Mounting", row("Mounting"))
@@ -2248,14 +2247,15 @@ Partial Class Methods_Order_DetailMethod
                                     Dim value As Object = DBNull.Value
                                     Dim globalLineNumber As Integer = (pageIndex * 6) + i + 1
 
-                                    If fieldName = "Line" Then
-                                        ' --- LOGIKA BARU UNTUK KOLOM "LINE" DIMULAI DI SINI ---
-                                        If i < chunk.Count Then
-                                            ' Hitung nomor baris global untuk BlindName ini
-                                            value = "Line " & globalLineNumber.ToString()
-                                        End If
-                                        ' --- LOGIKA BARU UNTUK KOLOM "LINE" BERAKHIR DI SINI ---
-                                   ElseIf fieldName = "Notes" Then
+                                '     If fieldName = "Line" Then
+                                '         ' --- LOGIKA BARU UNTUK KOLOM "LINE" DIMULAI DI SINI ---
+                                '         If i < chunk.Count Then
+                                '             ' Hitung nomor baris global untuk BlindName ini
+                                '             value = "Line " & globalLineNumber.ToString()
+                                '         End If
+                                '         ' --- LOGIKA BARU UNTUK KOLOM "LINE" BERAKHIR DI SINI ---
+                                '    Else
+                                   If fieldName = "Notes" Then
                                         If i < chunk.Count Then
                                             If chunk(i).Table.Columns.Contains(fieldName) AndAlso Not IsDBNull(chunk(i)(fieldName)) Then
                                                 value = "(Item " & globalLineNumber.ToString() & ") -" & CType(chunk(i)(fieldName), Object) & " |"
