@@ -1,4 +1,2 @@
 Web.config
-.pdf
-/File/Order/Job/.pdf
-/File/Order/Preview/.pdf
+*.pdf
