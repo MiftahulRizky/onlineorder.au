@@ -2016,8 +2016,8 @@ Partial Class Methods_Order_DetailMethod
             If BracketType = "Single" Or BracketType = "Double" Or InStr(BracketType, "Linked") > 0 Or InStr(BracketType, "Double and Link") > 0 Then
                 '#-----------------------|| Left or Right ||-----------------------#
                 If ControlPosition = "Left" Or ControlPosition = "Right" Then
-                    If TubeSize = "40" Then : result = Width + 28 : End IF
-                    If TubeSize = "45" Or TubeSize = "50H" Then : result = Width + 32 : End IF
+                    If TubeSize = "40" Then : result = Width - 28 : End IF
+                    If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 32 : End IF
                 End If
             End If
         End If
@@ -2025,8 +2025,8 @@ Partial Class Methods_Order_DetailMethod
         If InStr(KitName, "Spring System") > 0 Or InStr(TubeType, "Spring") > 0 Then
            '#-----------------------|| Null/Empty, N/A ||-----------------------#
             If String.IsNullOrEmpty(ControlPosition) Or ControlPosition = "N/A" Then
-                If TubeSize = "40" Then : result = Width + 28 : End IF
-                If TubeSize = "45" Or TubeSize = "50H" Then : result = Width + 32 : End IF
+                If TubeSize = "40" Then : result = Width - 28 : End IF
+                If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 32 : End IF
             End If
         End If
         Return result
