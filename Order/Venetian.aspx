@@ -116,7 +116,7 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-5 row" runat="server">
+                                <div class="mb-5 row" runat="server" id="divControl">
                                     <label class="col-lg-3 col-form-label">CONTROL</label>
                                     <div class="col-lg-2 col-md-12 col-sm-12">
                                         <asp:DropDownList runat="server" ID="ddlControl" CssClass="form-select">
@@ -133,6 +133,26 @@
                                     </div>
                                     <div class="col-lg-2 col-md-12 col-sm-12">
                                          <a class="btn btn-primary " data-bs-toggle="offcanvas" href="#canvasInfo" role="button" aria-controls="canvasInfo" onclick="return showInfo('Control Length');"><i class="bi bi-info-circle me-2"></i>Info</a>
+                                    </div>
+                                </div>
+
+                                <div class="mb-5 row" runat="server" id="divControlMock">
+                                    <label class="col-lg-3 col-form-label">CONTROL LIFT/TILT</label>
+                                    <div class="col-lg-2 col-md-12 col-sm-12">
+                                        <asp:DropDownList runat="server" ID="ddlControlLift" CssClass="form-select">
+                                            <asp:ListItem Value="" Text=""></asp:ListItem>
+                                            <asp:ListItem Value="Left" Text="LEFT"></asp:ListItem>
+                                            <asp:ListItem Value="Right" Text="RIGHT"></asp:ListItem>
+                                        </asp:DropDownList>
+                                        <small class="form-hint">* Lift</small>
+                                    </div>
+                                    <div class="col-lg-2 col-md-12 col-sm-12">
+                                        <asp:DropDownList runat="server" ID="ddlControlTilt" CssClass="form-select">
+                                            <asp:ListItem Value="" Text=""></asp:ListItem>
+                                            <asp:ListItem Value="Left" Text="LEFT"></asp:ListItem>
+                                            <asp:ListItem Value="Right" Text="RIGHT"></asp:ListItem>
+                                        </asp:DropDownList>
+                                        <small class="form-hint">* Tilt</small>
                                     </div>
                                 </div>
 
@@ -355,11 +375,29 @@
     </div>
 
     <!-- my custom script -->
-     <script type="text/javascript" src="/Content/dist/js/my/venetian.js"></script>
     <script type="text/javascript">
 
         document.addEventListener("DOMContentLoaded", function () {
             loaderFadeOut();
+        })
+
+        const msgError = document.getElementById("MainContent_divError");
+        const resetError = () => {
+            if (msgError) {
+                msgError.classList.add("d-none");
+            }
+        }
+
+        document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+            el.addEventListener("change", (e) => {
+                e.target.classList.remove("is-invalid");
+                resetError();
+            })
+            el.addEventListener("input", (e) => {
+                e.target.classList.remove("is-invalid");
+                resetError();
+            })
+
         })
 
         // Function untuk menampilkan pesan error dari code-behind
@@ -382,7 +420,7 @@
                 spanInfo += '<br /><br />';
                 spanInfo += 'Our Standar Pelmet Width:';
                 spanInfo += '<br />';
-                spanInfo += 'Reveal fit is width + 7';
+                spanInfo += 'Reveal fit is width + 10';
                 spanInfo += '<br />';
                 spanInfo += 'Face fit is width + 20';
             } else if (Type == 'Quantity') {
@@ -410,6 +448,7 @@
         <asp:Label runat="server" ID="lblCutOut_LeftBottom"></asp:Label>
         <asp:Label runat="server" ID="lblCutOut_RightTop"></asp:Label>
         <asp:Label runat="server" ID="lblCutOut_RightBottom"></asp:Label>
+        <asp:Label runat="server" ID="lblControlPosition"></asp:Label>
         
         <asp:SqlDataSource ID="sdsPage" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], ControlPosition, ControlLength, BottomHoldDown, CutOut_LeftTop, CutOut_RightTop, CutOut_LeftBottom, CutOut_RightBottom, PelmetType, PelmetWidth, PelmetSize, PelmetReturnSize, PelmetReturnSize2, LHSWidth_Top, LHSHeight_Top, RHSWidth_Top, RHSHeight_Top, LHSWidth_Bottom, LHSHeight_Bottom, RHSWidth_Bottom, RHSHeight_Bottom, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES(@Id, @HeaderId, 'Blind 1', @KitId, @SoeKitId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @ControlLength, @BottomHoldDown, @CutOut_LeftTop, @CutOut_RightTop, @CutOut_LeftBottom, @CutOut_RightBottom, @PelmetType, @PelmetWidth, @PelmetSize, @PelmetReturnSize, @PelmetReturnSize2, @LHSWidth_Top, @LHSHeight_Top, @RHSWidth_Top, @RHSHeight_Top, @LHSWidth_Bottom, @LHSHeight_Bottom, @RHSWidth_Bottom, @RHSHeight_Bottom, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)" UpdateCommand="UPDATE OrderDetails SET BlindNo='Blind 1', KitId=@KitId, SoeKitId=@SoeKitId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, ControlPosition=@ControlPosition, ControlLength=@ControlLength, BottomHoldDown=@BottomHoldDown, CutOut_LeftTop=@CutOut_LeftTop, CutOut_RightTop=@CutOut_RightTop, CutOut_LeftBottom=@CutOut_LeftBottom, CutOut_RightBottom=@CutOut_RightBottom, PelmetType=@PelmetType, PelmetWidth=@PelmetWidth, PelmetSize=@PelmetSize, PelmetReturnSize=@PelmetReturnSize, PelmetReturnSize2=@PelmetReturnSize, LHSWidth_Top=@LHSWidth_Top, LHSHeight_Top=@LHSHeight_Top, RHSWidth_Top=@RHSWidth_Top, RHSHeight_Top=@RHSHeight_Top, LHSWidth_Bottom=@LHSWidth_Bottom, LHSHeight_Bottom=@LHSHeight_Bottom, RHSWidth_Bottom=@RHSWidth_Bottom, RHSHeight_Bottom=@RHSHeight_Bottom, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id">
             <InsertParameters>
@@ -423,7 +462,7 @@
                 <asp:ControlParameter ControlID="ddlMounting" Name="Mounting" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="txtWidth" Name="Width" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtDrop" Name="Drop" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlControl" Name="ControlPosition" PropertyName="SelectedItem.Value" />
+                <asp:ControlParameter ControlID="lblControlPosition" Name="ControlPosition" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtControlLength" Name="ControlLength" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlHoldDown" Name="BottomHoldDown" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="lblCutOut_LeftTop" Name="CutOut_LeftTop" PropertyName="Text" />
@@ -457,7 +496,7 @@
                 <asp:ControlParameter ControlID="ddlMounting" Name="Mounting" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="txtWidth" Name="Width" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtDrop" Name="Drop" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlControl" Name="ControlPosition" PropertyName="SelectedItem.Value" />
+                <asp:ControlParameter ControlID="lblControlPosition" Name="ControlPosition" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtControlLength" Name="ControlLength" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlHoldDown" Name="BottomHoldDown" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="lblCutOut_LeftTop" Name="CutOut_LeftTop" PropertyName="Text" />

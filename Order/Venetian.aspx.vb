@@ -243,26 +243,42 @@ Partial Class Order_Venetian
                 Exit Sub
             End If
 
-            If ddlControl.SelectedValue = "" Then
-                Call MessageError(True, "CONTROL POSITION IS REQUIRED !")
-                ddlControl.CssClass = "form-select  is-invalid"
-                ddlControl.Focus()
-                Exit Sub
-            End If
-
-            If Not txtControlLength.Text = "" Then
-                If Not IsNumeric(txtControlLength.Text) Then
-                    Call MessageError(True, "CONTROL LENGTH SHOULD BE NUMERIC !")
-                    txtControlLength.CssClass = "form-control  is-invalid"
-                    txtControlLength.Focus()
+            Dim blindName As String = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
+            If blindName = "50mm Mockwood" Or blindName = "63mm Mockwood" Then
+                If ddlControlLift.SelectedValue = "" Then
+                    Call MessageError(True, "CONTROL LIFT IS REQUIRED !")
+                    ddlControlLift.CssClass = "form-select  is-invalid"
+                    ddlControlLift.Focus()
+                    Exit Sub
+                End If
+                If ddlControlTilt.SelectedValue = "" Then
+                    Call MessageError(True, "CONTROL TILT IS REQUIRED !")
+                    ddlControlTilt.CssClass = "form-select  is-invalid"
+                    ddlControlTilt.Focus()
+                    Exit Sub
+                End If
+            Else
+                If ddlControl.SelectedValue = "" Then
+                    Call MessageError(True, "CONTROL POSITION IS REQUIRED !")
+                    ddlControl.CssClass = "form-select  is-invalid"
+                    ddlControl.Focus()
                     Exit Sub
                 End If
 
-                If txtControlLength.Text < 1 Then
-                    Call MessageError(True, "PLEASE CHECK YOUR CONTROL LENGTH ORDER !")
-                    txtControlLength.CssClass = "form-control  is-invalid"
-                    txtControlLength.Focus()
-                    Exit Sub
+                If Not txtControlLength.Text = "" Then
+                    If Not IsNumeric(txtControlLength.Text) Then
+                        Call MessageError(True, "CONTROL LENGTH SHOULD BE NUMERIC !")
+                        txtControlLength.CssClass = "form-control  is-invalid"
+                        txtControlLength.Focus()
+                        Exit Sub
+                    End If
+
+                    If txtControlLength.Text < 1 Then
+                        Call MessageError(True, "PLEASE CHECK YOUR CONTROL LENGTH ORDER !")
+                        txtControlLength.CssClass = "form-control  is-invalid"
+                        txtControlLength.Focus()
+                        Exit Sub
+                    End If
                 End If
             End If
 
@@ -281,7 +297,7 @@ Partial Class Order_Venetian
                     Exit Sub
                 End If
 
-                If txtPelmetWidth.Text < 1 Then
+                If txtPelmetWidth.Text < 0 Then
                     Call MessageError(True, "PLEASE CHECK YOUR PELMET WIDTH ORDER !")
                     txtPelmetWidth.CssClass = "form-control  is-invalid"
                     txtPelmetWidth.Focus()
@@ -297,7 +313,7 @@ Partial Class Order_Venetian
                     Exit Sub
                 End If
 
-                If txtReturnLeft.Text < 1 Then
+                If txtReturnLeft.Text < 0 Then
                     Call MessageError(True, "PLEASE CHECK YOUR LEFT HAND RETURN ORDER !")
                     txtReturnLeft.CssClass = "form-control  is-invalid"
                     txtReturnLeft.Focus()
@@ -313,7 +329,7 @@ Partial Class Order_Venetian
                     Exit Sub
                 End If
 
-                If txtReturnRight.Text < 1 Then
+                If txtReturnRight.Text < 0 Then
                     Call MessageError(True, "PLEASE CHECK YOUR RIGHT HAND RETURN ORDER !")
                     txtReturnRight.CssClass = "form-control  is-invalid"
                     txtReturnRight.Focus()
@@ -329,7 +345,7 @@ Partial Class Order_Venetian
                     Exit Sub
                 End If
 
-                If txtTopLHSWidth.Text < 1 Then
+                If txtTopLHSWidth.Text < 0 Then
                     Call MessageError(True, "PLEASE CHECK YOUR TOP LHS WIDTH ORDER !")
                     txtTopLHSWidth.CssClass = "form-control  is-invalid"
                     txtTopLHSWidth.Focus()
@@ -344,7 +360,7 @@ Partial Class Order_Venetian
                     Exit Sub
                 End If
 
-                If txtTopLHSHeigth.Text < 1 Then
+                If txtTopLHSHeigth.Text < 0 Then
                     Call MessageError(True, "PLEASE CHECK YOUR TOP LHS HEIGHT ORDER !")
                     txtTopLHSHeigth.CssClass = "form-control  is-invalid"
                     txtTopLHSHeigth.Focus()
@@ -360,7 +376,7 @@ Partial Class Order_Venetian
                     Exit Sub
                 End If
 
-                If txtTopRHSWidth.Text < 1 Then
+                If txtTopRHSWidth.Text < 0 Then
                     Call MessageError(True, "PLEASE CHECK YOUR TOP RHS WIDTH ORDER !")
                     txtTopRHSWidth.CssClass = "form-control  is-invalid"
                     txtTopRHSWidth.Focus()
@@ -375,7 +391,7 @@ Partial Class Order_Venetian
                     Exit Sub
                 End If
 
-                If txtTopRHSHeigth.Text < 1 Then
+                If txtTopRHSHeigth.Text < 0 Then
                     Call MessageError(True, "PLEASE CHECK YOUR TOP RHS HEIGHT ORDER !")
                     txtTopRHSHeigth.CssClass = "form-control  is-invalid"
                     txtTopRHSHeigth.Focus()
@@ -390,7 +406,7 @@ Partial Class Order_Venetian
                     txtBottomLHSWidth.Focus()
                     Exit Sub
                 End If
-                If txtBottomLHSWidth.Text < 1 Then
+                If txtBottomLHSWidth.Text < 0 Then
                     Call MessageError(True, "PLEASE CHECK YOUR BOTTOM LHS WIDTH ORDER !")
                     txtBottomLHSWidth.CssClass = "form-control  is-invalid"
                     txtBottomLHSWidth.Focus()
@@ -405,7 +421,7 @@ Partial Class Order_Venetian
                     Exit Sub
                 End If
 
-                If txtBottomLHSHeigth.Text < 1 Then
+                If txtBottomLHSHeigth.Text < 0 Then
                     Call MessageError(True, "PLEASE CHECK YOUR BOTTOM LHS HEIGHT ORDER !")
                     txtBottomLHSHeigth.CssClass = "form-control  is-invalid"
                     txtBottomLHSHeigth.Focus()
@@ -421,7 +437,7 @@ Partial Class Order_Venetian
                     Exit Sub
                 End If
 
-                If txtBottomRHSWidth.Text < 1 Then
+                If txtBottomRHSWidth.Text < 0 Then
                     Call MessageError(True, "PLEASE CHECK YOUR BOTTOM RHS WIDTH ORDER !")
                     txtBottomRHSWidth.CssClass = "form-control  is-invalid"
                     txtBottomRHSWidth.Focus()
@@ -436,7 +452,7 @@ Partial Class Order_Venetian
                     Exit Sub
                 End If
 
-                If txtBottomRHSHeigth.Text < 1 Then
+                If txtBottomRHSHeigth.Text < 0 Then
                     Call MessageError(True, "PLEASE CHECK YOUR BOTTOM RHS HEIGHT ORDER !")
                     txtBottomRHSHeigth.CssClass = "form-control  is-invalid"
                     txtBottomRHSHeigth.Focus()
@@ -452,7 +468,7 @@ Partial Class Order_Venetian
                     Exit Sub
                 End If
 
-                If txtMarkUp.Text < 1 Then
+                If txtMarkUp.Text < 0 Then
                     Call MessageError(True, "PLEASE CHECK YOUR MARK UP ORDER !")
                     txtMarkUp.CssClass = "form-control  is-invalid"
                     txtMarkUp.Focus()
@@ -474,6 +490,13 @@ Partial Class Order_Venetian
                 Dim priceGroupName As String = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
                 Dim priceGroupId As String = publicCfg.GetPriceGroupId(designId, priceGroupName)
                 lblPriceGroupId.Text = UCase(priceGroupId).ToString()
+
+                If blindName = "50mm Mockwood" Or blindName = "63mm Mockwood" Then
+                    Dim mergeControl As String = ddlControlLift.SelectedValue & "|" & ddlControlTilt.SelectedValue
+                    lblControlPosition.Text = mergeControl
+                Else
+                    lblControlPosition.Text = ddlControl.SelectedValue
+                End If
 
                 If txtTopLHSWidth.Text = "" Then : txtTopLHSWidth.Text = 0 : End If
                 If txtTopLHSHeigth.Text = "" Then : txtTopLHSHeigth.Text = 0 : End If
@@ -509,21 +532,41 @@ Partial Class Order_Venetian
                         txtPelmetWidth.Text = txtWidth.Text + 20
                     End If
                     If ddlMounting.SelectedValue = "Reveal Fit" Then
-                        txtPelmetWidth.Text = txtWidth.Text + 7
+                        txtPelmetWidth.Text = txtWidth.Text + 10
                     End If
                 End If
 
+                
                 If ddlPelmetType.SelectedValue = "No Return" Then
                     txtReturnLeft.Text = "" : txtReturnRight.Text = ""
                 End If
+
                 If ddlPelmetType.SelectedValue = "With Return" Then
-                    txtReturnLeft.Text = "67" : txtReturnRight.Text = "67"
+                    ' txtReturnLeft.Text = "67" : txtReturnRight.Text = "67"
+                    If ddlMounting.SelectedValue = "Face Fit" Then
+                        txtReturnLeft.Text = "70" : txtReturnRight.Text = "70"
+                    End If
+                    If ddlMounting.SelectedValue = "Reveal Fit" Then
+                        txtReturnLeft.Text = "" : txtReturnRight.Text = ""
+                    End If
                 End If
+
                 If ddlPelmetType.SelectedValue = "Single Left Return" Then
-                    txtReturnLeft.Text = "67" : txtReturnRight.Text = ""
+                    If ddlMounting.SelectedValue = "Face Fit" Then
+                        txtReturnLeft.Text = "70" : txtReturnRight.Text = ""
+                    End If
+                    If ddlMounting.SelectedValue = "Reveal Fit" Then
+                        txtReturnLeft.Text = "" : txtReturnRight.Text = ""
+                    End If
                 End If
+
                 If ddlPelmetType.SelectedValue = "Single Right Return" Then
-                    txtReturnLeft.Text = "" : txtReturnRight.Text = "67"
+                    If ddlMounting.SelectedValue = "Face Fit" Then
+                        txtReturnLeft.Text = "" : txtReturnRight.Text = "70"
+                    End If    
+                    If ddlMounting.SelectedValue = "Reveal Fit" Then
+                        txtReturnLeft.Text = "" : txtReturnRight.Text = ""
+                    End If
                 End If
 
                 If Session("itemAction") = "AddItem" Or Session("itemAction") = "CopyItem" Then
@@ -573,6 +616,14 @@ Partial Class Order_Venetian
             Dim kitId As String = myData.Tables(0).Rows(0).Item("KitId").ToString()
             Dim blindId As String = myData.Tables(0).Rows(0).Item("BlindId").ToString()
             Dim style As String = myData.Tables(0).Rows(0).Item("ControlType").ToString()
+            Dim ControlPosition As String = myData.Tables(0).Rows(0).Item("ControlPosition").ToString()
+            If ControlPosition.Contains("|") Then
+                Dim ControlPositionParts As String() = ControlPosition.Split("|"c)
+                ddlControlLift.SelectedValue = ControlPositionParts(0)
+                ddlControlTilt.SelectedValue = ControlPositionParts(1)
+            Else
+               ddlControl.SelectedValue = ControlPosition
+            End If
 
             Call BindDataBlind()
             Call BindDataStyle(blindId)
@@ -587,7 +638,6 @@ Partial Class Order_Venetian
             ddlMounting.SelectedValue = myData.Tables(0).Rows(0).Item("Mounting").ToString()
             txtWidth.Text = myData.Tables(0).Rows(0).Item("Width").ToString()
             txtDrop.Text = myData.Tables(0).Rows(0).Item("Drop").ToString()
-            ddlControl.SelectedValue = myData.Tables(0).Rows(0).Item("ControlPosition").ToString()
             txtControlLength.Text = myData.Tables(0).Rows(0).Item("ControlLength").ToString()
             ddlHoldDown.SelectedValue = myData.Tables(0).Rows(0).Item("BottomHoldDown").ToString()
             ddlPelmetType.SelectedValue = myData.Tables(0).Rows(0).Item("PelmetType").ToString()
@@ -630,12 +680,23 @@ Partial Class Order_Venetian
         Try
             divDetail.Visible = False
             divStyle.Visible = False
+            divControl.Visible = False
+            divControlMock.Visible = False
+
 
             Dim blindName As String = String.Empty
             If Not ddlBlindType.SelectedValue = "" Then
                 blindName = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
                 If blindName = "50mm Timberstyle" Or blindName = "63mm Timberstyle" Then
                     divStyle.Visible = True
+                End If
+
+                If blindName = "50mm Mockwood" Or blindName = "63mm Mockwood" Then
+                    divControl.Visible = False
+                    divControlMock.Visible = True
+                Else
+                    divControl.Visible = True
+                    divControlMock.Visible = False
                 End If
             End If
             If Not Data = "" Then
@@ -755,6 +816,8 @@ Partial Class Order_Venetian
         txtWidth.CssClass = "form-control "
         txtDrop.CssClass = "form-control "
         ddlControl.CssClass = "form-select "
+        ddlControlLift.CssClass = "form-select "
+        ddlControlTilt.CssClass = "form-select "
         txtControlLength.CssClass = "form-control "
         ddlHoldDown.CssClass = "form-select "
         ddlPelmetType.CssClass = "form-select "

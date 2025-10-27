@@ -475,12 +475,29 @@
     </div>
 
     <!-- my custom script -->
-    <script text="text/javascript" src="/Content/dist/js/my/roller.js"></script>
     <script type="text/javascript">
 
         document.addEventListener("DOMContentLoaded", () => {
             loaderFadeOut();
         })
+
+        document.querySelectorAll('.form-control, .form-select').forEach(el => {
+            el.addEventListener('input', () => {
+                el.classList.remove('is-invalid');
+                resetError();
+            });
+            el.addEventListener('change', () => {
+                el.classList.remove('is-invalid');
+                resetError();
+            });
+        });
+
+        const msgError = document.getElementById("MainContent_divError");
+        const resetError=()=> {
+            if (msgError) {
+                msgError.classList.add("d-none");
+            }
+        }
 
         // Function untuk menampilkan pesan error dari code-behind
         function showPopUpWfMotorised(msg){
@@ -574,6 +591,7 @@
         }
     </script>
 
+<asp:Label runat="server" ID="lblUniqueId"></asp:Label>
     <div runat="server" visible="False">
         <asp:Label runat="server" ID="lblHeaderId"></asp:Label>
         <asp:Label runat="server" ID="lblItemId"></asp:Label>
@@ -590,7 +608,6 @@
         <asp:Label runat="server" ID="lblChainLength"></asp:Label>
 
         <asp:Label runat="server" ID="lblBlindNo"></asp:Label>
-        <asp:Label runat="server" ID="lblUniqueId"></asp:Label>
 
         <asp:Label runat="server" ID="lblTubeSize"></asp:Label>
 
@@ -620,7 +637,7 @@
         
 
         <!-- this is for updating the DB Linked 2 (Dep) first -->
-        <asp:SqlDataSource ID="sdsDB2Depfirst" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" UpdateCommand="UPDATE OrderDetails SET FabricId=@FabricId, PriceGroupId=@PriceGroupId, RollDirection=@RollDirection WHERE BlindNo='Blind 1' Or BlindNo='Blind 2' AND UniqueId=@UniqueId AND Active=1">
+        <asp:SqlDataSource ID="sdsDB2Depfirst" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" UpdateCommand="UPDATE OrderDetails SET FabricId=@FabricId, PriceGroupId=@PriceGroupId, RollDirection=@RollDirection WHERE BlindNo IN ('Blind 1', 'Blind 2') AND UniqueId=@UniqueId AND Active=1">
             <UpdateParameters>
                 <asp:ControlParameter ControlID="lblUniqueId" Name="UniqueId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlFabricColour" Name="FabricId" PropertyName="SelectedItem.Value" />
@@ -629,11 +646,12 @@
             </UpdateParameters>
         </asp:SqlDataSource>
         <!-- this is for updating the DB Linked 2 (Ind) first -->
-        <asp:SqlDataSource ID="sdsDB2Indfirst" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" UpdateCommand="UPDATE OrderDetails SET FabricId=@FabricId, PriceGroupId=@PriceGroupId WHERE BlindNo='Blind 1' Or BlindNo='Blind 2' AND UniqueId=@UniqueId AND Active=1">
+        <asp:SqlDataSource ID="sdsDB2Indfirst" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" UpdateCommand="UPDATE OrderDetails SET FabricId=@FabricId, PriceGroupId=@PriceGroupId, RollDirection=@RollDirection WHERE BlindNo IN ('Blind 1', 'Blind 2') AND UniqueId=@UniqueId AND Active=1">
             <UpdateParameters>
                 <asp:ControlParameter ControlID="lblUniqueId" Name="UniqueId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlFabricColour" Name="FabricId" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="lblPriceGroupId" Name="PriceGroupId" PropertyName="Text" />
+                <asp:ControlParameter ControlID="ddlRoll" Name="RollDirection" PropertyName="SelectedItem.Value" />
             </UpdateParameters>
         </asp:SqlDataSource>
 
@@ -647,11 +665,12 @@
             </UpdateParameters>
         </asp:SqlDataSource>
         <!-- this is for updating the DB Linked 2 (Ind) second -->
-        <asp:SqlDataSource ID="sdsDB2Indsecond" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" UpdateCommand="UPDATE OrderDetails SET FabricId=@FabricId, PriceGroupId=@PriceGroupId WHERE BlindNo IN ('Blind 3', 'Blind 4') AND UniqueId=@UniqueId AND Active=1">
+        <asp:SqlDataSource ID="sdsDB2Indsecond" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" UpdateCommand="UPDATE OrderDetails SET FabricId=@FabricId, PriceGroupId=@PriceGroupId, RollDirection=@RollDirection WHERE BlindNo IN ('Blind 3', 'Blind 4') AND UniqueId=@UniqueId AND Active=1">
             <UpdateParameters>
                 <asp:ControlParameter ControlID="lblUniqueId" Name="UniqueId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlFabricColour" Name="FabricId" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="lblPriceGroupId" Name="PriceGroupId" PropertyName="Text" />
+                <asp:ControlParameter ControlID="ddlRoll" Name="RollDirection" PropertyName="SelectedItem.Value" />
             </UpdateParameters>
         </asp:SqlDataSource>
 

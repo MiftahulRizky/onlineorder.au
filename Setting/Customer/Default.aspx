@@ -51,7 +51,8 @@
     </div>    
 
     <script type="text/javascript">
-        let uriMethod = '/Methods/Setting/Customer/CustomerMethod.aspx'; 
+        let uriMethod = '/Methods/Setting/Customer/CustomerMethod.aspx';
+        let roleName = '<%= Session("RoleName") %>';
     </script>
     <script src="/Scripts/Setting/Customer/Default.js?<%= DateTime.Now.Ticks %>"></script>
 </asp:Content>

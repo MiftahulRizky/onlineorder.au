@@ -15,6 +15,7 @@ Partial Class Methods_Setting_Cutomer_CustomerMethod
     Shared publicCfg As New PublicConfig()
 
     Public Class ServerSideParams
+        Public Property rolename As String
         ' Public Property designid As String
         ' Public Property blindid As String
         
@@ -98,7 +99,7 @@ Partial Class Methods_Setting_Cutomer_CustomerMethod
         Dim totalRecords As Integer = 0
         Dim filteredRecords As Integer = 0
         Dim resultList As New List(Of ServerSideReturnRow)()
-
+        
         
         Try
             Dim connStr As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
@@ -108,7 +109,7 @@ Partial Class Methods_Setting_Cutomer_CustomerMethod
                 
 
                 ' --- 1. Query untuk menghitung Total Records (tanpa filter DataTables, hanya filter awal Anda) ---
-                Dim countSql As String = "SELECT Customers.*, CASE WHEN Customers.CashSale = 1 THEN 'Yes' ELSE 'No' END AS CustomerCashSale, CASE WHEN Customers.OnStop = 1 THEN 'Yes' ELSE 'No' END AS CustomerOnStop, CASE WHEN Customers.MinimumOrderSurcharge = 1 THEN 'Yes' ELSE 'No' END AS CustomerMinSurcharge, CustomerGroups.Name AS CustomerGroup, CASE WHEN Customers.Active = 1 THEN 'Yes' WHEN Customers.Active = 0 THEN 'No' ELSE 'Error' END AS DataActive FROM Customers LEFT JOIN CustomerGroups ON CustomerGroups.Id = Customers.[Group]"
+                Dim countSql As String = "SELECT COUNT(*) FROM Customers LEFT JOIN CustomerGroups ON CustomerGroups.Id = Customers.[Group] WHERE 1 = 1"
                 Using countCmd As New SqlCommand(countSql, conn)
                     ' countCmd.Parameters.AddWithValue("@DesignId", params.designid)
                     ' countCmd.Parameters.AddWithValue("@BlindId", params.blindid)
@@ -118,9 +119,9 @@ Partial Class Methods_Setting_Cutomer_CustomerMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Customers.*, CASE WHEN Customers.CashSale = 1 THEN 'Yes' ELSE 'No' END AS CustomerCashSale, CASE WHEN Customers.OnStop = 1 THEN 'Yes' ELSE 'No' END AS CustomerOnStop, CASE WHEN Customers.MinimumOrderSurcharge = 1 THEN 'Yes' ELSE 'No' END AS CustomerMinSurcharge, CustomerGroups.Name AS CustomerGroup, CASE WHEN Customers.Active = 1 THEN 'Yes' WHEN Customers.Active = 0 THEN 'No' ELSE 'Error' END AS DataActive")
+                sqlBuilder.AppendLine("SELECT Customers.Id, Customers.ExactId, Customers.Name, Customers.CashSale AS CustomerCashSale, Customers.OnStop As CustomerOnStop, Customers.MinimumOrderSurcharge As CustomerMinSurcharge, CustomerGroups.Name AS CustomerGroup, Customers.Active As DataActive")
                 sqlBuilder.AppendLine("FROM Customers LEFT JOIN CustomerGroups ON CustomerGroups.Id = Customers.[Group]")
-                ' sqlBuilder.AppendLine("WHERE")
+                sqlBuilder.AppendLine("WHERE 1 = 1")
 
                 Dim whereClause As New System.Text.StringBuilder()
                 Dim cmd As New SqlCommand(sqlBuilder.ToString(), conn)
@@ -132,7 +133,7 @@ Partial Class Methods_Setting_Cutomer_CustomerMethod
                 ' --- Tambahkan Global Search DataTables (jika ada) ---
                 If Not String.IsNullOrEmpty(params.search.value) Then
                     Dim searchValue As String = "%" & params.search.value.Trim() & "%"
-                    whereClause.AppendLine(" Where ( Customers.Id LIKE @SearchValue OR Customers.MicronetId LIKE @SearchValue OR Customers.ExactId LIKE @SearchValue OR Customers.Name LIKE @SearchValue OR Customers.Type LIKE @SearchValue OR Customers.Name LIKE @SearchValue)")
+                    whereClause.AppendLine(" AND ( Customers.Id LIKE @SearchValue OR Customers.MicronetId LIKE @SearchValue OR Customers.ExactId LIKE @SearchValue OR Customers.Name LIKE @SearchValue OR Customers.Type LIKE @SearchValue OR Customers.Name LIKE @SearchValue)")
                     cmd.Parameters.AddWithValue("@SearchValue", searchValue)
                 End If
 
@@ -150,6 +151,8 @@ Partial Class Methods_Setting_Cutomer_CustomerMethod
 
                 ' ... kode sebelumnya ...
                 Dim orderByClause As New System.Text.StringBuilder()
+                Dim keyOrderBy As String = " ORDER BY Customers.Name ASC"
+                If params.rolename = "Administrator" Then keyOrderBy = " ORDER BY CASE WHEN Customers.Id = 'DEFAULT' THEN 0 ELSE 1 END, Customers.Name ASC"
                 If params.order IsNot Nothing AndAlso params.order.Count > 0 Then
                     ' Perbaiki bagian ini:
                     Dim columnMap As New Dictionary(Of Integer, String) From { _
@@ -159,17 +162,18 @@ Partial Class Methods_Setting_Cutomer_CustomerMethod
                     }
                     Dim orderColumnIndex As Integer = params.order(0).column
                     Dim orderDirection As String = params.order(0).dir.ToUpper()
+                   
 
                     If columnMap.ContainsKey(orderColumnIndex) AndAlso columnMap(orderColumnIndex) <> "No" Then
                         ' Perbaiki bagian ini:
                         orderByClause.AppendLine(" ORDER BY " & columnMap(orderColumnIndex) & " " & orderDirection)
                     Else
                         ' Default order jika kolom No atau kolom yang tidak bisa di-sort dipilih
-                        orderByClause.AppendLine(" ORDER BY Customers.Name ASC")
+                        orderByClause.AppendLine(keyOrderBy)
                     End If
                 Else
                     ' Default order jika tidak ada order dari DataTables
-                    orderByClause.AppendLine(" ORDER BY Customers.Name ASC")
+                    orderByClause.AppendLine(keyOrderBy)
                 End If
                 sqlBuilder.Append(orderByClause.ToString())
                 
@@ -192,6 +196,7 @@ Partial Class Methods_Setting_Cutomer_CustomerMethod
                             .CustomerGroup = reader("CustomerGroup").ToString(),
                             .CustomerCashSale = reader("CustomerCashSale").ToString(),
                             .CustomerOnStop = reader("CustomerOnStop").ToString(),
+                            .CustomerMinSurcharge = reader("CustomerMinSurcharge").ToString(),
                             .DataActive = reader("DataActive").ToString()
                         }
                         resultList.Add(row)

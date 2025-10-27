@@ -14,6 +14,7 @@ const bindCustomer = (params) => {
   const paramData = {
     // designid: designid,
     // blindid: blindid,
+    rolename: roleName,
   };
 
   tableData = $(params).DataTable({
@@ -78,25 +79,53 @@ const bindCustomer = (params) => {
       { data: "Id", width: "10%" },
       { data: "ExactId", width: "10%" },
       { data: "Name", width: "35%" },
-      // {
-      //   data: "Name",
-      //   width: "55%",
-      //   orderable: false,
-      //   render: function (data, type, row) {
-      //     let icn = "ti-circle-check";
-      //     let color = "text-success";
-      //     if (row.Active == "False") {
-      //       icn = "ti-circle-x";
-      //       color = "text-danger";
-      //     }
-      //     return `<i class="ti fs-3 me-1 ${icn} ${color}"></i>${data}`;
-      //   },
-      // },
       { data: "CustomerGroup", width: "10%" },
-      { data: "CustomerCashSale", width: "5%" },
-      { data: "CustomerOnStop", width: "5%" },
-      { data: "CustomerMinSurcharge", width: "10%" },
-      { data: "DataActive", width: "5%" },
+      {
+        data: "CustomerCashSale",
+        width: "5%",
+        orderable: false,
+        render: function (data, type, row) {
+          let retVal = "No";
+          if (row.CustomerCashSale == "1" || row.CustomerCashSale == "True")
+            retVal = "Yes";
+          return `<div class="text-center">${retVal}</div>`;
+        },
+      },
+      {
+        data: "CustomerOnStop",
+        width: "5%",
+        orderable: false,
+        render: function (data, type, row) {
+          let retVal = "No";
+          if (row.CustomerOnStop == "1" || row.CustomerOnStop == "True")
+            retVal = "Yes";
+          return `<div class="text-center">${retVal}</div>`;
+        },
+      },
+      {
+        data: "CustomerMinSurcharge",
+        width: "10%",
+        orderable: false,
+        render: function (data, type, row) {
+          let retVal = "No";
+          if (
+            row.CustomerMinSurcharge == "1" ||
+            row.CustomerMinSurcharge == "True"
+          )
+            retVal = "Yes";
+          return `<div class="text-center">${retVal}</div>`;
+        },
+      },
+      {
+        data: "DataActive",
+        width: "5%",
+        orderable: false,
+        render: function (data, type, row) {
+          let retVal = "No";
+          if (row.DataActive == "1" || row.DataActive == "True") retVal = "Yes";
+          return `<div class="text-center">${retVal}</div>`;
+        },
+      },
       {
         data: null,
         width: "5%",
@@ -118,27 +147,20 @@ const checkSessionCustomer = () => {
 // --------------------------------------------------||Additional data table styling ||-------------------------------------------
 const dropdownActionButton = (data, type, row) => {
   return `<div class="dropdown text-center">
-            <button class="btn btn-sm btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              action
+            <button class="border-0 bg-transparent dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
             </button>
               <ul class="dropdown-menu dropdown-menu-end">
-                <span class="dropdown-header">Basic Action</span>
                 <li>
-                  <a class="dropdown-item" href="javascript:void(0)" id="btn-edit" data-id="${row.Id}">
-                    <i class="ti ti-edit me-1 opacity-50 fs-2" ></i>Edit / Detail
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item text-danger" href="javascript:void(0)" id="btn-delete" data-id="${row.Id}" data-name="${row.Name}">
-                    <i class="ti ti-trash-x me-1 opacity-50 fs-2"></i>Delete
+                  <a class="dropdown-item" href="/setting/customer/detail" id="btn-detail" data-id="${row.Id}">
+                    <i class="ti ti-info-square-rounded me-1 opacity-50 fs-2" ></i>Detail
                   </a>
                 </li>
 
                 <div class="dropdown-divider"></div>
-                <span class="dropdown-header">configuration</span>
                 <li>
-                  <a class="dropdown-item " href="javascript:void(0)" id="btn-switch" data-id="${row.Id}" data-name="${row.Name}" data-active="${row.DataActive}">
-                    <i class="ti ti-switch-horizontal me-1 opacity-50 fs-2"></i>Switch Activation
+                  <a class="dropdown-item " href="javascript:void(0)" id="btn-logs" data-id="${row.Id}">
+                    <i class="ti ti-logout me-1 opacity-50 fs-2"></i>Logs
                   </a>
                 </li>
                 
