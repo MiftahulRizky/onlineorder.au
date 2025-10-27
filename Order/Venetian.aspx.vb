@@ -536,18 +536,37 @@ Partial Class Order_Venetian
                     End If
                 End If
 
+                
                 If ddlPelmetType.SelectedValue = "No Return" Then
                     txtReturnLeft.Text = "" : txtReturnRight.Text = ""
                 End If
+
                 If ddlPelmetType.SelectedValue = "With Return" Then
                     ' txtReturnLeft.Text = "67" : txtReturnRight.Text = "67"
-                    txtReturnLeft.Text = "70" : txtReturnRight.Text = "70"
+                    If ddlMounting.SelectedValue = "Face Fit" Then
+                        txtReturnLeft.Text = "70" : txtReturnRight.Text = "70"
+                    End If
+                    If ddlMounting.SelectedValue = "Reveal Fit" Then
+                        txtReturnLeft.Text = "" : txtReturnRight.Text = ""
+                    End If
                 End If
+
                 If ddlPelmetType.SelectedValue = "Single Left Return" Then
-                    txtReturnLeft.Text = "70" : txtReturnRight.Text = ""
+                    If ddlMounting.SelectedValue = "Face Fit" Then
+                        txtReturnLeft.Text = "70" : txtReturnRight.Text = ""
+                    End If
+                    If ddlMounting.SelectedValue = "Reveal Fit" Then
+                        txtReturnLeft.Text = "" : txtReturnRight.Text = ""
+                    End If
                 End If
+
                 If ddlPelmetType.SelectedValue = "Single Right Return" Then
-                    txtReturnLeft.Text = "" : txtReturnRight.Text = "70"
+                    If ddlMounting.SelectedValue = "Face Fit" Then
+                        txtReturnLeft.Text = "" : txtReturnRight.Text = "70"
+                    End If    
+                    If ddlMounting.SelectedValue = "Reveal Fit" Then
+                        txtReturnLeft.Text = "" : txtReturnRight.Text = ""
+                    End If
                 End If
 
                 If Session("itemAction") = "AddItem" Or Session("itemAction") = "CopyItem" Then
