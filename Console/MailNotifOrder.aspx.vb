@@ -33,14 +33,14 @@ Partial Class Console_MailNotifOrder
                                 Dim daysDifference As Integer = (currentDate - createdDate.Date).Days ' Hitung selisih hari
                                 Dim CekMailPush As DataSet = publicCfg.GetListData("SELECT * FROM MailPushOrderDraft WHERE Email = '"+ reader("Email").ToString() +"' AND OrdId = '"+ reader("OrdId").ToString() +"' ")
                                 '#SendEmail
-                                If daysDifference < 3 Then
+                                If daysDifference > 3 Then
                                     If CekMailPush.Tables.Count > 0 AndAlso CekMailPush.Tables(0).Rows.Count < 3 Then
                                         InsertMailPushOrderDraft(reader("OrdId").ToString(),reader("Email").ToString(),reader("CreatedDate").ToString())
                                         ' Kirim email
                                         SendEmail(email, cc, del, orderno, orderCust, appId)
                                     End If
                                 End If
-                                '#delete OrderDraft after 10 days
+                                '#delete OrderDraft If > 10 days
                                 If daysDifference > 10 Then
                                     deleteOrderDraft(reader("OrdId").ToString())
                                 End If
@@ -54,6 +54,7 @@ Partial Class Console_MailNotifOrder
                     Console.WriteLine("Error Query: " & ex.ToString())
                     ' Optionally re-throw with a more informative ToString()
                     Throw New Exception("Error Query: " & ex.ToString())
+                    publicCfg.MailError("", Page.Title, "Mail Push Order Error | Page_Load !", ex.ToString())
                 End Try
             End Using
         End Using
@@ -66,7 +67,7 @@ Partial Class Console_MailNotifOrder
             Using myCmd As SqlCommand = New SqlCommand("INSERT INTO MailPushOrderDraft (OrdId, Email, DraftDate) VALUES (@OrdId, @Email, @DraftDate)")
                 myCmd.Parameters.AddWithValue("@OrdId", OrdId)
                 myCmd.Parameters.AddWithValue("@Email", Email)
-                myCmd.Parameters.AddWithValue("@DraftDate", DraftDate)
+                myCmd.Parameters.Add("@DraftDate", SqlDbType.DateTime).Value = DraftDate
                 myCmd.Connection = thisConn
                 thisConn.Open()
                 myCmd.ExecuteNonQuery()
@@ -74,6 +75,7 @@ Partial Class Console_MailNotifOrder
             End Using
         End Using
     End Sub
+
 
     Public Sub deleteOrderDraft(OrdId As String)
         Using thisConn As SqlConnection = New SqlConnection(myConn)
@@ -136,10 +138,10 @@ Partial Class Console_MailNotifOrder
             Dim myMail As New MailMessage
             myMail.Subject = mailSubject
             myMail.From = New MailAddress(mailServer, mailAlias)
-            ' myMail.To.Add(toEmail)
-            myMail.To.Add(cc)
-            ' myMail.CC.Add(mailCC)
-            myMail.CC.Add(cc)
+            myMail.To.Add(toEmail)
+            ' myMail.To.Add(cc)
+            myMail.CC.Add(mailCC)
+            ' myMail.CC.Add(cc)
             myMail.Body = mailBody
             myMail.IsBodyHtml = True
 
@@ -155,6 +157,7 @@ Partial Class Console_MailNotifOrder
             Console.WriteLine("Error sending email: " & ex.ToString())
             ' Optionally re-throw with a more informative message
             Throw New Exception("Failed to send email notification: " & ex.ToString())
+            publicCfg.MailError("", Page.Title, "Mail Push Order Error | SendEmail !", ex.ToString())
         End Try
     End Sub
 

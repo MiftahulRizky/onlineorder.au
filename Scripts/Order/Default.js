@@ -449,7 +449,6 @@ const bindOrders = (status, active, storetype, params) => {
                 <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
               </button>
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <span class="dropdown-header">Basic Action</span>
                 <li>
                   <a class="dropdown-item" href="javascript:void(0)" id="btnDetailOrder" data-id="${row.Id}">
                     <i class="ti ti-edit me-1 fs-2 opacity-50"></i>Edit / Detail
@@ -466,7 +465,6 @@ const bindOrders = (status, active, storetype, params) => {
                   </a>
                 </li>
                 <div class="dropdown-divider"></div>
-                <span class="dropdown-header">Config & info</span>
                 <li>
                   <a class="dropdown-item" href="javascript:void(0)" id="btnDateInfo" data-id="${row.Id}">
                     <i class="ti ti-calendar-event me-1 fs-2 opacity-50"></i>Date Information

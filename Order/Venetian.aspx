@@ -190,7 +190,7 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-3 row">
+                                <div class="mb-3 row" runat="server" id="divPelmetSize">
                                     <label class="col-lg-3 col-form-label">PELMET SIZE</label>
                                     <div class="col-lg-2 col-md-12 col-sm-12">
                                         <asp:DropDownList runat="server" ID="ddlPelmetSize" CssClass="form-select">
