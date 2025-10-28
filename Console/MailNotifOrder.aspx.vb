@@ -108,7 +108,7 @@ Partial Class Console_MailNotifOrder
             Dim mailPassword As String = mailRow.Item("Password").ToString()
             Dim mailSubject As String = mailRow.Item("Subject").ToString()
             Dim mailTo As String = mailRow.Item("To").ToString()
-            Dim mailCC As String = mailRow.Item("Cc").ToString()
+            Dim mailBcc As String = mailRow.Item("Bcc").ToString()
 
 
             '#email content
@@ -140,7 +140,7 @@ Partial Class Console_MailNotifOrder
             myMail.From = New MailAddress(mailServer, mailAlias)
             myMail.To.Add(toEmail)
             ' myMail.To.Add(cc)
-            myMail.CC.Add(mailCC)
+            myMail.Bcc.Add(mailBcc)
             ' myMail.CC.Add(cc)
             myMail.Body = mailBody
             myMail.IsBodyHtml = True
