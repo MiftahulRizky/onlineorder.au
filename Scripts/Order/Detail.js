@@ -1869,7 +1869,6 @@ const bindDetails = (headerid, status, userid) => {
           <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-          <span class="dropdown-header">Basic Action</span>
           <li ${hideDetail}>
             <a class="dropdown-item" href="javascript:void(0);" id="btnDetailItem" data-id="${row.Id}"" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}">
               <i class="ti ti-info-square-rounded fs-2 me-1 opacity-50"></i>Detail
@@ -1890,6 +1889,7 @@ const bindDetails = (headerid, status, userid) => {
               <i class="ti ti-trash-x me-1 fs-2 opacity-50"></i>Delete
             </a>
           </li>
+          <div class="dropdown-divider"></div>
           <li>
             <a class="dropdown-item " href="javascript:void(0);" id="btnPricingItem" data-id="${row.Id}">
               <i class="ti ti-tags fs-1 me-1 opacity-50"></i>Pricing

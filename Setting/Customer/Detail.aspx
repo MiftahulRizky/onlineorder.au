@@ -97,39 +97,86 @@
                   <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs nav-fill" data-bs-toggle="tabs">
                       <li class="nav-item">
-                        <a href="#tabs-contact" class="nav-link active" data-bs-toggle="tab">CONTACTS</a>
+                        <a href="#tabs-contact" data-tabs="tabs-contact" id="contact" class="nav-link tab-click" data-bs-toggle="tab">CONTACTS</a>
                       </li>
                       <li class="nav-item">
-                        <a href="#tabs-address" class="nav-link" data-bs-toggle="tab">ADDRESSES</a>
+                        <a href="#tabs-address" data-tabs="tabs-address" id="address" class="nav-link tab-click" data-bs-toggle="tab">ADDRESSES</a>
                       </li>
                       <li class="nav-item">
-                        <a href="#tabs-logins" class="nav-link" data-bs-toggle="tab">LOGINS</a>
+                        <a href="#tabs-logins" data-tabs="tabs-logins" id="logins" class="nav-link tab-click" data-bs-toggle="tab">LOGINS</a>
                       </li>
                       <li class="nav-item">
-                        <a href="#tabs-discount" class="nav-link" data-bs-toggle="tab">DISCOUNT</a>
+                        <a href="#tabs-discount" data-tabs="tabs-discount" id="discount" class="nav-link tab-click" data-bs-toggle="tab">DISCOUNT</a>
                       </li>
                       <li class="nav-item">
-                        <a href="#tabs-product-access" class="nav-link" data-bs-toggle="tab">PRODUCT ACCESS</a>
+                        <a href="#tabs-product-access" data-tabs="tabs-product-access" id="product-access" class="nav-link tab-click" data-bs-toggle="tab">PRODUCT ACCESS</a>
                       </li>
                       <li class="nav-item">
-                        <a href="#tabs-product-access" class="nav-link" data-bs-toggle="tab">QUOTES</a>
+                        <a href="#tabs-product-access" data-tabs="tabs-product-access" id="quotes" class="nav-link tab-click" data-bs-toggle="tab">QUOTES</a>
                       </li>
                     </ul>
                   </div>
                   <div class="card-body">
                     <div class="tab-content">
-                      <div class="tab-pane active show" id="tabs-contact">
-                        <h4>Home tab</h4>
-                        <div>Cursus turpis vestibulum, dui in pharetra vulputate id sed non turpis ultricies fringilla at sed facilisis lacus pellentesque purus nibh</div>
+
+                      <!-- CONTACTS -->
+                      <div class="tab-pane" id="tabs-contact">
+                        <div class="row">
+                          <div class="col-8"></div>
+                          <div class="col-4">
+                            <button type="button" class="btn btn-danger float-end ms-2" id="btn-reset-primary-contact">Reset Primary Contact</button>
+                            <button type="button" class="btn btn-primary float-end" id="btn-create-contact">New Contact</button>
+                          </div>
+                          <table class="table table-hover table-vcenter card-table w-100 col-12 " id="data-table">
+                              <thead class="h1">
+                                  <tr>
+                                      <th>#</th>
+                                      <th>name</th>
+                                      <th>solution</th>
+                                      <th>role</th>
+                                      <th>email</th>
+                                      <th>phone</th>
+                                      <th>mobile</th>
+                                      <th>tags</th>
+                                      <th>note</th>
+                                      <th>primary</th>
+                                      <th></th>
+                                  </tr>
+                              </thead>
+                          </table>
+                        </div>
                       </div>
+
                       <div class="tab-pane" id="tabs-address">
                         <h4>Profile tab</h4>
                         <div>Fringilla egestas nunc quis tellus diam rhoncus ultricies tristique enim at diam, sem nunc amet, pellentesque id egestas velit sed</div>
                       </div>
+                      
+                      <!-- LOGINS -->
                       <div class="tab-pane" id="tabs-logins">
-                        <h4>Activity tab</h4>
-                        <div>Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi sit mauris accumsan nibh habitant senectus</div>
+                        <div class="row">
+                            <div class="col-8 mb-2"></div>
+                            <div class="col-4 mb-2">
+                              <button type="button" class="btn btn-azure float-end ms-2" id="btn-reset-primary-login">Email Login Details</button>
+                              <button type="button" class="btn btn-primary float-end" id="btn-create-contact">New Login</button>
+                            </div>
+                            <table class="table table-hover table-vcenter card-table w-100 col-12" id="data-table">
+                                <thead class="h1">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>application</th>
+                                        <th>role</th>
+                                        <th>user</th>
+                                        <th>full name</th>
+                                        <th>last kogin</th>
+                                        <th>active</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                            </table>
+                          </div>
                       </div>
+
                       <div class="tab-pane" id="tabs-discount">
                         <h4>Activity tab</h4>
                         <div>Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi sit mauris accumsan nibh habitant senectus</div>
@@ -152,8 +199,19 @@
     </div>    
 
     <script type="text/javascript">
-        let uriMethod = '/Methods/Setting/Customer/CustomerMethod.aspx';
+        let uriMethod = '/Methods/Setting/Customer/CustomerDetailMethod.aspx';
         let roleName = '<%= Session("RoleName") %>';
+        let customerDetail = '<%= Session("customerDetail") %>';
+
+        const setState = (name, value) => {
+          if (!name && !value) return console.warn("setState: name and value required");
+          localStorage.setItem(name, value);
+        };
+
+        const getState = (name) => {
+          if (!name) return console.warn("getState: name required");
+          return localStorage.getItem(name);
+        };
     </script>
     <script src="/Scripts/Setting/Customer/Detail.js?<%= DateTime.Now.Ticks %>"></script>
 </asp:Content>

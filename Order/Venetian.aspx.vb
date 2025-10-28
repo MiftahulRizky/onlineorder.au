@@ -544,7 +544,7 @@ Partial Class Order_Venetian
                 If ddlPelmetType.SelectedValue = "With Return" Then
                     ' txtReturnLeft.Text = "67" : txtReturnRight.Text = "67"
                     If ddlMounting.SelectedValue = "Face Fit" Then
-                        txtReturnLeft.Text = "70" : txtReturnRight.Text = "70"
+                        txtReturnLeft.Text = "77" : txtReturnRight.Text = "77"
                     End If
                     If ddlMounting.SelectedValue = "Reveal Fit" Then
                         txtReturnLeft.Text = "" : txtReturnRight.Text = ""
@@ -553,7 +553,7 @@ Partial Class Order_Venetian
 
                 If ddlPelmetType.SelectedValue = "Single Left Return" Then
                     If ddlMounting.SelectedValue = "Face Fit" Then
-                        txtReturnLeft.Text = "70" : txtReturnRight.Text = ""
+                        txtReturnLeft.Text = "77" : txtReturnRight.Text = ""
                     End If
                     If ddlMounting.SelectedValue = "Reveal Fit" Then
                         txtReturnLeft.Text = "" : txtReturnRight.Text = ""
@@ -562,7 +562,7 @@ Partial Class Order_Venetian
 
                 If ddlPelmetType.SelectedValue = "Single Right Return" Then
                     If ddlMounting.SelectedValue = "Face Fit" Then
-                        txtReturnLeft.Text = "" : txtReturnRight.Text = "70"
+                        txtReturnLeft.Text = "" : txtReturnRight.Text = "77"
                     End If    
                     If ddlMounting.SelectedValue = "Reveal Fit" Then
                         txtReturnLeft.Text = "" : txtReturnRight.Text = ""
@@ -682,6 +682,7 @@ Partial Class Order_Venetian
             divStyle.Visible = False
             divControl.Visible = False
             divControlMock.Visible = False
+            divPelmetSize.Visible = False
 
 
             Dim blindName As String = String.Empty
@@ -693,9 +694,11 @@ Partial Class Order_Venetian
 
                 If blindName = "50mm Mockwood" Or blindName = "63mm Mockwood" Then
                     divControl.Visible = False
+                    divPelmetSize.Visible = False
                     divControlMock.Visible = True
                 Else
                     divControl.Visible = True
+                    divPelmetSize.Visible = True
                     divControlMock.Visible = False
                 End If
             End If

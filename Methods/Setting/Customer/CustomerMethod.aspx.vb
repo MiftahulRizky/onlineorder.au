@@ -92,6 +92,11 @@ Partial Class Methods_Setting_Cutomer_CustomerMethod
         Public Property success As String
     End Class
 
+    <WebMethod(EnableSession:=True)>
+    Public Shared Sub SetSessionOpenCustomerDetail(ByVal id As String)
+        HttpContext.Current.Session("customerDetail") = id 
+    End Sub
+
 
     <WebMethod()>
     Public Shared Function CustomerServerSide(params As ServerSideParams) As DataTableResponse

@@ -3,8 +3,18 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log(uriMethod);
 });
 // ==================================================|| EVENTS ||==================================================
+// button detail
+document
+  .querySelector("#card-table #data-table")
+  .addEventListener("click", (e) => {
+    const btn = e.target.closest("#btn-detail");
+    if (btn) {
+      const id = btn.dataset.id;
+      handlerOpenDetail(id);
+    }
+  });
 // ==================================================|| FUNCTIONS ||===============================================
-// ----------------------------------------------|| Binding Functions ||--------------------------------------------
+// ----------------------------------------------|| Binding Functions ||-------------------------------------------
 let tableData;
 const bindCustomer = (params) => {
   if (tableData) {
@@ -137,6 +147,25 @@ const bindCustomer = (params) => {
     ],
   });
 };
+// ----------------------------------------------|| Handler Functions ||--------------------------------------------
+const handlerOpenDetail = async (id) => {
+  try {
+    const response = await fetch(`${uriMethod}/SetSessionOpenCustomerDetail`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ id }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+    }
+
+    // Jika sukses, arahkan ke halaman detail order
+    window.location.href = "/setting/customer/detail";
+  } catch (error) {
+    isError("Gagal menyetel session: " + error.message);
+  }
+};
 // ----------------------------------------------|| Other Functions ||----------------------------------------------
 const checkSessionCustomer = () => {
   // loaderFadeOut();
@@ -152,7 +181,7 @@ const dropdownActionButton = (data, type, row) => {
             </button>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
-                  <a class="dropdown-item" href="/setting/customer/detail" id="btn-detail" data-id="${row.Id}">
+                  <a class="dropdown-item" href="javascript:void(0)" id="btn-detail" data-id="${row.Id}">
                     <i class="ti ti-info-square-rounded me-1 opacity-50 fs-2" ></i>Detail
                   </a>
                 </li>
