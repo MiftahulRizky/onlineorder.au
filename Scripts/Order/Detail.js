@@ -1868,7 +1868,7 @@ const bindDetails = (headerid, status, userid) => {
         <button class="border-0 bg-transparent dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
         </button>
-        <ul class="dropdown-menu dropdown-menu-end">
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
           <li ${hideDetail}>
             <a class="dropdown-item" href="javascript:void(0);" id="btnDetailItem" data-id="${row.Id}"" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}">
               <i class="ti ti-info-square-rounded fs-2 me-1 opacity-50"></i>Detail
