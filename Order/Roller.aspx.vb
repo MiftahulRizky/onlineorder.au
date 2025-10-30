@@ -1713,13 +1713,11 @@ Partial Class Order_Roller
                     If MotorStyle = "Alpha 1NM Sml" Then
                         ddlMotorCharger.Items.Clear()
                         ddlMotorCharger.Items.Add(New ListItem("ALPHA", "Alpha"))
-                        ddlMotorCharger.Items.Add(New ListItem("USB-C", "USB-C"))
                     End If
                     
                     If MotorStyle = "Alpha 2NM Std" Then
                         ddlMotorCharger.Items.Clear()
                         ddlMotorCharger.Items.Add(New ListItem("ALPHA 2NM (C)", "Alpha 2NM (C)"))
-                        ddlMotorCharger.Items.Add(New ListItem("USB-C", "USB-C"))
                     End If
 
                     If MotorStyle = "Alpha 3NM HD" Then

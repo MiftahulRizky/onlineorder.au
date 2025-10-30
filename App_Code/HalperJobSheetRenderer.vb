@@ -9,92 +9,215 @@ Imports Microsoft.VisualBasic
 
 Public Class HalperJobSheetRenderer
 
+    Shared publicCfg As New PublicConfig()
+
     '#Print Header
-    Public Function PrintHeader(currentData As DataRow) As String
+    Public Shared Function PrintHeader(currentData As DataRow) As String
         Dim result As String = String.Empty
         Dim ReportType As String = String.Empty
         Dim ReportIcon As String = String.Empty
         Dim GoWith As String = String.Empty
-        '#Validate 1
-        Select Case  currentData("DesignName").ToString()
+        Dim goWithList As New List(Of String)()
+        Dim JobId As String = currentData("JobId").ToString()
+
+        ' Dim BlindNameList As DataSet = Nothing
+        '#-------------------------------|| Find Go With ||-------------------------------#
+        '#All
+        Dim all As DataSet = publicCfg.GetListData("SELECT DesignName, BlindName FROM Jobsheets WHERE JobId = '" & JobId & "'")
+        For i As Integer = 0 To all.Tables(0).Rows.Count - 1
+            Dim designName As String = all.Tables(0).Rows(i).Item("DesignName").ToString()
+            Select Case designName
+            Case "Cellora Blinds"
+                goWithList.Add("Cel")
+            Case "Roman Blinds"
+                goWithList.Add("Rom")
+            Case "Panel Glides"
+                goWithList.Add("PG")
+            End Select
+        Next
+
+        '#Roller Blinds
+        Dim rollerList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_RollerBlinds WHERE JobId = '" & JobId & "'")
+        For i As Integer = 0 To rollerList.Tables(0).Rows.Count - 1
+            Dim blindName As String = rollerList.Tables(0).Rows(i).Item("BlindName").ToString()
+            Select Case blindName
+                Case "Roller Blind"
+                        goWithList.Add("H")
+                Case "Motorised"
+                    goWithList.Add("Motorised")
+                Case "Cassette"
+                        goWithList.Add("Hc")
+                Case "Skin Only"
+                    goWithList.Add("Hs")
+            End Select
+        Next
+
+        '#Aluminium Blinds
+        Dim alumList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_Aluminium WHERE JobId = '" & JobId & "'")
+        For i As Integer = 0 To alumList.Tables(0).Rows.Count - 1
+            goWithList.Add("Alu")
+        Next
+
+        '#Venetian Blinds
+        Dim venList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_Venetian WHERE JobId = '" & JobId & "'")
+        For i As Integer = 0 To venList.Tables(0).Rows.Count - 1
+            Dim BlindName As String = venList.Tables(0).Rows(i).Item("BlindName").ToString()
+            Select Case BlindName
+                Case "Mockwood Venetian"
+                    goWithList.Add("MV")
+                Case "Timber Venetian"
+                    goWithList.Add("TV")
+                Case "Wooden Venetian"
+                    goWithList.Add("WV")
+            End Select
+        Next
+
+        '#Vertical Blinds
+        Dim verList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_Verticals WHERE JobId = '" & JobId & "'")
+        For i As Integer = 0 To verList.Tables(0).Rows.Count - 1
+            Dim blindName As String = verList.Tables(0).Rows(i).Item("BlindName").ToString()
+            Select Case blindName
+                Case "Complete"
+                    goWithList.Add("VD")
+                Case "Slat Only"
+                    goWithList.Add("VDs")
+                Case "Track Only"
+                    goWithList.Add("VDt")
+            End Select
+        Next
+
+        '#Vertical Blinds
+        Dim veriList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_Verishades WHERE JobId = '" & JobId & "'")
+        For i As Integer = 0 To veriList.Tables(0).Rows.Count - 1
+            Dim blindName As String = veriList.Tables(0).Rows(i).Item("BlindName").ToString()
+            Select Case blindName
+                Case "Single"
+                    goWithList.Add("VR")
+                Case "Slat Only"
+                    goWithList.Add("VRs")
+                Case "Track Only"
+                    goWithList.Add("VRt")
+            End Select
+        Next
+
+
+        '#-------------------------------|| ReportIcon & ReportType ||-------------------------------#
+        Select Case currentData("DesignName").ToString()
             '#--------Roller Blinds-----------
             Case "Roller Blinds"
                 ReportIcon = "H"
-                GoWith = "H"
                 ReportType = "Holland"
+
+                Select Case  currentData("BlindName").ToString()
+                    Case "Roller Blind"
+                        ReportType = "Holland Blinds"
+                        ReportIcon = "H"
+
+                    Case "Motorised"
+                        ReportType = "Holland Motorised"
+                        ReportIcon = "HM"
+
+                    Case "Cassette"
+                        ReportType = "Holland Cassette"
+                        ReportIcon = "Hc"
+
+                    Case "Skin Only"
+                        ReportType = "Holland Skin"
+                        ReportIcon = "Hs"
+                End Select
 
             '#--------Aluminium Blinds-----------
             Case "Aluminium Blinds"
                 ReportIcon = "V-alu"
-                GoWith = "Alu"
-                ReportType = "Aluminium Venetian"
+                ReportType = "Venetian Aluminium"
+
+            '#--------Venetian Blinds-----------
+            Case "Venetian Blinds"
+
+                ReportIcon = "V"
+                ReportType = "Venetian"
+
+                Select Case  currentData("BlindName").ToString()
+                    Case "Mockwood Venetian"
+                        ReportType = "Mockwood Venetian"
+                        ReportIcon = "MV"
+
+                    Case "Timber Venetian"
+                        ReportType = "Timber Venetian"
+                        ReportIcon = "TV"
+
+                    Case "Wooden Venetian"
+                        ReportType = "Wooden Venetian"
+                        ReportIcon = "WV"
+                End Select
 
             '#--------Vertical Blinds-----------
             Case "Vertical Blinds"
                 ReportIcon = "V"
-                GoWith = "V"
                 ReportType = "Vertical"
 
-            '#--------Veri Shades-----------
+                Select Case  currentData("BlindName").ToString()
+                    Case "Complete"
+                        ReportType = "Vertical"
+                        ReportIcon = "VD"
+
+                    Case "Slat Only"
+                        ReportType = "Vertical Slat"
+                        ReportIcon = "VDs"
+
+                    Case "Track Only"
+                        ReportType = "Vertical Track"
+                        ReportIcon = "VDt"
+                End Select
+
+
+            ' '#--------Veri Shades-----------
             Case "Veri Shades"
+
                 ReportIcon = "VR"
-                GoWith = "VR"
                 ReportType = "Verishade"
+                
+                Select Case  currentData("BlindName").ToString()
+                    Case "Single"
+                        ReportIcon = "VR"
+                        ReportType = "Verishade"
+                    Case "Slat Only"
+                        ReportIcon = "VRs"
+                        ReportType = "Verishade Slat"
+                    Case "Track Only"
+                        ReportIcon = "VRt"
+                        ReportType = "Verishade Track"
+                End Select
+            Case "Cellora Blinds"
+                ReportIcon = "CL"
+                ReportType = "Cellora"
+            Case "Roman Blinds"
+                ReportIcon = "R"
+                ReportType = "Roman"
+            Case "Panel Glides"
+                ReportIcon = "PG"
+                ReportType = "Panel Glide"
+            Case Else
+                ReportIcon = "NO"
+                ReportType = "Nulable"
         End Select
-        '#Validate 2
-        Select Case  currentData("BlindName").ToString()
-            '#--------Roller | Roller Blinds-----------
-            Case "Roller Blind"
-                ReportType = "Holland Blinds"
-                ReportIcon = "H"
+        
+        If goWithList.Count > 0 Then
+            GoWith = String.Join(" / ", goWithList)
+        End If
 
-            '#--------Roller | Roller Motorised-----------
-            Case "Motorised"
-                ReportType = "Holland Motorised"
-                ReportIcon = "HM"
-                GoWith = "Motorised"
 
-            '#--------Roller | Roller Cassette-----------
-            Case "Cassette"
-                ReportType = "Holland Cassette"
-                ReportIcon = "HC"
-                GoWith = "Cassette"
-
-            '#--------Roller | Roller Skin-----------
-            Case "Skin Only"
-                ReportType = "Holland Skin"
-                ReportIcon = "HSO"
-                GoWith = "Skin"
-
-            '#--------Vertical | Vertical Complete-----------
-            Case "Complete"
-                ReportType = "V-Complete"
-                ReportIcon = "VD"
-                GoWith = "VD"
-
-            '#--------Vertical | Vertical Slat Only-----------
-            Case "Slat Only"
-                ReportType = "V-Slat Only"
-                ReportIcon = "VDs"
-                GoWith = "VDs"
-
-            '#--------Vertical | Vertical Track Only-----------
-            Case "Track Only"
-                ReportType = "V-Track Only"
-                ReportIcon = "VDt"
-                GoWith = "VDt"
-        End Select
         Dim OrderCreated As String = Convert.ToDateTime(currentData("OrderCreated")).ToString("dd/MM/yyyy")
         Dim JobCreated As String = Convert.ToDateTime(currentData("JobCreated")).ToString("dd/MM/yyyy")
-        Dim ShipDate As String = Convert.ToDateTime(currentData("ShipDate")).ToString("dd/MM/yyyy")
+        Dim ShipDate As String = Convert.ToDateTime(currentData("ShipDate")).ToString("dd MMM yy").ToUpper()
         Dim Notes1 As String = currentData("Notes1").ToString()
         Dim Notes2 As String = currentData("Notes2").ToString()
         Dim Notes3 As String = currentData("Notes3").ToString()
         Dim Notes4 As String = currentData("Notes4").ToString()
         Dim Notes5 As String = currentData("Notes5").ToString()
         Dim Notes6 As String = currentData("Notes6").ToString()
-        Dim hightColumnNotes As String = "height: 50px;"
-        If Not String.IsNullOrEmpty(Notes1) Or Not String.IsNullOrEmpty(Notes2) Or Not String.IsNullOrEmpty(Notes3) Or Not String.IsNullOrEmpty(Notes4) Or Not String.IsNullOrEmpty(Notes5) Or Not String.IsNullOrEmpty(Notes6) Then hightColumnNotes = ""
+        Dim hightColumnNotes As String = "height: 30px;"
+        If Not (String.IsNullOrEmpty(Notes1) Or String.IsNullOrEmpty(Notes2) Or String.IsNullOrEmpty(Notes3) Or String.IsNullOrEmpty(Notes4) Or String.IsNullOrEmpty(Notes5) Or String.IsNullOrEmpty(Notes6)) Then hightColumnNotes = ""
         '#header
         result+= "<table style='width: 100%; border-collapse: collapse;'>"
             '#Go With, Icon, & Job No
@@ -107,8 +230,10 @@ Public Class HalperJobSheetRenderer
                 result+= "<th style='font-family: Impact, sans-serif; text-align: center; font-size: 35px; width: auto;' rowspan='6'>" & ReportIcon & "</th>"
 
                 '#heading Right
-                result+= "<th style=' text-align: left; width: 80px; font-size: 15px; padding-bottom: 5px;'>Job No</th>"
-                result+= "<th style=' text-align: left; font-size: 15px; padding-bottom: 5px;'>: "& currentData("JoNumber").ToString() &"</th>"
+                ' result+= "<th style=' text-align: left; width: 80px; font-size: 15px; padding-bottom: 5px;'>Job No</th>"
+                ' result+= "<th style=' text-align: left; font-size: 15px; padding-bottom: 5px;'>: "& currentData("JoNumber").ToString() &"</th>"
+                result+= "<th style=' text-align: left; width: 80px; font-size: 15px; padding-bottom: 5px;'></th>"
+                result+= "<th style=' text-align: left; font-size: 15px; padding-bottom: 5px;'></th>"
             result+= "</tr>"
 
             '#Order/Job Date & Reff
