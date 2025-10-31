@@ -2128,9 +2128,9 @@ Partial Class Order_Roller
         End If
 
         If ddlChainColour.SelectedValue = "" Then
-            Call MessageError(True, "CONTROL POSITION IS REQUIRED !")
-            ddlControlPosition.CssClass = "form-select  is-invalid"
-            ddlControlPosition.Focus()
+            Call MessageError(True, "CHAIN COLOUR IS REQUIRED !")
+            ddlChainColour.CssClass = "form-select  is-invalid"
+            ddlChainColour.Focus()
             Exit Sub
         End If
 

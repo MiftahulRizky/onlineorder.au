@@ -54,7 +54,7 @@
                                         <asp:ListItem Value="600" Text="600 mm"></asp:ListItem>
                                         <asp:ListItem Value="800" Text="800 mm"></asp:ListItem>
                                         <asp:ListItem Value="1000" Text="1000 mm"></asp:ListItem>
-                                        <asp:ListItem Value="1200" Text="1200 mm"></asp:ListItem>
+                                        <asp:ListItem Value="1250" Text="1250 mm"></asp:ListItem>
                                         <asp:ListItem Value="1500" Text="1500 mm"></asp:ListItem>
                                         <asp:ListItem Value="1800" Text="1800 mm"></asp:ListItem>
                                         <asp:ListItem Value="2000" Text="2000 mm"></asp:ListItem>
