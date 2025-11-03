@@ -455,6 +455,7 @@ const handlerDisplayElement = (item) => {
   const btnSendOrderMail = document.getElementById("btnSendOrderMail");
   const btnReloadPricing = document.getElementById("btnReloadPricing");
   const btnAddItem = document.getElementById("btnAddItem");
+  const divPrice = document.getElementById("divPrice");
   const msgThanks = document.getElementById("msgThanks");
 
   //SET DEFAULT HIDE ELEMENT
@@ -472,83 +473,78 @@ const handlerDisplayElement = (item) => {
   btnSendOrderMail.setAttribute("hidden", true);
   btnReloadPricing.setAttribute("hidden", true);
   btnAddItem.setAttribute("hidden", true);
+  divPrice.setAttribute("hidden", true);
   msgThanks.setAttribute("hidden", true);
 
-  if (roleName === "Administrator") {
-    // console.log(item);
+  if (!item) return;
+
+  // btnJobSheet
+  btnJobSheet.removeAttribute("hidden");
+  if (roleName !== "Administrator" && roleName !== "PPIC & DE") {
+    btnJobSheet.setAttribute("hidden", true);
   }
 
-  if (item) {
-    // btnJobSheet
-    // if (item.Status !== "Draft" && item.Status !== "Canceled") {
-    // }
-    btnJobSheet.removeAttribute("hidden");
-    if (roleName !== "Administrator" && roleName !== "PPIC & DE") {
-      btnJobSheet.setAttribute("hidden", true);
-    }
+  // btnReprintJobSheet & btnChangeJobStatus
+  if (item.JoNumber) {
+    btnReprintJobSheet.removeAttribute("hidden");
+    // btnChangeJobStatus.removeAttribute("hidden");
+  }
 
-    // btnReprintJobSheet & btnChangeJobStatus
-    if (item.JoNumber) {
-      btnReprintJobSheet.removeAttribute("hidden");
-      // btnChangeJobStatus.removeAttribute("hidden");
-    }
-
-    // btnSubmit, btnEditHeader, btnDeleteHeader, & btnAddItem
-    if (item.Status === "Draft") {
-      switch (roleName) {
-        case "Customer":
-          btnSubmit.removeAttribute("hidden");
+  // btnSubmit, btnEditHeader, btnDeleteHeader, & btnAddItem
+  if (item.Status === "Draft") {
+    switch (roleName) {
+      case "Customer":
+        btnSubmit.removeAttribute("hidden");
+        btnEditHeader.removeAttribute("hidden");
+        btnDeleteHeader.removeAttribute("hidden");
+        btnAddItem.removeAttribute("hidden");
+        break;
+      case "PPIC & DE":
+        if (item.UserId.toUpperCase() === userId) {
           btnEditHeader.removeAttribute("hidden");
           btnDeleteHeader.removeAttribute("hidden");
           btnAddItem.removeAttribute("hidden");
-          break;
-        case "PPIC & DE":
-          if (item.UserId.toUpperCase() === userId) {
-            btnEditHeader.removeAttribute("hidden");
-            btnDeleteHeader.removeAttribute("hidden");
-            btnAddItem.removeAttribute("hidden");
-          }
-          break;
-        case "Administrator":
-          btnSubmit.removeAttribute("hidden");
-          btnEditHeader.removeAttribute("hidden");
-          btnDeleteHeader.removeAttribute("hidden");
-          btnAddItem.removeAttribute("hidden");
-          break;
-      }
-    }
-
-    // btnQuote, btnQuoteDetail, & btnDownloadQuote
-    if (roleName === "Administrator" || roleName === "Customer") {
-      btnQuote.removeAttribute("hidden");
-      btnQuoteDetail.removeAttribute("hidden");
-      btnDownloadQuote.removeAttribute("hidden");
-    }
-
-    // btnAdministrator, btnChangeStatus, btnAddItem, & btnSendOrderMail
-    switch (item.Status) {
-      case "New Order":
-      case "In Production":
-      case "Completed":
-      case "On Hold":
-        msgThanks.removeAttribute("hidden");
-        if (roleName === "Administrator" || roleName === "PPIC & DE") {
-          btnAdministrator.removeAttribute("hidden");
-          btnChangeStatus.removeAttribute("hidden");
-          if (roleName === "Administrator") {
-            btnSendOrderMail.removeAttribute("hidden");
-            btnAddItem.removeAttribute("hidden");
-          }
         }
         break;
+      case "Administrator":
+        btnSubmit.removeAttribute("hidden");
+        btnEditHeader.removeAttribute("hidden");
+        btnDeleteHeader.removeAttribute("hidden");
+        btnAddItem.removeAttribute("hidden");
+        break;
     }
+  }
 
-    // btnReloadPricing
-    if (item.Status !== "Canceled") {
-      btnReloadPricing.removeAttribute("hidden");
-      if (roleName !== "Administrator") {
-        btnReloadPricing.setAttribute("hidden", true);
+  // btnQuote, btnQuoteDetail, & btnDownloadQuote
+  if (roleName === "Administrator" || roleName === "Customer") {
+    btnQuote.removeAttribute("hidden");
+    btnQuoteDetail.removeAttribute("hidden");
+    btnDownloadQuote.removeAttribute("hidden");
+  }
+
+  // btnAdministrator, btnChangeStatus, btnAddItem, & btnSendOrderMail
+  switch (item.Status) {
+    case "New Order":
+    case "In Production":
+    case "Completed":
+    case "On Hold":
+      msgThanks.removeAttribute("hidden");
+      if (roleName === "Administrator" || roleName === "PPIC & DE") {
+        btnAdministrator.removeAttribute("hidden");
+        btnChangeStatus.removeAttribute("hidden");
+        if (roleName === "Administrator") {
+          btnSendOrderMail.removeAttribute("hidden");
+          btnAddItem.removeAttribute("hidden");
+        }
       }
+      break;
+  }
+
+  // btnReloadPricing
+  if (item.Status !== "Canceled") {
+    btnReloadPricing.removeAttribute("hidden");
+    if (roleName !== "Administrator") {
+      btnReloadPricing.setAttribute("hidden", true);
     }
   }
 };
@@ -690,19 +686,27 @@ const handlerHeaderInfo = (item) => {
     }
 
     // CARD INFORMATION HEADER 2 | PRICES INFORMATION
-    $.ajax({
-      type: "POST",
-      url: uriMethod + "/GetAmountPriceHeader",
-      data: JSON.stringify({
+    fetch(`${uriMethod}/GetAmountPriceHeader`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
         headerid: item.Id,
         pricesaccess: pricesAccess,
       }),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (response) {
+    })
+      .then((response) => {
+        if (!response.ok) {
+          // Error dari server (misal 404, 500)
+          throw new Error(`${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then((response) => {
         const data = response.d;
         if (!data) {
-          var msg =
+          const msg =
             roleName === "Administrator"
               ? "No data returned from server : handlerDisplayElement"
               : "Please contact our IT team at support@onlineorder.au";
@@ -721,15 +725,14 @@ const handlerHeaderInfo = (item) => {
         spanFinalTotal.innerHTML = data.finaltotal
           ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${data.finaltotal}</span>`
           : `<span style="font-size:larger;">0</span>`;
-      },
-      error: function (xhr, status, error, thrownError) {
-        var msg =
+      })
+      .catch((error) => {
+        const msg =
           roleName === "Administrator"
-            ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
+            ? error.message
             : "Please contact our IT team at support@onlineorder.au";
         isError(msg);
-      },
-    });
+      });
   }
 };
 
@@ -1736,15 +1739,10 @@ const bindOrderHeaderByID = async (headerid) => {
     const data = dataResponse.d;
 
     if (!data || data.length === 0) {
-      const msg =
-        roleName === "Administrator"
-          ? "No data returned from server : bindOrderHeaderByID"
-          : "Please contact our IT team at support@onlineorder.au";
-      throw new Error(msg);
+      window.location.href = "/order";
     }
 
     for (const item of data) {
-      // Jika kamu ingin mengaktifkan kembali reload pricing:
       // await handlerReloadPricingOnReadyPage(item.Id, item.Status, "binding");
       await handlerDisplayElement(item);
       await handlerHeaderInfo(item);
@@ -1790,9 +1788,9 @@ const bindDetails = (headerid, status, userid) => {
       orderable: false,
       render: (row) => `<div class="text-center">${row.Qty}</div>`,
     },
-    { width: "15%", data: "Location" },
+    { width: "20%", data: "Location" },
     {
-      width: "50%",
+      width: "60%",
       data: null,
       orderable: false,
       render: (row) => {
@@ -1808,12 +1806,18 @@ const bindDetails = (headerid, status, userid) => {
           `;
       },
     },
-    { width: "5%", data: "Cost" },
   ];
+
+  const thPricing = document.querySelectorAll(".thPrice");
+  thPricing.forEach((el) => el.setAttribute("hidden", true));
+  if (pricesAccess === "True" || pricesAccess === "1") {
+    columnDefs.push({ width: "5%", data: "Cost" });
+    thPricing.forEach((el) => el.removeAttribute("hidden"));
+  }
 
   const thMarkUp = document.querySelectorAll(".thMarkUp");
   thMarkUp.forEach((el) => el.setAttribute("hidden", true));
-  if (markupAccess === "True") {
+  if (markupAccess === "True" || markupAccess === "1") {
     columnDefs.push({ width: "5%", data: "MarkUp" });
     thMarkUp.forEach((el) => el.removeAttribute("hidden"));
   }

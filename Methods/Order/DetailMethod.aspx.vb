@@ -295,6 +295,7 @@ Partial Class Methods_Order_DetailMethod
         Dim resultList As New List(Of OrdersMatrixReturnRow)()
         Dim rolename As String = HttpContext.Current.Session("RoleName").ToString()
         Dim sessionUserId As String = HttpContext.Current.Session("userId").ToString()
+        ' Dim sessionCustomerId As String = HttpContext.Current.Session("CustomerId").ToString()
 
         
         Try
