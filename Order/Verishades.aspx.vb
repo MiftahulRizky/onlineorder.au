@@ -269,13 +269,6 @@ Partial Class Order_Verishades
                     Exit Sub
                 End If
 
-                If ddlWandColour.SelectedValue = "" Then
-                    Call MessageError(True, "WAND COLOUR IS REQUIRED !")
-                    ddlWandColour.CssClass = "form-select  is-invalid"
-                    ddlWandColour.Focus()
-                    Exit Sub
-                End If
-
                 If ddlWandSize.SelectedValue = "" Then
                     Call MessageError(True, "WAND SIZE IS REQUIRED !")
                     ddlWandSize.CssClass = "form-select  is-invalid"
@@ -293,6 +286,13 @@ Partial Class Order_Verishades
                     Call MessageError(True, "MAXIMUM WAND SIZE IS 3000mm !")
                     txtWandCustomLength.CssClass = "form-control  is-invalid"
                     txtWandCustomLength.Focus()
+                    Exit Sub
+                End If
+
+                If ddlWandColour.SelectedValue = "" Then
+                    Call MessageError(True, "WAND COLOUR IS REQUIRED !")
+                    ddlWandColour.CssClass = "form-select  is-invalid"
+                    ddlWandColour.Focus()
                     Exit Sub
                 End If
             End If

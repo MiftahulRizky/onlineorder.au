@@ -408,19 +408,12 @@ Partial Class Order_Vertical
             End If
 
             If controlType = "Wand" Then
-                If ddlWandColour.SelectedValue = "" Then
-                    Call MessageError(True, "WAND COLOUR IS REQUIRED !")
-                    ddlWandColour.CssClass = "form-select  is-invalid"
-                    ddlWandColour.Focus()
+                If ddlWandLength.SelectedValue = "" Then
+                    Call MessageError(True, "WAND LENGTH IS REQUIRED !")
+                    ddlWandLength.CssClass = "form-select  is-invalid"
+                    ddlWandLength.Focus()
                     Exit Sub
                 End If
-
-                ' If ddlWandLength.SelectedValue = "" Then
-                '     Call MessageError(True, "WAND LENGTH IS REQUIRED !")
-                '     ddlWandLength.CssClass = "form-select  is-invalid"
-                '     ddlWandLength.Focus()
-                '     Exit Sub
-                ' End If
 
                 If ddlWandLength.SelectedValue = "custom" AndAlso txtWandCustomLength.Text = "" Then
                     Call MessageError(True, "CUSTOM WAND LENGTH IS REQUIRED !")
@@ -433,6 +426,13 @@ Partial Class Order_Vertical
                     Call MessageError(True, "MAXIMUM WAND LENGTH IS 3000mm !")
                     txtWandCustomLength.CssClass = "form-control  is-invalid"
                     txtWandCustomLength.Focus()
+                    Exit Sub
+                End If
+
+                If ddlWandColour.SelectedValue = "" Then
+                    Call MessageError(True, "WAND COLOUR IS REQUIRED !")
+                    ddlWandColour.CssClass = "form-select  is-invalid"
+                    ddlWandColour.Focus()
                     Exit Sub
                 End If
             End If
@@ -518,17 +518,35 @@ Partial Class Order_Vertical
                     Dim chainColour As String = "(" & ddlChainColour.SelectedValue & ")"
 
                     Dim chainLength As String = txtChainLength.Text
-                    If txtChainLength.Text = "" Then
-                        chainLength = "500"
-                        If txtDrop.Text > "700" Then : chainLength = "600" : End If
-                        If txtDrop.Text > 800 Then : chainLength = "800" : End If
-                        If txtDrop.Text > 1100 Then : chainLength = "1000" : End If
-                        If txtDrop.Text > 1300 Then : chainLength = "1200" : End If
-                        If txtDrop.Text > 1600 Then : chainLength = "1500" : End If
-                        If txtDrop.Text > 2000 Then : chainLength = "1800" : End If
-                        If txtDrop.Text > 2400 Then : chainLength = "2000" : End If
-                        If txtDrop.Text > 2700 Then : chainLength = "2200" : End If
+                    Dim dropValue As Double
+
+                    ' Pastikan drop berupa angka valid
+                    If Not Double.TryParse(txtDrop.Text, dropValue) Then
+                        dropValue = 0
                     End If
+
+                    If String.IsNullOrWhiteSpace(txtChainLength.Text) Then
+                        If dropValue > 2700 Then
+                            chainLength = "2200"
+                        ElseIf dropValue > 2400 Then
+                            chainLength = "2000"
+                        ElseIf dropValue > 2000 Then
+                            chainLength = "1800"
+                        ElseIf dropValue > 1600 Then
+                            chainLength = "1500"
+                        ElseIf dropValue > 1300 Then
+                            chainLength = "1200"
+                        ElseIf dropValue > 1100 Then
+                            chainLength = "1000"
+                        ElseIf dropValue > 800 Then
+                            chainLength = "800"
+                        ElseIf dropValue > 700 Then
+                            chainLength = "600"
+                        Else
+                            chainLength = "500"
+                        End If
+                    End If
+                    txtChainLength.Text = chainLength '#return new chain length
 
                     Dim chainName As String = chainLength & " " & "Chain + Joiner" & " " & chainColour
                     Dim FormulaChain As String = publicCfg.GetItemData("SELECT Id FROM Chains WHERE Name = '" + chainName + "'")
@@ -545,6 +563,7 @@ Partial Class Order_Vertical
                 If controlType = "Wand" Then
                     lblChainId.Text = ""
                     ddlChainColour.SelectedValue = "" : txtChainLength.Text = ""
+
                     If ddlWandLength.SelectedValue = "custom" Then
                         lblWandLength.Text = txtWandCustomLength.Text
                     Else
