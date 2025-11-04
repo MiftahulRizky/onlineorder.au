@@ -179,7 +179,7 @@ const dropdownActionButton = (data, type, row) => {
             <button class="border-0 bg-transparent dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
             </button>
-              <ul class="dropdown-menu dropdown-menu-end">
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <li>
                   <a class="dropdown-item" href="javascript:void(0)" id="btn-detail" data-id="${row.Id}">
                     <i class="ti ti-info-square-rounded me-1 opacity-50 fs-2" ></i>Detail

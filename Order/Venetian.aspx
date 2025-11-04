@@ -161,8 +161,8 @@
                                     <div class="col-lg-2 col-md-12 col-sm-12">
                                         <asp:DropDownList runat="server" ID="ddlHoldDown" CssClass="form-select">
                                             <asp:ListItem Value="" Text="N/A"></asp:ListItem>
-                                            <asp:ListItem Value="Gold" Text="GOLD"></asp:ListItem>
-                                            <asp:ListItem Value="Silver" Text="SILVER"></asp:ListItem>
+                                            <asp:ListItem Value="No" Text="NO"></asp:ListItem>
+                                            <asp:ListItem Value="Yes" Text="YES"></asp:ListItem>
                                         </asp:DropDownList>
                                     </div>
                                 </div>

@@ -151,19 +151,19 @@
                 }, 180000); // 3 menit
             }
 
-            const showMessageError = (msg, input) => {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    html: msg,
-                    customClass: {
-                        popup: isDark ? "bg-dark text-white" : "bg-white text-dark"
-                    }
-                }).then(() => {
-                    document.getElementById(input).focus();
-                })
+            // const showMessageError = (msg, input) => {
+            //     Swal.fire({
+            //         icon: "error",
+            //         title: "Oops...",
+            //         html: msg,
+            //         customClass: {
+            //             popup: isDark ? "bg-dark text-white" : "bg-white text-dark"
+            //         }
+            //     }).then(() => {
+            //         document.getElementById(input).focus();
+            //     })
 
-            }
+            // }
         </script>
 
         <div class="page">

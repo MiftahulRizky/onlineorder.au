@@ -289,6 +289,7 @@ const bindOrders = (status, active, storetype, params) => {
     bInfo: true,
     bFilter: true,
     bDestroy: true,
+    autoWidth: false,
     initComplete: function () {
       stylingColumnSearchAndPaging(params);
     },

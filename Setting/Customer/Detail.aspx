@@ -112,7 +112,7 @@
                         <a href="#tabs-product-access" data-tabs="tabs-product-access" id="product-access" class="nav-link tab-click" data-bs-toggle="tab">PRODUCT ACCESS</a>
                       </li>
                       <li class="nav-item">
-                        <a href="#tabs-product-access" data-tabs="tabs-product-access" id="quotes" class="nav-link tab-click" data-bs-toggle="tab">QUOTES</a>
+                        <a href="#tabs-quotes" data-tabs="tabs-quotes" id="quotes" class="nav-link tab-click" data-bs-toggle="tab">QUOTES</a>
                       </li>
                     </ul>
                   </div>
@@ -132,7 +132,7 @@
                                   <tr>
                                       <th>#</th>
                                       <th>name</th>
-                                      <th>solution</th>
+                                      <th>Salutation</th>
                                       <th>role</th>
                                       <th>email</th>
                                       <th>phone</th>
@@ -147,9 +147,29 @@
                         </div>
                       </div>
 
+                      <!-- ADDRESSES -->
                       <div class="tab-pane" id="tabs-address">
-                        <h4>Profile tab</h4>
-                        <div>Fringilla egestas nunc quis tellus diam rhoncus ultricies tristique enim at diam, sem nunc amet, pellentesque id egestas velit sed</div>
+                        <div class="row">
+                          <div class="col-8"></div>
+                          <div class="col-4">
+                            <button type="button" class="btn btn-danger float-end ms-2" id="btn-reset-primary-address">Reset Primary Address</button>
+                            <button type="button" class="btn btn-primary float-end" id="btn-create-address">New Address</button>
+                          </div>
+                          <table class="table table-hover table-vcenter card-table w-100 col-12 " id="data-table">
+                              <thead class="h1">
+                                  <tr>
+                                      <th>#</th>
+                                      <th>Description</th>
+                                      <th>Address</th>
+                                      <th>Nearest Port</th>
+                                      <th>Tags</th>
+                                      <th>Instruction</th>
+                                      <th>Primary</th>
+                                      <th></th>
+                                  </tr>
+                              </thead>
+                          </table>
+                        </div>
                       </div>
                       
                       <!-- LOGINS -->
@@ -168,7 +188,7 @@
                                         <th>role</th>
                                         <th>user</th>
                                         <th>full name</th>
-                                        <th>last kogin</th>
+                                        <th>last login</th>
                                         <th>active</th>
                                         <th></th>
                                     </tr>
@@ -177,17 +197,58 @@
                           </div>
                       </div>
 
+                      <!-- DISCOUNT -->
                       <div class="tab-pane" id="tabs-discount">
-                        <h4>Activity tab</h4>
-                        <div>Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi sit mauris accumsan nibh habitant senectus</div>
+                        <div class="row">
+                          <div class="col-8"></div>
+                          <div class="col-4">
+                            <button type="button" class="btn btn-secondary float-end ms-2" id="btn-reset-primary-address">Add Custome Discount (Fabric)</button>
+                            <button type="button" class="btn btn-primary float-end" id="btn-create-address">Add Discount</button>
+                          </div>
+                          <table class="table table-hover table-vcenter card-table w-100 col-12 " id="data-table">
+                              <thead class="h1">
+                                  <tr>
+                                      <th>#</th>
+                                      <th>id</th>
+                                      <th>title</th>
+                                      <th>discount</th>
+                                      <th>start date</th>
+                                      <th>end date</th>
+                                      <th>final discount (fabric)</th>
+                                      <th></th>
+                                  </tr>
+                              </thead>
+                          </table>
+                        </div>
                       </div>
+
+                      <!-- product access -->
                       <div class="tab-pane" id="tabs-product-access">
-                        <h4>Activity tab</h4>
-                        <div>Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi sit mauris accumsan nibh habitant senectus</div>
+                        <div class="row">
+                          <table class="table table-hover table-vcenter card-table w-100 col-12 " id="data-table">
+                              <thead class="h1">
+                                  <tr>
+                                      <th>Product</th>
+                                      <th></th>
+                                  </tr>
+                              </thead>
+                          </table>
+                        </div>
                       </div>
+
+                      <!-- quotes -->
                       <div class="tab-pane" id="tabs-quotes">
-                        <h4>Activity tab</h4>
-                        <div>Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi sit mauris accumsan nibh habitant senectus</div>
+                        <div class="row">
+                          <table class="table table-hover table-vcenter card-table w-100 col-12 " id="data-table">
+                              <thead class="h1">
+                                  <tr>
+                                      <th>Logo</th>
+                                      <th>Terms</th>
+                                      <th></th>
+                                  </tr>
+                              </thead>
+                          </table>
+                        </div>
                       </div>
                     </div>
                   </div>

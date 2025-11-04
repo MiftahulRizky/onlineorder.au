@@ -28,6 +28,10 @@ Partial Public Class SiteMaster
         Response.Redirect("~/account/login", False)
     End Sub
 
+    Protected Sub liOrder_Click(sender As Object, e As EventArgs)
+        Response.Redirect("~/account/login", False)
+    End Sub
+
     Private Sub MyLoad()
         Try
             If Session("isLoggedIn") = True Then

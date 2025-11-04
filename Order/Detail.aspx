@@ -182,7 +182,7 @@
 
             <!-- card information header 2-->
             <div class="row mb-3">
-                <div class="col-lg-6">
+                <div class="col-lg-6" id="divDate">
                     <div class="card">
                         <div class="card-body border-bottom py-3">
                             <div class="row mb-4">
@@ -257,7 +257,7 @@
                                          <th class="h3 text-center">QTY</th>
                                          <th class="h3">LOCATION</th>
                                          <th class="h3">PRODUCT</th>
-                                         <th class="h3 ">COST</th>
+                                         <th class="h3 thPrice">COST</th>
                                          <th class="h3 thMarkUp" >MARK UP</th>
                                          <th class="h3 text-center">ACTIONS</th>
                                      </tr>
@@ -400,7 +400,9 @@
     
 
     <script type="text/javascript">
-        let userId = '<%= Session("userId") %>';
+        let customerId = '<%= Session("CustomerId") %>';
+        // let userId = '<%= Session("userId") %>';
+        let userId = customerId;
         let userName = '<%= Session("UserName") %>';
         let loginId = '<%= Session("LoginId") %>';
         let roleName = '<%= Session("RoleName") %>';  
