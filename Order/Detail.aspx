@@ -400,9 +400,9 @@
     
 
     <script type="text/javascript">
+        let customerId = '<%= Session("CustomerId") %>';
         let userId = '<%= Session("userId") %>';
         // let userId = customerId;
-        let customerId = '<%= Session("CustomerId") %>';
         let userName = '<%= Session("UserName") %>';
         let loginId = '<%= Session("LoginId") %>';
         let roleName = '<%= Session("RoleName") %>';  

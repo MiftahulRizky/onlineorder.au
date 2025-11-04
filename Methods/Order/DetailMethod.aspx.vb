@@ -294,8 +294,9 @@ Partial Class Methods_Order_DetailMethod
         Dim filteredRecords As Integer = 0
         Dim resultList As New List(Of OrdersMatrixReturnRow)()
         Dim rolename As String = HttpContext.Current.Session("RoleName").ToString()
-        Dim sessionUserId As String = HttpContext.Current.Session("userId").ToString()
         ' Dim sessionCustomerId As String = HttpContext.Current.Session("CustomerId").ToString()
+        ' Dim sessionUserId As String = sessionCustomerId
+        Dim sessionUserId As String = HttpContext.Current.Session("userId").ToString()
 
         
         Try
@@ -8512,6 +8513,22 @@ Partial Class Methods_Order_DetailMethod
             End If
         Next
 
+        Dim initChainType As String() = {
+            currentData("ChainLength1").ToString(),
+            currentData("ChainLength2").ToString(),
+            currentData("ChainLength3").ToString(),
+            currentData("ChainLength4").ToString(),
+            currentData("ChainLength5").ToString(),
+            currentData("ChainLength6").ToString()
+        }
+        For i As Integer = 0 To initChainType.Length - 1
+            If Not String.IsNullOrEmpty(initChainType(i).ToString()) Then
+                initChainType(i) = initChainType(i).ToString() & " + joiner"
+            Else
+                initChainType(i) = String.Empty
+            End If
+        Next
+
 
         
         '#Line Option
@@ -8621,12 +8638,12 @@ Partial Class Methods_Order_DetailMethod
             '#
             result+= trDetStart
                 result+= tdTitleStart & "Track Option" & tdDetEnd
-                result+= tdDetStart & initTrackOption(0) & tdDetEnd
-                result+= tdDetStart & initTrackOption(1) & tdDetEnd
-                result+= tdDetStart & initTrackOption(2) & tdDetEnd
-                result+= tdDetStart & initTrackOption(3) & tdDetEnd
-                result+= tdDetStart & initTrackOption(4) & tdDetEnd
-                result+= tdDetRight & initTrackOption(5) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line1").ToString()), "", initTrackOption(0)) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line2").ToString()), "", initTrackOption(1)) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line3").ToString()), "", initTrackOption(2)) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line4").ToString()), "", initTrackOption(3)) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line5").ToString()), "", initTrackOption(4)) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Line6").ToString()), "", initTrackOption(5)) & tdDetEnd
             result+= trDetEnd
 
             '#ControlType
@@ -8643,12 +8660,12 @@ Partial Class Methods_Order_DetailMethod
             '#CLength
             result+= trDetStart
                 result+= tdTitleStart & "Chain Type" & tdDetEnd
-                result+= tdDetStart & currentData("CLength1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CLength6").ToString() & tdDetEnd
+                result+= tdDetStart & initChainType(0) & tdDetEnd
+                result+= tdDetStart & initChainType(1) & tdDetEnd
+                result+= tdDetStart & initChainType(2) & tdDetEnd
+                result+= tdDetStart & initChainType(3) & tdDetEnd
+                result+= tdDetStart & initChainType(4) & tdDetEnd
+                result+= tdDetRight & initChainType(5) & tdDetEnd
             result+= trDetEnd
 
             '#ChainColour
