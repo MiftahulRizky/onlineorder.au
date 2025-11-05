@@ -17,14 +17,14 @@ Partial Class Methods_Order_DefaultMethod
 
     '#--- Initialize Class ---#
     Public Class OrdersParams
-        Public Property storeid As String
+        Public Property customercontactid As String
         Public Property storecompany As String
-        Public Property userid As String
+        Public Property customerid As String
         Public Property rolename As String
         Public Property levelname As String
         Public Property status As String
         Public Property active As String
-        Public Property storetype As String
+        Public Property customeraccount As String
     
        
         Public Property draw As Integer
@@ -64,13 +64,16 @@ Partial Class Methods_Order_DefaultMethod
     Public Class OrdersMatrixReturnRow
         Public Property No As String 
         Public Property Id As String 
-        Public Property UserId As String 
+        Public Property OrderId As String 
+        Public Property CustomerId As String 
         Public Property JoNumber As String 
-        Public Property StoreName As String 
-        Public Property OrderNo As String 
-        Public Property OrderCust As String 
+        Public Property CustomerName As String 
+        Public Property OrderNumber As String 
+        Public Property OrderName As String 
+        Public Property OrderType As String 
         Public Property Delivery As String 
         Public Property Status As String 
+        Public Property StatusAdditional As String 
         Public Property CreatedDate As String 
         Public Property SubmittedDate As String 
         Public Property CanceledDate As String 
@@ -133,48 +136,48 @@ Partial Class Methods_Order_DefaultMethod
                 conn.Open()
 
                 
-                Dim byRole As String = ""
+                ' Dim byRole As String = ""
                 
-                If params.rolename = "PPIC & DE" Then
-                    byRole = " AND StoreCompany = '" + params.storecompany + "'"
-                End If
+                ' If params.rolename = "PPIC & DE" Then
+                '     byRole = " AND StoreCompany = '" + params.storecompany + "'"
+                ' End If
 
-                If params.rolename = "Customer" Then
-                    byRole = " AND StoreId = '" + params.storeid + "'"
-                    If params.levelname = "Member" Then
-                        byRole = " AND UserId = '" + params.userid + "'"
-                    End If
-                End If
+                ' If params.rolename = "Customer" Then
+                '     byRole = " AND StoreId = '" + params.storeid + "'"
+                '     If params.levelname = "Member" Then
+                '         byRole = " AND UserId = '" + params.userid + "'"
+                '     End If
+                ' End If
                 
 
                 ' --- 1. Query untuk menghitung Total Records (tanpa filter DataTables, hanya filter awal Anda) ---
-                Dim countSql As String = "SELECT COUNT( Id ) FROM view_headers WHERE Active = @Active" + byRole + " AND (@Status = 'all' OR Status = @Status) AND (@StoreType = 'ALL' OR StoreType = @StoreType)"
+                Dim countSql As String = "SELECT COUNT( Id ) FROM view_merge WHERE Active = @Active  AND (@Status = 'all' OR Status = @Status) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
                 Using countCmd As New SqlCommand(countSql, conn)
                     countCmd.Parameters.AddWithValue("@Status", params.status)
                     countCmd.Parameters.AddWithValue("@Active", params.active)
-                    countCmd.Parameters.AddWithValue("@StoreType", params.storetype)
+                    countCmd.Parameters.AddWithValue("@CustomerAccount", params.customeraccount)
                     totalRecords = CInt(countCmd.ExecuteScalar())
                 End Using
                 
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Id, UserId, JoNumber, StoreName, OrderNo, OrderCust, Delivery,Status, CreatedDate, SubmittedDate, CanceledDate, CompletedDate, Active")
-                sqlBuilder.AppendLine("FROM view_headers")
-                sqlBuilder.AppendLine("WHERE Active = @Active" + byRole + " AND (@Status = 'all' OR Status = @Status) AND (@StoreType = 'ALL' OR StoreType = @StoreType)")
+                sqlBuilder.AppendLine("SELECT Id, OrderId, JoNumberId, ShipmentId, CustomerId, OrderNumber, OrderName, Delivery, OrderNote, OrderType, Status, StatusAdditional, InternalNote, CreatedBy, CreatedDate, SubmittedBy, SubmittedDate, Deposit, Approved, JobDate, CanceledDate, CanceledCategory, CanceledDescription, CompletedDate, Active, CustomerName, CustomerCompany, CustomerAccount")
+                sqlBuilder.AppendLine("FROM view_merge")
+                sqlBuilder.AppendLine("WHERE Active = @Active AND (@Status = 'all' OR Status = @Status) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)")
 
                 Dim whereClause As New System.Text.StringBuilder()
                 Dim cmd As New SqlCommand(sqlBuilder.ToString(), conn)
                 cmd.Parameters.AddWithValue("@Status", params.status)
                 cmd.Parameters.AddWithValue("@Active", params.active)
-                cmd.Parameters.AddWithValue("@StoreType", params.storetype)
+                cmd.Parameters.AddWithValue("@CustomerAccount", params.customeraccount)
 
 
 
                 ' --- Tambahkan Global Search DataTables (jika ada) ---
                 If Not String.IsNullOrEmpty(params.search.value) Then
                     Dim searchValue As String = "%" & params.search.value.Trim() & "%"
-                    whereClause.AppendLine(" AND ( JoNumber LIKE @SearchValue OR StoreName LIKE @SearchValue OR OrderNo LIKE @SearchValue OR OrderCust LIKE @SearchValue OR Delivery LIKE @SearchValue OR Status LIKE @SearchValue )")
+                    whereClause.AppendLine(" AND ( OrderNumber LIKE @SearchValue OR OrderName LIKE @SearchValue )")
                     cmd.Parameters.AddWithValue("@SearchValue", searchValue)
                 End If
 
@@ -196,10 +199,7 @@ Partial Class Methods_Order_DefaultMethod
                     '# Notes: File di bawah ini untuk menambahkan order by ke query
                     Dim columnMap As New Dictionary(Of Integer, String) From { _
                         {0, "No"}, _
-                        {1, "JoNumber"}, _
-                        {2, "StoreName"}, _
-                        {3, "OrderNo"}, _
-                        {4, "OrderCust"} _
+                        {1, "Id"} _
                     }
                     Dim orderColumnIndex As Integer = params.order(0).column
                     Dim orderDirection As String = params.order(0).dir.ToUpper()
@@ -225,19 +225,22 @@ Partial Class Methods_Order_DefaultMethod
                 cmd.CommandText = sqlBuilder.ToString()
 
                 Using reader As SqlDataReader = cmd.ExecuteReader()
-                    Dim noCounter As Integer = params.start + 1 ' Mulai hitung dari offset
+                    Dim noCounter As Integer = params.start + 1
 
                     While reader.Read()
                         Dim row As New OrdersMatrixReturnRow With {
                             .No = noCounter.ToString(),
                             .Id = reader("Id").ToString(),
-                            .UserId = reader("UserId").ToString(),
-                            .JoNumber = reader("JoNumber").ToString(),
-                            .StoreName = reader("StoreName").ToString(),
-                            .OrderNo = reader("OrderNo").ToString(),
-                            .OrderCust = reader("OrderCust").ToString(),
+                            .OrderId = reader("OrderId").ToString(),
+                            .CustomerId = reader("CustomerId").ToString(),
+                            .JoNumber = reader("JoNumberId").ToString(),
+                            .CustomerName = reader("CustomerName").ToString(),
+                            .OrderNumber = reader("OrderNumber").ToString(),
+                            .OrderName = reader("OrderName").ToString(),
+                            .OrderType = reader("OrderType").ToString(),
                             .Delivery = reader("Delivery").ToString(),
                             .Status = reader("Status").ToString(),
+                            .StatusAdditional = reader("StatusAdditional").ToString(),
                             .CreatedDate = reader("CreatedDate").ToString(),
                             .SubmittedDate = reader("SubmittedDate").ToString(),
                             .CanceledDate = reader("CanceledDate").ToString(),

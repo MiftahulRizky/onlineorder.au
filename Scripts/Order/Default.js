@@ -1,13 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
-  if (roleName == "Administrator") {
+  if (ROLENAME == "Administrator") {
     console.log("Default.js loaded successfully");
-    console.log("roleName: " + roleName);
-    console.log("userId: " + userId);
-    console.log("userName: " + userName);
-    console.log("storeId: " + storeId);
-    console.log("storeCompany: " + storeCompany);
-    console.log("levelName: " + levelName);
-    console.log("uriMethod: " + uriMethod);
+    console.log("ROLENAME: " + ROLENAME);
+    console.log("CUSTOMERID: " + CUSTOMERID);
+    console.log("USERNAME: " + USERNAME);
+    console.log("CUSTOMERCONTACTID: " + CUSTOMERCONTACTID);
+    console.log("CUSTOMERCOMPANY: " + CUSTOMERCOMPANY);
+    console.log("LEVELNAME: " + LEVELNAME);
+    console.log("URIMETHOD: " + URIMETHOD);
   }
   checkSession();
 });
@@ -124,7 +124,7 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
 document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnDownloadCsv") {
     const id = e.target.dataset.id;
-    if (roleName !== "Administrator") {
+    if (ROLENAME !== "Administrator") {
       //  buat sweetalert jika bukan admin dengan pesan, "aksi ini akan segera hadir"
       Swal.fire({
         icon: "info",
@@ -205,7 +205,7 @@ const submitChangeStatus = async () => {
     "description",
   ];
 
-  const paramsChangeStatus = { username: userName };
+  const paramsChangeStatus = { username: USERNAME };
   for (const field of fields) {
     const el = document.querySelector(`#modalChangeStatus #${field}`);
     paramsChangeStatus[field] = el ? el.value : "";
@@ -222,7 +222,7 @@ const submitChangeStatus = async () => {
     swalLoadingShow("Please wait while we update the status.");
 
     // === kirim request ===
-    const response = await fetch(`${uriMethod}/UpdateStatusOrder`, {
+    const response = await fetch(`${URIMETHOD}/UpdateStatusOrder`, {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify({ data: paramsChangeStatus }),
@@ -246,7 +246,7 @@ const submitChangeStatus = async () => {
     }
   } catch (err) {
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? `${err.message}`
         : "Something went wrong, please try again!";
     isError(msg);
@@ -264,14 +264,14 @@ const submitChangeStatus = async () => {
 let tableData;
 const bindOrders = (status, active, storetype, params) => {
   const paramData = {
-    storeid: storeId,
-    storecompany: storeCompany,
-    userid: userId,
-    rolename: roleName,
-    levelname: levelName,
+    customercontactid: CUSTOMERCONTACTID,
+    storecompany: CUSTOMERCOMPANY,
+    customerid: CUSTOMERID,
+    rolename: ROLENAME,
+    levelname: LEVELNAME,
     status: status,
     active: active,
-    storetype: storetype,
+    customeraccount: storetype,
   };
 
   tableData = $(params).DataTable({
@@ -280,7 +280,7 @@ const bindOrders = (status, active, storetype, params) => {
     order: [],
     stateSave: true,
     stateDuration: -1,
-    pageLength: 10,
+    pageLength: 50,
     language: {
       search: "",
       lengthMenu: "_MENU_",
@@ -294,11 +294,12 @@ const bindOrders = (status, active, storetype, params) => {
       stylingColumnSearchAndPaging(params);
     },
     ajax: {
-      url: uriMethod + "/BindOrders",
+      url: URIMETHOD + "/BindOrders",
       type: "POST",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       data: function (d) {
+        // console.log(JSON.stringify(paramData));
         return JSON.stringify({
           params: {
             ...paramData,
@@ -333,27 +334,22 @@ const bindOrders = (status, active, storetype, params) => {
           return `<div class="text-center">${data}</div>`;
         },
       },
-      {
-        width: "10%",
-        data: null,
-        render: function (data, type, row, meta) {
-          let jobno = "";
-          if (row.JoNumber)
-            jobno = `<span class="badge badge-outline text-red">${row.JoNumber}</span>`;
-          return `<div class="text-center">${jobno}</div>`;
-        },
-      },
-      { width: "30%", data: "StoreName" },
-      { width: "15%", data: "OrderNo" },
-      { width: "15%", data: "OrderCust" },
+      { width: "5%", data: "Id" },
+      { width: "5%", data: "OrderId" },
+      { width: "30%", data: "CustomerName" },
+      { width: "10%", data: "OrderNumber" },
+      { width: "10%", data: "OrderName" },
+      { width: "10%", data: "OrderType" },
       {
         width: "10%",
         data: null,
         orderable: false,
         render: function (data, type, row) {
-          let findDelivery = `<span class='badge bg-cyan-lt'><i class='bi bi-box-seam'></i> ${row.Delivery}</span>`;
+          let findDelivery = "-";
           if (row.Delivery === "Pick Up") {
             findDelivery = `<span class='badge bg-pink-lt'><i class='bi bi-truck-front'></i> ${row.Delivery}</span>`;
+          } else if (row.Delivery === "Delivery") {
+            findDelivery = `<span class='badge bg-cyan-lt'><i class='bi bi-box-seam'></i> ${row.Delivery}</span>`;
           }
           return `<div class="text-center">${findDelivery}</div>`;
         },
@@ -363,7 +359,9 @@ const bindOrders = (status, active, storetype, params) => {
         data: null,
         orderable: false,
         render: function (data, type, row) {
-          let icon;
+          let icon = "";
+          let addStat = "";
+          if (row.OrderType == "Panorama") addStat = row.StatusAdditional;
           switch (row.Status) {
             case "Draft":
               icon = `<i class="bi opacity-50 bi-stopwatch"></i>`;
@@ -386,7 +384,8 @@ const bindOrders = (status, active, storetype, params) => {
           }
 
           // return `<span class="badge bg-blue text-blue-fg">${icon} ${row.Status}</span></div>`;
-          return icon + " " + row.Status;
+          // return icon + " " + row.Status;
+          return `${icon} ${row.Status} <br> <span class="text-secondary">${addStat}</span>`;
         },
       },
       {
@@ -403,14 +402,14 @@ const bindOrders = (status, active, storetype, params) => {
           // DISPLAY BUTTON DELETE
           if (row.Status === "Draft") {
             displayDelete = "";
-            if (roleName === "PPIC & DE" && userId !== row.UserId) {
+            if (ROLENAME === "PPIC & DE" && CUSTOMERID !== row.CustomerId) {
               displayDelete = "d-none";
             }
           }
-          // if (roleName === "Administrator" && row.Status !== "Canceled") {
-          if (roleName === "Administrator") displayDelete = "";
+          // if (ROLENAME === "Administrator" && row.Status !== "Canceled") {
+          if (ROLENAME === "Administrator") displayDelete = "";
 
-          if (roleName === "Manager" || roleName === "Account") {
+          if (ROLENAME === "Manager" || ROLENAME === "Account") {
             displayDelete = "d-none";
           }
 
@@ -418,12 +417,12 @@ const bindOrders = (status, active, storetype, params) => {
             displayDelete = "d-none";
 
           // DISPLAY BUTTON CHANGE STATUS
-          if (roleName === "Administrator" || roleName === "PPIC & DE") {
+          if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
             displayChangeStatus = "";
           }
           if (row.Status === "Completed" || row.Status === "Canceled") {
             displayChangeStatus = "d-none";
-            if (roleName === "Administrator") {
+            if (ROLENAME === "Administrator") {
               displayChangeStatus = "";
             }
           }
@@ -431,7 +430,7 @@ const bindOrders = (status, active, storetype, params) => {
             displayChangeStatus = "d-none";
 
           // DISPLAY BUTTON DOWNLOAD CSV
-          if (roleName === "Administrator" || roleName === "PPIC & DE") {
+          if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
             if (row.Status !== "Draft" && row.Status !== "Canceled") {
               displayDownloadCSV = "";
             }
@@ -439,7 +438,7 @@ const bindOrders = (status, active, storetype, params) => {
 
           // DISPLAY BUTTON RESTORE
           if (
-            roleName === "Administrator" &&
+            ROLENAME === "Administrator" &&
             (row.Active === "False" || row.Active === "0")
           ) {
             displayRestore = "";
@@ -548,7 +547,7 @@ const handlerSelStatus = async (params, statusNow) => {
 
   // === cardOrder => status ===
   if (params === "#cardOrder #status") {
-    if (roleName === "PPIC & DE") {
+    if (ROLENAME === "PPIC & DE") {
       data = [
         { value: "all", text: "All" },
         { value: "New Order", text: "New Order" },
@@ -578,7 +577,7 @@ const handlerSelStatus = async (params, statusNow) => {
           { value: "New Order", text: "New Order" },
           { value: "Canceled", text: "Canceled" },
         ];
-        if (roleName !== "Administrator") {
+        if (ROLENAME !== "Administrator") {
           data.unshift({ value: "Draft", text: "Draft" });
         }
         break;
@@ -601,7 +600,7 @@ const handlerSelStatus = async (params, statusNow) => {
         break;
     }
 
-    if (roleName === "Administrator") {
+    if (ROLENAME === "Administrator") {
       data.unshift({ value: "Draft", text: "Draft" });
     }
   }
@@ -641,7 +640,7 @@ const handlerSelStatus = async (params, statusNow) => {
 // HANDLER CREATE NEW ORDER
 const handlerCreateNewOrder = async () => {
   try {
-    const response = await fetch(`${uriMethod}/SetHeaderAction`, {
+    const response = await fetch(`${URIMETHOD}/SetHeaderAction`, {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify({ action: "AddHeader" }),
@@ -661,7 +660,7 @@ const handlerCreateNewOrder = async () => {
 // HANDLER OPEN DETAIL ORDER
 const handlerOpenDetailOrder = async (headerid) => {
   try {
-    const response = await fetch(`${uriMethod}/SetSessionOpenOrderDetail`, {
+    const response = await fetch(`${URIMETHOD}/SetSessionOpenOrderDetail`, {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify({ headerid }),
@@ -683,7 +682,7 @@ const handlerChangeStatus = async (headerid) => {
   if (!headerid) return;
 
   try {
-    const response = await fetch(`${uriMethod}/BindOrderId`, {
+    const response = await fetch(`${URIMETHOD}/BindOrderId`, {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify({ headerid }),
@@ -698,7 +697,7 @@ const handlerChangeStatus = async (headerid) => {
 
     if (!data || data.length === 0) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? "No data returned from server : handlerChangeStatus"
           : "Please contact our IT team at support@onlineorder.au";
       await isError(msg);
@@ -714,7 +713,7 @@ const handlerChangeStatus = async (headerid) => {
     }
   } catch (error) {
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? error.message
         : "Please contact our IT team at support@onlineorder.au";
     await isError(msg);
@@ -773,7 +772,7 @@ const handlerDateInfo = async (headerid) => {
   if (!headerid) return;
 
   try {
-    const response = await fetch(`${uriMethod}/BindOrderId`, {
+    const response = await fetch(`${URIMETHOD}/BindOrderId`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -790,7 +789,7 @@ const handlerDateInfo = async (headerid) => {
 
     if (!data || data.length === 0) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? "No data returned from server : handlerDateInfo"
           : "Please contact our IT team at support@onlineorder.au";
       await isError(msg);
@@ -803,7 +802,7 @@ const handlerDateInfo = async (headerid) => {
     }
   } catch (error) {
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? error.message
         : "Please contact our IT team at support@onlineorder.au";
     await isError(msg);
@@ -835,7 +834,7 @@ const setValueModalDateInfo = (itemData) => {
         return;
       }
 
-      if (roleName === "Administrator") {
+      if (ROLENAME === "Administrator") {
         const options = {
           weekday: "long",
           year: "numeric",
@@ -928,7 +927,7 @@ const handlerSwitch = async (id, name, order, ref, del, act) => {
   if (!result.isConfirmed) return;
 
   try {
-    const response = await fetch(`${uriMethod}/SwitchOrder`, {
+    const response = await fetch(`${URIMETHOD}/SwitchOrder`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -981,7 +980,7 @@ const handlerDownloadCSV = async (headerId) => {
   // hanya lanjut download jika Swal ditutup oleh timer
   if (result.dismiss === Swal.DismissReason.timer) {
     try {
-      const response = await fetch(`${uriMethod}/DownloadCSVOrder`, {
+      const response = await fetch(`${URIMETHOD}/DownloadCSVOrder`, {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({ HeaderId: headerId }), // huruf besar 'H' sesuai server
@@ -1013,7 +1012,7 @@ const handlerDownloadCSV = async (headerId) => {
       URL.revokeObjectURL(url);
     } catch (error) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? error.message
           : "Something went wrong while downloading the CSV.";
       await isError(msg);

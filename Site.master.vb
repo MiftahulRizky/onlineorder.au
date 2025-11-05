@@ -28,8 +28,8 @@ Partial Public Class SiteMaster
         Response.Redirect("~/account/login", False)
     End Sub
 
-    Protected Sub liOrder_Click(sender As Object, e As EventArgs)
-        Response.Redirect("~/account/login", False)
+    Protected Sub linkOrder_Click(sender As Object, e As EventArgs)
+        Response.Redirect("~/order", False)
     End Sub
 
     Private Sub MyLoad()
@@ -45,6 +45,7 @@ Partial Public Class SiteMaster
                 Session("LevelId") = myData.Tables(0).Rows(0).Item("LevelId").ToString()
                 Session("LevelName") = myData.Tables(0).Rows(0).Item("LevelName").ToString()
                 Session("CustomerId") = myData.Tables(0).Rows(0).Item("CustomerId").ToString()
+                Session("CustomerCompany") = myData.Tables(0).Rows(0).Item("CustomerCompany").ToString()
                 Session("resetLogin") = myData.Tables(0).Rows(0).Item("Reset")
                 Session("CustomerAccount") = myData.Tables(0).Rows(0).Item("CustomerAccount").ToString()
 

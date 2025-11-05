@@ -48,10 +48,12 @@
                                  <thead>
                                      <tr>
                                          <th class="text-center">#</th>
-                                         <th class="h3 text-center">JOB NO</th>
-                                         <th class="h3">STORE NAME</th>
+                                         <th class="h3 text-center">ID</th>
+                                         <th class="h3 text-center">ORDER ID</th>
+                                         <th class="h3">RETAILER NAME</th>
                                          <th class="h3">ORDER NUMBER</th>
-                                         <th class="h3">REFERENCE</th>
+                                         <th class="h3">ORDER NAME</th>
+                                         <th class="h3">ORDER TYPE</th>
                                          <th class="h3 text-center">DELIVERY</th>
                                          <th class="h3 text-center">STATUS</th>
                                          <th class="text-center">ACTIONS</th>
@@ -61,10 +63,12 @@
                                  <thead>
                                      <tr>
                                          <th class="text-center">#</th>
-                                         <th class="h3 text-center">JOB NO</th>
-                                         <th class="h3">STORE NAME</th>
+                                         <th class="h3 text-center">ID</th>
+                                         <th class="h3 text-center">ORDER ID</th>
+                                         <th class="h3">RETAILER NAME</th>
                                          <th class="h3">ORDER NUMBER</th>
-                                         <th class="h3">REFERENCE</th>
+                                         <th class="h3">ORDER NAME</th>
+                                         <th class="h3">ORDER TYPE</th>
                                          <th class="h3 text-center">DELIVERY</th>
                                          <th class="h3 text-center">STATUS</th>
                                          <th class="text-center">ACTIONS</th>
@@ -219,14 +223,14 @@
 
 
     <script type="text/javascript">
-        let userId = '<%= Session("userId") %>';
-        let userName = '<%= Session("UserName") %>';
-        let loginId = '<%= Session("LoginId") %>';
-        let roleName = '<%= Session("RoleName") %>';  
-        let storeId = '<%= Session("StoreId") %>';
-        let storeCompany = '<%= Session("StoreCompany") %>';
-        let levelName = '<%= Session("LevelName") %>';
-        let uriMethod = '/Methods/Order/DefaultMethod.aspx';      
+        let CUSTOMERID = '<%= Session("CustomerId") %>';
+        let USERNAME = '<%= Session("UserName") %>';
+        let LOGINID = '<%= Session("LoginId") %>';
+        let ROLENAME = '<%= Session("RoleName") %>';  
+        let CUSTOMERCONTACTID = '<%= Session("CustomerContactId") %>';
+        let CUSTOMERCOMPANY = '<%= Session("StoreCompany") %>';
+        let LEVELNAME = '<%= Session("LevelName") %>';
+        let URIMETHOD = '/Methods/Order/DefaultMethod.aspx';      
         let src="../Scripts/OrderHeaderPage/OrderHeaderPage.js";
     </script>
     <script src="/Scripts/Order/Default.js?<%= DateTime.Now.Ticks %>"></script>
