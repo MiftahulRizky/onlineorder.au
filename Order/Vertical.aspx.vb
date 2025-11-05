@@ -526,26 +526,28 @@ Partial Class Order_Vertical
                     End If
 
                     If String.IsNullOrWhiteSpace(txtChainLength.Text) Then
-                        If dropValue > 2700 Then
+                        If dropValue >= 3000 Then
                             chainLength = "2200"
-                        ElseIf dropValue > 2400 Then
+                        ElseIf dropValue >= 2700 Then
                             chainLength = "2000"
-                        ElseIf dropValue > 2000 Then
+                        ElseIf dropValue >= 2400 Then
                             chainLength = "1800"
-                        ElseIf dropValue > 1600 Then
+                        ElseIf dropValue >= 2000 Then
                             chainLength = "1500"
-                        ElseIf dropValue > 1300 Then
-                            chainLength = "1200"
-                        ElseIf dropValue > 1100 Then
+                        ElseIf dropValue >= 1600 Then
+                            chainLength = "1250"
+                        ElseIf dropValue >= 1300 Then
                             chainLength = "1000"
-                        ElseIf dropValue > 800 Then
+                        ElseIf dropValue >= 1100 Then
                             chainLength = "800"
-                        ElseIf dropValue > 700 Then
+                        ElseIf dropValue >= 800 Then
                             chainLength = "600"
                         Else
                             chainLength = "500"
                         End If
                     End If
+
+
                     txtChainLength.Text = chainLength '#return new chain length
 
                     Dim chainName As String = chainLength & " " & "Chain + Joiner" & " " & chainColour
