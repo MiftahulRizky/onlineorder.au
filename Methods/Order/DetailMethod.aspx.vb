@@ -231,9 +231,9 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindOrderHeaderByID(ByVal headerid As String) As Object
+    Public Shared Function BindOrderHeaderByID(ByVal headerid As String, ByVal ordertype As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM view_headers WHERE Id = '" + headerid + "'")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE Id = '" + headerid + "' AND OrderType = '" + ordertype + "'")
 
             Dim data As DataSet = DirectCast(datas, DataSet)
 
@@ -285,6 +285,23 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function GetCreatedBy(ByVal id As String) As Object
+        Dim result As New Dictionary(Of String, String)
+        
+        Dim detaildata As DataSet = publicCfg.GetListData("SELECT * FROM Users WHERE UserId='"+id+"'")
+
+        If detaildata.Tables(0).Rows.Count > 0 Then
+                Dim nameUser As String = detaildata.Tables(0).Rows(0)("FullName").ToString()
+                result = New Dictionary(Of String, String) From {
+                    {"createdby", nameUser}
+                }
+        End If
+
+        Return result
+    End Function
+
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
@@ -296,7 +313,7 @@ Partial Class Methods_Order_DetailMethod
         Dim rolename As String = HttpContext.Current.Session("RoleName").ToString()
         ' Dim sessionCustomerId As String = HttpContext.Current.Session("CustomerId").ToString()
         ' Dim sessionUserId As String = sessionCustomerId
-        Dim sessionUserId As String = HttpContext.Current.Session("userId").ToString()
+        Dim sessionUserId As String = HttpContext.Current.Session("CustomerId").ToString()
 
         
         Try
@@ -1552,8 +1569,8 @@ Partial Class Methods_Order_DetailMethod
             Dim url As String = String.Empty
             Dim Action As String = String.Empty
             Dim textSwall As String = String.Empty
-            Dim RoleName As String = HttpContext.Current.Session("rolename").ToString()
-            Dim sessionUserId As String = HttpContext.Current.Session("userid").ToString()
+            Dim RoleName As String = HttpContext.Current.Session("RoleName").ToString()
+            Dim sessionUserId As String = HttpContext.Current.Session("CustomerId").ToString()
 
             Dim detailData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + headerid + "' AND Active=1 ORDER BY Id ASC")
             If detailData.Tables(0).Rows.Count < 1  Then

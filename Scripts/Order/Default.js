@@ -17,36 +17,59 @@ document.addEventListener("DOMContentLoaded", function () {
 // CHANGE FILTER STATUS
 document.querySelector("#cardOrder #status").addEventListener("change", (e) => {
   const status = e.target.value;
+  const ordertype = document.querySelector("#cardOrder #ordertype").value;
   const active = document.querySelector("#cardOrder #active").value;
   const storetype = document.querySelector("#cardOrder #storetype").value;
 
   // Simpan ke localStorage
   setState("filter_orders_status", status);
+  setState("filter_orders_ordertype", ordertype);
   setState("filter_orders_active", active);
   setState("filter_orders_storetype", storetype);
 
-  bindOrders(status, active, storetype, "#cardOrder #tableAjax");
+  bindOrders(status, ordertype, active, storetype, "#cardOrder #tableAjax");
 });
+
+// CHANGE FILTER ORDERTYPE
+document
+  .querySelector("#cardOrder #ordertype")
+  .addEventListener("change", (e) => {
+    const status = document.querySelector("#cardOrder #status").value;
+    const ordertype = e.target.value;
+    const active = document.querySelector("#cardOrder #active").value;
+    const storetype = document.querySelector("#cardOrder #storetype").value;
+
+    // Simpan ke localStorage
+    setState("filter_orders_status", status);
+    setState("filter_orders_ordertype", ordertype);
+    setState("filter_orders_active", active);
+    setState("filter_orders_storetype", storetype);
+
+    bindOrders(status, ordertype, active, storetype, "#cardOrder #tableAjax");
+  });
 
 // BUTTON CREATE ORDER
 document
   .querySelector("#cardOrder #btnCreateNewOrder")
   .addEventListener("click", () => {
-    handlerCreateNewOrder();
+    // handlerCreateNewOrder();
+    window.location.href = "/order/create?arterix=add";
   });
 
 // CHANGE FILTER ACTIVE
 document.querySelector("#cardOrder #active").addEventListener("change", (e) => {
   const status = document.querySelector("#cardOrder #status").value;
+  const ordertype = document.querySelector("#cardOrder #ordertype").value;
   const active = e.target.value;
   const storetype = document.querySelector("#cardOrder #storetype").value;
 
   // Simpan ke localStorage
   setState("filter_orders_status", status);
+  setState("filter_orders_ordertype", ordertype);
   setState("filter_orders_active", active);
   setState("filter_orders_storetype", storetype);
 
-  bindOrders(status, active, storetype, "#cardOrder #tableAjax");
+  bindOrders(status, ordertype, active, storetype, "#cardOrder #tableAjax");
 });
 
 // CHANGE FILTER STORE TYPE
@@ -54,22 +77,31 @@ document
   .querySelector("#cardOrder #storetype")
   .addEventListener("change", (e) => {
     const status = document.querySelector("#cardOrder #status").value;
+    const ordertype = document.querySelector("#cardOrder #ordertype").value;
     const active = document.querySelector("#cardOrder #active").value;
     const storetype = e.target.value;
 
     // Simpan ke localStorage
     setState("filter_orders_status", status);
-    setState("filter_orders_active", active);
+    setState("filter_orders_ordertype", ordertype);
     setState("filter_orders_storetype", storetype);
 
-    bindOrders(status, active, storetype, "#cardOrder #tableAjax");
+    bindOrders(status, ordertype, active, storetype, "#cardOrder #tableAjax");
   });
 
 // BUTTON DETAIL ORDER
 document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnDetailOrder") {
     const id = e.target.dataset.id;
-    handlerOpenDetailOrder(id);
+    const type = e.target.dataset.type;
+    // handlerOpenDetailOrder(id);
+    if (type == "Blinds") {
+      window.location.href = `/order/detail?ultron=${id}&infinity=${type.toLowerCase()}`;
+    } else if (type == "Panorama") {
+      window.location.href = `/order/loop/detail?ultron=${id}&infinity=${type.toLowerCase()}`;
+    } else {
+      window.location.href = `/order`;
+    }
   }
 });
 
@@ -262,7 +294,7 @@ const submitChangeStatus = async () => {
 // --------------------------------------------||Binding Function ||-------------------------------------------
 // BIND ORDERS
 let tableData;
-const bindOrders = (status, active, storetype, params) => {
+const bindOrders = (status, ordertype, active, storetype, params) => {
   const paramData = {
     customercontactid: CUSTOMERCONTACTID,
     storecompany: CUSTOMERCOMPANY,
@@ -270,6 +302,7 @@ const bindOrders = (status, active, storetype, params) => {
     rolename: ROLENAME,
     levelname: LEVELNAME,
     status: status,
+    ordertype: ordertype,
     active: active,
     customeraccount: storetype,
   };
@@ -280,7 +313,7 @@ const bindOrders = (status, active, storetype, params) => {
     order: [],
     stateSave: true,
     stateDuration: -1,
-    pageLength: 50,
+    pageLength: 25,
     language: {
       search: "",
       lengthMenu: "_MENU_",
@@ -334,18 +367,18 @@ const bindOrders = (status, active, storetype, params) => {
           return `<div class="text-center">${data}</div>`;
         },
       },
-      { width: "5%", data: "Id" },
-      { width: "5%", data: "OrderId" },
-      { width: "30%", data: "CustomerName" },
-      { width: "10%", data: "OrderNumber" },
-      { width: "10%", data: "OrderName" },
-      { width: "10%", data: "OrderType" },
+      { width: "5%", data: "Id", orderable: false },
+      { width: "10%", data: "OrderId", orderable: false },
+      { width: "20%", data: "CustomerName", orderable: false },
+      { width: "15%", data: "OrderNumber", orderable: false },
+      { width: "15%", data: "OrderName", orderable: false },
+      { width: "5%", data: "OrderType", orderable: false },
       {
         width: "10%",
         data: null,
         orderable: false,
         render: function (data, type, row) {
-          let findDelivery = "-";
+          let findDelivery = "";
           if (row.Delivery === "Pick Up") {
             findDelivery = `<span class='badge bg-pink-lt'><i class='bi bi-truck-front'></i> ${row.Delivery}</span>`;
           } else if (row.Delivery === "Delivery") {
@@ -355,7 +388,7 @@ const bindOrders = (status, active, storetype, params) => {
         },
       },
       {
-        width: "10%",
+        width: "12%",
         data: null,
         orderable: false,
         render: function (data, type, row) {
@@ -364,6 +397,7 @@ const bindOrders = (status, active, storetype, params) => {
           if (row.OrderType == "Panorama") addStat = row.StatusAdditional;
           switch (row.Status) {
             case "Draft":
+            case "Unsubmitted":
               icon = `<i class="bi opacity-50 bi-stopwatch"></i>`;
               break;
             case "New Order":
@@ -382,132 +416,18 @@ const bindOrders = (status, active, storetype, params) => {
               icon = `<i class="bi opacity-50 bi-check-circle"></i>`;
               break;
           }
-
-          // return `<span class="badge bg-blue text-blue-fg">${icon} ${row.Status}</span></div>`;
-          // return icon + " " + row.Status;
           return `${icon} ${row.Status} <br> <span class="text-secondary">${addStat}</span>`;
         },
       },
       {
-        width: "5%",
+        width: "3%",
         data: null,
         orderable: false,
         render: function (data, type, row) {
-          // --------------------|| Visible Button ||--------------------#
-          let displayDelete = "d-none";
-          let displayChangeStatus = "d-none";
-          let displayDownloadCSV = "d-none";
-          let displayRestore = "d-none";
-
-          // DISPLAY BUTTON DELETE
-          if (row.Status === "Draft") {
-            displayDelete = "";
-            if (ROLENAME === "PPIC & DE" && CUSTOMERID !== row.CustomerId) {
-              displayDelete = "d-none";
-            }
-          }
-          // if (ROLENAME === "Administrator" && row.Status !== "Canceled") {
-          if (ROLENAME === "Administrator") displayDelete = "";
-
-          if (ROLENAME === "Manager" || ROLENAME === "Account") {
-            displayDelete = "d-none";
-          }
-
-          if (row.Active === "False" || row.Active === "0")
-            displayDelete = "d-none";
-
-          // DISPLAY BUTTON CHANGE STATUS
-          if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
-            displayChangeStatus = "";
-          }
-          if (row.Status === "Completed" || row.Status === "Canceled") {
-            displayChangeStatus = "d-none";
-            if (ROLENAME === "Administrator") {
-              displayChangeStatus = "";
-            }
-          }
-          if (row.Active === "False" || row.Active === "0")
-            displayChangeStatus = "d-none";
-
-          // DISPLAY BUTTON DOWNLOAD CSV
-          if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
-            if (row.Status !== "Draft" && row.Status !== "Canceled") {
-              displayDownloadCSV = "";
-            }
-          }
-
-          // DISPLAY BUTTON RESTORE
-          if (
-            ROLENAME === "Administrator" &&
-            (row.Active === "False" || row.Active === "0")
-          ) {
-            displayRestore = "";
-          }
-          return `
-            <div class="dropdown text-center">
-              <button class="border-0 bg-transparent dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li>
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnDetailOrder" data-id="${row.Id}">
-                    <i class="ti ti-edit me-1 fs-2 opacity-50"></i>Edit / Detail
-                  </a>
-                </li>
-                <li class="${displayDelete}">
-                  <a class="dropdown-item text-danger" href="javascript:void(0)" id="btnDeleteOrder" data-id="${row.Id}" data-name="${row.StoreName}" data-order="${row.OrderNo}" data-ref="${row.OrderCust}" data-del="${row.Delivery}">
-                    <i class="ti ti-trash-x me-1 fs-2 opacity-50"></i>Delete
-                  </a>
-                </li>
-                <li class="${displayRestore}">
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnRestoreOrder" data-id="${row.Id}" data-name="${row.StoreName}" data-order="${row.OrderNo}" data-ref="${row.OrderCust}" data-del="${row.Delivery}">
-                    <i class="ti ti-restore me-1 fs-2 opacity-50"></i>Restore 
-                  </a>
-                </li>
-                <div class="dropdown-divider"></div>
-                <li>
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnDateInfo" data-id="${row.Id}">
-                    <i class="ti ti-calendar-event me-1 fs-2 opacity-50"></i>Date Information
-                  </a>
-                </li>
-                
-                <li class="${displayChangeStatus}">
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnChangeStatus" data-id="${row.Id}">
-                    <i class="ti ti-checkup-list me-1 fs-2 opacity-50"></i>
-                    Change Status
-                  </a>
-                </li>
-                <li class="${displayDownloadCSV}">
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnDownloadCsv" data-id="${row.Id}">
-                 <i class="ti ti-file-type-csv me-1 fs-2 opacity-50"></i>Download CSV Order 
-                  </a>
-                </li>
-                
-              </ul>
-            </div>`;
+          return dropdownActionButton(data, type, row, params);
         },
       },
     ],
-  });
-};
-
-const stylingColumnSearchAndPaging = (params) => {
-  const input = $(params + "_filter input");
-  input
-    .addClass("form-control form-control-sm")
-    .attr("placeholder", "🔍 Type here to search...")
-    .css({
-      width: "250px",
-      height: "40px",
-      fontSize: "15px",
-      display: "inline-block",
-    });
-
-  const lengthSelect = $(params + "_length select");
-  lengthSelect.addClass("form-select form-select-sm").css({
-    width: "65px",
-    fontSize: "15px",
-    height: "40px",
   });
 };
 
@@ -559,7 +479,7 @@ const handlerSelStatus = async (params, statusNow) => {
     } else {
       data = [
         { value: "all", text: "All" },
-        { value: "Draft", text: "Draft" },
+        { value: "Draft", text: "Draft / Unsubmitted" },
         { value: "New Order", text: "New Order" },
         { value: "In Production", text: "In Production" },
         { value: "On Hold", text: "On Hold" },
@@ -578,7 +498,7 @@ const handlerSelStatus = async (params, statusNow) => {
           { value: "Canceled", text: "Canceled" },
         ];
         if (ROLENAME !== "Administrator") {
-          data.unshift({ value: "Draft", text: "Draft" });
+          data.unshift({ value: "Draft", text: "Draft / Unsubmitted" });
         }
         break;
 
@@ -601,7 +521,7 @@ const handlerSelStatus = async (params, statusNow) => {
     }
 
     if (ROLENAME === "Administrator") {
-      data.unshift({ value: "Draft", text: "Draft" });
+      data.unshift({ value: "Draft", text: "Draft / Unsubmitted" });
     }
   }
 
@@ -616,20 +536,24 @@ const handlerSelStatus = async (params, statusNow) => {
   // === cardOrder behavior ===
   if (params === "#cardOrder #status") {
     const uiStatus = sel.options[sel.selectedIndex]?.value || "";
+    const uiOrderType =
+      document.querySelector("#cardOrder #ordertype")?.value || "";
     const uiActive = document.querySelector("#cardOrder #active")?.value || "";
     const uiStoreType =
       document.querySelector("#cardOrder #storetype")?.value || "";
 
     const statusToUse = getState("filter_orders_status") || uiStatus;
+    const orderTypeToUse = getState("filter_orders_ordertype") || uiOrderType;
     const activeToUse = getState("filter_orders_active") || uiActive;
     const storeTypeToUse = getState("filter_orders_storetype") || uiStoreType;
 
     // Update filter UI
-    setFilterValues(statusToUse, activeToUse, storeTypeToUse);
+    setFilterValues(statusToUse, orderTypeToUse, activeToUse, storeTypeToUse);
 
     // Jika bindOrders adalah fungsi async, kita tunggu dulu
     await bindOrders(
       statusToUse,
+      orderTypeToUse,
       activeToUse,
       storeTypeToUse,
       "#cardOrder #tableAjax"
@@ -651,7 +575,7 @@ const handlerCreateNewOrder = async () => {
     }
 
     // Jika sukses, langsung arahkan ke halaman order header
-    window.location.href = "/order/header";
+    window.location.href = "/order/create";
   } catch (error) {
     isError("Gagal menyetel session: " + error.message);
   }
@@ -1095,8 +1019,124 @@ const getState = (name) => {
   return localStorage.getItem(name);
 };
 
-const setFilterValues = (status, active, storeType) => {
+const setFilterValues = (status, ordertype, active, storeType) => {
   document.querySelector("#cardOrder #status").value = status;
+  document.querySelector("#cardOrder #ordertype").value = ordertype;
   document.querySelector("#cardOrder #active").value = active;
   document.querySelector("#cardOrder #storetype").value = storeType;
+};
+
+// --------------------------------------------||Additional Datatable Function ||-------------------------------------------
+const dropdownActionButton = (data, type, row, params) => {
+  // --------------------|| Visible Button ||--------------------#
+  let displayDelete = "d-none";
+  let displayChangeStatus = "d-none";
+  let displayDownloadCSV = "d-none";
+  let displayRestore = "d-none";
+
+  // DISPLAY BUTTON DELETE
+  if (row.Status === "Draft") {
+    displayDelete = "";
+    if (ROLENAME === "PPIC & DE" && CUSTOMERID !== row.CustomerId) {
+      displayDelete = "d-none";
+    }
+  }
+  // if (ROLENAME === "Administrator" && row.Status !== "Canceled") {
+  if (ROLENAME === "Administrator") displayDelete = "";
+
+  if (ROLENAME === "Manager" || ROLENAME === "Account") {
+    displayDelete = "d-none";
+  }
+
+  if (row.Active === "False" || row.Active === "0") displayDelete = "d-none";
+
+  // DISPLAY BUTTON CHANGE STATUS
+  if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
+    displayChangeStatus = "";
+  }
+  if (row.Status === "Completed" || row.Status === "Canceled") {
+    displayChangeStatus = "d-none";
+    if (ROLENAME === "Administrator") {
+      displayChangeStatus = "";
+    }
+  }
+  if (row.Active === "False" || row.Active === "0")
+    displayChangeStatus = "d-none";
+
+  // DISPLAY BUTTON DOWNLOAD CSV
+  if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
+    if (row.Status !== "Draft" && row.Status !== "Canceled") {
+      displayDownloadCSV = "";
+    }
+  }
+
+  // DISPLAY BUTTON RESTORE
+  if (
+    ROLENAME === "Administrator" &&
+    (row.Active === "False" || row.Active === "0")
+  ) {
+    displayRestore = "";
+  }
+  return `
+            <div class="dropdown text-center">
+              <button class="border-0 bg-transparent dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li>
+                  <a class="dropdown-item" href="javascript:void(0)" id="btnDetailOrder" data-id="${row.Id}" data-type="${row.OrderType}">
+                    <i class="ti ti-edit me-1 fs-2 opacity-50"></i>Edit / Detail
+                  </a>
+                </li>
+                <li class="${displayDelete}">
+                  <a class="dropdown-item text-danger" href="javascript:void(0)" id="btnDeleteOrder" data-id="${row.Id}" data-name="${row.CustomerName}" data-order="${row.OrderNumber}" data-ref="${row.OrderName}" data-del="${row.Delivery}">
+                    <i class="ti ti-trash-x me-1 fs-2 opacity-50"></i>Delete
+                  </a>
+                </li>
+                <li class="${displayRestore}">
+                  <a class="dropdown-item" href="javascript:void(0)" id="btnRestoreOrder" data-id="${row.Id}" data-name="${row.StoreName}" data-order="${row.OrderNo}" data-ref="${row.OrderCust}" data-del="${row.Delivery}">
+                    <i class="ti ti-restore me-1 fs-2 opacity-50"></i>Restore 
+                  </a>
+                </li>
+                <div class="dropdown-divider"></div>
+                <li>
+                  <a class="dropdown-item" href="javascript:void(0)" id="btnDateInfo" data-id="${row.Id}">
+                    <i class="ti ti-calendar-event me-1 fs-2 opacity-50"></i>Date Information
+                  </a>
+                </li>
+                
+                <li class="${displayChangeStatus}">
+                  <a class="dropdown-item" href="javascript:void(0)" id="btnChangeStatus" data-id="${row.Id}">
+                    <i class="ti ti-checkup-list me-1 fs-2 opacity-50"></i>
+                    Change Status
+                  </a>
+                </li>
+                <li class="${displayDownloadCSV}">
+                  <a class="dropdown-item" href="javascript:void(0)" id="btnDownloadCsv" data-id="${row.Id}">
+                 <i class="ti ti-file-type-csv me-1 fs-2 opacity-50"></i>Download CSV Order 
+                  </a>
+                </li>
+                
+              </ul>
+            </div>`;
+};
+
+const stylingColumnSearchAndPaging = (params) => {
+  const input = $(params + "_filter input");
+  input
+    .addClass("form-control form-control-sm")
+    .attr("placeholder", "🔍 Type here to search...")
+    .css({
+      width: "250px",
+      height: "40px",
+      fontSize: "15px",
+      display: "inline-block",
+    });
+
+  const lengthSelect = $(params + "_length select");
+  lengthSelect.addClass("form-select form-select-sm").css({
+    width: "65px",
+    fontSize: "15px",
+    height: "40px",
+  });
 };

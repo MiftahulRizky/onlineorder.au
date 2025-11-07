@@ -24,6 +24,10 @@
                             </h3>
                             <div class="card-actions d-flex">
                                 <select name="status" id="status" class="form-select " style="width: 180px;"></select>
+                                <select name="ordertype" id="ordertype" class="form-select ms-3" style="width: 180px;">
+                                    <option value="Blinds">BLINDS</option>
+                                    <option value="Panorama">PANORAMA</option>
+                                </select>
                                 <button type="button" class="btn btn-primary float-end ms-3" id="btnCreateNewOrder">
                                     <i class="fa-solid fa-plus me-2"></i>
                                     Create Order
@@ -48,14 +52,14 @@
                                  <thead>
                                      <tr>
                                          <th class="text-center">#</th>
-                                         <th class="h3 text-center">ID</th>
-                                         <th class="h3 text-center">ORDER ID</th>
+                                         <th class="h3">ID</th>
+                                         <th class="h3">ORDER ID</th>
                                          <th class="h3">RETAILER NAME</th>
                                          <th class="h3">ORDER NUMBER</th>
                                          <th class="h3">ORDER NAME</th>
                                          <th class="h3">ORDER TYPE</th>
-                                         <th class="h3 text-center">DELIVERY</th>
-                                         <th class="h3 text-center">STATUS</th>
+                                         <th class="h3">DELIVERY</th>
+                                         <th class="h3">STATUS</th>
                                          <th class="text-center">ACTIONS</th>
                                      </tr>
                                  </thead>
@@ -63,14 +67,14 @@
                                  <thead>
                                      <tr>
                                          <th class="text-center">#</th>
-                                         <th class="h3 text-center">ID</th>
-                                         <th class="h3 text-center">ORDER ID</th>
+                                         <th class="h3 ">ID</th>
+                                         <th class="h3">ORDER ID</th>
                                          <th class="h3">RETAILER NAME</th>
                                          <th class="h3">ORDER NUMBER</th>
                                          <th class="h3">ORDER NAME</th>
                                          <th class="h3">ORDER TYPE</th>
-                                         <th class="h3 text-center">DELIVERY</th>
-                                         <th class="h3 text-center">STATUS</th>
+                                         <th class="h3 ">DELIVERY</th>
+                                         <th class="h3 ">STATUS</th>
                                          <th class="text-center">ACTIONS</th>
                                      </tr>
                                  </thead>

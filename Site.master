@@ -92,9 +92,31 @@
             
             const isSuccess = (msg) => {
                 return Swal.fire({
-                    title: "Success!",
+                    title: "Success",
                     html: msg,
                     icon: "success",
+                    customClass: {
+                        popup: isDark ? "bg-dark text-white" : "bg-white text-dark"
+                    }
+                });
+            }
+
+            const isWarning = (msg) => {
+                return Swal.fire({
+                    title: "Warning!",
+                    html: msg,
+                    icon: "warning",
+                    customClass: {
+                        popup: isDark ? "bg-dark text-white" : "bg-white text-dark"
+                    }
+                });
+            }
+
+            const isInfo = (msg) => {
+                return Swal.fire({
+                    title: "Information",
+                    html: msg,
+                    icon: "info",
                     customClass: {
                         popup: isDark ? "bg-dark text-white" : "bg-white text-dark"
                     }

@@ -129,15 +129,32 @@
     </div>
 
     <!-- custom js -->
-    <script type="text/javascript" src="/Content/dist/js/my/header.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             loaderFadeOut();
         })
-        // Function untuk menampilkan pesan error dari code-behind
-        function showMessageError(msg){
+
+        const msgError = document.getElementById("MainContent_divError");
+
+        document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+            el.addEventListener("change", (e) => {
+                e.target.classList.remove("is-invalid");
+                resetError();
+            })
+            el.addEventListener("input", (e) => {
+                e.target.classList.remove("is-invalid");
+                resetError();
+            });
+        })
+
+        const resetError = () => {
+            if (msgError) {
+                msgError.classList.add("d-none");
+            }
+        }
+        const showMessageError = (msg) =>{
             Swal.fire({
-                icon: "error",
+                icon: "warning",
                 title: "Oops...",
                 html: msg,
                 customClass: {

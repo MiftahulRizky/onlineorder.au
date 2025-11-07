@@ -59,7 +59,8 @@ document.querySelector("#btnSubmit").addEventListener("click", () => {
 
 // BUTTON EDIT HEADER
 document.querySelector("#btnEditHeader").addEventListener("click", () => {
-  handlerEditHeader(headerId);
+  // handlerEditHeader(headerId);
+  window.location.href = "/order/create?arterix=edit&obelix=" + headerId;
 });
 
 // BUTTON DELETE HEADER
@@ -485,7 +486,7 @@ const handlerDisplayElement = (item) => {
   }
 
   // btnReprintJobSheet & btnChangeJobStatus
-  if (item.JoNumber) {
+  if (item.JoNumberId) {
     btnReprintJobSheet.removeAttribute("hidden");
     // btnChangeJobStatus.removeAttribute("hidden");
   }
@@ -553,23 +554,23 @@ const handlerDisplayElement = (item) => {
 const handlerHeaderInfo = (item) => {
   // INITIALIZE ELEMENTS
   // CARD 1
-  spanJoNumber = document.getElementById("spanJoNumber");
-  spanOrderNo = document.getElementById("spanOrderNo");
-  spanOrderCust = document.getElementById("spanOrderCust");
-  spanCreatedDate = document.getElementById("spanCreatedDate");
-  spanCreatedBy = document.getElementById("spanCreatedBy");
-  spanNote = document.getElementById("spanNote");
-  spanStatusNote = document.getElementById("spanStatusNote");
-  spanStatusOrder = document.getElementById("spanStatusOrder");
-  spanDelivery = document.getElementById("spanDelivery");
+  const spanJoNumber = document.getElementById("spanJoNumber");
+  const spanOrderNo = document.getElementById("spanOrderNo");
+  const spanOrderCust = document.getElementById("spanOrderCust");
+  const spanCreatedDate = document.getElementById("spanCreatedDate");
+  const spanCreatedBy = document.getElementById("spanCreatedBy");
+  const spanNote = document.getElementById("spanNote");
+  const spanStatusNote = document.getElementById("spanStatusNote");
+  const spanStatusOrder = document.getElementById("spanStatusOrder");
+  const spanDelivery = document.getElementById("spanDelivery");
 
   // CARD 2
-  spanSubmittedDate = document.getElementById("spanSubmittedDate");
-  spanCompletedDate = document.getElementById("spanCompletedDate");
-  spanCanceledDate = document.getElementById("spanCanceledDate");
-  spanTotal = document.getElementById("spanTotal");
-  spanGST = document.getElementById("spanGST");
-  spanFinalTotal = document.getElementById("spanFinalTotal");
+  const spanSubmittedDate = document.getElementById("spanSubmittedDate");
+  const spanCompletedDate = document.getElementById("spanCompletedDate");
+  const spanCanceledDate = document.getElementById("spanCanceledDate");
+  const spanTotal = document.getElementById("spanTotal");
+  const spanGST = document.getElementById("spanGST");
+  const spanFinalTotal = document.getElementById("spanFinalTotal");
 
   // SET INFORMATION OR VALUES
   if (item) {
@@ -589,11 +590,11 @@ const handlerHeaderInfo = (item) => {
       day: "2-digit",
     };
     // CARD 1
-    spanJoNumber.innerHTML = item.JoNumber
-      ? `<span class="badge badge-outline text-red">${item.JoNumber}</span>`
+    spanJoNumber.innerHTML = item.JoNumberId
+      ? `<span class="badge badge-outline text-red">${item.JoNumberId}</span>`
       : "-";
-    spanOrderNo.innerHTML = item.OrderNo;
-    spanOrderCust.innerHTML = item.OrderCust;
+    spanOrderNo.innerHTML = item.OrderNumber;
+    spanOrderCust.innerHTML = item.OrderName;
 
     // CreatedDate
     const customDate = parseCustomDate(item.CreatedDate);
@@ -610,7 +611,6 @@ const handlerHeaderInfo = (item) => {
       spanCreatedDate.innerHTML = customDate.toLocaleDateString("en-US", indo);
     }
 
-    spanCreatedBy.innerHTML = item.UserName;
     spanNote.innerHTML = item.Note ? item.Note : "-";
     spanStatusNote.innerHTML = item.StatusDescription
       ? item.StatusDescription
@@ -684,6 +684,44 @@ const handlerHeaderInfo = (item) => {
         );
       }
     }
+
+    // GET CREATED BY
+    fetch(`${uriMethod}/GetCreatedBy`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        id: item.CreatedBy,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          // Error dari server (misal 404, 500)
+          throw new Error(`${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then((response) => {
+        const data = response.d;
+        if (!data) {
+          const msg =
+            roleName === "Administrator"
+              ? "No data returned from server : handlerDisplayElement"
+              : "Please contact our IT team at support@onlineorder.au";
+          isError(msg);
+          return;
+        }
+
+        spanCreatedBy.innerHTML = data.createdby ? data.createdby : "??????";
+      })
+      .catch((error) => {
+        const msg =
+          roleName === "Administrator"
+            ? error.message
+            : "Please contact our IT team at support@onlineorder.au";
+        isError(msg);
+      });
 
     // CARD INFORMATION HEADER 2 | PRICES INFORMATION
     fetch(`${uriMethod}/GetAmountPriceHeader`, {
@@ -1719,7 +1757,7 @@ const handlerCheckOrder = async (headerid, status, userid) => {
 
 // ------------------------------------------||Binding Function ||-------------------------------------------
 // BIND ORDER HEADER
-const bindOrderHeaderByID = async (headerid) => {
+const bindOrderHeaderByID = async (headerid, ordertype) => {
   if (!headerid) return;
 
   try {
@@ -1728,11 +1766,15 @@ const bindOrderHeaderByID = async (headerid) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ headerid }),
+      body: JSON.stringify({ headerid, ordertype }),
     });
 
     if (!response.ok) {
-      throw new Error(`${response.status} - ${response.statusText}`);
+      const msg =
+        roleName === "Administrator"
+          ? `${response.status} - ${response.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw new Error(msg);
     }
 
     const dataResponse = await response.json();
@@ -1746,9 +1788,9 @@ const bindOrderHeaderByID = async (headerid) => {
       // await handlerReloadPricingOnReadyPage(item.Id, item.Status, "binding");
       await handlerDisplayElement(item);
       await handlerHeaderInfo(item);
-      await bindDetails(item.Id, item.Status, item.UserId);
+      await bindDetails(item.Id, item.Status, item.CreatedBy);
 
-      await handlerCheckOrder(item.Id, item.Status, item.UserId);
+      await handlerCheckOrder(item.Id, item.Status, item.CreatedBy);
     }
   } catch (error) {
     const msg =
@@ -1959,9 +2001,7 @@ const bindDetails = (headerid, status, userid) => {
 // --------------------------------------------||Other Function ||-------------------------------------------
 // CHECK SESSION
 const checkSessionDetail = () => {
-  setSessionAlive();
-
-  bindOrderHeaderByID(headerId);
+  bindOrderHeaderByID(headerId, INFYNITY);
 };
 
 // FORMAT DATE TIME

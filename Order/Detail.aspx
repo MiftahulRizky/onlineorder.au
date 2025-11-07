@@ -400,15 +400,18 @@
     
 
     <script type="text/javascript">
+        const params = new URLSearchParams(window.location.search);
+        const ULTRON = params.get("ultron"); // AS HeaderId
+        const INFYNITY = params.get("infinity"); // AS OrderType
+        let headerId = ULTRON;
         let customerId = '<%= Session("CustomerId") %>';
-        // let userId = '<%= Session("userId") %>';
-        let userId = customerId;
+        let userId = '<%= Session("userId") %>';
+        // let userId = customerId;
         let userName = '<%= Session("UserName") %>';
         let loginId = '<%= Session("LoginId") %>';
         let roleName = '<%= Session("RoleName") %>';  
         let storeId = '<%= Session("StoreId") %>';
         let storeCompany = '<%= Session("StoreCompany") %>';
-        let headerId = '<%= Session("headerId") %>';
         let itemId = '<%= Session("itemId") %>';
         let levelName = '<%= Session("LevelName") %>';
         let pricesAccess = '<%= Session("PriceAccess") %>';

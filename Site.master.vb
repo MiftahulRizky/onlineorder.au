@@ -48,6 +48,9 @@ Partial Public Class SiteMaster
                 Session("CustomerCompany") = myData.Tables(0).Rows(0).Item("CustomerCompany").ToString()
                 Session("resetLogin") = myData.Tables(0).Rows(0).Item("Reset")
                 Session("CustomerAccount") = myData.Tables(0).Rows(0).Item("CustomerAccount").ToString()
+                Dim myData2 As DataSet = publicCfg.GetListData("SELECT * FROM Users WHERE UserId = '" + loginId + "'")
+                Session("PriceAccess") = myData2.Tables(0).Rows(0).Item("Price").ToString()
+                Session("MarkUpAccess") = myData2.Tables(0).Rows(0).Item("MarkUp").ToString()
 
                 Dim appActive As Boolean = myData.Tables(0).Rows(0).Item("AppActive")
                 Dim customerActive As Boolean = myData.Tables(0).Rows(0).Item("Active")

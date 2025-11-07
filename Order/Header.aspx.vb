@@ -6,6 +6,8 @@ Partial Class Order_Header
     Dim publicCfg As New PublicConfig
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
+        Response.Redirect("~/order", False)
+        Exit Sub
         If Session("headerAction") = "" Then
             Response.Redirect("~/order", False)
             Exit Sub
@@ -80,25 +82,6 @@ Partial Class Order_Header
                 Exit Sub
             End If
 
-            ' If Session("headerAction") = "AddHeader" Then
-            '     Dim OrderNo As String = txtOrderNo.Text.Trim()
-
-            '     '#check by store
-            '     If OrderNo = publicCfg.GetItemData("SELECT OrderNo FROM OrderHeaders WHERE OrderNo = '" + OrderNo + "' AND StoreId = '" + ddlStore.SelectedValue + "' AND Active=1") Then
-            '         Call MessageError(True, "YOU HAVE USED THIS ORDER NUMBER !")
-            '          txtOrderNo.CssClass = "form-control  is-invalid"
-            '         txtOrderNo.Focus()
-            '         Exit Sub
-            '     End If
-
-            '     '#check all
-            '     If OrderNo = publicCfg.GetItemData("SELECT OrderNo FROM OrderHeaders WHERE OrderNo = '" + OrderNo + "' AND Active=1") Then
-            '         Call MessageError(True, "SORRY. YOU CAN NOT USE THIS ORDER NUMBER !")
-            '          txtOrderNo.CssClass = "form-control  is-invalid"
-            '         txtOrderNo.Focus()
-            '         Exit Sub
-            '     End If
-            ' End If
 
             If Session("headerAction") = "AddHeader" Then
                 Dim orderNo As String = txtOrderNo.Text.Trim()
@@ -128,23 +111,6 @@ Partial Class Order_Header
             End If
 
 
-            ' If Session("headerAction") = "EditHeader" And Not txtOrderNo.Text = lblOrderNo.Text Then
-            '     Dim OrderNo As String = txtOrderNo.Text.Trim()
-
-            '     If OrderNo = publicCfg.GetItemData("SELECT OrderNo FROM OrderHeaders WHERE OrderNo = '" + OrderNo + "' AND StoreId = '" + ddlStore.SelectedValue + "' AND Active=1") Then
-            '         Call MessageError(True, "YOU HAVE USED THIS ORDER NUMBER !")
-            '          txtOrderNo.CssClass = "form-control  is-invalid"
-            '         txtOrderNo.Focus()
-            '         Exit Sub
-            '     End If
-
-            '     If OrderNo = publicCfg.GetItemData("SELECT OrderNo FROM OrderHeaders WHERE OrderNo = '" + OrderNo + "' AND Active=1") Then
-            '         Call MessageError(True, "SORRY. YOU CAN NOT USE THIS ORDER NUMBER !")
-            '          txtOrderNo.CssClass = "form-control  is-invalid"
-            '         txtOrderNo.Focus()
-            '         Exit Sub
-            '     End If
-            ' End If
 
             If Session("headerAction") = "EditHeader" AndAlso txtOrderNo.Text.Trim() <> lblOrderNo.Text.Trim() Then
                 Dim orderNo As String = txtOrderNo.Text.Trim()

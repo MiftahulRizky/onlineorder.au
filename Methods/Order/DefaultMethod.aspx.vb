@@ -23,6 +23,7 @@ Partial Class Methods_Order_DefaultMethod
         Public Property rolename As String
         Public Property levelname As String
         Public Property status As String
+        Public Property ordertype As String
         Public Property active As String
         Public Property customeraccount As String
     
@@ -59,6 +60,7 @@ Partial Class Methods_Order_DefaultMethod
         Public Property recordsTotal As Integer
         Public Property recordsFiltered As Integer
         Public Property data As List(Of OrdersMatrixReturnRow)
+        Public Property [error] As String
     End Class
 
     Public Class OrdersMatrixReturnRow
@@ -136,24 +138,15 @@ Partial Class Methods_Order_DefaultMethod
                 conn.Open()
 
                 
-                ' Dim byRole As String = ""
-                
-                ' If params.rolename = "PPIC & DE" Then
-                '     byRole = " AND StoreCompany = '" + params.storecompany + "'"
-                ' End If
-
-                ' If params.rolename = "Customer" Then
-                '     byRole = " AND StoreId = '" + params.storeid + "'"
-                '     If params.levelname = "Member" Then
-                '         byRole = " AND UserId = '" + params.userid + "'"
-                '     End If
-                ' End If
-                
 
                 ' --- 1. Query untuk menghitung Total Records (tanpa filter DataTables, hanya filter awal Anda) ---
-                Dim countSql As String = "SELECT COUNT( Id ) FROM view_merge WHERE Active = @Active  AND (@Status = 'all' OR Status = @Status) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                Dim countSql As String = "SELECT COUNT( Id ) FROM view_order_headers WHERE Active = @Active  AND (@Status = 'all' OR Status = @Status) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                If params.status = "Draft" Then
+                    countSql = "SELECT COUNT( Id ) FROM view_order_headers WHERE Active = @Active AND OrderType = @OrderType  AND (@Status = 'all' OR Status IN ('Draft', 'Unsubmitted')) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                End If
                 Using countCmd As New SqlCommand(countSql, conn)
                     countCmd.Parameters.AddWithValue("@Status", params.status)
+                    countCmd.Parameters.AddWithValue("@OrderType", params.ordertype)
                     countCmd.Parameters.AddWithValue("@Active", params.active)
                     countCmd.Parameters.AddWithValue("@CustomerAccount", params.customeraccount)
                     totalRecords = CInt(countCmd.ExecuteScalar())
@@ -162,13 +155,18 @@ Partial Class Methods_Order_DefaultMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Id, OrderId, JoNumberId, ShipmentId, CustomerId, OrderNumber, OrderName, Delivery, OrderNote, OrderType, Status, StatusAdditional, InternalNote, CreatedBy, CreatedDate, SubmittedBy, SubmittedDate, Deposit, Approved, JobDate, CanceledDate, CanceledCategory, CanceledDescription, CompletedDate, Active, CustomerName, CustomerCompany, CustomerAccount")
-                sqlBuilder.AppendLine("FROM view_merge")
-                sqlBuilder.AppendLine("WHERE Active = @Active AND (@Status = 'all' OR Status = @Status) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)")
+                Dim whereQueries As String = "WHERE Active = @Active AND OrderType = @OrderType AND (@Status = 'all' OR Status = @Status) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                If params.status = "Draft" Then
+                    whereQueries = "WHERE Active = @Active AND OrderType = @OrderType AND (@Status = 'all' OR Status IN ('Draft', 'Unsubmitted')) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                End If
+                sqlBuilder.AppendLine("SELECT Id, OrderId, JoNumberId, CustomerId, OrderNumber, OrderName, Delivery, OrderType, Status, StatusAdditional, CreatedDate, SubmittedDate,CanceledDate, CompletedDate, Active, CustomerName")
+                sqlBuilder.AppendLine("FROM view_order_headers")
+                sqlBuilder.AppendLine(whereQueries)
 
                 Dim whereClause As New System.Text.StringBuilder()
                 Dim cmd As New SqlCommand(sqlBuilder.ToString(), conn)
                 cmd.Parameters.AddWithValue("@Status", params.status)
+                cmd.Parameters.AddWithValue("@OrderType", params.ordertype)
                 cmd.Parameters.AddWithValue("@Active", params.active)
                 cmd.Parameters.AddWithValue("@CustomerAccount", params.customeraccount)
 
@@ -262,15 +260,16 @@ Partial Class Methods_Order_DefaultMethod
 
             Return response
 
-        Catch ex As Exception
+       Catch ex As Exception
             response.draw = If(params Is Nothing, 0, params.draw)
             response.recordsTotal = 0
             response.recordsFiltered = 0
             response.data = New List(Of OrdersMatrixReturnRow)()
-            ' Untuk debugging, bisa kirim error ke client, tapi jangan di production
-            ' response.error = ex.Message
+            response.error = ex.Message & " | " & ex.StackTrace
+
             Return response
         End Try
+
     End Function
 
     <WebMethod()>
