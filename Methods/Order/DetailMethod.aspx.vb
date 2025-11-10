@@ -2031,31 +2031,87 @@ Partial Class Methods_Order_DetailMethod
     Private Shared Function GetTubeSkinSize(row As DataRow) As Integer
         Dim result As Integer = 0
         Dim KitName As String = row("KitName").ToString()
+        Dim BlindName As String = row("BlindName").ToString()
         Dim BracketType As String = row("BracketType").ToString()
         Dim TubeType As String = row("TubeType").ToString()
         Dim ControlPosition As String = row("ControlPosition").ToString()
         Dim TubeSize As String = row("TubeSize").ToString()
         Dim Width As Integer = CInt(row("Width").ToString())
 
-        '#-----------------------|| JAI / LOV ||-----------------------#
-        If InStr(KitName, "JAI") > 0 Or InStr(KitName, "LOV") > 0 Or InStr(TubeType, "JAI") > 0 Or InStr(TubeType, "LOV") > 0 Then
-            '#-----------------------|| Single, Double, Linked, Double and Link ||-----------------------#
-            If BracketType = "Single" Or BracketType = "Double" Or InStr(BracketType, "Linked") > 0 Or InStr(BracketType, "Double and Link") > 0 Then
-                '#-----------------------|| Left or Right ||-----------------------#
-                If ControlPosition = "Left" Or ControlPosition = "Right" Then
+        '#..........................................|| Blinds ||..........................................#
+        If BlindName = "Roller Blind" Then
+            '#-----------------------|| JAI / LOV ||-----------------------#
+            If InStr(KitName, "JAI") > 0 Or InStr(KitName, "LOV") > 0 Or InStr(TubeType, "JAI") > 0 Or InStr(TubeType, "LOV") > 0 Then
+                '#-----------------------|| Single, Double, Linked, Double and Link ||-----------------------#
+                If BracketType = "Single" Or BracketType = "Double" Or InStr(BracketType, "Linked") > 0 Or InStr(BracketType, "Double and Link") > 0 Then
+                    '#-----------------------|| Left or Right ||-----------------------#
+                    If ControlPosition = "Left" Or ControlPosition = "Right" Then
+                        If TubeSize = "40" Then : result = Width - 28 : End IF
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 32 : End IF
+                    End If
+                End If
+            End If
+            '#-----------------------|| Spring System ||-----------------------#
+            If InStr(KitName, "Spring System") > 0 Or InStr(TubeType, "Spring") > 0 Then
+            '#-----------------------|| Null/Empty, N/A ||-----------------------#
+                If String.IsNullOrEmpty(ControlPosition) Or ControlPosition = "N/A" Then
                     If TubeSize = "40" Then : result = Width - 28 : End IF
                     If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 32 : End IF
                 End If
             End If
         End If
-        '#-----------------------|| Spring System ||-----------------------#
-        If InStr(KitName, "Spring System") > 0 Or InStr(TubeType, "Spring") > 0 Then
-           '#-----------------------|| Null/Empty, N/A ||-----------------------#
-            If String.IsNullOrEmpty(ControlPosition) Or ControlPosition = "N/A" Then
-                If TubeSize = "40" Then : result = Width - 28 : End IF
-                If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 32 : End IF
+
+
+        '#..........................................|| Motorised ||..........................................#
+        If BlindName = "Motorised" Then
+            '#-----------------------|| JAI / LOV ||-----------------------#
+            If InStr(KitName, "Alpha RTS 45") > 0 Or InStr(KitName, "Alpha RTS 45H") > 0 Or InStr(KitName, "Alpha WF 45") > 0 Or InStr(KitName, "Alpha WF 45H") > 0 Or InStr(KitName, "Alpha WS 45") > 0 Or InStr(KitName, "Alpha WS 45H") > 0 Or InStr(KitName, "Somfy RTS 45") > 0 Or InStr(KitName, "Somfy RTS 45H") > 0 Or InStr(KitName, "Somfy WF 45") > 0 Or InStr(KitName, "Somfy WF 45H") > 0 Or InStr(KitName, "Somfy WS 45") > 0 Or InStr(KitName, "Somfy WS 45H") > 0 Then
+                '#-----------------------|| Single, Double, Linked, Double and Link ||-----------------------#
+                If BracketType = "Single" Or BracketType = "Double" Or InStr(BracketType, "Linked") > 0 Or InStr(BracketType, "Double and Link") > 0 Then
+                    '#-----------------------|| Left or Right Or N/A ||-----------------------#
+                    If ControlPosition = "Left" Or ControlPosition = "Right" Then
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 34 : End IF
+                    End If
+                    If ControlPosition = "" Or ControlPosition = "N/A" Then
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 24 : End IF
+                    End If
+                End If
             End If
+
+            '#-----------------------|| Acmeda ||-----------------------#
+            If InStr(KitName, "Somfy RTS 63 Acmeda") > 0 Or InStr(KitName, "Somfy WS 63 Acmeda") > 0 Then
+                '#-----------------------|| Single, Double ||-----------------------#
+                If BracketType = "Single" Or BracketType = "Double"  Then
+                    '#-----------------------|| N/A ||-----------------------#
+                    If ControlPosition <> "" Or Not ControlPosition <> "N/A" Then
+                       result = Width - 40
+                    End If
+                End If
+
+                '#-----------------------|| Linked 2 Dep ||-----------------------#
+                If InStr(BracketType, "Linked 2 Blinds (Dep)") > 0 Then
+                    '#-----------------------|| Left or Right Or N/A ||-----------------------#
+                    If ControlPosition = "Left" Or ControlPosition = "Right" Then
+                        result = Width - 39
+                    End If
+                    If ControlPosition = "" Or ControlPosition = "N/A" Then
+                        result = Width - 28
+                    End If
+                End If
+
+                '#-----------------------|| Linked 2 Ind ||-----------------------#
+                If InStr(BracketType, "Linked 2 Blinds (Ind)") > 0 Then
+                    '#-----------------------|| Left or Right Or N/A ||-----------------------#
+                    If ControlPosition = "Left" Or ControlPosition = "Right" Or ControlPosition <> "" Or ControlPosition <> "N/A" Then
+                        result = Width - 39
+                    End If
+                End If
+            End If
+
         End If
+
+
+
         Return result
     End Function
 
@@ -2066,6 +2122,7 @@ Partial Class Methods_Order_DetailMethod
         Dim TubeSize As String = row("TubeSize").ToString()
         Dim Drop As Integer = CInt(row("Drop").ToString())
         Dim Trim As String = row("Trim").ToString()
+
 
         If BottomType = "Oval" Or BottomType = "Round" Or InStr(BottomType, "Flat") > 0 Then
             If Trim = "1F" Then
