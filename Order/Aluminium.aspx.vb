@@ -392,6 +392,7 @@ Partial Class Order_Aluminium
 
                 If blindName = "25mm Aluminium" Then
                     ddlHoldDown.SelectedValue = ""
+                    lblBottomHoldDown.Text = "Yes"
 
                     If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
                         Dim CordLength As String = txtDrop.Text * 2 / 3
@@ -401,6 +402,7 @@ Partial Class Order_Aluminium
                 End If
 
                 If blindName = "50mm Aluminium" Then
+                    lblBottomHoldDown.Text = ddlHoldDown.SelectedValue
                     If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
                         txtControlLength.Text = "900"
                         If txtDrop.Text < 1000 Then
