@@ -2047,7 +2047,11 @@ Partial Class Methods_Order_DetailMethod
                     '#-----------------------|| Left or Right ||-----------------------#
                     If ControlPosition = "Left" Or ControlPosition = "Right" Then
                         If TubeSize = "40" Then : result = Width - 28 : End IF
-                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 32 : End IF
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 34 : End IF
+                    End If
+                    If String.IsNullOrEmpty(ControlPosition) Or ControlPosition = "N/A" Then
+                        If TubeSize = "40" Then : result = Width - 22 : End IF
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 24 : End IF
                     End If
                 End If
             End If
@@ -2124,7 +2128,7 @@ Partial Class Methods_Order_DetailMethod
         Dim Trim As String = row("Trim").ToString()
 
 
-        If BottomType = "Oval" Or BottomType = "Round" Or InStr(BottomType, "Flat") > 0 Then
+        If BottomType = "Oval" Or InStr(BottomType, "Oval Bumper") > 0 Or BottomType = "Round" Or InStr(BottomType, "Flat") > 0 Then
             If Trim = "1F" Then
                 If TubeSize = "40" Then : result = Drop + 200 : End IF
                 If TubeSize = "43" Or TubeSize = "45" Or TubeSize = "45H" Or TubeSize = "50" Then 
