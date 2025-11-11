@@ -2121,40 +2121,39 @@ Partial Class Methods_Order_DetailMethod
 
     Private Shared Function GetNumBoldNuts(row As DataRow) As Integer
         Dim result As Integer = 0
-        Dim KitName As String = row("KitName").ToString()
-        Dim BottomType As String = row("BottomType").ToString()
-        Dim TubeSize As String = row("TubeSize").ToString()
-        Dim Drop As Integer = CInt(row("Drop").ToString())
-        Dim Trim As String = row("Trim").ToString()
+        Dim kitName As String = row("KitName").ToString()
+        Dim bottomType As String = row("BottomType").ToString()
+        Dim tubeSize As String = row("TubeSize").ToString()
+        Dim drop As Integer = CInt(row("Drop").ToString())
+        Dim trim As String = row("Trim").ToString()
 
-
-        If BottomType = "Oval" Or InStr(BottomType, "Oval Bumper") > 0 Or BottomType = "Round" Or InStr(BottomType, "Flat") > 0 Then
-            If Trim = "1F" Then
-                If TubeSize = "40" Then : result = Drop + 200 : End IF
-                If TubeSize = "43" Or TubeSize = "45" Or TubeSize = "45H" Or TubeSize = "50" Then 
-                    result = Drop + 300
-                End IF
-                If TubeSize = "63" Then : result = Drop + 350 : End IF
-            End If
-        End If
-
-        If Trim <> "1F" Then
-            If TubeSize = "40" Then : result = Drop + 250 : End IF
-            If TubeSize = "43" Or TubeSize = "45" Or TubeSize = "45H" Or TubeSize = "50" Then 
-                result = Drop + 350
-            End IF
-            If TubeSize = "63" Then : result = Drop + 400 : End IF
-        End If
-
-        If InStr(KitName, "Spring System") > 0 Or InStr(KitName, "Spring") > 0 Then
-            If Trim <> "1F" Then
-                If TubeSize = "40" Then : result = Drop + 250 : End IF
-                If TubeSize = "45" Or TubeSize = "45H" Then : result = Drop + 350 : End IF
-            End If
-        End If
+        Select Case tubeSize
+            Case "40"
+                If trim = "1F" AndAlso (bottomType = "Oval" OrElse (InStr(bottomType, "Flat") > 0 AndAlso bottomType <> "Flat Wrapped")) Then
+                    result = drop + 200
+                End If
+                If trim = "1P" OrElse String.IsNullOrEmpty(bottomType) OrElse bottomType = "Flat Wrapped" OrElse bottomType = "Oval Bumper" Then
+                    result = drop + 250
+                End If
+            Case "45","50"
+                If trim = "1F" AndAlso (bottomType = "Oval" OrElse (InStr(bottomType, "Flat") > 0 AndAlso bottomType <> "Flat Wrapped")) Then
+                    result = drop + 300
+                End If
+                If trim = "1P" OrElse String.IsNullOrEmpty(bottomType) OrElse bottomType = "Flat Wrapped" OrElse bottomType = "Oval Bumper" Then
+                    result = drop + 350
+                End If
+            Case "63"
+                If trim = "1F" AndAlso (bottomType = "Oval" OrElse (InStr(bottomType, "Flat") > 0 AndAlso bottomType <> "Flat Wrapped")) Then
+                    result = drop + 350
+                End If
+                If trim = "1P" OrElse String.IsNullOrEmpty(bottomType) OrElse bottomType = "Flat Wrapped" OrElse bottomType = "Oval Bumper" Then
+                    result = drop + 400
+                End If
+        End Select
 
         Return result
     End Function
+
 
     
     Private Shared Function GetSpacer(row As DataRow) As String
