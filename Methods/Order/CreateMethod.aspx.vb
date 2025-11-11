@@ -111,28 +111,28 @@ Partial Class Methods_Order_CreateMethod
                 If data.actions = "add" Then
                     '# check by customer
                     Dim OrderNumber As String = data.ordernumber.Trim()
-                    Dim OrderNumberByCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_merge WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND CustomerId = '" & data.customer & "' AND Active = 1")
+                    Dim OrderNumberByCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND CustomerId = '" & data.customer & "' AND Active = 1")
 
                     If String.Equals(OrderNumber.Trim(), OrderNumberByCust, StringComparison.OrdinalIgnoreCase) Then
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
                     End If
 
                     '# check by all customer
-                    Dim OrderNumberAllCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_merge WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND Active = 1")
+                    Dim OrderNumberAllCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND Active = 1")
                     If String.Equals(OrderNumber.Trim(), OrderNumberAllCust, StringComparison.OrdinalIgnoreCase) Then
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
                     End If
                 Else If data.actions = "edit" Then
                     '# check by customer
                     Dim OrderNumber As String = data.ordernumber.Trim()
-                    Dim OrderNumberByCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_merge WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND CustomerId = '" & data.customer & "' AND Id <> '" & data.headerid & "' AND Active = 1")
+                    Dim OrderNumberByCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND CustomerId = '" & data.customer & "' AND Id <> '" & data.headerid & "' AND Active = 1")
 
                     If String.Equals(OrderNumber.Trim(), OrderNumberByCust, StringComparison.OrdinalIgnoreCase) Then
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
                     End If
 
                     '# check by all customer
-                    Dim OrderNumberAllCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_merge WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND Id <> '" & data.headerid & "' AND Active = 1")
+                    Dim OrderNumberAllCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND Id <> '" & data.headerid & "' AND Active = 1")
                     If String.Equals(OrderNumber.Trim(), OrderNumberAllCust, StringComparison.OrdinalIgnoreCase) Then
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
                     End If
@@ -163,7 +163,6 @@ Partial Class Methods_Order_CreateMethod
             Dim url As String = "/"
             '#insert
             If String.IsNullOrEmpty(data.id) Then
-
                 IF data.ordertype = "Blinds" Then
                     Dim id As String = publicCfg.CreateOrderHeaderId()
                     Using thisConn As New SqlConnection(myConn)
@@ -210,7 +209,6 @@ Partial Class Methods_Order_CreateMethod
                     End Using
                     url = "/order/loop/detail?ultron=" & headerId & "&infinity=" & data.ordertype
                 End If
-
                 msg = "Data has been saved successfully. <br /> Click oke to continue."
             End If
 
@@ -235,6 +233,7 @@ Partial Class Methods_Order_CreateMethod
                     End Using
                     url = "/order/detail?ultron=" & id & "&infinity=" & data.ordertype
                 Else If data.ordertype = "Panorama" Then
+                    url = "/order/loop/detail?ultron=" & data.id & "&infinity=" & data.ordertype
                 End If
                 msg = "Data has been updated successfully."
             End If
@@ -304,6 +303,54 @@ Partial Class Methods_Order_CreateMethod
             Return list
         Catch ex As Exception
             Return New With {.error = ex.Message}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindShipment() As Object
+        Try
+           Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM OrderShipments ORDER BY Id ASC")
+            Dim list As New List(Of Dictionary(Of String, String))()
+            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
+                For Each row As DataRow In datas.Tables(0).Rows
+                    Dim result As New Dictionary(Of String, String) From {
+                        {"value", row("Id").ToString()},
+                        {"text", row("ShipmentNumber").ToString()}
+                    }
+                    list.Add(result)
+                Next
+            End If
+            Return list
+        Catch ex As Exception
+            Return New With {.error = ex.Message}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindShipping(ByVal customerid As String) As Object
+        Try
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM CustomerAddress WHERE CustomerId = '" + customerid + "' AND [Primary] = 1")
+
+            Dim data As DataSet = DirectCast(datas, DataSet)
+
+            Dim resultList As New List(Of Dictionary(Of String, String))()
+
+            If data IsNot Nothing AndAlso data.Tables.Count > 0 Then
+                For Each row As DataRow In data.Tables(0).Rows
+                    Dim dict As New Dictionary(Of String, String)()
+                    For Each col As DataColumn In data.Tables(0).Columns
+                        dict(col.ColumnName) = row(col).ToString()
+                    Next
+                    resultList.Add(dict)
+                Next
+            End If
+
+            Return resultList
+        Catch ex As Exception
+            ' Tangani error agar bisa dikenali di JavaScript
+            Return New With {.error = True, .message = ex.Message}
         End Try
     End Function
 

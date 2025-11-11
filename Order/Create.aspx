@@ -37,7 +37,7 @@
                                 </div>
                             </div>
                             <div id="formDetail">
-                                <div class="row mb-5">
+                                <div class="row mb-5" id="divCustomer">
                                     <label for="customer" class="col-lg-4 form-label text-uppercase required" id="lblcustomer">cutomer name</label>
                                     <div class="col-lg-8">
                                         <select name="customer" id="customer" class="form-select "></select>
@@ -103,14 +103,14 @@
                                 </div>
 
                                 <div class="row mb-3" id="divJobId">
-                                    <label for="jobid" class="col-lg-4 form-label text-uppercase">job id</label>
+                                    <label for="jobid" class="col-lg-4 form-label text-uppercase required">job id</label>
                                     <div class="col-lg-4">
                                       <input type="text" class="form-control" id="jobid" name="jobid">
                                     </div>
                                 </div>
 
                                 <div class="row mb-3" id="divJobDate">
-                                    <label for="jobdate" class="col-lg-4 form-label text-uppercase">job date</label>
+                                    <label for="jobdate" class="col-lg-4 form-label text-uppercase required">job date</label>
                                     <div class="col-lg-4">
                                       <input type="date" class="form-control" id="jobdate" name="jobdate">
                                     </div>
@@ -143,13 +143,81 @@
     </div>
 
 
-      <script type="text/javascript">
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalShipping" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalShippingLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="modalShippingLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="javascript:void(0);" method="post" id="form-submit">     
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-4 mb-3">
+                                <label for="unitnumber" class="form-label">Unit Number</label>
+                                <input type="text" name="unitnumber" id="unitnumber" class="form-control" placeholder="Unit Number ..." autocomplete="off">
+                                <input type="text" name="id" id="id" class="form-control" readonly hidden>
+                            </div>
+                            <div class="col-lg-8 mb-3">
+                                <label for="shipping" class="form-label required">Street Address</label>
+                                <textarea name="streetaddress" id="streetaddress" class="form-control" cols="1" rows="1" placeholder="Street Address ..." autocomplete="off"></textarea>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="suburb" class="form-label required">Suburb</label>
+                                <input type="text" name="suburb" id="suburb" class="form-control"  placeholder="Suburb ..." autocomplete="off">
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="states" class="form-label required">States</label>
+                                <select name="states" id="states" class="form-select">
+                                    <option value=""></option>
+                                    <option value="ACT">ACT</option>
+                                    <option value="NSW">NSW</option>
+                                    <option value="NT">NT</option>
+                                    <option value="QLD">QLD</option>
+                                    <option value="SA">SA</option>
+                                    <option value="TAS">TAS</option>
+                                    <option value="VIC">VIC</option>
+                                    <option value="WA">WA</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="postcode" class="form-label required">Post Code</label>
+                                <textarea name="postcode" id="postcode" class="form-control" cols="1" rows="1"  placeholder="Post Code ..." autocomplete="off"></textarea>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="addressport" class="form-label required">Nearest Port</label>
+                                <select name="addressport" id="addressport" class="form-select">
+                                    <option value=""></option>
+                                    <option value="Adelaide">Adelaide</option>
+                                    <option value="Brisbane">Brisbane</option>
+                                    <option value="Brisbane">Brisbane</option>
+                                    <option value="Melbourne">Melbourne</option>
+                                    <option value="Perth">Perth</option>
+                                    <option value="Sydney">Sydney</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="btn-submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
         const params = new URLSearchParams(window.location.search);
         const ACTION = params.get("arterix"); // As action
         const ID = params.get("obelix"); // As id
         const ORDERTYPE = params.get("ultron"); // As ordertype
         let HEADER_ACTION = '<%= Session("headerAction") %>';
         let ROLENAME = '<%= Session("RoleName") %>';
+        let LEVELNAME = '<%= Session("LevelName") %>';
         let LOGINID = '<%= Session("LoginId") %>';
         let URIMETHOD = '/Methods/Order/CreateMethod.aspx';      
     </script>
