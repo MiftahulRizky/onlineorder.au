@@ -345,7 +345,7 @@ Public Class OrderConfig
             Dim idDetail As String = String.Empty
             Using thisConn As New SqlConnection(myConn)
                 thisConn.Open()
-                Using myCmd As New SqlCommand("SELECT TOP 1 Id FROM OrderHeaders ORDER BY Id DESC", thisConn)
+                Using myCmd As New SqlCommand("SELECT TOP 1 Id FROM OrderHeaders_Shutters ORDER BY Id DESC", thisConn)
                     Using rdResult = myCmd.ExecuteReader
                         While rdResult.Read
                             idDetail = rdResult.Item("Id").ToString()

@@ -60,7 +60,7 @@ document.querySelector("#btnSubmit").addEventListener("click", () => {
 // BUTTON EDIT HEADER
 document.querySelector("#btnEditHeader").addEventListener("click", () => {
   // handlerEditHeader(headerId);
-  window.location.href = "/order/create?arterix=edit&obelix=" + headerId;
+  window.location.href = `/order/create?arterix=edit&obelix=${headerId}&ultron=blinds`;
 });
 
 // BUTTON DELETE HEADER
@@ -2001,6 +2001,8 @@ const bindDetails = (headerid, status, userid) => {
 // --------------------------------------------||Other Function ||-------------------------------------------
 // CHECK SESSION
 const checkSessionDetail = () => {
+  if (!ULTRON || !INFYNITY) window.location.href = "/order";
+
   bindOrderHeaderByID(headerId, INFYNITY);
 };
 

@@ -344,6 +344,8 @@
 
         <asp:Label runat="server" ID="lblPriceGroupId"></asp:Label>
 
+        <asp:Label runat="server" ID="lblBottomHoldDown"></asp:Label>
+
         <asp:Label runat="server" ID="lblCutOut_LeftTop"></asp:Label>
         <asp:Label runat="server" ID="lblCutOut_LeftBottom"></asp:Label>
         <asp:Label runat="server" ID="lblCutOut_RightTop"></asp:Label>
@@ -364,7 +366,7 @@
                 <asp:ControlParameter ControlID="ddlControl" Name="ControlPosition" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="txtControlLength" Name="WandLength" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlBracket" Name="BracketOption" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="ddlHoldDown" Name="BottomHoldDown" PropertyName="SelectedItem.Value" />
+                <asp:ControlParameter ControlID="lblBottomHoldDown" Name="BottomHoldDown" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblCutOut_LeftTop" Name="CutOut_LeftTop" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblCutOut_RightTop" Name="CutOut_RightTop" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblCutOut_LeftBottom" Name="CutOut_LeftBottom" PropertyName="Text" />
@@ -394,7 +396,7 @@
                 <asp:ControlParameter ControlID="ddlControl" Name="ControlPosition" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="txtControlLength" Name="WandLength" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlBracket" Name="BracketOption" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="ddlHoldDown" Name="BottomHoldDown" PropertyName="SelectedItem.Value" />
+                <asp:ControlParameter ControlID="lblBottomHoldDown" Name="BottomHoldDown" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblCutOut_LeftTop" Name="CutOut_LeftTop" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblCutOut_RightTop" Name="CutOut_RightTop" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblCutOut_LeftBottom" Name="CutOut_LeftBottom" PropertyName="Text" />

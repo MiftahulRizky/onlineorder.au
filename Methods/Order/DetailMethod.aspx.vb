@@ -2048,69 +2048,129 @@ Partial Class Methods_Order_DetailMethod
     Private Shared Function GetTubeSkinSize(row As DataRow) As Integer
         Dim result As Integer = 0
         Dim KitName As String = row("KitName").ToString()
+        Dim BlindName As String = row("BlindName").ToString()
         Dim BracketType As String = row("BracketType").ToString()
         Dim TubeType As String = row("TubeType").ToString()
         Dim ControlPosition As String = row("ControlPosition").ToString()
         Dim TubeSize As String = row("TubeSize").ToString()
         Dim Width As Integer = CInt(row("Width").ToString())
 
-        '#-----------------------|| JAI / LOV ||-----------------------#
-        If InStr(KitName, "JAI") > 0 Or InStr(KitName, "LOV") > 0 Or InStr(TubeType, "JAI") > 0 Or InStr(TubeType, "LOV") > 0 Then
-            '#-----------------------|| Single, Double, Linked, Double and Link ||-----------------------#
-            If BracketType = "Single" Or BracketType = "Double" Or InStr(BracketType, "Linked") > 0 Or InStr(BracketType, "Double and Link") > 0 Then
-                '#-----------------------|| Left or Right ||-----------------------#
-                If ControlPosition = "Left" Or ControlPosition = "Right" Then
+        '#..........................................|| Blinds ||..........................................#
+        If BlindName = "Roller Blind" Then
+            '#-----------------------|| JAI / LOV ||-----------------------#
+            If InStr(KitName, "JAI") > 0 Or InStr(KitName, "LOV") > 0 Or InStr(TubeType, "JAI") > 0 Or InStr(TubeType, "LOV") > 0 Then
+                '#-----------------------|| Single, Double, Linked, Double and Link ||-----------------------#
+                If BracketType = "Single" Or BracketType = "Double" Or InStr(BracketType, "Linked") > 0 Or InStr(BracketType, "Double and Link") > 0 Then
+                    '#-----------------------|| Left or Right ||-----------------------#
+                    If ControlPosition = "Left" Or ControlPosition = "Right" Then
+                        If TubeSize = "40" Then : result = Width - 28 : End IF
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 34 : End IF
+                    End If
+                    If String.IsNullOrEmpty(ControlPosition) Or ControlPosition = "N/A" Then
+                        If TubeSize = "40" Then : result = Width - 22 : End IF
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 24 : End IF
+                    End If
+                End If
+            End If
+            '#-----------------------|| Spring System ||-----------------------#
+            If InStr(KitName, "Spring System") > 0 Or InStr(TubeType, "Spring") > 0 Then
+            '#-----------------------|| Null/Empty, N/A ||-----------------------#
+                If String.IsNullOrEmpty(ControlPosition) Or ControlPosition = "N/A" Then
                     If TubeSize = "40" Then : result = Width - 28 : End IF
                     If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 32 : End IF
                 End If
             End If
         End If
-        '#-----------------------|| Spring System ||-----------------------#
-        If InStr(KitName, "Spring System") > 0 Or InStr(TubeType, "Spring") > 0 Then
-           '#-----------------------|| Null/Empty, N/A ||-----------------------#
-            If String.IsNullOrEmpty(ControlPosition) Or ControlPosition = "N/A" Then
-                If TubeSize = "40" Then : result = Width - 28 : End IF
-                If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 32 : End IF
+
+
+        '#..........................................|| Motorised ||..........................................#
+        If BlindName = "Motorised" Then
+            '#-----------------------|| JAI / LOV ||-----------------------#
+            If InStr(KitName, "Alpha RTS 45") > 0 Or InStr(KitName, "Alpha RTS 45H") > 0 Or InStr(KitName, "Alpha WF 45") > 0 Or InStr(KitName, "Alpha WF 45H") > 0 Or InStr(KitName, "Alpha WS 45") > 0 Or InStr(KitName, "Alpha WS 45H") > 0 Or InStr(KitName, "Somfy RTS 45") > 0 Or InStr(KitName, "Somfy RTS 45H") > 0 Or InStr(KitName, "Somfy WF 45") > 0 Or InStr(KitName, "Somfy WF 45H") > 0 Or InStr(KitName, "Somfy WS 45") > 0 Or InStr(KitName, "Somfy WS 45H") > 0 Then
+                '#-----------------------|| Single, Double, Linked, Double and Link ||-----------------------#
+                If BracketType = "Single" Or BracketType = "Double" Or InStr(BracketType, "Linked") > 0 Or InStr(BracketType, "Double and Link") > 0 Then
+                    '#-----------------------|| Left or Right Or N/A ||-----------------------#
+                    If ControlPosition = "Left" Or ControlPosition = "Right" Then
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 34 : End IF
+                    End If
+                    If ControlPosition = "" Or ControlPosition = "N/A" Then
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 24 : End IF
+                    End If
+                End If
             End If
+
+            '#-----------------------|| Acmeda ||-----------------------#
+            If InStr(KitName, "Somfy RTS 63 Acmeda") > 0 Or InStr(KitName, "Somfy WS 63 Acmeda") > 0 Then
+                '#-----------------------|| Single, Double ||-----------------------#
+                If BracketType = "Single" Or BracketType = "Double"  Then
+                    '#-----------------------|| N/A ||-----------------------#
+                    If ControlPosition <> "" Or Not ControlPosition <> "N/A" Then
+                       result = Width - 40
+                    End If
+                End If
+
+                '#-----------------------|| Linked 2 Dep ||-----------------------#
+                If InStr(BracketType, "Linked 2 Blinds (Dep)") > 0 Then
+                    '#-----------------------|| Left or Right Or N/A ||-----------------------#
+                    If ControlPosition = "Left" Or ControlPosition = "Right" Then
+                        result = Width - 39
+                    End If
+                    If ControlPosition = "" Or ControlPosition = "N/A" Then
+                        result = Width - 28
+                    End If
+                End If
+
+                '#-----------------------|| Linked 2 Ind ||-----------------------#
+                If InStr(BracketType, "Linked 2 Blinds (Ind)") > 0 Then
+                    '#-----------------------|| Left or Right Or N/A ||-----------------------#
+                    If ControlPosition = "Left" Or ControlPosition = "Right" Or ControlPosition <> "" Or ControlPosition <> "N/A" Then
+                        result = Width - 39
+                    End If
+                End If
+            End If
+
         End If
+
+
+
         Return result
     End Function
 
     Private Shared Function GetNumBoldNuts(row As DataRow) As Integer
         Dim result As Integer = 0
-        Dim KitName As String = row("KitName").ToString()
-        Dim BottomType As String = row("BottomType").ToString()
-        Dim TubeSize As String = row("TubeSize").ToString()
-        Dim Drop As Integer = CInt(row("Drop").ToString())
-        Dim Trim As String = row("Trim").ToString()
+        Dim kitName As String = row("KitName").ToString()
+        Dim bottomType As String = row("BottomType").ToString()
+        Dim tubeSize As String = row("TubeSize").ToString()
+        Dim drop As Integer = CInt(row("Drop").ToString())
+        Dim trim As String = row("Trim").ToString()
 
-        If BottomType = "Oval" Or BottomType = "Round" Or InStr(BottomType, "Flat") > 0 Then
-            If Trim = "1F" Then
-                If TubeSize = "40" Then : result = Drop + 200 : End IF
-                If TubeSize = "43" Or TubeSize = "45" Or TubeSize = "45H" Or TubeSize = "50" Then 
-                    result = Drop + 300
-                End IF
-                If TubeSize = "63" Then : result = Drop + 350 : End IF
-            End If
-        End If
-
-        If Trim <> "1F" Then
-            If TubeSize = "40" Then : result = Drop + 250 : End IF
-            If TubeSize = "43" Or TubeSize = "45" Or TubeSize = "45H" Or TubeSize = "50" Then 
-                result = Drop + 350
-            End IF
-            If TubeSize = "63" Then : result = Drop + 400 : End IF
-        End If
-
-        If InStr(KitName, "Spring System") > 0 Or InStr(KitName, "Spring") > 0 Then
-            If Trim <> "1F" Then
-                If TubeSize = "40" Then : result = Drop + 250 : End IF
-                If TubeSize = "45" Or TubeSize = "45H" Then : result = Drop + 350 : End IF
-            End If
-        End If
+        Select Case tubeSize
+            Case "40"
+                If trim = "1F" AndAlso (bottomType = "Oval" OrElse (InStr(bottomType, "Flat") > 0 AndAlso bottomType <> "Flat Wrapped")) Then
+                    result = drop + 200
+                End If
+                If trim = "1P" OrElse String.IsNullOrEmpty(bottomType) OrElse bottomType = "Flat Wrapped" OrElse bottomType = "Oval Bumper" Then
+                    result = drop + 250
+                End If
+            Case "45","50"
+                If trim = "1F" AndAlso (bottomType = "Oval" OrElse (InStr(bottomType, "Flat") > 0 AndAlso bottomType <> "Flat Wrapped")) Then
+                    result = drop + 300
+                End If
+                If trim = "1P" OrElse String.IsNullOrEmpty(bottomType) OrElse bottomType = "Flat Wrapped" OrElse bottomType = "Oval Bumper" Then
+                    result = drop + 350
+                End If
+            Case "63"
+                If trim = "1F" AndAlso (bottomType = "Oval" OrElse (InStr(bottomType, "Flat") > 0 AndAlso bottomType <> "Flat Wrapped")) Then
+                    result = drop + 350
+                End If
+                If trim = "1P" OrElse String.IsNullOrEmpty(bottomType) OrElse bottomType = "Flat Wrapped" OrElse bottomType = "Oval Bumper" Then
+                    result = drop + 400
+                End If
+        End Select
 
         Return result
     End Function
+
 
     
     Private Shared Function GetSpacer(row As DataRow) As String
@@ -2124,7 +2184,7 @@ Partial Class Methods_Order_DetailMethod
         If DesignName = "Vertical Blinds" Then
             If BlindName = "Complete" OR BlindName = "Track Only" Then
                 Select Case SlatSize
-                    Case "127"
+                    Case "127", "127mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer127Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2140,7 +2200,7 @@ Partial Class Methods_Order_DetailMethod
                                 End If
                             Next
                         End If
-                    Case "100"
+                    Case "100", "100mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer100Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2156,7 +2216,7 @@ Partial Class Methods_Order_DetailMethod
                                 End If
                             Next
                         End If
-                    Case "89"
+                    Case "89", "89mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer89Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2172,7 +2232,7 @@ Partial Class Methods_Order_DetailMethod
                                 End If
                             Next
                         End If
-                    Case "63"
+                    Case "63", "63mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer63Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2205,7 +2265,7 @@ Partial Class Methods_Order_DetailMethod
         If DesignName = "Vertical Blinds" Then
             If BlindName = "Complete" OR BlindName = "Track Only" Then
                 Select Case SlatSize
-                    Case "127"
+                    Case "127", "127mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer127Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2221,7 +2281,7 @@ Partial Class Methods_Order_DetailMethod
                                 End If
                             Next
                         End If
-                    Case "100"
+                    Case "100", "100mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer100Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2237,7 +2297,7 @@ Partial Class Methods_Order_DetailMethod
                                 End If
                             Next
                         End If
-                    Case "89"
+                    Case "89", "89mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer89Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2253,7 +2313,7 @@ Partial Class Methods_Order_DetailMethod
                                 End If
                             Next
                         End If
-                    Case "63"
+                    Case "63", "63mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer63Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -9161,12 +9221,28 @@ Partial Class Methods_Order_DetailMethod
         }
         For i As Integer = 0 To initVenType.Length - 1
             If Not String.IsNullOrEmpty(initVenType(i).ToString()) Then
-                initVenType(i) = "Blind"
+                initVenType(i) = "Track Only"
             Else
                 initVenType(i) = String.Empty
             End If
         Next
+        
 
+        Dim initTrackOption As String() = {
+            currentData("InsertInTrack1").ToString(),
+            currentData("InsertInTrack2").ToString(),
+            currentData("InsertInTrack3").ToString(),
+            currentData("InsertInTrack4").ToString(),
+            currentData("InsertInTrack5").ToString(),
+            currentData("InsertInTrack6").ToString()
+        }
+        For i As Integer = 0 To initTrackOption.Length - 1
+            If Not String.IsNullOrEmpty(initTrackOption(i).ToString()) Then
+                initTrackOption(i) = "Insert"
+            Else
+                initTrackOption(i) = "Plain"
+            End If
+        Next
 
         
         '#Line Option
@@ -9185,6 +9261,16 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Qty6").ToString()), "0", currentData("Qty6").ToString()) & tdDetEnd
             result+= trDetEnd
 
+            '#initVenType
+            result+= trDetStart
+                result+= tdTitleStart & fs11Start & "Vertical Blind Type" & fsEnd & tdDetEnd
+                result+= tdDetStart & initVenType(0) & tdDetEnd
+                result+= tdDetStart & initVenType(1) & tdDetEnd
+                result+= tdDetStart & initVenType(2) & tdDetEnd
+                result+= tdDetStart & initVenType(3) & tdDetEnd
+                result+= tdDetStart & initVenType(4) & tdDetEnd
+                result+= tdDetRight & initVenType(5) & tdDetEnd
+            result+= trDetEnd
 
             '#TubeType
             result+= trDetStart
@@ -9266,12 +9352,12 @@ Partial Class Methods_Order_DetailMethod
             '#
             result+= trDetStart
                 result+= tdTitleStart & "Track Option" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetRight & "" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line1").ToString()), "", initTrackOption(0)) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line2").ToString()), "", initTrackOption(1)) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line3").ToString()), "", initTrackOption(2)) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line4").ToString()), "", initTrackOption(3)) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line5").ToString()), "", initTrackOption(4)) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Line6").ToString()), "", initTrackOption(5)) & tdDetEnd
             result+= trDetEnd
 
             '#ControlType

@@ -51,6 +51,33 @@ Partial Class Methods_Order_CreateMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function Find(ByVal id As String, ByVal ordertype As String) As Object
+        Try
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE Id = '" + UCase(id).ToString() + "' AND OrderType = '" + ordertype + "'")
+
+            Dim data As DataSet = DirectCast(datas, DataSet)
+
+            Dim resultList As New List(Of Dictionary(Of String, String))()
+
+            If data IsNot Nothing AndAlso data.Tables.Count > 0 Then
+                For Each row As DataRow In data.Tables(0).Rows
+                    Dim dict As New Dictionary(Of String, String)()
+                    For Each col As DataColumn In data.Tables(0).Columns
+                        dict(col.ColumnName) = row(col).ToString()
+                    Next
+                    resultList.Add(dict)
+                Next
+            End If
+
+            Return resultList
+        Catch ex As Exception
+            ' Tangani error agar bisa dikenali di JavaScript
+            Return New With {.error = True, .message = ex.Message}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Submit(ByVal data As ParamSubmit) As Object
         Try
             If String.IsNullOrEmpty(data.ordertype) Then
@@ -137,7 +164,7 @@ Partial Class Methods_Order_CreateMethod
             '#insert
             If String.IsNullOrEmpty(data.id) Then
 
-                IF data.ordertype = "blinds" Then
+                IF data.ordertype = "Blinds" Then
                     Dim id As String = publicCfg.CreateOrderHeaderId()
                     Using thisConn As New SqlConnection(myConn)
                         Using myCmd As New SqlCommand("INSERT INTO OrderHeaders (Id, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, CreatedDate, Active) VALUES (@Id, @UserId, @StoreId, LTRIM(RTRIM(@OrderNo)), LTRIM(RTRIM(@OrderCust)), @Delivery, @Note, 'Yes', 0, 0, 0,  'Draft', GETDATE(), 1)", thisConn)
@@ -155,7 +182,7 @@ Partial Class Methods_Order_CreateMethod
                         End Using
                     End Using
                     url = "/order/detail?ultron=" & id & "&infinity=" & data.ordertype
-                Else If data.ordertype = "panorama" Then
+                Else If data.ordertype = "Panorama" Then
                     Dim headerId As String = orderCfg.CreateOrderHeaderId()
                     Dim orderId As String = "SPP-" & headerId
 
@@ -165,7 +192,7 @@ Partial Class Methods_Order_CreateMethod
                     End If
 
                     Using thisConn As New SqlConnection(myConn)
-                        Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderHeaders_Shutters(Id, OrderId, CustomerId, OrderNumber, OrderName, OrderNote, Status, CreatedBy, CreatedDate, Deposit, Approved, Active) VALUES (@Id, @OrderId, @CustomerId, @OrderNumber, @OrderName, @OrderNote, 'Unsubmitted', @CreatedBy, @CreatedDate, 0, 0, 1) INSERT INTO OrderQuotes VALUES (@Id, '', '', '', '', '', '', 0.00, 0.00, 0.00, 0.00)")
+                        Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderHeaders_Shutters(Id, OrderId, CustomerId, OrderNumber, OrderName, OrderNote, OrderType, Status, CreatedBy, CreatedDate, Deposit, Approved, Active) VALUES (@Id, @OrderId, @CustomerId, @OrderNumber, @OrderName, @OrderNote, 'Panorama', 'Unsubmitted', @CreatedBy, @CreatedDate, 0, 0, 1) INSERT INTO OrderQuotes VALUES (@Id, '', '', '', '', '', '', 0.00, 0.00, 0.00, 0.00)")
                             myCmd.Parameters.AddWithValue("@Id", headerId)
                             myCmd.Parameters.AddWithValue("@OrderId", orderId)
                             myCmd.Parameters.AddWithValue("@CustomerId", UCase(data.customer).ToString())
@@ -173,7 +200,7 @@ Partial Class Methods_Order_CreateMethod
                             myCmd.Parameters.AddWithValue("@OrderName", data.ordernumber.Trim())
                             myCmd.Parameters.AddWithValue("@OrderNote",data.Note.Trim())
                             myCmd.Parameters.AddWithValue("@CreatedBy", createdBy)
-                            myCmd.Parameters.AddWithValue("@CreatedDate", txtCreatedDate.Text)
+                            myCmd.Parameters.AddWithValue("@CreatedDate", data.createddate)
 
                             myCmd.Connection = thisConn
                             thisConn.Open()
@@ -181,32 +208,34 @@ Partial Class Methods_Order_CreateMethod
                             thisConn.Close()
                         End Using
                     End Using
-                    url = "/order/loop/detail?ultron=" & id & "&infinity=" & data.ordertype
+                    url = "/order/loop/detail?ultron=" & headerId & "&infinity=" & data.ordertype
                 End If
 
                 msg = "Data has been saved successfully. <br /> Click oke to continue."
             End If
 
+            '#update
             If Not String.IsNullOrEmpty(data.id) Then
-                ' Using thisConn As New SqlConnection(myConn)
-                '     Using myCmd As New SqlCommand("UPDATE HardwareKits SET SoeId=@SoeId, DesignId=@DesignId, BlindId=@BlindId, Name=@Name, BracketType=@BracketType, TubeType=@TubeType, ControlType=@ControlType, ColourType=@ColourType, Description=@Description, Active=@Active WHERE Id=@Id", thisConn)
-                '         myCmd.Parameters.AddWithValue("@Id", UCase(data.id).ToString())
-                '         myCmd.Parameters.AddWithValue("@SoeId", data.soeid)
-                '         myCmd.Parameters.AddWithValue("@DesignId", UCase(data.designtype).ToString())
-                '         myCmd.Parameters.AddWithValue("@BlindId", UCase(data.blindtype).ToString())
-                '         myCmd.Parameters.AddWithValue("@Name", data.name)
-                '         myCmd.Parameters.AddWithValue("@BracketType", data.bracket)
-                '         myCmd.Parameters.AddWithValue("@TubeType", data.tube)
-                '         myCmd.Parameters.AddWithValue("@ControlType", data.control)
-                '         myCmd.Parameters.AddWithValue("@ColourType", data.colour)
-                '         myCmd.Parameters.AddWithValue("@Description", data.des)
-                '         myCmd.Parameters.AddWithValue("@Active", data.active)
-                '         myCmd.Connection = thisConn
-                '         thisConn.Open()
-                '         myCmd.ExecuteNonQuery()
-                '         thisConn.Close()
-                '     End Using
-                ' End Using
+                IF data.ordertype = "Blinds" Then
+                     Dim id As String = data.id
+                    Using thisConn As New SqlConnection(myConn)
+                        Using myCmd As New SqlCommand("UPDATE OrderHeaders SET UserId=@UserId, StoreId=@StoreId, OrderNo=LTRIM(RTRIM(@OrderNo)), OrderCust=LTRIM(RTRIM(@OrderCust)), Delivery=@Delivery, Note=@Note, Active=1 WHERE Id=@Id", thisConn)
+                            myCmd.Parameters.AddWithValue("@Id", id)
+                            myCmd.Parameters.AddWithValue("@UserId", UCase(data.loginid).ToString())
+                            myCmd.Parameters.AddWithValue("@StoreId", UCase(data.customer).ToString())
+                            myCmd.Parameters.AddWithValue("@OrderNo", data.ordernumber)
+                            myCmd.Parameters.AddWithValue("@OrderCust", data.ordername)
+                            myCmd.Parameters.AddWithValue("@Delivery", data.delivery)
+                            myCmd.Parameters.AddWithValue("@Note", data.Note)
+                            myCmd.Connection = thisConn
+                            thisConn.Open()
+                            myCmd.ExecuteNonQuery()
+                            thisConn.Close()
+                        End Using
+                    End Using
+                    url = "/order/detail?ultron=" & id & "&infinity=" & data.ordertype
+                Else If data.ordertype = "Panorama" Then
+                End If
                 msg = "Data has been updated successfully."
             End If
 
@@ -229,10 +258,10 @@ Partial Class Methods_Order_CreateMethod
             Dim company As String = "LOOP"
             Dim query As String = "SELECT Id, Name, Company, Active FROM view_customers WHERE Company IN ('" + company + "', 'ALL') AND (Id <> 'DEFAULT' AND Id <> 'LIFESTYLE' ) AND Active='1' ORDER BY Name ASC"
 
-            If ordertype = "blinds" Then 
+            If ordertype = "Blinds" Then 
                 company = "SP" 
                 query = "SELECT Id, Name, Company, Active FROM view_customers WHERE Company IN ('" + company + "', 'ALL') AND (Id <> 'DEFAULT' AND Id <> 'LIFESTYLE' ) AND Active='1' ORDER BY Name ASC"
-            Else If ordertype = "panorama" Then
+            Else If ordertype = "Panorama" Then
                 company = "LOOP"
                 query = "SELECT Id, Name, Company, Active FROM view_customers WHERE Company IN ('" + company + "', 'ALL') AND Active='1' ORDER BY Name ASC"
                 If rolename = "Customer Service" Or rolename = "Data Entry" Then
@@ -261,7 +290,7 @@ Partial Class Methods_Order_CreateMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindUser() As Object
         Try
-           Dim datas As DataSet = publicCfg.GetListData("SELECT UPPER(Id) AS IdText, UPPER(UserName) + ' | ' + UPPER(FullName) AS NameText FROM CustomerLogins ORDER BY UserName ASC")
+           Dim datas As DataSet = publicCfg.GetListData("SELECT UPPER(Id) AS IdText, UPPER(UserName) + ' | ' + UPPER(FullName) AS NameText FROM view_customer_logins ORDER BY UserName ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows

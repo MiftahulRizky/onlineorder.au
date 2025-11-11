@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("CUSTOMERID: " + CUSTOMERID);
     console.log("USERNAME: " + USERNAME);
     console.log("CUSTOMERCONTACTID: " + CUSTOMERCONTACTID);
+    console.log("ONSTOP: " + ONSTOP);
     console.log("CUSTOMERCOMPANY: " + CUSTOMERCOMPANY);
     console.log("LEVELNAME: " + LEVELNAME);
     console.log("URIMETHOD: " + URIMETHOD);
@@ -467,7 +468,11 @@ const handlerSelStatus = async (params, statusNow) => {
 
   // === cardOrder => status ===
   if (params === "#cardOrder #status") {
-    if (ROLENAME === "PPIC & DE") {
+    if (
+      ROLENAME === "PPIC & DE" ||
+      ROLENAME === "Data Entry" ||
+      ROLENAME === "Customer Service"
+    ) {
       data = [
         { value: "all", text: "All" },
         { value: "New Order", text: "New Order" },
@@ -475,6 +480,14 @@ const handlerSelStatus = async (params, statusNow) => {
         { value: "On Hold", text: "On Hold" },
         { value: "Completed", text: "Completed" },
         { value: "Canceled", text: "Canceled" },
+      ];
+    } else if (ROLENAME == "Sunlight Product" || ROLENAME == "Account") {
+      data = [
+        { value: "all", text: "All" },
+        { value: "New Order", text: "New Order" },
+        { value: "In Production", text: "In Production" },
+        { value: "On Hold", text: "On Hold" },
+        { value: "Completed", text: "Completed" },
       ];
     } else {
       data = [
@@ -1005,8 +1018,9 @@ const handlerTooltip = (modalName, params) => {
 };
 // --------------------------------------------||Other Function ||-------------------------------------------
 // CHECK SESSION
-const checkSession = () => {
-  handlerSelStatus("#cardOrder #status", null);
+const checkSession = async () => {
+  await Promise.all([handlerSelStatus("#cardOrder #status", null)]);
+  visibleColumnServerside();
 };
 
 const setState = (name, value) => {
@@ -1029,19 +1043,32 @@ const setFilterValues = (status, ordertype, active, storeType) => {
 // --------------------------------------------||Additional Datatable Function ||-------------------------------------------
 const dropdownActionButton = (data, type, row, params) => {
   // --------------------|| Visible Button ||--------------------#
+  let act;
   let displayDelete = "d-none";
   let displayChangeStatus = "d-none";
   let displayDownloadCSV = "d-none";
   let displayRestore = "d-none";
 
-  // DISPLAY BUTTON DELETE
-  if (row.Status === "Draft") {
-    displayDelete = "";
-    if (ROLENAME === "PPIC & DE" && CUSTOMERID !== row.CustomerId) {
+  //...............................|| Display Delete Button ||...............................//
+  if (row.Status === "Draft" || row.Status === "Unsubmitted") {
+    if (ROLENAME == "Administrator") {
+      displayDelete = "";
+    }
+
+    if (
+      (ROLENAME === "PPIC & DE" ||
+        ROLENAME === "Data Entry" ||
+        ROLENAME === "Customer Service") &&
+      CUSTOMERID !== row.CustomerId
+    ) {
       displayDelete = "d-none";
     }
+
+    if (ROLENAME === "Customer" || ROLENAME === "Representative") {
+      displayDelete = "";
+    }
   }
-  // if (ROLENAME === "Administrator" && row.Status !== "Canceled") {
+
   if (ROLENAME === "Administrator") displayDelete = "";
 
   if (ROLENAME === "Manager" || ROLENAME === "Account") {
@@ -1050,7 +1077,7 @@ const dropdownActionButton = (data, type, row, params) => {
 
   if (row.Active === "False" || row.Active === "0") displayDelete = "d-none";
 
-  // DISPLAY BUTTON CHANGE STATUS
+  //...............................|| Display Change Status Button ||...............................//
   if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
     displayChangeStatus = "";
   }
@@ -1063,62 +1090,76 @@ const dropdownActionButton = (data, type, row, params) => {
   if (row.Active === "False" || row.Active === "0")
     displayChangeStatus = "d-none";
 
-  // DISPLAY BUTTON DOWNLOAD CSV
+  //...............................|| Display Download CSV Button ||...............................//
   if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
     if (row.Status !== "Draft" && row.Status !== "Canceled") {
       displayDownloadCSV = "";
     }
   }
 
-  // DISPLAY BUTTON RESTORE
+  //...............................|| Display Restore Button ||...............................//
   if (
     ROLENAME === "Administrator" &&
     (row.Active === "False" || row.Active === "0")
   ) {
     displayRestore = "";
   }
-  return `
-            <div class="dropdown text-center">
-              <button class="border-0 bg-transparent dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li>
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnDetailOrder" data-id="${row.Id}" data-type="${row.OrderType}">
-                    <i class="ti ti-edit me-1 fs-2 opacity-50"></i>Edit / Detail
-                  </a>
-                </li>
-                <li class="${displayDelete}">
-                  <a class="dropdown-item text-danger" href="javascript:void(0)" id="btnDeleteOrder" data-id="${row.Id}" data-name="${row.CustomerName}" data-order="${row.OrderNumber}" data-ref="${row.OrderName}" data-del="${row.Delivery}">
-                    <i class="ti ti-trash-x me-1 fs-2 opacity-50"></i>Delete
-                  </a>
-                </li>
-                <li class="${displayRestore}">
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnRestoreOrder" data-id="${row.Id}" data-name="${row.StoreName}" data-order="${row.OrderNo}" data-ref="${row.OrderCust}" data-del="${row.Delivery}">
-                    <i class="ti ti-restore me-1 fs-2 opacity-50"></i>Restore 
-                  </a>
-                </li>
-                <div class="dropdown-divider"></div>
-                <li>
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnDateInfo" data-id="${row.Id}">
-                    <i class="ti ti-calendar-event me-1 fs-2 opacity-50"></i>Date Information
-                  </a>
-                </li>
-                
-                <li class="${displayChangeStatus}">
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnChangeStatus" data-id="${row.Id}">
-                    <i class="ti ti-checkup-list me-1 fs-2 opacity-50"></i>
-                    Change Status
-                  </a>
-                </li>
-                <li class="${displayDownloadCSV}">
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnDownloadCsv" data-id="${row.Id}">
-                 <i class="ti ti-file-type-csv me-1 fs-2 opacity-50"></i>Download CSV Order 
-                  </a>
-                </li>
-                
-              </ul>
+
+  act = `<div class="dropdown text-center">
+            <button class="border-0 bg-transparent dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`;
+  act += `<li>
+            <a class="dropdown-item" href="javascript:void(0)" id="btnDetailOrder" data-id="${row.Id}" data-type="${row.OrderType}">
+              <i class="ti ti-edit me-1 fs-2 opacity-50"></i>Edit / Detail
+            </a>
+          </li>
+          <li class="${displayDelete}">
+            <a class="dropdown-item text-danger" href="javascript:void(0)" id="btnDeleteOrder" data-id="${row.Id}" data-name="${row.CustomerName}" data-order="${row.OrderNumber}" data-ref="${row.OrderName}" data-del="${row.Delivery}">
+              <i class="ti ti-trash-x me-1 fs-2 opacity-50"></i>Delete
+            </a>
+          </li>`;
+
+  if (row.OrderType == "Blinds") {
+    act += `<li class="${displayRestore}">
+              <a class="dropdown-item" href="javascript:void(0)" id="btnRestoreOrder" data-id="${row.Id}" data-name="${row.StoreName}" data-order="${row.OrderNo}" data-ref="${row.OrderCust}" data-del="${row.Delivery}">
+                <i class="ti ti-restore me-1 fs-2 opacity-50"></i>Restore 
+              </a>
+            </li>
+            <div class="dropdown-divider"></div>
+            <li>
+              <a class="dropdown-item" href="javascript:void(0)" id="btnDateInfo" data-id="${row.Id}">
+                <i class="ti ti-calendar-event me-1 fs-2 opacity-50"></i>Date Information
+              </a>
+            </li>
+            
+            <li class="${displayChangeStatus}">
+              <a class="dropdown-item" href="javascript:void(0)" id="btnChangeStatus" data-id="${row.Id}">
+                <i class="ti ti-checkup-list me-1 fs-2 opacity-50"></i>
+                Change Status
+              </a>
+            </li>
+            <li class="${displayDownloadCSV}">
+              <a class="dropdown-item" href="javascript:void(0)" id="btnDownloadCsv" data-id="${row.Id}">
+              <i class="ti ti-file-type-csv me-1 fs-2 opacity-50"></i>Download CSV Order 
+              </a>
+            </li>`;
+  }
+
+  if (row.OrderType == "Panorama") {
+    act += `<div class="dropdown-divider"></div>
+            <li>
+              <a class="dropdown-item" href="javascript:void(0)" id="btnLogs" data-id="${row.Id}">
+                <i class="ti ti-logout me-1 fs-2 opacity-50"></i>Logs
+              </a>
+            </li>`;
+  }
+
+  act += `</ul>
             </div>`;
+
+  return act;
 };
 
 const stylingColumnSearchAndPaging = (params) => {
@@ -1139,4 +1180,82 @@ const stylingColumnSearchAndPaging = (params) => {
     fontSize: "15px",
     height: "40px",
   });
+};
+
+const visibleColumnServerside = () => {
+  const id = document.querySelector("#tableAjax .column-id");
+  const retailer = document.querySelector("#tableAjax .column-retailer");
+  const ordertype = document.querySelector("#tableAjax .column-type");
+
+  tableData.columns(1).visible(false); // ID
+  tableData.columns(3).visible(false); // RETAILER
+  tableData.columns(6).visible(true); // ORDER TYPE
+  id.setAttribute("hidden", true);
+  retailer.setAttribute("hidden", true);
+  ordertype.removeAttribute("hidden");
+
+  if (
+    ROLENAME == "Administrator" &&
+    (LEVELNAME == "Leader" || LEVELNAME == "Super Admin")
+  ) {
+    tableData.columns(1).visible(true); // ID
+    id.removeAttribute("hidden");
+  }
+
+  if (
+    ROLENAME == "Administrator" ||
+    ROLENAME == "Customer Service" ||
+    ROLENAME == "Data Entry"
+  ) {
+    tableData.columns(3).visible(true); // ID
+    retailer.removeAttribute("hidden");
+  }
+
+  if (
+    ROLENAME == "Customer" &&
+    (CUSTOMERID == "LS-A012" || CUSTOMERID == "LS-A333")
+  ) {
+    tableData.columns(3).visible(true); // ID
+    retailer.removeAttribute("hidden");
+  }
+
+  if (ROLENAME == "Customer" || ROLENAME == "Representative" || SESSION_SP) {
+    tableData.columns(6).visible(false); // ORDER TYPE
+    ordertype.setAttribute("hidden", true);
+  }
+
+  const aDailyMail = document.querySelector("#aDailyMail");
+  const aOtorisasi = document.querySelector("#aOtorisasi");
+  const btnCreateNewOrder = document.querySelector("#btnCreateNewOrder");
+  aDailyMail.setAttribute("hidden", true);
+  aOtorisasi.setAttribute("hidden", true);
+  btnCreateNewOrder.setAttribute("hidden", true);
+
+  if (
+    ROLENAME == "Administrator" &&
+    (LEVELNAME == "Leader" || LEVELNAME == "Super Admin")
+  ) {
+    aDailyMail.removeAttribute("hidden");
+  }
+
+  if (
+    ROLENAME == "Administrator" ||
+    ROLENAME == "Customer Service" ||
+    ROLENAME == "Data Entry"
+  ) {
+    aOtorisasi.removeAttribute("hidden");
+  }
+
+  if (
+    ROLENAME == "Administrator" ||
+    ROLENAME == "Customer Service" ||
+    ROLENAME == "Data Entry" ||
+    ROLENAME == "Representative"
+  ) {
+    btnCreateNewOrder.removeAttribute("hidden");
+  }
+
+  if (ROLENAME == "Customer" && ONSTOP == "False") {
+    btnCreateNewOrder.removeAttribute("hidden");
+  }
 };

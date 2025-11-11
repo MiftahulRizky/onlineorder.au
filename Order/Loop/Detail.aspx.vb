@@ -92,9 +92,9 @@ Partial Class Order_Detail
     End Sub
 
     Protected Sub btnEditHeader_Click(sender As Object, e As EventArgs)
-        Session("headerAction") = "EditHeader"
-        Session("headerId") = lblHeaderId.Text
-        Response.Redirect("~/order/edit", False)
+        ' Session("headerAction") = "EditHeader"
+        ' Session("headerId") = lblHeaderId.Text
+        Response.Redirect("~/order/create?arterix=edit&obelix="+lblHeaderId.Text+"&ultron=panorama", False)
     End Sub
 
     Protected Sub btnSubmitOrder_Click(sender As Object, e As EventArgs)

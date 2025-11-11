@@ -20,7 +20,9 @@ Public Class PrintConfig
     Dim thStartColSpan2 As String = "<th colspan='2' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;'>"
     Dim thStartColSpan3 As String = "<th colspan='3' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;'>"
     Dim thStartColSpan4 As String = "<th colspan='4' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;'>"
+    Dim thStartColSpan8 As String = "<th colspan='8' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;'>"
     Dim thStartRowSpan2 As String = "<th rowspan='2' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;word-wrap:break-word;'>"
+    Dim thStartRowSpan3 As String = "<th rowspan='3' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;word-wrap:break-word;'>"
     Dim thEnd As String = "</th>"
 
     Dim tdStart As String = "<td style='text-align:center;height:auto;font-size:8px;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
@@ -274,22 +276,26 @@ Public Class PrintConfig
                 result += spanStart & "ALUMINIUM BLINDS" & spanEnd
                 result += tableStart
                 result += trStart
-                result += thStartRowSpan2 & "No" & thEnd
-                result += thStartRowSpan2 & "ID" & thEnd
-                result += thStartRowSpan2 & "Qty" & thEnd
-                result += thStartRowSpan2 & "Product" & thEnd
-                result += thStartRowSpan2 & "Location" & thEnd
-                result += thStartRowSpan2 & "Mounting" & thEnd
-                result += thStartRowSpan2 & "Width" & thEnd
-                result += thStartRowSpan2 & "Drop" & thEnd
-                result += thStartRowSpan2 & "Bracket" & thEnd
-                result += thStartRowSpan2 & "Bottom" & thEnd
-                result += thStartColSpan2 & "Control" & thEnd
-                result += thStartColSpan2 & "Top LHS" & thEnd
-                result += thStartColSpan2 & "Top RHS" & thEnd
-                result += thStartColSpan2 & "Bottom LHS" & thEnd
-                result += thStartColSpan2 & "Bottom RHS" & thEnd
+                result += thStartRowSpan3 & "No" & thEnd
+                result += thStartRowSpan3 & "ID" & thEnd
+                result += thStartRowSpan3 & "Qty" & thEnd
+                result += thStartRowSpan3 & "Product" & thEnd
+                result += thStartRowSpan3 & "Location" & thEnd
+                result += thStartRowSpan3 & "Mounting" & thEnd
+                result += thStartRowSpan3 & "Width" & thEnd
+                result += thStartRowSpan3 & "Drop" & thEnd
+                result += thStartRowSpan3 & "Bracket" & thEnd
+                result += thStartRowSpan3 & "Bottomrail Hold Down Clip (Clear Plastic)" & thEnd
+                result += "<th colspan='2' rowspan='2' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;'>" & "Control" & thEnd
+                result += "<th colspan='8' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;'>" & "Cut Out" & thEnd               
                 result += trEnd
+
+                result += trStart
+                    result += thStartColSpan2 & "Top LHS" & thEnd
+                    result += thStartColSpan2 & "Top RHS" & thEnd
+                    result += thStartColSpan2 & "Bottom LHS" & thEnd
+                    result += thStartColSpan2 & "Bottom RHS" & thEnd
+                result += trEnd 
 
                 result += trStart
                 result += thStart & "Position" & thEnd

@@ -23,17 +23,17 @@
                             <h3 class="card-title">Create New Order</h3>
                         </div>
                         <div class="card-body">
-                            <div class="row mb-3">
+                            <div class="row mb-3" id="divOrderType">
                                 <label for="ordertype" class="col-lg-4 form-label text-uppercase required">
                                     order type
                                 </label>
                                 <div class="col-lg-4">
                                     <select name="ordertype" id="ordertype" class="form-select ">
                                         <option value=""></option>
-                                        <option value="blinds">BLINDS</option>
-                                        <option value="panorama">PANORAMA</option>
+                                        <option value="Blinds">BLINDS</option>
+                                        <option value="Panorama">PANORAMA</option>
                                     </select>
-                                    <input type="text" name="id" id="id" class="form-control" readonly>
+                                    <input type="text" name="id" id="id" class="form-control" readonly hidden>
                                 </div>
                             </div>
                             <div id="formDetail">
@@ -57,6 +57,12 @@
                                     </div>
                                 </div>
 
+                                <div class="row mb-3" id="divOrderId">
+                                    <label for="orderid" class="col-lg-4 form-label text-uppercase required">order id</label>
+                                    <div class="col-lg-4">
+                                        <input type="text" class="form-control " id="orderid" name="orderid" placeholder="Order Number ...">
+                                    </div>
+                                </div>
                                 <div class="row mb-3" id="">
                                     <label for="ordernumber" class="col-lg-4 form-label text-uppercase required">order number</label>
                                     <div class="col-lg-6">
@@ -67,7 +73,7 @@
                                     </div>
                                 </div>
                                 <div class="row mb-5" id="">
-                                    <label for="ordername" class="col-lg-4 form-label text-uppercase required">order name</label>
+                                    <label for="ordername" class="col-lg-4 form-label text-uppercase required" id="lblOrderName">order name</label>
                                     <div class="col-lg-8">
                                             <div class="input-group">
                                             <input type="text" class="form-control " id="ordername" name="ordername" placeholder="Order Name ...">
@@ -90,16 +96,44 @@
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label for="note" class="col-lg-4 form-label text-uppercase required">note</label>
+                                    <label for="note" class="col-lg-4 form-label text-uppercase">note</label>
                                     <div class="col-lg-8">
                                         <textarea name="note" id="note" class="form-control" rows="4" cols="4" placeholder="Your note for this order ..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3" id="divJobId">
+                                    <label for="jobid" class="col-lg-4 form-label text-uppercase">job id</label>
+                                    <div class="col-lg-4">
+                                      <input type="text" class="form-control" id="jobid" name="jobid">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3" id="divJobDate">
+                                    <label for="jobdate" class="col-lg-4 form-label text-uppercase">job date</label>
+                                    <div class="col-lg-4">
+                                      <input type="date" class="form-control" id="jobdate" name="jobdate">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3" id="divShipmentId">
+                                    <label for="shipmentid" class="col-lg-4 form-label text-uppercase">shipment number</label>
+                                    <div class="col-lg-4">
+                                      <select name="shipmentid" id="shipmentid" class="form-select"></select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3" id="divShipping">
+                                    <label for="shipping" class="col-lg-4 form-label text-uppercase">shipping address</label>
+                                    <div class="col-lg-8">
+                                        <textarea name="shipping" id="shipping" class="form-control" rows="3" cols="3" ></textarea>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="card-footer text-end">
                             <button type="submit" class="btn btn-primary" id="btn-submit">Submit</button>
-                            <a href="/order" class="btn btn-danger" id="btn-cancel">Cancel</a>
+                            <button type="button" class="btn btn-danger" id="btn-cancel">Cancel</button>
                         </div>
                     </div>
                     </form>
@@ -113,6 +147,7 @@
         const params = new URLSearchParams(window.location.search);
         const ACTION = params.get("arterix"); // As action
         const ID = params.get("obelix"); // As id
+        const ORDERTYPE = params.get("ultron"); // As ordertype
         let HEADER_ACTION = '<%= Session("headerAction") %>';
         let ROLENAME = '<%= Session("RoleName") %>';
         let LOGINID = '<%= Session("LoginId") %>';

@@ -4,10 +4,20 @@
     <div class="page-header">
         <div class="container-xl">
             <div class="row g-2 align-items-center">
-                <div class="col">
+
+                <div class="col-5">
                     <div class="page-pretitle">Order</div>
                     <h2 class="page-title">List Order</h2>
                 </div>
+
+                <div class="col-7 text-end">
+                    <a href="#" id="aDailyMail" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalDailyMail">Daily Mail</a>
+                    <a id="aOtorisasi" class="btn btn-info position-relative" data-bs-toggle="offcanvas" href="#canvasOtorisasi" role="button" aria-controls="canvasAdd">
+                        Waiting for Authorization List
+                        <span id="spanOtorisasi" class="badge bg-red text-blue-fg badge-notification badge-pill">10</span>
+                    </a>
+                </div>
+
             </div>
         </div>
     </div>
@@ -52,12 +62,12 @@
                                  <thead>
                                      <tr>
                                          <th class="text-center">#</th>
-                                         <th class="h3">ID</th>
+                                         <th class="h3 column-id">ID</th>
                                          <th class="h3">ORDER ID</th>
-                                         <th class="h3">RETAILER NAME</th>
+                                         <th class="h3 column-retailer">RETAILER NAME</th>
                                          <th class="h3">ORDER NUMBER</th>
                                          <th class="h3">ORDER NAME</th>
-                                         <th class="h3">ORDER TYPE</th>
+                                         <th class="h3 column-type">ORDER TYPE</th>
                                          <th class="h3">DELIVERY</th>
                                          <th class="h3">STATUS</th>
                                          <th class="text-center">ACTIONS</th>
@@ -67,12 +77,12 @@
                                  <thead>
                                      <tr>
                                          <th class="text-center">#</th>
-                                         <th class="h3 ">ID</th>
+                                         <th class="h3 column-id">ID</th>
                                          <th class="h3">ORDER ID</th>
-                                         <th class="h3">RETAILER NAME</th>
+                                         <th class="h3 column-retailer">RETAILER NAME</th>
                                          <th class="h3">ORDER NUMBER</th>
                                          <th class="h3">ORDER NAME</th>
-                                         <th class="h3">ORDER TYPE</th>
+                                         <th class="h3 column-type">ORDER TYPE</th>
                                          <th class="h3 ">DELIVERY</th>
                                          <th class="h3 ">STATUS</th>
                                          <th class="text-center">ACTIONS</th>
@@ -228,6 +238,8 @@
 
     <script type="text/javascript">
         let CUSTOMERID = '<%= Session("CustomerId") %>';
+        let SESSION_SP = '<%= Session("Sunlight Product") %>';
+        let ONSTOP = '<%= Session("OnStop") %>';
         let USERNAME = '<%= Session("UserName") %>';
         let LOGINID = '<%= Session("LoginId") %>';
         let ROLENAME = '<%= Session("RoleName") %>';  

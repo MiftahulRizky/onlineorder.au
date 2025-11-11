@@ -14,12 +14,22 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     const formDetail = document.getElementById("formDetail");
     const divCreatedBy = document.getElementById("divCreatedBy");
     const divCreatedDate = document.getElementById("divCreatedDate");
+    const divOrderId = document.getElementById("divOrderId");
     const divDelivery = document.getElementById("divDelivery");
+    const divJobId = document.getElementById("divJobId");
+    const divJobDate = document.getElementById("divJobDate");
+    const divShipmentId = document.getElementById("divShipmentId");
+    const divShipping = document.getElementById("divShipping");
 
     formDetail.setAttribute("hidden", true);
     divCreatedBy.setAttribute("hidden", true);
     divCreatedDate.setAttribute("hidden", true);
+    divOrderId.setAttribute("hidden", true);
     divDelivery.setAttribute("hidden", true);
+    divJobId.setAttribute("hidden", true);
+    divJobDate.setAttribute("hidden", true);
+    divShipmentId.setAttribute("hidden", true);
+    divShipping.setAttribute("hidden", true);
 
     const value = e.target.value;
     if (!value) return;
@@ -27,11 +37,11 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     await Promise.all([handlerSelCustomer(value, "#customer")]);
 
     formDetail.removeAttribute("hidden");
-    if (value == "blinds") {
+    if (value == "Blinds") {
       divCreatedBy.setAttribute("hidden", true);
       divCreatedDate.setAttribute("hidden", true);
       divDelivery.removeAttribute("hidden");
-    } else if (value == "panorama") {
+    } else if (value == "Panorama") {
       handlerSelUser(value, "#createdby");
       divCreatedBy.removeAttribute("hidden");
       divCreatedDate.removeAttribute("hidden");
@@ -63,6 +73,23 @@ document.querySelector("#btn-submit").addEventListener("click", (e) => {
   });
 
   handlerSubmit(e.target.form, e.target, e.target.innerHTML);
+});
+
+// button cancel
+document.querySelector("#btn-cancel").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  if (ACTION == "add") {
+    window.location.href = "/order";
+  }
+
+  if (ACTION == "edit" && ORDERTYPE == "blinds") {
+    window.location.href = `/order/detail?ultron=${ID}&infinity=${ORDERTYPE.toLowerCase()}`;
+  }
+
+  if (ACTION == "edit" && ORDERTYPE == "panorama") {
+    window.location.href = `/order/loop/detail?ultron=${ID}&infinity=${ORDERTYPE.toLowerCase()}`;
+  }
 });
 
 // ==============================================|| FUNCTIONS ||=============================================
@@ -269,6 +296,89 @@ const handlerSelUser = async (ordertype, params) => {
     isError(msg);
   }
 };
+
+const handlerEdit = async (id, ordertype) => {
+  try {
+    if (!id) return;
+
+    const res = await fetch(`${URIMETHOD}/Find`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ id, ordertype }),
+    });
+
+    if (!res.ok) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw new Error(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d;
+
+    if (!data || data.length === 0) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? "No data returned from server : handlerEdit"
+          : "Please contact our IT team at support@onlineorder.au";
+      throw new Error(msg);
+    }
+
+    for (const item of data) {
+      await handlerSelCustomer(item.OrderType, "#customer");
+      await handlerSelUser(item.OrderType, "#createdby");
+      await visibleElementForm(item);
+      await handlerSetElementValues(item);
+      await loaderFadeOut();
+    }
+
+    return true; // ✅ success
+  } catch (error) {
+    console.error("handlerEdit error:", error);
+    throw error;
+  }
+};
+
+const handlerSetElementValues = (itemData) => {
+  const mapping = {
+    ordertype: "OrderType",
+    id: "Id",
+    customer: "CustomerId",
+    createdby: "CreatedBy",
+    createddate: "CreatedDate",
+    ordernumber: "OrderNumber",
+    ordername: "OrderName",
+    delivery: "Delivery",
+  };
+
+  Object.entries(mapping).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) {
+      console.warn(`Elemen '${id}' tidak ditemukan.`);
+      return;
+    }
+
+    let value = itemData[key];
+
+    if (id === "customer") {
+      value = value ? value.toUpperCase() : "";
+    }
+
+    if (id === "createdby") {
+      value = value ? value.toUpperCase() : "";
+    }
+
+    if (id === "createddate") {
+      value = new Date(value).toLocaleDateString("en-CA");
+    }
+
+    el.value = value ?? "";
+  });
+};
 // --------------------------------------------||Other Functions ||-------------------------------------------
 const checkSessionCreateHeader = async () => {
   if (!ACTION) window.location.href = "/order";
@@ -276,18 +386,25 @@ const checkSessionCreateHeader = async () => {
   if (ACTION === "add") {
     await Promise.all([visibleElementForm()]);
     loaderFadeOut();
-  } else if (ACTION === "edit" && ID) {
-    loaderFadeOut();
+  } else if (ACTION === "edit" && ID && ORDERTYPE) {
+    handlerEdit(ID, ORDERTYPE);
+    // loaderFadeOut();
   } else {
     window.location.href = "/order";
   }
 };
 
-const visibleElementForm = () => {
+const visibleElementForm = (item) => {
+  const divOrderType = document.getElementById("divOrderType");
   const formDetail = document.getElementById("formDetail");
   const divCreatedBy = document.getElementById("divCreatedBy");
   const divCreatedDate = document.getElementById("divCreatedDate");
+  const divOrderId = document.getElementById("divOrderId");
   const divDelivery = document.getElementById("divDelivery");
+  const divJobId = document.getElementById("divJobId");
+  const divJobDate = document.getElementById("divJobDate");
+  const divShipmentId = document.getElementById("divShipmentId");
+  const divShipping = document.getElementById("divShipping");
 
   const createddate = (document.getElementById("createddate").value =
     new Date().toLocaleDateString("en-CA"));
@@ -295,5 +412,26 @@ const visibleElementForm = () => {
   formDetail.setAttribute("hidden", true);
   divCreatedBy.setAttribute("hidden", true);
   divCreatedDate.setAttribute("hidden", true);
+  divOrderId.setAttribute("hidden", true);
   divDelivery.setAttribute("hidden", true);
+  divJobId.setAttribute("hidden", true);
+  divJobDate.setAttribute("hidden", true);
+  divShipmentId.setAttribute("hidden", true);
+  divShipping.setAttribute("hidden", true);
+
+  if (!item) return;
+
+  divOrderType.setAttribute("hidden", true); // edit
+  formDetail.removeAttribute("hidden");
+  if (item.OrderType == "Blinds") {
+    divCreatedBy.setAttribute("hidden", true);
+    divCreatedDate.setAttribute("hidden", true);
+    divDelivery.removeAttribute("hidden");
+  }
+
+  if (item.OrderType == "Panorama") {
+    divCreatedBy.removeAttribute("hidden");
+    divCreatedDate.removeAttribute("hidden");
+    divDelivery.setAttribute("hidden", true);
+  }
 };
