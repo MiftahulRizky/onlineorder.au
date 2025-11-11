@@ -2167,7 +2167,7 @@ Partial Class Methods_Order_DetailMethod
         If DesignName = "Vertical Blinds" Then
             If BlindName = "Complete" OR BlindName = "Track Only" Then
                 Select Case SlatSize
-                    Case "127"
+                    Case "127", "127mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer127Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2183,7 +2183,7 @@ Partial Class Methods_Order_DetailMethod
                                 End If
                             Next
                         End If
-                    Case "100"
+                    Case "100", "100mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer100Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2199,7 +2199,7 @@ Partial Class Methods_Order_DetailMethod
                                 End If
                             Next
                         End If
-                    Case "89"
+                    Case "89", "89mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer89Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2215,7 +2215,7 @@ Partial Class Methods_Order_DetailMethod
                                 End If
                             Next
                         End If
-                    Case "63"
+                    Case "63", "63mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer63Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2248,7 +2248,7 @@ Partial Class Methods_Order_DetailMethod
         If DesignName = "Vertical Blinds" Then
             If BlindName = "Complete" OR BlindName = "Track Only" Then
                 Select Case SlatSize
-                    Case "127"
+                    Case "127", "127mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer127Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2264,7 +2264,7 @@ Partial Class Methods_Order_DetailMethod
                                 End If
                             Next
                         End If
-                    Case "100"
+                    Case "100", "100mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer100Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2280,7 +2280,7 @@ Partial Class Methods_Order_DetailMethod
                                 End If
                             Next
                         End If
-                    Case "89"
+                    Case "89", "89mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer89Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -2296,7 +2296,7 @@ Partial Class Methods_Order_DetailMethod
                                 End If
                             Next
                         End If
-                    Case "63"
+                    Case "63", "63mm"
                         If TubeType.Contains("Tiltrack") Then
                             For Each item In Spacer63Tiltrack
                                 If Width <= item.MaxWidth Then
@@ -9204,12 +9204,28 @@ Partial Class Methods_Order_DetailMethod
         }
         For i As Integer = 0 To initVenType.Length - 1
             If Not String.IsNullOrEmpty(initVenType(i).ToString()) Then
-                initVenType(i) = "Blind"
+                initVenType(i) = "Track Only"
             Else
                 initVenType(i) = String.Empty
             End If
         Next
+        
 
+        Dim initTrackOption As String() = {
+            currentData("InsertInTrack1").ToString(),
+            currentData("InsertInTrack2").ToString(),
+            currentData("InsertInTrack3").ToString(),
+            currentData("InsertInTrack4").ToString(),
+            currentData("InsertInTrack5").ToString(),
+            currentData("InsertInTrack6").ToString()
+        }
+        For i As Integer = 0 To initTrackOption.Length - 1
+            If Not String.IsNullOrEmpty(initTrackOption(i).ToString()) Then
+                initTrackOption(i) = "Insert"
+            Else
+                initTrackOption(i) = "Plain"
+            End If
+        Next
 
         
         '#Line Option
@@ -9228,6 +9244,16 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Qty6").ToString()), "0", currentData("Qty6").ToString()) & tdDetEnd
             result+= trDetEnd
 
+            '#initVenType
+            result+= trDetStart
+                result+= tdTitleStart & fs11Start & "Vertical Blind Type" & fsEnd & tdDetEnd
+                result+= tdDetStart & initVenType(0) & tdDetEnd
+                result+= tdDetStart & initVenType(1) & tdDetEnd
+                result+= tdDetStart & initVenType(2) & tdDetEnd
+                result+= tdDetStart & initVenType(3) & tdDetEnd
+                result+= tdDetStart & initVenType(4) & tdDetEnd
+                result+= tdDetRight & initVenType(5) & tdDetEnd
+            result+= trDetEnd
 
             '#TubeType
             result+= trDetStart
@@ -9309,12 +9335,12 @@ Partial Class Methods_Order_DetailMethod
             '#
             result+= trDetStart
                 result+= tdTitleStart & "Track Option" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetRight & "" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line1").ToString()), "", initTrackOption(0)) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line2").ToString()), "", initTrackOption(1)) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line3").ToString()), "", initTrackOption(2)) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line4").ToString()), "", initTrackOption(3)) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Line5").ToString()), "", initTrackOption(4)) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Line6").ToString()), "", initTrackOption(5)) & tdDetEnd
             result+= trDetEnd
 
             '#ControlType
