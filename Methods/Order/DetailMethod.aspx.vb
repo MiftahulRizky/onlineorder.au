@@ -2042,18 +2042,29 @@ Partial Class Methods_Order_DetailMethod
         If BlindName = "Roller Blind" Then
             '#-----------------------|| JAI / LOV ||-----------------------#
             If InStr(KitName, "JAI") > 0 Or InStr(KitName, "LOV") > 0 Or InStr(TubeType, "JAI") > 0 Or InStr(TubeType, "LOV") > 0 Then
-                '#-----------------------|| Single, Double, Linked, Double and Link ||-----------------------#
-                If BracketType = "Single" Or BracketType = "Double" Or InStr(BracketType, "Linked") > 0 Or InStr(BracketType, "Double and Link") > 0 Then
-                    '#-----------------------|| Left or Right ||-----------------------#
+
+                '#-----------------------|| Single, Double, Linked (Ind), Double and Link(Ind) ||-----------------------#
+                If BracketType = "Single" Or BracketType = "Double" Or InStr(BracketType, "Ind") > 0 Then
+                    If TubeSize = "40" Then : result = Width - 28 : End IF
+                    If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 32 : End IF
+                    If TubeSize = "50" Then : result = Width - 28 : End IF
+                End If
+
+                '#-----------------------|| Linked (Dep), Double and Link(Dep) ||-----------------------#
+                If InStr(BracketType, "Dep") > 0 Then
                     If ControlPosition = "Left" Or ControlPosition = "Right" Then
                         If TubeSize = "40" Then : result = Width - 28 : End IF
-                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 34 : End IF
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 32 : End IF
+                        If TubeSize = "50" Then : result = Width - 28 : End IF
                     End If
                     If String.IsNullOrEmpty(ControlPosition) Or ControlPosition = "N/A" Then
                         If TubeSize = "40" Then : result = Width - 22 : End IF
-                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 24 : End IF
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 26 : End IF
+                        If TubeSize = "50" Then : result = Width - 22 : End IF
                     End If
                 End If
+
+
             End If
             '#-----------------------|| Spring System ||-----------------------#
             If InStr(KitName, "Spring System") > 0 Or InStr(TubeType, "Spring") > 0 Then
@@ -2135,7 +2146,7 @@ Partial Class Methods_Order_DetailMethod
                 If trim = "1P" OrElse String.IsNullOrEmpty(bottomType) OrElse bottomType = "Flat Wrapped" OrElse bottomType = "Oval Bumper" Then
                     result = drop + 250
                 End If
-            Case "45","50"
+            Case "45","45H","50"
                 If trim = "1F" AndAlso (bottomType = "Oval" OrElse (InStr(bottomType, "Flat") > 0 AndAlso bottomType <> "Flat Wrapped")) Then
                     result = drop + 300
                 End If
