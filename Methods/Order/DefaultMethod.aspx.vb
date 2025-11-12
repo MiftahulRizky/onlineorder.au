@@ -142,7 +142,7 @@ Partial Class Methods_Order_DefaultMethod
                 ' --- 1. Query untuk menghitung Total Records (tanpa filter DataTables, hanya filter awal Anda) ---
                 Dim countSql As String = "SELECT COUNT( Id ) FROM view_order_headers WHERE Active = @Active  AND (@Status = 'all' OR Status = @Status) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
                 If params.status = "Draft" Then
-                    countSql = "SELECT COUNT( Id ) FROM view_order_headers WHERE Active = @Active AND OrderType = @OrderType  AND (@Status = 'all' OR Status IN ('Draft', 'Unsubmitted')) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                    countSql = "SELECT COUNT( Id ) FROM view_order_headers WHERE Active = @Active AND (@OrderType = 'All' OR OrderType = @OrderType)  AND (@Status = 'all' OR Status IN ('Draft', 'Unsubmitted')) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
                 End If
                 Using countCmd As New SqlCommand(countSql, conn)
                     countCmd.Parameters.AddWithValue("@Status", params.status)
@@ -155,9 +155,9 @@ Partial Class Methods_Order_DefaultMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                Dim whereQueries As String = "WHERE Active = @Active AND OrderType = @OrderType AND (@Status = 'all' OR Status = @Status) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                Dim whereQueries As String = "WHERE Active = @Active AND (@OrderType = 'All' OR OrderType = @OrderType) AND (@Status = 'all' OR Status = @Status) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
                 If params.status = "Draft" Then
-                    whereQueries = "WHERE Active = @Active AND OrderType = @OrderType AND (@Status = 'all' OR Status IN ('Draft', 'Unsubmitted')) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                    whereQueries = "WHERE Active = @Active AND (@OrderType = 'All' OR OrderType = @OrderType) AND (@Status = 'all' OR Status IN ('Draft', 'Unsubmitted')) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
                 End If
                 sqlBuilder.AppendLine("SELECT Id, OrderId, JoNumberId, CustomerId, OrderNumber, OrderName, Delivery, OrderType, Status, StatusAdditional, CreatedDate, SubmittedDate,CanceledDate, CompletedDate, Active, CustomerName")
                 sqlBuilder.AppendLine("FROM view_order_headers")

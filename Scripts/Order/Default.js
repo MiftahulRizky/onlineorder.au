@@ -1183,50 +1183,52 @@ const stylingColumnSearchAndPaging = (params) => {
 };
 
 const visibleColumnServerside = () => {
-  const id = document.querySelector("#tableAjax .column-id");
-  const retailer = document.querySelector("#tableAjax .column-retailer");
-  const ordertype = document.querySelector("#tableAjax .column-type");
+  const id = document.querySelectorAll("#tableAjax .column-id");
+  const retailer = document.querySelectorAll("#tableAjax .column-retailer");
+  const ordertype = document.querySelectorAll("#tableAjax .column-type");
 
   tableData.columns(1).visible(false); // ID
   tableData.columns(3).visible(false); // RETAILER
   tableData.columns(6).visible(true); // ORDER TYPE
-  id.setAttribute("hidden", true);
-  retailer.setAttribute("hidden", true);
-  ordertype.removeAttribute("hidden");
+  id.forEach((item) => item.setAttribute("hidden", true));
+  retailer.forEach((item) => item.setAttribute("hidden", true));
+  ordertype.forEach((item) => item.removeAttribute("hidden"));
 
   if (
     ROLENAME == "Administrator" &&
     (LEVELNAME == "Leader" || LEVELNAME == "Super Admin")
   ) {
     tableData.columns(1).visible(true); // ID
-    id.removeAttribute("hidden");
+    id.forEach((item) => item.removeAttribute("hidden"));
   }
 
   if (
     ROLENAME == "Administrator" ||
     ROLENAME == "Customer Service" ||
-    ROLENAME == "Data Entry"
+    ROLENAME == "Data Entry" ||
+    ROLENAME == "PPIC & DE"
   ) {
-    tableData.columns(3).visible(true); // ID
-    retailer.removeAttribute("hidden");
+    tableData.columns(3).visible(true); // RETAILER;
+    retailer.forEach((item) => item.removeAttribute("hidden"));
   }
 
   if (
     ROLENAME == "Customer" &&
     (CUSTOMERID == "LS-A012" || CUSTOMERID == "LS-A333")
   ) {
-    tableData.columns(3).visible(true); // ID
-    retailer.removeAttribute("hidden");
+    tableData.columns(3).visible(true); // RETAILER
+    retailer.forEach((item) => item.removeAttribute("hidden"));
   }
 
   if (ROLENAME == "Customer" || ROLENAME == "Representative" || SESSION_SP) {
     tableData.columns(6).visible(false); // ORDER TYPE
-    ordertype.setAttribute("hidden", true);
+    ordertype.forEach((item) => item.setAttribute("hidden", true));
   }
 
   const aDailyMail = document.querySelector("#aDailyMail");
   const aOtorisasi = document.querySelector("#aOtorisasi");
   const btnCreateNewOrder = document.querySelector("#btnCreateNewOrder");
+
   aDailyMail.setAttribute("hidden", true);
   aOtorisasi.setAttribute("hidden", true);
   btnCreateNewOrder.setAttribute("hidden", true);
@@ -1241,7 +1243,8 @@ const visibleColumnServerside = () => {
   if (
     ROLENAME == "Administrator" ||
     ROLENAME == "Customer Service" ||
-    ROLENAME == "Data Entry"
+    ROLENAME == "Data Entry" ||
+    ROLENAME == "PPIC & DE"
   ) {
     aOtorisasi.removeAttribute("hidden");
   }
@@ -1250,6 +1253,7 @@ const visibleColumnServerside = () => {
     ROLENAME == "Administrator" ||
     ROLENAME == "Customer Service" ||
     ROLENAME == "Data Entry" ||
+    ROLENAME == "PPIC & DE" ||
     ROLENAME == "Representative"
   ) {
     btnCreateNewOrder.removeAttribute("hidden");

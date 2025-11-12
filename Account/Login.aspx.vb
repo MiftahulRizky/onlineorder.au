@@ -42,7 +42,7 @@ Partial Class Account_Login
             End If
 
             If msgError.InnerText = "" Then
-                Dim memberData As DataSet = publicCfg.GetListData("SELECT * FROM view_memberships WHERE UserName = '" + txtUserLogin.Text + "'")
+                Dim memberData As DataSet = publicCfg.GetListData("SELECT * FROM view_auth WHERE UserName = '" + txtUserLogin.Text + "'")
                 
                 If memberData.Tables(0).Rows.Count = 0 Then
                     Call MessageError(True, "txtUserLogin", "USERNAME NOT FOUND !")

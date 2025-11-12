@@ -158,6 +158,7 @@
                             <div class="col-lg-4 mb-3">
                                 <label for="unitnumber" class="form-label">Unit Number</label>
                                 <input type="text" name="unitnumber" id="unitnumber" class="form-control" placeholder="Unit Number ..." autocomplete="off">
+                                <input type="text" name="customer" id="customer" class="form-control" readonly hidden>
                                 <input type="text" name="id" id="id" class="form-control" readonly hidden>
                             </div>
                             <div class="col-lg-8 mb-3">

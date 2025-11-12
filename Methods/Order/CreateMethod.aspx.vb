@@ -16,7 +16,12 @@ Partial Class Methods_Order_CreateMethod
     Shared orderCfg As New OrderConfig()
 
     Public Class ParamSubmit
+        '#Submit OrderHeader
         Public Property id  As String
+        Public Property orderid As String
+        Public Property jobid As String
+        Public Property jobdate As String
+        Public Property shipmentid As String
         Public Property ordertype As String
         Public Property customer As String
         Public Property createdby As String
@@ -26,9 +31,19 @@ Partial Class Methods_Order_CreateMethod
         Public Property delivery As String
         Public Property note As String
 
+        '#Submit SubmitShipping
+        ' Public Property id As String => On #Submit OrderHeader
+        ' Public Property customer As String => On #Submit OrderHeader
+        Public Property unitnumber As String
+        Public Property streetaddress As String
+        Public Property suburb As String
+        Public Property states As String
+        Public Property postcode As String
+        Public Property addressport As String
+
+        '#aditional param
         Public Property loginid As String
         Public Property actions As String
-        Public Property headerid As String
     End Class
 
     '#--- Kelas Output WebMethod ---#
@@ -125,14 +140,14 @@ Partial Class Methods_Order_CreateMethod
                 Else If data.actions = "edit" Then
                     '# check by customer
                     Dim OrderNumber As String = data.ordernumber.Trim()
-                    Dim OrderNumberByCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND CustomerId = '" & data.customer & "' AND Id <> '" & data.headerid & "' AND Active = 1")
+                    Dim OrderNumberByCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND CustomerId = '" & data.customer & "' AND Id <> '" & data.id & "' AND Active = 1")
 
                     If String.Equals(OrderNumber.Trim(), OrderNumberByCust, StringComparison.OrdinalIgnoreCase) Then
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
                     End If
 
                     '# check by all customer
-                    Dim OrderNumberAllCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND Id <> '" & data.headerid & "' AND Active = 1")
+                    Dim OrderNumberAllCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND Id <> '" & data.id & "' AND Active = 1")
                     If String.Equals(OrderNumber.Trim(), OrderNumberAllCust, StringComparison.OrdinalIgnoreCase) Then
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
                     End If
@@ -215,11 +230,11 @@ Partial Class Methods_Order_CreateMethod
             '#update
             If Not String.IsNullOrEmpty(data.id) Then
                 IF data.ordertype = "Blinds" Then
-                     Dim id As String = data.id
+                    Dim id As String = data.id
                     Using thisConn As New SqlConnection(myConn)
                         Using myCmd As New SqlCommand("UPDATE OrderHeaders SET UserId=@UserId, StoreId=@StoreId, OrderNo=LTRIM(RTRIM(@OrderNo)), OrderCust=LTRIM(RTRIM(@OrderCust)), Delivery=@Delivery, Note=@Note, Active=1 WHERE Id=@Id", thisConn)
                             myCmd.Parameters.AddWithValue("@Id", id)
-                            myCmd.Parameters.AddWithValue("@UserId", UCase(data.loginid).ToString())
+                            myCmd.Parameters.AddWithValue("@UserId", UCase(data.createdby).ToString())
                             myCmd.Parameters.AddWithValue("@StoreId", UCase(data.customer).ToString())
                             myCmd.Parameters.AddWithValue("@OrderNo", data.ordernumber)
                             myCmd.Parameters.AddWithValue("@OrderCust", data.ordername)
@@ -233,9 +248,110 @@ Partial Class Methods_Order_CreateMethod
                     End Using
                     url = "/order/detail?ultron=" & id & "&infinity=" & data.ordertype
                 Else If data.ordertype = "Panorama" Then
+                    Using thisConn As New SqlConnection(myConn)
+                        Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders_Shutters SET OrderId=@OrderId, JobId=@JobId, JobDate=@JobDate, ShipmentId=@ShipmentId, CustomerId=@CustomerId, CreatedBy=@CreatedBy, CreatedDate=@CreatedDate, OrderNumber=@OrderNumber, OrderName=@OrderName, OrderNote=@OrderNote WHERE Id=@Id")
+                            myCmd.Parameters.AddWithValue("@Id", data.id)
+                            myCmd.Parameters.AddWithValue("@OrderId", data.orderid)
+                            myCmd.Parameters.AddWithValue("@JobId", data.jobid)
+                            myCmd.Parameters.AddWithValue("@JobDate", data.jobdate)
+                            myCmd.Parameters.AddWithValue("@ShipmentId", If(String.IsNullOrEmpty(data.shipmentid), DBNull.Value, data.shipmentid))
+                            myCmd.Parameters.AddWithValue("@CustomerId", UCase(data.customer).ToString())
+                            myCmd.Parameters.AddWithValue("@CreatedBy", UCase(data.createdby).ToString())
+                            myCmd.Parameters.AddWithValue("@CreatedDate", data.createddate)
+                            myCmd.Parameters.AddWithValue("@OrderNumber", data.ordernumber.Trim())
+                            myCmd.Parameters.AddWithValue("@OrderName", data.ordername.Trim())
+                            myCmd.Parameters.AddWithValue("@OrderNote", data.note.Trim())
+
+                            myCmd.Connection = thisConn
+                            thisConn.Open()
+                            myCmd.ExecuteNonQuery()
+                            thisConn.Close()
+                        End Using
+                    End Using
                     url = "/order/loop/detail?ultron=" & data.id & "&infinity=" & data.ordertype
                 End If
                 msg = "Data has been updated successfully."
+            End If
+
+            Return New SuccessResponse With {.success = New SuccessDetail With {.message = msg, .url = url}}
+        Catch ex As Exception
+            Return New ErrorResponse With {
+                .error = New ErrorDetail With {
+                    .message = ex.Message,
+                    .field = ""
+                }
+            }
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function SubmitShipping(ByVal data As ParamSubmit) As Object
+        Try
+            If String.IsNullOrEmpty(data.streetaddress) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "street address is required !", .field = "streetaddress"}}
+            End If
+            If String.IsNullOrEmpty(data.suburb) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "suburb is required !", .field = "suburb"}}
+            End If
+            If String.IsNullOrEmpty(data.states) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "states is required !", .field = "states"}}
+            End If
+            If String.IsNullOrEmpty(data.postcode) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "postcode is required !", .field = "postcode"}}
+            End If
+            If String.IsNullOrEmpty(data.addressport) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "address port is required !", .field = "addressport"}}
+            End If
+            
+
+            Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString    
+
+            Dim msg As String = "200"
+            Dim url As String = "/"
+            '#insert
+            If String.IsNullOrEmpty(data.id) Then
+                Dim Id As string = orderCfg.GetCustomerAddressId()
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As SqlCommand = New SqlCommand("UPDATE CustomerAddress SET [Primary]=0 WHERE CustomerId = @CustomerId; INSERT INTO CustomerAddress VALUES (NEWID(), @CustomerId, 'Delivery', @UnitNumber, @Street, @Suburb, @States, @PostCode, @Port, 'Delivery', NULL, 1)")
+                        myCmd.Parameters.AddWithValue("@Id", Id)
+                        myCmd.Parameters.AddWithValue("@CustomerId", UCase(data.customer).ToString())
+                        myCmd.Parameters.AddWithValue("@UnitNumber", data.unitnumber.Trim())
+                        myCmd.Parameters.AddWithValue("@Street", data.streetaddress.Trim())
+                        myCmd.Parameters.AddWithValue("@Suburb", data.suburb.Trim())
+                        myCmd.Parameters.AddWithValue("@States", data.states)
+                        myCmd.Parameters.AddWithValue("@PostCode", data.postcode.Trim())
+                        myCmd.Parameters.AddWithValue("@Port", data.addressport)
+
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+                msg = "Shipping Address has been saved successfully. <br /> Click oke to continue."
+            End If
+
+            '#update
+            If Not String.IsNullOrEmpty(data.id) Then
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As SqlCommand = New SqlCommand("UPDATE CustomerAddress SET UnitNumber=@UnitNumber, Street=@Street, Suburb=@Suburb, States=@States, PostCode=@PostCode, Port=@Port WHERE Id=@Id")
+                        myCmd.Parameters.AddWithValue("@Id", data.id)
+                        myCmd.Parameters.AddWithValue("@CustomerId", UCase(data.customer).ToString())
+                        myCmd.Parameters.AddWithValue("@UnitNumber", data.unitnumber.Trim())
+                        myCmd.Parameters.AddWithValue("@Street", data.streetaddress.Trim())
+                        myCmd.Parameters.AddWithValue("@Suburb", data.suburb.Trim())
+                        myCmd.Parameters.AddWithValue("@States", data.states)
+                        myCmd.Parameters.AddWithValue("@PostCode", data.postcode.Trim())
+                        myCmd.Parameters.AddWithValue("@Port", data.addressport)
+
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+                msg = "Shipping Address has been updated successfully."
             End If
 
             Return New SuccessResponse With {.success = New SuccessDetail With {.message = msg, .url = url}}
@@ -255,16 +371,16 @@ Partial Class Methods_Order_CreateMethod
     Public Shared Function BindCustomer(ByVal ordertype As String, ByVal rolename As String) As Object
         Try
             Dim company As String = "LOOP"
-            Dim query As String = "SELECT Id, Name, Company, Active FROM view_customers WHERE Company IN ('" + company + "', 'ALL') AND (Id <> 'DEFAULT' AND Id <> 'LIFESTYLE' ) AND Active='1' ORDER BY Name ASC"
+            Dim query As String = "SELECT Id, Name, Company, Active FROM Customers WHERE Company IN ('" + company + "', 'ALL') AND (Id <> 'DEFAULT' AND Id <> 'LIFESTYLE' ) AND Active='1' ORDER BY Name ASC"
 
             If ordertype = "Blinds" Then 
                 company = "SP" 
-                query = "SELECT Id, Name, Company, Active FROM view_customers WHERE Company IN ('" + company + "', 'ALL') AND (Id <> 'DEFAULT' AND Id <> 'LIFESTYLE' ) AND Active='1' ORDER BY Name ASC"
+                query = "SELECT Id, Name, Company, Active FROM Customers WHERE Company IN ('" + company + "', 'ALL') AND (Id <> 'DEFAULT' AND Id <> 'LIFESTYLE' ) AND Active='1' ORDER BY Name ASC"
             Else If ordertype = "Panorama" Then
                 company = "LOOP"
-                query = "SELECT Id, Name, Company, Active FROM view_customers WHERE Company IN ('" + company + "', 'ALL') AND Active='1' ORDER BY Name ASC"
+                query = "SELECT Id, Name, Company, Active FROM Customers WHERE Company IN ('" + company + "', 'ALL') AND Active='1' ORDER BY Name ASC"
                 If rolename = "Customer Service" Or rolename = "Data Entry" Then
-                    query = "SELECT Id, Name, Company, Active FROM view_customers WHERE Company IN ('" + company + "', 'ALL') AND Id <> 'DEFAULT' AND Active='1' ORDER BY Name ASC"
+                    query = "SELECT Id, Name, Company, Active FROM Customers WHERE Company IN ('" + company + "', 'ALL') AND Id <> 'DEFAULT' AND Active='1' ORDER BY Name ASC"
                 End If
             End If
             
@@ -289,7 +405,7 @@ Partial Class Methods_Order_CreateMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindUser() As Object
         Try
-           Dim datas As DataSet = publicCfg.GetListData("SELECT UPPER(Id) AS IdText, UPPER(UserName) + ' | ' + UPPER(FullName) AS NameText FROM view_customer_logins ORDER BY UserName ASC")
+           Dim datas As DataSet = publicCfg.GetListData("SELECT UPPER(Id) AS IdText, UPPER(UserName) + ' | ' + UPPER(FullName) AS NameText FROM CustomerLogins ORDER BY UserName ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows

@@ -111,6 +111,35 @@ document.querySelector("#btn-cancel").addEventListener("click", (e) => {
 
 // --------------------------------------------|| modalShipping ||-----------------------------------------
 
+document
+  .querySelectorAll("#modalShipping .form-control, #modalShipping .form-select")
+  .forEach((el) => {
+    el.addEventListener("change", () => {
+      el.classList.remove("is-invalid");
+    });
+    el.addEventListener("input", () => {
+      el.classList.remove("is-invalid");
+    });
+  });
+
+// button submit
+document
+  .querySelector("#modalShipping #btn-submit")
+  .addEventListener("click", (e) => {
+    e.preventDefault();
+
+    document
+      .querySelectorAll(
+        "#modalShipping, #modalShipping .form-control, #modalShipping .form-select"
+      )
+      .forEach((el) => {
+        el.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        el.classList.remove("is-invalid");
+      });
+
+    handlerSubmitShipping(e.target.form, e.target, e.target.innerHTML);
+  });
+
 // ==============================================|| FUNCTIONS ||=============================================
 const handlerHideBSModal = (id) => {
   var modalEl = document.getElementById(id);
@@ -119,14 +148,8 @@ const handlerHideBSModal = (id) => {
   if (modalInstance) {
     modalInstance.hide();
   } else {
-    // Jika modal belum pernah di-show dan belum punya instance, buat dan langsung hide
     modalInstance = new bootstrap.Modal(modalEl);
     modalInstance.hide();
-  }
-
-  // Hilangkan fokus dari elemen dalam modal
-  if (document.activeElement && modalEl.contains(document.activeElement)) {
-    document.activeElement.blur();
   }
 };
 
@@ -151,9 +174,6 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
       "__SCROLLPOSITIONY",
       "__EVENTVALIDATION",
       "ctl00$txtSearchMaster",
-      "designid",
-      "blindid",
-      "data-table_length",
     ];
 
     formObject = Object.fromEntries(
@@ -212,6 +232,84 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
     } else {
       await isSuccess(dataResult.success.message);
       window.location.href = dataResult.success.url;
+    }
+  } catch (err) {
+    await isError(err.message);
+  }
+};
+
+const handlerSubmitShipping = async (formEl, button, htmlButton) => {
+  try {
+    const formData = new FormData(formEl);
+
+    let formObject = Object.fromEntries(formData.entries());
+    const excludeKeys = [
+      "__EVENTTARGET",
+      "__EVENTARGUMENT",
+      "__VIEWSTATE",
+      "__VIEWSTATEGENERATOR",
+      "__SCROLLPOSITIONX",
+      "__SCROLLPOSITIONY",
+      "__EVENTVALIDATION",
+      "ctl00$txtSearchMaster",
+    ];
+
+    formObject = Object.fromEntries(
+      Object.entries(formObject).filter(([key]) => !excludeKeys.includes(key))
+    );
+
+    const additionalData = {
+      loginid: LOGINID,
+    };
+
+    const finalData = {
+      ...formObject,
+      ...additionalData,
+    };
+
+    // debug konsisten
+    // return console.table(finalData);
+
+    // before send
+    button.setAttribute("disabled", "disabled");
+    button.innerHTML = '<i class="ti ti-loader fs-2 me-1"></i> Processing...';
+
+    const response = await fetch(URIMETHOD + "/SubmitShipping", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: finalData }),
+    });
+
+    // restore button
+    button.removeAttribute("disabled");
+    button.innerHTML = htmlButton;
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        ROLENAME === "Administrator"
+          ? `${response.status}\n${errorText}`
+          : "Something went wrong, please try again!"
+      );
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success.message);
+      handlerHideBSModal("modalShipping");
+      location.reload();
     }
   } catch (err) {
     await isError(err.message);
@@ -426,11 +524,7 @@ const handlerShipping = async (customerid) => {
     const data = response.d;
 
     if (!data || data.length === 0) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? "No data returned from server : BindShipping"
-          : "Please contact our IT team at support@onlineorder.au";
-      throw new Error(msg);
+      return true;
     }
 
     for (const item of data) {
@@ -438,11 +532,16 @@ const handlerShipping = async (customerid) => {
       const modalShippingLabel = document.querySelector(
         "#modalShipping #modalShippingLabel"
       );
+      const customer = document.querySelector("#customer");
+
+      document.querySelector("#modalShipping #customer").value = customer.value;
       modalShippingLabel.innerHTML = "Add Primary Address";
 
       if (!item) return;
       modalShippingLabel.innerHTML = "Edit Primary Address";
       document.querySelector("#modalShipping #id").value = item.Id;
+      document.querySelector("#modalShipping #customer").value =
+        item.CustomerId;
       document.querySelector("#modalShipping #unitnumber").value =
         item.UnitNumber;
       document.querySelector("#modalShipping #streetaddress").value =
@@ -572,7 +671,6 @@ const checkSessionCreateHeader = async () => {
     loaderFadeOut();
   } else if (ACTION === "edit" && ID && ORDERTYPE) {
     handlerEdit(ID, ORDERTYPE);
-    // loaderFadeOut();
   } else {
     window.location.href = "/order";
   }

@@ -37,7 +37,7 @@ Partial Public Class SiteMaster
         Try
             If Session("isLoggedIn") = True Then
                 Dim loginId As String = Session("LoginId")
-                Dim myData As DataSet = publicCfg.GetListData("SELECT * FROM view_memberships WHERE Id = '" + loginId + "'")
+                Dim myData As DataSet = publicCfg.GetListData("SELECT * FROM view_auth WHERE Id = '" + loginId + "'")
 
                 Session("FullName") = myData.Tables(0).Rows(0).Item("FullName").ToString()
                 Session("AppName") = myData.Tables(0).Rows(0).Item("AppName").ToString()
@@ -50,7 +50,7 @@ Partial Public Class SiteMaster
                 Session("resetLogin") = myData.Tables(0).Rows(0).Item("Reset")
                 Session("CustomerAccount") = myData.Tables(0).Rows(0).Item("CustomerAccount").ToString()
 
-                Dim myData2 As DataSet = publicCfg.GetListData("SELECT * FROM Users WHERE UserId = '" + loginId + "'")
+                Dim myData2 As DataSet = publicCfg.GetListData("SELECT * FROM CustomerContacts WHERE CustomerId = '" + Session("CustomerId") + "'")
                 Session("PriceAccess") = myData2.Tables(0).Rows(0).Item("Price").ToString()
                 Session("MarkUpAccess") = myData2.Tables(0).Rows(0).Item("MarkUp").ToString()
 
