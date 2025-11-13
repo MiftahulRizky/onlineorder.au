@@ -17,15 +17,16 @@ Partial Class Methods_Order_DefaultMethod
 
     '#--- Initialize Class ---#
     Public Class OrdersParams
-        Public Property customercontactid As String
-        Public Property storecompany As String
+        Public Property loginid As String
         Public Property customerid As String
+        Public Property customeraccount As String
+        Public Property customercompany As String
         Public Property rolename As String
         Public Property levelname As String
         Public Property status As String
         Public Property ordertype As String
         Public Property active As String
-        Public Property customeraccount As String
+        Public Property customeraccountfilter As String
     
        
         Public Property draw As Integer
@@ -137,28 +138,55 @@ Partial Class Methods_Order_DefaultMethod
             Using conn As New SqlConnection(connStr)
                 conn.Open()
 
-                
-
-                ' --- 1. Query untuk menghitung Total Records (tanpa filter DataTables, hanya filter awal Anda) ---
-                Dim countSql As String = "SELECT COUNT( Id ) FROM view_order_headers WHERE Active = @Active  AND (@Status = 'all' OR Status = @Status) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                '#---------------------------------------------------------|| Addtitional Where Query ||---------------------------------------------------------#
+                Dim statusMerged As String = "AND (@Status = 'all' OR Status = @Status)"
                 If params.status = "Draft" Then
-                    countSql = "SELECT COUNT( Id ) FROM view_order_headers WHERE Active = @Active AND (@OrderType = 'All' OR OrderType = @OrderType)  AND (@Status = 'all' OR Status IN ('Draft', 'Unsubmitted')) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                    statusMerged = "AND (@Status = 'all' OR Status IN ('Draft', 'Unsubmitted'))"
                 End If
+
+                Dim whereRole As String = String.Empty
+                IF params.customercompany = "SP" Or params.customercompany = "ALL" Then
+                    whereRole = ""
+                    If params.rolename = "PPIC & DE" Then
+                        whereRole = " AND CustomerCompany = '" + params.customercompany + "'"
+                    End If
+
+                    If params.rolename = "Customer" Then
+                        whereRole = " AND CustomerId = '" + params.customerid + "'"
+                        If params.levelname = "Member" Then
+                            whereRole = " AND CreatedBy = '" + params.loginid + "'"
+                        End If
+                    End If
+                ElseIf params.customercompany = "LOOP" Or params.customercompany = "ALL" Then
+                    Select Case params.rolename
+                        Case "Administrator", "Customer Service", "Data Entry", "PPIC & DE", "Account"
+                            whereRole = ""
+                        Case "Representative"
+                            whereRole = " AND CustomerId = '" + params.customerid + "' AND CreatedBy = '" + params.loginid + "'"
+                        Case "Customer"
+                            whereRole = " AND CustomerId = '" + params.customerid + "'"
+                            If params.customeraccount = "Master" Then
+                                whereRole = " AND CustomerId = '" + params.customerid + "' AND CustomerMasterId = '" + params.customerid + "'"
+                            End If
+                    End Select
+                End If
+
+
+                '#---------------------------------------------------------|| Count Records ||---------------------------------------------------------#
+               
+                Dim countSql As String = "SELECT COUNT( Id ) FROM view_order_headers WHERE Active = @Active " + whereRole + " AND (@OrderType = 'All' OR OrderType = @OrderType) " + statusMerged + " AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
                 Using countCmd As New SqlCommand(countSql, conn)
                     countCmd.Parameters.AddWithValue("@Status", params.status)
                     countCmd.Parameters.AddWithValue("@OrderType", params.ordertype)
                     countCmd.Parameters.AddWithValue("@Active", params.active)
-                    countCmd.Parameters.AddWithValue("@CustomerAccount", params.customeraccount)
+                    countCmd.Parameters.AddWithValue("@CustomerAccount", params.customeraccountfilter)
                     totalRecords = CInt(countCmd.ExecuteScalar())
                 End Using
                 
-
-                ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
+                '#---------------------------------------------------------|| Mian Query ||---------------------------------------------------------#
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                Dim whereQueries As String = "WHERE Active = @Active AND (@OrderType = 'All' OR OrderType = @OrderType) AND (@Status = 'all' OR Status = @Status) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
-                If params.status = "Draft" Then
-                    whereQueries = "WHERE Active = @Active AND (@OrderType = 'All' OR OrderType = @OrderType) AND (@Status = 'all' OR Status IN ('Draft', 'Unsubmitted')) AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
-                End If
+               
+                Dim whereQueries As String = "WHERE Active = @Active " + whereRole + " AND (@OrderType = 'All' OR OrderType = @OrderType) " + statusMerged + " AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
                 sqlBuilder.AppendLine("SELECT Id, OrderId, JoNumberId, CustomerId, OrderNumber, OrderName, Delivery, OrderType, Status, StatusAdditional, CreatedDate, SubmittedDate,CanceledDate, CompletedDate, Active, CustomerName")
                 sqlBuilder.AppendLine("FROM view_order_headers")
                 sqlBuilder.AppendLine(whereQueries)
@@ -168,11 +196,10 @@ Partial Class Methods_Order_DefaultMethod
                 cmd.Parameters.AddWithValue("@Status", params.status)
                 cmd.Parameters.AddWithValue("@OrderType", params.ordertype)
                 cmd.Parameters.AddWithValue("@Active", params.active)
-                cmd.Parameters.AddWithValue("@CustomerAccount", params.customeraccount)
+                cmd.Parameters.AddWithValue("@CustomerAccount", params.customeraccountfilter)
 
 
-
-                ' --- Tambahkan Global Search DataTables (jika ada) ---
+                '#-------------------------------------------------|| Global Search ||-------------------------------------------------#
                 If Not String.IsNullOrEmpty(params.search.value) Then
                     Dim searchValue As String = "%" & params.search.value.Trim() & "%"
                     whereClause.AppendLine(" AND ( OrderNumber LIKE @SearchValue OR OrderName LIKE @SearchValue )")
@@ -181,7 +208,6 @@ Partial Class Methods_Order_DefaultMethod
 
                 sqlBuilder.Append(whereClause.ToString())
                 
-                ' --- Query untuk menghitung Filtered Records ---
                 Dim filteredCountSql As String = "SELECT COUNT(T.Id) FROM (" & sqlBuilder.ToString() & ") AS T"
                 Using filteredCountCmd As New SqlCommand(filteredCountSql, conn)
                     For Each p As SqlParameter In cmd.Parameters
@@ -191,10 +217,35 @@ Partial Class Methods_Order_DefaultMethod
                 End Using
                 
 
-                ' ... kode sebelumnya ...
+                '#-------------------------------------------------|| Order By ||-------------------------------------------------#
                 Dim orderByClause As New System.Text.StringBuilder()
+                Dim customOrderBy As String = String.Empty
+                IF params.customercompany = "SP" Or params.customercompany = "ALL" Then
+                    customOrderBy = " ORDER BY CreatedDate DESC"
+                ElseIf params.customercompany = "LOOP" Or params.customercompany = "ALL" Then
+                    customOrderBy = " ORDER BY Id DESC"
+                    If params.rolename = "Administrator" Then
+                        customOrderBy = " ORDER BY Id, CASE WHEN Status = 'New Order' THEN 1 WHEN Status = 'In Production' THEN 2 WHEN Status = 'Completed' THEN 3 WHEN Status = 'Unsubmitted' THEN 4 WHEN Status = 'Draft' THEN 4 WHEN Status = 'Canceled' THEN 5 END DESC"
+                    End If
+
+                    If params.rolename = "Customer Service" Or params.rolename = "Data Entry" Or params.rolename = "PPIC & DE" Then
+                        customOrderBy = " ORDER BY Id, CASE WHEN Status = 'New Order' THEN 1 WHEN Status = 'In Production' THEN 2 WHEN Status = 'Completed' THEN 3 WHEN Status = 'Unsubmitted' THEN 4 WHEN Status = 'Draft' THEN 4 WHEN Status = 'Canceled' THEN 5 END DESC"
+                    End If
+
+                    If params.rolename = "Account" Then
+                        customOrderBy = " ORDER BY OrderHeaders.Id, CASE WHEN Status = 'New Order' THEN 1 WHEN Status = 'In Production' THEN 2 WHEN Status = 'Completed' THEN 3 END DESC"
+                    End If
+
+                    If params.rolename = "Representative" Then
+                        customOrderBy = " ORDER BY Id DESC"
+                    End If
+
+                    If params.rolename = "Customer" Then
+                        customOrderBy = " ORDER BY Id DESC"
+                    End If
+                End If
+
                 If params.order IsNot Nothing AndAlso params.order.Count > 0 Then
-                    '# Notes: File di bawah ini untuk menambahkan order by ke query
                     Dim columnMap As New Dictionary(Of Integer, String) From { _
                         {0, "No"}, _
                         {1, "Id"} _
@@ -203,21 +254,16 @@ Partial Class Methods_Order_DefaultMethod
                     Dim orderDirection As String = params.order(0).dir.ToUpper()
 
                     If columnMap.ContainsKey(orderColumnIndex) AndAlso columnMap(orderColumnIndex) <> "No" Then
-                        ' Perbaiki bagian ini:
                         orderByClause.AppendLine(" ORDER BY " & columnMap(orderColumnIndex) & " " & orderDirection)
                     Else
-                        ' Default order jika kolom No atau kolom yang tidak bisa di-sort dipilih
-                        orderByClause.AppendLine(" ORDER BY CreatedDate DESC")
+                        orderByClause.AppendLine(customOrderBy)
                     End If
                 Else
-                    ' Default order jika tidak ada order dari DataTables
-                    orderByClause.AppendLine(" ORDER BY CreatedDate DESC")
+                    orderByClause.AppendLine(customOrderBy)
                 End If
                 sqlBuilder.Append(orderByClause.ToString())
                 
-                ' ... kode selanjutnya ...
 
-                ' --- Tambahkan Pagination (OFFSET/FETCH NEXT untuk SQL Server 2012+) ---
                 sqlBuilder.AppendLine(" OFFSET " & params.start.ToString() & " ROWS FETCH NEXT " & params.length.ToString() & " ROWS ONLY")
 
                 cmd.CommandText = sqlBuilder.ToString()
@@ -252,7 +298,6 @@ Partial Class Methods_Order_DefaultMethod
 
             End Using
 
-            ' --- Siapkan Respons ---
             response.draw = params.draw
             response.recordsTotal = totalRecords
             response.recordsFiltered = filteredRecords

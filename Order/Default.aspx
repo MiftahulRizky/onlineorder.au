@@ -238,14 +238,15 @@
 
 
     <script type="text/javascript">
+        let CUSTOMERACCOUNT = '<%= Session("CustomerAccount") %>';
         let CUSTOMERID = '<%= Session("CustomerId") %>';
         let SESSION_SP = '<%= Session("Sunlight Product") %>';
         let ONSTOP = '<%= Session("OnStop") %>';
         let USERNAME = '<%= Session("UserName") %>';
         let LOGINID = '<%= Session("LoginId") %>';
         let ROLENAME = '<%= Session("RoleName") %>';  
-        let CUSTOMERCONTACTID = '<%= Session("CustomerContactId") %>';
-        let CUSTOMERCOMPANY = '<%= Session("StoreCompany") %>';
+        // let CUSTOMERCONTACTID = '<%= Session("CustomerContactId") %>';
+        let CUSTOMERCOMPANY = '<%= Session("CustomerCompany") %>';
         let LEVELNAME = '<%= Session("LevelName") %>';
         let URIMETHOD = '/Methods/Order/DefaultMethod.aspx';      
         let src="../Scripts/OrderHeaderPage/OrderHeaderPage.js";

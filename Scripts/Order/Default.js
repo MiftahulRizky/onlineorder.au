@@ -4,11 +4,13 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("ROLENAME: " + ROLENAME);
     console.log("CUSTOMERID: " + CUSTOMERID);
     console.log("USERNAME: " + USERNAME);
-    console.log("CUSTOMERCONTACTID: " + CUSTOMERCONTACTID);
+    // console.log("CUSTOMERCONTACTID: " + CUSTOMERCONTACTID);
     console.log("ONSTOP: " + ONSTOP);
     console.log("CUSTOMERCOMPANY: " + CUSTOMERCOMPANY);
     console.log("LEVELNAME: " + LEVELNAME);
     console.log("URIMETHOD: " + URIMETHOD);
+    console.log("LOGINID: " + LOGINID);
+    console.log("CUSTOMERACCOUNT: " + CUSTOMERACCOUNT);
   }
   checkSession();
 });
@@ -297,15 +299,16 @@ const submitChangeStatus = async () => {
 let tableData;
 const bindOrders = (status, ordertype, active, storetype, params) => {
   const paramData = {
-    customercontactid: CUSTOMERCONTACTID,
-    storecompany: CUSTOMERCOMPANY,
+    loginid: LOGINID,
     customerid: CUSTOMERID,
+    customeraccount: CUSTOMERACCOUNT, // Exm: Regular
+    customercompany: CUSTOMERCOMPANY, // SP or LOOP
     rolename: ROLENAME,
     levelname: LEVELNAME,
     status: status,
-    ordertype: ordertype,
+    ordertype: ordertype, // from filter, Exm: Blinds or Panorama
     active: active,
-    customeraccount: storetype,
+    customeraccountfilter: storetype, // from filter
   };
 
   tableData = $(params).DataTable({
