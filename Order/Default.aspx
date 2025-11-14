@@ -11,7 +11,7 @@
                 </div>
 
                 <div class="col-7 text-end">
-                    <a href="#" id="aDailyMail" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalDailyMail">Daily Mail</a>
+                    <a href="javascript:void(0);" id="aDailyMail" class="btn btn-secondary">Daily Mail</a>
                     <a id="aOtorisasi" class="btn btn-info position-relative" data-bs-toggle="offcanvas" href="#canvasOtorisasi" role="button" aria-controls="canvasAdd">
                         Waiting for Authorization List
                         <span id="spanOtorisasi" class="badge bg-red text-blue-fg badge-notification badge-pill">10</span>

@@ -1,15 +1,14 @@
 window.addEventListener("DOMContentLoaded", function () {
-  if (roleName == "Administrator") {
+  if (ROLENAME == "Administrator") {
     console.log("Detail.js loaded successfully");
-    console.log("roleName: " + roleName);
-    console.log("userId: " + userId);
-    console.log("userName: " + userName);
-    console.log("headerId: " + headerId);
-    console.log("itemId: " + itemId);
-    console.log("pricesAccess: " + pricesAccess);
-    console.log("printPreview: " + printPreview);
-    console.log("Reprint: " + Reprint);
-    console.log("uriMethod: " + uriMethod);
+    console.log("ROLENAME: " + ROLENAME);
+    console.log("CUSTOMERID: " + CUSTOMERID);
+    console.log("USERNAME: " + USERNAME);
+    console.log("HEADERID: " + HEADERID);
+    console.log("PRICEACCESS: " + PRICEACCESS);
+    console.log("PREVIEWACCESS: " + PREVIEWACCESS);
+    console.log("REPRINT: " + REPRINT);
+    console.log("URIMETHOD: " + URIMETHOD);
   }
   checkSessionDetail();
 });
@@ -23,7 +22,7 @@ document.querySelector("#btnFinish").addEventListener("click", () => {
 // BUTTON PREVIEW PRINT
 document.querySelector("#btnPreviewPrint").addEventListener("click", () => {
   handlerCreatePDFOrder(
-    headerId,
+    HEADERID,
     "preview",
     "Please wait while we generate the document."
   );
@@ -32,7 +31,7 @@ document.querySelector("#btnPreviewPrint").addEventListener("click", () => {
 // BUTTON PREVIEW PDF
 document.querySelector("#btnPreviewPDF").addEventListener("click", () => {
   handlerCreatePDFOrder(
-    headerId,
+    HEADERID,
     "download",
     "Please wait while we generate the document."
   );
@@ -40,18 +39,18 @@ document.querySelector("#btnPreviewPDF").addEventListener("click", () => {
 
 // BUTTON CONVERT TO JOB
 document.querySelector("#btnConvertToJob").addEventListener("click", () => {
-  handlerConvertToJob(headerId, "convert", "Please wait while we convert...");
+  handlerConvertToJob(HEADERID, "convert", "Please wait while we convert...");
 });
 
 // BUTTON RE PRINT JOB SHEET
 document.querySelector("#btnReprintJobSheet").addEventListener("click", () => {
-  handlerCreateJOBOrder(headerId, "reprint", "Please wait while we reprint...");
+  handlerCreateJOBOrder(HEADERID, "reprint", "Please wait while we reprint...");
 });
 
 // BUTTON SUBMIT ORDER
 document.querySelector("#btnSubmit").addEventListener("click", () => {
   handlerSubmitOrder(
-    headerId,
+    HEADERID,
     "submit",
     "Please wait while we submit the order."
   );
@@ -59,20 +58,20 @@ document.querySelector("#btnSubmit").addEventListener("click", () => {
 
 // BUTTON EDIT HEADER
 document.querySelector("#btnEditHeader").addEventListener("click", () => {
-  // handlerEditHeader(headerId);
-  window.location.href = `/order/create?arterix=edit&obelix=${headerId}&ultron=blinds`;
+  // handlerEditHeader(HEADERID);
+  window.location.href = `/order/create?arterix=edit&obelix=${HEADERID}&ultron=blinds`;
 });
 
 // BUTTON DELETE HEADER
 document.querySelector("#btnDeleteHeader").addEventListener("click", () => {
-  handlerDeleteHeader(headerId);
+  handlerDeleteHeader(HEADERID);
 });
 
 // BUTTON QUOTE DETAIL
 document.querySelector("#btnQuoteDetail").addEventListener("click", () => {
   handlerCreatePDFQuote(
-    headerId,
-    userName,
+    HEADERID,
+    USERNAME,
     "preview",
     "Please wait while we generate the document."
   );
@@ -81,8 +80,8 @@ document.querySelector("#btnQuoteDetail").addEventListener("click", () => {
 // BUTTON DOWNLOAD QUOTE
 document.querySelector("#btnDownloadQuote").addEventListener("click", () => {
   handlerCreatePDFQuote(
-    headerId,
-    userName,
+    HEADERID,
+    USERNAME,
     "download",
     "Please wait while we generate the document."
   );
@@ -97,13 +96,13 @@ document.querySelector("#btnChangeStatus").addEventListener("click", () => {
     .forEach((e) => {
       e.classList.remove("is-invalid");
     });
-  handlerChangeStatus(headerId);
+  handlerChangeStatus(HEADERID);
 });
 
 // BUTTON SEND MANUAL ORDER
 document.querySelector("#btnSendOrderMail").addEventListener("click", () => {
   handlerCreatePDFOrder(
-    headerId,
+    HEADERID,
     "mail",
     "Please wait while we generate the document."
   );
@@ -112,7 +111,7 @@ document.querySelector("#btnSendOrderMail").addEventListener("click", () => {
 // BTN RELOAD PRICING
 document.querySelector("#btnReloadPricing").addEventListener("click", () => {
   const statusOrder = document.getElementById("spanStatusOrder").innerHTML;
-  handlerReloadPricing(headerId, statusOrder, "click");
+  handlerReloadPricing(HEADERID, statusOrder, "click");
 });
 
 // BUTTON ADD ITEMS
@@ -141,7 +140,7 @@ document
   .addEventListener("click", () => {
     const designId = document.querySelector("#modalAddItem #designid").value;
     const action = "AddItem";
-    submitSelectProduct(headerId, action, designId);
+    submitSelectProduct(HEADERID, action, designId);
   });
 
 // ------------------------------------------||modalChangeStatus Event ||------------------------------------
@@ -234,7 +233,7 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const id = e.target.dataset.id;
     const designId = e.target.dataset.designid;
     const msgBody = e.target.dataset.next;
-    handlerNextItem(id, headerId, "NextItem", designId, msgBody);
+    handlerNextItem(id, HEADERID, "NextItem", designId, msgBody);
   }
 });
 
@@ -261,7 +260,7 @@ const submitChangeStatus = async () => {
     "description",
   ];
 
-  const paramsChangeStatus = { username: userName };
+  const paramsChangeStatus = { username: USERNAME };
 
   fields.forEach((field) => {
     const el = document.querySelector(`#modalChangeStatus #${field}`);
@@ -275,7 +274,7 @@ const submitChangeStatus = async () => {
     swalLoadingShow("Please wait while we update the status.");
 
     // === Kirim request ===
-    const response = await fetch(`${uriMethod}/UpdateStatusOrder`, {
+    const response = await fetch(`${URIMETHOD}/UpdateStatusOrder`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -305,7 +304,7 @@ const submitChangeStatus = async () => {
     }
   } catch (error) {
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? error.message
         : "Something went wrong, please try again!";
     await isError(msg);
@@ -322,7 +321,7 @@ const submitChangeStatus = async () => {
 const submitSelectProduct = (headerid, action, designid) => {
   // VALIDATE FORM
   if (!headerid || !action || !designid) {
-    if (roleName === "Administrator") {
+    if (ROLENAME === "Administrator") {
       if (!headerid) {
         isError("HEADER ID NOT FOUND !").then(() => {
           const fieldElement = document.querySelector(
@@ -390,7 +389,7 @@ const submitSelectProduct = (headerid, action, designid) => {
 
   $.ajax({
     type: "POST",
-    url: uriMethod + "/SetSessionOpenPageInputItem",
+    url: URIMETHOD + "/SetSessionOpenPageInputItem",
     contentType: "application/json; charset=utf-8",
     data: JSON.stringify({
       id: "",
@@ -407,7 +406,7 @@ const submitSelectProduct = (headerid, action, designid) => {
       var msg = xhr.status + "\n" + xhr.responseText + "\n" + error;
       // isError(msg);
       // return;
-      if (roleName === "Administrator") {
+      if (ROLENAME === "Administrator") {
         isError("Gagal menyetel session: " + error);
         return;
       }
@@ -459,6 +458,9 @@ const handlerDisplayElement = (item) => {
   const divPrice = document.getElementById("divPrice");
   const msgThanks = document.getElementById("msgThanks");
 
+  const thMarkUp = document.querySelector(".thMarkUp");
+  const thPrice = document.querySelector(".thPrice");
+
   //SET DEFAULT HIDE ELEMENT
   btnJobSheet.setAttribute("hidden", true);
   btnReprintJobSheet.setAttribute("hidden", true);
@@ -477,11 +479,17 @@ const handlerDisplayElement = (item) => {
   divPrice.setAttribute("hidden", true);
   msgThanks.setAttribute("hidden", true);
 
+  thMarkUp.setAttribute("hidden", true);
+  thPrice.setAttribute("hidden", true);
+
+  tableData.columns(5).visible(false);
+  tableData.columns(6).visible(false);
+
   if (!item) return;
 
   // btnJobSheet
   btnJobSheet.removeAttribute("hidden");
-  if (roleName !== "Administrator" && roleName !== "PPIC & DE") {
+  if (ROLENAME !== "Administrator" && ROLENAME !== "PPIC & DE") {
     btnJobSheet.setAttribute("hidden", true);
   }
 
@@ -493,7 +501,7 @@ const handlerDisplayElement = (item) => {
 
   // btnSubmit, btnEditHeader, btnDeleteHeader, & btnAddItem
   if (item.Status === "Draft") {
-    switch (roleName) {
+    switch (ROLENAME) {
       case "Customer":
         btnSubmit.removeAttribute("hidden");
         btnEditHeader.removeAttribute("hidden");
@@ -501,7 +509,7 @@ const handlerDisplayElement = (item) => {
         btnAddItem.removeAttribute("hidden");
         break;
       case "PPIC & DE":
-        if (item.UserId.toUpperCase() === userId) {
+        if (item.CreatedBy.toUpperCase() === LOGINID) {
           btnEditHeader.removeAttribute("hidden");
           btnDeleteHeader.removeAttribute("hidden");
           btnAddItem.removeAttribute("hidden");
@@ -517,7 +525,7 @@ const handlerDisplayElement = (item) => {
   }
 
   // btnQuote, btnQuoteDetail, & btnDownloadQuote
-  if (roleName === "Administrator" || roleName === "Customer") {
+  if (ROLENAME === "Administrator" || ROLENAME === "Customer") {
     btnQuote.removeAttribute("hidden");
     btnQuoteDetail.removeAttribute("hidden");
     btnDownloadQuote.removeAttribute("hidden");
@@ -530,10 +538,10 @@ const handlerDisplayElement = (item) => {
     case "Completed":
     case "On Hold":
       msgThanks.removeAttribute("hidden");
-      if (roleName === "Administrator" || roleName === "PPIC & DE") {
+      if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
         btnAdministrator.removeAttribute("hidden");
         btnChangeStatus.removeAttribute("hidden");
-        if (roleName === "Administrator") {
+        if (ROLENAME === "Administrator") {
           btnSendOrderMail.removeAttribute("hidden");
           btnAddItem.removeAttribute("hidden");
         }
@@ -544,9 +552,20 @@ const handlerDisplayElement = (item) => {
   // btnReloadPricing
   if (item.Status !== "Canceled") {
     btnReloadPricing.removeAttribute("hidden");
-    if (roleName !== "Administrator") {
+    if (ROLENAME !== "Administrator") {
       btnReloadPricing.setAttribute("hidden", true);
     }
+  }
+
+  if (PRICEACCESS == "True" || PRICEACCESS == "1") {
+    tableData.columns(5).visible(true);
+    thPrice.removeAttribute("hidden");
+    divPrice.removeAttribute("hidden");
+  }
+
+  if (MARKUPACCESS == "True" || MARKUPACCESS == "1") {
+    tableData.columns(6).visible(true);
+    thMarkUp.removeAttribute("hidden");
   }
 };
 
@@ -603,7 +622,7 @@ const handlerHeaderInfo = (item) => {
       spanCreatedDate.innerHTML = "-";
       return;
     }
-    if (roleName === "Administrator") {
+    if (ROLENAME === "Administrator") {
       spanCreatedDate.innerHTML = customDate
         .toLocaleDateString("id-ID", us)
         .replace(/\./g, ":");
@@ -631,7 +650,7 @@ const handlerHeaderInfo = (item) => {
         spanCreatedDate.innerHTML = "-";
         return;
       }
-      if (roleName === "Administrator") {
+      if (ROLENAME === "Administrator") {
         spanSubmittedDate.innerHTML = customDate
           .toLocaleDateString("id-ID", us)
           .replace(/\./g, ":");
@@ -652,7 +671,7 @@ const handlerHeaderInfo = (item) => {
         spanCreatedDate.innerHTML = "-";
         return;
       }
-      if (roleName === "Administrator") {
+      if (ROLENAME === "Administrator") {
         spanCompletedDate.innerHTML = customDate
           .toLocaleDateString("id-ID", us)
           .replace(/\./g, ":");
@@ -673,7 +692,7 @@ const handlerHeaderInfo = (item) => {
         spanCreatedDate.innerHTML = "-";
         return;
       }
-      if (roleName === "Administrator") {
+      if (ROLENAME === "Administrator") {
         spanCanceledDate.innerHTML = customDate
           .toLocaleDateString("id-ID", us)
           .replace(/\./g, ":");
@@ -686,7 +705,7 @@ const handlerHeaderInfo = (item) => {
     }
 
     // GET CREATED BY
-    fetch(`${uriMethod}/GetCreatedBy`, {
+    fetch(`${URIMETHOD}/GetCreatedBy`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -706,7 +725,7 @@ const handlerHeaderInfo = (item) => {
         const data = response.d;
         if (!data) {
           const msg =
-            roleName === "Administrator"
+            ROLENAME === "Administrator"
               ? "No data returned from server : handlerDisplayElement"
               : "Please contact our IT team at support@onlineorder.au";
           isError(msg);
@@ -717,21 +736,21 @@ const handlerHeaderInfo = (item) => {
       })
       .catch((error) => {
         const msg =
-          roleName === "Administrator"
+          ROLENAME === "Administrator"
             ? error.message
             : "Please contact our IT team at support@onlineorder.au";
         isError(msg);
       });
 
     // CARD INFORMATION HEADER 2 | PRICES INFORMATION
-    fetch(`${uriMethod}/GetAmountPriceHeader`, {
+    fetch(`${URIMETHOD}/GetAmountPriceHeader`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
       body: JSON.stringify({
         headerid: item.Id,
-        pricesaccess: pricesAccess,
+        pricesaccess: PRICEACCESS,
       }),
     })
       .then((response) => {
@@ -745,7 +764,7 @@ const handlerHeaderInfo = (item) => {
         const data = response.d;
         if (!data) {
           const msg =
-            roleName === "Administrator"
+            ROLENAME === "Administrator"
               ? "No data returned from server : handlerDisplayElement"
               : "Please contact our IT team at support@onlineorder.au";
           isError(msg);
@@ -766,7 +785,7 @@ const handlerHeaderInfo = (item) => {
       })
       .catch((error) => {
         const msg =
-          roleName === "Administrator"
+          ROLENAME === "Administrator"
             ? error.message
             : "Please contact our IT team at support@onlineorder.au";
         isError(msg);
@@ -780,7 +799,7 @@ const handlerCreatePDFOrder = async (headerid, action, msgloading) => {
   swalLoadingShow(msgloading);
 
   try {
-    const response = await fetch(`${uriMethod}/CreatePDFOrder`, {
+    const response = await fetch(`${URIMETHOD}/CreatePDFOrder`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -840,7 +859,7 @@ const handlerSubmitOrder = async (headerid, action, msgloading) => {
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
-        const response = await fetch(`${uriMethod}/SubmitOrder`, {
+        const response = await fetch(`${URIMETHOD}/SubmitOrder`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json; charset=utf-8",
@@ -916,7 +935,7 @@ const handlerCreateJOBOrder = async (headerid, action, msgloading) => {
   swalLoadingShow(msgloading);
 
   try {
-    const response = await fetch(`${uriMethod}/CreateJOBOrder`, {
+    const response = await fetch(`${URIMETHOD}/CreateJOBOrder`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -961,7 +980,7 @@ const handlerCreateJOBOrder = async (headerid, action, msgloading) => {
 // HANDLER EDIT HEADER
 const handlerEditHeader = async (headerid) => {
   try {
-    const response = await fetch(`${uriMethod}/SetSessionOpenEditOrderHeader`, {
+    const response = await fetch(`${URIMETHOD}/SetSessionOpenEditOrderHeader`, {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify({ headerid }),
@@ -998,7 +1017,7 @@ const handlerDeleteHeader = async (headerid) => {
   swalLoadingShow("Please wait while we delete the order.");
 
   try {
-    const response = await fetch(`${uriMethod}/DeleteOrderHeader`, {
+    const response = await fetch(`${URIMETHOD}/DeleteOrderHeader`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -1040,7 +1059,7 @@ const handlerCreatePDFQuote = async (
     // Tampilkan loading SweetAlert
     swalLoadingShow(msgloading);
 
-    const response = await fetch(`${uriMethod}/CreatePDFQuote`, {
+    const response = await fetch(`${URIMETHOD}/CreatePDFQuote`, {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify({ headerid, username, action }),
@@ -1077,7 +1096,7 @@ const handlerChangeStatus = async (headerid) => {
   try {
     if (!headerid) return;
 
-    const response = await fetch(`${uriMethod}/BindOrderHeaderByID`, {
+    const response = await fetch(`${URIMETHOD}/BindOrderHeaderByID`, {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify({ headerid }),
@@ -1092,7 +1111,7 @@ const handlerChangeStatus = async (headerid) => {
 
     if (!data || data.length === 0) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? "No data returned from server : handlerChangeStatus"
           : "Please contact our IT team at support@onlineorder.au";
       throw new Error(msg);
@@ -1106,7 +1125,7 @@ const handlerChangeStatus = async (headerid) => {
     }
   } catch (error) {
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? error.message
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
@@ -1130,7 +1149,7 @@ const handlerSelStatus = async (params, statusNow) => {
           { value: "New Order", text: "New Order" },
           { value: "Canceled", text: "Canceled" },
         ];
-        if (roleName !== "Administrator") {
+        if (ROLENAME !== "Administrator") {
           data.unshift({ value: "Draft", text: "Draft" });
         }
         break;
@@ -1153,7 +1172,7 @@ const handlerSelStatus = async (params, statusNow) => {
         break;
     }
 
-    if (roleName === "Administrator") {
+    if (ROLENAME === "Administrator") {
       data.unshift({ value: "Draft", text: "Draft" });
     }
   }
@@ -1326,7 +1345,7 @@ const handlerReloadPricingOnReadyPage = async (headerid, status, action) => {
   }
 
   try {
-    const response = await fetch(`${uriMethod}/ReloadPricing`, {
+    const response = await fetch(`${URIMETHOD}/ReloadPricing`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -1345,7 +1364,7 @@ const handlerReloadPricingOnReadyPage = async (headerid, status, action) => {
       return result.error.message; // sama seperti resolve(result.error.message)
     } else {
       if (action === "binding") {
-        if (roleName === "Administrator") {
+        if (ROLENAME === "Administrator") {
           console.log(result.success.message);
         }
       } else if (action === "click") {
@@ -1365,7 +1384,7 @@ const handlerSelDesignType = async (params) => {
   sel.innerHTML = ""; // reset
 
   try {
-    const response = await fetch(`${uriMethod}/BindDesignType`, {
+    const response = await fetch(`${URIMETHOD}/BindDesignType`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -1381,7 +1400,7 @@ const handlerSelDesignType = async (params) => {
 
     if (!result || result.length === 0) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? "No data returned from server : handlerSelDesignType"
           : "Please contact our IT team at support@onlineorder.au";
       await isError(msg);
@@ -1407,7 +1426,7 @@ const handlerSelDesignType = async (params) => {
     return Promise.resolve();
   } catch (error) {
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? error.message
         : "Please contact our IT team at support@onlineorder.au";
     await isError(msg);
@@ -1418,7 +1437,7 @@ const handlerSelDesignType = async (params) => {
 // HANDLER EDIT ITEM
 const handlerEditItem = async (id, headerid, action, designid) => {
   if (!id || !headerid || !action || !designid) {
-    if (roleName === "Administrator") {
+    if (ROLENAME === "Administrator") {
       if (!id) await isError("ID NOT FOUND!");
       if (!headerid) await isError("HEADER ID NOT FOUND!");
       if (!action) await isError("ACTION NOT FOUND!");
@@ -1431,7 +1450,7 @@ const handlerEditItem = async (id, headerid, action, designid) => {
   }
 
   try {
-    const response = await fetch(`${uriMethod}/SetSessionOpenPageInputItem`, {
+    const response = await fetch(`${URIMETHOD}/SetSessionOpenPageInputItem`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -1455,7 +1474,7 @@ const handlerEditItem = async (id, headerid, action, designid) => {
     window.location.href = finePage;
   } catch (error) {
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? "Gagal menyetel session: " + error.message
         : "Please contact our IT team at support@onlineorder.au";
     await isError(msg);
@@ -1482,7 +1501,7 @@ const handlerCopyItem = async (id, product, msgloading) => {
   swalLoadingShow(msgloading);
 
   try {
-    const response = await fetch(`${uriMethod}/CopyItem`, {
+    const response = await fetch(`${URIMETHOD}/CopyItem`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -1511,7 +1530,7 @@ const handlerCopyItem = async (id, product, msgloading) => {
   } catch (error) {
     Swal.close();
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? error.message
         : "Something went wrong, please try again!";
     await isError(msg);
@@ -1538,7 +1557,7 @@ async function handlerDeleteItem(id, product, msgloading) {
   swalLoadingShow(msgloading);
 
   try {
-    const response = await fetch(`${uriMethod}/DeleteItem`, {
+    const response = await fetch(`${URIMETHOD}/DeleteItem`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -1599,7 +1618,7 @@ const handlerPricingItem = (id) => {
       $("#tablePricingDetail_paginate").hide();
     },
     ajax: {
-      url: uriMethod + "/BindOrderPricingDetails",
+      url: URIMETHOD + "/BindOrderPricingDetails",
       type: "POST",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
@@ -1654,7 +1673,7 @@ const handlerNextItem = async (id, headerid, action, designid, msgbody) => {
 
   // VALIDATE FORM
   if (!id || !headerid || !action || !designid) {
-    if (roleName === "Administrator") {
+    if (ROLENAME === "Administrator") {
       if (!id) isError("ID NOT FOUND !");
       if (!headerid) isError("HEADER ID NOT FOUND !");
       if (!action) isError("ACTION NOT FOUND !");
@@ -1666,7 +1685,7 @@ const handlerNextItem = async (id, headerid, action, designid, msgbody) => {
   }
 
   try {
-    const response = await fetch(`${uriMethod}/SetSessionOpenPageInputItem`, {
+    const response = await fetch(`${URIMETHOD}/SetSessionOpenPageInputItem`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -1689,7 +1708,7 @@ const handlerNextItem = async (id, headerid, action, designid, msgbody) => {
     const finePage = resultData.success.message.replace("~", "");
     window.location.href = finePage;
   } catch (error) {
-    if (roleName === "Administrator") {
+    if (ROLENAME === "Administrator") {
       isError("Gagal menyetel session: " + error.message);
     } else {
       isError("Please contact our IT team at support@onlineorder.au");
@@ -1698,11 +1717,11 @@ const handlerNextItem = async (id, headerid, action, designid, msgbody) => {
 };
 
 // HANDLER CHEKC ORDER
-const handlerCheckOrder = async (headerid, status, userid) => {
+const handlerCheckOrder = async (headerid, status, loginid) => {
   if (!headerid) return;
 
   try {
-    const response = await fetch(`${uriMethod}/CheckOrder`, {
+    const response = await fetch(`${URIMETHOD}/CheckOrder`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -1710,7 +1729,7 @@ const handlerCheckOrder = async (headerid, status, userid) => {
       body: JSON.stringify({
         headerid,
         status,
-        userid,
+        loginid,
       }),
     });
 
@@ -1761,7 +1780,7 @@ const bindOrderHeaderByID = async (headerid, ordertype) => {
   if (!headerid) return;
 
   try {
-    const response = await fetch(`${uriMethod}/BindOrderHeaderByID`, {
+    const response = await fetch(`${URIMETHOD}/BindOrderHeaderByID`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -1771,7 +1790,7 @@ const bindOrderHeaderByID = async (headerid, ordertype) => {
 
     if (!response.ok) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? `${response.status} - ${response.statusText}`
           : "Please contact our IT team at support@onlineorder.au";
       throw new Error(msg);
@@ -1786,15 +1805,15 @@ const bindOrderHeaderByID = async (headerid, ordertype) => {
 
     for (const item of data) {
       // await handlerReloadPricingOnReadyPage(item.Id, item.Status, "binding");
-      await handlerDisplayElement(item);
       await handlerHeaderInfo(item);
       await bindDetails(item.Id, item.Status, item.CreatedBy);
-
+      await handlerDisplayElement(item);
       await handlerCheckOrder(item.Id, item.Status, item.CreatedBy);
+      await loaderFadeOut();
     }
   } catch (error) {
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? error.message
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
@@ -1803,11 +1822,11 @@ const bindOrderHeaderByID = async (headerid, ordertype) => {
 
 // BIND ORDER DETAILS
 let tableData;
-const bindDetails = (headerid, status, userid) => {
+const bindDetails = (headerid, status, createdby) => {
   const paramData = {
     headerid: headerid,
     status: status,
-    userid: userid,
+    createdby: createdby,
   };
 
   // render: function (data, type, row, meta)
@@ -1848,104 +1867,17 @@ const bindDetails = (headerid, status, userid) => {
           `;
       },
     },
-  ];
-
-  const thPricing = document.querySelectorAll(".thPrice");
-  thPricing.forEach((el) => el.setAttribute("hidden", true));
-  if (pricesAccess === "True" || pricesAccess === "1") {
-    columnDefs.push({ width: "5%", data: "Cost" });
-    thPricing.forEach((el) => el.removeAttribute("hidden"));
-  }
-
-  const thMarkUp = document.querySelectorAll(".thMarkUp");
-  thMarkUp.forEach((el) => el.setAttribute("hidden", true));
-  if (markupAccess === "True" || markupAccess === "1") {
-    columnDefs.push({ width: "5%", data: "MarkUp" });
-    thMarkUp.forEach((el) => el.removeAttribute("hidden"));
-  }
-
-  columnDefs.push({
-    width: "5%",
-    data: null,
-    orderable: false,
-    render: (row) => {
-      // HIDE BUTTON DETAIL
-      let hideDetail = "";
-      if (row.StatusHeader === "Draft") {
-        hideDetail = "hidden";
-        if (roleName === "PPIC & DE" && userid !== row.UserId) {
-          hideDetail = "";
-        }
-      }
-
-      // HIDE BUTTON EDIT
-      let hideEdit = "hidden";
-      if (row.StatusHeader === "Draft") {
-        hideEdit = "";
-        if (roleName === "PPIC & DE" && userid !== row.UserId) {
-          hideEdit = "hidden";
-        }
-      }
-
-      // HIDE BUTTON COPY
-      let hideCopy = "hidden";
-      if (row.StatusHeader === "Draft") {
-        hideCopy = "";
-        if (roleName === "PPIC & DE" && userid !== row.UserId) {
-          hideCopy = "hidden";
-        } else if (roleName === "Manager" || roleName === "Account") {
-          hideCopy = "hidden";
-        }
-      }
-
-      // HIDE BUTTON DELETE
-      let hideDelete = "hidden";
-      if (row.StatusHeader === "Draft") {
-        hideDelete = "";
-        if (roleName === "PPIC & DE" && userid !== row.UserId) {
-          hideDelete = "hidden";
-        } else if (roleName === "Manager" || roleName === "Account") {
-          hideDelete = "hidden";
-        }
-      }
-
-      return `
-      <div class="dropdown text-center">
-        <button class="border-0 bg-transparent dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-          <li ${hideDetail}>
-            <a class="dropdown-item" href="javascript:void(0);" id="btnDetailItem" data-id="${row.Id}"" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}">
-              <i class="ti ti-info-square-rounded fs-2 me-1 opacity-50"></i>Detail
-            </a>
-          </li>
-          <li ${hideEdit}>
-            <a class="dropdown-item" href="javascript:void(0);" id="btnEditItem" data-id="${row.Id}" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}">
-              <i class="ti ti-edit me-1 fs-2 opacity-50"></i>Edit
-            </a>
-          </li>
-          <li ${hideCopy}>
-            <a class="dropdown-item" href="javascript:void(0);" id="btnCopyItem" data-id="${row.Id}" data-product="${row.Product}">
-              <i class="ti ti-copy-plus fs-2 me-1 opacity-50"></i>Copy
-            </a>
-          </li>
-          <li ${hideDelete}>
-            <a class="dropdown-item text-danger" href="javascript:void(0);" id="btnDeleteItem" data-id="${row.Id}" data-product="${row.Product}">
-              <i class="ti ti-trash-x me-1 fs-2 opacity-50"></i>Delete
-            </a>
-          </li>
-          <div class="dropdown-divider"></div>
-          <li>
-            <a class="dropdown-item " href="javascript:void(0);" id="btnPricingItem" data-id="${row.Id}">
-              <i class="ti ti-tags fs-1 me-1 opacity-50"></i>Pricing
-            </a>
-          </li>
-        </ul>
-      </div>
-    `;
+    { width: "5%", data: "Cost" },
+    { width: "5%", data: "MarkUp" },
+    {
+      width: "5%",
+      data: null,
+      orderable: false,
+      render: (row) => {
+        return dropdownActionButton(row, createdby);
+      },
     },
-  });
+  ];
 
   tableData = $("#tableAjax").DataTable({
     processing: true,
@@ -1953,13 +1885,10 @@ const bindDetails = (headerid, status, userid) => {
     order: [], // Tetap bisa set default order di sini
     pageLength: 100,
     initComplete: function () {
-      $("#tableAjax_filter").hide();
-      $("#tableAjax_length").hide();
-      $("#tableAjax_info").hide();
-      $("#tableAjax_paginate").hide();
+      return stylingColumnSearchAndPaging();
     },
     ajax: {
-      url: uriMethod + "/BindOrderDetails",
+      url: URIMETHOD + "/BindOrderDetails",
       type: "POST",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
@@ -1983,7 +1912,7 @@ const bindDetails = (headerid, status, userid) => {
         return json.d.data;
       },
       complete: function () {
-        loaderFadeOut(); // Loader disembunyikan setelah data Ajax berhasil
+        // loaderFadeOut(); // Loader disembunyikan setelah data Ajax berhasil
       },
       error: function (xhr, thrownError, ajaxOptions) {
         var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
@@ -2003,7 +1932,7 @@ const bindDetails = (headerid, status, userid) => {
 const checkSessionDetail = () => {
   if (!ULTRON || !INFYNITY) window.location.href = "/order";
 
-  bindOrderHeaderByID(headerId, INFYNITY);
+  bindOrderHeaderByID(HEADERID, INFYNITY);
 };
 
 // FORMAT DATE TIME
@@ -2046,4 +1975,90 @@ const parseCustomDate = (value) => {
   }
 
   return null;
+};
+
+// --------------------------------------------||Additional Serverside ||-------------------------------------------
+const dropdownActionButton = (row, createdby) => {
+  // HIDE BUTTON DETAIL
+  let hideDetail = "";
+  if (row.StatusHeader === "Draft") {
+    hideDetail = "hidden";
+    if (ROLENAME === "PPIC & DE" && createdby !== row.CustomerContactId) {
+      hideDetail = "";
+    }
+  }
+
+  // HIDE BUTTON EDIT
+  let hideEdit = "hidden";
+  if (row.StatusHeader === "Draft") {
+    hideEdit = "";
+    if (ROLENAME === "PPIC & DE" && createdby !== row.CustomerContactId) {
+      hideEdit = "hidden";
+    }
+  }
+  console.log(createdby);
+
+  // HIDE BUTTON COPY
+  let hideCopy = "hidden";
+  if (row.StatusHeader === "Draft") {
+    hideCopy = "";
+    if (ROLENAME === "PPIC & DE" && createdby !== row.CustomerContactId) {
+      hideCopy = "hidden";
+    } else if (ROLENAME === "Manager" || ROLENAME === "Account") {
+      hideCopy = "hidden";
+    }
+  }
+
+  // HIDE BUTTON DELETE
+  let hideDelete = "hidden";
+  if (row.StatusHeader === "Draft") {
+    hideDelete = "";
+    if (ROLENAME === "PPIC & DE" && createdby !== row.CustomerContactId) {
+      hideDelete = "hidden";
+    } else if (ROLENAME === "Manager" || ROLENAME === "Account") {
+      hideDelete = "hidden";
+    }
+  }
+
+  return `
+      <div class="dropdown text-center">
+        <button class="border-0 bg-transparent dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+          <li ${hideDetail}>
+            <a class="dropdown-item" href="javascript:void(0);" id="btnDetailItem" data-id="${row.Id}"" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}">
+              <i class="ti ti-info-square-rounded fs-2 me-1 opacity-50"></i>Detail
+            </a>
+          </li>
+          <li ${hideEdit}>
+            <a class="dropdown-item" href="javascript:void(0);" id="btnEditItem" data-id="${row.Id}" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}">
+              <i class="ti ti-edit me-1 fs-2 opacity-50"></i>Edit
+            </a>
+          </li>
+          <li ${hideCopy}>
+            <a class="dropdown-item" href="javascript:void(0);" id="btnCopyItem" data-id="${row.Id}" data-product="${row.Product}">
+              <i class="ti ti-copy-plus fs-2 me-1 opacity-50"></i>Copy
+            </a>
+          </li>
+          <li ${hideDelete}>
+            <a class="dropdown-item text-danger" href="javascript:void(0);" id="btnDeleteItem" data-id="${row.Id}" data-product="${row.Product}">
+              <i class="ti ti-trash-x me-1 fs-2 opacity-50"></i>Delete
+            </a>
+          </li>
+          <div class="dropdown-divider"></div>
+          <li>
+            <a class="dropdown-item " href="javascript:void(0);" id="btnPricingItem" data-id="${row.Id}">
+              <i class="ti ti-tags fs-1 me-1 opacity-50"></i>Pricing
+            </a>
+          </li>
+        </ul>
+      </div>
+    `;
+};
+const stylingColumnSearchAndPaging = () => {
+  $("#tableAjax_filter").hide();
+  $("#tableAjax_length").hide();
+  $("#tableAjax_info").hide();
+  $("#tableAjax_paginate").hide();
 };

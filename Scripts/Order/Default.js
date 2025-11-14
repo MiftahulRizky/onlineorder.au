@@ -17,6 +17,12 @@ document.addEventListener("DOMContentLoaded", function () {
 // ==================================================EVENTS==================================================
 
 // --------------------------------------------||cardOrder Event ||-------------------------------------------
+// BUTTON DAILY MAIL
+document.querySelector("#aDailyMail").addEventListener("click", (e) => {
+  e.preventDefault();
+  handlerSendProductionOrder();
+});
+
 // CHANGE FILTER STATUS
 document.querySelector("#cardOrder #status").addEventListener("change", (e) => {
   const status = e.target.value;
@@ -458,6 +464,54 @@ const handlerShowBSModal = (params) => {
   myModal.show();
 };
 
+// HANDLER SEND PRODUCTION ORDER
+const handlerSendProductionOrder = async () => {
+  const result = await Swal.fire({
+    title: "Send Production Order",
+    html: "Are you sure you would like to do this?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, send it!",
+    customClass: {
+      popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+    },
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/SendProductionOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      // body: JSON.stringify({ id, action: act }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const resultData = data.d || data;
+
+    if (resultData.error) {
+      await isError(resultData.error.message.toUpperCase());
+    } else {
+      await isSuccess(resultData.success);
+      tableData.ajax.reload();
+    }
+  } catch (error) {
+    var msg = `${error.message || error}`;
+    if (ROLENAME != "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    await isError(msg);
+  }
+};
+
 // HANDLER CELECT STSTUS
 const handlerSelStatus = async (params, statusNow) => {
   if (!params) return;
@@ -574,26 +628,6 @@ const handlerSelStatus = async (params, statusNow) => {
       storeTypeToUse,
       "#cardOrder #tableAjax"
     );
-  }
-};
-
-// HANDLER CREATE NEW ORDER
-const handlerCreateNewOrder = async () => {
-  try {
-    const response = await fetch(`${URIMETHOD}/SetHeaderAction`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json; charset=utf-8" },
-      body: JSON.stringify({ action: "AddHeader" }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
-    }
-
-    // Jika sukses, langsung arahkan ke halaman order header
-    window.location.href = "/order/create";
-  } catch (error) {
-    isError("Gagal menyetel session: " + error.message);
   }
 };
 
@@ -1243,12 +1277,10 @@ const visibleColumnServerside = () => {
     aDailyMail.removeAttribute("hidden");
   }
 
-  if (
-    ROLENAME == "Administrator" ||
-    ROLENAME == "Customer Service" ||
-    ROLENAME == "Data Entry" ||
-    ROLENAME == "PPIC & DE"
-  ) {
+  if (ROLENAME == "Administrator") {
+    // || ROLENAME == "Customer Service" ||
+    // ROLENAME == "Data Entry" ||
+    // ROLENAME == "PPIC & DE"
     aOtorisasi.removeAttribute("hidden");
   }
 

@@ -34,7 +34,7 @@ Partial Class Methods_Order_DetailMethod
     Public Class OrdersParams
         Public Property headerid As String
         Public Property status As String
-        Public Property userid As String
+        Public Property createdby As String
        
         Public Property draw As Integer
         Public Property start As Integer
@@ -71,7 +71,7 @@ Partial Class Methods_Order_DetailMethod
     End Class
 
     Public Class OrdersMatrixReturnRow
-        Public Property UserId As String 
+        Public Property CustomerContactId As String 
         Public Property StatusHeader As String 
         Public Property HideNext As String 
         Public Property TextNext As String 
@@ -311,9 +311,7 @@ Partial Class Methods_Order_DetailMethod
         Dim filteredRecords As Integer = 0
         Dim resultList As New List(Of OrdersMatrixReturnRow)()
         Dim rolename As String = HttpContext.Current.Session("RoleName").ToString()
-        ' Dim sessionCustomerId As String = HttpContext.Current.Session("CustomerId").ToString()
-        ' Dim sessionUserId As String = sessionCustomerId
-        Dim sessionUserId As String = HttpContext.Current.Session("CustomerId").ToString()
+        Dim CustomerContactId As String = HttpContext.Current.Session("CustomerContactId").ToString()
 
         
         Try
@@ -404,7 +402,7 @@ Partial Class Methods_Order_DetailMethod
                         Dim TextNext As String = "Add blind that is doubled to this blind"
 
                         Dim StatusHeader As String = params.status
-                        Dim UserId As String = params.userid
+                        ' Dim UserId As String = params.userid
 
 
                         Dim Id As String = reader("Id").ToString()
@@ -663,7 +661,7 @@ Partial Class Methods_Order_DetailMethod
 
                         End If
                         
-                        If rolename = "PPIC & DE" And UCase(UserId).ToString() <> UCase(sessionUserId) Then
+                        If rolename = "PPIC & DE" And UCase(params.createdby).ToString() <> UCase(CustomerContactId) Then
                             HideNext = "hidden"
                         End If
 
@@ -693,7 +691,7 @@ Partial Class Methods_Order_DetailMethod
                             .No = noCounter.ToString(),
                             .Id = Id,
                             .HeaderId = HeaderId,
-                            .UserId = UserId,
+                            .CustomerContactId = CustomerContactId,
                             .StatusHeader = StatusHeader,
                             .DesignId = DesignId,
                             .Qty = Qty,
@@ -1563,14 +1561,14 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function CheckOrder(ByVal headerid As String, ByVal status As String, ByVal userid As String) As Object
+    Public Shared Function CheckOrder(ByVal headerid As String, ByVal status As String, ByVal loginid As String) As Object
         Try
             Dim msg As String = String.Empty
             Dim url As String = String.Empty
             Dim Action As String = String.Empty
             Dim textSwall As String = String.Empty
             Dim RoleName As String = HttpContext.Current.Session("RoleName").ToString()
-            Dim sessionUserId As String = HttpContext.Current.Session("CustomerId").ToString()
+            Dim CustomerContactId As String = HttpContext.Current.Session("CustomerContactId").ToString()
 
             Dim detailData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + headerid + "' AND Active=1 ORDER BY Id ASC")
             If detailData.Tables(0).Rows.Count < 1  Then
@@ -1613,7 +1611,7 @@ Partial Class Methods_Order_DetailMethod
                     Action = "No"
                 End If
 
-                If RoleName = "PPIC & DE" And Not userid = sessionUserId Then
+                If RoleName = "PPIC & DE" And Not loginid = CustomerContactId Then
                     Action = "No"
                 End If
 

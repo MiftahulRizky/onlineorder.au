@@ -14,6 +14,7 @@ Partial Class Methods_Order_DefaultMethod
     Inherits System.Web.UI.Page
 
     Shared publicCfg As New PublicConfig()
+    Shared mailCfg As New MailConfig()
 
     '#--- Initialize Class ---#
     Public Class OrdersParams
@@ -113,9 +114,19 @@ Partial Class Methods_Order_DefaultMethod
 
 
     <WebMethod(EnableSession:=True)>
-    Public Shared Sub SetHeaderAction(ByVal action As String)
-        HttpContext.Current.Session("headerAction") = action
-    End Sub
+    Public Shared function SendProductionOrder()
+        Try
+            ' mailCfg.MailProduction()
+            Return New SuccessResponse With { .success = "Production Order has been sent successfully."}
+        Catch ex As Exception
+            Return New ErrorResponse With {
+                .error = New ErrorDetail With {
+                    .message = ex.Message,
+                    .field = ""
+                }
+            }
+        End Try
+    End Function
 
     <WebMethod(EnableSession:=True)>
     Public Shared Sub SetSessionOpenOrderDetail(ByVal headerid As String)
@@ -148,7 +159,8 @@ Partial Class Methods_Order_DefaultMethod
                 IF params.customercompany = "SP" Or params.customercompany = "ALL" Then
                     whereRole = ""
                     If params.rolename = "PPIC & DE" Then
-                        whereRole = " AND CustomerCompany = '" + params.customercompany + "'"
+                        ' whereRole = " AND CustomerCompany = '" + params.customercompany + "'"
+                        whereRole = ""
                     End If
 
                     If params.rolename = "Customer" Then
@@ -348,7 +360,7 @@ Partial Class Methods_Order_DefaultMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function UpdateStatusOrder(data As ParamUpdateStatusOrder) As Object
         Try
-        Dim msg As String
+            Dim msg As String
 
         '#-------------------------|| SET VALIDATE RULES ||-----------------------#
             '#-------------------------|| id ||-----------------------#

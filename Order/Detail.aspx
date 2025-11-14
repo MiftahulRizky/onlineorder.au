@@ -403,22 +403,19 @@
         const params = new URLSearchParams(window.location.search);
         const ULTRON = params.get("ultron"); // AS HeaderId
         const INFYNITY = params.get("infinity"); // AS OrderType
-        let headerId = ULTRON;
-        let customerId = '<%= Session("CustomerId") %>';
-        let userId = '<%= Session("userId") %>';
-        // let userId = customerId;
-        let userName = '<%= Session("UserName") %>';
-        let loginId = '<%= Session("LoginId") %>';
-        let roleName = '<%= Session("RoleName") %>';  
-        let storeId = '<%= Session("StoreId") %>';
-        let storeCompany = '<%= Session("StoreCompany") %>';
-        let itemId = '<%= Session("itemId") %>';
-        let levelName = '<%= Session("LevelName") %>';
-        let pricesAccess = '<%= Session("PriceAccess") %>';
-        let markupAccess = '<%= Session("MarkUpAccess") %>';
-        let printPreview = '<%= Session("printPreview") %>';
-        let Reprint = '<%= Session("Reprint") %>';
-        let uriMethod = '/Methods/Order/DetailMethod.aspx';      
+
+        let HEADERID = ULTRON;
+        let CUSTOMERID = '<%= Session("CustomerId") %>';
+        let CUSTOMERCONTACTID = '<%= Session("CustomerContactId") %>';
+        let USERID = '<%= Session("userId") %>';
+        let USERNAME = '<%= Session("UserName") %>';
+        let LOGINID = '<%= Session("LoginId") %>';
+        let ROLENAME = '<%= Session("RoleName") %>';  
+        let PRICEACCESS = '<%= Session("PriceAccess") %>';
+        let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
+        let PREVIEWACCESS = '<%= Session("printPreview") %>';
+        let REPRINT = '<%= Session("Reprint") %>';
+        let URIMETHOD = '/Methods/Order/DetailMethod.aspx';      
     </script>
     <script src="/Scripts/Order/Detail.js?<%= DateTime.Now.Ticks %>"></script>
 

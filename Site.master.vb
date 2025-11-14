@@ -50,7 +50,8 @@ Partial Public Class SiteMaster
                 Session("resetLogin") = myData.Tables(0).Rows(0).Item("Reset")
                 Session("CustomerAccount") = myData.Tables(0).Rows(0).Item("CustomerAccount").ToString()
 
-                Dim myData2 As DataSet = publicCfg.GetListData("SELECT * FROM CustomerContacts WHERE CustomerId = '" + Session("CustomerId") + "'")
+                Dim myData2 As DataSet = publicCfg.GetListData("SELECT * FROM CustomerContacts WHERE CustomerId = '" + Session("CustomerId") + "' AND FullName = '" + Session("FullName") + "'")
+                Session("CustomerContactId") = myData2.Tables(0).Rows(0).Item("Id").ToString()
                 Session("PriceAccess") = myData2.Tables(0).Rows(0).Item("Price").ToString()
                 Session("MarkUpAccess") = myData2.Tables(0).Rows(0).Item("MarkUp").ToString()
 
