@@ -1423,7 +1423,7 @@ Partial Class Order_Detail
 
                     If spanStatusOrder.InnerText = "Unsubmitted" Then
                         Session("itemAction") = "EditItem"
-                        If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+                        If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" OR Session("RoleName") = "PPIC & DE" Then
                             Session("itemAction") = "ViewItem"
                             If lblCreatedBy.Text = Session("LoginId") Then
                                 Session("itemAction") = "EditItem"
@@ -1431,7 +1431,7 @@ Partial Class Order_Detail
                         End If
                     End If
                     If spanStatusOrder.InnerText = "New Order" Then
-                        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Data Entry" Or Session("RoleName") = "Customer Service" Then
+                        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Data Entry" OR Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Customer Service" Then
                             Session("itemAction") = "EditItem"
                         End If
                         If Session("RoleName") = "Customer" And spanStatusAdditional.InnerText = "On Hold - Customer Request" Then
@@ -2025,7 +2025,7 @@ Partial Class Order_Detail
                 End If
             End If
 
-            If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+            If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" OR Session("RoleName") = "PPIC & DE" Then
                 divRetailerName.Visible = True
                 divInternalNote.Visible = True
                 If spanStatusOrder.InnerText = "Unsubmitted" Then
@@ -2254,7 +2254,7 @@ Partial Class Order_Detail
                 gvList.Columns(8).Visible = True ' PAID
             End If
 
-            If Session("RoleName") = "Data Entry" Then
+            If Session("RoleName") = "Data Entry" OR Session("RoleName") = "PPIC & DE" Then
                 gvList.Columns(2).Visible = True ' NUMBER
                 gvList.Columns(3).Visible = True ' QTY
                 gvList.Columns(4).Visible = True ' DESCRIPTION
@@ -3088,7 +3088,7 @@ Partial Class Order_Detail
             Dim designName As String = orderCfg.GetItemData("SELECT Name FROM Designs WHERE Id = '" + designId + "'")
             Dim designType As String = orderCfg.GetItemData("SELECT Type FROM Designs WHERE Id = '" + designId + "'")
 
-            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" OR Session("RoleName") = "PPIC & DE" Then
                 result = True
             End If
 
@@ -3123,7 +3123,7 @@ Partial Class Order_Detail
                     End If
                 End If
 
-                If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+                If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" OR Session("RoleName") = "PPIC & DE" Then
                     If designType = "RBR" Or designType = "Curtain" Or designType = "Blinds" Or designType = "Veri Shades" Or designType = "Zebra Blinds" Then
                         result = False
                     End If
@@ -3137,7 +3137,7 @@ Partial Class Order_Detail
             End If
 
             If spanStatusOrder.InnerText = "New Order" Then
-                If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+                If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" OR Session("RoleName") = "PPIC & DE" Then
                     result = True
                 End If
                 If Session("RoleName") = "Administrator" Then
@@ -3164,7 +3164,7 @@ Partial Class Order_Detail
                 If Session("RoleName") = "Customer" Or Session("RoleName") = "Representative" Then
                     result = True
                 End If
-                If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+                If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" OR Session("RoleName") = "PPIC & DE" Then
                     If lblCreatedBy.Text = Session("LoginId") Then
                         result = True
                     End If
@@ -3175,7 +3175,7 @@ Partial Class Order_Detail
             End If
 
             If spanStatusOrder.InnerText = "New Order" Then
-                If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+                If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" OR Session("RoleName") = "PPIC & DE" Then
                     result = True
                 End If
                 If Session("RoleName") = "Administrator" Then
@@ -3190,7 +3190,7 @@ Partial Class Order_Detail
                 If Session("RoleName") = "Administrator" Then
                     result = True
                 End If
-                If designName = "Additional" And (Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry") Then
+                If designName = "Additional" And (Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" OR Session("RoleName") = "PPIC & DE") Then
                     result = True
                 End If
             End If
@@ -3219,7 +3219,7 @@ Partial Class Order_Detail
             End If
         End If
 
-        If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+        If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" OR Session("RoleName") = "PPIC & DE" Then
             If spanStatusOrder.InnerText = "New Order" And lblApproved.Text = 1 Then
                 If Not ProductId = "" Then
                     result = True
