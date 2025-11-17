@@ -547,6 +547,14 @@ const handlerDisplayElement = (item) => {
       btnReloadPricing.setAttribute("hidden", true);
     }
   }
+
+  if (pricesAccess == "True" || pricesAccess == "1") {
+    divPrice.removeAttribute("hidden");
+  }
+
+  if (markupAccess == "True" || markupAccess == "1") {
+    divPrice.removeAttribute("hidden");
+  }
 };
 
 // HANDLER HEADER INFO

@@ -284,6 +284,7 @@ function submitCSV() {
         } else {
           isSuccess(result.success).then(() => {
             handlerHideBSModal("modalImport");
+            tableData.ajax.reload();
           });
         }
       },
@@ -339,7 +340,7 @@ function uploadCSVFile(callback) {
 }
 // #-------------------------|| Bind Function ||-------------------------#
 // BIND CASSETTE EXTRA
-
+let tableData;
 function bindPriceMatrix(pricegroupid, type, width, drop) {
   if ($.fn.DataTable.isDataTable("#tableAjax")) {
     $("#tableAjax").DataTable().destroy(); // Hancurkan instance DataTables yang ada
@@ -887,7 +888,9 @@ const handlerDeleteByGroupAndType = (groupid, type, htmlgroupid) => {
               }
             });
           } else {
-            isSuccess(result.success);
+            isSuccess(result.success).then(() => {
+              tableData.ajax.reload();
+            });
           }
         },
         error: function (xhr, ajaxOptions, thrownError) {
