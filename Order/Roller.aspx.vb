@@ -1808,20 +1808,20 @@ Partial Class Order_Roller
                     ddlTrim.Items.Add(New ListItem("25F", "25F"))
                     ddlTrim.Items.Add(New ListItem("26F", "26F"))
 
-                    If TubeType = "Spring Operated" Then
-                        ddlTrim.Items.Clear()
+                    ' If TubeType = "Spring Operated" Then
+                    '     ddlTrim.Items.Clear()
 
-                        ddlTrim.Items.Add(New ListItem("1P", "1P"))
-                        ddlTrim.Items.Add(New ListItem("17F", "17F"))
-                        ddlTrim.Items.Add(New ListItem("18F", "18F"))
-                        ddlTrim.Items.Add(New ListItem("19F", "19F"))
-                        ddlTrim.Items.Add(New ListItem("20F", "20F"))
-                        ddlTrim.Items.Add(New ListItem("22F", "22F"))
-                        ddlTrim.Items.Add(New ListItem("23F", "23F"))
-                        ddlTrim.Items.Add(New ListItem("24F", "24F"))
-                        ddlTrim.Items.Add(New ListItem("25F", "25F"))
-                        ddlTrim.Items.Add(New ListItem("26F", "26F"))
-                    End If
+                    '     ddlTrim.Items.Add(New ListItem("1P", "1P"))
+                    '     ddlTrim.Items.Add(New ListItem("17F", "17F"))
+                    '     ddlTrim.Items.Add(New ListItem("18F", "18F"))
+                    '     ddlTrim.Items.Add(New ListItem("19F", "19F"))
+                    '     ddlTrim.Items.Add(New ListItem("20F", "20F"))
+                    '     ddlTrim.Items.Add(New ListItem("22F", "22F"))
+                    '     ddlTrim.Items.Add(New ListItem("23F", "23F"))
+                    '     ddlTrim.Items.Add(New ListItem("24F", "24F"))
+                    '     ddlTrim.Items.Add(New ListItem("25F", "25F"))
+                    '     ddlTrim.Items.Add(New ListItem("26F", "26F"))
+                    ' End If
 
                     If ddlTrim.Items.Count > 1 Then
                         ddlTrim.Items.Insert(0, New ListItem("", ""))
