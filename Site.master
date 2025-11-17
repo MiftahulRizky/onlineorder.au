@@ -264,8 +264,45 @@
                                                     <path d="M9 11v-5a3 3 0 0 1 6 0v5" />
                                                 </svg>
                                             </span>
-                                            <span class="nav-link-title">Create & View Order</span>
+                                            <span class="nav-link-title" id="spanOrder" runat="server">Create & View Order</span>
                                         </a>
+                                    </li>
+
+                                    <li runat="server" id="liShipment" class="nav-item">
+                                        <a runat="server" class="nav-link" href="~/shipment/">
+                                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-cube-send">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                    <path d="M16 12.5l-5 -3l5 -3l5 3v5.5l-5 3z" />
+                                                    <path d="M11 9.5v5.5l5 3" />
+                                                    <path d="M16 12.545l5 -3.03" />
+                                                    <path d="M7 9h-5" />
+                                                    <path d="M7 12h-3" />
+                                                    <path d="M7 15h-1" />
+                                                </svg>
+                                            </span>
+                                            <span class="nav-link-title">Shipment</span>
+                                        </a>
+                                    </li>
+
+                                    <li runat="server" id="liExportShutter" class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#navbar-extra" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
+                                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                    <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
+                                                    <path d="M7 11l5 5l5 -5"></path>
+                                                    <path d="M12 4l0 12"></path>
+                                                </svg>
+                                            </span>
+                                            <span class="nav-link-title">Export</span>
+                                        </a>
+
+                                        <div class="dropdown-menu">
+                                            <a runat="server" id="aExportBoe" class="dropdown-item" href="~/export/boe">BIG</a>
+                                            <a runat="server" id="aExportLS" class="dropdown-item" href="~/export/ls">Lifestyle Blinds & Shutters</a>
+                                            <a runat="server" id="aExportSP" class="dropdown-item" href="~/export/sunlight">Sunlight Product</a>
+                                        </div>
                                     </li>
 
                                     <li runat="server" id="liExport" class="nav-item">
@@ -279,6 +316,43 @@
                                                 </svg>
                                             </span>
                                             <span class="nav-link-title">Export</span>
+                                        </a>
+                                    </li>
+
+                                    <li runat="server" id="liSales" class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#navbar-extra" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
+                                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-report-analytics">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                    <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" />
+                                                    <path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" />
+                                                    <path d="M9 17v-5" /><path d="M12 17v-1" /><path d="M15 17v-3" />
+                                                </svg>
+                                            </span>
+                                            <span class="nav-link-title">Sales</span>
+                                        </a>
+
+                                        <div class="dropdown-menu">
+                                            <a runat="server" class="dropdown-item" href="~/sales/ls">Lifestyle</a>
+                                            <a runat="server" class="dropdown-item" href="~/sales/big">BIG</a>
+                                        </div>
+                                    </li>
+
+                                    <li runat="server" id="liReport" class="nav-item">
+                                        <a runat="server" class="nav-link" href="~/report/">
+                                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chart-arrows-vertical">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                    <path d="M18 21v-14" />
+                                                    <path d="M9 15l3 -3l3 3" />
+                                                    <path d="M15 10l3 -3l3 3" />
+                                                    <path d="M3 21l18 0" />
+                                                    <path d="M12 21l0 -9" />
+                                                    <path d="M3 6l3 -3l3 3" />
+                                                    <path d="M6 21v-18" />
+                                                </svg>
+                                            </span>
+                                            <span class="nav-link-title">Report</span>
                                         </a>
                                     </li>
 
@@ -330,6 +404,24 @@
                                         </a>
                                     </li>
 
+                                    <li runat="server" id="liSettingCustomer" class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#navbar-extra" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
+                                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                    <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"></path>
+                                                    <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
+                                                </svg>
+                                            </span>
+                                            <span class="nav-link-title">Setting</span>
+                                        </a>
+
+                                        <div class="dropdown-menu">
+                                            <a runat="server" class="dropdown-item" href="~/setting/logo">Logo</a>
+                                            <a runat="server" class="dropdown-item" href="~/setting/terms">Terms</a>
+                                        </div>
+                                    </li>
+
                                     <li runat="server" id="liSetting" class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#navbar-extra" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
                                             <span class="nav-link-icon d-md-none d-lg-inline-block">
@@ -360,12 +452,20 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="dropend" runat="server" id="divCustomers">
+                                                    <a runat="server" id="aCustomer" class="dropdown-item" href="~/setting/customer">Customer</a>
+                                                    <div class="dropdown-divider" runat="server" id="divDividerCustomer"></div>
+                                                    <a runat="server" id="aCustomerGroup" class="dropdown-item" href="~/setting/customer/group">Customer Group</a>
+                                                    <a runat="server" id="aCustomerPriceGroup" class="dropdown-item" href="~/setting/customer/pricegroup">Customer Price Group</a>
+                                                    <div class="dropdown-divider" runat="server" id="divDividerCustomerDisc"></div>
+                                                    <a runat="server" id="aCustomerDiscount" class="dropdown-item" href="~/setting/customer/discount">Customer Discount</a>
+
+                                                    <div class="dropend" runat="server" id="divCustomerAdmin">
                                                         <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">Master Customer</a>
                                                         <div class="dropdown-menu">
-                                                            <a runat="server" id="aCustomer" class="dropdown-item" href="~/setting/customer">Customer</a>
-                                                            <a runat="server" id="aCutomerGroup" class="dropdown-item" href="~/setting/customer/group">Customer Group</a>
-                                                            <a runat="server" id="aCustomerPriceGroup" class="dropdown-item" href="~/setting/customer/pricegroup">Customer Price Group</a>
+                                                            <a runat="server" class="dropdown-item" href="~/setting/customer">Customer</a>
+                                                            <a runat="server" id="aCustomerLogin" class="dropdown-item" href="~/setting/customer/login">Customer Login</a>
+                                                            <a runat="server" class="dropdown-item" href="~/setting/customer/group">Customer Group</a>
+                                                            <a runat="server" class="dropdown-item" href="~/setting/customer/pricegroup">Customer Price Group</a>
                                                         </div>
                                                     </div>
 

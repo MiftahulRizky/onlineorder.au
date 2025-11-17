@@ -11,6 +11,7 @@ Partial Class Account_Login
     Inherits Page
 
     Dim publicCfg As New PublicConfig
+    Dim settingCfg As New SettingConfig
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         Session.Clear()
@@ -87,7 +88,7 @@ Partial Class Account_Login
 
                 If msgError.InnerText = "" Then
                     Call MessageError(True, String.Empty, "masuk")
-                    publicCfg.UpdateSession(lblDeviceId.Text, loginId)
+                    settingCfg.UpdateSession(lblDeviceId.Text, loginId)
                     Session.Add("IsLoggedIn", True)
                     Session.Add("LoginId", UCase(loginId).ToString())
                     Session.Add("ApplicationId", UCase(appId).ToString())
@@ -134,21 +135,21 @@ Partial Class Account_Login
                     Response.Redirect("~/", False)
                     Exit Sub
                 Else
-                    lblDeviceId.Text = publicCfg.InsertSession()
+                    lblDeviceId.Text = settingCfg.InsertSession()
                     Dim deviceCookie As New HttpCookie("deviceId", UCase(lblDeviceId.Text).ToString())
                     deviceCookie.Expires = DateTime.Now.AddMonths(1)
                     Response.Cookies.Add(deviceCookie)
                     Exit Sub
                 End If
             Else
-                lblDeviceId.Text = publicCfg.InsertSession()
+                lblDeviceId.Text = settingCfg.InsertSession()
                 Dim deviceCookie As New HttpCookie("deviceId", UCase(lblDeviceId.Text).ToString())
                 deviceCookie.Expires = DateTime.Now.AddMonths(1)
                 Response.Cookies.Add(deviceCookie)
                 Exit Sub
             End If
         Else
-            lblDeviceId.Text = publicCfg.InsertSession()
+            lblDeviceId.Text = settingCfg.InsertSession()
             Dim deviceCookie As New HttpCookie("deviceId", UCase(lblDeviceId.Text).ToString())
             deviceCookie.Expires = DateTime.Now.AddMonths(1)
             Response.Cookies.Add(deviceCookie)

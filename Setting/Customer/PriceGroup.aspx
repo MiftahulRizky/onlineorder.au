@@ -1,4 +1,4 @@
-﻿<%@ Page Language="VB" AutoEventWireup="false" CodeFile="Default.aspx.vb" Inherits="Setting_Customer_Group_Default" MasterPageFile="~/Site.Master" MaintainScrollPositionOnPostback="true" Debug="true" Title="Customer Group" %>
+﻿<%@ Page Language="VB" AutoEventWireup="false" CodeFile="PriceGroup.aspx.vb" Inherits="Setting_Customer_PriceGroup" MasterPageFile="~/Site.Master" MaintainScrollPositionOnPostback="true" Debug="true" Title="Customer Price Group" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <div class="page-header">
@@ -6,7 +6,7 @@
             <div class="row g-2 align-items-center">
                 <div class="col">
                     <div class="page-pretitle">Setting</div>
-                    <h2 class="page-title">Customer Group</h2>
+                    <h2 class="page-title">Customer Price Group</h2>
                 </div>
             </div>
         </div>
@@ -34,7 +34,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Data Customer Group</h3>
+                            <h3 class="card-title">Data Customer Price Group</h3>
                             <div class="card-actions">
                                 <asp:Button runat="server" ID="btnAdd" CssClass="btn btn-primary" Text="Add New" OnClick="btnAdd_Click" />
                             </div>
@@ -59,16 +59,16 @@
                             <asp:GridView runat="server" ID="gvList" CssClass="table table-vcenter table-striped table-hover card-table" AutoGenerateColumns="false" AllowPaging="true" ShowHeaderWhenEmpty="true" EmptyDataText="CUSTOMER GROUP DATA NOT FOUND :)" EmptyDataRowStyle-HorizontalAlign="Center" PageSize="30" PagerSettings-Position="TopAndBottom" OnPageIndexChanging="gvList_PageIndexChanging" OnRowCommand="gvList_RowCommand">
                                 <RowStyle />
                                 <Columns>
-                                    <asp:TemplateField HeaderText="#" ItemStyle-Width="70px">
+                                    <asp:TemplateField HeaderText="#" ItemStyle-Width="100px">
                                         <ItemTemplate>
                                             <%# Container.DataItemIndex + 1 %>
                                         </ItemTemplate>
                                     </asp:TemplateField>
-                                    <asp:BoundField DataField="Id" HeaderText="ID"  />
-                                    <asp:BoundField DataField="Name" HeaderText="Group Name" />
+                                    <asp:BoundField DataField="Id" HeaderText="ID" />
+                                    <asp:BoundField DataField="Name" HeaderText="Price Group Name" />
                                     <asp:BoundField DataField="Description" HeaderText="Description" />
                                     <asp:BoundField DataField="DataActive" HeaderText="Active" />
-                                    <asp:TemplateField ItemStyle-Width="150px">
+                                    <asp:TemplateField ItemStyle-Width="300px">
                                         <ItemTemplate>
                                             <button class="btn btn-sm btn-pill btn-orange" data-bs-toggle="dropdown">Actions</button>
                                             <div class="dropdown-menu dropdown-menu-end">
@@ -76,7 +76,6 @@
                                                 <a href="#" runat="server" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalDelete" onclick='<%# String.Format("return showDelete(`{0}`);", Eval("Id").ToString()) %>' visible='<%# VisibleAction() %>'>Delete</a>
                                                 <div class="dropdown-divider" runat="server" visible='<%# VisibleAction() %>'></div>
                                                 <asp:LinkButton runat="server" ID="linkCustomer" CssClass="dropdown-item" Text="Customer List" CommandName="CustomerList" CommandArgument='<%# Eval("Id") %>'></asp:LinkButton>
-                                                <asp:LinkButton runat="server" ID="linkDiscount" CssClass="dropdown-item" Text="Discount List" CommandName="CustomerDiscount" CommandArgument='<%# Eval("Id") %>'></asp:LinkButton>
                                                 <div class="dropdown-divider" runat="server" visible='<%# VisibleAction() %>'></div>
                                                 <asp:LinkButton runat="server" CssClass="dropdown-item" ID="linkLog" Text="Logs" CommandName="Log" CommandArgument='<%# Eval("Id") %>'></asp:LinkButton>
                                             </div>
@@ -88,6 +87,7 @@
                                 <AlternatingRowStyle BackColor="" />
                             </asp:GridView>
                         </div>
+
                         <div class="card-footer text-end"></div>
                     </div>
                 </div>
@@ -162,7 +162,7 @@
                 <div class="modal-status bg-danger"></div>
                 <div class="modal-body text-center py-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-danger icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.24 3.957l-8.422 14.06a1.989 1.989 0 0 0 1.7 2.983h16.845a1.989 1.989 0 0 0 1.7 -2.983l-8.423 -14.06a1.989 1.989 0 0 0 -3.4 0z" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
-                    <h3>Delete Customer Group</h3>
+                    <h3>Delete Customer Price Group</h3>
                     <asp:TextBox runat="server" ID="txtIdDelete" style="display:none;"></asp:TextBox>
                     <div class="text-secondary">
                         Are you sure you would like to do this?
@@ -171,9 +171,7 @@
                 <div class="modal-footer">
                     <div class="w-100">
                         <div class="row">
-                            <div class="col">
-                                <asp:Button runat="server" ID="btnCancelDelete" Text="Cancel" CssClass="btn w-100" OnClick="btnCancel_Click" />
-                            </div>
+                            <div class="col"><asp:Button runat="server" ID="btnCancelDelete" Text="Cancel" CssClass="btn w-100" OnClick="btnCancel_Click" /></div>
                             <div class="col">
                                 <asp:Button runat="server" ID="btnSubmitDelete" CssClass="btn btn-danger w-100" Text="Confirm" OnClick="btnSubmitDelete_Click" />
                             </div>
@@ -209,73 +207,16 @@
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <asp:GridView runat="server" ID="gvListCustomer" CssClass="table table-vcenter card-table" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="CUSTOMER LIST NOT FOUND" EmptyDataRowStyle-HorizontalAlign="Center">
+                        <asp:GridView runat="server" ID="gvListCustomer" CssClass="table table-vcenter table-striped table-hover card-table" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="CUSTOMER LIST NOT FOUND" EmptyDataRowStyle-HorizontalAlign="Center">
                             <RowStyle />
                             <Columns>
                                 <asp:BoundField DataField="MicronetId" HeaderText="Mnet ID" />
-                                <asp:BoundField DataField="Name" HeaderText="Customer Name" />
+                                <asp:BoundField DataField="Name" HeaderText="Name" />
                             </Columns>
                             <AlternatingRowStyle BackColor="" />
                         </asp:GridView>
                     </div>
                     <div class="card-footer"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal modal-blur fade" id="modalDiscount" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Discount List</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                
-                <div class="modal-body">
-                    <div class="row" runat="server" id="divErrorDiscount">
-                        <div class="col-12">
-                            <div class="alert alert-important alert-danger alert-dismissible" role="alert">
-                                <div class="d-flex">
-                                    <div>
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 8v4" /><path d="M12 16h.01" /></svg>
-                                    </div>
-                                    <div>
-                                        <span runat="server" id="msgErrorDiscount"></span>
-                                    </div>
-                                </div>
-                                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <asp:GridView runat="server" ID="gvListDiscount" CssClass="table table-vcenter card-table" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="DISCOUNT LIST NOT FOUND" EmptyDataRowStyle-HorizontalAlign="Center">
-                            <RowStyle />
-                            <Columns>
-                                <asp:TemplateField HeaderText="Title">
-                                    <ItemTemplate>
-                                        <%# TextType(Eval("Id").ToString()) %>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Discount">
-                                    <ItemTemplate>
-                                        <%# ValueDiscount(Eval("Discount")) %>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:BoundField DataField="StartDate" HeaderText="Start Date" DataFormatString="{0:dd MMM yyyy}" />
-                                <asp:BoundField DataField="EndDate" HeaderText="End Date" DataFormatString="{0:dd MMM yyyy}" />
-                                <asp:TemplateField HeaderText="Final Discount (Fabric)">
-                                    <ItemTemplate>
-                                        <%# FinalDiscount(Eval("DiscountType"), Eval("FinalDiscount")) %>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                            </Columns>
-                            <AlternatingRowStyle BackColor="" />
-                        </asp:GridView>
-                    </div>
-                    <div class="mt-3 card-footer">
-                        <asp:Button runat="server" ID="btnManageDiscount" CssClass="btn btn-primary" Text="Manage Discount For This Customer Group" OnClick="btnManageDiscount_Click" />
-                    </div>
                 </div>
             </div>
         </div>
@@ -329,19 +270,16 @@
         function showProcess() {
             $("#modalProcess").modal("show");
         }
-        function showDelete(id) {
-            document.getElementById("<%=txtIdDelete.ClientID %>").value = id;
-        }
         function showCustomer() {
             $("#modalCustomer").modal("show");
         }
-        function showDiscount() {
-            $("#modalDiscount").modal("show");
+        function showDelete(id) {
+            document.getElementById("<%=txtIdDelete.ClientID %>").value = id;
         }
         function showLog() {
             $("#modalLog").modal("show");
         }
-        ["modalProcess", "modalDelete", "modalLog", "modalCustomer", "modalDiscount"].forEach(function (id) {
+        ["modalProcess", "modalDelete", "modalLog", "modalCustomer"].forEach(function (id) {
             document.getElementById(id).addEventListener("hide.bs.modal", function () {
                 document.activeElement.blur();
                 document.body.focus();

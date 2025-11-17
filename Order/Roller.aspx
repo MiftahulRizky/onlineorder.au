@@ -336,9 +336,13 @@
                                         <asp:DropDownList runat="server" ID="ddlAccessory" CssClass="form-select">
                                             <asp:ListItem Value="" Text=""></asp:ListItem>
                                             <asp:ListItem Value="Crochet Ring Pull" Text="CROCHET RING PULL"></asp:ListItem>
+                                            <asp:ListItem Value="Metal Ring Pull" Text="METAL RING PULL"></asp:ListItem>
                                             <asp:ListItem Value="Tassle Pull" Text="TASSLE PULL"></asp:ListItem>
-                                            <asp:ListItem Value="Silver Metal Ring" Text="SILVER METAL RING"></asp:ListItem>
-                                            <asp:ListItem Value="Gold Metal Ring" Text="GOLD METAL RING"></asp:ListItem>
+                                            <asp:ListItem Value="Plastic Ring & Tab" Text="PLASTIC RING & TAB"></asp:ListItem>
+                                            <asp:ListItem Value="Timber Ring & Tab" Text="TIMBER RING & TAB"></asp:ListItem>
+                                            <asp:ListItem Value="Silver Ring" Text="SILVER RING"></asp:ListItem>
+                                            <asp:ListItem Value="Gold Ring" Text="GOLD RING"></asp:ListItem>
+                                            <asp:ListItem Value="Match Metal Ring" Text="MATCH METAL RING"></asp:ListItem>
                                         </asp:DropDownList>
                                     </div>
                                 </div>

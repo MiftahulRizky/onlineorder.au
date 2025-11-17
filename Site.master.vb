@@ -6,6 +6,7 @@ Partial Public Class SiteMaster
 
     Dim publicCfg As New PublicConfig
     Dim orderCfg As New OrderConfig
+    Dim settingCfg As New SettingConfig
     Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
 
@@ -50,10 +51,12 @@ Partial Public Class SiteMaster
                 Session("resetLogin") = myData.Tables(0).Rows(0).Item("Reset")
                 Session("CustomerAccount") = myData.Tables(0).Rows(0).Item("CustomerAccount").ToString()
 
-                Dim myData2 As DataSet = publicCfg.GetListData("SELECT * FROM CustomerContacts WHERE CustomerId = '" + Session("CustomerId") + "' AND FullName = '" + Session("FullName") + "'")
-                Session("CustomerContactId") = myData2.Tables(0).Rows(0).Item("Id").ToString()
-                Session("PriceAccess") = myData2.Tables(0).Rows(0).Item("Price").ToString()
-                Session("MarkUpAccess") = myData2.Tables(0).Rows(0).Item("MarkUp").ToString()
+                Dim myData2 As DataSet = publicCfg.GetListData("SELECT * FROM CustomerContacts WHERE CustomerId = '" + Session("CustomerId") + "' AND Name = '" + Session("FullName") + "'")
+                IF myData2.Tables(0).Rows.Count > 0 Then
+                    Session("CustomerContactId") = myData2.Tables(0).Rows(0).Item("Id").ToString()
+                    Session("PriceAccess") = myData2.Tables(0).Rows(0).Item("Price").ToString()
+                    Session("MarkUpAccess") = myData2.Tables(0).Rows(0).Item("MarkUp").ToString()
+                End If
 
                 Dim myData3 As Boolean = orderCfg.GetItemData_Boolean("SELECT OnStop FROM Customers WHERE Id='" + Session("CustomerId") + "'")
                 Session("OnStop") = myData3
@@ -98,81 +101,166 @@ Partial Public Class SiteMaster
 
     Private Sub BindListNavigation()
         Try
-            liOrder.Visible = True
-            liExport.Visible = True
-            liImport.Visible = True
-            liStatistic.Visible = True
-            liTutorial.Visible = True
+            liOrder.Visible = False
+            liShipment.Visible = False '#shutter
+            liExport.Visible = False
 
-            liSetting.Visible = True
+            liExportShutter.Visible = False '#shutter
+            aExportBoe.Visible = True
+            aExportLS.Visible = True
+            aExportSP.Visible = True
 
-            aApplication.Visible = True
-            aEmail.Visible = True
+            liImport.Visible = False
 
-            divUsers.Visible = True
-            divCustomers.Visible = True
-            aStore.Visible = True
-            aMembership.Visible = True
-            dividerUsers.Visible = True
-            aRole.Visible = True
-            aMemberLevel.Visible = True
-            aRegion.Visible = True
-            aCompany.Visible = True
+            liSales.Visible = False '#shutter
+            liReport.Visible = False '#shutter
 
-            divProduct.Visible = True
-            aDesign.Visible = True
-            aBlind.Visible = True
-            aKit.Visible = True
-            aFabric.Visible = True
-            aChain.Visible = True
-            aBottom.Visible = True
+            liStatistic.Visible = False
+            liTutorial.Visible = False
 
-            divPrice.Visible = True
-            aPriceGroup.Visible = True
-            aPriceMatrix.Visible = True
-            aCassetteExtra.Visible = True
+            liSettingCustomer.Visible = False
+            liSetting.Visible = False
 
-            aFeedback.Visible = True
-            aDeleteFile.Visible = True
-            aDeleteOrder.Visible = True
-            aQuery.Visible = True
+            aApplication.Visible = False
+            aEmail.Visible = False
+
+            divUsers.Visible = False
+            aStore.Visible = False
+            aMembership.Visible = False
+            dividerUsers.Visible = False
+            aRole.Visible = False
+            aMemberLevel.Visible = False
+            aRegion.Visible = False
+            aCompany.Visible = False
+
+            aCustomer.Visible = False '#shutter
+            aCustomerGroup.Visible = False '#shutter
+            aCustomerLogin.Visible = False '#shutter
+            aCustomerPriceGroup.Visible = False '#shutter
+            divDividerCustomer.Visible = False '#shutter
+            divDividerCustomerDisc.Visible = False '#shutter
+            aCustomerDiscount.Visible = False '#shutter
+            divCustomerAdmin.Visible = False '#shutter
+
+            divProduct.Visible = False
+            aDesign.Visible = False
+            aBlind.Visible = False
+            aKit.Visible = False
+            aFabric.Visible = False
+            aChain.Visible = False
+            aBottom.Visible = False
+
+            divPrice.Visible = False
+            aPriceGroup.Visible = False
+            aPriceMatrix.Visible = False
+            aCassetteExtra.Visible = False
+
+            aFeedback.Visible = False
+            aDeleteFile.Visible = False
+            aDeleteOrder.Visible = False
+            aQuery.Visible = False
+
+            spanOrder.InnerText = "Create & View Order"
+
+            If Session("RoleName") = "Administrator" Then
+                liOrder.Visible = True
+
+                If Session("CustomerCompany") = "SP" Then
+                    liExport.Visible = True
+                End If
+
+                liShipment.Visible = True '#shutter
+                liExportShutter.Visible = True '#shutter
+                aExportBoe.Visible = True '#shutter
+                aExportLS.Visible = True '#shutter
+                aExportSP.Visible = True '#shutter
+                liSales.Visible = True '#shutter
+                liReport.Visible = True '#shutter
+                
+                liSetting.Visible = True
+
+                aApplication.Visible = True
+                aEmail.Visible = True
+
+                divUsers.Visible = True
+                aStore.Visible = True
+                aMembership.Visible = True
+                dividerUsers.Visible = True
+                aRole.Visible = True
+                aMemberLevel.Visible = True
+                aRegion.Visible = True
+                aCompany.Visible = True
+
+                divCustomerAdmin.Visible = True '#shutter
+
+                divProduct.Visible = True
+                aDesign.Visible = True
+                aBlind.Visible = True
+                aKit.Visible = True
+                aFabric.Visible = True
+                aChain.Visible = True
+                aBottom.Visible = True
+
+                divPrice.Visible = True
+                aPriceGroup.Visible = True
+                aPriceMatrix.Visible = True
+                aCassetteExtra.Visible = True
+
+                aFeedback.Visible = True
+                aDeleteFile.Visible = True
+                aDeleteOrder.Visible = True
+                aQuery.Visible = True
+            End If
+
+            If Session("RoleName") = "Customer Service" Then
+                liOrder.Visible = True
+                liShipment.Visible = True
+                liReport.Visible = True
+                liSales.Visible = True
+
+                liSetting.Visible = True
+
+                aCustomer.Visible = True
+                aCustomerGroup.Visible = True
+                aCustomerPriceGroup.Visible = True
+                divDividerCustomer.Visible = True
+                divDividerCustomerDisc.Visible = True
+                aCustomerDiscount.Visible = True
+            End If
+
+            If Session("RoleName") = "Data Entry" Then
+                liOrder.Visible = True
+                liReport.Visible = True
+            End If
+
+            If Session("RoleName") = "Representative" Then
+                liOrder.Visible = True
+
+                liSetting.Visible = True
+
+                aCustomer.Visible = True
+                divDividerCustomerDisc.Visible = True
+                aCustomerDiscount.Visible = True
+            End If
 
             If Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Manager" Then
-                liExport.Visible = False
-                liSetting.Visible = False
+                liOrder.Visible = True
+                liShipment.Visible = True
+                liSales.Visible = True
+                liReport.Visible = True
             End If
 
             If Session("RoleName") = "Customer" Then
-                liExport.Visible = False
-                liImport.Visible = False
-                liStatistic.Visible = False
-                liSetting.Visible = False
+                spanOrder.InnerText = "My Order"
+
+                liOrder.Visible = True
+                liSettingCustomer.Visible = True
             End If
 
             If Session("RoleName") = "Account" Then
-                liExport.Visible = False
-                liImport.Visible = False
-                liStatistic.Visible = False
-                aApplication.Visible = False
-                aEmail.Visible = False
-                divProduct.Visible = False
-                aFeedback.Visible = False
-                aDeleteFile.Visible = False
-                aDeleteOrder.Visible = False
-                aQuery.Visible = False
-                '#masteruser/
-                aStore.Visible = False
-                dividerUsers.Visible = False
-                aRole.Visible = False
-                aMemberLevel.Visible = False
-                aRegion.Visible = False
-                aCompany.Visible = False
-                '#masterprice/ 
-                aPriceGroup.Visible = False
-                aPriceMatrix.Visible = False
-                aCassetteExtra.Visible = False
-                aSurcharge.Visible = False
-
+                liOrder.Visible = True
+                liSales.Visible = True
+                liReport.Visible = True
             End If
         Catch ex As Exception
             publicCfg.MailError(Session("UserId"), Page.Title, "BindListNavigation", ex.ToString())
@@ -311,7 +399,7 @@ Partial Public Class SiteMaster
 
         If Request.Cookies("deviceId") IsNot Nothing Then
             sessionId = Request.Cookies("deviceId").Value
-            publicCfg.DeleteSession(sessionId)
+            settingCfg.DeleteSession(sessionId)
         End If
 
         Session.Clear()

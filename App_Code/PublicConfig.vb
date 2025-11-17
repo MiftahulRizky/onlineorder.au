@@ -26,7 +26,7 @@ Public Class PublicConfig
     End Function
 
     Public Function GetItemData(thisString As String) As String
-        Dim result As String = String.Empty
+        Dim result As String = ""
         Using thisConn As New SqlConnection(myConn)
             thisConn.Open()
             Using myCmd As New SqlCommand(thisString, thisConn)
@@ -43,21 +43,17 @@ Public Class PublicConfig
 
     Public Function GetItemData_Integer(thisString As String) As Integer
         Dim result As Double = 0.00
-        Try
-            Using thisConn As New SqlConnection(myConn)
-                thisConn.Open()
-                Using myCmd As New SqlCommand(thisString, thisConn)
-                    Using rdResult = myCmd.ExecuteReader
-                        While rdResult.Read
-                            result = rdResult.Item(0)
-                        End While
-                    End Using
+        Using thisConn As New SqlConnection(myConn)
+            thisConn.Open()
+            Using myCmd As New SqlCommand(thisString, thisConn)
+                Using rdResult = myCmd.ExecuteReader
+                    While rdResult.Read
+                        result = rdResult.Item(0)
+                    End While
                 End Using
-                thisConn.Close()
             End Using
-        Catch ex As Exception
-            result = 0
-        End Try
+            thisConn.Close()
+        End Using
         Return result
     End Function
 
@@ -92,57 +88,6 @@ Public Class PublicConfig
         End Using
         Return result
     End Function
-
-    Public Function InsertSession() As String
-        Dim result As String = String.Empty
-        Try
-            Using thisConn As SqlConnection = New SqlConnection(myConn)
-                Using myCmd As SqlCommand = New SqlCommand("DECLARE @NewId UNIQUEIDENTIFIER = NEWID(); INSERT INTO Sessions (Id, LoginId) VALUES (@NewId, NULL); SELECT @NewId;", thisConn)
-                    thisConn.Open()
-                    Dim newId As Object = myCmd.ExecuteScalar()
-                    thisConn.Close()
-
-                    If newId IsNot Nothing Then
-                        Dim generatedGuid As Guid = CType(newId, Guid)
-                        result = generatedGuid.ToString()
-                    End If
-                End Using
-            End Using
-        Catch ex As Exception
-            result = ""
-        End Try
-        Return result
-    End Function
-
-    Public Sub UpdateSession(Id As String, LoginId As String)
-        Try
-            Using thisConn As SqlConnection = New SqlConnection(myConn)
-                Using myCmd As SqlCommand = New SqlCommand("UPDATE Sessions SET LoginId = @LoginId WHERE Id = @Id", thisConn)
-                    myCmd.Parameters.AddWithValue("@Id", UCase(Id).ToString())
-                    myCmd.Parameters.AddWithValue("@LoginId", UCase(LoginId).ToString())
-
-                    thisConn.Open()
-                    myCmd.ExecuteNonQuery()
-                    thisConn.Close()
-                End Using
-            End Using
-        Catch ex As Exception
-        End Try
-    End Sub
-
-    Public Sub DeleteSession(Id As String)
-        Try
-            Using thisConn As SqlConnection = New SqlConnection(myConn)
-                Using myCmd As SqlCommand = New SqlCommand("DELETE FROM Sessions WHERE Id = @Id", thisConn)
-                    myCmd.Parameters.AddWithValue("@Id", UCase(Id).ToString())
-                    thisConn.Open()
-                    myCmd.ExecuteNonQuery()
-                    thisConn.Close()
-                End Using
-            End Using
-        Catch ex As Exception
-        End Try
-    End Sub
 
     Public Function GetConfig(AppId As String) As Boolean
         Dim result As Boolean = False
@@ -522,128 +467,52 @@ Public Class PublicConfig
         Return result
     End Function
 
-    ' Public Sub MailError(UserId As String, Page As String, Action As String, Content As String)
-    '     Dim appId As String = GetItemData("SELECT ApplicationId FROM Memberships WHERE UserId = '" + UCase(UserId).ToString() + "'")
-    '     Dim mailData As DataSet = GetListData("SELECT * FROM MailConfiguration WHERE AppId = '" + UCase(appId).ToString() + "' AND Name = 'ERROR WEB' AND Active=1")
+    Public Sub MailError(UserId As String, Page As String, Action As String, Content As String)
+        Dim appId As String = GetItemData("SELECT ApplicationId FROM Memberships WHERE UserId = '" + UCase(UserId).ToString() + "'")
+        Dim mailData As DataSet = GetListData("SELECT * FROM MailConfiguration WHERE AppId = '" + UCase(appId).ToString() + "' AND Name = 'ERROR WEB' AND Active=1")
 
-    '     If Not mailData.Tables.Count = 0 AndAlso mailData.Tables(0).Rows.Count > 0 Then
-    '         Dim mailServer As String = mailData.Tables(0).Rows(0).Item("Server").ToString()
-    '         Dim mailAlias As String = mailData.Tables(0).Rows(0).Item("Alias").ToString()
-    '         Dim mailPort As String = mailData.Tables(0).Rows(0).Item("Port").ToString()
-    '         Dim mailHost As String = mailData.Tables(0).Rows(0).Item("Host").ToString()
-    '         Dim mailEnableSsl As String = mailData.Tables(0).Rows(0).Item("EnableSsl")
-    '         Dim mailCredentials As String = mailData.Tables(0).Rows(0).Item("UseDefaultCredentials")
-    '         Dim nailAccount As String = mailData.Tables(0).Rows(0).Item("Account").ToString()
-    '         Dim mailPassword As String = mailData.Tables(0).Rows(0).Item("Password").ToString()
-    '         Dim mailSubject As String = mailData.Tables(0).Rows(0).Item("Subject").ToString()
-    '         Dim mailTo As String = mailData.Tables(0).Rows(0).Item("To").ToString()
-    '         Dim mailCC As String = mailData.Tables(0).Rows(0).Item("Cc").ToString()
+        If Not mailData.Tables.Count = 0 AndAlso mailData.Tables(0).Rows.Count > 0 Then
+            Dim mailServer As String = mailData.Tables(0).Rows(0).Item("Server").ToString()
+            Dim mailAlias As String = mailData.Tables(0).Rows(0).Item("Alias").ToString()
+            Dim mailPort As String = mailData.Tables(0).Rows(0).Item("Port").ToString()
+            Dim mailHost As String = mailData.Tables(0).Rows(0).Item("Host").ToString()
+            Dim mailEnableSsl As String = mailData.Tables(0).Rows(0).Item("EnableSsl")
+            Dim mailCredentials As String = mailData.Tables(0).Rows(0).Item("UseDefaultCredentials")
+            Dim nailAccount As String = mailData.Tables(0).Rows(0).Item("Account").ToString()
+            Dim mailPassword As String = mailData.Tables(0).Rows(0).Item("Password").ToString()
+            Dim mailSubject As String = mailData.Tables(0).Rows(0).Item("Subject").ToString()
+            Dim mailTo As String = mailData.Tables(0).Rows(0).Item("To").ToString()
+            Dim mailCC As String = mailData.Tables(0).Rows(0).Item("Cc").ToString()
 
-    '         Dim vBody As String = ""
-    '         vBody += "1. PAGE : <b>" & Page & "</b>"
-    '         vBody += "<br />"
-    '         vBody += "2. ACTION : <b>" & Action & "</b>"
-    '         vBody += "<br />"
-    '         vBody += "3. USERS : <b>" & UCase(UserId).ToString() & "</b>"
-    '         vBody += "<br /><br />"
-    '         vBody += "4. MESSAGE : "
-    '         vBody += "<br />"
-    '         vBody += Content
+            Dim vBody As String = ""
+            vBody += "1. PAGE : <b>" & Page & "</b>"
+            vBody += "<br />"
+            vBody += "2. ACTION : <b>" & Action & "</b>"
+            vBody += "<br />"
+            vBody += "3. USERS : <b>" & UCase(UserId).ToString() & "</b>"
+            vBody += "<br /><br />"
+            vBody += "4. MESSAGE : "
+            vBody += "<br />"
+            vBody += Content
 
-    '         Dim myMail As New MailMessage
-    '         myMail.Subject = mailSubject
-    '         myMail.From = New MailAddress(mailServer, mailAlias)
-    '         myMail.To.Add(mailTo)
-    '         myMail.Body = vBody
-    '         myMail.IsBodyHtml = True
-    '         Dim smtpClient As New SmtpClient()
-    '         smtpClient.Host = mailHost
-    '         smtpClient.EnableSsl = mailEnableSsl
-    '         Dim NetworkCredl As New NetworkCredential()
-    '         NetworkCredl.UserName = nailAccount
-    '         NetworkCredl.Password = mailPassword
-    '         smtpClient.UseDefaultCredentials = mailCredentials
-    '         smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network
-    '         smtpClient.Credentials = NetworkCredl
-    '         smtpClient.Port = mailPort
-    '         smtpClient.Send(myMail)
-    '     End If
-    ' End Sub
-
-    Public Sub MailError(Page As String, Action As String, LoginId As String, exError As String)
-        Try
-            Dim appId As String = GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE Id = '" + UCase(LoginId).ToString() + "'")
-
-            Dim mailData As DataSet = GetListData("SELECT * FROM Mailings WHERE ApplicationId = '" + UCase(appId).ToString() + "' AND Name = 'Web Error' AND Active = 1")
-
-            If Not mailData.Tables(0).Rows.Count = 0 Then
-                Dim mailServer As String = mailData.Tables(0).Rows(0).Item("Server").ToString()
-                Dim mailHost As String = mailData.Tables(0).Rows(0).Item("Host").ToString()
-                Dim mailPort As Integer = mailData.Tables(0).Rows(0).Item("Port")
-
-                Dim mailUserName As String = mailData.Tables(0).Rows(0).Item("Account").ToString()
-                Dim mailPassword As String = mailData.Tables(0).Rows(0).Item("Password").ToString()
-                Dim mailAlias As String = mailData.Tables(0).Rows(0).Item("Alias").ToString()
-                Dim mailSubject As String = mailData.Tables(0).Rows(0).Item("Subject").ToString()
-
-                Dim mailTo As String = mailData.Tables(0).Rows(0).Item("To").ToString()
-                Dim mailCc As String = mailData.Tables(0).Rows(0).Item("Cc").ToString()
-
-                Dim mailNetworkCredentials As Boolean = mailData.Tables(0).Rows(0).Item("NetworkCredentials")
-                Dim mailDefaultCredentials As Boolean = mailData.Tables(0).Rows(0).Item("DefaultCredentials")
-                Dim mailEnableSSL As Boolean = mailData.Tables(0).Rows(0).Item("EnableSSL")
-
-                Dim userName As String = GetItemData("SELECT UserName FROM CustomerLogins WHERE Id = '" + UCase(LoginId).ToString() + "'")
-
-                Dim mailBody As String = String.Empty
-
-                mailBody = "Hi Team, there's an error."
-                mailBody &= "<br /><br />"
-                mailBody &= "Web Page : " & Page
-                mailBody &= "<br />"
-                mailBody &= "Action : " & Action
-                mailBody &= "<br />"
-                mailBody &= "Users : " & UCase(LoginId).ToString() & " | " & userName
-                mailBody &= "<br /><br />"
-                mailBody &= "Error Message : "
-                mailBody &= "<br />"
-                mailBody &= exError
-
-                Dim myMail As New MailMessage
-
-                myMail.Subject = mailSubject
-                myMail.From = New MailAddress(mailServer, mailAlias)
-                myMail.To.Add(mailTo)
-
-                If Not mailCc = "" Then
-                    Dim thisArray() As String = mailCc.Split(";")
-                    Dim thisMail As String = ""
-                    For Each thisMail In thisArray
-                        myMail.CC.Add(thisMail)
-                    Next
-                End If
-
-                myMail.Body = mailBody
-                myMail.IsBodyHtml = True
-                Dim smtpClient As New SmtpClient()
-                smtpClient.Host = mailHost
-                smtpClient.EnableSsl = mailEnableSSL
-                Dim NetworkCredl As New NetworkCredential()
-                NetworkCredl.UserName = mailUserName
-                NetworkCredl.Password = mailPassword
-                smtpClient.UseDefaultCredentials = mailDefaultCredentials
-                smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network
-
-                If mailNetworkCredentials = True Then
-                    smtpClient.Credentials = NetworkCredl
-                End If
-
-                smtpClient.Port = mailPort
-                smtpClient.Send(myMail)
-                Threading.Thread.Sleep(3000)
-            End If
-        Catch ex As Exception
-        End Try
+            Dim myMail As New MailMessage
+            myMail.Subject = mailSubject
+            myMail.From = New MailAddress(mailServer, mailAlias)
+            myMail.To.Add(mailTo)
+            myMail.Body = vBody
+            myMail.IsBodyHtml = True
+            Dim smtpClient As New SmtpClient()
+            smtpClient.Host = mailHost
+            smtpClient.EnableSsl = mailEnableSsl
+            Dim NetworkCredl As New NetworkCredential()
+            NetworkCredl.UserName = nailAccount
+            NetworkCredl.Password = mailPassword
+            smtpClient.UseDefaultCredentials = mailCredentials
+            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network
+            smtpClient.Credentials = NetworkCredl
+            smtpClient.Port = mailPort
+            smtpClient.Send(myMail)
+        End If
     End Sub
 
     Public Sub MailOrder(HeaderId As String, FileDirectory As String)

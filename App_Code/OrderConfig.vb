@@ -345,7 +345,7 @@ Public Class OrderConfig
             Dim idDetail As String = String.Empty
             Using thisConn As New SqlConnection(myConn)
                 thisConn.Open()
-                Using myCmd As New SqlCommand("SELECT TOP 1 Id FROM OrderHeaders_Shutters ORDER BY Id DESC", thisConn)
+                Using myCmd As New SqlCommand("SELECT TOP 1 Id FROM OrderHeaders ORDER BY Id DESC", thisConn)
                     Using rdResult = myCmd.ExecuteReader
                         While rdResult.Read
                             idDetail = rdResult.Item("Id").ToString()
@@ -3091,75 +3091,41 @@ Public Class OrderConfig
         Dim frameType As String = Convert.ToString(data(3))
         Dim frameTop As String = Convert.ToString(data(4))
         Dim frameBottom As String = Convert.ToString(data(5))
-        Dim bottomTrackType As String = Convert.ToString(data(6))
-        Dim horizontalTPost As String = Convert.ToString(data(7))
+        Dim deductType As String = Convert.ToString(data(6))
 
         If blindName = "Hinged" Or blindName = "Hinged Bi-fold" Then
-            Dim crDeductionTop As Decimal = 0
-            Dim crDeductionBottom As Decimal = 0
-
-            Dim cfDeductionTop As Decimal = 0
-            Dim cfDeductionBottom As Decimal = 0
-
             Dim frameDeduction As Decimal = 0
-            Dim frameTDeduction As Decimal = 0
-            Dim frameBDeduction As Decimal = 0
+            Dim mountingDeduction As Decimal = 0
+            Dim standardGap As Decimal = 2
 
-            If mounting = "Inside" Then
-                If frameType = "Beaded L 49mm" Or frameType = "Insert L 49mm" Then
-                    If frameTop = "L Striker Plate" Then crDeductionTop = 2
-                    If frameBottom = "L Striker Plate" Then crDeductionBottom = 2
-                End If
+            If deductType = "Bottom" And frameTop = "Yes" Then
+                If frameType = "Beaded L 49mm" Then frameDeduction = 22
+                If frameType = "Insert L 49mm" Then frameDeduction = 22
+                If frameType = "Small Bullnose Z Frame" Then frameDeduction = 22
+                If frameType = "Large Bullnose Z Frame" Then frameDeduction = 22
 
-                If frameType.Contains("Z Frame") Then
-                    If frameTop = "L Striker Plate" Then crDeductionTop = 3.2
-                    If frameBottom = "L Striker Plate" Then crDeductionBottom = 3.2
+                If mounting = "Inside" Then
+                    If frameType = "Beaded L 49mm" Then mountingDeduction = 2
+                    If frameType = "Insert L 49mm" Then mountingDeduction = 2
+                    If frameType = "Small Bullnose Z Frame" Then mountingDeduction = 3
+                    If frameType = "Large Bullnose Z Frame" Then mountingDeduction = 3
                 End If
             End If
 
-            If Not frameTop = "No" Then cfDeductionTop = 3
-            If Not frameBottom = "No" Then cfDeductionBottom = 3
+            If deductType = "Top" And frameTop = "Yes" Then
+                If frameType = "Beaded L 49mm" Then frameDeduction = 22
+                If frameType = "Insert L 49mm" Then frameDeduction = 22
+                If frameType = "Small Bullnose Z Frame" Then frameDeduction = 22
+                If frameType = "Large Bullnose Z Frame" Then frameDeduction = 22
 
-            If frameType = "Beaded L 49mm" Then frameDeduction = 22.5
-            If frameType = "Insert L 49mm" Then frameDeduction = 22.5
-            If frameType = "No Frame" Then frameDeduction = 22.5
-            If frameType = "Small Bullnose Z Frame" Then frameDeduction = 22.5
-            If frameType = "Large Bullnose Z Frame" Then frameDeduction = 22.5
-
-            If Not frameTop = "No" Then frameTDeduction = frameDeduction
-            If Not frameBottom = "No" Then frameBDeduction = frameDeduction
-
-            result = drop - crDeductionTop - crDeductionBottom - cfDeductionTop - cfDeductionBottom - frameTDeduction - frameBDeduction
-        End If
-
-        If blindName = "Track Bi-fold" Or blindName = "Track Sliding" Then
-            Dim frameDeduction As Decimal = 0
-            Dim frameTDeduction As Decimal = 0
-            Dim frameBDeduction As Decimal = 0
-
-            If frameTop = "Yes" Then frameTDeduction = 1
-
-            If frameTop = "Yes" Then frameTDeduction = 73
-            If frameBottom = "Yes" Then frameTDeduction = 46
-            If frameBottom = "No" Then frameTDeduction = 24
-
-            result = drop - frameTDeduction - frameBDeduction
-        End If
-
-        If blindName = "Fixed" Then
-            If frameType = "U Channel" Then
-                Dim topDeduction As Decimal = 0
-                Dim bottomDeduction As Decimal = 0
-
-                If frameTop = "Yes" Then topDeduction = 17.5
-                If frameBottom = "Yes" Then bottomDeduction = 9.5
-
-                result = drop - topDeduction - bottomDeduction
+                If mounting = "Inside" Then
+                    If frameType = "Beaded L 49mm" Then mountingDeduction = 2
+                    If frameType = "Insert L 49mm" Then mountingDeduction = 2
+                    If frameType = "Small Bullnose Z Frame" Then mountingDeduction = 3
+                    If frameType = "Large Bullnose Z Frame" Then mountingDeduction = 3
+                End If
             End If
-
-            If frameType = "19x19 Light Block" Then
-                result = drop - 3
-            End If
+            result = drop - frameDeduction - mountingDeduction - standardGap
         End If
 
         Return result
