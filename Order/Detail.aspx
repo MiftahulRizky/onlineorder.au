@@ -401,8 +401,8 @@
 
     <script type="text/javascript">
         const params = new URLSearchParams(window.location.search);
-        const ULTRON = params.get("ultron"); // AS HeaderId
-        const INFYNITY = params.get("infinity"); // AS OrderType
+        const ULTRON = params.get("param"); // AS HeaderId
+        const INFYNITY = params.get("ordertype"); // AS OrderType
 
         let HEADERID = ULTRON;
         let CUSTOMERID = '<%= Session("CustomerId") %>';

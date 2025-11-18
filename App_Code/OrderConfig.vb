@@ -345,7 +345,7 @@ Public Class OrderConfig
             Dim idDetail As String = String.Empty
             Using thisConn As New SqlConnection(myConn)
                 thisConn.Open()
-                Using myCmd As New SqlCommand("SELECT TOP 1 Id FROM OrderHeaders ORDER BY Id DESC", thisConn)
+                Using myCmd As New SqlCommand("SELECT TOP 1 Id FROM OrderHeaders_Shutters ORDER BY Id DESC", thisConn)
                     Using rdResult = myCmd.ExecuteReader
                         While rdResult.Read
                             idDetail = rdResult.Item("Id").ToString()
@@ -460,7 +460,7 @@ Public Class OrderConfig
             Dim designName As String = GetItemData("SELECT Name FROM Designs WHERE Id = '" + designId + "'")
             Dim blindName As String = GetItemData("SELECT Name FROM Blinds WHERE Id = '" + blindId + "'")
 
-            Dim custGroup As String = GetItemData("SELECT Customers.[Group] FROM OrderHeaders INNER JOIN Customers ON OrderHeaders.CustomerId = Customers.Id WHERE OrderHeaders.Id = '" + Id + "'")
+            Dim custGroup As String = GetItemData("SELECT Customers.[Group] FROM OrderHeaders_Shutters INNER JOIN Customers ON OrderHeaders_Shutters.CustomerId = Customers.Id WHERE OrderHeaders_Shutters.Id = '" + Id + "'")
 
             If designName = "Zebra Blind" Then
                 result = "17010.001"
@@ -573,7 +573,7 @@ Public Class OrderConfig
         Try
             Dim orderType As String = GetItemData("SELECT TOP 1 Designs.Type FROM OrderDetails LEFT JOIN Products ON OrderDetails.ProductId = Products.Id LEFT JOIN Designs ON Products.DesignId = Designs.Id WHERE OrderDetails.HeaderId = '" + Id + "' AND OrderDetails.Active = 1 ORDER BY OrderDetails.Id ASC")
             Using thisConn As SqlConnection = New SqlConnection(myConn)
-                Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders SET OrderType=@OrderType WHERE Id=@HeaderId")
+                Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders_Shutters SET OrderType=@OrderType WHERE Id=@HeaderId")
                     myCmd.Parameters.AddWithValue("@HeaderId", Id)
                     myCmd.Parameters.AddWithValue("@OrderType", orderType)
                     myCmd.Connection = thisConn
@@ -1146,9 +1146,9 @@ Public Class OrderConfig
         Try
             Dim thisData As DataSet = GetListData("SELECT * FROM OrderDetails WHERE Id='" + itemId + "' AND Active=1")
             If Not thisData.Tables(0).Rows.Count = 0 Then
-                Dim customerId As String = GetItemData("SELECT CustomerId FROM OrderHeaders WHERE Id = '" + headerId + "'")
-                Dim customerGroup As String = GetItemData("SELECT Customers.[Group] FROM Customers INNER JOIN OrderHeaders ON Customers.Id = OrderHeaders.CustomerId WHERE OrderHeaders.Id='" + headerId + "'")
-                Dim customerPriceGroup As String = GetItemData("SELECT Customers.Pricing FROM Customers INNER JOIN OrderHeaders ON Customers.Id = OrderHeaders.CustomerId WHERE OrderHeaders.Id='" + headerId + "'")
+                Dim customerId As String = GetItemData("SELECT CustomerId FROM OrderHeaders_Shutters WHERE Id = '" + headerId + "'")
+                Dim customerGroup As String = GetItemData("SELECT Customers.[Group] FROM Customers INNER JOIN OrderHeaders_Shutters ON Customers.Id = OrderHeaders_Shutters.CustomerId WHERE OrderHeaders_Shutters.Id='" + headerId + "'")
+                Dim customerPriceGroup As String = GetItemData("SELECT Customers.Pricing FROM Customers INNER JOIN OrderHeaders_Shutters ON Customers.Id = OrderHeaders_Shutters.CustomerId WHERE OrderHeaders_Shutters.Id='" + headerId + "'")
 
                 Dim productId As String = thisData.Tables(0).Rows(0).Item("ProductId").ToString()
                 Dim designId As String = GetItemData("SELECT DesignId FROM Products WHERE Id = '" + productId + "'")

@@ -56,8 +56,8 @@
             lblId.Text = txtIdDelete.Text
             sdsPage.Delete()
 
-            Dim userId As String = UCase(Session("UserId")).ToString()
-            publicCfg.InsertActivity(userId, Page.Title, "DELETE DESIGN TYPE. ID : " & lblId.Text)
+            Dim LoginId As String = UCase(Session("LoginId")).ToString()
+            publicCfg.InsertActivity(LoginId, Page.Title, "DELETE DESIGN TYPE. ID : " & lblId.Text)
 
             Call BindData(txtSearch.Text)
         Catch ex As Exception
@@ -81,8 +81,8 @@
 
             sdsPage.Update()
 
-            Dim userId As String = UCase(Session("UserId")).ToString()
-            publicCfg.InsertActivity(userId, Page.Title, "ACTIVE DESIGN. ID : " & lblId.Text)
+            Dim LoginId As String = UCase(Session("LoginId")).ToString()
+            publicCfg.InsertActivity(LoginId, Page.Title, "ACTIVE DESIGN. ID : " & lblId.Text)
 
             Call BindData(txtSearch.Text)
         Catch ex As Exception

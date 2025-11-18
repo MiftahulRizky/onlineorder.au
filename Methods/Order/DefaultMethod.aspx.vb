@@ -156,7 +156,7 @@ Partial Class Methods_Order_DefaultMethod
                 End If
 
                 Dim whereRole As String = String.Empty
-                IF params.customercompany = "SP" Or params.customercompany = "ALL" Then
+                IF params.customercompany = "SP" Then
                     whereRole = ""
                     If params.rolename = "PPIC & DE" Then
                         ' whereRole = " AND CustomerCompany = '" + params.customercompany + "'"
@@ -169,7 +169,7 @@ Partial Class Methods_Order_DefaultMethod
                             whereRole = " AND CreatedBy = '" + params.loginid + "'"
                         End If
                     End If
-                ElseIf params.customercompany = "LOOP" Or params.customercompany = "ALL" Then
+                ElseIf params.customercompany = "LOOP" Then
                     Select Case params.rolename
                         Case "Administrator", "Customer Service", "Data Entry", "PPIC & DE", "Account"
                             whereRole = ""
@@ -181,6 +181,8 @@ Partial Class Methods_Order_DefaultMethod
                                 whereRole = " AND CustomerId = '" + params.customerid + "' AND CustomerMasterId = '" + params.customerid + "'"
                             End If
                     End Select
+                ElseIf params.customercompany = "ALL" Then
+                    whereRole = ""
                 End If
 
 
@@ -232,9 +234,9 @@ Partial Class Methods_Order_DefaultMethod
                 '#-------------------------------------------------|| Order By ||-------------------------------------------------#
                 Dim orderByClause As New System.Text.StringBuilder()
                 Dim customOrderBy As String = String.Empty
-                IF params.customercompany = "SP" Or params.customercompany = "ALL" Then
+                IF params.customercompany = "SP" Then
                     customOrderBy = " ORDER BY CreatedDate DESC"
-                ElseIf params.customercompany = "LOOP" Or params.customercompany = "ALL" Then
+                ElseIf params.customercompany = "LOOP" Then
                     customOrderBy = " ORDER BY Id DESC"
                     If params.rolename = "Administrator" Then
                         customOrderBy = " ORDER BY Id, CASE WHEN Status = 'New Order' THEN 1 WHEN Status = 'In Production' THEN 2 WHEN Status = 'Completed' THEN 3 WHEN Status = 'Unsubmitted' THEN 4 WHEN Status = 'Draft' THEN 4 WHEN Status = 'Canceled' THEN 5 END DESC"
@@ -255,6 +257,8 @@ Partial Class Methods_Order_DefaultMethod
                     If params.rolename = "Customer" Then
                         customOrderBy = " ORDER BY Id DESC"
                     End If
+                ElseIf params.customercompany = "ALL" Then
+                    customOrderBy = " ORDER BY CreatedDate DESC"
                 End If
 
                 If params.order IsNot Nothing AndAlso params.order.Count > 0 Then

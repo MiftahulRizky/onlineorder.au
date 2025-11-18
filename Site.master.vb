@@ -245,8 +245,6 @@ Partial Public Class SiteMaster
 
             If Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Manager" Then
                 liOrder.Visible = True
-                liShipment.Visible = True
-                liSales.Visible = True
                 liReport.Visible = True
             End If
 

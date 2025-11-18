@@ -59,7 +59,7 @@ document.querySelector("#btnSubmit").addEventListener("click", () => {
 // BUTTON EDIT HEADER
 document.querySelector("#btnEditHeader").addEventListener("click", () => {
   // handlerEditHeader(HEADERID);
-  window.location.href = `/order/create?arterix=edit&obelix=${HEADERID}&ultron=blinds`;
+  window.location.href = `/order/header?action=edit&param=${HEADERID}&ordertype=blinds`;
 });
 
 // BUTTON DELETE HEADER

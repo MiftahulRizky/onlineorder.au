@@ -62,7 +62,7 @@ document
   .querySelector("#cardOrder #btnCreateNewOrder")
   .addEventListener("click", () => {
     // handlerCreateNewOrder();
-    window.location.href = "/order/create?arterix=add";
+    window.location.href = "/order/header?action=add";
   });
 
 // CHANGE FILTER ACTIVE
@@ -105,9 +105,9 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const type = e.target.dataset.type;
     // handlerOpenDetailOrder(id);
     if (type == "Blinds") {
-      window.location.href = `/order/detail?ultron=${id}&infinity=${type.toLowerCase()}`;
-    } else if (type == "Panorama") {
-      window.location.href = `/order/loop/detail?ultron=${id}&infinity=${type.toLowerCase()}`;
+      window.location.href = `/order/detail?param=${id}&ordertype=${type.toLowerCase()}`;
+    } else if (type == "Panorama" || type == "Evolve") {
+      window.location.href = `/order/shutters/detail?param=${id}&ordertype=${type.toLowerCase()}`;
     } else {
       window.location.href = `/order`;
     }

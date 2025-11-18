@@ -195,8 +195,8 @@ Partial Class Methods_Order_CreateMethod
                             thisConn.Close()
                         End Using
                     End Using
-                    url = "/order/detail?ultron=" & id & "&infinity=" & data.ordertype
-                Else If data.ordertype = "Panorama" Then
+                    url = "/order/detail?param=" & id & "&ordertype=" & data.ordertype.ToLower()
+                Else If data.ordertype = "Panorama" Or data.ordertype = "Evolve" Then
                     Dim headerId As String = orderCfg.CreateOrderHeaderId()
                     Dim orderId As String = "SPP-" & headerId
 
@@ -206,13 +206,14 @@ Partial Class Methods_Order_CreateMethod
                     End If
 
                     Using thisConn As New SqlConnection(myConn)
-                        Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderHeaders_Shutters(Id, OrderId, CustomerId, OrderNumber, OrderName, OrderNote, OrderType, Status, CreatedBy, CreatedDate, Deposit, Approved, Active) VALUES (@Id, @OrderId, @CustomerId, @OrderNumber, @OrderName, @OrderNote, 'Panorama', 'Unsubmitted', @CreatedBy, @CreatedDate, 0, 0, 1) INSERT INTO OrderQuotes VALUES (@Id, '', '', '', '', '', '', 0.00, 0.00, 0.00, 0.00)")
+                        Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderHeaders_Shutters(Id, OrderId, CustomerId, OrderNumber, OrderName, OrderNote, OrderType, Status, CreatedBy, CreatedDate, Deposit, Approved, Active) VALUES (@Id, @OrderId, @CustomerId, @OrderNumber, @OrderName, @OrderNote, @OrderType, 'Unsubmitted', @CreatedBy, @CreatedDate, 0, 0, 1) INSERT INTO OrderQuotes VALUES (@Id, '', '', '', '', '', '', 0.00, 0.00, 0.00, 0.00)")
                             myCmd.Parameters.AddWithValue("@Id", headerId)
                             myCmd.Parameters.AddWithValue("@OrderId", orderId)
                             myCmd.Parameters.AddWithValue("@CustomerId", UCase(data.customer).ToString())
                             myCmd.Parameters.AddWithValue("@OrderNumber", data.ordernumber.Trim())
                             myCmd.Parameters.AddWithValue("@OrderName", data.ordernumber.Trim())
                             myCmd.Parameters.AddWithValue("@OrderNote",data.Note.Trim())
+                            myCmd.Parameters.AddWithValue("@OrderType",data.ordertype)
                             myCmd.Parameters.AddWithValue("@CreatedBy", createdBy)
                             myCmd.Parameters.AddWithValue("@CreatedDate", data.createddate)
 
@@ -222,7 +223,7 @@ Partial Class Methods_Order_CreateMethod
                             thisConn.Close()
                         End Using
                     End Using
-                    url = "/order/loop/detail?ultron=" & headerId & "&infinity=" & data.ordertype
+                    url = "/order/shutters/detail?param=" & headerId & "&ordertype=" & data.ordertype.ToLower()
                 End If
                 msg = "Data has been saved successfully. <br /> Click oke to continue."
             End If
@@ -246,8 +247,8 @@ Partial Class Methods_Order_CreateMethod
                             thisConn.Close()
                         End Using
                     End Using
-                    url = "/order/detail?ultron=" & id & "&infinity=" & data.ordertype
-                Else If data.ordertype = "Panorama" Then
+                    url = "/order/detail?param=" & id & "&ordertype=" & data.ordertype.ToLower()
+                Else If data.ordertype = "Panorama" Or data.ordertype = "Evolve" Then
                     Using thisConn As New SqlConnection(myConn)
                         Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders_Shutters SET OrderId=@OrderId, JobId=@JobId, JobDate=@JobDate, ShipmentId=@ShipmentId, CustomerId=@CustomerId, CreatedBy=@CreatedBy, CreatedDate=@CreatedDate, OrderNumber=@OrderNumber, OrderName=@OrderName, OrderNote=@OrderNote WHERE Id=@Id")
                             myCmd.Parameters.AddWithValue("@Id", data.id)
@@ -268,7 +269,7 @@ Partial Class Methods_Order_CreateMethod
                             thisConn.Close()
                         End Using
                     End Using
-                    url = "/order/loop/detail?ultron=" & data.id & "&infinity=" & data.ordertype
+                    url = "/order/shutters/detail?param=" & data.id & "&ordertype=" & data.ordertype.ToLower()
                 End If
                 msg = "Data has been updated successfully."
             End If

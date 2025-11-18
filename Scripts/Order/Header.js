@@ -44,7 +44,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       divCreatedBy.setAttribute("hidden", true);
       divCreatedDate.setAttribute("hidden", true);
       divDelivery.removeAttribute("hidden");
-    } else if (value == "Panorama") {
+    } else if (value == "Panorama" || value == "Evolve") {
       handlerSelUser("#createdby");
       divCustomer.removeAttribute("hidden");
       divCreatedBy.removeAttribute("hidden");
@@ -101,11 +101,12 @@ document.querySelector("#btn-cancel").addEventListener("click", (e) => {
   }
 
   if (ACTION == "edit" && ORDERTYPE == "blinds") {
-    window.location.href = `/order/detail?ultron=${ID}&infinity=${ORDERTYPE.toLowerCase()}`;
+    window.location.href = `/order/detail?param=${ID}&ordertype=${ORDERTYPE.toLowerCase()}`;
   }
 
-  if (ACTION == "edit" && ORDERTYPE == "panorama") {
-    window.location.href = `/order/loop/detail?ultron=${ID}&infinity=${ORDERTYPE.toLowerCase()}`;
+  if (ACTION == "edit" && (ORDERTYPE == "panorama" || ORDERTYPE == "evolve")) {
+    // let ortype = ORDERTYPE;
+    window.location.href = `/order/shutters/detail?param=${ID}&ordertype=${ORDERTYPE}`;
   }
 });
 
@@ -600,7 +601,7 @@ const handlerEdit = async (id, ordertype) => {
             item.Status == "Canceled" ||
             item.Status == "Completed")
         ) {
-          window.location.href = `/order/loop/detail?ultron=${item.Id}&infinity=panorama`;
+          window.location.href = `/order/shutters/detail?ultron=${item.Id}&infinity=panorama`;
           return;
         }
       }
@@ -720,7 +721,7 @@ const visibleElementForm = (item) => {
     divDelivery.removeAttribute("hidden");
   }
 
-  if (item.OrderType == "Panorama") {
+  if (item.OrderType == "Panorama" || item.OrderType == "Evolve") {
     divOrderId.removeAttribute("hidden");
     // divShipmentId.removeAttribute("hidden");
 

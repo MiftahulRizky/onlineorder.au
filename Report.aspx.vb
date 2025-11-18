@@ -9,7 +9,7 @@ Partial Class Report
     Dim reportCfg As New ReportConfig
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
-        If Not Session("RoleName") = "Administrator" And Not Session("RoleName") = "Customer Service" And Not Session("RoleName") = "Data Entry" And Not Session("RoleName") = "Account" Then
+        If Not Session("RoleName") = "Administrator" And Not Session("RoleName") = "Customer Service" And Not Session("RoleName") = "Data Entry" And Not Session("RoleName") = "PPIC & DE" And Not Session("RoleName") = "Account" Then
             Response.Redirect("~/", False)
         End If
         If Not IsPostBack Then

@@ -1,6 +1,7 @@
-﻿<%@ Page Language="VB" AutoEventWireup="false" CodeFile="Header.aspx.vb" Inherits="Order_Header" MaintainScrollPositionOnPostback="true" MasterPageFile="~/Site.master" Debug="true" Title="Create Order" %>
+﻿<%@ Page Title="Create Order" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="Header.aspx.vb" Inherits="Order_Create" MaintainScrollPositionOnPostback="true" Debug="true"%>
 
-<asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
+<asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" Runat="Server">
+
     <div class="page-header">
         <div class="container-xl">
             <div class="row g-2 align-items-center">
@@ -15,179 +16,214 @@
     <div class="page-body">
         <div class="container-xl">
             <div class="row">
-                <div class="col-lg-7 col-md-12 col-sm-12">
+                <div class="col-7">
+                    <form action="javascript:void(0)" method="post" id="form-submit">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title" runat="server" id="cardTitle"></h3>
+                            <h3 class="card-title">Create New Order</h3>
                         </div>
                         <div class="card-body">
-                            <div class="mb-3 row">
-                                <label class="col-lg-3 col-form-label required">STORE NAME</label>
-                                <div class="col-lg-7 col-md-12 col-sm-12">
-                                    <asp:DropDownList runat="server" ID="ddlStore" CssClass="form-select"></asp:DropDownList>
+                            <div class="row mb-3" id="divOrderType">
+                                <label for="ordertype" class="col-lg-4 form-label text-uppercase required">
+                                    order type
+                                </label>
+                                <div class="col-lg-4">
+                                    <select name="ordertype" id="ordertype" class="form-select ">
+                                        <option value=""></option>
+                                        <option value="Blinds">BLINDS</option>
+                                        <option value="Panorama">PANORAMA</option>
+                                        <option value="Evolve">EVOLVE</option>
+                                    </select>
+                                    <input type="text" name="id" id="id" class="form-control" readonly hidden>
                                 </div>
                             </div>
-
-                            <div class="mb-6 row" runat="server" id="divFindStore">
-                                <label class="col-lg-3 col-form-label">FIND BY STORE ID</label>
-                                <div class="col-lg-3 col-md-12 col-sm-12">
-                                    <asp:TextBox runat="server" ID="txtStore" CssClass="form-control " placeholder="Find store id ..." autocomplete="off"></asp:TextBox>
+                            <div id="formDetail">
+                                <div class="row mb-5" id="divCustomer">
+                                    <label for="customer" class="col-lg-4 form-label text-uppercase required" id="lblcustomer">cutomer name</label>
+                                    <div class="col-lg-8">
+                                        <select name="customer" id="customer" class="form-select "></select>
+                                    </div>
                                 </div>
-                                <div class="col-lg-3 col-md-12 col-sm-12">
-                                     <asp:LinkButton runat="server" ID="btnFindStore" CssClass="btn btn-primary " Text="Find" OnClick="btnFindStore_Click" >
-                                        <i class="bi bi-search me-2"></i> Find
-                                     </asp:LinkButton>
-                                </div>
-                            </div>
 
-                            <div class="mb-3 row">
-                                <label class="col-lg-3 col-form-label required">ORDER NUMBER</label>
-                                <div class="col-lg-6 col-md-12 col-sm-12">
-                                    <asp:TextBox runat="server" ID="txtOrderNo" CssClass="form-control" placeholder="Order Number ..." autocomplete="off"></asp:TextBox>
-                                    <small class="form-hint" style="color:red;">* Please quote this order number when querying this order</small>
+                                <div class="row mb-3" id="divCreatedBy">
+                                    <label for="createdby" class="col-lg-4 form-label text-uppercase required">created by</label>
+                                    <div class="col-lg-8">
+                                        <select name="createdby" id="createdby" class="form-select"></select>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="mb-4 row">
-                                <label class="col-lg-3 col-form-label required">REFERENCE</label>
-                                <div class="col-lg-8 col-md-12 col-sm-12">
-                                    <asp:TextBox runat="server" ID="txtReference" CssClass="form-control" placeholder="Reference ..." autocomplete="off"></asp:TextBox>
+                                <div class="row mb-5" id="divCreatedDate">
+                                    <label for="createddate" class="col-lg-4 form-label text-uppercase required">created date</label>
+                                    <div class="col-lg-3">
+                                        <input type="date" class="form-control" id="createddate" name="createddate">
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="mb-5 row">
-                                <label class="col-lg-3 col-form-label required">DELIVERY / PICK UP</label>
-                                <div class="col-lg-3 col-md-12 col-sm-12">
-                                    <asp:DropDownList runat="server" ID="ddlDelivery" CssClass="form-select">
-                                        <asp:ListItem Value="" Text=""></asp:ListItem>
-                                        <asp:ListItem Value="Delivery" Text="DELIVERY"></asp:ListItem>
-                                        <asp:ListItem Value="Pick Up" Text="PICK UP"></asp:ListItem>
-                                        <asp:ListItem Value="INT-FIS" Text="INT-FIS"></asp:ListItem>
-                                        <asp:ListItem Value="INT-PU" Text="INT-PU"></asp:ListItem>
-                                    </asp:DropDownList>
+                                <div class="row mb-3" id="divOrderId">
+                                    <label for="orderid" class="col-lg-4 form-label text-uppercase required">order id</label>
+                                    <div class="col-lg-4">
+                                        <input type="text" class="form-control " id="orderid" name="orderid" placeholder="Order Number ...">
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="mb-3 row">
-                                <label class="col-lg-3 col-form-label">NOTE</label>
-                                <div class="col-lg-8 col-md-12 col-sm-12">
-                                    <asp:TextBox runat="server" ID="txtNote" Height="120px" TextMode="MultiLine" CssClass="form-control" placeholder="Your note for this order ..." autocomplete="off" style="resize:none;"></asp:TextBox>
-                                </div>
-                            </div>
-
-                            <div class="row" runat="server" id="divError">
-                                <div class="col-lg-12">
-                                    <div class="alert alert-important alert-danger alert-dismissible" role="alert">
-                                        <div class="d-flex">
-                                            <div>
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 8v4" /><path d="M12 16h.01" /></svg>
-                                            </div>
-                                            <div>
-                                                <span runat="server" id="msgError"></span>
-                                            </div>
+                                <div class="row mb-3" id="">
+                                    <label for="ordernumber" class="col-lg-4 form-label text-uppercase required">order number</label>
+                                    <div class="col-lg-6">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control " id="ordernumber" name="ordernumber" placeholder="Order Number ...">
+                                            <button class="btn" type="button" id="btnInfoOrderNumber">?</button>
                                         </div>
-                                        <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+                                    </div>
+                                </div>
+                                <div class="row mb-5" id="">
+                                    <label for="ordername" class="col-lg-4 form-label text-uppercase required" id="lblOrderName">order name</label>
+                                    <div class="col-lg-8">
+                                            <div class="input-group">
+                                            <input type="text" class="form-control " id="ordername" name="ordername" placeholder="Order Name ...">
+                                            <button class="btn" type="button" id="btnInfoOrderName">?</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3" id="divDelivery">
+                                    <label for="delivery" class="col-lg-4 form-label text-uppercase required">delivery / pick up</label>
+                                    <div class="col-lg-4">
+                                        <select name="delivery" id="delivery" class="form-select ">
+                                            <option value=""></option>
+                                            <option value="Delivery">DELIVERY</option>
+                                            <option value="Pick Up">PICK UP</option>
+                                            <option value="INT-FIS">INT-FIS</option>
+                                            <option value="INT-PU">INT-PU</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label for="note" class="col-lg-4 form-label text-uppercase">note</label>
+                                    <div class="col-lg-8">
+                                        <textarea name="note" id="note" class="form-control" rows="4" cols="4" placeholder="Your note for this order ..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3" id="divJobId">
+                                    <label for="jobid" class="col-lg-4 form-label text-uppercase required">job id</label>
+                                    <div class="col-lg-4">
+                                      <input type="text" class="form-control" id="jobid" name="jobid">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3" id="divJobDate">
+                                    <label for="jobdate" class="col-lg-4 form-label text-uppercase required">job date</label>
+                                    <div class="col-lg-4">
+                                      <input type="date" class="form-control" id="jobdate" name="jobdate">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3" id="divShipmentId">
+                                    <label for="shipmentid" class="col-lg-4 form-label text-uppercase">shipment number</label>
+                                    <div class="col-lg-4">
+                                      <select name="shipmentid" id="shipmentid" class="form-select"></select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3" id="divShipping">
+                                    <label for="shipping" class="col-lg-4 form-label text-uppercase">shipping address</label>
+                                    <div class="col-lg-8">
+                                        <textarea name="shipping" id="shipping" class="form-control" rows="3" cols="3" ></textarea>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                         <div class="card-footer text-end">
-                             <asp:LinkButton runat="server" ID="btnSubmit" CssClass="btn btn-primary " OnClick="btnSubmit_Click" >
-                                <i class="fa-solid fa-cloud-arrow-up me-2"></i> Submit 
-                             </asp:LinkButton>
-                             <asp:LinkButton runat="server" ID="btnCancel" CssClass="btn btn-danger " OnClick="btnCancel_Click">
-                                <i class="fa-solid fa-arrow-rotate-left me-2"></i> Cancel
-                             </asp:LinkButton>
+                            <button type="submit" class="btn btn-primary" id="btn-submit">Submit</button>
+                            <button type="button" class="btn btn-danger" id="btn-cancel">Cancel</button>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-5 col-md-12 col-sm-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Notes</h3>
-                        </div>
-
-                        <div class="card-body">
-                            <div class="markdown">
-                                <ul>
-                                    <li>
-                                        Please do not use the following characters for <br />
-                                        <b>ORDER NUMBER</b> & <b>REFERENCE</b> <br />
-                                        <b>[ / ], [ | ], [ \ ], [ & ], [ # ], [ ' ], [ ` ] AND [ , ]</b>
-                                    </li>
-                                    <li class="mt-2">
-                                        MAXIMUM 50 CHARACTERS FOR <b>ORDER NUMBER</b>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- custom js -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            loaderFadeOut();
-        })
 
-        const msgError = document.getElementById("MainContent_divError");
 
-        document.querySelectorAll(".form-control, .form-select").forEach((el) => {
-            el.addEventListener("change", (e) => {
-                e.target.classList.remove("is-invalid");
-                resetError();
-            })
-            el.addEventListener("input", (e) => {
-                e.target.classList.remove("is-invalid");
-                resetError();
-            });
-        })
-
-        const resetError = () => {
-            if (msgError) {
-                msgError.classList.add("d-none");
-            }
-        }
-        const showMessageError = (msg) =>{
-            Swal.fire({
-                icon: "warning",
-                title: "Oops...",
-                html: msg,
-                customClass: {
-                    popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-                },
-            });
-        }
-    </script>
-
-    <div runat="server" visible="false">
-        <asp:Label runat="server" ID="lblUserId"></asp:Label>
-        <asp:Label runat="server" ID="lblHeaderId"></asp:Label>
-        <asp:Label runat="server" ID="lblOrderNo"></asp:Label>
-       
-        <asp:SqlDataSource ID="sdsPage" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO OrderHeaders(Id, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, CreatedDate, Active) VALUES (@Id, @UserId, @StoreId, LTRIM(RTRIM(@OrderNo)), LTRIM(RTRIM(@OrderCust)), @Delivery, @Note, 'Yes', 0, 0, 0,  'Draft', GETDATE(), 1)" UpdateCommand="UPDATE OrderHeaders SET UserId=@UserId, StoreId=@StoreId, OrderNo=LTRIM(RTRIM(@OrderNo)), OrderCust=LTRIM(RTRIM(@OrderCust)), Delivery=@Delivery, Note=@Note, Active=1 WHERE Id=@Id">
-            <InsertParameters>
-                <asp:ControlParameter ControlID="lblHeaderId" Name="Id" PropertyName="Text" />
-                <asp:ControlParameter ControlID="lblUserId" Name="UserId" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlStore" Name="StoreId" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="txtOrderNo" Name="OrderNo" PropertyName="Text" />
-                <asp:ControlParameter ControlID="txtReference" Name="OrderCust" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlDelivery" Name="Delivery" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="txtNote" Name="Note" PropertyName="Text" />
-            </InsertParameters>
-            <UpdateParameters>
-                <asp:ControlParameter ControlID="lblHeaderId" Name="Id" PropertyName="Text" />
-                <asp:ControlParameter ControlID="lblUserId" Name="UserId" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlStore" Name="StoreId" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="txtOrderNo" Name="OrderNo" PropertyName="Text" />
-                <asp:ControlParameter ControlID="txtReference" Name="OrderCust" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlDelivery" Name="Delivery" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="txtNote" Name="Note" PropertyName="Text" />
-            </UpdateParameters>
-        </asp:SqlDataSource>
+    <!-- Modal -->
+    <div class="modal fade" id="modalShipping" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalShippingLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="modalShippingLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="javascript:void(0);" method="post" id="form-submit">     
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-4 mb-3">
+                                <label for="unitnumber" class="form-label">Unit Number</label>
+                                <input type="text" name="unitnumber" id="unitnumber" class="form-control" placeholder="Unit Number ..." autocomplete="off">
+                                <input type="text" name="customer" id="customer" class="form-control" readonly hidden>
+                                <input type="text" name="id" id="id" class="form-control" readonly hidden>
+                            </div>
+                            <div class="col-lg-8 mb-3">
+                                <label for="shipping" class="form-label required">Street Address</label>
+                                <textarea name="streetaddress" id="streetaddress" class="form-control" cols="1" rows="1" placeholder="Street Address ..." autocomplete="off"></textarea>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="suburb" class="form-label required">Suburb</label>
+                                <input type="text" name="suburb" id="suburb" class="form-control"  placeholder="Suburb ..." autocomplete="off">
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="states" class="form-label required">States</label>
+                                <select name="states" id="states" class="form-select">
+                                    <option value=""></option>
+                                    <option value="ACT">ACT</option>
+                                    <option value="NSW">NSW</option>
+                                    <option value="NT">NT</option>
+                                    <option value="QLD">QLD</option>
+                                    <option value="SA">SA</option>
+                                    <option value="TAS">TAS</option>
+                                    <option value="VIC">VIC</option>
+                                    <option value="WA">WA</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="postcode" class="form-label required">Post Code</label>
+                                <textarea name="postcode" id="postcode" class="form-control" cols="1" rows="1"  placeholder="Post Code ..." autocomplete="off"></textarea>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="addressport" class="form-label required">Nearest Port</label>
+                                <select name="addressport" id="addressport" class="form-select">
+                                    <option value=""></option>
+                                    <option value="Adelaide">Adelaide</option>
+                                    <option value="Brisbane">Brisbane</option>
+                                    <option value="Brisbane">Brisbane</option>
+                                    <option value="Melbourne">Melbourne</option>
+                                    <option value="Perth">Perth</option>
+                                    <option value="Sydney">Sydney</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="btn-submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+
+
+    <script type="text/javascript">
+        const params = new URLSearchParams(window.location.search);
+        const ACTION = params.get("action"); // As action
+        const ID = params.get("param"); // As id
+        const ORDERTYPE = params.get("ordertype"); // As ordertype
+        let HEADER_ACTION = '<%= Session("headerAction") %>';
+        let ROLENAME = '<%= Session("RoleName") %>';
+        let LEVELNAME = '<%= Session("LevelName") %>';
+        let LOGINID = '<%= Session("LoginId") %>';
+        let URIMETHOD = '/Methods/Order/CreateMethod.aspx';      
+    </script>
+    <script src="/Scripts/Order/Header.js?<%= DateTime.Now.Ticks %>"></script>
+
 </asp:Content>
+

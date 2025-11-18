@@ -14,13 +14,18 @@ Partial Class Order_Detail
     Dim enUS As CultureInfo = New CultureInfo("en-US")
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
-        Dim headerid As String = Request.QueryString("ultron")
-        Dim ordertype As String = Request.QueryString("infinity")
-        lblOrderType.Text = ordertype
-        ' If headerid = "" Then
-        '     Response.Redirect("~/order/", False)
-        '     Exit Sub
-        ' End If
+        Dim headerid As String = Request.QueryString("param")
+        Dim ordertype As String = Request.QueryString("ordertype")
+        lblOrderType.Text = StrConv(ordertype, VbStrConv.ProperCase)
+        If headerid = "" Then
+            Response.Redirect("~/order/", False)
+            Exit Sub
+        End If
+
+        If ordertype = "" Then
+            Response.Redirect("~/order/", False)
+            Exit Sub
+        End If
 
         lblHeaderId.Text = headerid
         If Not IsPostBack Then
@@ -40,6 +45,7 @@ Partial Class Order_Detail
             End If
 
             If lblOrderType.Text = "RBR" Or lblOrderType.Text = "Blinds" Or lblOrderType.Text = "Curtain" Or lblOrderType.Text = "Veri Shades" Or lblOrderType.Text = "Zebra Blinds" Then
+
                 Dim previewCfg As New PreviewConfig
                 Dim filePath As String = "~/File/Order/"
                 Dim fileName As String = "Preview" & "-" & spanOrderId.InnerText & ".pdf"
@@ -63,7 +69,7 @@ Partial Class Order_Detail
                 previewCfg.BindContent(lblHeaderId.Text, finalFilePath)
 
                 Response.Clear()
-                Dim url As String = "/order/preview"
+                Dim url As String = "/order/shutters/preview"
                 Session("printPreview") = finalFilePath
                 Dim sb As New StringBuilder()
                 sb.Append("<script type = 'text/javascript'>")
@@ -94,7 +100,8 @@ Partial Class Order_Detail
     Protected Sub btnEditHeader_Click(sender As Object, e As EventArgs)
         ' Session("headerAction") = "EditHeader"
         ' Session("headerId") = lblHeaderId.Text
-        Response.Redirect("~/order/create?arterix=edit&obelix="+lblHeaderId.Text+"&ultron=panorama", False)
+        Dim ordertype As String = Request.QueryString("ordertype")
+        Response.Redirect("~/order/header?action=edit&param="+lblHeaderId.Text+"&ordertype=" + ordertype, False)
     End Sub
 
     Protected Sub btnSubmitOrder_Click(sender As Object, e As EventArgs)
@@ -1687,7 +1694,13 @@ Partial Class Order_Detail
         ddlDesign.Items.Clear()
         Try
             If Not lblCustomerId.Text = "" Then
-                Dim thisQuery As String = "SELECT Designs.Id, UPPER(Designs.Name) AS NameText FROM CustomerProductAccess CROSS APPLY STRING_SPLIT(CustomerProductAccess.DesignId, ',') AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '" + Session("CustomerId").ToString() + "' AND Designs.Type <> 'Additional' AND Designs.Active = 1 ORDER BY Designs.Name ASC"
+                Dim ordertype As String = Request.QueryString("ordertype")
+                Dim types As String = StrConv(ordertype, VbStrConv.ProperCase)
+
+                Dim thisQuery As String = "SELECT Designs.Id, UPPER(Designs.Name) AS NameText FROM CustomerProductAccess CROSS APPLY STRING_SPLIT(CustomerProductAccess.DesignId, ',') AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '" + Session("CustomerId").ToString() + "' AND Designs.Type <> 'Additional' AND Designs.Type = '" +  types + "' AND Designs.Active = 1 ORDER BY Designs.Name ASC"
+
+
+
                 If gvList.Rows.Count > 0 Then
                     Dim type As String = orderCfg.GetItemData("SELECT TOP 1 Designs.Type FROM OrderDetails_Shutters INNER JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id INNER JOIN Designs ON Products.DesignId = Designs.Id WHERE OrderDetails_Shutters.HeaderId = '" + lblHeaderId.Text + "' AND OrderDetails_Shutters.Active = 1 ORDER BY OrderDetails_Shutters.Id ASC")
 

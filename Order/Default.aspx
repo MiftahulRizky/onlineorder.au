@@ -38,6 +38,7 @@
                                     <option value="ALL">ALL</option>
                                     <option value="Blinds">BLINDS</option>
                                     <option value="Panorama">PANORAMA</option>
+                                    <option value="Evolve">EVOLVE</option>
                                 </select>
                                 <button type="button" class="btn btn-primary float-end ms-3" id="btnCreateNewOrder">
                                     <i class="fa-solid fa-plus me-2"></i>
