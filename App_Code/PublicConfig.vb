@@ -902,7 +902,8 @@ Public Class PublicConfig
                 
                 '#---------------------For Vertical Slat Only---------------------#
                 If designName = "Vertical Blinds" AndAlso blindName = "Slat Only" Then
-                    getMatrix = getMatrix * Convert.ToDecimal(SlatQty)
+                    Dim getMatrixSlat As Decimal = getMatrix * Convert.ToDecimal(SlatQty)
+                    If getMatrixSlat < 10 Then : getMatrix = 0.00 : End If
                 End If
                 '#---------------------/For Vertical Slat Only---------------------#
 
@@ -952,7 +953,14 @@ Public Class PublicConfig
                 End If
                 '#---------------------|| /Panorama Shutter Only ||---------------------#
 
-                Call PriceDetail(HeaderId, ItemId, qty, description, thisMatrix)
+                
+                If designName = "Vertical Blinds" AndAlso blindName = "Slat Only" Then
+                    If thisMatrix > 0 Then
+                        Call PriceDetail(HeaderId, ItemId, qty, description, thisMatrix)
+                    End If
+                Else
+                    Call PriceDetail(HeaderId, ItemId, qty, description, thisMatrix)
+                End If
             End If
             Call UpdateMatrix(ItemId, qty, thisMatrix)
         End If
