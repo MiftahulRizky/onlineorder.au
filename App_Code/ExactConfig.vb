@@ -96,7 +96,7 @@ Public Class ExactConfig
         settings.OmitXmlDeclaration = True
         settings.Encoding = New UTF8Encoding(False)
 
-        Dim headerData As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Id = '" + Id + "'")
+        Dim headerData As DataSet = GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Id = '" + Id + "'")
 
         Dim orderId As String = headerData.Tables(0).Rows(0).Item("OrderId").ToString()
         Dim orderNumber As String = headerData.Tables(0).Rows(0).Item("OrderNumber").ToString()
@@ -149,7 +149,7 @@ Public Class ExactConfig
                 writer.WriteElementString("Date", jobDate)
                 writer.WriteEndElement()
 
-                Dim detailData As DataSet = GetListData("SELECT * FROM OrderDetails WHERE HeaderId = '" & Id & "' AND Active = 1 ORDER BY Id ASC")
+                Dim detailData As DataSet = GetListData("SELECT * FROM OrderDetails_Shutters WHERE HeaderId = '" & Id & "' AND Active = 1 ORDER BY Id ASC")
 
                 For i As Integer = 0 To detailData.Tables(0).Rows.Count - 1
                     Dim itemId As String = detailData.Tables(0).Rows(i).Item("Id").ToString()

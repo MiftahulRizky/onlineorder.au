@@ -426,9 +426,20 @@ Partial Class Methods_Order_DetailMethod
                         '#-------------------|| Cost ||-------------------#
                         Dim Cost As String = String.Empty
                         Dim totalCost As Decimal = 0.00
-                        If Matrix > 0 Then
-                            totalCost = Convert.ToDecimal(Matrix) + Convert.ToDecimal(Charge)
-                            Cost = "$" & totalCost.ToString("N2", enUS)
+                        
+                        If DesignName = "Vertical Blinds" AndAlso BlindName = "Slat Only" Then
+                            If Matrix = 0 Then
+                                totalCost = Convert.ToDecimal(Charge)
+                                Cost = "$" & totalCost.ToString("N2", enUS)
+                            Else
+                                totalCost = Convert.ToDecimal(Matrix) + Convert.ToDecimal(Charge)
+                                Cost = "$" & totalCost.ToString("N2", enUS)
+                            End If
+                        Else
+                            If Matrix > 0 Then
+                                totalCost = Convert.ToDecimal(Matrix) + Convert.ToDecimal(Charge)
+                                Cost = "$" & totalCost.ToString("N2", enUS)
+                            End If
                         End If
 
                         '#-------------------|| Markup ||-------------------#

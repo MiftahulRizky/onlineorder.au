@@ -121,15 +121,10 @@ Partial Public Class SiteMaster
             liSettingCustomer.Visible = False
             liSetting.Visible = False
 
-            aApplication.Visible = False
-            aEmail.Visible = False
+            divSystem.Visible = False
 
-            divUsers.Visible = False
-            aStore.Visible = False
-            aMembership.Visible = False
+            divAccess.Visible = False
             dividerUsers.Visible = False
-            aRole.Visible = False
-            aMemberLevel.Visible = False
             aRegion.Visible = False
             aCompany.Visible = False
 
@@ -150,10 +145,19 @@ Partial Public Class SiteMaster
             aChain.Visible = False
             aBottom.Visible = False
 
+            aProduct.Visible = False
+            aMounting.Visible = False
+
             divPrice.Visible = False
             aPriceGroup.Visible = False
             aPriceMatrix.Visible = False
             aCassetteExtra.Visible = False
+
+            aPriceGroup2.Visible = False
+            aPriceMatrix2.Visible = False
+
+            divLog.Visible = False
+            divOther.Visible = False
 
             aFeedback.Visible = False
             aDeleteFile.Visible = False
@@ -179,15 +183,10 @@ Partial Public Class SiteMaster
                 
                 liSetting.Visible = True
 
-                aApplication.Visible = True
-                aEmail.Visible = True
+                divSystem.Visible = True
 
-                divUsers.Visible = True
-                aStore.Visible = True
-                aMembership.Visible = True
+                divAccess.Visible = True
                 dividerUsers.Visible = True
-                aRole.Visible = True
-                aMemberLevel.Visible = True
                 aRegion.Visible = True
                 aCompany.Visible = True
 
@@ -201,10 +200,19 @@ Partial Public Class SiteMaster
                 aChain.Visible = True
                 aBottom.Visible = True
 
+                aProduct.Visible = True
+                aMounting.Visible = True
+
                 divPrice.Visible = True
                 aPriceGroup.Visible = True
                 aPriceMatrix.Visible = True
                 aCassetteExtra.Visible = True
+
+                aPriceGroup2.Visible = True
+                aPriceMatrix2.Visible = True
+
+                divLog.Visible = True
+                divOther.Visible = True
 
                 aFeedback.Visible = True
                 aDeleteFile.Visible = True

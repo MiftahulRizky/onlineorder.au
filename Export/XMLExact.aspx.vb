@@ -22,7 +22,7 @@ Partial Class Export_XMLExact
     End Sub
 
     Private Sub Process(status As String, jobDate As String)
-        Dim headerData As DataSet = exactCfg.GetListData("SELECT * FROM OrderHeaders WHERE Status = '" + status + "' AND (OrderType = 'Panorama' Or OrderType = 'Evolve') AND CONVERT(DATE, JobDate) = '" + jobDate + "'")
+        Dim headerData As DataSet = exactCfg.GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Status = '" + status + "' AND (OrderType = 'Panorama' Or OrderType = 'Evolve') AND CONVERT(DATE, JobDate) = '" + jobDate + "'")
 
         If headerData.Tables(0).Rows.Count > 0 Then
             For i As Integer = 0 To headerData.Tables(0).Rows.Count - 1

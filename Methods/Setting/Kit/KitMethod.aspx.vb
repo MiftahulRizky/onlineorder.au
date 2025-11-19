@@ -423,7 +423,7 @@ Partial Class Methods_Setting_Kit_KitMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindDesignType() As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Designs ORDER BY Name ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Designs WHERE Company='SP' ORDER BY Name ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -446,7 +446,7 @@ Partial Class Methods_Setting_Kit_KitMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindBlindType(ByVal designid As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Blinds WHERE DesignId='" + UCase(designid).ToString() + "' ORDER BY Name ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Blinds WHERE DesignId='" + UCase(designid).ToString() + "'  ORDER BY Name ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows

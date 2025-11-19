@@ -16,7 +16,7 @@ Partial Class Export_Sunlight
             BackColor()
 
             btnSubmit.Visible = False : btnCancel.Visible = False
-            If Session("RoleName") = "Administrator" And Session("LevelName") = "Leader" Then
+            If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" OR Session("LevelName") = "Super Admin") Then
                 btnSubmit.Visible = True : btnCancel.Visible = True
             End If
             If Session("RoleName") = "Sunlight Product" Then
@@ -43,7 +43,7 @@ Partial Class Export_Sunlight
             End If
 
             If msgError.InnerText = "" Then
-                Dim thisData As DataSet = exactCfg.GetListData("SELECT * FROM OrderHeaders WHERE Status = '" + ddlOrderStatus.SelectedValue + "' AND OrderType = 'Panorama' AND CONVERT(DATE, OrderHeaders.JobDate) = '" + txtJobDate.Text + "' AND Active=1")
+                Dim thisData As DataSet = exactCfg.GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Status = '" + ddlOrderStatus.SelectedValue + "' AND OrderType = 'Panorama' AND CONVERT(DATE, OrderHeaders_Shutters.JobDate) = '" + txtJobDate.Text + "' AND Active=1")
 
                 If thisData.Tables(0).Rows.Count = 0 Then
                     MessageError(True, "TIDAK ADA DATA !")

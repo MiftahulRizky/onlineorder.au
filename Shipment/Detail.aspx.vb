@@ -48,7 +48,7 @@ Partial Class Shipment_Detail
         MessageError(False, String.Empty)
         Try
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderShipments SET Completed = 1 WHERE Id=@ShipmentId UPDATE OrderHeaders SET Status='Completed', CompletedDate=GETDATE() WHERE ShipmentId=@ShipmentId")
+                Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderShipments SET Completed = 1 WHERE Id=@ShipmentId UPDATE OrderHeaders_Shutters SET Status='Completed', CompletedDate=GETDATE() WHERE ShipmentId=@ShipmentId")
                     myCmd.Parameters.AddWithValue("@ShipmentId", lblShipmentId.Text)
 
                     myCmd.Connection = thisConn
@@ -112,7 +112,7 @@ Partial Class Shipment_Detail
             End Using
 
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders SET ShipmentId = NULL WHERE ShipmentId=@Id")
+                Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders_Shutters SET ShipmentId = NULL WHERE ShipmentId=@Id")
                     myCmd.Parameters.AddWithValue("@Id", lblShipmentId.Text)
 
                     myCmd.Connection = thisConn
@@ -220,7 +220,7 @@ Partial Class Shipment_Detail
                 aDelete.Visible = True
             End If
 
-            gvList.DataSource = shipmentCfg.GetListData("SELECT OrderHeaders.*, Customers.Name AS CustomerName, CASE WHEN Customers.CashSale = 1 THEN 'Cash Sale' ELSE 'Account' END AS Term, CASE WHEN Customers.OnStop = 1 THEN 'Yes' ELSE '' END AS CustOnStop FROM OrderHeaders LEFT JOIN Customers ON OrderHeaders.CustomerId = Customers.Id WHERE OrderHeaders.ShipmentId = '" + shipmentId + "'")
+            gvList.DataSource = shipmentCfg.GetListData("SELECT OrderHeaders_Shutters.*, Customers.Name AS CustomerName, CASE WHEN Customers.CashSale = 1 THEN 'Cash Sale' ELSE 'Account' END AS Term, CASE WHEN Customers.OnStop = 1 THEN 'Yes' ELSE '' END AS CustOnStop FROM OrderHeaders_Shutters LEFT JOIN Customers ON OrderHeaders_Shutters.CustomerId = Customers.Id WHERE OrderHeaders_Shutters.ShipmentId = '" + shipmentId + "'")
             gvList.DataBind()
 
             VisibleEmail()

@@ -436,17 +436,25 @@
                                         <div class="dropdown-menu ">
                                             <div class="dropdown-menu-columns">
                                                 <div class="dropdown-menu-column">
-                                                    <a runat="server" id="aApplication" class="dropdown-item" href="~/setting/application">Application</a>
-                                                    <a runat="server" id="aEmail" class="dropdown-item" href="~/setting/email">Mail Configuration</a>
-
-                                                    <div class="dropend" runat="server" id="divUsers">
-                                                        <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">Master Users</a>
+                                                    
+                                                    <div class="dropend" runat="server" id="divSystem">
+                                                        <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">Master System</a>
                                                         <div class="dropdown-menu">
-                                                            <a runat="server" id="aStore" class="dropdown-item" href="~/setting/store">Store</a>
-                                                            <a runat="server" id="aMembership" class="dropdown-item" href="~/setting/member">Membership</a>
+                                                            <a runat="server" id="aApplication" class="dropdown-item" href="~/setting/application">Application</a>
+                                                            <a runat="server" id="aEmail" class="dropdown-item" href="~/setting/email">Mailing Blinds</a>
+                                                            <a runat="server" class="dropdown-item" href="~/setting/system/mailing">Mailing</a>
+                                                            <a runat="server" id="aSession" class="dropdown-item" href="~/setting/system/session">Session</a>
+                                                            <a runat="server" class="dropdown-item" href="~/setting/system/micronet">Micronet LS</a>
+                                                            <a runat="server" class="dropdown-item" href="~/setting/system/exact">Exact SP</a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="dropend" runat="server" id="divAccess">
+                                                        <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">Master Access</a>
+                                                        <div class="dropdown-menu">
+                                                            <a runat="server" id="aLoginRole" class="dropdown-item" href="~/setting/access/role">Login Role</a>
+                                                            <a runat="server" id="aLoginLevel" class="dropdown-item" href="~/setting/access/level">Login Level</a>
                                                             <div runat="server" id="dividerUsers" class="dropdown-divider"></div>
-                                                            <a runat="server" id="aRole" class="dropdown-item" href="~/setting/role">Role</a>
-                                                            <a runat="server" id="aMemberLevel" class="dropdown-item" href="~/setting/memberlevel">Level</a>
                                                             <a runat="server" id="aRegion" class="dropdown-item" href="~/setting/region">Region</a>
                                                             <a runat="server" id="aCompany" class="dropdown-item" href="~/setting/company">Company</a>
                                                         </div>
@@ -478,6 +486,9 @@
                                                             <a runat="server" id="aFabric" class="dropdown-item" href="~/setting/fabric">Fabric</a>
                                                             <a runat="server" id="aChain" class="dropdown-item" href="~/setting/chain">Chain</a>
                                                             <a runat="server" id="aBottom" class="dropdown-item" href="~/setting/bottom">Bottom Rail</a>
+                                                            <div runat="server" class="dropdown-divider"></div>
+                                                            <a runat="server" id="aProduct" class="dropdown-item" href="~/setting/product">Product</a>
+                                                            <a runat="server" id="aMounting" class="dropdown-item" href="~/setting/product/mounting">Mounting</a>
                                                         </div>
                                                     </div>
 
@@ -490,12 +501,39 @@
                                                             <a runat="server" id="aSurcharge" class="dropdown-item" href="~/setting/surcharge">Surcharge</a>
                                                             <a runat="server" id="aDiscount" class="dropdown-item" href="~/setting/discount">Discount</a>
                                                             <a runat="server" id="aCusDiscount" class="dropdown-item" href="~/setting/customdiscount">Custom Discount</a>
+                                                            <div runat="server" class="dropdown-divider"></div>
+                                                            <a runat="server" id="aPriceGroup2" class="dropdown-item" href="~/setting/price/group">Product Price Group</a>
+                                                            <a runat="server" id="aPriceMatrix2" class="dropdown-item" href="~/setting/price/matrix">Price Matrix</a>
+                                                            <a runat="server" id="aSurcharge2" class="dropdown-item" href="~/setting/price/surcharge">Price Surcharge</a>
                                                         </div>
                                                     </div>
-                                                    <a runat="server" id="aFeedback" class="dropdown-item" href="~/setting/feedback">FeedBack</a>
-                                                    <a runat="server" id="aDeleteFile" class="dropdown-item" href="~/setting/deletefile">Delete File</a>
-                                                    <a runat="server" id="aDeleteOrder" class="dropdown-item" href="~/setting/deleteorder">Delete Order</a>
-                                                    <a runat="server" id="aQuery" class="dropdown-item" href="~/setting/query">Run Query</a>
+
+                                                    <div class="dropend" runat="server" id="divLog">
+                                                        <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">Log</a>
+                                                        <div class="dropdown-menu">
+                                                            <a runat="server" class="dropdown-item" href="~/setting/log/system">System</a>
+                                                            <a runat="server" class="dropdown-item" href="~/setting/log/access">Access</a>
+                                                            <a runat="server" class="dropdown-item" href="~/setting/log/customer">Customer</a>
+                                                            <a runat="server" class="dropdown-item" href="~/setting/log/product">Product</a>
+                                                            <a runat="server" class="dropdown-item" href="~/setting/log/price">Price</a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="dropend" runat="server" id="divOther">
+                                                        <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">Other</a>
+                                                        <div class="dropdown-menu">
+                                                            <a runat="server" class="dropdown-item" href="~/setting/other/delete">Delete File</a>
+                                                            <a runat="server" class="dropdown-item" href="~/setting/other/query">Run Query</a>
+                                                            <a runat="server" class="dropdown-item" href="~/setting/other/email">Test Email</a>
+                                                            <div runat="server" class="dropdown-divider"></div>
+                                                            <a runat="server" id="aFeedback" class="dropdown-item" href="~/setting/feedback">FeedBack</a>
+                                                            <a runat="server" id="aDeleteFile" class="dropdown-item" href="~/setting/deletefile">Delete File</a>
+                                                            <a runat="server" id="aDeleteOrder" class="dropdown-item" href="~/setting/deleteorder">Delete Order</a>
+                                                            <a runat="server" id="aQuery" class="dropdown-item" href="~/setting/query">Run Query</a>
+                                                        </div>
+                                                    </div>
+
+
                                                 </div>
                                             </div>
                                         </div>
