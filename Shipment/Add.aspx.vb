@@ -99,7 +99,7 @@ Partial Class Shipment_Add
                 Dim orderId As String = jobData.Trim()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders SET ShipmentId=@ShipmentId WHERE OrderId=@OrderId")
+                    Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders_Shutters SET ShipmentId=@ShipmentId WHERE OrderId=@OrderId")
                         myCmd.Parameters.AddWithValue("@ShipmentId", shipmentId)
                         myCmd.Parameters.AddWithValue("@OrderId", orderId)
 
