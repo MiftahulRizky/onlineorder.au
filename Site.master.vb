@@ -174,11 +174,6 @@ Partial Public Class SiteMaster
                 End If
 
                 liShipment.Visible = True '#shutter
-                liExportShutter.Visible = True '#shutter
-                aExportBoe.Visible = True '#shutter
-                aExportLS.Visible = True '#shutter
-                aExportSP.Visible = True '#shutter
-                liSales.Visible = True '#shutter
                 liReport.Visible = True '#shutter
                 
                 liSetting.Visible = True
@@ -224,7 +219,6 @@ Partial Public Class SiteMaster
                 liOrder.Visible = True
                 liShipment.Visible = True
                 liReport.Visible = True
-                liSales.Visible = True
 
                 liSetting.Visible = True
 

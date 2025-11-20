@@ -13,7 +13,7 @@ Partial Class Setting_Product_Add
             Exit Sub
         End If
 
-        If Not Session("LevelName") = "Leader" Then
+        If Not (Session("LevelName") = "Leader" OR Session("LevelName") = "Super Admin") Then
             Response.Redirect("~/setting/product", False)
             Exit Sub
         End If

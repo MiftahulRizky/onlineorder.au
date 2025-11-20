@@ -57,8 +57,8 @@ Partial Class Setting_Design_Detail
             If msgError.InnerText = "" Then
                 sdsPage.Update()
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
-                publicCfg.InsertActivity(userId, Page.Title, "UPDATE NEW DESIGN TYPE. NAME : " & txtName.Text)
+                Dim LoginId As String = UCase(Session("LoginId")).ToString()
+                publicCfg.InsertActivity(LoginId, Page.Title, "UPDATE NEW DESIGN TYPE. NAME : " & txtName.Text)
 
                 Response.Redirect("~/setting/design", False)
             End If

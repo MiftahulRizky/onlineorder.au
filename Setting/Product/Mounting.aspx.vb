@@ -211,7 +211,7 @@ Partial Class Setting_Product_Mounting
             gvList.DataBind()
 
             btnAdd.Visible = False
-            If Session("RoleName") = "Administrator" And Session("LevelName") = "Leader" Then btnAdd.Visible = True
+            If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" OR Session("LevelName") = "Super Admin") Then btnAdd.Visible = True
         Catch ex As Exception
             MessageError(True, ex.ToString())
         End Try
@@ -283,7 +283,7 @@ Partial Class Setting_Product_Mounting
     End Function
 
     Protected Function VisibleAction() As Boolean
-        If Session("LevelName") = "Leader" Then
+        If Session("LevelName") = "Leader" OR Session("LevelName") = "Super Admin" Then
             Return True
         End If
         Return False

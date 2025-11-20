@@ -257,7 +257,7 @@ Partial Class Setting_Product_Default
 
             btnAdd.Visible = False
             btnActions.Visible = False
-            If Session("RoleName") = "Administrator" And Session("LevelName") = "Leader" Then
+            If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" OR Session("LevelName") = "Super Admin") Then
                 btnAdd.Visible = True
                 btnActions.Visible = True
             End If
@@ -270,7 +270,7 @@ Partial Class Setting_Product_Default
         ddlDesignId.Items.Clear()
         Try
             ddlDesignId.Items.Clear()
-            ddlDesignId.DataSource = settingCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Designs ORDER BY Name ASC")
+            ddlDesignId.DataSource = settingCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Designs WHERE Company='LOOP' ORDER BY Name ASC")
             ddlDesignId.DataTextField = "NameText"
             ddlDesignId.DataValueField = "Id"
             ddlDesignId.DataBind()

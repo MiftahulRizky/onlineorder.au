@@ -290,10 +290,10 @@ Partial Class Methods_Order_DetailMethod
     Public Shared Function GetCreatedBy(ByVal id As String) As Object
         Dim result As New Dictionary(Of String, String)
         
-        Dim detaildata As DataSet = publicCfg.GetListData("SELECT * FROM Users WHERE UserId='"+id+"'")
+        Dim detaildata As DataSet = publicCfg.GetListData("SELECT * FROM CustomerContacts WHERE Id='"+id+"'")
 
         If detaildata.Tables(0).Rows.Count > 0 Then
-                Dim nameUser As String = detaildata.Tables(0).Rows(0)("FullName").ToString()
+                Dim nameUser As String = detaildata.Tables(0).Rows(0)("Name").ToString()
                 result = New Dictionary(Of String, String) From {
                     {"createdby", nameUser}
                 }
