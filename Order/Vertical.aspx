@@ -276,12 +276,9 @@
                                     <div class="col-lg-5 col-md-12 col-sm-12">
                                         <asp:DropDownList runat="server" ID="ddlBottom" CssClass="form-select">
                                             <asp:ListItem Value="" Text=""></asp:ListItem>
-                                            <asp:ListItem hidden Value="Chained (Black)" Text="CHAINED (BLACK)"></asp:ListItem>
                                             <asp:ListItem Value="Chained (White)" Text="CHAINED (WHITE)"></asp:ListItem>
                                             <asp:ListItem Value="Fully Sewn In" Text="FULLY SEWN IN"></asp:ListItem>
                                             <asp:ListItem Value="Plastic Chainless" Text="PLASTIC CHAINLESS"></asp:ListItem>
-                                            <asp:ListItem hidden Value="Plastic Chainless (Black)" Text="PLASTIC CHAINLESS (BLACK)"></asp:ListItem>
-                                            <asp:ListItem Value="Plastic Chainless (White)" Text="PLASTIC CHAINLESS (WHITE)"></asp:ListItem>
                                             <asp:ListItem Value="Top Hanger Only" Text="TOP HANGER ONLY"></asp:ListItem>
                                         </asp:DropDownList>
                                     </div>

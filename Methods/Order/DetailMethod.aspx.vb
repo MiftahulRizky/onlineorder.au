@@ -7489,7 +7489,7 @@ Partial Class Methods_Order_DetailMethod
             result+= trDetEnd
 
             '#line Blank
-            result += BlankLineEachRow(3)
+            result += BlankLineEachRow(1)
 
         result+= tableDetEnd
 
