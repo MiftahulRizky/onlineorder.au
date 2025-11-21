@@ -19,20 +19,6 @@
     </div>
 
     <div class="page-body">
-        <div class="container container-slim py-4" id="divLoader">
-            <div class="text-center">
-                <div class="row mb-xxl-7">
-                    <br />
-                </div>
-                <div class="row mb-xxl-8">
-                    <a href="." class="navbar-brand navbar-brand-autodark"><img runat="server" src="~/Content/static/ShutterLogo.png"></a>
-                </div>
-                <div class="text-secondary mb-3">PREPARING DATA</div>
-                <div class="progress progress-sm">
-                    <div class="progress-bar progress-bar-indeterminate"></div>
-                </div>
-            </div>
-        </div>
         <div class="container-xl" id="divOrder" style="display:none;">
             <div class="row mb-3">
                 <div class="col-lg-8 col-md-12 col-sm-12">
@@ -638,6 +624,7 @@
     <script type="text/javascript">
         let designIdOri = '0CB7C37F-D478-49BA-94CB-DCDE83FB84C8';
         let headerId = '<%= Session("headerId") %>';
+        let orderType = '<%= Session("orderType") %>';
         let itemAction = '<%= Session("itemAction") %>';
         let designId = '<%= Session("designId") %>';
         let itemId = '<%= Session("itemId") %>';

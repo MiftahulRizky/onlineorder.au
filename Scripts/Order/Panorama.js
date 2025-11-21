@@ -22,12 +22,19 @@ document
   });
 
 $(document).ready(function () {
-  loaderFadeOut();
   checkSession();
 
   $("#submit").on("click", proccess);
-  $("#cancel").on("click", () => (window.location.href = "/order/detail/"));
-  $("#vieworder").on("click", () => (window.location.href = "/order/detail"));
+  $("#cancel").on(
+    "click",
+    () =>
+      (window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`)
+  );
+  $("#vieworder").on(
+    "click",
+    () =>
+      (window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`)
+  );
 
   $("#blindtype").on("change", function () {
     resetForm();
@@ -80,13 +87,13 @@ $(document).ready(function () {
           if (drop.length < 4) return;
 
           if (louvresize === "63" && drop < 282) {
-            isError("MINIMUM PANEL HEIGHT IS 282MM !");
+            isErrors("MINIMUM PANEL HEIGHT IS 282MM !");
           } else if (louvresize === "89" && drop < 333) {
-            isError("MINIMUM PANEL HEIGHT IS 333MM !");
+            isErrors("MINIMUM PANEL HEIGHT IS 333MM !");
           } else if (louvresize === "114" && drop < 384) {
-            isError("MINIMUM PANEL HEIGHT IS 384MM !");
+            isErrors("MINIMUM PANEL HEIGHT IS 384MM !");
           } else if (drop > 2500) {
-            isError("MAXIMUM PANEL HEIGHT IS 2500MM !");
+            isErrors("MAXIMUM PANEL HEIGHT IS 2500MM !");
           }
         }
       })
@@ -220,7 +227,7 @@ $(document).ready(function () {
 
         if (widthInput.length < 3) return;
         if (width < 200 || width > 900) {
-          isError("PANEL WIDTH MUST BE BETWEEN 200MM & 900MM !");
+          isErrors("PANEL WIDTH MUST BE BETWEEN 200MM & 900MM !");
           $(this).val("");
         }
       })
@@ -240,16 +247,16 @@ $(document).ready(function () {
 
           if ($(this).val().length < 4) return;
           if (louvresize === "63" && drop < 282) {
-            isError("MINIMUM PANEL HEIGHT IS 282MM !");
+            isErrors("MINIMUM PANEL HEIGHT IS 282MM !");
             $(this).val("");
           } else if (louvresize === "89" && drop < 333) {
-            isError("MINIMUM PANEL HEIGHT IS 333MM !");
+            isErrors("MINIMUM PANEL HEIGHT IS 333MM !");
             $(this).val("");
           } else if (louvresize === "114" && drop < 384) {
-            isError("MINIMUM PANEL HEIGHT IS 384MM !");
+            isErrors("MINIMUM PANEL HEIGHT IS 384MM !");
             $(this).val("");
           } else if (drop > 2500) {
-            isError("MAXIMUM PANEL HEIGHT IS 2500MM !");
+            isErrors("MAXIMUM PANEL HEIGHT IS 2500MM !");
             $(this).val("");
           }
         }
@@ -272,11 +279,11 @@ async function checkSession() {
     return;
   }
   if (!itemAction || !designId) {
-    window.location.href = "/order/detail";
+    window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`;
     return;
   }
   if (designId.toUpperCase() !== designIdOri) {
-    window.location.href = "/order/detail";
+    window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`;
     return;
   }
 
@@ -284,38 +291,30 @@ async function checkSession() {
     await getDesignName(designId);
     await getDataHeader(headerId);
     await getFormAction(itemAction);
-    await loader(itemAction);
+    // await loaderFadeOut();
 
     if (itemAction === "AddItem") {
-      bindComponentForm("", "");
-      controlForm(false);
+      await bindComponentForm("", "");
+      await controlForm(false);
       await bindBlindType(designId);
+      await loaderFadeOut();
     } else if (["EditItem", "ViewItem", "CopyItem"].includes(itemAction)) {
       await bindItemOrder(itemId);
-      controlForm(
+      await controlForm(
         itemAction === "ViewItem",
         itemAction === "EditItem",
         itemAction === "CopyItem"
       );
+      await loaderFadeOut();
     }
   } catch (error) {
     console.error(error);
   }
 }
 
-function isError(msg) {
+function isErrors(msg) {
   $("#modalError").modal("show");
   document.getElementById("errorMsg").innerHTML = msg;
-}
-
-function loader(itemAction) {
-  return new Promise((resolve) => {
-    if (itemAction === "AddItem") {
-      document.getElementById("divLoader").style.display = "none";
-      document.getElementById("divOrder").style.display = "";
-    }
-    resolve();
-  });
 }
 
 function getDesignName(designId) {
@@ -1891,12 +1890,13 @@ function proccess() {
           startCountdown(3);
         }, 1000);
       } else {
-        isError(result);
+        isErrors(result);
         toggleButtonState(false, "Submit");
       }
     },
-    error: function () {
+    error: function (response) {
       toggleButtonState(false, "Submit");
+      console.error("AJAX Error:", response.responseText.trim());
     },
   });
 }
@@ -1923,15 +1923,13 @@ function startCountdown(seconds) {
     if (countdown >= 0) {
       setTimeout(updateButton, 1000);
     } else {
-      window.location.href = "/order/detail";
+      window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`;
     }
   }
   updateButton();
 }
 
 function bindItemOrder(itemId) {
-  document.getElementById("divLoader").style.display = "";
-
   return new Promise((resolve, reject) => {
     $.ajax({
       type: "POST",
@@ -1943,7 +1941,6 @@ function bindItemOrder(itemId) {
         const data = response.d;
 
         if (!data.length) {
-          document.getElementById("divLoader").style.display = "none";
           reject("No data found");
           return;
         }
@@ -2011,18 +2008,15 @@ function bindItemOrder(itemId) {
             ]);
           })
           .then(() => {
-            document.getElementById("divLoader").style.display = "none";
             document.getElementById("divOrder").style.display = "";
             resolve();
           })
           .catch((error) => {
             console.error("Promise chain error:", error);
-            document.getElementById("divLoader").style.display = "none";
             reject(error);
           });
       },
       error: function (error) {
-        document.getElementById("divLoader").style.display = "none";
         reject(error);
       },
     });

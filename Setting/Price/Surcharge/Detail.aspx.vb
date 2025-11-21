@@ -105,7 +105,7 @@ Partial Class Setting_Price_Surcharge_Detail
     Private Sub BindDesignType()
         ddlDesign.Items.Clear()
         Try
-            ddlDesign.DataSource = settingCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Designs WHERE Active = 1 ORDER BY Name ASC")
+            ddlDesign.DataSource = settingCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Designs WHERE Active = 1 AND Company='LOOP' ORDER BY Name ASC")
             ddlDesign.DataTextField = "NameText"
             ddlDesign.DataValueField = "Id"
             ddlDesign.DataBind()
@@ -122,7 +122,7 @@ Partial Class Setting_Price_Surcharge_Detail
         ddlBlind.Items.Clear()
         Try
             If Not DesignId = "" Then
-                ddlBlind.DataSource = settingCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Blinds WHERE DesignId = '" + DesignId + "' AND Active = 1 ORDER BY Name ASC")
+                ddlBlind.DataSource = settingCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Blinds WHERE DesignId = '" + DesignId + "' AND Active = 1 AND Company='LOOP' ORDER BY Name ASC")
                 ddlBlind.DataTextField = "NameText"
                 ddlBlind.DataValueField = "Id"
                 ddlBlind.DataBind()

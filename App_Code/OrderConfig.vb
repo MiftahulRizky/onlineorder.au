@@ -369,7 +369,7 @@ Public Class OrderConfig
             Dim idDetail As String = ""
             Using thisConn As New SqlConnection(myConn)
                 thisConn.Open()
-                Using myCmd As New SqlCommand("SELECT TOP 1 Id FROM OrderDetails ORDER BY Id DESC", thisConn)
+                Using myCmd As New SqlCommand("SELECT TOP 1 Id FROM OrderDetails_Shutters ORDER BY Id DESC", thisConn)
                     Using rdResult = myCmd.ExecuteReader
                         While rdResult.Read
                             idDetail = rdResult.Item("Id").ToString()
@@ -393,7 +393,7 @@ Public Class OrderConfig
             Dim idDetail As String = String.Empty
             Using thisConn As New SqlConnection(myConn)
                 thisConn.Open()
-                Using myCmd As New SqlCommand("SELECT TOP 1 Number FROM OrderDetails WHERE HeaderId = '" + HeaderId + "' ORDER BY Number DESC", thisConn)
+                Using myCmd As New SqlCommand("SELECT TOP 1 Number FROM OrderDetails_Shutters WHERE HeaderId = '" + HeaderId + "' ORDER BY Number DESC", thisConn)
                     Using rdResult = myCmd.ExecuteReader
                         While rdResult.Read
                             idDetail = rdResult.Item("Number").ToString()
@@ -416,7 +416,7 @@ Public Class OrderConfig
     '     Try
     '         Using thisConn As New SqlConnection(myConn)
     '             thisConn.Open()
-    '             Using myCmd As New SqlCommand("SELECT ISNULL(MAX(Id),0)+1 FROM OrderDetails", thisConn)
+    '             Using myCmd As New SqlCommand("SELECT ISNULL(MAX(Id),0)+1 FROM OrderDetails_Shutters", thisConn)
     '                 myCmd.CommandTimeout = 60 ' Timeout dalam detik
     '                 result = Convert.ToInt32(myCmd.ExecuteScalar())
     '             End Using
@@ -433,7 +433,7 @@ Public Class OrderConfig
     '     Try
     '         Using thisConn As New SqlConnection(myConn)
     '             thisConn.Open()
-    '             Using myCmd As New SqlCommand("SELECT ISNULL(MAX(Number),0)+1 FROM OrderDetails WHERE HeaderId=@HeaderId", thisConn)
+    '             Using myCmd As New SqlCommand("SELECT ISNULL(MAX(Number),0)+1 FROM OrderDetails_Shutters WHERE HeaderId=@HeaderId", thisConn)
     '                 myCmd.Parameters.AddWithValue("@HeaderId", HeaderId)
     '                 myCmd.CommandTimeout = 60 ' Timeout dalam detik
     '                 result = Convert.ToInt32(myCmd.ExecuteScalar())
@@ -571,7 +571,7 @@ Public Class OrderConfig
 
     Public Sub UpdateProductType(Id As String)
         Try
-            Dim orderType As String = GetItemData("SELECT TOP 1 Designs.Type FROM OrderDetails LEFT JOIN Products ON OrderDetails.ProductId = Products.Id LEFT JOIN Designs ON Products.DesignId = Designs.Id WHERE OrderDetails.HeaderId = '" + Id + "' AND OrderDetails.Active = 1 ORDER BY OrderDetails.Id ASC")
+            Dim orderType As String = GetItemData("SELECT TOP 1 Designs.Type FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id LEFT JOIN Designs ON Products.DesignId = Designs.Id WHERE OrderDetails_Shutters.HeaderId = '" + Id + "' AND OrderDetails_Shutters.Active = 1 ORDER BY OrderDetails_Shutters.Id ASC")
             Using thisConn As SqlConnection = New SqlConnection(myConn)
                 Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders_Shutters SET OrderType=@OrderType WHERE Id=@HeaderId")
                     myCmd.Parameters.AddWithValue("@HeaderId", Id)
@@ -605,7 +605,7 @@ Public Class OrderConfig
 
     Public Function RollerOtorisasi(headerId As String, itemId As String) As Boolean
         Try
-            Dim thisData As DataSet = GetListData("SELECT * FROM OrderDetails WHERE Id='" + itemId + "' AND Active=1")
+            Dim thisData As DataSet = GetListData("SELECT * FROM OrderDetails_Shutters WHERE Id='" + itemId + "' AND Active=1")
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim productId As String = thisData.Tables(0).Rows(0).Item("ProductId").ToString()
                 Dim tubeType As String = GetItemData("SELECT TubeType FROM Products WHERE Id = '" + UCase(productId).ToString() + "'")
@@ -1015,7 +1015,7 @@ Public Class OrderConfig
     Public Function RomanOtorisasi(HeaderId As String, ItemId As String) As Boolean
         Dim result As Boolean = False
         Try
-            Dim thisData As DataSet = GetListData("SELECT * FROM OrderDetails WHERE Id='" + ItemId + "' AND Active=1")
+            Dim thisData As DataSet = GetListData("SELECT * FROM OrderDetails_Shutters WHERE Id='" + ItemId + "' AND Active=1")
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim productId As String = thisData.Tables(0).Rows(0).Item("ProductId").ToString()
                 Dim controlType As String = GetItemData("SELECT ControlType FROM Products WHERE Id = '" + UCase(productId).ToString() + "'")
@@ -1052,7 +1052,7 @@ Public Class OrderConfig
     Public Function SkinOtorisasi(HeaderId As String, ItemId As String) As Boolean
         Dim result As Boolean = False
         Try
-            Dim thisData As DataSet = GetListData("SELECT * FROM OrderDetails WHERE Id='" + ItemId + "' AND Active=1")
+            Dim thisData As DataSet = GetListData("SELECT * FROM OrderDetails_Shutters WHERE Id='" + ItemId + "' AND Active=1")
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim width As Integer = Convert.ToInt32(If(thisData.Tables(0).Rows(0).Item("Width") Is DBNull.Value, 0, thisData.Tables(0).Rows(0).Item("Width")))
                 Dim drop As Integer = Convert.ToInt32(If(thisData.Tables(0).Rows(0).Item("Drop") Is DBNull.Value, 0, thisData.Tables(0).Rows(0).Item("Drop")))
@@ -1082,7 +1082,7 @@ Public Class OrderConfig
     Public Function BuyPrice(headerId As String, itemId As String) As Decimal
         Dim result As Decimal = 0.00
         Try
-            Dim thisData As DataSet = GetListData("SELECT * FROM OrderDetails WHERE Id='" + itemId + "' AND Active=1")
+            Dim thisData As DataSet = GetListData("SELECT * FROM OrderDetails_Shutters WHERE Id='" + itemId + "' AND Active=1")
             If Not thisData.Tables(0).Rows.Count = 0 Then
 
             End If
@@ -1128,7 +1128,7 @@ Public Class OrderConfig
 
     Public Sub UpdateBuyPrice(ItemId As String, Cost As Decimal)
         Using thisConn As SqlConnection = New SqlConnection(myConn)
-            Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails SET BuyPrice=@BuyPrice WHERE Id=@ItemId")
+            Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails_Shutters SET BuyPrice=@BuyPrice WHERE Id=@ItemId")
                 myCmd.Parameters.AddWithValue("@ItemId", ItemId)
                 myCmd.Parameters.AddWithValue("@BuyPrice", Cost)
                 myCmd.Connection = thisConn
@@ -1144,7 +1144,7 @@ Public Class OrderConfig
     Public Function CountCost(headerId As String, itemId As String) As Decimal
         Dim result As Decimal = 0.00
         Try
-            Dim thisData As DataSet = GetListData("SELECT * FROM OrderDetails WHERE Id='" + itemId + "' AND Active=1")
+            Dim thisData As DataSet = GetListData("SELECT * FROM OrderDetails_Shutters WHERE Id='" + itemId + "' AND Active=1")
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim customerId As String = GetItemData("SELECT CustomerId FROM OrderHeaders_Shutters WHERE Id = '" + headerId + "'")
                 Dim customerGroup As String = GetItemData("SELECT Customers.[Group] FROM Customers INNER JOIN OrderHeaders_Shutters ON Customers.Id = OrderHeaders_Shutters.CustomerId WHERE OrderHeaders_Shutters.Id='" + headerId + "'")
@@ -1270,7 +1270,7 @@ Public Class OrderConfig
                         End If
 
                         If blindName = "Freight" Then
-                            Dim thisQuery As String = "SELECT SUM(SquareMetre) FROM OrderDetails LEFT JOIN Products ON OrderDetails.ProductId = Products.Id WHERE OrderDetails.HeaderId = '" + headerId + "' AND OrderDetails.Active=1"
+                            Dim thisQuery As String = "SELECT SUM(SquareMetre) FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id WHERE OrderDetails_Shutters.HeaderId = '" + headerId + "' AND OrderDetails_Shutters.Active=1"
                             Dim totalSqm As Decimal = GetItemData_Decimal(thisQuery)
 
                             If productName = "Curtain" Then
@@ -2352,7 +2352,7 @@ Public Class OrderConfig
     Public Function CountCharge(headerId As String, itemId As String, number As String) As Decimal
         Dim result As Decimal = 0.00
         Try
-            Dim thisData As DataSet = GetListData("SELECT * FROM OrderDetails WHERE Id='" + itemId + "' AND Active=1 ORDER BY Id ASC")
+            Dim thisData As DataSet = GetListData("SELECT * FROM OrderDetails_Shutters WHERE Id='" + itemId + "' AND Active=1 ORDER BY Id ASC")
             If thisData.Tables(0).Rows.Count > 0 Then
                 Dim productId As String = thisData.Tables(0).Rows(0).Item("ProductId").ToString()
                 Dim designId As String = GetItemData("SELECT DesignId FROM Products WHERE Id = '" + productId + "'")
@@ -2445,7 +2445,7 @@ Public Class OrderConfig
 
     Public Sub UpdateCost(ItemId As String, Cost As Decimal)
         Using thisConn As SqlConnection = New SqlConnection(myConn)
-            Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails SET Cost=@Cost WHERE Id=@ItemId")
+            Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails_Shutters SET Cost=@Cost WHERE Id=@ItemId")
                 myCmd.Parameters.AddWithValue("@ItemId", ItemId)
                 myCmd.Parameters.AddWithValue("@Cost", Cost)
                 ' myCmd.Parameters.AddWithValue("@Cost", 0.00)
@@ -2459,7 +2459,7 @@ Public Class OrderConfig
 
     Public Sub UpdateCostOverride(ItemId As String, Cost As Decimal)
         Using thisConn As SqlConnection = New SqlConnection(myConn)
-            Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails SET CostOverride=@Cost WHERE Id=@ItemId")
+            Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails_Shutters SET CostOverride=@Cost WHERE Id=@ItemId")
                 myCmd.Parameters.AddWithValue("@ItemId", ItemId)
                 myCmd.Parameters.AddWithValue("@Cost", Cost)
                 ' myCmd.Parameters.AddWithValue("@Cost", 0.00)
@@ -2473,7 +2473,7 @@ Public Class OrderConfig
 
     Public Sub UpdateFinalCost(ItemId As String)
         Using thisConn As SqlConnection = New SqlConnection(myConn)
-            Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails SET FinalCost = CostOverride - Discount WHERE Id=@ItemId")
+            Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails_Shutters SET FinalCost = CostOverride - Discount WHERE Id=@ItemId")
                 myCmd.Parameters.AddWithValue("@ItemId", ItemId)
                 myCmd.Connection = thisConn
                 thisConn.Open()
@@ -2485,7 +2485,7 @@ Public Class OrderConfig
 
     Public Sub UpdateFinalCostIvoices(Id As String)
         Try
-            Dim orderCost As Decimal = GetItemData_Decimal("SELECT SUM(FinalCost) FROM OrderDetails WHERE HeaderId='" + Id + "'")
+            Dim orderCost As Decimal = GetItemData_Decimal("SELECT SUM(FinalCost) FROM OrderDetails_Shutters WHERE HeaderId='" + Id + "'")
             Dim gst As Decimal = orderCost * 10 / 100
 
             Using thisConn As SqlConnection = New SqlConnection(myConn)

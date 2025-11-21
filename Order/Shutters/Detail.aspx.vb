@@ -1417,6 +1417,7 @@ Partial Class Order_Detail
                     Session("itemId") = ItemId
                     Session("designId") = designId
                     Session("itemAction") = "ViewItem"
+                    Session("orderType") = Request.QueryString("ordertype")
 
                     Dim production As String = orderCfg.GetItemData("SELECT TOP 1 Production FROM OrderDetails_Shutters WHERE HeaderId = '" + lblHeaderId.Text + "' AND Active=1 ORDER BY Id ASC")
                     Session("itemProduction") = production
@@ -1446,7 +1447,7 @@ Partial Class Order_Detail
                         End If
                     End If
                     If spanStatusOrder.InnerText = "In Production" Then
-                        If Session("RoleName") = "Administrator" And Session("LevelName") = "Leader" Then
+                        If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" Or Session("LevelName") = "Super Admin")Then
                             Session("itemAction") = "EditItem"
                         End If
                     End If
@@ -2015,7 +2016,7 @@ Partial Class Order_Detail
                     btnQuoteDownload.Visible = True
                     aInternalNote.Visible = True
 
-                    If Session("LevelName") = "Leader" Then
+                    If Session("LevelName") = "Leader" Or Session("LevelName") = "Super Admin" Then
                         aExact.Visible = True
                     End If
 
@@ -2032,7 +2033,7 @@ Partial Class Order_Detail
                     aInternalNote.Visible = True
                     aSlip.Visible = True
                     btnEditHeader.Visible = True
-                    If Session("LevelName") = "Leader" Then
+                    If Session("LevelName") = "Leader" Or Session("LevelName") = "Super Admin" Then
                         aExact.Visible = True
                     End If
                 End If
@@ -2240,7 +2241,7 @@ Partial Class Order_Detail
             gvList.Columns(8).Visible = False ' ACTION
 
             If Session("RoleName") = "Administrator" Then
-                If Session("LevelName") = "Leader" Then
+                If Session("LevelName") = "Leader" Or Session("LevelName") = "Super Admin" Then
                     gvList.Columns(1).Visible = True ' ID
                 End If
                 gvList.Columns(2).Visible = True ' NUMBER
@@ -3214,7 +3215,7 @@ Partial Class Order_Detail
     Protected Function VisibleProduction(ProductId As String, Production As String) As Boolean
         Dim result As Boolean = False
 
-        If Session("RoleName") = "Administrator" And Session("LevelName") = "Leader" Then
+        If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" OR Session("LevelName") = "Super Admin") Then
             If spanStatusOrder.InnerText = "New Order" And lblApproved.Text = 1 Then
                 If Not ProductId = "" Then
                     result = True

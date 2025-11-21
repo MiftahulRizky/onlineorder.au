@@ -268,15 +268,15 @@ Partial Class Order_Method
         Dim dataHeader As New Dictionary(Of String, String) From {
             {
                 "OrderId",
-                orderCfg.GetItemData("SELECT OrderId FROM OrderHeaders WHERE Id = '" + headerId + "'")
+                orderCfg.GetItemData("SELECT OrderId FROM OrderHeaders_Shutters WHERE Id = '" + headerId + "'")
             },
             {
                 "OrderNumber",
-                orderCfg.GetItemData("SELECT OrderNumber FROM OrderHeaders WHERE Id = '" + headerId + "'")
+                orderCfg.GetItemData("SELECT OrderNumber FROM OrderHeaders_Shutters WHERE Id = '" + headerId + "'")
             },
             {
                 "OrderName",
-                orderCfg.GetItemData("SELECT OrderName FROM OrderHeaders WHERE Id = '" + headerId + "'")
+                orderCfg.GetItemData("SELECT OrderName FROM OrderHeaders_Shutters WHERE Id = '" + headerId + "'")
             }
         }
         Return dataHeader
@@ -905,7 +905,7 @@ Partial Class Order_Method
                 Dim itemId As String = orderCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, Number, HeaderId, ProductId, ProductPriceGroupId, Qty, Room, Mounting, Width, [Drop], SemiInsideMount, LouvreSize, LouvrePosition, HingeColour, MidrailHeight1, MidrailHeight2, MidrailCritical, Layout, LayoutSpecial, CustomHeaderLength, FrameType, FrameLeft, FrameRight, FrameTop, FrameBottom, BottomTrackType, Buildout, PanelQty, TrackQty, TrackLength, PanelSize, HingeQtyPerPanel, PanelQtyWithHinge, LocationTPost1, LocationTPost2, LocationTPost3, LocationTPost4, LocationTPost5, HorizontalTPost, HorizontalTPostHeight, JoinedPanels, ReverseHinged, PelmetFlat, ExtraFascia, HingesLoose, TiltrodType, TiltrodSplit, SplitHeight1, SplitHeight2, SquareMetre, LinearMetre, Notes, Cost, CostOverride, Discount, FinalCost, MarkUp, TotalBlinds, Production, Paid, Active) VALUES (@Id, @Number, @HeaderId, @ProductId, @ProductPriceGroupId, @Qty, @Room, @Mounting, @Width, @Drop, @SemiInsideMount, @LouvreSize, @LouvrePosition, @HingeColour, @MidrailHeight1, @MidrailHeight2, @MidrailCritical, @Layout, @LayoutSpecial, @CustomHeaderLength, @FrameType, @FrameLeft, @FrameRight, @FrameTop, @FrameBottom, @BottomTrackType, @Buildout, @PanelQty, @TrackQty, @TrackLength, @PanelSize, @HingeQtyPerPanel, @PanelQtyWithHinge, @LocationTPost1, @LocationTPost2, @LocationTPost3, @LocationTPost4, @LocationTPost5, @HorizontalTPost, @HorizontalTPostHeight, @JoinedPanels, @ReverseHinged, @PelmetFlat, @ExtraFascia, @HingesLoose, @TiltrodType, @TiltrodSplit, @SplitHeight1, @SplitHeight2, @SquareMetre, @LinearMetre, @Notes, 0, 0, 0, 0, @MarkUp, 0, @Production, 0, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails_Shutters(Id, Number, HeaderId, ProductId, ProductPriceGroupId, Qty, Room, Mounting, Width, [Drop], SemiInsideMount, LouvreSize, LouvrePosition, HingeColour, MidrailHeight1, MidrailHeight2, MidrailCritical, Layout, LayoutSpecial, CustomHeaderLength, FrameType, FrameLeft, FrameRight, FrameTop, FrameBottom, BottomTrackType, Buildout, PanelQty, TrackQty, TrackLength, PanelSize, HingeQtyPerPanel, PanelQtyWithHinge, LocationTPost1, LocationTPost2, LocationTPost3, LocationTPost4, LocationTPost5, HorizontalTPost, HorizontalTPostHeight, JoinedPanels, ReverseHinged, PelmetFlat, ExtraFascia, HingesLoose, TiltrodType, TiltrodSplit, SplitHeight1, SplitHeight2, SquareMetre, LinearMetre, Notes, Cost, CostOverride, Discount, FinalCost, MarkUp, TotalBlinds, Production, Paid, Active) VALUES (@Id, @Number, @HeaderId, @ProductId, @ProductPriceGroupId, @Qty, @Room, @Mounting, @Width, @Drop, @SemiInsideMount, @LouvreSize, @LouvrePosition, @HingeColour, @MidrailHeight1, @MidrailHeight2, @MidrailCritical, @Layout, @LayoutSpecial, @CustomHeaderLength, @FrameType, @FrameLeft, @FrameRight, @FrameTop, @FrameBottom, @BottomTrackType, @Buildout, @PanelQty, @TrackQty, @TrackLength, @PanelSize, @HingeQtyPerPanel, @PanelQtyWithHinge, @LocationTPost1, @LocationTPost2, @LocationTPost3, @LocationTPost4, @LocationTPost5, @HorizontalTPost, @HorizontalTPostHeight, @JoinedPanels, @ReverseHinged, @PelmetFlat, @ExtraFascia, @HingesLoose, @TiltrodType, @TiltrodSplit, @SplitHeight1, @SplitHeight2, @SquareMetre, @LinearMetre, @Notes, 0, 0, 0, 0, @MarkUp, 0, @Production, 0, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@Number", orderCfg.CreateOrderItemNumber(data.headerid))
                         myCmd.Parameters.AddWithValue("@HeaderId", data.headerid)
@@ -987,7 +987,7 @@ Partial Class Order_Method
             Dim itemId As String = data.itemid
 
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderDetails SET ProductId=@ProductId, ProductPriceGroupId=@ProductPriceGroupId, Qty=@Qty, Room=@Room, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, SemiInsideMount=@SemiInsideMount, LouvreSize=@LouvreSize, LouvrePosition=@LouvrePosition, HingeColour=@HingeColour, MidrailHeight1=@MidrailHeight1, MidrailHeight2=@MidrailHeight2, MidrailCritical=@MidrailCritical, Layout=@Layout, LayoutSpecial=@LayoutSpecial, CustomHeaderLength=@CustomHeaderLength, FrameType=@FrameType, FrameLeft=@FrameLeft, FrameRight=@FrameRight, FrameTop=@FrameTop, FrameBottom=@FrameBottom, BottomTrackType=@BottomTrackType, Buildout=@Buildout, PanelQty=@PanelQty, TrackQty=@TrackQty, TrackLength=@TrackLength, PanelSize=@PanelSize, HingeQtyPerPanel=@HingeQtyPerPanel, PanelQtyWithHinge=@PanelQtyWithHinge, LocationTPost1=@LocationTPost1, LocationTPost2=@LocationTPost2, LocationTPost3=@LocationTPost3, LocationTPost4=@LocationTPost4, LocationTPost5=@LocationTPost5, HorizontalTPost=@HorizontalTPost, HorizontalTPostHeight=@HorizontalTPostHeight, JoinedPanels=@JoinedPanels, ReverseHinged=@ReverseHinged, PelmetFlat=@PelmetFlat, ExtraFascia=@ExtraFascia, HingesLoose=@HingesLoose, TiltrodType=@TiltrodType, TiltrodSplit=@TiltrodSplit, SplitHeight1=@SplitHeight1, SplitHeight2=@SplitHeight2, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, Cost=0.00, CostOverride=0.00, FinalCost=0.00, MarkUp=@MarkUp, TotalBlinds=0, Production=@Production, Active=1 WHERE Id=@Id", thisConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetails_Shutters SET ProductId=@ProductId, ProductPriceGroupId=@ProductPriceGroupId, Qty=@Qty, Room=@Room, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, SemiInsideMount=@SemiInsideMount, LouvreSize=@LouvreSize, LouvrePosition=@LouvrePosition, HingeColour=@HingeColour, MidrailHeight1=@MidrailHeight1, MidrailHeight2=@MidrailHeight2, MidrailCritical=@MidrailCritical, Layout=@Layout, LayoutSpecial=@LayoutSpecial, CustomHeaderLength=@CustomHeaderLength, FrameType=@FrameType, FrameLeft=@FrameLeft, FrameRight=@FrameRight, FrameTop=@FrameTop, FrameBottom=@FrameBottom, BottomTrackType=@BottomTrackType, Buildout=@Buildout, PanelQty=@PanelQty, TrackQty=@TrackQty, TrackLength=@TrackLength, PanelSize=@PanelSize, HingeQtyPerPanel=@HingeQtyPerPanel, PanelQtyWithHinge=@PanelQtyWithHinge, LocationTPost1=@LocationTPost1, LocationTPost2=@LocationTPost2, LocationTPost3=@LocationTPost3, LocationTPost4=@LocationTPost4, LocationTPost5=@LocationTPost5, HorizontalTPost=@HorizontalTPost, HorizontalTPostHeight=@HorizontalTPostHeight, JoinedPanels=@JoinedPanels, ReverseHinged=@ReverseHinged, PelmetFlat=@PelmetFlat, ExtraFascia=@ExtraFascia, HingesLoose=@HingesLoose, TiltrodType=@TiltrodType, TiltrodSplit=@TiltrodSplit, SplitHeight1=@SplitHeight1, SplitHeight2=@SplitHeight2, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, Cost=0.00, CostOverride=0.00, FinalCost=0.00, MarkUp=@MarkUp, TotalBlinds=0, Production=@Production, Active=1 WHERE Id=@Id", thisConn)
                     myCmd.Parameters.AddWithValue("@Id", itemId)
                     myCmd.Parameters.AddWithValue("@ProductId", UCase(data.colourtype).ToString())
                     myCmd.Parameters.AddWithValue("@ProductPriceGroupId", UCase(productpriceGroupId).ToString())
@@ -1078,7 +1078,7 @@ Partial Class Order_Method
 
         Dim designName As String = orderCfg.GetItemData("SELECT Name FROM Designs WHERE Id='" + data.designid + "'")
 
-        Dim customerPriceGroup As String = orderCfg.GetItemData("SELECT Customers.Pricing FROM Customers INNER JOIN OrderHeaders ON Customers.Id = OrderHeaders.CustomerId WHERE OrderHeaders.Id='" + data.headerid + "'")
+        Dim customerPriceGroup As String = orderCfg.GetItemData("SELECT Customers.Pricing FROM Customers INNER JOIN OrderHeaders_Shutters ON Customers.Id = OrderHeaders_Shutters.CustomerId WHERE OrderHeaders_Shutters.Id='" + data.headerid + "'")
 
 
         If String.IsNullOrEmpty(data.blindtype) Then Return "TYPE IS REQUIRED !"
@@ -1263,7 +1263,7 @@ Partial Class Order_Method
             Dim itemId As String = orderCfg.CreateOrderItemId()
 
             Using thisConn As SqlConnection = New SqlConnection(myConn)
-                Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetails(Id, Number, HeaderId, ProductId, ExactId, ProductPriceGroupId, Qty, PartCategory, PartComponent, PartColour, PartLength, LinearMetre, PanelQty, Notes, Cost, CostOverride, Discount, FinalCost, MarkUp, TotalBlinds, Production, Paid, Active) VALUES(@Id, @Number, @HeaderId, @ProductId, @ExactId, @ProductPriceGroupId, @Qty, @PartCategory, @PartComponent, @PartColour, @PartLength, @LinearMetre, @PanelQty, @Notes, 0, 0, 0, 0, @MarkUp, @TotalBlinds, @Production, 0, 1)", thisConn)
+                Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetails_Shutters(Id, Number, HeaderId, ProductId, ExactId, ProductPriceGroupId, Qty, PartCategory, PartComponent, PartColour, PartLength, LinearMetre, PanelQty, Notes, Cost, CostOverride, Discount, FinalCost, MarkUp, TotalBlinds, Production, Paid, Active) VALUES(@Id, @Number, @HeaderId, @ProductId, @ExactId, @ProductPriceGroupId, @Qty, @PartCategory, @PartComponent, @PartColour, @PartLength, @LinearMetre, @PanelQty, @Notes, 0, 0, 0, 0, @MarkUp, @TotalBlinds, @Production, 0, 1)", thisConn)
                     myCmd.Parameters.AddWithValue("@Id", itemId)
                     myCmd.Parameters.AddWithValue("@Number", orderCfg.CreateOrderItemNumber(data.headerid))
                     myCmd.Parameters.AddWithValue("@HeaderId", data.headerid)
@@ -1305,7 +1305,7 @@ Partial Class Order_Method
         If data.itemaction = "EditItem" Or data.itemaction = "ViewItem" Then
             Dim itemId As String = data.itemid
             Using thisConn As SqlConnection = New SqlConnection(myConn)
-                Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails SET ProductId=@ProductId, ExactId=@ExactId, ProductPriceGroupId=@ProductPriceGroupId, Qty=@Qty, PartCategory=@PartCategory, PartComponent=@PartComponent, PartColour=@PartColour, PartLength=@PartLength, LinearMetre=@LinearMetre, PanelQty=@PanelQty, Notes=@Notes, Cost=0.00, CostOverride=0.00, FinalCost=0.00, MarkUp=@MarkUp, Production=@Production, TotalBlinds=@TotalBlinds, Active=1 WHERE Id=@Id", thisConn)
+                Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails_Shutters SET ProductId=@ProductId, ExactId=@ExactId, ProductPriceGroupId=@ProductPriceGroupId, Qty=@Qty, PartCategory=@PartCategory, PartComponent=@PartComponent, PartColour=@PartColour, PartLength=@PartLength, LinearMetre=@LinearMetre, PanelQty=@PanelQty, Notes=@Notes, Cost=0.00, CostOverride=0.00, FinalCost=0.00, MarkUp=@MarkUp, Production=@Production, TotalBlinds=@TotalBlinds, Active=1 WHERE Id=@Id", thisConn)
                     myCmd.Parameters.AddWithValue("@Id", data.itemid)
                     myCmd.Parameters.AddWithValue("@ProductId", UCase(data.colourtype).ToString())
                     myCmd.Parameters.AddWithValue("@ExactId", exactId)
@@ -2020,10 +2020,10 @@ Partial Class Order_Method
             If data.specialshape = "" Then data.templateprovided = ""
         End If
 
-        Dim customerPriceGroup As String = orderCfg.GetItemData("SELECT Customers.Pricing FROM Customers INNER JOIN OrderHeaders ON Customers.Id = OrderHeaders.CustomerId WHERE OrderHeaders.Id='" + data.headerid + "'")
+        Dim customerPriceGroup As String = orderCfg.GetItemData("SELECT Customers.Pricing FROM Customers INNER JOIN OrderHeaders_Shutters ON Customers.Id = OrderHeaders_Shutters.CustomerId WHERE OrderHeaders_Shutters.Id='" + data.headerid + "'")
 
         Dim productpriceGroupName As String = String.Format("Panorama {0}", customerPriceGroup)
-        Dim customerId As String = orderCfg.GetItemData("SELECT CustomerId FROM OrderHeaders WHERE Id = '" + data.headerid + "'")
+        Dim customerId As String = orderCfg.GetItemData("SELECT CustomerId FROM OrderHeaders_Shutters WHERE Id = '" + data.headerid + "'")
         If customerId = "LS-A329" Then
             productpriceGroupName = "Panorama Standard (SP Special)"
         End If
@@ -2059,7 +2059,7 @@ Partial Class Order_Method
                 Dim itemId As String = orderCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, Number, HeaderId, ProductId, MicronetId, ExactId, ProductPriceGroupId, Qty, Room, Mounting, Width, [Drop], SemiInsideMount, LouvreSize, LouvrePosition, HingeColour, MidrailHeight1, MidrailHeight2, MidrailCritical, Layout, LayoutSpecial, CustomHeaderLength, FrameType, FrameLeft, FrameRight, FrameTop, FrameBottom, BottomTrackType, BottomTrackRecess, Buildout, BuildoutPosition, PanelQty, TrackQty, TrackLength, PanelSize, HingeQtyPerPanel, PanelQtyWithHinge, LocationTPost1, LocationTPost2, LocationTPost3, LocationTPost4, LocationTPost5, HorizontalTPost, HorizontalTPostHeight, JoinedPanels, ReverseHinged, PelmetFlat, ExtraFascia, HingesLoose, TiltrodType, TiltrodSplit, SplitHeight1, SplitHeight2, DoorCutOut, SpecialShape, TemplateProvided, SquareMetre, LinearMetre, Notes, Cost, CostOverride, Discount, FinalCost, MarkUp, TotalBlinds, Production, Paid, Active) VALUES (@Id, @Number, @HeaderId, @ProductId, @MicronetId, @ExactId, @ProductPriceGroupId, @Qty, @Room, @Mounting, @Width, @Drop, @SemiInsideMount, @LouvreSize, @LouvrePosition, @HingeColour, @MidrailHeight1, @MidrailHeight2, @MidrailCritical, @Layout, @LayoutSpecial, @CustomHeaderLength, @FrameType, @FrameLeft, @FrameRight, @FrameTop, @FrameBottom, @BottomTrackType, @BottomTrackRecess, @Buildout, @BuildoutPosition, @PanelQty, @TrackQty, @TrackLength, @PanelSize, @HingeQtyPerPanel, @PanelQtyWithHinge, @LocationTPost1, @LocationTPost2, @LocationTPost3, @LocationTPost4, @LocationTPost5, @HorizontalTPost, @HorizontalTPostHeight, @JoinedPanels, @ReverseHinged, @PelmetFlat, @ExtraFascia, @HingesLoose, @TiltrodType, @TiltrodSplit, @SplitHeight1, @SplitHeight2, @DoorCutOut, @SpecialShape, @TemplateProvided, @SquareMetre, @LinearMetre, @Notes, 0, 0, 0, 0, @MarkUp, 1, @Production, 0, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails_Shutters(Id, Number, HeaderId, ProductId, MicronetId, ExactId, ProductPriceGroupId, Qty, Room, Mounting, Width, [Drop], SemiInsideMount, LouvreSize, LouvrePosition, HingeColour, MidrailHeight1, MidrailHeight2, MidrailCritical, Layout, LayoutSpecial, CustomHeaderLength, FrameType, FrameLeft, FrameRight, FrameTop, FrameBottom, BottomTrackType, BottomTrackRecess, Buildout, BuildoutPosition, PanelQty, TrackQty, TrackLength, PanelSize, HingeQtyPerPanel, PanelQtyWithHinge, LocationTPost1, LocationTPost2, LocationTPost3, LocationTPost4, LocationTPost5, HorizontalTPost, HorizontalTPostHeight, JoinedPanels, ReverseHinged, PelmetFlat, ExtraFascia, HingesLoose, TiltrodType, TiltrodSplit, SplitHeight1, SplitHeight2, DoorCutOut, SpecialShape, TemplateProvided, SquareMetre, LinearMetre, Notes, Cost, CostOverride, Discount, FinalCost, MarkUp, TotalBlinds, Production, Paid, Active) VALUES (@Id, @Number, @HeaderId, @ProductId, @MicronetId, @ExactId, @ProductPriceGroupId, @Qty, @Room, @Mounting, @Width, @Drop, @SemiInsideMount, @LouvreSize, @LouvrePosition, @HingeColour, @MidrailHeight1, @MidrailHeight2, @MidrailCritical, @Layout, @LayoutSpecial, @CustomHeaderLength, @FrameType, @FrameLeft, @FrameRight, @FrameTop, @FrameBottom, @BottomTrackType, @BottomTrackRecess, @Buildout, @BuildoutPosition, @PanelQty, @TrackQty, @TrackLength, @PanelSize, @HingeQtyPerPanel, @PanelQtyWithHinge, @LocationTPost1, @LocationTPost2, @LocationTPost3, @LocationTPost4, @LocationTPost5, @HorizontalTPost, @HorizontalTPostHeight, @JoinedPanels, @ReverseHinged, @PelmetFlat, @ExtraFascia, @HingesLoose, @TiltrodType, @TiltrodSplit, @SplitHeight1, @SplitHeight2, @DoorCutOut, @SpecialShape, @TemplateProvided, @SquareMetre, @LinearMetre, @Notes, 0, 0, 0, 0, @MarkUp, 1, @Production, 0, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@Number", orderCfg.CreateOrderItemNumber(data.headerid))
                         myCmd.Parameters.AddWithValue("@HeaderId", data.headerid)
@@ -2148,7 +2148,7 @@ Partial Class Order_Method
             Dim itemId As String = data.itemid
 
             Using thisConn As SqlConnection = New SqlConnection(myConn)
-                Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails Set ProductId=@ProductId, MicronetId=@MicronetId, ExactId=@ExactId, ProductPriceGroupId=@ProductPriceGroupId, Qty=@Qty, Room=@Room, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, SemiInsideMount=@SemiInsideMount, LouvreSize=@LouvreSize, LouvrePosition=@LouvrePosition, HingeColour=@HingeColour, MidrailHeight1=@MidrailHeight1, MidrailHeight2=@MidrailHeight2, MidrailCritical=@MidrailCritical, Layout=@Layout, LayoutSpecial=@LayoutSpecial, CustomHeaderLength=@CustomHeaderLength, FrameType=@FrameType, FrameLeft=@FrameLeft, FrameRight=@FrameRight, FrameTop=@FrameTop, FrameBottom=@FrameBottom, BottomTrackType=@BottomTrackType, BottomTrackRecess=@BottomTrackRecess, Buildout=@Buildout, BuildoutPosition=@BuildoutPosition, PanelQty=@PanelQty, TrackQty=@TrackQty, TrackLength=@TrackLength, PanelSize=@PanelSize, HingeQtyPerPanel=@HingeQtyPerPanel, PanelQtyWithHinge=@PanelQtyWithHinge, LocationTPost1=@LocationTPost1, LocationTPost2=@LocationTPost2, LocationTPost3=@LocationTPost3, LocationTPost4=@LocationTPost4, LocationTPost5=@LocationTPost5, HorizontalTPost=@HorizontalTPost, HorizontalTPostHeight=@HorizontalTPostHeight, JoinedPanels=@JoinedPanels, ReverseHinged=@ReverseHinged, PelmetFlat=@PelmetFlat, ExtraFascia=@ExtraFascia, HingesLoose=@HingesLoose, TiltrodType=@TiltrodType, TiltrodSplit=@TiltrodSplit, SplitHeight1=@SplitHeight1, SplitHeight2=@SplitHeight2, DoorCutOut=@DoorCutOut, SpecialShape=@SpecialShape, TemplateProvided=@TemplateProvided, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, Cost=0.00, CostOverride=0.00, FinalCost=0.00, MarkUp=@MarkUp, Production=@Production, TotalBlinds=1, Active=1 WHERE Id=@Id")
+                Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails_Shutters Set ProductId=@ProductId, MicronetId=@MicronetId, ExactId=@ExactId, ProductPriceGroupId=@ProductPriceGroupId, Qty=@Qty, Room=@Room, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, SemiInsideMount=@SemiInsideMount, LouvreSize=@LouvreSize, LouvrePosition=@LouvrePosition, HingeColour=@HingeColour, MidrailHeight1=@MidrailHeight1, MidrailHeight2=@MidrailHeight2, MidrailCritical=@MidrailCritical, Layout=@Layout, LayoutSpecial=@LayoutSpecial, CustomHeaderLength=@CustomHeaderLength, FrameType=@FrameType, FrameLeft=@FrameLeft, FrameRight=@FrameRight, FrameTop=@FrameTop, FrameBottom=@FrameBottom, BottomTrackType=@BottomTrackType, BottomTrackRecess=@BottomTrackRecess, Buildout=@Buildout, BuildoutPosition=@BuildoutPosition, PanelQty=@PanelQty, TrackQty=@TrackQty, TrackLength=@TrackLength, PanelSize=@PanelSize, HingeQtyPerPanel=@HingeQtyPerPanel, PanelQtyWithHinge=@PanelQtyWithHinge, LocationTPost1=@LocationTPost1, LocationTPost2=@LocationTPost2, LocationTPost3=@LocationTPost3, LocationTPost4=@LocationTPost4, LocationTPost5=@LocationTPost5, HorizontalTPost=@HorizontalTPost, HorizontalTPostHeight=@HorizontalTPostHeight, JoinedPanels=@JoinedPanels, ReverseHinged=@ReverseHinged, PelmetFlat=@PelmetFlat, ExtraFascia=@ExtraFascia, HingesLoose=@HingesLoose, TiltrodType=@TiltrodType, TiltrodSplit=@TiltrodSplit, SplitHeight1=@SplitHeight1, SplitHeight2=@SplitHeight2, DoorCutOut=@DoorCutOut, SpecialShape=@SpecialShape, TemplateProvided=@TemplateProvided, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, Cost=0.00, CostOverride=0.00, FinalCost=0.00, MarkUp=@MarkUp, Production=@Production, TotalBlinds=1, Active=1 WHERE Id=@Id")
                     myCmd.Parameters.AddWithValue("@Id", itemId)
                     myCmd.Parameters.AddWithValue("@ProductId", UCase(data.colourtype).ToString())
                     myCmd.Parameters.AddWithValue("@MicronetId", micronetId)
@@ -2274,7 +2274,7 @@ Partial Class Order_Method
             If Not Decimal.TryParse(data.cost, addCost) OrElse addCost <= 0 Then Return "PLEASE CHECK YOUR PRICE PER M2 !"
         End If
 
-        Dim customerPriceGroup As String = orderCfg.GetItemData("SELECT Customers.Pricing FROM Customers INNER JOIN OrderHeaders ON Customers.Id = OrderHeaders.CustomerId WHERE OrderHeaders.Id='" + data.headerid + "'")
+        Dim customerPriceGroup As String = orderCfg.GetItemData("SELECT Customers.Pricing FROM Customers INNER JOIN OrderHeaders_Shutters ON Customers.Id = OrderHeaders_Shutters.CustomerId WHERE OrderHeaders_Shutters.Id='" + data.headerid + "'")
 
         Dim productpriceGroupName As String = productName
         If blindName = "Check Measure" Or blindName = "Installation" Or blindName = "Takedown" Or blindName = "Travel Charge" Then
@@ -2303,7 +2303,7 @@ Partial Class Order_Method
             Dim itemId As String = orderCfg.CreateOrderItemId()
 
             Using thisConn As SqlConnection = New SqlConnection(myConn)
-                Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetails(Id, Number, HeaderId, ProductId, MicronetId, ExactId, ProductPriceGroupId, Qty, AddName, AddNumber, AddPrice, Cost, CostOverride, Discount, FinalCost, MarkUp, TotalBlinds, Paid, Active) VALUES(@Id, @Number, @HeaderId, @ProductId, @MicronetId, @ExactId, @ProductPriceGroupId, @Qty, @AddName, @AddNumber, @AddPrice, 0, 0, 0, 0, 0, 0, 0, 1)")
+                Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetails_Shutters(Id, Number, HeaderId, ProductId, MicronetId, ExactId, ProductPriceGroupId, Qty, AddName, AddNumber, AddPrice, Cost, CostOverride, Discount, FinalCost, MarkUp, TotalBlinds, Paid, Active) VALUES(@Id, @Number, @HeaderId, @ProductId, @MicronetId, @ExactId, @ProductPriceGroupId, @Qty, @AddName, @AddNumber, @AddPrice, 0, 0, 0, 0, 0, 0, 0, 1)")
                     myCmd.Parameters.AddWithValue("@Id", itemId)
                     myCmd.Parameters.AddWithValue("@Number", orderCfg.CreateOrderItemNumber(data.headerid))
                     myCmd.Parameters.AddWithValue("@HeaderId", data.headerid)
@@ -2339,7 +2339,7 @@ Partial Class Order_Method
         If data.itemaction = "EditItem" Or data.itemaction = "ViewItem" Then
             Dim itemId As String = data.itemid
             Using thisConn As SqlConnection = New SqlConnection(myConn)
-                Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails SET ProductId=@ProductId, MicronetId=@MicronetId, ExactId=@ExactId, ProductPriceGroupId=@ProductPriceGroupId, Qty=@Qty, AddName=@AddName, AddNumber=@AddNumber, AddPrice=@AddPrice, Cost=0.00, CostOverride=0.00, FinalCost=0.00, Discount=0.00, MarkUp=0, TotalBlinds=0, Active=1 WHERE Id=@Id")
+                Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails_Shutters SET ProductId=@ProductId, MicronetId=@MicronetId, ExactId=@ExactId, ProductPriceGroupId=@ProductPriceGroupId, Qty=@Qty, AddName=@AddName, AddNumber=@AddNumber, AddPrice=@AddPrice, Cost=0.00, CostOverride=0.00, FinalCost=0.00, Discount=0.00, MarkUp=0, TotalBlinds=0, Active=1 WHERE Id=@Id")
                     myCmd.Parameters.AddWithValue("@Id", itemId)
                     myCmd.Parameters.AddWithValue("@ProductId", UCase(data.product).ToString())
                     myCmd.Parameters.AddWithValue("@MicronetId", micronetId)
@@ -2376,7 +2376,7 @@ Partial Class Order_Method
     <WebMethod()>
     Public Shared Function ShutterDetail(itemId As String) As List(Of Dictionary(Of String, Object))
         Dim orderCfg As New OrderConfig
-        Dim myData As DataSet = orderCfg.GetListData("SELECT * FROM OrderDetails WHERE Id = '" + itemId + "'")
+        Dim myData As DataSet = orderCfg.GetListData("SELECT * FROM OrderDetails_Shutters WHERE Id = '" + itemId + "'")
 
         Dim resultData As New List(Of Dictionary(Of String, Object))()
         If myData.Tables.Count > 0 Then
@@ -2450,7 +2450,7 @@ Partial Class Order_Method
         Dim orderCfg As New OrderConfig
         Dim resultData As New List(Of Dictionary(Of String, Object))()
 
-        Dim query As String = "SELECT * FROM OrderDetails WHERE Id = '" & itemId.Replace("'", "''") & "'"
+        Dim query As String = "SELECT * FROM OrderDetails_Shutters WHERE Id = '" & itemId.Replace("'", "''") & "'"
         Dim myData As DataSet = orderCfg.GetListData(query)
 
         If myData IsNot Nothing AndAlso myData.Tables.Count > 0 AndAlso myData.Tables(0).Rows.Count > 0 Then

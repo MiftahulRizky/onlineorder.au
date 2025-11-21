@@ -205,7 +205,7 @@ Partial Class Setting_Price_Surcharge_Default
         ddlDesignId.Items.Clear()
         Try
             ddlDesignId.Items.Clear()
-            ddlDesignId.DataSource = settingCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Designs WHERE Active = 1 ORDER BY Name ASC")
+            ddlDesignId.DataSource = settingCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Designs WHERE Active = 1 AND Company='LOOP' ORDER BY Name ASC")
             ddlDesignId.DataTextField = "NameText"
             ddlDesignId.DataValueField = "Id"
             ddlDesignId.DataBind()
