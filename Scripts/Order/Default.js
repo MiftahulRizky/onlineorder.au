@@ -98,6 +98,7 @@ document
     bindOrders(status, ordertype, active, storetype, "#cardOrder #tableAjax");
   });
 
+// --------------------------------------------|| tableAjax Event ||-------------------------------------------
 // BUTTON DETAIL ORDER
 document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnDetailOrder") {
@@ -178,6 +179,14 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
       return;
     }
     handlerDownloadCSV(id);
+  }
+});
+
+// BUTTON LOGS
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnLogs") {
+    const id = e.target.dataset.id;
+    handlerLogs(id);
   }
 });
 // --------------------------------------------||modalChangeStatus Event ||-------------------------------------------
@@ -994,6 +1003,53 @@ const handlerDownloadCSV = async (headerId) => {
   }
 };
 
+// HANLDER LOGS
+const handlerLogs = async (id) => {
+  try {
+    const response = await fetch(`${URIMETHOD}/Logs`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const resultData = data.d || data;
+
+    if (resultData.error) {
+      await isError(resultData.error.message.toUpperCase());
+    } else {
+      const table = document.querySelector("#modalLogs #table-logs tbody");
+      table.innerHTML = "";
+
+      const logs =
+        typeof resultData === "string" ? JSON.parse(resultData) : resultData;
+
+      logs.forEach((log) => {
+        const formattedDate = formatDotNetDate(log.ActionDate);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+        <td >
+          <b>${log.FullName}</b> on ${formattedDate}. Action: ${log.Description} 
+        </td>
+        `;
+        table.appendChild(tr);
+      });
+
+      await handlerShowBSModal("modalLogs");
+    }
+    // await handlerShowBSModal("modalLogs");
+  } catch (error) {
+    const msg = `${error.message || error}`;
+    await isError(msg);
+  }
+};
+
 // HANDLER DISPLAY ELEMENT MODAL CHANGE STATUS
 const hanlderDisplayElementModalChangeStatus = (status) => {
   // INITIALIZE ELEMENT
@@ -1077,6 +1133,38 @@ const setFilterValues = (status, ordertype, active, storeType) => {
   document.querySelector("#cardOrder #storetype").value = storeType;
 };
 
+const formatDotNetDate = (value) => {
+  if (!value) return "";
+
+  // Ambil angka di dalam /Date(XXXXX)/
+  const timestamp = parseInt(value.replace("/Date(", "").replace(")/", ""));
+
+  const date = new Date(timestamp);
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${day} ${month} ${year} ${hours}:${minutes}`;
+};
+
 // --------------------------------------------||Additional Datatable Function ||-------------------------------------------
 const dropdownActionButton = (data, type, row, params) => {
   // --------------------|| Visible Button ||--------------------#
@@ -1088,9 +1176,7 @@ const dropdownActionButton = (data, type, row, params) => {
 
   //...............................|| Display Delete Button ||...............................//
   if (row.Status === "Draft" || row.Status === "Unsubmitted") {
-    if (ROLENAME == "Administrator") {
-      displayDelete = "";
-    }
+    if (ROLENAME == "Administrator") displayDelete = "";
 
     if (
       (ROLENAME === "PPIC & DE" ||
@@ -1106,37 +1192,35 @@ const dropdownActionButton = (data, type, row, params) => {
     }
   }
 
-  if (ROLENAME === "Administrator") displayDelete = "";
-
-  if (ROLENAME === "Manager" || ROLENAME === "Account") {
-    displayDelete = "d-none";
-  }
-
   if (row.Active === "False" || row.Active === "0") displayDelete = "d-none";
 
   //...............................|| Display Change Status Button ||...............................//
   if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
     displayChangeStatus = "";
   }
+
   if (row.Status === "Completed" || row.Status === "Canceled") {
     displayChangeStatus = "d-none";
-    if (ROLENAME === "Administrator") {
+
+    if (ROLENAME === "Administrator" && LEVELNAME === "Super Admin") {
       displayChangeStatus = "";
     }
   }
+
   if (row.Active === "False" || row.Active === "0")
     displayChangeStatus = "d-none";
 
   //...............................|| Display Download CSV Button ||...............................//
-  if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
-    if (row.Status !== "Draft" && row.Status !== "Canceled") {
-      displayDownloadCSV = "";
-    }
-  }
+  // if (ROLENAME === "Administrator" && LEVELNAME === "Super Admin") {
+  //   if (row.Status !== "Draft" && row.Status !== "Canceled") {
+  //     displayDownloadCSV = "";
+  //   }
+  // }
 
   //...............................|| Display Restore Button ||...............................//
   if (
     ROLENAME === "Administrator" &&
+    LEVELNAME === "Super Admin" &&
     (row.Active === "False" || row.Active === "0")
   ) {
     displayRestore = "";
@@ -1223,6 +1307,7 @@ const visibleColumnServerside = () => {
   const id = document.querySelectorAll("#tableAjax .column-id");
   const retailer = document.querySelectorAll("#tableAjax .column-retailer");
   const ordertype = document.querySelectorAll("#tableAjax .column-type");
+  const filterOrderType = document.querySelector("#cardOrder #ordertype");
 
   tableData.columns(1).visible(false); // ID
   tableData.columns(3).visible(false); // RETAILER
@@ -1230,6 +1315,7 @@ const visibleColumnServerside = () => {
   id.forEach((item) => item.setAttribute("hidden", true));
   retailer.forEach((item) => item.setAttribute("hidden", true));
   ordertype.forEach((item) => item.removeAttribute("hidden"));
+  filterOrderType.setAttribute("hidden", true);
 
   if (
     ROLENAME == "Administrator" &&
@@ -1237,6 +1323,7 @@ const visibleColumnServerside = () => {
   ) {
     tableData.columns(1).visible(true); // ID
     id.forEach((item) => item.removeAttribute("hidden"));
+    filterOrderType.removeAttribute("hidden");
   }
 
   if (

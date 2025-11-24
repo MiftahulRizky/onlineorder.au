@@ -224,6 +224,9 @@ Partial Class Methods_Order_CreateMethod
                         End Using
                     End Using
                     url = "/order/shutters/detail?param=" & headerId & "&ordertype=" & data.ordertype.ToLower()
+
+                    Dim dataLog As Object() = {headerId, "", HttpContext.Current.Session("LoginId").ToString(), "Create Order"}
+                    orderCfg.Log_Orders(dataLog)
                 End If
                 msg = "Data has been saved successfully. <br /> Click oke to continue."
             End If
@@ -270,6 +273,9 @@ Partial Class Methods_Order_CreateMethod
                         End Using
                     End Using
                     url = "/order/shutters/detail?param=" & data.id & "&ordertype=" & data.ordertype.ToLower()
+
+                    Dim dataLog As Object() = {data.id, "", HttpContext.Current.Session("LoginId").ToString(), "Edit Order"}
+                    orderCfg.Log_Orders(dataLog)
                 End If
                 msg = "Data has been updated successfully."
             End If
@@ -371,20 +377,8 @@ Partial Class Methods_Order_CreateMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindCustomer(ByVal ordertype As String, ByVal rolename As String) As Object
         Try
-            Dim company As String = "LOOP"
-            Dim query As String = "SELECT Id, Name, Company, Active FROM Customers WHERE Company IN ('" + company + "', 'ALL') AND (Id <> 'DEFAULT' AND Id <> 'LIFESTYLE' ) AND Active='1' ORDER BY Name ASC"
+            Dim query As String = "SELECT Id, Name, Company, Active FROM Customers WHERE Active='1' AND Id <> 'DEFAULT' ORDER BY Name ASC"
 
-            If ordertype = "Blinds" Then 
-                company = "SP" 
-                query = "SELECT Id, Name, Company, Active FROM Customers WHERE Company IN ('" + company + "', 'ALL') AND (Id <> 'DEFAULT' AND Id <> 'LIFESTYLE' ) AND Active='1' ORDER BY Name ASC"
-            Else If ordertype = "Panorama" Then
-                company = "LOOP"
-                query = "SELECT Id, Name, Company, Active FROM Customers WHERE Company IN ('" + company + "', 'ALL') AND Active='1' ORDER BY Name ASC"
-                If rolename = "Customer Service" Or rolename = "Data Entry" Then
-                    query = "SELECT Id, Name, Company, Active FROM Customers WHERE Company IN ('" + company + "', 'ALL') AND Id <> 'DEFAULT' AND Active='1' ORDER BY Name ASC"
-                End If
-            End If
-            
             Dim datas As DataSet = publicCfg.GetListData(query)
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then

@@ -192,7 +192,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
     };
 
     // debug konsisten
-    // return console.table(finalData);
+    return console.table(finalData);
 
     // before send
     button.setAttribute("disabled", "disabled");
@@ -656,11 +656,22 @@ const handlerSetElementValues = (itemData) => {
     }
 
     if (id === "createddate" || id === "jobdate") {
-      value = value ? new Date(value).toLocaleDateString("en-CA") : "";
+      // value = value ? new Date(value).toLocaleDateString("en-CA") : "";
+      const parsed = parseDDMMYYYYToDate(value);
+      value = parsed ? parsed.toISOString().split("T")[0] : "";
     }
 
     el.value = value ?? "";
   });
+};
+
+const parseDDMMYYYYToDate = (value) => {
+  if (!value) return null;
+
+  const [datePart] = value.split(" "); // ambil "24/11/2025"
+  const [day, month, year] = datePart.split("/");
+
+  return new Date(`${year}-${month}-${day}`); // format valid
 };
 
 // --------------------------------------------||Other Functions ||-------------------------------------------
@@ -732,7 +743,7 @@ const visibleElementForm = (item) => {
     jobid.setAttribute("disabled", true);
     jobdate.setAttribute("disabled", true);
 
-    if (ROLENAME == "Administrator") {
+    if (ROLENAME == "Administrator" || ROLENAME == "Customer") {
       divCustomer.removeAttribute("hidden");
       divCreatedBy.removeAttribute("hidden");
       divCreatedDate.removeAttribute("hidden");

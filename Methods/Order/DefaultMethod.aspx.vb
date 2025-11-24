@@ -15,6 +15,7 @@ Partial Class Methods_Order_DefaultMethod
 
     Shared publicCfg As New PublicConfig()
     Shared mailCfg As New MailConfig()
+    Shared orderCfg As New OrderConfig()
 
     '#--- Initialize Class ---#
     Public Class OrdersParams
@@ -132,8 +133,6 @@ Partial Class Methods_Order_DefaultMethod
     Public Shared Sub SetSessionOpenOrderDetail(ByVal headerid As String)
         HttpContext.Current.Session("headerId") = headerid 
     End Sub
-
-
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
@@ -588,5 +587,34 @@ Partial Class Methods_Order_DefaultMethod
         Next
 
         Return csv.ToString()
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function Logs(ByVal id As String) As Object
+        Try
+            Dim ds As DataSet = orderCfg.GetListData("SELECT CustomerLogins.FullName, Log_Orders.ActionDate, Log_Orders.Description FROM Log_Orders INNER JOIN CustomerLogins ON Log_Orders.ActionBy=CustomerLogins.Id WHERE Log_Orders.HeaderId='" + id + "' ORDER BY ActionDate ASC")
+
+            Dim list As New List(Of Dictionary(Of String, Object))()
+
+            For Each row As DataRow In ds.Tables(0).Rows
+                Dim dict As New Dictionary(Of String, Object)()
+                For Each col As DataColumn In ds.Tables(0).Columns
+                    dict.Add(col.ColumnName, row(col))
+                Next
+                list.Add(dict)
+            Next
+
+            Dim json = New JavaScriptSerializer().Serialize(list)
+
+            Return json
+        Catch ex As Exception
+            Return New ErrorResponse With {
+                .error = New ErrorDetail With {
+                    .message = ex.Message,
+                    .field = ""
+                }
+            }
+        End Try
     End Function
 End Class

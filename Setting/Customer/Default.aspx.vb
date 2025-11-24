@@ -317,13 +317,13 @@ Partial Class Setting_Customer_Default
             gvList.DataBind()
 
             gvList.Columns(1).Visible = False ' ID
-            If Session("RoleName") = "Administrator" And Session("LevelName") = "Leader" Then
+            If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" Or Session("LevelName") = "Super Admin") Then
                 gvList.Columns(1).Visible = True
             End If
 
             divDebtorCode.Visible = False
             divExact.Visible = False
-            If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" Or Session("LevelName") = "Member") Then
+            If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" Or Session("LevelName") = "Member" Or Session("LevelName") = "Super Admin") Then
                 divDebtorCode.Visible = True
                 divExact.Visible = True
             End If

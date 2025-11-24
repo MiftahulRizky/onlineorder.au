@@ -61,7 +61,7 @@
         </div>
     </div>
     
-    <div runat="server" visible="false">
+    <div runat="server" visible="True">
         <asp:Label runat="server" ID="lblCustomerId"></asp:Label>
         <asp:Label runat="server" ID="lblLogo"></asp:Label>
         <asp:Label runat="server" ID="lblLogoOld"></asp:Label>
@@ -78,5 +78,8 @@
         document.addEventListener("DOMContentLoaded", () => {
             loaderFadeOut();
         })
+
+        let CUSTOMERID = '<%= Session("CustomerId") %>';
+        console.log("CUSTOMERID: " + CUSTOMERID);
     </script>
 </asp:Content>

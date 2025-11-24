@@ -238,6 +238,34 @@
 
 
 
+    <!-- logs -->
+    <div class="modal fade" id="modalLogs" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLogsLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="modalLogsLabel">Changelog</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table" width="100%" id="table-logs">
+                        <tbody></tbody>
+                        <!-- <tr>
+                            <td>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</td>
+                        </tr>
+                        <tr>
+                            <td>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</td>
+                        </tr> -->
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     <script type="text/javascript">
         let CUSTOMERACCOUNT = '<%= Session("CustomerAccount") %>';
         let CUSTOMERID = '<%= Session("CustomerId") %>';

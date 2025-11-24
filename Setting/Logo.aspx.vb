@@ -12,12 +12,12 @@ Partial Class Setting_Logo
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         lblCustomerId.Text = Session("CustomerId")
 
-        If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Or Session("RoleName") = "Account" Or Session("RoleName") = "Sunlight Product" Then
-            Response.Redirect("~/setting", False)
+        If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Account" Or Session("RoleName") = "Sunlight Product" Then
+            Response.Redirect("~/", False)
             Exit Sub
         End If
         If Session("LevelName") = "Support" Then
-            Response.Redirect("~/setting", False)
+            Response.Redirect("~/", False)
             Exit Sub
         End If
         If Not IsPostBack Then
@@ -95,7 +95,8 @@ Partial Class Setting_Logo
             If Not Session("RoleName") = "Administrator" Then
                 MessageError(True, "Please contact IT Support at reza@bigblinds.co.id")
                 If Session("RoleName") = "Customer" Then
-                    MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
+                    ' MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
+                    MessageError(True, ex.ToString())
                 End If
                 mailCfg.MailError(Page.Title, "BindData", Session("LoginId"), ex.ToString())
             End If
@@ -107,14 +108,22 @@ Partial Class Setting_Logo
         MessageError(False, String.Empty)
         Try
             Dim myData As DataSet = settingCfg.GetListData("SELECT * FROM CustomerQuotes WHERE Id = '" + Id + "'")
-            lblLogoOld.Text = myData.Tables(0).Rows(0).Item("Logo").ToString()
-            imgLogo.ImageUrl = "~/Content/static/customers/" & myData.Tables(0).Rows(0).Item("Logo").ToString()
+            IF myData.Tables(0).Rows.Count > 0 Then
+                lblLogoOld.Text = myData.Tables(0).Rows(0).Item("Logo").ToString()
+                If Not String.IsNullOrEmpty(myData.Tables(0).Rows(0).Item("Logo").ToString()) Then
+                    imgLogo.ImageUrl = "~/Content/static/customers/" & myData.Tables(0).Rows(0).Item("Logo").ToString()
+                End If
+            Else
+                lblLogoOld.Text = "no-image.jpg"
+                imgLogo.ImageUrl = "~/Content/static/no-image.jpg"
+            End If
         Catch ex As Exception
             MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 MessageError(True, "Please contact IT Support at reza@bigblinds.co.id")
                 If Session("RoleName") = "Customer" Then
-                    MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
+                    ' MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
+                    MessageError(True, ex.ToString())
                 End If
                 mailCfg.MailError(Page.Title, "BindData", Session("LoginId"), ex.ToString())
             End If

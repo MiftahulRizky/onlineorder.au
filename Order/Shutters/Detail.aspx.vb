@@ -211,7 +211,7 @@ Partial Class Order_Detail
 
             mailCfg.MailSubmit(lblHeaderId.Text, filePath, fileName)
 
-            Response.Redirect("~/order/detail", False)
+            Response.Redirect(Request.RawUrl)
         Catch ex As Exception
             MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
@@ -254,7 +254,7 @@ Partial Class Order_Detail
             Dim dataLog As Object() = {lblHeaderId.Text, "", Session("LoginId").ToString(), "Unsubmit Order"}
             orderCfg.Log_Orders(dataLog)
 
-            Response.Redirect("~/order/detail", False)
+            Response.Redirect(Request.RawUrl)
         Catch ex As Exception
             MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
@@ -336,7 +336,7 @@ Partial Class Order_Detail
 
             Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, Session("LoginId").ToString(), "Authorize Order"}
             orderCfg.Log_Orders(dataLog)
-            Response.Redirect("~/order/detail", False)
+            Response.Redirect(Request.RawUrl)
         Catch ex As Exception
             MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
@@ -370,7 +370,7 @@ Partial Class Order_Detail
             Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, Session("LoginId").ToString(), "Decline Order"}
             orderCfg.Log_Orders(dataLog)
 
-            Response.Redirect("~/order/detail", False)
+            Response.Redirect(Request.RawUrl)
         Catch ex As Exception
             MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
@@ -424,11 +424,11 @@ Partial Class Order_Detail
 
                 Threading.Thread.Sleep(3000)
 
-                Response.Redirect("~/order/detail", False)
+                Response.Redirect(Request.RawUrl)
                 Exit Sub
             End If
 
-            Response.Redirect("~/order/detail", False)
+           Response.Redirect(Request.RawUrl)
         Catch ex As Exception
             MessageError(True, ex.ToString())
         End Try
@@ -490,7 +490,7 @@ Partial Class Order_Detail
                 Dim dataLog As Object() = {lblHeaderId.Text, "", Session("LoginId").ToString(), "Cancel Order"}
                 orderCfg.Log_Orders(dataLog)
 
-                Response.Redirect("~/order/detail", False)
+                Response.Redirect(Request.RawUrl)
             End If
         Catch ex As Exception
             MessageError_CancelOrder(True, ex.ToString())
@@ -518,7 +518,7 @@ Partial Class Order_Detail
 
             Dim dataLog As Object() = {lblHeaderId.Text, "", Session("LoginId").ToString(), "Complete Order"}
             orderCfg.Log_Orders(dataLog)
-            Response.Redirect("~/order/detail", False)
+            Response.Redirect(Request.RawUrl)
         Catch ex As Exception
             MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
@@ -541,7 +541,7 @@ Partial Class Order_Detail
             exactCfg.CreateXML(lblHeaderId.Text, fileName, filePath)
             exactCfg.Connect(finalPath)
 
-            Response.Redirect("~/order/detail", False)
+            Response.Redirect(Request.RawUrl)
         Catch ex As Exception
             MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
@@ -657,7 +657,7 @@ Partial Class Order_Detail
                 Exit Sub
             End If
 
-            Response.Redirect("~/order/detail", False)
+            Response.Redirect(Request.RawUrl)
         Catch ex As Exception
             MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
@@ -763,7 +763,7 @@ Partial Class Order_Detail
                     End Using
                 End Using
 
-                Response.Redirect("~/order/detail", False)
+                Response.Redirect(Request.RawUrl)
             End If
         Catch ex As Exception
             MessageError_QuoteDetail(True, ex.ToString())
@@ -860,7 +860,7 @@ Partial Class Order_Detail
                             thisConn.Close()
                         End Using
                     End Using
-                    Response.Redirect("~/order/detail", False)
+                    Response.Redirect(Request.RawUrl)
                     Exit Sub
                 End If
 
@@ -896,7 +896,7 @@ Partial Class Order_Detail
                             thisConn.Close()
                         End Using
                     End Using
-                    Response.Redirect("~/order/detail", False)
+                    Response.Redirect(Request.RawUrl)
                     Exit Sub
                 End If
 
@@ -916,7 +916,7 @@ Partial Class Order_Detail
                             thisConn.Close()
                         End Using
                     End Using
-                    Response.Redirect("~/order/detail", False)
+                    Response.Redirect(Request.RawUrl)
                     Exit Sub
                 End If
             End If
@@ -937,7 +937,7 @@ Partial Class Order_Detail
                         thisConn.Close()
                     End Using
                 End Using
-                Response.Redirect("~/order/detail", False)
+                Response.Redirect(Request.RawUrl)
                 Exit Sub
             End If
         Catch ex As Exception
@@ -973,7 +973,7 @@ Partial Class Order_Detail
                     End Using
                 End Using
 
-                Response.Redirect("~/order/detail", False)
+                Response.Redirect(Request.RawUrl)
             End If
         Catch ex As Exception
             MessageError_InternalNote(True, ex.ToString())
@@ -1003,7 +1003,7 @@ Partial Class Order_Detail
             quoteCfg.BindContentQuote(lblHeaderId.Text, pdfFilePath)
 
             Response.Clear()
-            Dim url As String = "/order/preview"
+            Dim url As String = "/order/shutters/preview"
             Session("printPreview") = fileDirectory + fileName
 
             Dim sb As New StringBuilder()
@@ -1120,7 +1120,7 @@ Partial Class Order_Detail
                 depositRequest.BindContentDeposit(lblHeaderId.Text, pdfFilePath)
                 mailCfg.MailDeposit(lblHeaderId.Text, pdfFilePath, txtDepositTo.Text.Trim(), txtDepositCc.Text.Trim())
 
-                Response.Redirect("~/order/detail", False)
+                Response.Redirect(Request.RawUrl)
             End If
         Catch ex As Exception
             MessageError_Deposit(True, ex.ToString())
@@ -1136,7 +1136,7 @@ Partial Class Order_Detail
         MessageError(False, String.Empty)
         Try
             If ddlDesign.SelectedValue = "" Then
-                Response.Redirect("~/order/detail", False)
+                Response.Redirect(Request.RawUrl)
                 Exit Sub
             End If
 
@@ -1295,7 +1295,7 @@ Partial Class Order_Detail
             End If
 
             If msgErrorEditPricing.InnerText = "" Then
-                Response.Redirect("~/order/detail", False)
+                Response.Redirect(Request.RawUrl)
             End If
         Catch ex As Exception
             MessageError_EditPricing(True, ex.ToString())
@@ -1338,7 +1338,7 @@ Partial Class Order_Detail
 
             orderCfg.UpdateProductType(lblHeaderId.Text)
 
-            Response.Redirect("~/order/detail", False)
+            Response.Redirect(Request.RawUrl)
         Catch ex As Exception
             MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
@@ -1372,7 +1372,7 @@ Partial Class Order_Detail
                 End Using
             End Using
 
-            Response.Redirect("~/order/detail", False)
+            Response.Redirect(Request.RawUrl)
         Catch ex As Exception
             MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
@@ -1875,7 +1875,7 @@ Partial Class Order_Detail
                                 thisConn.Close()
                             End Using
                         End Using
-                        Response.Redirect("~/order/detail", False)
+                        Response.Redirect(Request.RawUrl)
                         Exit Sub
                     End If
                 End If
@@ -1893,7 +1893,7 @@ Partial Class Order_Detail
                             thisConn.Close()
                         End Using
                     End Using
-                    Response.Redirect("~/order/detail", False)
+                    Response.Redirect(Request.RawUrl)
                     Exit Sub
                 End If
             End If
