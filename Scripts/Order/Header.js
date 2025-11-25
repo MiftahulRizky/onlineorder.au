@@ -36,19 +36,30 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     const value = e.target.value;
     if (!value) return;
 
-    await Promise.all([handlerSelCustomer(value, "#customer")]);
+    await handlerSelCustomer(value, "#customer");
 
     formDetail.removeAttribute("hidden");
     if (value == "Blinds") {
-      divCustomer.removeAttribute("hidden");
-      divCreatedBy.setAttribute("hidden", true);
-      divCreatedDate.setAttribute("hidden", true);
+      if (ROLENAME == "Administrator") {
+        divCustomer.removeAttribute("hidden");
+      }
+
       divDelivery.removeAttribute("hidden");
     } else if (value == "Panorama" || value == "Evolve") {
       handlerSelUser("#createdby");
-      divCustomer.removeAttribute("hidden");
-      divCreatedBy.removeAttribute("hidden");
-      divCreatedDate.removeAttribute("hidden");
+      if (
+        ROLENAME == "Administrator" ||
+        ROLENAME == "Customer Service" ||
+        ROLENAME == "Data Entry" ||
+        ROLENAME == "PPIC & DE"
+      ) {
+        divCustomer.removeAttribute("hidden");
+      }
+
+      if (ROLENAME == "Administrator") {
+        divCreatedBy.removeAttribute("hidden");
+        divCreatedDate.removeAttribute("hidden");
+      }
       divDelivery.setAttribute("hidden", true);
     }
   });
@@ -85,7 +96,7 @@ document.querySelector("#btn-submit").addEventListener("click", (e) => {
   e.preventDefault();
 
   document.querySelectorAll(".form-control, .form-select").forEach((el) => {
-    el.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+    // el.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
     el.classList.remove("is-invalid");
   });
 
@@ -192,7 +203,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
     };
 
     // debug konsisten
-    return console.table(finalData);
+    // return console.table(finalData);
 
     // before send
     button.setAttribute("disabled", "disabled");
@@ -367,6 +378,8 @@ const handlerSelCustomer = async (ordertype, params) => {
         // option.setAttribute("data-name", item.text);
         sel.add(option);
       });
+
+      sel.value = CUSTOMERID;
     }
   } catch (error) {
     const msg =
@@ -679,8 +692,8 @@ const checkSessionCreateHeader = async () => {
   if (!ACTION) window.location.href = "/order";
 
   if (ACTION === "add") {
-    await Promise.all([visibleElementForm()]);
-    loaderFadeOut();
+    await visibleElementForm();
+    await loaderFadeOut();
   } else if (ACTION === "edit" && ID && ORDERTYPE) {
     handlerEdit(ID, ORDERTYPE);
   } else {
@@ -724,26 +737,27 @@ const visibleElementForm = (item) => {
 
   divOrderType.setAttribute("hidden", true); // edit
   formDetail.removeAttribute("hidden");
+  divOrderId.removeAttribute("hidden");
+
+  orderid.setAttribute("readonly", true);
+  orderid.classList.add("bg-body-secondary");
+  orderid.classList.add("text-secondary");
 
   if (item.OrderType == "Blinds") {
-    divCustomer.removeAttribute("hidden");
-    divCreatedBy.setAttribute("hidden", true);
-    divCreatedDate.setAttribute("hidden", true);
     divDelivery.removeAttribute("hidden");
   }
 
   if (item.OrderType == "Panorama" || item.OrderType == "Evolve") {
-    divOrderId.removeAttribute("hidden");
     // divShipmentId.removeAttribute("hidden");
 
-    customer.setAttribute("disabled", true);
-    createdby.setAttribute("disabled", true);
-    createddate.setAttribute("disabled", true);
-    orderid.setAttribute("disabled", true);
-    jobid.setAttribute("disabled", true);
-    jobdate.setAttribute("disabled", true);
+    customer.setAttribute("readonly", true);
+    createdby.setAttribute("readonly", true);
+    createddate.setAttribute("readonly", true);
 
-    if (ROLENAME == "Administrator" || ROLENAME == "Customer") {
+    jobid.setAttribute("readonly", true);
+    jobdate.setAttribute("readonly", true);
+
+    if (ROLENAME == "Administrator") {
       divCustomer.removeAttribute("hidden");
       divCreatedBy.removeAttribute("hidden");
       divCreatedDate.removeAttribute("hidden");
@@ -755,14 +769,14 @@ const visibleElementForm = (item) => {
         divJobDate.removeAttribute("hidden");
       }
 
-      customer.removeAttribute("disabled");
-      createdby.removeAttribute("disabled");
-      createddate.removeAttribute("disabled");
+      customer.removeAttribute("readonly");
+      createdby.removeAttribute("readonly");
+      createddate.removeAttribute("readonly");
 
       if (LEVELNAME == "Leader" || "Super Admin") {
-        orderid.removeAttribute("disabled");
-        jobid.removeAttribute("disabled");
-        jobdate.removeAttribute("disabled");
+        orderid.removeAttribute("readonly");
+        jobid.removeAttribute("readonly");
+        jobdate.removeAttribute("readonly");
       }
     }
 

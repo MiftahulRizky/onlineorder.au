@@ -1143,6 +1143,7 @@ Partial Class Order_Detail
             Session("headerId") = lblHeaderId.Text
             Session("itemAction") = "AddItem"
             Session("designId") = UCase(ddlDesign.SelectedValue).ToString()
+            Session("orderType") = Request.QueryString("ordertype")
 
             Dim page As String = orderCfg.GetItemData("SELECT Page FROM Designs WHERE Id='" + UCase(ddlDesign.SelectedValue).ToString() + "'")
             Dim name As String = orderCfg.GetItemData("SELECT Name FROM Designs WHERE Id='" + UCase(ddlDesign.SelectedValue).ToString() + "'")

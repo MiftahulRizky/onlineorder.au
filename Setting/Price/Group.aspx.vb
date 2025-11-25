@@ -227,7 +227,7 @@ Partial Class Setting_Price_Group
     Private Sub BindDesignSearch()
         ddlDesignSearch.Items.Clear()
         Try
-            ddlDesignSearch.DataSource = settingCfg.GetListData("SELECT Id, UPPER(Name) NameText FROM Designs WHERE Active = 1 ORDER BY Name ASC")
+            ddlDesignSearch.DataSource = settingCfg.GetListData("SELECT Id, UPPER(Name) NameText FROM Designs WHERE Active = 1 AND Company='LOOP' ORDER BY Name ASC")
             ddlDesignSearch.DataTextField = "NameText"
             ddlDesignSearch.DataValueField = "Id"
             ddlDesignSearch.DataBind()
@@ -243,7 +243,7 @@ Partial Class Setting_Price_Group
     Private Sub BindDesignType()
         ddlDesignType.Items.Clear()
         Try
-            ddlDesignType.DataSource = settingCfg.GetListData("SELECT *, UPPER(Id) AS IdText FROM Designs WHERE Active = 1 ORDER BY Name ASC")
+            ddlDesignType.DataSource = settingCfg.GetListData("SELECT *, UPPER(Id) AS IdText FROM Designs WHERE Active = 1 AND Company='LOOP' ORDER BY Name ASC")
             ddlDesignType.DataTextField = "Name"
             ddlDesignType.DataValueField = "Id"
             ddlDesignType.DataBind()

@@ -297,6 +297,7 @@ async function checkSession() {
       await bindComponentForm("", "");
       await controlForm(false);
       await bindBlindType(designId);
+      document.getElementById("divOrder").style.display = "";
       await loaderFadeOut();
     } else if (["EditItem", "ViewItem", "CopyItem"].includes(itemAction)) {
       await bindItemOrder(itemId);

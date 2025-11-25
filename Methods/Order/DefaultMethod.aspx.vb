@@ -117,7 +117,7 @@ Partial Class Methods_Order_DefaultMethod
     <WebMethod(EnableSession:=True)>
     Public Shared function SendProductionOrder()
         Try
-            ' mailCfg.MailProduction()
+            mailCfg.MailProduction()
             Return New SuccessResponse With { .success = "Production Order has been sent successfully."}
         Catch ex As Exception
             Return New ErrorResponse With {
@@ -365,12 +365,24 @@ Partial Class Methods_Order_DefaultMethod
         Try
             Dim msg As String
 
+
         '#-------------------------|| SET VALIDATE RULES ||-----------------------#
+
             '#-------------------------|| id ||-----------------------#
             If String.IsNullOrEmpty(data.id) Then
                 Return New ErrorResponse With {
                     .error = New ErrorDetail With {
                         .message = "this order is missing !",
+                        .field = "#modalChangeStatus #id"
+                    }
+                }
+            End If
+            
+            Dim headerData As DataSet = publicCfg.GetListData("SELECT * FROM OrderDetails WHERE HeaderId = '" + data.id + "'")
+            If headerData.Tables(0).Rows.Count = 0 Then
+                Return New ErrorResponse With {
+                    .error = New ErrorDetail With {
+                        .message = "cannot update this status, please add an item first !",
                         .field = "#modalChangeStatus #id"
                     }
                 }
@@ -518,7 +530,7 @@ Partial Class Methods_Order_DefaultMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function SwitchOrder(ByVal id As String, ByVal action As String) As Object
+    Public Shared Function SwitchOrder(ByVal id As String, ByVal action As String, ByVal type As String) As Object
         Try
          Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
@@ -531,8 +543,13 @@ Partial Class Methods_Order_DefaultMethod
                 msg = "Data has been deleted successfully."
             End If
 
+            Dim tableTo As String = "OrderHeaders"
+            If type = "Panorama" Or type = "Evolve" Then
+                tableTo = "OrderHeaders_Shutters"
+            End If
+
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET " & Key & " WHERE Id=@Id", thisConn)
+                Using myCmd As New SqlCommand("UPDATE " & tableTo & " SET " & Key & " WHERE Id=@Id", thisConn)
                     myCmd.Parameters.AddWithValue("@Id", id)
                     myCmd.Connection = thisConn
                     thisConn.Open()

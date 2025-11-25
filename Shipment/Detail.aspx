@@ -126,7 +126,7 @@
                                         </ItemTemplate>
                                     </asp:TemplateField>
                                     <asp:BoundField DataField="Id" HeaderText="ID" HeaderStyle-CssClass="hiddencol" ItemStyle-CssClass="hiddencol" />
-                                    <asp:BoundField DataField="JobId" HeaderText="Job Number" />
+                                    <asp:BoundField DataField="OrderId" HeaderText="Order ID" />
                                     <asp:BoundField DataField="Status" HeaderText="Status" />
                                     <asp:BoundField DataField="CustomerName" HeaderText="Customer" />
                                     <asp:BoundField DataField="OrderNumber" HeaderText="Order Number" />

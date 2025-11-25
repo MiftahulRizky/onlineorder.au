@@ -67,7 +67,7 @@ Public Class MailConfig
         Dim attachment As Attachment = Nothing
 
         Try
-            Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Id = '" + HeaderId + "'")
+            Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Id = '" + HeaderId + "'")
             If myData.Tables(0).Rows.Count = 0 Then Exit Sub
 
             Dim createdBy As String = myData.Tables(0).Rows(0).Item("CreatedBy").ToString()
@@ -81,7 +81,7 @@ Public Class MailConfig
 
             Dim customerName As String = GetItemData("SELECT Name FROM Customers WHERE Id = '" + customerId + "'")
             Dim customerCashSale As Boolean = GetItemData_Boolean("SELECT CashSale FROM Customers WHERE Id = '" + customerId + "'")
-            Dim production As String = GetItemData("SELECT TOP 1 Production FROM OrderDetails WHERE HeaderId = '" + HeaderId + "' AND Active = 1 ORDER BY Id ASC")
+            Dim production As String = GetItemData("SELECT TOP 1 Production FROM OrderDetails_Shutters WHERE HeaderId = '" + HeaderId + "' AND Active = 1 ORDER BY Id ASC")
 
             Dim product As String = If(orderType = "Blinds", orderType & " - " & production, orderType)
             Dim appId As String = GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE Id = '" + UCase(createdBy).ToString() + "'")
@@ -205,7 +205,7 @@ Public Class MailConfig
     Public Sub MailDeposit(Id As String, FilePDF As String, StrTo As String, StrCC As String)
         Dim fs As FileStream = Nothing
         Try
-            Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Id = '" & Id & "'")
+            Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Id = '" & Id & "'")
             If myData.Tables(0).Rows.Count = 0 Then Exit Sub
 
             Dim orderId As String = myData.Tables(0).Rows(0)("OrderId").ToString()
@@ -331,7 +331,7 @@ Public Class MailConfig
 
     Public Sub MailQuote(Id As String, QFile As String, PFile As String, MTo As String, MCc As String)
         Try
-            Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Id = '" + Id + "'")
+            Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Id = '" + Id + "'")
             If myData.Tables(0).Rows.Count = 0 Then Exit Sub
 
             Dim orderId As String = myData.Tables(0).Rows(0).Item("OrderId").ToString()
@@ -439,7 +439,7 @@ Public Class MailConfig
 
     Public Sub MailProduction()
         Try
-            Dim headerData As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Status = 'In Production' AND CONVERT(DATE, JobDate) = '" + Now.ToString("yyyy-MM-dd") + "'")
+            Dim headerData As DataSet = GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Status = 'In Production' AND CONVERT(DATE, JobDate) = '" + Now.ToString("yyyy-MM-dd") + "'")
             If headerData.Tables(0).Rows.Count > 0 Then
                 For i As Integer = 0 To headerData.Tables(0).Rows.Count - 1
                     Dim headerId As String = headerData.Tables(0).Rows(i).Item("Id").ToString()
@@ -512,7 +512,7 @@ Public Class MailConfig
                         mailContent &= "</tr></thead>"
 
                         mailContent &= "<tbody>"
-                        Dim detailQuery As String = "SELECT * FROM OrderDetails WHERE HeaderId = '" + headerId + "' AND Active = 1 ORDER BY Id ASC"
+                        Dim detailQuery As String = "SELECT * FROM OrderDetails_Shutters WHERE HeaderId = '" + headerId + "' AND Active = 1 ORDER BY Id ASC"
                         Dim detailData As DataSet = GetListData(detailQuery)
                         If Not detailData.Tables(0).Rows.Count = 0 Then
                             For ls As Integer = 0 To detailData.Tables(0).Rows.Count - 1
@@ -779,7 +779,7 @@ Public Class MailConfig
     End Sub
 
     Public Sub MailSuplierShutters(Id As String, Lampiran As String)
-        Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Id = '" & Id & "'")
+        Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Id = '" & Id & "'")
         If myData.Tables(0).Rows.Count = 0 Then Exit Sub
 
         Dim row As DataRow = myData.Tables(0).Rows(0)
@@ -893,7 +893,7 @@ Public Class MailConfig
 
     Public Sub MailNewShipment(HeaderId As String)
         Try
-            Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Id = '" + HeaderId + "'")
+            Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Id = '" + HeaderId + "'")
 
             Dim orderId As String = myData.Tables(0).Rows(0).Item("OrderId").ToString()
             Dim customerId As String = myData.Tables(0).Rows(0).Item("CustomerId").ToString()
@@ -1012,7 +1012,7 @@ Public Class MailConfig
 
     Public Sub MailAmendedShipment(HeaderId As String)
         Try
-            Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Id = '" + HeaderId + "'")
+            Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Id = '" + HeaderId + "'")
 
             Dim orderId As String = myData.Tables(0).Rows(0).Item("OrderId").ToString()
             Dim customerId As String = myData.Tables(0).Rows(0).Item("CustomerId").ToString()

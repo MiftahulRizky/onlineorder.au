@@ -629,6 +629,13 @@
         let designId = '<%= Session("designId") %>';
         let itemId = '<%= Session("itemId") %>';
         let loginId = '<%= Session("LoginId") %>';
+
+        console.log("headerId: " + headerId);
+        console.log("orderType: " + orderType);
+        console.log("itemAction: " + itemAction);
+        console.log("designId: " + designId);
+        console.log("itemId: " + itemId);
+        console.log("loginId: " + loginId);
     </script>
     <script src="../Scripts/Order/Panorama.js?v=<%= DateTime.Now.Ticks %>"></script>
 </asp:Content>

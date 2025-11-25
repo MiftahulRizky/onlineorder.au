@@ -1437,8 +1437,8 @@
         }
     </script>
 
-<asp:Label runat="server" ID="lblHeaderId"></asp:Label>
-    <div runat="server" visible="false">
+<div runat="server" visible="false">
+        <asp:Label runat="server" ID="lblHeaderId"></asp:Label>
         <asp:Label runat="server" ID="lblCustomerId"></asp:Label>
         <asp:Label runat="server" ID="lblMnetId"></asp:Label>
         <asp:Label runat="server" ID="lblCreatedBy"></asp:Label>

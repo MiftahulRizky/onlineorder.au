@@ -12,7 +12,7 @@
 
                 <div class="col-7 text-end">
                     <a href="javascript:void(0);" id="aDailyMail" class="btn btn-secondary">Daily Mail</a>
-                    <a id="aOtorisasi" class="btn btn-info position-relative" data-bs-toggle="offcanvas" href="#canvasOtorisasi" role="button" aria-controls="canvasAdd">
+                    <a id="aOtorisasi" class="btn btn-info position-relative" href="javascript:void(0);">
                         Waiting for Authorization List
                         <span id="spanOtorisasi" class="badge bg-red text-blue-fg badge-notification badge-pill">10</span>
                     </a>
@@ -122,7 +122,7 @@
 
     <!-- modalDateInfo -->
     <div class="modal fade" id="modalDateInfo" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalDateInfoLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title" id="modalDateInfoLabel">Date Information</h1>

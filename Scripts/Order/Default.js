@@ -134,6 +134,7 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
         el.classList.remove("is-invalid");
       });
     const id = e.target.dataset.id;
+    swalLoadingShow("Please wait ...");
     handlerChangeStatus(id);
   }
 });
@@ -146,7 +147,8 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const order = e.target.dataset.order;
     const ref = e.target.dataset.ref;
     const del = e.target.dataset.del;
-    handlerSwitch(id, name, order, ref, del, "delete");
+    const type = e.target.dataset.type;
+    handlerSwitch(id, name, order, ref, del, type, "delete");
   }
 });
 
@@ -158,7 +160,8 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const order = e.target.dataset.order;
     const ref = e.target.dataset.ref;
     const del = e.target.dataset.del;
-    handlerSwitch(id, name, order, ref, del, "restore");
+    const type = e.target.dataset.type;
+    handlerSwitch(id, name, order, ref, del, type, "restore");
   }
 });
 
@@ -489,6 +492,8 @@ const handlerSendProductionOrder = async () => {
   });
 
   if (!result.isConfirmed) return;
+
+  swalLoadingShow("Please wait ...");
 
   try {
     const response = await fetch(`${URIMETHOD}/SendProductionOrder`, {
@@ -884,7 +889,7 @@ const parseCustomDate = (value) => {
 };
 
 // HANDLER DELETE & RESTORE ORDER
-const handlerSwitch = async (id, name, order, ref, del, act) => {
+const handlerSwitch = async (id, name, order, ref, del, type, act) => {
   const title = act === "delete" ? "delete" : "restore";
   const textButton = act === "delete" ? "Yes, delete it!" : "Yes, restore it!";
   const icon = act === "delete" ? "warning" : "question";
@@ -915,7 +920,7 @@ const handlerSwitch = async (id, name, order, ref, del, act) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ id, action: act }),
+      body: JSON.stringify({ id, action: act, type }),
     });
 
     if (!response.ok) {
@@ -929,6 +934,7 @@ const handlerSwitch = async (id, name, order, ref, del, act) => {
       await isError(resultData.error.message.toUpperCase());
     } else {
       await isSuccess(resultData.success);
+      tableData.ajax.reload();
     }
   } catch (error) {
     const msg = `${error.message || error}`;
@@ -1169,11 +1175,19 @@ const formatDotNetDate = (value) => {
 const dropdownActionButton = (data, type, row, params) => {
   // --------------------|| Visible Button ||--------------------#
   let act;
+  let displayEditOrDetail = "d-none";
   let displayDelete = "d-none";
   let displayChangeStatus = "d-none";
   let displayDownloadCSV = "d-none";
   let displayRestore = "d-none";
 
+  //...............................|| Display Edit / Detail Button ||...............................//
+  if (row.Status === "Draft" || row.Status === "Unsubmitted") {
+    displayEditOrDetail = "";
+
+    if (ROLENAME === "Customer" || ROLENAME === "Representative") {
+    }
+  }
   //...............................|| Display Delete Button ||...............................//
   if (row.Status === "Draft" || row.Status === "Unsubmitted") {
     if (ROLENAME == "Administrator") displayDelete = "";
@@ -1233,11 +1247,11 @@ const dropdownActionButton = (data, type, row, params) => {
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`;
   act += `<li>
             <a class="dropdown-item" href="javascript:void(0)" id="btnDetailOrder" data-id="${row.Id}" data-type="${row.OrderType}">
-              <i class="ti ti-edit me-1 fs-2 opacity-50"></i>Edit / Detail
+              <i class="ti ti-info-square-rounded me-1 fs-2 opacity-50"></i>Detail
             </a>
           </li>
           <li class="${displayDelete}">
-            <a class="dropdown-item text-danger" href="javascript:void(0)" id="btnDeleteOrder" data-id="${row.Id}" data-name="${row.CustomerName}" data-order="${row.OrderNumber}" data-ref="${row.OrderName}" data-del="${row.Delivery}">
+            <a class="dropdown-item text-danger" href="javascript:void(0)" id="btnDeleteOrder" data-id="${row.Id}" data-name="${row.CustomerName}" data-order="${row.OrderNumber}" data-ref="${row.OrderName}" data-del="${row.Delivery}" data-type="${row.OrderType}">
               <i class="ti ti-trash-x me-1 fs-2 opacity-50"></i>Delete
             </a>
           </li>`;
