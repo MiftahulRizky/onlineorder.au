@@ -67,10 +67,10 @@ Partial Public Class SiteMaster
                 Dim levelActive As Boolean = myData.Tables(0).Rows(0).Item("LevelActive")
                 Dim resetLogin As Boolean = myData.Tables(0).Rows(0).Item("Reset")
 
-                ' If resetLogin = True AndAlso Not Request.Url.AbsolutePath.ToLower().EndsWith("/account/password") Then
-                '     Response.Redirect("~/account/password", False)
-                '     Exit Sub
-                ' End If
+                If resetLogin = True AndAlso Not Request.Url.AbsolutePath.ToLower().EndsWith("/account/password") Then
+                    Response.Redirect("~/account/password", False)
+                    Exit Sub
+                End If
 
                 If appActive = False Then
                     Response.Redirect("~/system/maintenance", False)

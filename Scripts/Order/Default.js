@@ -134,7 +134,6 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
         el.classList.remove("is-invalid");
       });
     const id = e.target.dataset.id;
-    swalLoadingShow("Please wait ...");
     handlerChangeStatus(id);
   }
 });
@@ -670,11 +669,17 @@ const handlerChangeStatus = async (headerid) => {
   if (!headerid) return;
 
   try {
+    let timer = setTimeout(() => {
+      swalLoadingShow("Please wait ...");
+    }, 3000);
+
     const response = await fetch(`${URIMETHOD}/BindOrderId`, {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify({ headerid }),
     });
+
+    clearTimeout(timer);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status} - ${response.statusText}`);
@@ -697,6 +702,7 @@ const handlerChangeStatus = async (headerid) => {
       await handlerSelStatus("#modalChangeStatus #status", item.Status);
       await setValueModalChangeStatus(item);
       await hanlderDisplayElementModalChangeStatus(item.Status);
+      await Swal.close();
       await handlerShowBSModal("modalChangeStatus");
     }
   } catch (error) {
@@ -760,6 +766,10 @@ const handlerDateInfo = async (headerid) => {
   if (!headerid) return;
 
   try {
+    let timer = setTimeout(() => {
+      swalLoadingShow("Please wait ...");
+    }, 3000);
+
     const response = await fetch(`${URIMETHOD}/BindOrderId`, {
       method: "POST",
       headers: {
@@ -767,6 +777,8 @@ const handlerDateInfo = async (headerid) => {
       },
       body: JSON.stringify({ headerid }),
     });
+
+    clearTimeout(timer);
 
     if (!response.ok) {
       throw new Error(`HTTP error: ${response.status}`);
@@ -786,6 +798,7 @@ const handlerDateInfo = async (headerid) => {
 
     for (const item of data) {
       await setValueModalDateInfo(item);
+      await Swal.close();
       await handlerShowBSModal("modalDateInfo");
     }
   } catch (error) {

@@ -1,11 +1,14 @@
 ﻿Partial Class Account_Password
     Inherits Page
 
-    Dim publicCfg As New PublicConfig
+    Dim settingCfg As New SettingConfig
+    Dim mailCfg As New MailConfig
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
-        lblUserId.Text = UCase(Session("UserId")).ToString()
-
+        'cardTitle.InnerText = "CHANGE YOUR PASSWORD"
+        'If Session("resetLogin") = True Then
+        '    cardTitle.InnerText = "YOU MUST CHANGE YOUR TEMPORARY PASSWORD !"
+        'End If
         If Not IsPostBack Then
             Call BackColor()
         End If
@@ -17,48 +20,50 @@
             If txtNewPass.Text = "" Then
                 txtNewPass.BackColor = Drawing.Color.Red
                 txtNewPass.Focus()
-                Call MessageError(True, "NEW PASSWORD IS REQUIRED !")
+                Call MessageError(True, "PASSWORD IS REQUIRED !")
                 Exit Sub
             End If
 
-            If txtCNewPass.Text <> txtNewPass.Text Then
+            If Not txtCNewPass.Text = txtNewPass.Text Then
                 txtCNewPass.BackColor = Drawing.Color.Red
                 txtCNewPass.Focus()
-                Call MessageError(True, "PASSWORD ARE NOT THE SAME !")
+                Call MessageError(True, "KATA SANDI TIDKA SAMA !")
                 Exit Sub
             End If
 
             If msgError.InnerText = "" Then
-                lblPassword.Text = publicCfg.Encrypt(txtNewPass.Text)
+                lblLoginId.Text = UCase(Session("LoginId")).ToString()
+                lblPasswordHash.Text = settingCfg.Encrypt(txtNewPass.Text)
                 sdsPage.Update()
 
-                publicCfg.InsertActivity(lblUserId.Text, Page.Title, "CHANGE PASSWORD")
-
+                Dim thisScript As String = "window.onload = function() { showSuccess(); };"
+                ClientScript.RegisterStartupScript(Me.GetType(), "showSuccess", thisScript, True)
                 Session.Clear()
-                Response.Redirect("~/", False)
+                Exit Sub
             End If
         Catch ex As Exception
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
-                Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(lblUserId.Text, Page.Title, "btnSubmit_Click", ex.ToString())
+                Call MessageError(True, "Please contact IT at reza@bigblinds.co.id")
+                If Session("RoleName") = "Customer" Then
+                    Call MessageError(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
+                End If
+                mailCfg.MailError(Page.Title, "btnSubmit_Click", Session("LoginId"), ex.ToString())
             End If
         End Try
     End Sub
 
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
-        Response.Redirect("~/account/", False)
+        Response.Redirect("~/", False)
     End Sub
 
     Private Sub BackColor()
         Call MessageError(False, String.Empty)
-
         txtNewPass.BackColor = Drawing.Color.Empty
         txtCNewPass.BackColor = Drawing.Color.Empty
     End Sub
 
     Private Sub MessageError(Show As Boolean, Msg As String)
-        divError.Visible = False : msgError.InnerText = Msg
-        If Show = True Then : divError.Visible = True : End If
+        divError.Visible = Show : msgError.InnerText = Msg
     End Sub
 End Class
