@@ -274,7 +274,7 @@
         let USERNAME = '<%= Session("UserName") %>';
         let LOGINID = '<%= Session("LoginId") %>';
         let ROLENAME = '<%= Session("RoleName") %>';  
-        // let CUSTOMERCONTACTID = '<%= Session("CustomerContactId") %>';
+        let FULLNAME = '<%= Session("FullName") %>';
         let CUSTOMERCOMPANY = '<%= Session("CustomerCompany") %>';
         let LEVELNAME = '<%= Session("LevelName") %>';
         let URIMETHOD = '/Methods/Order/DefaultMethod.aspx';      

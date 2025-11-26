@@ -780,7 +780,11 @@ const visibleElementForm = (item) => {
       }
     }
 
-    if (ROLENAME == "Customer Service" || ROLENAME == "Data Entry") {
+    if (
+      ROLENAME == "Customer Service" ||
+      ROLENAME == "Data Entry" ||
+      ROLENAME == "PPIC & DE"
+    ) {
       divCustomer.removeAttribute("hidden");
       divCreatedBy.removeAttribute("hidden");
       divCreatedDate.removeAttribute("hidden");

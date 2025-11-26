@@ -147,4 +147,10 @@
             </UpdateParameters>
         </asp:SqlDataSource>
     </div>
+
+    <script text="text/javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+            loaderFadeOut();
+        })
+    </script>
 </asp:Content>

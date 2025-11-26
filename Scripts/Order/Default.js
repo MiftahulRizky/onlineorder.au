@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("ROLENAME: " + ROLENAME);
     console.log("CUSTOMERID: " + CUSTOMERID);
     console.log("USERNAME: " + USERNAME);
-    // console.log("CUSTOMERCONTACTID: " + CUSTOMERCONTACTID);
+    console.log("FULLNAME: " + FULLNAME);
     console.log("ONSTOP: " + ONSTOP);
     console.log("CUSTOMERCOMPANY: " + CUSTOMERCOMPANY);
     console.log("LEVELNAME: " + LEVELNAME);

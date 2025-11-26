@@ -6,12 +6,12 @@ Partial Class Account_Default
     Dim publicCfg As New PublicConfig
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
-        If Session("UserId") = "" Then
+        If Session("CustomerId") = "" Then
             Response.Redirect("~/", False)
             Exit Sub
         End If
 
-        lblUserId.Text = UCase(Session("UserId")).ToString()
+        lblUserId.Text = UCase(Session("CustomerId")).ToString()
         If Not IsPostBack Then
             Call BindData(lblUserId.Text)
         End If
@@ -67,12 +67,18 @@ Partial Class Account_Default
     Private Sub BindData(UserId As String)
         Call MessageError(False, String.Empty)
         Try
-            Dim myData As DataSet = publicCfg.GetListData("SELECT * FROM view_memberships WHERE UserId = '" + UCase(UserId).ToString() + "'")
+            Dim myData As DataSet = publicCfg.GetListData("SELECT * FROM view_auth WHERE CustomerId = '" + UCase(UserId).ToString() + "'")
+            Dim Contacts As DataSet = publicCfg.GetListData("SELECT * FROM CustomerContacts WHERE Id = '" + UCase(Session("CustomerContactId")).ToString() + "'")
+            Dim Email As String = ""
+
+            If Contacts.Tables(0).Rows.Count > 0 Then
+                Email = Contacts.Tables(0).Rows(0).Item("Email").ToString()
+            End If
 
             txtUserName.Text = myData.Tables(0).Rows(0).Item("UserName").ToString()
             txtFullName.Text = myData.Tables(0).Rows(0).Item("FullName").ToString()
-            txtEmail.Text = myData.Tables(0).Rows(0).Item("UserEmail").ToString()
-            lblEmailOld.Text = myData.Tables(0).Rows(0).Item("UserEmail").ToString()
+            txtEmail.Text = Email
+            lblEmailOld.Text = Email
 
             Dim roleId As String = myData.Tables(0).Rows(0).Item("RoleId").ToString()
             Dim levelId As String = myData.Tables(0).Rows(0).Item("LevelId").ToString()
@@ -91,7 +97,7 @@ Partial Class Account_Default
     Private Sub BindRole(RoleId As String)
         ddlRole.Items.Clear()
         Try
-            ddlRole.DataSource = publicCfg.GetListData("SELECT * FROM Roles WHERE Id='" + UCase(RoleId).ToString() + "' ORDER BY Name ASC")
+            ddlRole.DataSource = publicCfg.GetListData("SELECT * FROM CustomerLoginRoles WHERE Id='" + UCase(RoleId).ToString() + "' ORDER BY Name ASC")
             ddlRole.DataTextField = "Name"
             ddlRole.DataValueField = "Id"
             ddlRole.DataBind()
@@ -107,7 +113,7 @@ Partial Class Account_Default
     Private Sub BindLevel(LevelId As String)
         ddlLevel.Items.Clear()
         Try
-            ddlLevel.DataSource = publicCfg.GetListData("SELECT * FROM LevelMembers WHERE Id='" + UCase(LevelId).ToString() + "' ORDER BY Name ASC")
+            ddlLevel.DataSource = publicCfg.GetListData("SELECT * FROM CustomerLoginLevels WHERE Id='" + UCase(LevelId).ToString() + "' ORDER BY Name ASC")
             ddlLevel.DataTextField = "Name"
             ddlLevel.DataValueField = "Id"
             ddlLevel.DataBind()

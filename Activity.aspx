@@ -72,4 +72,9 @@
             </div>
         </div>
     </div>
+    <script type="">
+        document.addEventListener('DOMContentLoaded', () => {
+            loaderFadeOut();
+        })
+    </script>
 </asp:Content>

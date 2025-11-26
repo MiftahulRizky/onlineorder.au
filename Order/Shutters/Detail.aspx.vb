@@ -1478,6 +1478,7 @@ Partial Class Order_Detail
                     Session("designId") = designId
                     Session("itemId") = ItemId
                     Session("itemAction") = "CopyItem"
+                    Session("orderType") = Request.QueryString("ordertype")
 
                     Response.Redirect(page, False)
                     Exit Sub

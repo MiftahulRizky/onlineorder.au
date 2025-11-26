@@ -223,11 +223,9 @@
                                     </div>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                    <a runat="server" href="~/account/" class="dropdown-item">
-                                        <i class="bi bi-person-circle me-2"></i> Profile
-                                    </a>
+                                    <a runat="server" href="~/account/password" class="dropdown-item"><i class="ti ti-key me-2 fs-2"></i>Change Password</a>
                                     <asp:LinkButton runat="server" ID="linkLogout" CssClass="dropdown-item" Text="" OnClick="linkLogout_Click">
-                                        <i class="bi bi-arrow-return-right me-2"></i> Logout
+                                        <i class="ti ti-logout-2 fs-2 me-2"></i> Logout
                                     </asp:LinkButton>
                                 </div>
                             </div>
@@ -444,7 +442,6 @@
                                                             <a runat="server" id="aEmail" class="dropdown-item" href="~/setting/email">Mailing Blinds</a>
                                                             <a runat="server" class="dropdown-item" href="~/setting/system/mailing">Mailing</a>
                                                             <a runat="server" id="aSession" class="dropdown-item" href="~/setting/system/session">Session</a>
-                                                            <a runat="server" class="dropdown-item" href="~/setting/system/micronet">Micronet LS</a>
                                                             <a runat="server" class="dropdown-item" href="~/setting/system/exact">Exact SP</a>
                                                         </div>
                                                     </div>
