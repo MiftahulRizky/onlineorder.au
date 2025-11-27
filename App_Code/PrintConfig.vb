@@ -1667,9 +1667,10 @@ Public Class PrintConfig
     Public Function BuildLogoQuote(StoreId As String) As String
         Dim result As String = String.Empty
 
-        ' Dim fileDirectory As String = "https://images.onlineorder.au/img/stores/"
-        Dim fileDirectory As String = "http://10.0.209.168:8888/Content/static/stores/"
-        Dim fileName As String = GetItemData("SELECT [Image] FROM Stores WHERE Id = '" + StoreId + "'")
+        Dim request As HttpRequest = HttpContext.Current.Request
+        Dim baseUrl As String = request.Url.Scheme & "://" & request.Url.Authority & request.ApplicationPath.TrimEnd("/"c)
+        Dim fileDirectory As String = baseUrl & "/Content/static/stores/"
+        Dim fileName As String = GetItemData("SELECT [Image] FROM Customers WHERE Id = '" + StoreId + "'")
 
         Dim src As String = fileDirectory & fileName
 
@@ -1927,7 +1928,7 @@ Public Class PrintConfig
     Public Function BuildFooterQuote(StoreId As String) As String
         Dim result As String = String.Empty
 
-        Dim resultStore As DataSet = GetListData("SELECT * FROM Stores WHERE Id = '" + StoreId + "'")
+        Dim resultStore As DataSet = GetListData("SELECT * FROM Customers WHERE Id = '" + StoreId + "'")
 
         Dim storeName As String = resultStore.Tables(0).Rows(0).Item("Name").ToString()
         Dim storeAddress As String = resultStore.Tables(0).Rows(0).Item("Address").ToString()

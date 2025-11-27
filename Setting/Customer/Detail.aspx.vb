@@ -231,7 +231,7 @@ Partial Class Setting_Customer_Detail
             liDiscount.Visible = False
             liAccess.Visible = False
             liQuote.Visible = False
-            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Data Entry" Then
                 liContact.Visible = True
                 liAddress.Visible = True
                 liLogin.Visible = True
@@ -250,7 +250,7 @@ Partial Class Setting_Customer_Detail
             aDelete.Visible = False
             btnEdit.Visible = False
             aCreateOrder.Visible = False
-            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Data Entry" Then
                 aDelete.Visible = True
                 btnEdit.Visible = True
                 aCreateOrder.Visible = True
@@ -260,7 +260,7 @@ Partial Class Setting_Customer_Detail
                     btnEdit.Visible = False
                     aCreateOrder.Visible = False
 
-                    If Session("RoleName") = "Administrator" And Session("LevelName") = "Leader" Then
+                    If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" Or Session("LevelName") = "Super Admin") Then
                         btnEdit.Visible = True
                         aCreateOrder.Visible = True
                     End If
@@ -573,7 +573,7 @@ Partial Class Setting_Customer_Detail
             If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
                 btnAddContact.Visible = True
             End If
-            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Then
+            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
                 aResetContact.Visible = True
             End If
         Catch ex As Exception
@@ -586,7 +586,7 @@ Partial Class Setting_Customer_Detail
     End Sub
 
     Protected Function VisibleActionContact() As Boolean
-        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Then
+        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
             Return True
         End If
         Return False
@@ -918,10 +918,10 @@ Partial Class Setting_Customer_Detail
 
             btnAddAddress.Visible = False
             aResetPrimaryAddress.Visible = False
-            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Data Entry" Then
                 btnAddAddress.Visible = True
             End If
-            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Then
+            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Then
                 aResetPrimaryAddress.Visible = True
             End If
         Catch ex As Exception
@@ -954,7 +954,7 @@ Partial Class Setting_Customer_Detail
     End Function
 
     Protected Function VisibleActionAddress() As Boolean
-        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Data Entry" Then
             Return True
         End If
         Return False
@@ -1212,7 +1212,7 @@ Partial Class Setting_Customer_Detail
         Dim thisScript As String = "window.onload = function() { showProcessLogin(); };"
 
         Try
-            If Session("RoleName") = "Administrator" And Session("LevelName") = "Leader" Then
+            If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" Or Session("LevelName") = "Super Admin") Then
                 If ddlLoginAppId.SelectedValue = "" Then
                     MessageErrorProcess_Login(True, "APPLICATION ID IS REQUIRED !")
                     ClientScript.RegisterStartupScript(Me.GetType(), "showProcessLogin", thisScript, True)
@@ -1277,7 +1277,7 @@ Partial Class Setting_Customer_Detail
                 End If
                 Dim password As String = settingCfg.Encrypt(txtLoginPassword.Text)
 
-                If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+                If Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Data Entry" Then
                     appId = UCase(Session("ApplicationId").ToString())
                     roleId = settingCfg.GetItemData("SELECT UPPER(Id) FROM CustomerLoginRoles WHERE Name = 'Customer'")
                     levelId = settingCfg.GetItemData("SELECT UPPER(Id) FROM CustomerLoginLevels WHERE Name = 'Member'")
@@ -1366,7 +1366,7 @@ Partial Class Setting_Customer_Detail
             btnAddLogin.Visible = True
             If lblId.Text = "DEFAULT" Then
                 btnAddLogin.Visible = False
-                If Session("RoleName") = "Administrator" And Session("LevelName") = "Leader" Then
+                If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" Or Session("LevelName") = "Super Admin") Then
                     btnAddLogin.Visible = True
                 End If
             End If
@@ -1782,7 +1782,7 @@ Partial Class Setting_Customer_Detail
 
             btnAddDiscount.Visible = False
             btnAddCustomDiscount.Visible = False
-            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Then
+            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Then
                 btnAddDiscount.Visible = True
                 btnAddCustomDiscount.Visible = True
             End If
@@ -1870,7 +1870,7 @@ Partial Class Setting_Customer_Detail
     End Sub
 
     Protected Function VisibleActionDiscount() As Boolean
-        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Data Entry" Then
             Return True
         End If
         Return False
@@ -2262,7 +2262,7 @@ Partial Class Setting_Customer_Detail
     Protected Function VisibleActions_Login(CustId As String) As Boolean
         If Not CustId = "" Then
             If CustId = "DEFAULT" Then
-                If Session("RoleName") = "Administrator" And Session("LevelName") = "Leader" Then
+                If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" Or Session("LevelName") = "Super Admin") Then
                     Return True
                 End If
                 Return False

@@ -32,7 +32,7 @@ Partial Class Setting_Other_Delete
             EmptyFolder(directoryNewsletter)
 
             Dim directoryOrder As New DirectoryInfo(Server.MapPath("~/File/Order/"))
-            EmptyFolder(directoryOrder)
+            DeletePdfRecursive(directoryOrder)
 
             Dim directoryReport As New DirectoryInfo(Server.MapPath("~/File/Report/"))
             EmptyFolder(directoryReport)
@@ -54,6 +54,18 @@ Partial Class Setting_Other_Delete
 
         For Each subDir As DirectoryInfo In directory.GetDirectories()
             subDir.Delete(True)
+        Next
+    End Sub
+
+    Private Sub DeletePdfRecursive(dir As DirectoryInfo)
+        ' Hapus semua file PDF di folder ini
+        For Each file As FileInfo In dir.GetFiles("*.pdf", SearchOption.TopDirectoryOnly)
+            file.Delete()
+        Next
+
+        ' Masuk ke semua subfolder, lalu ulangi
+        For Each subDir As DirectoryInfo In dir.GetDirectories()
+            DeletePdfRecursive(subDir)
         Next
     End Sub
 End Class

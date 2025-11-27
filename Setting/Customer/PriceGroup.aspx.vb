@@ -11,7 +11,7 @@ Partial Class Setting_Customer_PriceGroup
     Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
-        If Not Session("RoleName") = "Administrator" And Not Session("RoleName") = "Customer Service" And Not Session("RoleName") = "Data Entry" Then
+        If Not Session("RoleName") = "Administrator" And Not Session("RoleName") = "Customer Service" And Not Session("RoleName") = "PPIC & DE" And Not Session("RoleName") = "Data Entry" Then
             Response.Redirect("~/setting/customer", False)
             Exit Sub
         End If

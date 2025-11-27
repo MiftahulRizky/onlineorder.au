@@ -11,7 +11,7 @@ Partial Class Setting_Customer_Default
     Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
-        If Not Session("RoleName") = "Administrator" And Not Session("RoleName") = "Customer Service" And Not Session("RoleName") = "Data Entry" And Not Session("RoleName") = "Representative" Then
+        If Not Session("RoleName") = "Administrator" And Not Session("RoleName") = "Customer Service"  And Not Session("RoleName") = "PPIC & DE" And Not Session("RoleName") = "Data Entry" And Not Session("RoleName") = "Representative" Then
             Response.Redirect("~/setting/", False)
             Exit Sub
         End If
@@ -328,12 +328,12 @@ Partial Class Setting_Customer_Default
                 divExact.Visible = True
             End If
 
-            If Session("RoleName") = "Customer Service" Then
+            If Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Then
                 divExact.Visible = True
             End If
 
             btnAdd.Visible = False
-            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Data Entry" Then
                 btnAdd.Visible = True
             End If
         Catch ex As Exception
@@ -406,7 +406,7 @@ Partial Class Setting_Customer_Default
     End Sub
 
     Protected Function VisibleDetail(Id As String) As Boolean
-        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Or Session("RoleName") = "Representative" Then
+        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Data Entry" Or Session("RoleName") = "Representative" Then
             If Id = "DEFAULT" Then
                 If Session("RoleName") = "Administrator" Then
                     Return True
@@ -419,7 +419,7 @@ Partial Class Setting_Customer_Default
     End Function
 
     Protected Function VisibleDelete(Id As String) As Boolean
-        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Data Entry" Then
             If Id = "DEFAULT" Then Return False
             Return True
         End If
@@ -427,7 +427,7 @@ Partial Class Setting_Customer_Default
     End Function
 
     Protected Function VisibleOnStop(Id As String) As Boolean
-        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Data Entry" Then
             If Id = "DEFAULT" Then Return False
             Return True
         End If

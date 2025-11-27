@@ -11,7 +11,7 @@ Partial Class Setting_Customer_Discount
     Dim enUS As CultureInfo = New CultureInfo("en-US")
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
-        If Not Session("RoleName") = "Administrator" And Not Session("RoleName") = "Customer Service" And Not Session("RoleName") = "Data Entry" And Not Session("RoleName") = "Representative" Then
+        If Not Session("RoleName") = "Administrator" And Not Session("RoleName") = "Customer Service" And Not Session("RoleName") = "PPIC & DE" And Not Session("RoleName") = "Data Entry" And Not Session("RoleName") = "Representative" Then
             Response.Redirect("~/", False)
             Exit Sub
         End If

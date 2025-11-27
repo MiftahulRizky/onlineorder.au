@@ -672,7 +672,7 @@ Partial Class Methods_Order_DetailMethod
 
                         End If
                         
-                        If rolename = "PPIC & DE" And UCase(params.createdby).ToString() <> UCase(CustomerContactId) Then
+                        If (rolename = "PPIC & DE" Or rolename = "Customer Service") And UCase(params.createdby).ToString() <> UCase(CustomerContactId) Then
                             HideNext = "hidden"
                         End If
 
@@ -966,7 +966,7 @@ Partial Class Methods_Order_DetailMethod
             End If
 
             '# --------------------------|| Check Order Header ||-------------------------------
-            Dim headerData As DataSet = publicCfg.GetListData("SELECT * FROM view_headers WHERE Id='" + headerid + "'")
+            Dim headerData As DataSet = publicCfg.GetListData("SELECT * FROM OrderHeaders WHERE Id='" + headerid + "'")
             if headerData.Tables(0).Rows.Count < 1 Then
                 Return New ErrorResponse With {
                     .[error] = New ErrorDetail With {
@@ -7504,7 +7504,7 @@ Partial Class Methods_Order_DetailMethod
             result+= trDetEnd
 
             '#line Blank
-            result += BlankLineEachRow(3)
+            result += BlankLineEachRow(1)
 
         result+= tableDetEnd
 

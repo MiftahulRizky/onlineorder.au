@@ -2254,7 +2254,7 @@ Partial Class Order_Detail
                 gvList.Columns(8).Visible = True ' ACTION
             End If
 
-            If Session("RoleName") = "Customer Service" Then
+            If Session("RoleName") = "Customer Service" OR Session("RoleName") = "PPIC & DE" Then
                 gvList.Columns(2).Visible = True ' NUMBER
                 gvList.Columns(3).Visible = True ' QTY
                 gvList.Columns(4).Visible = True ' DESCRIPTION
@@ -2270,7 +2270,7 @@ Partial Class Order_Detail
                 gvList.Columns(8).Visible = True ' PAID
             End If
 
-            If Session("RoleName") = "Data Entry" OR Session("RoleName") = "PPIC & DE" Then
+            If Session("RoleName") = "Data Entry"  Then
                 gvList.Columns(2).Visible = True ' NUMBER
                 gvList.Columns(3).Visible = True ' QTY
                 gvList.Columns(4).Visible = True ' DESCRIPTION
@@ -3249,7 +3249,7 @@ Partial Class Order_Detail
     End Function
 
     Protected Function VisibleEditPricing() As Boolean
-        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Then
+        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" OR Session("RoleName") = "PPIC & DE" Then
             If spanStatusOrder.InnerText = "Completed" Or spanStatusOrder.InnerText = "Canceled" Then
                 Return False
             End If

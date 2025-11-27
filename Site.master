@@ -522,11 +522,6 @@
                                                             <a runat="server" class="dropdown-item" href="~/setting/other/delete">Delete File</a>
                                                             <a runat="server" class="dropdown-item" href="~/setting/other/query">Run Query</a>
                                                             <a runat="server" class="dropdown-item" href="~/setting/other/email">Test Email</a>
-                                                            <div runat="server" class="dropdown-divider"></div>
-                                                            <a runat="server" id="aFeedback" class="dropdown-item" href="~/setting/feedback">FeedBack</a>
-                                                            <a runat="server" id="aDeleteFile" class="dropdown-item" href="~/setting/deletefile">Delete File</a>
-                                                            <a runat="server" id="aDeleteOrder" class="dropdown-item" href="~/setting/deleteorder">Delete Order</a>
-                                                            <a runat="server" id="aQuery" class="dropdown-item" href="~/setting/query">Run Query</a>
                                                         </div>
                                                     </div>
 

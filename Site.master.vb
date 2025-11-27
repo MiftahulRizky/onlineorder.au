@@ -159,10 +159,10 @@ Partial Public Class SiteMaster
             divLog.Visible = False
             divOther.Visible = False
 
-            aFeedback.Visible = False
-            aDeleteFile.Visible = False
-            aDeleteOrder.Visible = False
-            aQuery.Visible = False
+            ' aFeedback.Visible = False
+            ' aDeleteFile.Visible = False
+            ' aDeleteOrder.Visible = False
+            ' aQuery.Visible = False
 
             spanOrder.InnerText = "Create & View Order"
 
@@ -209,13 +209,13 @@ Partial Public Class SiteMaster
                 divLog.Visible = True
                 divOther.Visible = True
 
-                aFeedback.Visible = True
-                aDeleteFile.Visible = True
-                aDeleteOrder.Visible = True
-                aQuery.Visible = True
+                ' aFeedback.Visible = True
+                ' aDeleteFile.Visible = True
+                ' aDeleteOrder.Visible = True
+                ' aQuery.Visible = True
             End If
 
-            If Session("RoleName") = "Customer Service" Then
+            If Session("RoleName") = "Customer Service" OR Session("RoleName") = "PPIC & DE" Then
                 liOrder.Visible = True
                 liShipment.Visible = True
                 liReport.Visible = True
