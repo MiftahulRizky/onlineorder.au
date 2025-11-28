@@ -98,6 +98,7 @@ Partial Class Account_Login
             End If
         Catch ex As Exception
             Call MessageError(True, String.Empty, "Please contact our IT team at support@onlineorder.au")
+            ' Call MessageError(True, String.Empty, ex.ToString())
         End Try
     End Sub
 

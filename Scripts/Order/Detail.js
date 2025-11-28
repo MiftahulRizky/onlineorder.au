@@ -1,11 +1,17 @@
 window.addEventListener("DOMContentLoaded", function () {
-  if (ROLENAME == "Administrator") {
+  if (
+    ROLENAME == "Administrator" ||
+    ROLENAME == "Customer Service" ||
+    ROLENAME == "PPIC & DE" ||
+    ROLENAME == "Data Entry"
+  ) {
     console.log("Detail.js loaded successfully");
     console.log("ROLENAME: " + ROLENAME);
     console.log("CUSTOMERID: " + CUSTOMERID);
     console.log("USERNAME: " + USERNAME);
     console.log("HEADERID: " + HEADERID);
     console.log("PRICEACCESS: " + PRICEACCESS);
+    console.log("CUSTOMERCONTACTID: " + CUSTOMERCONTACTID);
     console.log("PREVIEWACCESS: " + PREVIEWACCESS);
     console.log("REPRINT: " + REPRINT);
     console.log("URIMETHOD: " + URIMETHOD);
@@ -509,6 +515,7 @@ const handlerDisplayElement = (item) => {
         btnAddItem.removeAttribute("hidden");
         break;
       case "PPIC & DE":
+      case "Customer Service":
         if (item.CreatedBy.toUpperCase() === LOGINID) {
           btnEditHeader.removeAttribute("hidden");
           btnDeleteHeader.removeAttribute("hidden");
@@ -712,6 +719,7 @@ const handlerHeaderInfo = (item) => {
       },
       body: JSON.stringify({
         id: item.CreatedBy,
+        company: CUSTOMERCOMPANY,
       }),
     })
       .then((response) => {
@@ -1805,9 +1813,9 @@ const bindOrderHeaderByID = async (headerid, ordertype) => {
 
     for (const item of data) {
       // await handlerReloadPricingOnReadyPage(item.Id, item.Status, "binding");
-      await handlerHeaderInfo(item);
-      await bindDetails(item.Id, item.Status, item.CreatedBy);
-      await handlerDisplayElement(item);
+      handlerHeaderInfo(item);
+      bindDetails(item.Id, item.Status, item.CreatedBy);
+      handlerDisplayElement(item);
       await handlerCheckOrder(item.Id, item.Status, item.CreatedBy);
       await loaderFadeOut();
     }
@@ -1983,7 +1991,10 @@ const dropdownActionButton = (row, createdby) => {
   let hideDetail = "";
   if (row.StatusHeader === "Draft") {
     hideDetail = "hidden";
-    if (ROLENAME === "PPIC & DE" && createdby !== row.CustomerContactId) {
+    if (
+      (ROLENAME === "PPIC & DE" || ROLENAME === "Customer Service") &&
+      createdby !== row.CustomerContactId
+    ) {
       hideDetail = "";
     }
   }
@@ -1992,17 +2003,22 @@ const dropdownActionButton = (row, createdby) => {
   let hideEdit = "hidden";
   if (row.StatusHeader === "Draft") {
     hideEdit = "";
-    if (ROLENAME === "PPIC & DE" && createdby !== row.CustomerContactId) {
+    if (
+      (ROLENAME === "PPIC & DE" || ROLENAME === "Customer Service") &&
+      createdby !== row.CustomerContactId
+    ) {
       hideEdit = "hidden";
     }
   }
-  console.log(createdby);
 
   // HIDE BUTTON COPY
   let hideCopy = "hidden";
   if (row.StatusHeader === "Draft") {
     hideCopy = "";
-    if (ROLENAME === "PPIC & DE" && createdby !== row.CustomerContactId) {
+    if (
+      (ROLENAME === "PPIC & DE" || ROLENAME === "Customer Service") &&
+      createdby !== row.CustomerContactId
+    ) {
       hideCopy = "hidden";
     } else if (ROLENAME === "Manager" || ROLENAME === "Account") {
       hideCopy = "hidden";
@@ -2013,7 +2029,10 @@ const dropdownActionButton = (row, createdby) => {
   let hideDelete = "hidden";
   if (row.StatusHeader === "Draft") {
     hideDelete = "";
-    if (ROLENAME === "PPIC & DE" && createdby !== row.CustomerContactId) {
+    if (
+      (ROLENAME === "PPIC & DE" || ROLENAME === "Customer Service") &&
+      createdby !== row.CustomerContactId
+    ) {
       hideDelete = "hidden";
     } else if (ROLENAME === "Manager" || ROLENAME === "Account") {
       hideDelete = "hidden";

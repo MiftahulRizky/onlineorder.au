@@ -28,12 +28,7 @@
                                     order type
                                 </label>
                                 <div class="col-lg-4">
-                                    <select name="ordertype" id="ordertype" class="form-select ">
-                                        <option value=""></option>
-                                        <option value="Blinds">BLINDS</option>
-                                        <option value="Panorama">PANORAMA</option>
-                                        <option value="Evolve">EVOLVE</option>
-                                    </select>
+                                    <select name="ordertype" id="ordertype" class="form-select "></select>
                                     <input type="text" name="id" id="id" class="form-control" readonly hidden>
                                 </div>
                             </div>

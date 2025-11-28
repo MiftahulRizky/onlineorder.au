@@ -526,7 +526,7 @@ const handlerSendProductionOrder = async () => {
 };
 
 // HANDLER CELECT STSTUS
-const handlerSelStatus = async (params, statusNow) => {
+const handlerSelStatus = (params, statusNow) => {
   if (!params) return;
 
   const sel = document.querySelector(params);
@@ -538,11 +538,7 @@ const handlerSelStatus = async (params, statusNow) => {
 
   // === cardOrder => status ===
   if (params === "#cardOrder #status") {
-    if (
-      ROLENAME === "PPIC & DE" ||
-      ROLENAME === "Data Entry" ||
-      ROLENAME === "Customer Service"
-    ) {
+    if (ROLENAME === "PPIC & DE") {
       data = [
         { value: "all", text: "All" },
         { value: "New Order", text: "New Order" },
@@ -558,6 +554,15 @@ const handlerSelStatus = async (params, statusNow) => {
         { value: "In Production", text: "In Production" },
         { value: "On Hold", text: "On Hold" },
         { value: "Completed", text: "Completed" },
+      ];
+    } else if (ROLENAME == "Customer Service") {
+      data = [
+        { value: "all", text: "All" },
+        { value: "Draft", text: "Draft / Unsubmitted" },
+        { value: "New Order", text: "New Order" },
+        { value: "In Production", text: "In Production" },
+        { value: "Completed", text: "Completed" },
+        { value: "Canceled", text: "Canceled" },
       ];
     } else {
       data = [
@@ -634,7 +639,7 @@ const handlerSelStatus = async (params, statusNow) => {
     setFilterValues(statusToUse, orderTypeToUse, activeToUse, storeTypeToUse);
 
     // Jika bindOrders adalah fungsi async, kita tunggu dulu
-    await bindOrders(
+    bindOrders(
       statusToUse,
       orderTypeToUse,
       activeToUse,
@@ -699,11 +704,11 @@ const handlerChangeStatus = async (headerid) => {
 
     // Jalankan tiap item secara berurutan
     for (const item of data) {
-      await handlerSelStatus("#modalChangeStatus #status", item.Status);
-      await setValueModalChangeStatus(item);
-      await hanlderDisplayElementModalChangeStatus(item.Status);
+      handlerSelStatus("#modalChangeStatus #status", item.Status);
+      setValueModalChangeStatus(item);
+      hanlderDisplayElementModalChangeStatus(item.Status);
       await Swal.close();
-      await handlerShowBSModal("modalChangeStatus");
+      handlerShowBSModal("modalChangeStatus");
     }
   } catch (error) {
     const msg =
@@ -1131,7 +1136,7 @@ const handlerTooltip = (modalName, params) => {
 // --------------------------------------------||Other Function ||-------------------------------------------
 // CHECK SESSION
 const checkSession = async () => {
-  await Promise.all([handlerSelStatus("#cardOrder #status", null)]);
+  await handlerSelStatus("#cardOrder #status", null);
   visibleColumnServerside();
 };
 

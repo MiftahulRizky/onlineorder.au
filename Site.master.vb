@@ -50,12 +50,12 @@ Partial Public Class SiteMaster
                 Session("CustomerCompany") = myData.Tables(0).Rows(0).Item("CustomerCompany").ToString()
                 Session("resetLogin") = myData.Tables(0).Rows(0).Item("Reset")
                 Session("CustomerAccount") = myData.Tables(0).Rows(0).Item("CustomerAccount").ToString()
+                Session("PriceAccess") = myData.Tables(0).Rows(0).Item("Price").ToString()
+                Session("MarkUpAccess") = myData.Tables(0).Rows(0).Item("MarkUp").ToString()
 
                 Dim myData2 As DataSet = publicCfg.GetListData("SELECT * FROM CustomerContacts WHERE CustomerId = '" + Session("CustomerId") + "' AND Name = '" + Session("FullName") + "'")
                 IF myData2.Tables(0).Rows.Count > 0 Then
                     Session("CustomerContactId") = myData2.Tables(0).Rows(0).Item("Id").ToString()
-                    Session("PriceAccess") = myData2.Tables(0).Rows(0).Item("Price").ToString()
-                    Session("MarkUpAccess") = myData2.Tables(0).Rows(0).Item("MarkUp").ToString()
                 End If
 
                 Dim myData3 As Boolean = orderCfg.GetItemData_Boolean("SELECT OnStop FROM Customers WHERE Id='" + Session("CustomerId") + "'")

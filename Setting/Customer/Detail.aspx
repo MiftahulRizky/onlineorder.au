@@ -320,7 +320,7 @@
                                     <div class="row text-start">
                                         <div class="col-12">
                                             <asp:Button runat="server" ID="btnAddContact" Text="New Contact" CssClass="btn btn-primary" OnClick="btnAddContact_Click" />
-                                            <a href="#" runat="server" id="aResetContact" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalResetPrimaryContact">Reset Primary Contact</a>`
+                                            <a href="#" runat="server" id="aResetContact" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalResetPrimaryContact">Reset Primary Contact</a>
                                         </div> 
                                     </div>
                                 </div>
@@ -1159,6 +1159,23 @@
                             <asp:TextBox runat="server" ID="txtLoginPassword" CssClass="form-control" placeholder="Password ..."></asp:TextBox>
                         </div>
                         <small class="form-hint" id="passwordinfo"></small>
+                    </div>
+
+                    <div class="mb-4 row" runat="server" id="divMarkupPrice">
+                        <div class="col-6">
+                            <label class="form-label" id="lblMarkup" runat="server">Markup</label>
+                            <asp:DropDownList runat="server" ID="ddlMarkup" CssClass="form-select">
+                                <asp:ListItem Value="False">NO</asp:ListItem>
+                                <asp:ListItem Value="True">YES</asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Price</label>
+                            <asp:DropDownList runat="server" ID="ddlPrice" CssClass="form-select">
+                                <asp:ListItem Value="False">NO</asp:ListItem>
+                                <asp:ListItem Value="True">YES</asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
                     </div>
                     
                     <div class="row" runat="server" id="divErrorProcessLogin">

@@ -468,7 +468,7 @@ Public Class PublicConfig
     End Function
 
     Public Sub MailError(UserId As String, Page As String, Action As String, Content As String)
-        Dim appId As String = GetItemData("SELECT ApplicationId FROM Memberships WHERE UserId = '" + UCase(UserId).ToString() + "'")
+        Dim appId As String = GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE Id = '" + UCase(UserId).ToString() + "'")
         Dim mailData As DataSet = GetListData("SELECT * FROM MailConfiguration WHERE AppId = '" + UCase(appId).ToString() + "' AND Name = 'ERROR WEB' AND Active=1")
 
         If Not mailData.Tables.Count = 0 AndAlso mailData.Tables(0).Rows.Count > 0 Then
@@ -524,7 +524,7 @@ Public Class PublicConfig
         Dim orderCust As String = myData.Tables(0).Rows(0).Item("OrderCust").ToString()
         Dim delivery As String = myData.Tables(0).Rows(0).Item("Delivery").ToString()
 
-        Dim appId As String = GetItemData("SELECT ApplicationId FROM Memberships WHERE UserId = '" + UCase(userId).ToString() + "'")
+        Dim appId As String = GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE UserId = '" + UCase(userId).ToString() + "'")
         Dim mailData As DataSet = GetListData("SELECT * FROM MailConfiguration WHERE AppId = '" + UCase(appId).ToString() + "' AND Name = 'SUBMIT ORDER' AND Active=1")
 
         If Not mailData.Tables.Count = 0 Then

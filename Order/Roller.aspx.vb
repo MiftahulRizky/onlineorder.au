@@ -621,7 +621,7 @@ Partial Class Order_Roller
             If msgError.InnerText = "" Then
                 If txtMarkUp.Text = "" Then : txtMarkUp.Text = "0" : End If
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
+                Dim userId As String = UCase(Session("LoginId")).ToString()
 
                 lblKitId.Text = UCase(ddlColourType.SelectedValue).ToString()
                 lblSoeKitId.Text = publicCfg.GetSoeKitId(lblKitId.Text)
@@ -918,7 +918,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "btnSubmit_Click", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "btnSubmit_Click", ex.ToString())
             End If
         End Try
     End Sub
@@ -1073,7 +1073,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindDataItem", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindDataItem", ex.ToString())
             End If
         End Try
     End Sub
@@ -1450,7 +1450,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindComponentForm", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindComponentForm", ex.ToString())
             End If
         End Try
     End Sub
@@ -1470,7 +1470,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindBlindType", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindBlindType", ex.ToString())
             End If
         End Try
     End Sub
@@ -1492,7 +1492,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindBracket", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindBracket", ex.ToString())
             End If
         End Try
     End Sub
@@ -1514,7 +1514,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindTubeType", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindTubeType", ex.ToString())
             End If
         End Try
     End Sub
@@ -1536,7 +1536,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindControlType", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindControlType", ex.ToString())
             End If
         End Try
     End Sub
@@ -1558,7 +1558,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindColour", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindColour", ex.ToString())
             End If
         End Try
     End Sub
@@ -1613,7 +1613,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindMotorStyle", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindMotorStyle", ex.ToString())
             End If
         End Try
     End Sub
@@ -1673,7 +1673,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindRemoteMotor", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindRemoteMotor", ex.ToString())
             End If
         End Try
     End Sub
@@ -1689,7 +1689,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindExternalBattery", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindExternalBattery", ex.ToString())
             End If
         End Try
     End Sub
@@ -1734,7 +1734,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindChargerMotor", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindChargerMotor", ex.ToString())
             End If
         End Try
     End Sub
@@ -1755,7 +1755,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindFabricType", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindFabricType", ex.ToString())
             End If
         End Try
     End Sub
@@ -1776,7 +1776,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindFabricColour", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindFabricColour", ex.ToString())
             End If
         End Try
     End Sub
@@ -1872,7 +1872,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindTrim", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindTrim", ex.ToString())
             End If
         End Try
     End Sub
@@ -1905,7 +1905,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindRailType", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindRailType", ex.ToString())
             End If
         End Try
     End Sub
@@ -1937,7 +1937,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindRailColour", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindRailColour", ex.ToString())
             End If
         End Try
     End Sub
@@ -1987,7 +1987,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindTubeSize", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindTubeSize", ex.ToString())
             End If
         End Try
     End Sub
@@ -2035,7 +2035,7 @@ Partial Class Order_Roller
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindExtras", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindExtras", ex.ToString())
             End If
         End Try
     End Sub
@@ -2089,7 +2089,7 @@ Partial Class Order_Roller
     End Sub
 
     Private Sub myCancel()
-        Session("headerId") = lblHeaderId.Text
+        
         Response.Redirect("~/order/detail", False)
     End Sub
 

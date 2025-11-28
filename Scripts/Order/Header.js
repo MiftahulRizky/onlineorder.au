@@ -11,57 +11,9 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     e.target.classList.remove("is-invalid");
 
     if (e.target.id !== "ordertype") return;
-    const formDetail = document.getElementById("formDetail");
-    const divCustomer = document.getElementById("divCustomer");
-    const divCreatedBy = document.getElementById("divCreatedBy");
-    const divCreatedDate = document.getElementById("divCreatedDate");
-    const divOrderId = document.getElementById("divOrderId");
-    const divDelivery = document.getElementById("divDelivery");
-    const divJobId = document.getElementById("divJobId");
-    const divJobDate = document.getElementById("divJobDate");
-    const divShipmentId = document.getElementById("divShipmentId");
-    const divShipping = document.getElementById("divShipping");
 
-    formDetail.setAttribute("hidden", true);
-    divCustomer.setAttribute("hidden", true);
-    divCreatedBy.setAttribute("hidden", true);
-    divCreatedDate.setAttribute("hidden", true);
-    divOrderId.setAttribute("hidden", true);
-    divDelivery.setAttribute("hidden", true);
-    divJobId.setAttribute("hidden", true);
-    divJobDate.setAttribute("hidden", true);
-    divShipmentId.setAttribute("hidden", true);
-    divShipping.setAttribute("hidden", true);
-
-    const value = e.target.value;
-    if (!value) return;
-
-    await handlerSelCustomer(value, "#customer");
-
-    formDetail.removeAttribute("hidden");
-    if (value == "Blinds") {
-      if (ROLENAME == "Administrator") {
-        divCustomer.removeAttribute("hidden");
-      }
-
-      divDelivery.removeAttribute("hidden");
-    } else if (value == "Panorama" || value == "Evolve") {
-      handlerSelUser("#createdby");
-      if (
-        ROLENAME == "Administrator" ||
-        ROLENAME == "Customer Service" ||
-        ROLENAME == "Data Entry" ||
-        ROLENAME == "PPIC & DE"
-      ) {
-        divCustomer.removeAttribute("hidden");
-      }
-
-      if (ROLENAME == "Administrator") {
-        divCreatedBy.removeAttribute("hidden");
-        divCreatedDate.removeAttribute("hidden");
-      }
-      divDelivery.setAttribute("hidden", true);
-    }
+    const ortype = e.target.value;
+    await visibleElementFormOnChange(ortype);
   });
 });
 
@@ -687,12 +639,39 @@ const parseDDMMYYYYToDate = (value) => {
   return new Date(`${year}-${month}-${day}`); // format valid
 };
 
+const handlerSelOrderType = async (params) => {
+  if (!params) return;
+
+  const sel = document.querySelector(params);
+  if (!sel) return;
+  sel.innerHTML = ""; // Reset options
+
+  let data = [];
+  data = [
+    { value: "", text: "" },
+    { value: "Blinds", text: "Blinds" },
+    { value: "Panorama", text: "Panorama" },
+    { value: "Evolve", text: "Evolve" },
+  ];
+
+  if (CUSTOMERID == "LS-A224") {
+    data = [{ value: "Panorama", text: "Panorama" }];
+  }
+
+  for (const { value, text } of data) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = text.toUpperCase();
+    sel.appendChild(option);
+  }
+};
+
 // --------------------------------------------||Other Functions ||-------------------------------------------
 const checkSessionCreateHeader = async () => {
   if (!ACTION) window.location.href = "/order";
-
+  await handlerSelOrderType("#ordertype");
   if (ACTION === "add") {
-    await visibleElementForm();
+    visibleElementForm();
     await loaderFadeOut();
   } else if (ACTION === "edit" && ID && ORDERTYPE) {
     handlerEdit(ID, ORDERTYPE);
@@ -702,6 +681,7 @@ const checkSessionCreateHeader = async () => {
 };
 
 const visibleElementForm = (item) => {
+  const ordertype = document.getElementById("ordertype");
   const formDetail = document.getElementById("formDetail");
   const divOrderType = document.getElementById("divOrderType");
   const divCustomer = document.getElementById("divCustomer");
@@ -733,6 +713,11 @@ const visibleElementForm = (item) => {
   divShipmentId.setAttribute("hidden", true);
   divShipping.setAttribute("hidden", true);
 
+  if (CUSTOMERID == "LS-A224") {
+    divOrderType.setAttribute("hidden", true);
+    visibleElementFormOnChange(ordertype.value);
+    return;
+  }
   if (!item) return;
 
   divOrderType.setAttribute("hidden", true); // edit
@@ -790,5 +775,59 @@ const visibleElementForm = (item) => {
       divCreatedDate.removeAttribute("hidden");
       divShipping.removeAttribute("hidden");
     }
+  }
+};
+
+const visibleElementFormOnChange = async (ordertype) => {
+  const formDetail = document.getElementById("formDetail");
+  const divCustomer = document.getElementById("divCustomer");
+  const divCreatedBy = document.getElementById("divCreatedBy");
+  const divCreatedDate = document.getElementById("divCreatedDate");
+  const divOrderId = document.getElementById("divOrderId");
+  const divDelivery = document.getElementById("divDelivery");
+  const divJobId = document.getElementById("divJobId");
+  const divJobDate = document.getElementById("divJobDate");
+  const divShipmentId = document.getElementById("divShipmentId");
+  const divShipping = document.getElementById("divShipping");
+
+  formDetail.setAttribute("hidden", true);
+  divCustomer.setAttribute("hidden", true);
+  divCreatedBy.setAttribute("hidden", true);
+  divCreatedDate.setAttribute("hidden", true);
+  divOrderId.setAttribute("hidden", true);
+  divDelivery.setAttribute("hidden", true);
+  divJobId.setAttribute("hidden", true);
+  divJobDate.setAttribute("hidden", true);
+  divShipmentId.setAttribute("hidden", true);
+  divShipping.setAttribute("hidden", true);
+
+  const value = ordertype;
+  // if (!value) return;
+
+  await handlerSelCustomer(value, "#customer");
+  formDetail.removeAttribute("hidden");
+  console.log(value);
+  if (value == "Blinds") {
+    if (ROLENAME == "Administrator" || ROLENAME == "Customer Service") {
+      divCustomer.removeAttribute("hidden");
+    }
+
+    divDelivery.removeAttribute("hidden");
+  } else if (value == "Panorama" || value == "Evolve") {
+    handlerSelUser("#createdby");
+    if (
+      ROLENAME == "Administrator" ||
+      ROLENAME == "Customer Service" ||
+      ROLENAME == "Data Entry" ||
+      ROLENAME == "PPIC & DE"
+    ) {
+      divCustomer.removeAttribute("hidden");
+    }
+
+    if (ROLENAME == "Administrator") {
+      divCreatedBy.removeAttribute("hidden");
+      divCreatedDate.removeAttribute("hidden");
+    }
+    divDelivery.setAttribute("hidden", true);
   }
 };

@@ -1026,7 +1026,8 @@ Partial Class Setting_Customer_Detail
                     txtLoginFullName.Text = myData.Tables(0).Rows(0).Item("FullName").ToString()
                     Dim password As String = myData.Tables(0).Rows(0).Item("Password").ToString()
                     txtLoginPassword.Text = settingCfg.Decrypt(password)
-
+                    ddlMarkup.SelectedValue = myData.Tables(0).Rows(0).Item("Markup").ToString()
+                    ddlPrice.SelectedValue = myData.Tables(0).Rows(0).Item("Price").ToString()
                     ClientScript.RegisterStartupScript(Me.GetType(), "showProcessLogin", thisScript, True)
                 Catch ex As Exception
                     MessageErrorProcess_Login(True, ex.ToString())
@@ -1291,7 +1292,7 @@ Partial Class Setting_Customer_Detail
                 If lblActionLogin.Text = "Add" Then
                     Dim thisId As String = String.Empty
                     Using thisConn As New SqlConnection(myConn)
-                        Using myCmd As SqlCommand = New SqlCommand("INSERT INTO CustomerLogins OUTPUT INSERTED.Id VALUES (NEWID(), @AppId, @CustomerId, @RoleId, @LevelId, @UserName, @Password, @FullName, NULL, 0, NULL, 1, 1)")
+                        Using myCmd As SqlCommand = New SqlCommand("INSERT INTO CustomerLogins OUTPUT INSERTED.Id VALUES (NEWID(), @AppId, @CustomerId, @RoleId, @LevelId, @UserName, @Password, @FullName, NULL, 0, 0, 0, NULL, 1, @Markup, @Price, 1)")
                             myCmd.Parameters.AddWithValue("@AppId", appId)
                             myCmd.Parameters.AddWithValue("@CustomerId", lblId.Text)
                             myCmd.Parameters.AddWithValue("@RoleId", roleId)
@@ -1299,6 +1300,8 @@ Partial Class Setting_Customer_Detail
                             myCmd.Parameters.AddWithValue("@UserName", txtLoginUserName.Text.Trim())
                             myCmd.Parameters.AddWithValue("@Password", password)
                             myCmd.Parameters.AddWithValue("@FullName", txtLoginFullName.Text.Trim())
+                            myCmd.Parameters.AddWithValue("@Markup", ddlMarkup.SelectedValue)
+                            myCmd.Parameters.AddWithValue("@Price", ddlPrice.SelectedValue)
 
                             myCmd.Connection = thisConn
                             thisConn.Open()
@@ -1315,7 +1318,7 @@ Partial Class Setting_Customer_Detail
 
                 If lblActionLogin.Text = "Edit" Then
                     Using thisConn As New SqlConnection(myConn)
-                        Using myCmd As SqlCommand = New SqlCommand("UPDATE CustomerLogins SET ApplicationId=@AppId, CustomerId=@CustomerId, RoleId=@RoleId, LevelId=@LevelId, UserName=@UserName, FullName=@FullName WHERE Id=@Id")
+                        Using myCmd As SqlCommand = New SqlCommand("UPDATE CustomerLogins SET ApplicationId=@AppId, CustomerId=@CustomerId, RoleId=@RoleId, LevelId=@LevelId, UserName=@UserName, FullName=@FullName, Markup=@Markup, Price=@Price WHERE Id=@Id")
                             myCmd.Parameters.AddWithValue("@Id", lblIdLogin.Text)
                             myCmd.Parameters.AddWithValue("@AppId", appId)
                             myCmd.Parameters.AddWithValue("@CustomerId", lblId.Text)
@@ -1324,6 +1327,8 @@ Partial Class Setting_Customer_Detail
                             myCmd.Parameters.AddWithValue("@UserName", txtLoginUserName.Text.Trim())
                             myCmd.Parameters.AddWithValue("@Password", password)
                             myCmd.Parameters.AddWithValue("@FullName", txtLoginFullName.Text.Trim())
+                            myCmd.Parameters.AddWithValue("@Markup", ddlMarkup.SelectedValue)
+                            myCmd.Parameters.AddWithValue("@Price", ddlPrice.SelectedValue)
 
                             myCmd.Connection = thisConn
                             thisConn.Open()

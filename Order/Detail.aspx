@@ -406,6 +406,7 @@
 
         let HEADERID = ULTRON;
         let CUSTOMERID = '<%= Session("CustomerId") %>';
+        let CUSTOMERCOMPANY = '<%= Session("CustomerCompany") %>';
         let CUSTOMERCONTACTID = '<%= Session("CustomerContactId") %>';
         let USERID = '<%= Session("userId") %>';
         let USERNAME = '<%= Session("UserName") %>';

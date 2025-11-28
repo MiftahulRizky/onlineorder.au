@@ -287,13 +287,21 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function GetCreatedBy(ByVal id As String) As Object
+    Public Shared Function GetCreatedBy(ByVal id As String, ByVal company As String) As Object
         Dim result As New Dictionary(Of String, String)
         
         Dim detaildata As DataSet = publicCfg.GetListData("SELECT * FROM CustomerContacts WHERE Id='"+id+"'")
+        If company = "LOOP" Then
+            detaildata = publicCfg.GetListData("SELECT * FROM CustomerLogins WHERE Id='" + id + "'")
+        End If
 
         If detaildata.Tables(0).Rows.Count > 0 Then
-                Dim nameUser As String = detaildata.Tables(0).Rows(0)("Name").ToString()
+                Dim nameUser As String = String.Empty
+                If company = "LOOP" Then
+                    nameUser = detaildata.Tables(0).Rows(0).Item("FullName").ToString()
+                ElseIf company = "SP" Then
+                    nameUser = detaildata.Tables(0).Rows(0).Item("Name").ToString()
+                End If
                 result = New Dictionary(Of String, String) From {
                     {"createdby", nameUser}
                 }
@@ -310,8 +318,8 @@ Partial Class Methods_Order_DetailMethod
         Dim totalRecords As Integer = 0
         Dim filteredRecords As Integer = 0
         Dim resultList As New List(Of OrdersMatrixReturnRow)()
-        Dim rolename As String = HttpContext.Current.Session("RoleName").ToString()
-        Dim CustomerContactId As String = HttpContext.Current.Session("CustomerContactId").ToString()
+        Dim rolename As String = HttpContext.Current.Session("RoleName")
+        Dim CustomerContactId As String = HttpContext.Current.Session("CustomerContactId")
 
         
         Try
