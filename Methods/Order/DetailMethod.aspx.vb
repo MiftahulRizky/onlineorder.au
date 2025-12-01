@@ -190,9 +190,10 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod(EnableSession:=True)>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function SetSessionOpenPageInputItem(ByVal id As String, ByVal headerid As String, ByVal action As String, ByVal designid As String) As Object
+    Public Shared Function SetSessionOpenPageInputItem(ByVal id As String, ByVal headerid As String, ByVal ordertype As String, ByVal action As String, ByVal designid As String) As Object
         HttpContext.Current.Session("headerId") = headerid 
         HttpContext.Current.Session("itemAction") = action
+        HttpContext.Current.Session("orderType") = ordertype
         HttpContext.Current.Session("designId") = UCase(designid).ToString()
 
         If Not String.IsNullOrEmpty(id) And (action ="EditItem" Or action = "ViewItem" Or action = "NextItem") Then
@@ -208,9 +209,9 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindDesignType() As Object
+    Public Shared Function BindDesignType(ByVal customerid As String, ByVal ordertype As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Designs WHERE Active=1 AND Company = 'SP' ORDER BY Name ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT Designs.Id, Designs.Name FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '" + customerid + "' AND Designs.Type <> 'Additional' AND Designs.Type = '" + ordertype + "' AND Designs.Active = 1 ORDER BY Designs.Name ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -287,21 +288,13 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function GetCreatedBy(ByVal id As String, ByVal company As String) As Object
+    Public Shared Function GetCreatedBy(ByVal id As String) As Object
         Dim result As New Dictionary(Of String, String)
         
-        Dim detaildata As DataSet = publicCfg.GetListData("SELECT * FROM CustomerContacts WHERE Id='"+id+"'")
-        If company = "LOOP" Then
-            detaildata = publicCfg.GetListData("SELECT * FROM CustomerLogins WHERE Id='" + id + "'")
-        End If
+        Dim detaildata As DataSet = publicCfg.GetListData("SELECT * FROM CustomerLogins WHERE Id='" + id + "'")
 
         If detaildata.Tables(0).Rows.Count > 0 Then
-                Dim nameUser As String = String.Empty
-                If company = "LOOP" Then
-                    nameUser = detaildata.Tables(0).Rows(0).Item("FullName").ToString()
-                ElseIf company = "SP" Then
-                    nameUser = detaildata.Tables(0).Rows(0).Item("Name").ToString()
-                End If
+                Dim nameUser As String  = detaildata.Tables(0).Rows(0).Item("FullName").ToString()
                 result = New Dictionary(Of String, String) From {
                     {"createdby", nameUser}
                 }

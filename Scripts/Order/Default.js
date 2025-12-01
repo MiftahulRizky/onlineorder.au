@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  if (ROLENAME == "Administrator") {
+  if (ROLENAME == "Administrator" || ROLENAME == "Customer Service") {
     console.log("Default.js loaded successfully");
     console.log("ROLENAME: " + ROLENAME);
     console.log("CUSTOMERID: " + CUSTOMERID);
@@ -1135,8 +1135,8 @@ const handlerTooltip = (modalName, params) => {
 };
 // --------------------------------------------||Other Function ||-------------------------------------------
 // CHECK SESSION
-const checkSession = async () => {
-  await handlerSelStatus("#cardOrder #status", null);
+const checkSession = () => {
+  handlerSelStatus("#cardOrder #status", null);
   visibleColumnServerside();
 };
 
@@ -1227,7 +1227,11 @@ const dropdownActionButton = (data, type, row, params) => {
   if (row.Active === "False" || row.Active === "0") displayDelete = "d-none";
 
   //...............................|| Display Change Status Button ||...............................//
-  if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
+  if (
+    ROLENAME === "Administrator" ||
+    ROLENAME === "PPIC & DE" ||
+    ROLENAME === "Customer Service"
+  ) {
     displayChangeStatus = "";
   }
 
@@ -1300,14 +1304,14 @@ const dropdownActionButton = (data, type, row, params) => {
             </li>`;
   }
 
-  if (row.OrderType == "Panorama") {
-    act += `<div class="dropdown-divider"></div>
-            <li>
-              <a class="dropdown-item" href="javascript:void(0)" id="btnLogs" data-id="${row.Id}">
-                <i class="ti ti-logout me-1 fs-2 opacity-50"></i>Logs
-              </a>
-            </li>`;
-  }
+  act += `<div class="dropdown-divider"></div>
+          <li>
+            <a class="dropdown-item" href="javascript:void(0)" id="btnLogs" data-id="${row.Id}">
+              <i class="ti ti-logout me-1 fs-2 opacity-50"></i>Logs
+            </a>
+          </li>`;
+  // if (row.OrderType == "Panorama") {
+  // }
 
   act += `</ul>
             </div>`;

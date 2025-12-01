@@ -146,7 +146,7 @@ document
   .addEventListener("click", () => {
     const designId = document.querySelector("#modalAddItem #designid").value;
     const action = "AddItem";
-    submitSelectProduct(HEADERID, action, designId);
+    submitSelectProduct(HEADERID, INFYNITY, action, designId);
   });
 
 // ------------------------------------------||modalChangeStatus Event ||------------------------------------
@@ -193,7 +193,8 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const id = e.target.dataset.id;
     const designid = e.target.dataset.designid;
     const headerid = e.target.dataset.headerid;
-    handlerEditItem(id, headerid, "ViewItem", designid);
+    const ordertype = INFYNITY;
+    handlerEditItem(id, headerid, ordertype, "ViewItem", designid);
   }
 });
 
@@ -202,7 +203,8 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const id = e.target.dataset.id;
     const designid = e.target.dataset.designid;
     const headerid = e.target.dataset.headerid;
-    handlerEditItem(id, headerid, "EditItem", designid);
+    const ordertype = INFYNITY;
+    handlerEditItem(id, headerid, ordertype, "EditItem", designid);
   }
 });
 
@@ -324,7 +326,7 @@ const submitChangeStatus = async () => {
 };
 
 // SUBMIT SELECT PRODUCT
-const submitSelectProduct = (headerid, action, designid) => {
+const submitSelectProduct = (headerid, ordertype, action, designid) => {
   // VALIDATE FORM
   if (!headerid || !action || !designid) {
     if (ROLENAME === "Administrator") {
@@ -400,6 +402,7 @@ const submitSelectProduct = (headerid, action, designid) => {
     data: JSON.stringify({
       id: "",
       headerid: headerid,
+      ordertype: ordertype,
       action: action,
       designid: designid,
     }),
@@ -719,7 +722,6 @@ const handlerHeaderInfo = (item) => {
       },
       body: JSON.stringify({
         id: item.CreatedBy,
-        company: CUSTOMERCOMPANY,
       }),
     })
       .then((response) => {
@@ -740,7 +742,7 @@ const handlerHeaderInfo = (item) => {
           return;
         }
 
-        spanCreatedBy.innerHTML = data.createdby ? data.createdby : "??????";
+        spanCreatedBy.innerHTML = data.createdby ? data.createdby : "ERROR!";
       })
       .catch((error) => {
         const msg =
@@ -1397,6 +1399,7 @@ const handlerSelDesignType = async (params) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
+      body: JSON.stringify({ customerid: CUSTOMERID, ordertype: INFYNITY }),
     });
 
     if (!response.ok) {
@@ -1411,8 +1414,7 @@ const handlerSelDesignType = async (params) => {
         ROLENAME === "Administrator"
           ? "No data returned from server : handlerSelDesignType"
           : "Please contact our IT team at support@onlineorder.au";
-      await isError(msg);
-      return Promise.reject(msg);
+      throw new Error(msg);
     }
 
     if (Array.isArray(result)) {
@@ -1438,12 +1440,11 @@ const handlerSelDesignType = async (params) => {
         ? error.message
         : "Please contact our IT team at support@onlineorder.au";
     await isError(msg);
-    return Promise.reject(msg);
   }
 };
 
 // HANDLER EDIT ITEM
-const handlerEditItem = async (id, headerid, action, designid) => {
+const handlerEditItem = async (id, headerid, ordertype, action, designid) => {
   if (!id || !headerid || !action || !designid) {
     if (ROLENAME === "Administrator") {
       if (!id) await isError("ID NOT FOUND!");
@@ -1466,6 +1467,7 @@ const handlerEditItem = async (id, headerid, action, designid) => {
       body: JSON.stringify({
         id,
         headerid,
+        ordertype,
         action,
         designid,
       }),
@@ -1993,7 +1995,7 @@ const dropdownActionButton = (row, createdby) => {
     hideDetail = "hidden";
     if (
       (ROLENAME === "PPIC & DE" || ROLENAME === "Customer Service") &&
-      createdby !== row.CustomerContactId
+      createdby.toUpperCase() !== LOGINID.toUpperCase()
     ) {
       hideDetail = "";
     }
@@ -2005,7 +2007,7 @@ const dropdownActionButton = (row, createdby) => {
     hideEdit = "";
     if (
       (ROLENAME === "PPIC & DE" || ROLENAME === "Customer Service") &&
-      createdby !== row.CustomerContactId
+      createdby.toUpperCase() !== LOGINID.toUpperCase()
     ) {
       hideEdit = "hidden";
     }
@@ -2017,7 +2019,7 @@ const dropdownActionButton = (row, createdby) => {
     hideCopy = "";
     if (
       (ROLENAME === "PPIC & DE" || ROLENAME === "Customer Service") &&
-      createdby !== row.CustomerContactId
+      createdby.toUpperCase() !== LOGINID.toUpperCase()
     ) {
       hideCopy = "hidden";
     } else if (ROLENAME === "Manager" || ROLENAME === "Account") {
@@ -2031,7 +2033,7 @@ const dropdownActionButton = (row, createdby) => {
     hideDelete = "";
     if (
       (ROLENAME === "PPIC & DE" || ROLENAME === "Customer Service") &&
-      createdby !== row.CustomerContactId
+      createdby.toUpperCase() !== LOGINID.toUpperCase()
     ) {
       hideDelete = "hidden";
     } else if (ROLENAME === "Manager" || ROLENAME === "Account") {

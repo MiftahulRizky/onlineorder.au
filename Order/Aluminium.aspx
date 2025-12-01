@@ -337,6 +337,7 @@
     
     <div runat="server" visible="false">
         <asp:Label runat="server" ID="lblHeaderId"></asp:Label>
+        <asp:Label runat="server" ID="lblOrderType"></asp:Label>
         <asp:Label runat="server" ID="lblItemId"></asp:Label>
 
         <asp:Label runat="server" ID="lblKitId"></asp:Label>

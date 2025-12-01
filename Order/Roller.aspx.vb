@@ -17,6 +17,11 @@ Partial Class Order_Roller
             Response.Redirect("~/order/", False)
             Exit Sub
         End If
+        
+        If Session("orderType") = "" Then
+            Response.Redirect("~/order/", False)
+            Exit Sub
+        End If
 
         If Session("itemAction") = "" Then
             Response.Redirect("~/order/detail", False)
@@ -30,6 +35,7 @@ Partial Class Order_Roller
         End If
 
         lblHeaderId.Text = Session("headerId") : lblItemId.Text = ""
+        lblOrderType.Text = Session("orderType")
         lblOrderNo.Text = publicCfg.GetOrderNo(lblHeaderId.Text)
         lblOrderCust.Text = publicCfg.GetOrderCust(lblHeaderId.Text)
 
@@ -2089,8 +2095,9 @@ Partial Class Order_Roller
     End Sub
 
     Private Sub myCancel()
-        
-        Response.Redirect("~/order/detail", False)
+        Dim headerid As String = lblHeaderId.Text
+        Dim ordertype As String = lblOrderType.Text
+        Response.Redirect("~/order/detail?param=" & headerid & "&ordertype=" & ordertype, False)
     End Sub
 
     Protected Function GenerateUniqueId() As String

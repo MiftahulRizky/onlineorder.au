@@ -18,6 +18,11 @@ Partial Class Order_Aluminium
             Exit Sub
         End If
 
+        If Session("orderType") = "" Then
+            Response.Redirect("~/order/", False)
+            Exit Sub
+        End If
+
         If Session("itemAction") = "" Then
             Response.Redirect("~/order/detail", False)
             Exit Sub
@@ -30,6 +35,7 @@ Partial Class Order_Aluminium
         End If
 
         lblHeaderId.Text = Session("headerId") : lblItemId.Text = ""
+        lblOrderType.Text = Session("orderType")
         lblOrderNo.Text = publicCfg.GetOrderNo(lblHeaderId.Text)
         lblOrderCust.Text = publicCfg.GetOrderCust(lblHeaderId.Text)
 
@@ -450,7 +456,7 @@ Partial Class Order_Aluminium
                     lblCutOut_RightBottom.Text = 1
                 End If
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
+                Dim userId As String = UCase(Session("LoginId")).ToString()
                 If Session("itemAction") = "AddItem" Or Session("itemAction") = "CopyItem" Then
                     lblItemId.Text = publicCfg.CreateOrderItemId()
                     sdsPage.Insert()
@@ -470,7 +476,7 @@ Partial Class Order_Aluminium
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "btnSubmit_Click", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "btnSubmit_Click", ex.ToString())
             End If
         End Try
     End Sub
@@ -538,7 +544,7 @@ Partial Class Order_Aluminium
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindItemOrder", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindItemOrder", ex.ToString())
             End If
         End Try
     End Sub
@@ -577,7 +583,7 @@ Partial Class Order_Aluminium
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindComponentForm", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindComponentForm", ex.ToString())
             End If
         End Try
     End Sub
@@ -596,7 +602,7 @@ Partial Class Order_Aluminium
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindDataBlind", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindDataBlind", ex.ToString())
             End If
         End Try
     End Sub
@@ -618,7 +624,7 @@ Partial Class Order_Aluminium
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindDataColour", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindDataColour", ex.ToString())
             End If
         End Try
     End Sub
@@ -644,7 +650,7 @@ Partial Class Order_Aluminium
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindDataBracket", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindDataBracket", ex.ToString())
             End If
         End Try
     End Sub
@@ -683,7 +689,8 @@ Partial Class Order_Aluminium
     End Sub
 
     Private Sub myCancel()
-        Session("headerId") = lblHeaderId.Text
-        Response.Redirect("~/order/detail", False)
+        Dim headerid As String = lblHeaderId.Text
+        Dim ordertype As String = lblOrderType.Text
+        Response.Redirect("~/order/detail?param=" & headerid & "&ordertype=" & ordertype, False)
     End Sub
 End Class

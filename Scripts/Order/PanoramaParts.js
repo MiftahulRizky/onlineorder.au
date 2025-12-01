@@ -16,8 +16,16 @@ $(document).ready(function () {
   checkSession();
 
   $("#submit").on("click", proccess);
-  $("#cancel").on("click", () => (window.location.href = "/order/detail/"));
-  $("#vieworder").on("click", () => (window.location.href = "/order/detail"));
+  $("#cancel").on(
+    "click",
+    () =>
+      (window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`)
+  );
+  $("#vieworder").on(
+    "click",
+    () =>
+      (window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`)
+  );
 
   $("#category").on("change", function () {
     const ddlCategory = $(this).val();
@@ -64,12 +72,14 @@ async function checkSession() {
     await getDesignName(designId);
     await getDataHeader(headerId);
     await getFormAction(itemAction);
-    await loader(itemAction);
+    // await loader(itemAction);
 
     if (itemAction === "AddItem") {
       bindComponentForm("");
       controlForm(false);
       await bindBlindType(designId);
+      document.getElementById("divOrder").style.display = "";
+      await loaderFadeOut();
     } else if (["EditItem", "ViewItem", "CopyItem"].includes(itemAction)) {
       await bindItemOrder(itemId);
       controlForm(
@@ -77,25 +87,16 @@ async function checkSession() {
         itemAction === "EditItem",
         itemAction === "CopyItem"
       );
+      await loaderFadeOut();
     }
   } catch (error) {
     console.error("Terjadi kesalahan saat proses checkSession:", error);
   }
 }
 
-function isError(msg) {
+function isErrors(msg) {
   $("#modalError").modal("show");
   document.getElementById("errorMsg").innerHTML = msg;
-}
-
-function loader(itemAction) {
-  return new Promise((resolve) => {
-    if (itemAction === "AddItem") {
-      document.getElementById("divLoader").style.display = "none";
-      document.getElementById("divOrder").style.display = "";
-    }
-    resolve();
-  });
 }
 
 function getDesignName(designId) {
@@ -521,7 +522,7 @@ function proccess() {
           startCountdown(3);
         }, 1000);
       } else {
-        isError(result);
+        isErrors(result);
         toggleButtonState(false, "Submit");
       }
     },
@@ -555,7 +556,7 @@ function startCountdown(seconds) {
     if (countdown >= 0) {
       setTimeout(updateButton, 1000);
     } else {
-      window.location.href = "/order/detail";
+      window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`;
     }
   }
   updateButton();
@@ -584,8 +585,6 @@ async function bindItemOrder(itemId) {
     const category = itemData["Category"];
     const component = itemData["Component"];
 
-    document.getElementById("divLoader").style.display = "";
-
     bindBlindType(designId);
     await delay(150);
 
@@ -601,7 +600,6 @@ async function bindItemOrder(itemId) {
     setFormValues(itemData);
     bindComponentForm(colourtype);
 
-    document.getElementById("divLoader").style.display = "none";
     document.getElementById("divOrder").style.display = "";
   } catch (err) {
     console.error("Error:", err);
