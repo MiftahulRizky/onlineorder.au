@@ -528,16 +528,18 @@ Public Class OrderConfig
     ' LOG ACTIVITY
     Public Sub Log_Orders(data As Object())
         Try
-            If data.Length = 4 Then
+            If data.Length = 5 Then
                 Dim headerId As String = Convert.ToString(data(0))
                 Dim itemId As String = Convert.ToString(data(1))
-                Dim loginId As String = Convert.ToString(data(2))
-                Dim desc As String = Convert.ToString(data(3))
+                Dim orderType As String = Convert.ToString(data(2))
+                Dim loginId As String = Convert.ToString(data(3))
+                Dim desc As String = Convert.ToString(data(4))
 
                 Using thisConn As SqlConnection = New SqlConnection(myConn)
-                    Using myCmd As SqlCommand = New SqlCommand("INSERT INTO Log_Orders VALUES (NEWID(), @HeaderId, @ItemId, @ActionBy, GETDATE(), @Description)")
+                    Using myCmd As SqlCommand = New SqlCommand("INSERT INTO Log_Orders VALUES (NEWID(), @HeaderId, @ItemId, @OrderType, @ActionBy, GETDATE(), @Description)")
                         myCmd.Parameters.AddWithValue("@HeaderId", headerId)
                         myCmd.Parameters.AddWithValue("@ItemId", itemId)
+                        myCmd.Parameters.AddWithValue("@OrderType", orderType)
                         myCmd.Parameters.AddWithValue("@ActionBy", UCase(loginId).ToString())
                         myCmd.Parameters.AddWithValue("@Description", desc)
                         myCmd.Connection = thisConn
@@ -548,6 +550,7 @@ Public Class OrderConfig
                 End Using
             End If
         Catch ex As Exception
+
         End Try
     End Sub
 

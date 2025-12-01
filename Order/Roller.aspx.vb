@@ -4,6 +4,7 @@ Partial Class Order_Roller
     Inherits Page
 
     Dim publicCfg As New PublicConfig
+    Dim orderCfg As New OrderConfig
 
     Dim designId As String = String.Empty
 
@@ -716,6 +717,7 @@ Partial Class Order_Roller
 
                 ' Call MessageError(True, lblTrim.Text)
                 
+                
 
                 '#create new
                 If Session("itemAction") = "AddItem" Then
@@ -727,12 +729,15 @@ Partial Class Order_Roller
 
                     sdsPage.Insert()
                     Call SetPricing(lblItemId.Text, lblHeaderId.Text)
+                    Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Add Item Order"}
+                    orderCfg.Log_Orders(dataLog)
 
                     publicCfg.InsertActivity(userId, Page.Title, "INSERT ORDER DETAIL. ITEM ID : " & lblItemId.Text)
                     If bracketName = "Double" Or InStr(bracketName, "Linked") > 0 Or InStr(bracketName, "Link") > 0 Then
                         Session("itemAction") = ""
                         Dim myScript As String = "window.onload = function() { showConfirm('" + lblItemId.Text + "', '" + lblBlindNo.Text + "'); };"
                         ClientScript.RegisterStartupScript(Me.GetType(), "showConfirm", myScript, True)
+
                         Exit Sub
                     End If
 
@@ -742,12 +747,14 @@ Partial Class Order_Roller
                         Dim msg As String ="<b>Warning :</b>Check SP the availability for linking blind for WF motorised !"
                         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "Script", "showPopUpWfMotorised('"& msg &"')", True)
                         Session("headerId") = lblHeaderId.Text
+
                         Exit Sub
                     End If
                     If  InStr(bracketName, "Linked") AND ddlControlType.SelectedValue = "Alpha WF" AndAlso ddlMotorStyle.SelectedValue = "Alpha 2NM Std" Then
                         Dim msg As String ="<b>Warning :</b> Check SP the availability for linking blind for WF motorised !"
                         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "Script", "showPopUpWfMotorised('"& msg &"')", True)
                         Session("headerId") = lblHeaderId.Text
+
                         Exit Sub
                     End If
 
@@ -758,8 +765,6 @@ Partial Class Order_Roller
                 If Session("itemAction") = "NextItem" Then
                     lblItemId.Text = publicCfg.CreateOrderItemId()
                     sdsPage.Insert()
-
-                    publicCfg.InsertActivity(userId, Page.Title, "COPY ORDER DETAIL. ITEM ID : " & lblItemId.Text)
 
                     '#Double
                     If bracketName = "Double" Then
@@ -821,13 +826,16 @@ Partial Class Order_Roller
 
                     Call SetPricing(lblItemId.Text, lblHeaderId.Text)
 
+                    Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Next Item Order"}
+                    orderCfg.Log_Orders(dataLog)
+
                     If lblBlindNo.Text = "Blind 2" And (bracketName = "Linked 3 Blinds (Dep)" Or bracketName = "Linked 3 Blinds (Ind)" Or bracketName = "Double and Link System Dep" Or bracketName = "Double and Link System Ind") Then
                         Dim blindNo As String = lblBlindNo.Text
                         Dim myScript As String = "window.onload = function() { showConfirm('" + lblItemId.Text + "', '" + blindNo + "'); };"
                         ClientScript.RegisterStartupScript(Me.GetType(), "showConfirm", myScript, True)
                         Exit Sub
                     End If
-
+                    
 
                     Call myCancel()
                 End If
@@ -895,6 +903,8 @@ Partial Class Order_Roller
                     End If
 
                     Call SetPricing(lblItemId.Text, lblHeaderId.Text)
+                    Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Update Item Order"}
+                    orderCfg.Log_Orders(dataLog)
 
                     '#Show popup WF Motorised
                     publicCfg.InsertActivity(userId, Page.Title, "UPDATE ORDER DETAIL. ITEM ID : " & lblItemId.Text)

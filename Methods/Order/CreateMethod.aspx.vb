@@ -197,7 +197,7 @@ Partial Class Methods_Order_CreateMethod
                     End Using
                     url = "/order/detail?param=" & id & "&ordertype=" & data.ordertype.ToLower()
 
-                    Dim dataLog As Object() = {id, "", HttpContext.Current.Session("LoginId").ToString(), "Create Order"}
+                    Dim dataLog As Object() = {id, "", data.ordertype, HttpContext.Current.Session("LoginId").ToString(), "Create Order"}
                     orderCfg.Log_Orders(dataLog)
                 Else If data.ordertype = "Panorama" Or data.ordertype = "Evolve" Then
                     Dim headerId As String = orderCfg.CreateOrderHeaderId()
@@ -228,7 +228,7 @@ Partial Class Methods_Order_CreateMethod
                     End Using
                     url = "/order/shutters/detail?param=" & headerId & "&ordertype=" & data.ordertype.ToLower()
 
-                    Dim dataLog As Object() = {headerId, "", HttpContext.Current.Session("LoginId").ToString(), "Create Order"}
+                    Dim dataLog As Object() = {headerId, "", data.ordertype, HttpContext.Current.Session("LoginId").ToString(), "Create Order"}
                     orderCfg.Log_Orders(dataLog)
                 End If
                 msg = "Data has been saved successfully. <br /> Click oke to continue."
@@ -278,7 +278,7 @@ Partial Class Methods_Order_CreateMethod
                     url = "/order/shutters/detail?param=" & data.id & "&ordertype=" & data.ordertype.ToLower()
 
                 End If
-                Dim dataLog As Object() = {data.id, "", HttpContext.Current.Session("LoginId").ToString(), "Edit Order"}
+                Dim dataLog As Object() = {data.id, "", data.ordertype, HttpContext.Current.Session("LoginId").ToString(), "Edit Order"}
                 orderCfg.Log_Orders(dataLog)
                 msg = "Data has been updated successfully."
             End If

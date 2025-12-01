@@ -241,7 +241,7 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const id = e.target.dataset.id;
     const designId = e.target.dataset.designid;
     const msgBody = e.target.dataset.next;
-    handlerNextItem(id, HEADERID, "NextItem", designId, msgBody);
+    handlerNextItem(id, HEADERID, INFYNITY, "NextItem", designId, msgBody);
   }
 });
 
@@ -1665,7 +1665,14 @@ const handlerPricingItem = (id) => {
 };
 
 // HANDLER NEXT ITEM
-const handlerNextItem = async (id, headerid, action, designid, msgbody) => {
+const handlerNextItem = async (
+  id,
+  headerid,
+  ordertype,
+  action,
+  designid,
+  msgbody
+) => {
   const result = await Swal.fire({
     title: "Information",
     html: msgbody,
@@ -1703,6 +1710,7 @@ const handlerNextItem = async (id, headerid, action, designid, msgbody) => {
       body: JSON.stringify({
         id,
         headerid,
+        ordertype,
         action,
         designid,
       }),

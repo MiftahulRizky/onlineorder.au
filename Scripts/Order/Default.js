@@ -188,7 +188,8 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
 document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnLogs") {
     const id = e.target.dataset.id;
-    handlerLogs(id);
+    const ordertype = e.target.dataset.type;
+    handlerLogs(id, ordertype);
   }
 });
 // --------------------------------------------||modalChangeStatus Event ||-------------------------------------------
@@ -1028,14 +1029,14 @@ const handlerDownloadCSV = async (headerId) => {
 };
 
 // HANLDER LOGS
-const handlerLogs = async (id) => {
+const handlerLogs = async (id, ordertype) => {
   try {
     const response = await fetch(`${URIMETHOD}/Logs`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ id: id, ordertype: ordertype }),
     });
 
     if (!response.ok) {
@@ -1053,6 +1054,16 @@ const handlerLogs = async (id) => {
 
       const logs =
         typeof resultData === "string" ? JSON.parse(resultData) : resultData;
+
+      if (logs.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+        <td  class="text-center">
+          No logs found
+        </td>
+        `;
+        table.appendChild(tr);
+      }
 
       logs.forEach((log) => {
         const formattedDate = formatDotNetDate(log.ActionDate);
@@ -1306,7 +1317,7 @@ const dropdownActionButton = (data, type, row, params) => {
 
   act += `<div class="dropdown-divider"></div>
           <li>
-            <a class="dropdown-item" href="javascript:void(0)" id="btnLogs" data-id="${row.Id}">
+            <a class="dropdown-item" href="javascript:void(0)" id="btnLogs" data-id="${row.Id}" data-type="${row.OrderType}">
               <i class="ti ti-logout me-1 fs-2 opacity-50"></i>Logs
             </a>
           </li>`;

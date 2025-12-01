@@ -481,6 +481,9 @@
     <!-- my custom script -->
     <script type="text/javascript">
 
+        let headerId = '<%= Session("headerId") %>';
+        let orderType = '<%= Session("orderType") %>';
+
         document.addEventListener("DOMContentLoaded", () => {
             loaderFadeOut();
         })
@@ -514,7 +517,7 @@
                 html: msg,
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = "/order/detail";
+                    `/order/detail?param=${headerId}&ordertype=${orderType}`
                 }
             });
         }
@@ -532,7 +535,7 @@
 
         $(function () {
             $("#modalSuccess").on('hidden.bs.modal', function (e) {
-                window.location.href = "/order/detail";
+                window.location.href = `/order/detail?param=${headerId}&ordertype=${orderType}`;
             });
         });
         function showConfirm(itemId, blindNo) {
