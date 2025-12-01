@@ -122,7 +122,7 @@ Public Class PrintConfig
         result += Print_RollerBlind(HeaderId)
         result += Print_Roller_Motorised(HeaderId)
         result += Print_Cassette(HeaderId)
-        'result += Print_CassetteMotorised(HeaderId)
+        result += Print_CassetteMotorised(HeaderId)
 
         Using stream As FileStream = New FileStream(Directories + "/" + FileName, FileMode.Create)
             Dim pdfDoc As Document = New Document(PageSize.A4.Rotate)
@@ -1467,7 +1467,7 @@ Public Class PrintConfig
 
     Protected Function Print_Cassette(HeaderId As String) As String
         Dim result As String = String.Empty
-        Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Blinds' AND BlindName='Cassette' AND ControlType='JAI Geared' AND Active=1 ORDER BY Id, BlindNo ASC")
+        Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Blinds' AND BlindName='Cassette' AND TubeType='JAI Geared' AND Active=1 ORDER BY Id, BlindNo ASC")
         If Not thisData.Tables(0).Rows.Count = 0 Then
             Dim tdNotes As String = "<td colspan='18' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
             result += spanStart & "ROLLER CASSETTE - JAI SYSTEM" & spanEnd
@@ -1533,7 +1533,7 @@ Public Class PrintConfig
 
     Protected Function Print_CassetteMotorised(HeaderId As String) As String
         Dim result As String = String.Empty
-        Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Blinds' AND BlindName='Cassette' AND ControlType='Motorised' AND Active=1 ORDER BY Id, BlindNo ASC")
+        Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Blinds' AND BlindName='Cassette' AND TubeType='Motorised' AND Active=1 ORDER BY Id, BlindNo ASC")
         If Not thisData.Tables(0).Rows.Count = 0 Then
             Dim tdNotes As String = "<td colspan='19' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
             result += spanStart & "ROLLER CASSETTE - MOTORISED" & spanEnd
@@ -1564,7 +1564,7 @@ Public Class PrintConfig
             For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
                 result += trStart
                 result += tdStart & i + 1 & tdEnd
-                result += tdStart & thisData.Tables(0).Rows(i).Item("ID").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
