@@ -171,9 +171,9 @@
     
                             <div class="card-footer text-end">
                                 <button type="submit" id="btnSubmit" class="btn btn-primary "><i class="ti ti-cloud-up fs-2 me-1"></i>Submit</button>
-                                <a href="/order/detail" id="btnCancel"  class="btn btn-danger " >
+                                <button type="button" id="btnCancel"  class="btn btn-danger " >
                                    <i class="ti ti-cancel fs-2 me-1"></i> Cancel
-                                </a>
+                                </button>
                             </div>
                         </form>
         
@@ -204,16 +204,17 @@
 
 
     <script type="text/javascript">
-        let designIdOri = '35905E47-9B37-485B-A3FD-281BE4E3A94E';
-        let headerId = '<%=Session("HeaderId")%>'
-        let itemAction = '<%= Session("itemAction") %>';
-        let designId = '<%= Session("designId") %>';
-        let itemId = '<%= Session("itemId") %>';
-        let userId = '<%= Session("userId") %>';
-        let loginId = '<%= Session("LoginId") %>';
-        let roleName = '<%= Session("RoleName") %>';
-        let markupAccess = '<%= Session("MarkUpAccess") %>';
-        let uriMethod = "/Methods/Order/CelloraMethod.aspx"
+        let DESIGNIDORI = '35905E47-9B37-485B-A3FD-281BE4E3A94E';
+        let HEADERID = '<%=Session("headerId")%>'
+        let ORDERTYPE = '<%= Session("orderType") %>';
+        let ITEMACTION = '<%= Session("itemAction") %>';
+        let DESIGNID = '<%= Session("designId") %>';
+        let ITEMID = '<%= Session("itemId") %>';
+        let CUSTOMERID = '<%= Session("CustomerId") %>';
+        let LOGINID = '<%= Session("LoginId") %>';
+        let ROLENAME = '<%= Session("RoleName") %>';
+        let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
+        let URIMETHOD = "/Methods/Order/CelloraMethod.aspx"
         
     </script>
 

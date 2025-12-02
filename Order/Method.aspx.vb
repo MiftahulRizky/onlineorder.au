@@ -975,7 +975,8 @@ Partial Class Order_Method
                 orderCfg.UpdateFinalCost(itemId)
                 orderCfg.ResetAuthorization(data.headerid, itemId)
 
-                Dim dataLog As Object() = {data.headerid, itemId, data.loginid, "Add Item Order"}
+                Dim ordertype As String = orderCfg.GetItemData("SELECT OrderType FROM OrderHeaders_Shutters WHERE Id =" & data.headerid)
+                Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Add Item Order"}
                 orderCfg.Log_Orders(dataLog)
 
                 orderCfg.UpdateProductType(data.headerid)
@@ -1055,7 +1056,8 @@ Partial Class Order_Method
             orderCfg.UpdateFinalCost(itemId)
             orderCfg.ResetAuthorization(data.headerid, itemId)
 
-            Dim dataLog As Object() = {data.headerid, itemId, data.loginid, "Edit Item Order"}
+            Dim ordertype As String = orderCfg.GetItemData("SELECT OrderType FROM OrderHeaders_Shutters WHERE Id =" & data.headerid)
+            Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Edit Item Order"}
             orderCfg.Log_Orders(dataLog)
 
             orderCfg.UpdateProductType(data.headerid)
@@ -1079,7 +1081,6 @@ Partial Class Order_Method
         Dim designName As String = orderCfg.GetItemData("SELECT Name FROM Designs WHERE Id='" + data.designid + "'")
 
         Dim customerPriceGroup As String = orderCfg.GetItemData("SELECT Customers.Pricing FROM Customers INNER JOIN OrderHeaders_Shutters ON Customers.Id = OrderHeaders_Shutters.CustomerId WHERE OrderHeaders_Shutters.Id='" + data.headerid + "'")
-
 
         If String.IsNullOrEmpty(data.blindtype) Then Return "TYPE IS REQUIRED !"
         If String.IsNullOrEmpty(data.colourtype) Then Return "PRODUCT IS REQUIRED !"
@@ -1294,7 +1295,8 @@ Partial Class Order_Method
             orderCfg.UpdateFinalCost(itemId)
             orderCfg.ResetAuthorization(data.headerid, itemId)
 
-            Dim dataLog As Object() = {data.headerid, itemId, data.loginid, "Add Item Order"}
+            Dim ordertype As String = orderCfg.GetItemData("SELECT OrderType FROM OrderHeaders_Shutters WHERE Id =" & data.headerid)
+            Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Add Item Order"}
             orderCfg.Log_Orders(dataLog)
 
             orderCfg.UpdateProductType(data.headerid)
@@ -1334,7 +1336,8 @@ Partial Class Order_Method
             orderCfg.UpdateFinalCost(itemId)
             orderCfg.ResetAuthorization(data.headerid, itemId)
 
-            Dim dataLog As Object() = {data.headerid, itemId, data.loginid, "Edit Item Order"}
+            Dim ordertype As String = orderCfg.GetItemData("SELECT OrderType FROM OrderHeaders_Shutters WHERE Id =" & data.headerid)
+            Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Edit Item Order"}
             orderCfg.Log_Orders(dataLog)
 
             orderCfg.UpdateProductType(data.headerid)
@@ -2136,7 +2139,8 @@ Partial Class Order_Method
                 orderCfg.UpdateFinalCost(itemId)
                 orderCfg.ResetAuthorization(data.headerid, itemId)
 
-                Dim dataLog As Object() = {data.headerid, itemId, data.loginid, "Add Item Order"}
+                Dim ordertype As String = orderCfg.GetItemData("SELECT OrderType FROM OrderHeaders_Shutters WHERE Id =" & data.headerid)
+                Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Add Item Order"}
                 orderCfg.Log_Orders(dataLog)
 
                 orderCfg.UpdateProductType(data.headerid)
@@ -2222,7 +2226,8 @@ Partial Class Order_Method
             orderCfg.UpdateCostOverride(itemId, cost)
             orderCfg.UpdateFinalCost(itemId)
 
-            Dim dataLog As Object() = {data.headerid, itemId, data.loginid, "Edit Item Order"}
+            Dim ordertype As String = orderCfg.GetItemData("SELECT OrderType FROM OrderHeaders_Shutters WHERE Id =" & data.headerid)
+            Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Edit Item Order"}
             orderCfg.Log_Orders(dataLog)
 
             orderCfg.ResetAuthorization(data.headerid, itemId)
@@ -2330,7 +2335,8 @@ Partial Class Order_Method
             orderCfg.UpdateFinalCost(itemId)
             orderCfg.ResetAuthorization(data.headerid, itemId)
 
-            Dim dataLog As Object() = {data.headerid, itemId, data.loginid, "Add Item Order"}
+            Dim ordertype As String = orderCfg.GetItemData("SELECT OrderType FROM OrderHeaders_Shutters WHERE Id =" & data.headerid)
+            Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Add Item Order"}
             orderCfg.Log_Orders(dataLog)
 
             Return "Success"
@@ -2364,7 +2370,8 @@ Partial Class Order_Method
             orderCfg.UpdateFinalCost(itemId)
             orderCfg.ResetAuthorization(data.headerid, itemId)
 
-            Dim dataLog As Object() = {data.headerid, itemId, data.loginid, "Edit Item Order"}
+            Dim ordertype As String = orderCfg.GetItemData("SELECT OrderType FROM OrderHeaders_Shutters WHERE Id =" & data.headerid)
+            Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Edit Item Order"}
             orderCfg.Log_Orders(dataLog)
 
             Return "Success"

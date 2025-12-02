@@ -4,6 +4,7 @@ Partial Class Order_Aluminium
     Inherits Page
 
     Dim publicCfg As New PublicConfig
+    Dim orderCfg As New OrderConfig
 
     Dim designId As String = String.Empty
 
@@ -461,6 +462,10 @@ Partial Class Order_Aluminium
                     lblItemId.Text = publicCfg.CreateOrderItemId()
                     sdsPage.Insert()
                     publicCfg.InsertActivity(userId, Page.Title, "INSERT ORDER DETAIL. ITEM ID : " & lblItemId.Text)
+
+                    Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Add Item Order"}
+                    orderCfg.Log_Orders(dataLog)
+
                     Call SetPricing(lblItemId.Text, lblHeaderId.Text)
                     Call myCancel()
                 End If
@@ -468,6 +473,10 @@ Partial Class Order_Aluminium
                 If Session("itemAction") = "EditItem" Or Session("itemAction") = "ViewItem" Then
                     sdsPage.Update()
                     publicCfg.InsertActivity(userId, Page.Title, "UPDATE ORDER DETAIL. ITEM ID : " & lblItemId.Text)
+
+                    Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Update Item Order"}
+                    orderCfg.Log_Orders(dataLog)
+
                     Call SetPricing(lblItemId.Text, lblHeaderId.Text)
                     Call myCancel()
                 End If

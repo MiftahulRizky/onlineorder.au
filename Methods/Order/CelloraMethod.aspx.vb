@@ -10,11 +10,12 @@ Partial Class Methods_Order_CelloraMethod
     Inherits System.Web.UI.Page
 
     Shared publicCfg As New PublicConfig()
+    Shared orderCfg As New OrderConfig()
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function GetDesignType(ByVal designId As String) As Object
-        Dim designName As String = publicCfg.GetDesignName(designId)
+    Public Shared Function GetDesignType(ByVal designid As String) As Object
+        Dim designName As String = publicCfg.GetDesignName(designid)
         Dim result As New Dictionary(Of String, String) From {
             {"designName", designName}
         }
@@ -37,9 +38,9 @@ Partial Class Methods_Order_CelloraMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindBlindType(ByVal designId As String) As Object
+    Public Shared Function BindBlindType(ByVal designid As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Blinds WHERE DesignId='" + designId + "' AND Active=1 ORDER BY Name ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Blinds WHERE DesignId='" + designid + "' AND Active=1 ORDER BY Name ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -60,9 +61,9 @@ Partial Class Methods_Order_CelloraMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindColourType(ByVal designId As String, ByVal blindId As String) As Object
+    Public Shared Function BindColourType(ByVal designid As String, ByVal blindid As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT Id, ColourType FROM HardwareKits WHERE DesignId = '" + designId + "' AND BlindId='" + UCase(blindId).ToString() + "' AND Active=1 ORDER BY ColourType ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT Id, ColourType FROM HardwareKits WHERE DesignId = '" + designid + "' AND BlindId='" + UCase(blindid).ToString() + "' AND Active=1 ORDER BY ColourType ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -83,10 +84,10 @@ Partial Class Methods_Order_CelloraMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindFabricType(ByVal designId As String) As Object
+    Public Shared Function BindFabricType(ByVal designid As String) As Object
         Try
             
-            Dim datas As DataSet = publicCfg.GetListData("SELECT Type FROM Fabrics WHERE DesignId='" + designId + "' AND Active='1' GROUP BY Type ORDER BY Type ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT Type FROM Fabrics WHERE DesignId='" + designid + "' AND Active='1' GROUP BY Type ORDER BY Type ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -106,9 +107,9 @@ Partial Class Methods_Order_CelloraMethod
 
      <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindFabricColour(ByVal designId As String, ByVal fabricType As String) As Object
+    Public Shared Function BindFabricColour(ByVal designid As String, ByVal fabricType As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT Id, Colour FROM Fabrics WHERE DesignId='" + designId + "' AND Active='1' AND Type='" + fabricType + "' ORDER BY Name ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT Id, Colour FROM Fabrics WHERE DesignId='" + designid + "' AND Active='1' AND Type='" + fabricType + "' ORDER BY Name ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -128,7 +129,7 @@ Partial Class Methods_Order_CelloraMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindItemOrder(ByVal itemId As String) As Object
+    Public Shared Function BindItemOrder(ByVal itemid As String) As Object
         Try
             ' Gunakan parameterized query (idealnya pakai SqlParameter, ini simulasi fungsi GetListData Anda)
             Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE Id = '" + itemId + "'")
@@ -330,6 +331,8 @@ Partial Class Methods_Order_CelloraMethod
                 publicCfg.HitungHarga(data.headerid, itemId)
                 publicCfg.HitungSurcharge(data.headerid, itemId)
 
+                Dim dataLog As Object() = {data.headerid, itemId, "Blinds", data.loginid, "Add Item Order"}
+                orderCfg.Log_Orders(dataLog)
 
                 msg = "Item added successfully !"
             End If
@@ -365,6 +368,9 @@ Partial Class Methods_Order_CelloraMethod
                 publicCfg.ResetPriceDetail(itemId)
                 publicCfg.HitungHarga(data.headerid, itemId)
                 publicCfg.HitungSurcharge(data.headerid, itemId)
+
+                Dim dataLog As Object() = {data.headerid, itemId, "Blinds", data.loginid, "Update Item Order"}
+                orderCfg.Log_Orders(dataLog)
 
                 msg = "Item updated successfully !"
             End If

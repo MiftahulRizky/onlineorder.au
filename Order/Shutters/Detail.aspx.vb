@@ -126,7 +126,7 @@ Partial Class Order_Detail
 
             orderCfg.UpdateProductType(lblHeaderId.Text)
 
-            Dim dataLog As Object() = {lblHeaderId.Text, "", Session("LoginId").ToString(), "Submit Order"}
+            Dim dataLog As Object() = {lblHeaderId.Text, "", lblOrderType.Text, Session("LoginId").ToString(), "Submit Order"}
             orderCfg.Log_Orders(dataLog)
 
             Dim deposit As String = "1"
@@ -251,7 +251,7 @@ Partial Class Order_Detail
                 End Using
             End Using
 
-            Dim dataLog As Object() = {lblHeaderId.Text, "", Session("LoginId").ToString(), "Unsubmit Order"}
+            Dim dataLog As Object() = {lblHeaderId.Text, "", lblOrderType.Text, Session("LoginId").ToString(), "Unsubmit Order"}
             orderCfg.Log_Orders(dataLog)
 
             Response.Redirect(Request.RawUrl)
@@ -278,7 +278,7 @@ Partial Class Order_Detail
                 End Using
             End Using
 
-            Dim dataLog As Object() = {lblHeaderId.Text, "", Session("LoginId").ToString(), "Delete Order"}
+            Dim dataLog As Object() = {lblHeaderId.Text, "", lblOrderType.Text, Session("LoginId").ToString(), "Delete Order"}
             orderCfg.Log_Orders(dataLog)
 
             Response.Redirect("~/order", False)
@@ -334,7 +334,7 @@ Partial Class Order_Detail
                 End Using
             End Using
 
-            Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, Session("LoginId").ToString(), "Authorize Order"}
+            Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId").ToString(), "Authorize Order"}
             orderCfg.Log_Orders(dataLog)
             Response.Redirect(Request.RawUrl)
         Catch ex As Exception
@@ -367,7 +367,7 @@ Partial Class Order_Detail
                 End Using
             End Using
 
-            Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, Session("LoginId").ToString(), "Decline Order"}
+            Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId").ToString(), "Decline Order"}
             orderCfg.Log_Orders(dataLog)
 
             Response.Redirect(Request.RawUrl)
@@ -408,7 +408,7 @@ Partial Class Order_Detail
                 End Using
             End Using
 
-            Dim dataLog As Object() = {lblHeaderId.Text, "", Session("LoginId").ToString(), "Generate Job Order"}
+            Dim dataLog As Object() = {lblHeaderId.Text, "", lblOrderType.Text, Session("LoginId").ToString(), "Generate Job Order"}
             orderCfg.Log_Orders(dataLog)
 
             If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
@@ -487,7 +487,7 @@ Partial Class Order_Detail
                     End Using
                 End Using
 
-                Dim dataLog As Object() = {lblHeaderId.Text, "", Session("LoginId").ToString(), "Cancel Order"}
+                Dim dataLog As Object() = {lblHeaderId.Text, "", lblOrderType.Text, Session("LoginId").ToString(), "Cancel Order"}
                 orderCfg.Log_Orders(dataLog)
 
                 Response.Redirect(Request.RawUrl)
@@ -516,7 +516,7 @@ Partial Class Order_Detail
                 End Using
             End Using
 
-            Dim dataLog As Object() = {lblHeaderId.Text, "", Session("LoginId").ToString(), "Complete Order"}
+            Dim dataLog As Object() = {lblHeaderId.Text, "", lblOrderType.Text, Session("LoginId").ToString(), "Complete Order"}
             orderCfg.Log_Orders(dataLog)
             Response.Redirect(Request.RawUrl)
         Catch ex As Exception
@@ -846,7 +846,7 @@ Partial Class Order_Detail
                     End If
 
                     Dim changeStatus As String = spanStatusAdditional.InnerText & " to Clear Status"
-                    Dim dataLog As Object() = {lblHeaderId.Text, "", Session("LoginId").ToString(), changeStatus}
+                    Dim dataLog As Object() = {lblHeaderId.Text, "", lblOrderType.Text, Session("LoginId").ToString(), changeStatus}
                     orderCfg.Log_Orders(dataLog)
 
                     Using thisConn As New SqlConnection(myConn)
@@ -882,7 +882,7 @@ Partial Class Order_Detail
                         changeStatus = "Change to " & ddlStatusAdditional.SelectedValue
                     End If
 
-                    Dim dataLog As Object() = {lblHeaderId.Text, "", Session("LoginId").ToString(), changeStatus}
+                    Dim dataLog As Object() = {lblHeaderId.Text, "", lblOrderType.Text, Session("LoginId").ToString(), changeStatus}
                     orderCfg.Log_Orders(dataLog)
 
                     Using thisConn As New SqlConnection(myConn)
@@ -902,7 +902,7 @@ Partial Class Order_Detail
 
                 If ddlStatusAdditional.SelectedValue = "On Hold - Order Detail Query" Or ddlStatusAdditional.SelectedValue = "On Hold - Customer Request" Or ddlStatusAdditional.SelectedValue = "On Hold - Waiting for Template" Or ddlStatusAdditional.SelectedValue = "On Hold - Waiting for Colour Swatch" Or ddlStatusAdditional.SelectedValue = "On Hold - Waiting for Drawing Approval" Then
                     Dim changeStatus As String = spanStatusAdditional.InnerText & " to " & ddlStatusAdditional.SelectedValue
-                    Dim dataLog As Object() = {lblHeaderId.Text, "", Session("LoginId").ToString(), changeStatus}
+                    Dim dataLog As Object() = {lblHeaderId.Text, "", lblOrderType.Text, Session("LoginId").ToString(), changeStatus}
                     orderCfg.Log_Orders(dataLog)
 
                     Using thisConn As New SqlConnection(myConn)
@@ -923,7 +923,7 @@ Partial Class Order_Detail
 
             If spanStatusOrder.InnerText = "In Production" Then
                 Dim changeStatus As String = spanStatusAdditional.InnerText & " to " & ddlStatusAdditional.SelectedValue
-                Dim dataLog As Object() = {lblHeaderId.Text, "", Session("LoginId").ToString(), changeStatus}
+                Dim dataLog As Object() = {lblHeaderId.Text, "", lblOrderType.Text, Session("LoginId").ToString(), changeStatus}
                 orderCfg.Log_Orders(dataLog)
 
                 Using thisConn As New SqlConnection(myConn)

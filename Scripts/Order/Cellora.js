@@ -1,11 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
-  if (roleName === "Administrator") {
+  if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
     console.log("Cellora.js loaded successfully");
-    console.log("roleName: " + roleName);
-    console.log("itemaction: " + itemAction);
-    console.log("itemId: " + itemId);
-    console.log("userId: " + userId);
-    console.log("uriMethod: " + uriMethod);
+    console.log("ROLENAME: " + ROLENAME);
+    console.log("ITEMACTION: " + ITEMACTION);
+    console.log("ITEMID: " + ITEMID);
+    console.log("HEADERID: " + HEADERID);
+    console.log("ORDERTYPE: " + ORDERTYPE);
+    console.log("URIMETHOD: " + URIMETHOD);
   }
   checkSessionCellora();
 });
@@ -28,9 +29,9 @@ document.querySelector("#blindtype").addEventListener("change", (e) => {
   const blindId = e.target.value;
   const fabricType = document.querySelector("#fabrictype").value;
 
-  bindColours(designId, blindId);
-  bindFabrics(designId);
-  bindFabricColours(designId, fabricType);
+  bindColours(DESIGNID, blindId);
+  bindFabrics(DESIGNID);
+  bindFabricColours(DESIGNID, fabricType);
 });
 
 // // change colours
@@ -40,7 +41,7 @@ document.querySelector("#colourtype").addEventListener("change", (e) => {
 
 // change fabrics
 document.querySelector("#fabrictype").addEventListener("change", (e) => {
-  bindFabricColours(designId, e.target.value);
+  bindFabricColours(DESIGNID, e.target.value);
 });
 
 // input notes count length
@@ -50,6 +51,12 @@ document.querySelector("#notes").addEventListener("input", (e) => {
   document.querySelector(
     "#notescount"
   ).textContent = `${currentLength}/${maxLength}`;
+});
+
+// btn cancel
+const buttonCancel = document.querySelector("#btnCancel");
+buttonCancel.addEventListener("click", () => {
+  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
 });
 
 // submit form
@@ -108,11 +115,11 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
 
     // data tambahan
     const extraData = {
-      headerid: headerId,
-      itemaction: itemAction,
-      itemid: itemId,
-      designid: designId,
-      loginid: loginId,
+      headerid: HEADERID,
+      itemaction: ITEMACTION,
+      itemid: ITEMID,
+      designid: DESIGNID,
+      loginid: LOGINID,
     };
 
     // gabungkan
@@ -131,7 +138,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
     button.innerHTML = '<i class="ti ti-loader fs-2 me-1"></i> Processing...';
 
     // fetch POST
-    const response = await fetch(uriMethod + "/SubmitForm", {
+    const response = await fetch(URIMETHOD + "/SubmitForm", {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -146,7 +153,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? `${response.status}\n${errorText}`
           : "Something went wrong, please try again!"
       );
@@ -165,7 +172,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
       }
     } else {
       await isSuccess(dataResult.success);
-      window.location.href = "/order/detail";
+      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
     }
   } catch (err) {
     await isError(err.message);
@@ -185,32 +192,32 @@ const handlerElementVisibility = (colourtype) => {
   if (colourtype) divFormDetail.removeAttribute("hidden");
 
   // markup
-  if (markupAccess === "True") divMarkUp.removeAttribute("hidden");
+  if (MARKUPACCESS === "True") divMarkUp.removeAttribute("hidden");
 
-  if (["AddItem", "EditItem", "CopyItem"].includes(itemAction)) {
+  if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
     btnSubmit.removeAttribute("hidden");
-  } else if (itemAction === "ViewItem") {
+  } else if (ITEMACTION === "ViewItem") {
     btnSubmit.removeAttribute("hidden");
-    if (roleName !== "Administrator") btnSubmit.setAttribute("hidden", true);
+    if (ROLENAME !== "Administrator") btnSubmit.setAttribute("hidden", true);
   }
 };
 
 // --------------------------------------|| Binding Functions ||--------------------------------------
 const bindDesigns = async () => {
   try {
-    const response = await fetch(`${uriMethod}/GetDesignType`, {
+    const response = await fetch(`${URIMETHOD}/GetDesignType`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designId }),
+      body: JSON.stringify({ designid: DESIGNID }),
     });
 
     // cek status HTTP (400, 500, dsb.)
     if (!response.ok) {
       const text = await response.text();
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? `${response.status}\n${text}`
           : "Please contact our IT team at support@onlineorder.au";
       return isError(msg);
@@ -223,7 +230,7 @@ const bindDesigns = async () => {
     // validasi apakah ada data
     if (!data) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? "No data returned from server : bindDesigns"
           : "Please contact our IT team at support@onlineorder.au";
       return isError(msg);
@@ -231,11 +238,11 @@ const bindDesigns = async () => {
 
     // render ke elemen halaman
     document.getElementById("pageTitle").innerHTML = data.designName;
-    document.getElementById("pageAction").innerHTML = itemAction;
+    document.getElementById("pageAction").innerHTML = ITEMACTION;
   } catch (err) {
     // error karena jaringan / parsing JSON
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? err.message
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
@@ -244,19 +251,19 @@ const bindDesigns = async () => {
 
 const bindHeaders = async () => {
   try {
-    const response = await fetch(`${uriMethod}/GetHeaderData`, {
+    const response = await fetch(`${URIMETHOD}/GetHeaderData`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ headerId }),
+      body: JSON.stringify({ headerId: HEADERID }),
     });
 
     // cek status HTTP (400, 500, dsb.)
     if (!response.ok) {
       const text = await response.text();
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? `${response.status}\n${text}`
           : "Please contact our IT team at support@onlineorder.au";
       return isError(msg);
@@ -269,7 +276,7 @@ const bindHeaders = async () => {
     // validasi apakah ada data
     if (!data) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? "No data returned from server : bindHeaders"
           : "Please contact our IT team at support@onlineorder.au";
       return isError(msg);
@@ -287,14 +294,14 @@ const bindHeaders = async () => {
   } catch (err) {
     // error karena jaringan / parsing JSON
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? err.message
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
   }
 };
 
-const bindFormAction = (itemAction) => {
+const bindFormAction = (itemaction) => {
   const cardTitle = document.getElementById("cardTitle");
   // if (!cardTitle) return console.warn("Elemen 'cardTitle' tidak ditemukan.");
 
@@ -304,29 +311,29 @@ const bindFormAction = (itemAction) => {
     ViewItem: "VIEW ITEM",
     CopyItem: "COPY ITEM",
   };
-  cardTitle.innerText = actionMap[itemAction] || "";
+  cardTitle.innerText = actionMap[itemaction] || "";
 };
 
 const bindBlinds = async () => {
   const blindtype = document.getElementById("blindtype");
   blindtype.innerHTML = ""; //reset
 
-  if (!designId) return;
+  if (!DESIGNID) return;
 
   try {
-    const response = await fetch(`${uriMethod}/BindBlindType`, {
+    const response = await fetch(`${URIMETHOD}/BindBlindType`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designId }),
+      body: JSON.stringify({ designid: DESIGNID }),
     });
 
     // cek status HTTP (400, 500, dsb.)
     if (!response.ok) {
       const text = await response.text();
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? `${response.status}\n${text}`
           : "Please contact our IT team at support@onlineorder.au";
       return isError(msg);
@@ -339,7 +346,7 @@ const bindBlinds = async () => {
     // validasi apakah ada data
     if (!data) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? "No data returned from server : bindBlinds"
           : "Please contact our IT team at support@onlineorder.au";
       return isError(msg);
@@ -367,44 +374,43 @@ const bindBlinds = async () => {
 
       if (data.length === 1) {
         blindtype.selectedIndex = 0;
-        bindColours(designId, blindtype.value);
+        bindColours(DESIGNID, blindtype.value);
       }
 
       const blindId = blindtype.value;
-      //   bindColours(designId, blindId);
     }
 
-    if (itemAction === "AddItem") loaderFadeOut();
+    if (ITEMACTION === "AddItem") loaderFadeOut();
   } catch (err) {
     // error karena jaringan / parsing JSON
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? err.message
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
   }
 };
 
-const bindColours = async (designId, blindId) => {
+const bindColours = async (designid, blindid) => {
   const colourtype = document.getElementById("colourtype");
   colourtype.innerHTML = ""; //reset
 
-  if (!blindId) return;
+  if (!blindid) return;
 
   try {
-    const response = await fetch(`${uriMethod}/BindColourType`, {
+    const response = await fetch(`${URIMETHOD}/BindColourType`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designId, blindId }),
+      body: JSON.stringify({ designid, blindid }),
     });
 
     // cek status HTTP (400, 500, dsb.)
     if (!response.ok) {
       const text = await response.text();
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? `${response.status}\n${text}`
           : "Please contact our IT team at support@onlineorder.au";
       return isError(msg);
@@ -417,7 +423,7 @@ const bindColours = async (designId, blindId) => {
     // validasi apakah ada data
     if (!data) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? "No data returned from server : bindColours"
           : "Please contact our IT team at support@onlineorder.au";
       return isError(msg);
@@ -455,33 +461,33 @@ const bindColours = async (designId, blindId) => {
   } catch (err) {
     // error karena jaringan / parsing JSON
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? err.message
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
   }
 };
 
-const bindFabrics = async (designId) => {
+const bindFabrics = async (designid) => {
   const sel = document.getElementById("fabrictype");
   sel.innerHTML = ""; //reset
 
-  if (!designId) return;
+  if (!designid) return;
 
   try {
-    const response = await fetch(`${uriMethod}/BindFabricType`, {
+    const response = await fetch(`${URIMETHOD}/BindFabricType`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designId }),
+      body: JSON.stringify({ designid: DESIGNID }),
     });
 
     // cek status HTTP (400, 500, dsb.)
     if (!response.ok) {
       const text = await response.text();
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? `${response.status}\n${text}`
           : "Please contact our IT team at support@onlineorder.au";
       return isError(msg);
@@ -494,7 +500,7 @@ const bindFabrics = async (designId) => {
     // validasi apakah ada data
     if (!data) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? "No data returned from server : bindFabrics"
           : "Please contact our IT team at support@onlineorder.au";
       return isError(msg);
@@ -521,39 +527,39 @@ const bindFabrics = async (designId) => {
 
       if (data.length === 1) {
         sel.selectedIndex = 0;
-        bindFabricColours(designId, sel.value);
+        bindFabricColours(designid, sel.value);
       }
     }
   } catch (err) {
     // error karena jaringan / parsing JSON
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? err.message
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
   }
 };
 
-const bindFabricColours = async (designId, fabricType) => {
+const bindFabricColours = async (designid, fabricType) => {
   const sel = document.getElementById("fabriccolour");
   sel.innerHTML = ""; //reset
 
-  if (!fabricType || !designId) return;
+  if (!fabricType || !designid) return;
 
   try {
-    const response = await fetch(`${uriMethod}/BindFabricColour`, {
+    const response = await fetch(`${URIMETHOD}/BindFabricColour`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designId, fabricType }),
+      body: JSON.stringify({ designid, fabricType }),
     });
 
     // cek status HTTP (400, 500, dsb.)
     if (!response.ok) {
       const text = await response.text();
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? `${response.status}\n${text}`
           : "Please contact our IT team at support@onlineorder.au";
       return isError(msg);
@@ -566,7 +572,7 @@ const bindFabricColours = async (designId, fabricType) => {
     // validasi apakah ada data
     if (!data) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? "No data returned from server : bindFabricColours"
           : "Please contact our IT team at support@onlineorder.au";
       return isError(msg);
@@ -598,28 +604,28 @@ const bindFabricColours = async (designId, fabricType) => {
   } catch (err) {
     // error karena jaringan / parsing JSON
     const msg =
-      roleName === "Administrator"
+      ROLENAME === "Administrator"
         ? err.message
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
   }
 };
 
-const bindItemOrders = async (itemId) => {
+const bindItemOrders = async (itemid) => {
   try {
-    if (!itemId) return;
+    if (!itemid) return;
 
-    const res = await fetch(`${uriMethod}/BindItemOrder`, {
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ itemId }),
+      body: JSON.stringify({ itemid }),
     });
 
     if (!res.ok) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? `${res.status} - ${res.statusText}`
           : "Please contact our IT team at support@onlineorder.au";
       throw isError(msg);
@@ -630,7 +636,7 @@ const bindItemOrders = async (itemId) => {
 
     if (!data || data.length === 0) {
       const msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? "No data returned from server : bindItemOrders"
           : "Please contact our IT team at support@onlineorder.au";
       throw isError(msg);
@@ -643,7 +649,7 @@ const bindItemOrders = async (itemId) => {
       await bindFabricColours(item.DesignId, item.FabricType);
       await handlerElementVisibility(item.BlindId);
       await handlerSetElementValues(item);
-      if (itemAction !== "AddItem") await loaderFadeOut();
+      if (ITEMACTION !== "AddItem") await loaderFadeOut();
     }
 
     return true; // ✅ success
@@ -696,7 +702,7 @@ const handlerSetElementValues = (itemData) => {
   }
 
   // Kalau mode copy item → reset beberapa field
-  if (itemAction === "CopyItem") {
+  if (ITEMACTION === "CopyItem") {
     const resetFields = ["room", "width", "drop", "notes"];
     resetFields.forEach((id) => {
       const el = document.getElementById(id);
@@ -711,16 +717,23 @@ const handlerSetElementValues = (itemData) => {
 
 // --------------------------------------|| Other Functions ||--------------------------------------
 const checkSessionCellora = () => {
-  if (!headerId) {
+  if (!HEADERID) {
     window.location.href = "/order";
     return;
   }
-  if (!itemAction || !designId) {
-    window.location.href = "/order/detail";
+
+  if (!ORDERTYPE) {
+    window.location.href = "/order";
     return;
   }
-  if (designId.toUpperCase() !== designIdOri) {
-    window.location.href = "/order/detail";
+
+  if (!ITEMACTION || !DESIGNID) {
+    window.location.href = `/order/detail`;
+    return;
+  }
+
+  if (DESIGNID.toUpperCase() !== DESIGNIDORI) {
+    window.location.href = `/order/detail`;
     return;
   }
 
@@ -728,12 +741,12 @@ const checkSessionCellora = () => {
 
   bindDesigns();
   bindHeaders();
-  bindFormAction(itemAction);
+  bindFormAction(ITEMACTION);
 
-  if (itemAction === "AddItem") {
+  if (ITEMACTION === "AddItem") {
     handlerElementVisibility();
-    bindBlinds(designId);
-  } else if (["EditItem", "ViewItem", "CopyItem"].includes(itemAction)) {
-    bindItemOrders(itemId);
+    bindBlinds(DESIGNID);
+  } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
+    bindItemOrders(ITEMID);
   }
 };
