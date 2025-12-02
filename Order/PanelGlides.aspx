@@ -250,16 +250,16 @@
 
 
     <script type="text/javascript">
-        let designIdOri = '3191CB8E-9A39-4BAE-BB71-95032D5E87F1';
-        let headerId = '<%=Session("HeaderId")%>'
-        let itemAction = '<%= Session("itemAction") %>';
-        let designId = '<%= Session("designId") %>';
-        let itemId = '<%= Session("itemId") %>';
-        let userId = '<%= Session("userId") %>';
-        let loginId = '<%= Session("LoginId") %>';
-        let roleName = '<%= Session("RoleName") %>';
-        let markupAccess = '<%= Session("MarkUpAccess") %>';
-        let uriMethod = "/Methods/Order/PanelGlideMethod.aspx"
+        let DESIGNIDORI = '3191CB8E-9A39-4BAE-BB71-95032D5E87F1';
+        let HEADERID = '<%=Session("headerId")%>'
+        let ORDERTYPE = '<%= Session("orderType") %>';
+        let ITEMACTION = '<%= Session("itemAction") %>';
+        let DESIGNID = '<%= Session("designId") %>';
+        let ITEMID = '<%= Session("itemId") %>';
+        let LOGINID = '<%= Session("LoginId") %>';
+        let ROLENAME = '<%= Session("RoleName") %>';
+        let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
+        let URIMETHOD = "/Methods/Order/PanelGlideMethod.aspx"
         
     </script>
     <script src="/Scripts/Order/PanelGlides.js?<%= DateTime.Now.Ticks %>"></script>

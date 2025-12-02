@@ -1,11 +1,10 @@
 $(document).ready(function () {
-  if (roleName === "Administrator") {
+  if (ROLENAME === "Administrator") {
     console.log("panelglides.js loaded successfully");
-    console.log("roleName: " + roleName);
-    console.log("itemaction: " + itemAction);
-    console.log("itemId: " + itemId);
-    console.log("userId: " + userId);
-    console.log("uriMethod: " + uriMethod);
+    console.log("ROLENAME: " + ROLENAME);
+    console.log("ITEMACTION: " + ITEMACTION);
+    console.log("ITEMID: " + ITEMID);
+    console.log("URIMETHOD: " + URIMETHOD);
   }
   checkSession();
 });
@@ -13,7 +12,11 @@ $(document).ready(function () {
 // ==================================================EVENTS==================================================
 // #-------------------------|| Button Event ||-------------------------#
 // BUTTON CANCEL
-$("#btnCancel").on("click", () => (window.location.href = "/order/detail"));
+$("#btnCancel").on(
+  "click",
+  () =>
+    (window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`)
+);
 
 // BUTTON SUBMIT
 $("#btnSubmit").on("click", submitForm);
@@ -30,10 +33,10 @@ $("#blindtype").on("change", function (e) {
   const fabrictype = $(this).find("option:selected").data("type");
   console.log("fabrictype: " + fabrictype);
 
-  bindColourType(designId, blindId);
+  bindColourType(DESIGNID, blindId);
   bindMounting(blindName);
-  bindFabricType(designId, blindName);
-  bindFabricColour(designId, fabrictype);
+  bindFabricType(DESIGNID, blindName);
+  bindFabricColour(DESIGNID, fabrictype);
   bindLayoutCode(blindName);
   bindNoPanel();
   bindTrackType();
@@ -70,7 +73,7 @@ $("#mounting").on("change", function (e) {
 $("#fabrictype").on("change", function (e) {
   $(this).removeClass("is-invalid");
   const fabrictype = $(this).find("option:selected").data("type");
-  bindFabricColour(designId, fabrictype);
+  bindFabricColour(DESIGNID, fabrictype);
 });
 
 // CHANGE FABRIC COLOUR
@@ -155,15 +158,15 @@ $("#markup").on("change", function (e) {
 // ==================================================FUNCTIONS===============================================
 // #-------------------------|| Binding Function ||-------------------------#
 // BIND DESIGN TYPE
-function bindDesignType(designId) {
+function bindDesignType(designid) {
   return new Promise((resolve, reject) => {
-    if (!designId) return resolve();
+    if (!designid) return resolve();
 
     $.ajax({
       type: "POST",
-      url: uriMethod + "/GetDesignType",
+      url: URIMETHOD + "/GetDesignType",
       data: JSON.stringify({
-        designId: designId,
+        designid: designid,
       }),
       contentType: "application/json; charset=utf-8",
       dataType: "json",
@@ -171,7 +174,7 @@ function bindDesignType(designId) {
         const data = response.d;
         if (!data) {
           var msg =
-            roleName === "Administrator"
+            ROLENAME === "Administrator"
               ? "No data returned from server : bindDesignType"
               : "Please contact our IT team at support@onlineorder.au";
           reject(isError(msg));
@@ -179,12 +182,12 @@ function bindDesignType(designId) {
         }
 
         document.getElementById("pageTitle").innerHTML = data.designName;
-        document.getElementById("pageAction").innerHTML = itemAction;
+        document.getElementById("pageAction").innerHTML = ITEMACTION;
         resolve();
       },
       error: function (xhr, status, error, thrownError) {
         var msg =
-          roleName === "Administrator"
+          ROLENAME === "Administrator"
             ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
             : "Please contact our IT team at support@onlineorder.au";
         reject(isError(msg));
@@ -194,7 +197,7 @@ function bindDesignType(designId) {
 }
 
 // BIND ITEM ORDER
-function bindFormAction(itemAction) {
+function bindFormAction(itemaction) {
   const cardTitle = document.getElementById("cardTitle");
   // if (!cardTitle) return console.warn("Elemen 'cardTitle' tidak ditemukan.");
 
@@ -204,19 +207,19 @@ function bindFormAction(itemAction) {
     ViewItem: "VIEW ITEM",
     CopyItem: "COPY ITEM",
   };
-  cardTitle.innerText = actionMap[itemAction] || "";
+  cardTitle.innerText = actionMap[itemaction] || "";
 }
 
 // BIND DATA HEADER
-function bindDataHeader(headerId) {
+function bindDataHeader(headerid) {
   return new Promise((resolve, reject) => {
-    if (!headerId) return resolve();
+    if (!headerid) return resolve();
 
     $.ajax({
       type: "POST",
-      url: uriMethod + "/GetHeaderData",
+      url: URIMETHOD + "/GetHeaderData",
       data: JSON.stringify({
-        headerId: headerId,
+        headerid: headerid,
       }),
       contentType: "application/json; charset=utf-8",
       dataType: "json",
@@ -224,7 +227,7 @@ function bindDataHeader(headerId) {
         const data = response.d;
         if (!data) {
           var msg =
-            roleName === "Administrator"
+            ROLENAME === "Administrator"
               ? "No data returned from server : bindDataHeader"
               : "Please contact our IT team at support@onlineorder.au";
           reject(isError(msg));
@@ -244,7 +247,7 @@ function bindDataHeader(headerId) {
       },
       error: function (xhr, status, error, thrownError) {
         var msg =
-          roleName === "Administrator"
+          ROLENAME === "Administrator"
             ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
             : "Please contact our IT team at support@onlineorder.au";
         reject(isError(msg));
@@ -254,20 +257,20 @@ function bindDataHeader(headerId) {
 }
 
 // BIND DATA BLIND TYPE
-function bindBlindType(designId) {
+function bindBlindType(designid) {
   return new Promise((resolve, reject) => {
     const blindtype = document.getElementById("blindtype");
     blindtype.innerHTML = ""; //reset
 
-    if (!designId) return resolve();
+    if (!designid) return resolve();
 
-    bindColourType(designId, blindtype.value);
+    bindColourType(designid, blindtype.value);
 
     $.ajax({
       type: "POST",
-      url: uriMethod + "/BindBlindType",
+      url: URIMETHOD + "/BindBlindType",
       data: JSON.stringify({
-        designId: designId,
+        designid: designid,
       }),
       contentType: "application/json; charset=utf-8",
       dataType: "json",
@@ -276,7 +279,7 @@ function bindBlindType(designId) {
 
         if (!data || data.length === 0) {
           var msg =
-            roleName === "Administrator"
+            ROLENAME === "Administrator"
               ? "No data returned from server : bindBlindType"
               : "Please contact our IT team at support@onlineorder.au";
           reject(isError(msg));
@@ -304,14 +307,14 @@ function bindBlindType(designId) {
 
           if (data.length === 1) {
             blindtype.selectedIndex = 0;
-            bindColourType(designId, blindtype.value);
+            bindColourType(designid, blindtype.value);
           }
         }
         resolve();
       },
       error: function (xhr, status, error, thrownError) {
         var msg =
-          roleName === "Administrator"
+          ROLENAME === "Administrator"
             ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
             : "Please contact our IT team at support@onlineorder.au";
         reject(isError(msg));
@@ -321,12 +324,12 @@ function bindBlindType(designId) {
 }
 
 // BIND COLOUR TYPE
-function bindColourType(designId, blindId) {
+function bindColourType(designid, blindid) {
   return new Promise((resolve, reject) => {
     const colourtype = document.getElementById("colourtype");
     colourtype.innerHTML = ""; //reset
 
-    if (!blindId) return resolve();
+    if (!blindid) return resolve();
 
     const sel = document.getElementById("blindtype");
     const blindName = sel.selectedOptions[0].getAttribute("data-name");
@@ -335,10 +338,10 @@ function bindColourType(designId, blindId) {
 
     $.ajax({
       type: "POST",
-      url: uriMethod + "/BindColourType",
+      url: URIMETHOD + "/BindColourType",
       data: JSON.stringify({
-        designId: designId,
-        blindId: blindId,
+        designid: designid,
+        blindid: blindid,
       }),
       contentType: "application/json; charset=utf-8",
       dataType: "json",
@@ -347,7 +350,7 @@ function bindColourType(designId, blindId) {
 
         if (!data || data.length === 0) {
           var msg =
-            roleName === "Administrator"
+            ROLENAME === "Administrator"
               ? "No data returned from server : bindColourType"
               : "Please contact our IT team at support@onlineorder.au";
           reject(isError(msg));
@@ -380,7 +383,7 @@ function bindColourType(designId, blindId) {
       },
       error: function (xhr, status, error, thrownError) {
         var msg =
-          roleName === "Administrator"
+          ROLENAME === "Administrator"
             ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
             : "Please contact our IT team at support@onlineorder.au";
         reject(isError(msg));
@@ -434,7 +437,7 @@ function bindFabricType(designid, blindname) {
 
     $.ajax({
       type: "POST",
-      url: uriMethod + "/BindFabricType",
+      url: URIMETHOD + "/BindFabricType",
       data: JSON.stringify({
         designid: designid,
         blindname: blindname,
@@ -446,7 +449,7 @@ function bindFabricType(designid, blindname) {
 
         if (!data || data.length === 0) {
           var msg =
-            roleName === "Administrator"
+            ROLENAME === "Administrator"
               ? "No data returned from server : bindFabricType"
               : "Please contact our IT team at support@onlineorder.au";
           reject(isError(msg));
@@ -480,7 +483,7 @@ function bindFabricType(designid, blindname) {
       },
       error: function (xhr, status, error, thrownError) {
         var msg =
-          roleName === "Administrator"
+          ROLENAME === "Administrator"
             ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
             : "Please contact our IT team at support@onlineorder.au";
         reject(isError(msg));
@@ -499,7 +502,7 @@ function bindFabricColour(designid, fabrictype) {
 
     $.ajax({
       type: "POST",
-      url: uriMethod + "/BindFabricColour",
+      url: URIMETHOD + "/BindFabricColour",
       data: JSON.stringify({
         designid: designid,
         fabrictype: fabrictype,
@@ -511,7 +514,7 @@ function bindFabricColour(designid, fabrictype) {
 
         if (!data || data.length === 0) {
           var msg =
-            roleName === "Administrator"
+            ROLENAME === "Administrator"
               ? "No data returned from server : bindFabricColour"
               : "Please contact our IT team at support@onlineorder.au";
           reject(isError(msg));
@@ -544,7 +547,7 @@ function bindFabricColour(designid, fabrictype) {
       },
       error: function (xhr, status, error, thrownError) {
         var msg =
-          roleName === "Administrator"
+          ROLENAME === "Administrator"
             ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
             : "Please contact our IT team at support@onlineorder.au";
         reject(isError(msg));
@@ -744,16 +747,16 @@ function bindBattenColour() {
 }
 
 // BIND ITEM ORDER FOR EDIT ONLY
-function bindItemOrder(itemId) {
+function bindItemOrder(itemid) {
   return new Promise((resolve, reject) => {
-    if (!itemId) return resolve();
-    // console.log("bindItemOrder", itemId);
+    if (!itemid) return resolve();
+    // console.log("bindItemOrder", itemid);
 
     $.ajax({
       type: "POST",
-      url: uriMethod + "/BindItemOrder",
+      url: URIMETHOD + "/BindItemOrder",
       data: JSON.stringify({
-        itemId: itemId,
+        itemid: itemid,
       }),
       contentType: "application/json; charset=utf-8",
       dataType: "json",
@@ -762,7 +765,7 @@ function bindItemOrder(itemId) {
 
         if (!data || data.length === 0) {
           var msg =
-            roleName === "Administrator"
+            ROLENAME === "Administrator"
               ? "No data returned from server : bindItemOrder"
               : "Please contact our IT team at support@onlineorder.au";
           reject(isError(msg));
@@ -798,7 +801,7 @@ function bindItemOrder(itemId) {
       },
       error: function (xhr, status, error, thrownError) {
         var msg =
-          roleName === "Administrator"
+          ROLENAME === "Administrator"
             ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
             : "Please contact our IT team at support@onlineorder.au";
         reject(isError(msg));
@@ -850,7 +853,7 @@ function setFormValues(itemData) {
   const notesLength = (itemData["Notes"] || "").length;
   $("#notescount").text(`${notesLength}/${maxLength}`);
 
-  if (itemAction === "CopyItem") {
+  if (ITEMACTION === "CopyItem") {
     const resetFields = ["room", "width", "drop", "notes"];
     resetFields.forEach((id) => {
       const el = document.getElementById(id);
@@ -863,11 +866,11 @@ function setFormValues(itemData) {
 
 // #-------------------------|| Submit Function ||-------------------------#
 function submitForm() {
-  if (itemAction === "AddItem") {
+  if (ITEMACTION === "AddItem") {
     var htmlButtonSubmit =
       "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Add Item)";
   }
-  if (itemAction === "EditItem" || itemAction === "CopyItem") {
+  if (ITEMACTION === "EditItem" || ITEMACTION === "CopyItem") {
     var htmlButtonSubmit =
       "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Edit Item)";
   }
@@ -899,11 +902,11 @@ function submitForm() {
   ];
 
   const formData = {
-    headerid: headerId,
-    itemaction: itemAction,
-    itemid: itemId,
-    designid: designId,
-    loginid: loginId,
+    headerid: HEADERID,
+    itemaction: ITEMACTION,
+    itemid: ITEMID,
+    designid: DESIGNID,
+    loginid: LOGINID,
   };
 
   fields.forEach((field) => {
@@ -912,7 +915,7 @@ function submitForm() {
 
   $.ajax({
     type: "post",
-    url: uriMethod + "/SubmitForm",
+    url: URIMETHOD + "/SubmitForm",
     data: JSON.stringify({ data: formData }),
     dataType: "json",
     contentType: "application/json; charset=utf-8",
@@ -936,13 +939,13 @@ function submitForm() {
         });
       } else {
         isSuccess(result.success).then(() => {
-          window.location.href = "/order/detail";
+          window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
         });
       }
     },
     error: function (xhr, ajaxOptions, thrownError) {
       var msg =
-        roleName === "Administrator"
+        ROLENAME === "Administrator"
           ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
           : "Something went wrong, please try again!";
       isError(msg);
@@ -968,18 +971,18 @@ function visibleElementForm(blindname, colourtype) {
     divFormDetail.removeAttribute("hidden");
   }
 
-  if (markupAccess === "True") divMarkUp.removeAttribute("hidden");
+  if (MARKUPACCESS === "True") divMarkUp.removeAttribute("hidden");
 
-  if (itemAction == "AddItem") {
+  if (ITEMACTION == "AddItem") {
     //SET DEFAULT TEXT BUTTON SUBMIT
     btnSubmit.innerHTML =
       "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Add Item)";
-  } else if (itemAction == "EditItem" || itemAction == "CopyItem") {
+  } else if (ITEMACTION == "EditItem" || ITEMACTION == "CopyItem") {
     //SET DEFAULT TEXT BUTTON SUBMIT
     btnSubmit.innerHTML =
       "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Edit Item)";
-  } else if (itemAction == "ViewItem") {
-    if (roleName !== "Administrator") btnSubmit.setAttribute("hidden", true);
+  } else if (ITEMACTION == "ViewItem") {
+    if (ROLENAME !== "Administrator") btnSubmit.setAttribute("hidden", true);
   }
 }
 
@@ -993,60 +996,33 @@ function visibleBattenColour(batten) {
 }
 // #-------------------------|| Other Function ||-------------------------#
 // SESSION FUNCTION
-function checkSession() {
-  if (!headerId) {
+const checkSession = async () => {
+  if (!HEADERID) {
     window.location.href = "/order";
     return;
   }
-  if (!itemAction || !designId) {
+  if (!ITEMACTION || !DESIGNID) {
     window.location.href = "/order/detail";
     return;
   }
-  if (designId.toUpperCase() !== designIdOri) {
+  if (DESIGNID.toUpperCase() !== DESIGNIDORI) {
     window.location.href = "/order/detail";
     return;
   }
 
-  loader(itemAction);
+  await bindDesignType(DESIGNID);
+  await bindDataHeader(HEADERID);
+  bindFormAction(ITEMACTION);
 
-  setSessionAlive();
-
-  bindDesignType(designId);
-  bindDataHeader(headerId);
-  bindFormAction(itemAction);
-
-  if (itemAction === "AddItem") {
+  if (ITEMACTION === "AddItem") {
     visibleElementForm();
-    bindBlindType(designId);
-  } else if (["EditItem", "ViewItem", "CopyItem"].includes(itemAction)) {
-    bindItemOrder(itemId);
+    await bindBlindType(DESIGNID);
+    loaderFadeOut();
+  } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
+    await bindItemOrder(ITEMID);
+    loaderFadeOut();
   }
-}
-
-// LOADER FUNCTION
-function loader(action) {
-  const overlay = document.getElementById("loading-overlay");
-
-  if (action === "AddItem") {
-    overlay.classList.add("fade-out"); // mulai fade-out
-    setTimeout(() => {
-      overlay.classList.add("d-none");
-      overlay.classList.remove("d-flex", "fade-out");
-    }, 1000); // waktu harus sama dengan di CSS
-  } else {
-    overlay.classList.remove("d-none");
-    overlay.classList.add("d-flex");
-    overlay.classList.remove("fade-out"); // pastikan tidak dalam fade-out
-
-    setTimeout(() => {
-      overlay.classList.add("fade-out");
-      setTimeout(() => {
-        overlay.classList.add("d-none");
-        overlay.classList.remove("d-flex", "fade-out");
-      }, 500); // fade-out durasi
-    }, 2000);
-  }
-}
+};
 
 // RESET FORM IS INVALID
 function resetFormError() {
