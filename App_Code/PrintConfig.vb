@@ -1535,7 +1535,7 @@ Public Class PrintConfig
         Dim result As String = String.Empty
         Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Blinds' AND BlindName='Cassette' AND TubeType='Motorised' AND Active=1 ORDER BY Id, BlindNo ASC")
         If Not thisData.Tables(0).Rows.Count = 0 Then
-            Dim tdNotes As String = "<td colspan='19' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
+            Dim tdNotes As String = "<td colspan='20' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
             result += spanStart & "ROLLER CASSETTE - MOTORISED" & spanEnd
             result += tableStart
 
@@ -1550,6 +1550,7 @@ Public Class PrintConfig
             result += thStart & "Fabric" & thEnd
             result += thStart & "Width" & thEnd
             result += thStart & "Drop" & thEnd
+            result += thStart & "Roll Direction" & thEnd
             result += thStart & "Motor" & thEnd
             result += thStart & "Remote" & thEnd
             result += thStart & "Charger" & thEnd
@@ -1573,6 +1574,7 @@ Public Class PrintConfig
                 result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("RollDirection").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("MotorStyle").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("MotorRemote").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("MotorCharger").ToString() & tdEnd
