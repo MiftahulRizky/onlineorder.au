@@ -245,16 +245,16 @@
 
 
     <script type="text/javascript">
-        let designIdOri = '7120F117-F60A-4EC8-B092-4E44C8386B37';
-        let headerId = '<%=Session("HeaderId")%>'
-        let itemAction = '<%= Session("itemAction") %>';
-        let designId = '<%= Session("designId") %>';
-        let itemId = '<%= Session("itemId") %>';
-        let userId = '<%= Session("userId") %>';
-        let loginId = '<%= Session("LoginId") %>';
-        let roleName = '<%= Session("RoleName") %>';
-        let markupAccess = '<%= Session("MarkUpAccess") %>';
-        let uriMethod = "/Methods/Order/RomanBlindMethod.aspx"
+        let DESIGNIDORI = '7120F117-F60A-4EC8-B092-4E44C8386B37';
+        let HEADERID = '<%=Session("headerId")%>'
+        let ORDERTYPE = '<%= Session("orderType") %>';
+        let ITEMACTION = '<%= Session("itemAction") %>';
+        let DESIGNID = '<%= Session("designId") %>';
+        let ITEMID = '<%= Session("itemId") %>';
+        let LOGINID = '<%= Session("LoginId") %>';
+        let ROLENAME = '<%= Session("RoleName") %>';
+        let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
+        let URIMETHOD = "/Methods/Order/RomanBlindMethod.aspx"
         
     </script>
     <script src="/Scripts/Order/RomanBlinds.js?<%= DateTime.Now.Ticks %>"></script>

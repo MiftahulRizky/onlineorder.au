@@ -25,7 +25,7 @@ Partial Class Order_Roller
         End If
 
         If Session("itemAction") = "" Then
-            Response.Redirect("~/order/detail", False)
+            Response.Redirect("~/order/detail?param=" & Session("headerId") & "&ordertype=" & Session("orderType"), False)
             Exit Sub
         End If
 

@@ -10,6 +10,7 @@ Partial Class Methods_Order_RomanBlindMethod
     Inherits System.Web.UI.Page
 
     Shared publicCfg As New PublicConfig()
+    Shared orderCfg As New OrderConfig()
 
     '#-------------------------------|| INITIALIZE CLASS ||--------------------------#
     Public Class ParamSaveData
@@ -55,8 +56,8 @@ Partial Class Methods_Order_RomanBlindMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function GetDesignName(ByVal designId As String) As Object
-        Dim designName As String = publicCfg.GetDesignName(designId)
+    Public Shared Function GetDesignName(ByVal designid As String) As Object
+        Dim designName As String = publicCfg.GetDesignName(designid)
         Dim result As New Dictionary(Of String, String) From {
             {"designName", designName}
         }
@@ -65,9 +66,9 @@ Partial Class Methods_Order_RomanBlindMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function GetHeaderData(ByVal headerId As String) As Object
-        Dim orderno As String = publicCfg.GetOrderNo(headerId)
-        Dim ordercust As String = publicCfg.GetOrderCust(headerId)
+    Public Shared Function GetHeaderData(ByVal headerid As String) As Object
+        Dim orderno As String = publicCfg.GetOrderNo(headerid)
+        Dim ordercust As String = publicCfg.GetOrderCust(headerid)
         Dim result As New Dictionary(Of String, String) From {
             {"orderNo", orderno},
             {"orderCust", ordercust}
@@ -77,9 +78,9 @@ Partial Class Methods_Order_RomanBlindMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindBlindType(ByVal designId As String) As Object
+    Public Shared Function BindBlindType(ByVal designid As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Blinds WHERE DesignId='" + designId + "' AND Active=1 ORDER BY Name ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Blinds WHERE DesignId='" + designid + "' AND Active=1 ORDER BY Name ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -100,9 +101,9 @@ Partial Class Methods_Order_RomanBlindMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindColourType(ByVal designId As String, ByVal blindId As String) As Object
+    Public Shared Function BindColourType(ByVal designid As String, ByVal blindid As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT Id, ControlType FROM HardwareKits WHERE DesignId = '" + designId + "' AND BlindId='" + UCase(blindId).ToString() + "' AND Active=1 ORDER BY ControlType ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT Id, ControlType FROM HardwareKits WHERE DesignId = '" + designid + "' AND BlindId='" + UCase(blindid).ToString() + "' AND Active=1 ORDER BY ControlType ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -200,10 +201,10 @@ Partial Class Methods_Order_RomanBlindMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindItemOrder(ByVal itemId As String) As Object
+    Public Shared Function BindItemOrder(ByVal itemid As String) As Object
         Try
             ' Gunakan parameterized query (idealnya pakai SqlParameter, ini simulasi fungsi GetListData Anda)
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE Id = '" + itemId + "'")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE Id = '" + itemid + "'")
 
             Dim data As DataSet = DirectCast(datas, DataSet)
 
@@ -614,6 +615,9 @@ Partial Class Methods_Order_RomanBlindMethod
                 publicCfg.HitungHarga(data.headerid, itemId)
                 publicCfg.HitungSurcharge(data.headerid, itemId)
 
+                Dim dataLog As Object() = {data.headerid, itemId, "Blinds", data.loginid, "Add Item Order"}
+                orderCfg.Log_Orders(dataLog)
+
                 msg = "Data has been saved successfully."
             End If
 
@@ -655,6 +659,9 @@ Partial Class Methods_Order_RomanBlindMethod
                 publicCfg.ResetPriceDetail(itemId)
                 publicCfg.HitungHarga(data.headerid, itemId)
                 publicCfg.HitungSurcharge(data.headerid, itemId)
+
+                Dim dataLog As Object() = {data.headerid, itemId, "Blinds", data.loginid, "Update Item Order"}
+                orderCfg.Log_Orders(dataLog)
 
                 msg = "Data has been updated successfully."
             End If

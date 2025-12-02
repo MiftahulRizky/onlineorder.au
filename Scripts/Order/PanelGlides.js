@@ -1001,12 +1001,16 @@ const checkSession = async () => {
     window.location.href = "/order";
     return;
   }
+  if (!ORDERTYPE) {
+    window.location.href = "/order";
+    return;
+  }
   if (!ITEMACTION || !DESIGNID) {
-    window.location.href = "/order/detail";
+    window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
     return;
   }
   if (DESIGNID.toUpperCase() !== DESIGNIDORI) {
-    window.location.href = "/order/detail";
+    window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
     return;
   }
 
