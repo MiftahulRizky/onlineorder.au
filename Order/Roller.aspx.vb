@@ -628,7 +628,6 @@ Partial Class Order_Roller
             If msgError.InnerText = "" Then
                 If txtMarkUp.Text = "" Then : txtMarkUp.Text = "0" : End If
 
-                Dim userId As String = UCase(Session("LoginId")).ToString()
 
                 lblKitId.Text = UCase(ddlColourType.SelectedValue).ToString()
                 lblSoeKitId.Text = publicCfg.GetSoeKitId(lblKitId.Text)
@@ -732,7 +731,6 @@ Partial Class Order_Roller
                     Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Add Item Order"}
                     orderCfg.Log_Orders(dataLog)
 
-                    publicCfg.InsertActivity(userId, Page.Title, "INSERT ORDER DETAIL. ITEM ID : " & lblItemId.Text)
                     If bracketName = "Double" Or InStr(bracketName, "Linked") > 0 Or InStr(bracketName, "Link") > 0 Then
                         Session("itemAction") = ""
                         Dim myScript As String = "window.onload = function() { showConfirm('" + lblItemId.Text + "', '" + lblBlindNo.Text + "'); };"
@@ -742,7 +740,6 @@ Partial Class Order_Roller
                     End If
 
                     '#Show popup WF Motorised
-                    publicCfg.InsertActivity(userId, Page.Title, "UPDATE ORDER DETAIL. ITEM ID : " & lblItemId.Text)
                     If  InStr(bracketName, "Linked") AND ddlControlType.SelectedValue = "Somfy WF" Then
                         Dim msg As String ="<b>Warning :</b>Check SP the availability for linking blind for WF motorised !"
                         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "Script", "showPopUpWfMotorised('"& msg &"')", True)
@@ -907,7 +904,6 @@ Partial Class Order_Roller
                     orderCfg.Log_Orders(dataLog)
 
                     '#Show popup WF Motorised
-                    publicCfg.InsertActivity(userId, Page.Title, "UPDATE ORDER DETAIL. ITEM ID : " & lblItemId.Text)
                     If  InStr(bracketName, "Linked") AND ddlControlType.SelectedValue = "Somfy WF" Then
                         Dim msg As String ="<b>Warning :</b>Check SP the availability for linking blind for WF motorised !"
                         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "Script", "showPopUpWfMotorised('"& msg &"')", True)

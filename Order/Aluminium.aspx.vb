@@ -457,11 +457,9 @@ Partial Class Order_Aluminium
                     lblCutOut_RightBottom.Text = 1
                 End If
 
-                Dim userId As String = UCase(Session("LoginId")).ToString()
                 If Session("itemAction") = "AddItem" Or Session("itemAction") = "CopyItem" Then
                     lblItemId.Text = publicCfg.CreateOrderItemId()
                     sdsPage.Insert()
-                    publicCfg.InsertActivity(userId, Page.Title, "INSERT ORDER DETAIL. ITEM ID : " & lblItemId.Text)
 
                     Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Add Item Order"}
                     orderCfg.Log_Orders(dataLog)
@@ -472,7 +470,6 @@ Partial Class Order_Aluminium
 
                 If Session("itemAction") = "EditItem" Or Session("itemAction") = "ViewItem" Then
                     sdsPage.Update()
-                    publicCfg.InsertActivity(userId, Page.Title, "UPDATE ORDER DETAIL. ITEM ID : " & lblItemId.Text)
 
                     Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Update Item Order"}
                     orderCfg.Log_Orders(dataLog)
