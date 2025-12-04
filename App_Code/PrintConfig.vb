@@ -839,8 +839,8 @@ Public Class PrintConfig
                 result += thStart & "No" & thEnd
                 result += thStart & "ID" & thEnd
                 result += thStart & "Qty" & thEnd
-                result += thStart & "Location" & thEnd
                 result += thStart & "Product" & thEnd
+                result += thStart & "Location" & thEnd
                 result += thStart & "Fabric" & thEnd
                 result += thStart & "Drop" & thEnd
                 result += thStart & "Blind Size" & thEnd

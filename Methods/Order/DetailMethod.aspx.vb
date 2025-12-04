@@ -5629,21 +5629,6 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
-
-    Private Shared Function GetPart(list As List(Of String()), controlIndex As Integer, partIndex As Integer) As String
-        If controlIndex < 0 OrElse controlIndex >= list.Count Then
-            Return "" ' index kontrol tidak valid
-        End If
-        Dim arr As String() = list(controlIndex)
-        If arr Is Nothing Then Return ""
-        If partIndex < 0 OrElse partIndex >= arr.Length Then
-            Return "" ' index part tidak ada
-        End If
-        Return arr(partIndex)
-    End Function
-
-    
-
     Private Shared Function PrintTimberVenetian(currentData As DataRow) As String
         Dim result As String = String.Empty
 
@@ -6051,6 +6036,16 @@ Partial Class Methods_Order_DetailMethod
 
         Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
 
+        Dim ControlPositions As New List(Of String())
+        For i As Integer = 1 To 6
+            Dim val As String = ""
+            If Not IsDBNull(currentData("ControlPosition" & i)) Then
+                val = currentData("ControlPosition" & i).ToString()
+            End If
+            Dim parts As String() = If(val.Contains("|"), val.Split("|"c), New String() {val})
+            ControlPositions.Add(parts)
+        Next
+        
         '#line options
         result+= LineOptions(currentData)
 
@@ -6113,27 +6108,25 @@ Partial Class Methods_Order_DetailMethod
 
             
 
-            '#
-            result+= trDetStart
-                result+= tdTitleStart & "Controls (lift)" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetRight & "" & tdDetEnd
-            result+= trDetEnd
+            result += trDetStart
+            result += tdTitleStart & "Controls (lift)" & tdDetEnd
+            result += tdDetStart & GetPart(ControlPositions, 0, 0) & tdDetEnd
+            result += tdDetStart & GetPart(ControlPositions, 1, 0) & tdDetEnd
+            result += tdDetStart & GetPart(ControlPositions, 2, 0) & tdDetEnd
+            result += tdDetStart & GetPart(ControlPositions, 3, 0) & tdDetEnd
+            result += tdDetStart & GetPart(ControlPositions, 4, 0) & tdDetEnd
+            result += tdDetRight & GetPart(ControlPositions, 5, 0) & tdDetEnd
+            result += trDetEnd
 
-            '#
-            result+= trDetStart
-                result+= tdTitleStart & "Controls (Tilt)" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetRight & "" & tdDetEnd
-            result+= trDetEnd
+            result += trDetStart
+            result += tdTitleStart & "Controls (Tilt)" & tdDetEnd
+            result += tdDetStart & GetPart(ControlPositions, 0, 1) & tdDetEnd
+            result += tdDetStart & GetPart(ControlPositions, 1, 1) & tdDetEnd
+            result += tdDetStart & GetPart(ControlPositions, 2, 1) & tdDetEnd
+            result += tdDetStart & GetPart(ControlPositions, 3, 1) & tdDetEnd
+            result += tdDetStart & GetPart(ControlPositions, 4, 1) & tdDetEnd
+            result += tdDetRight & GetPart(ControlPositions, 5, 1) & tdDetEnd
+            result += trDetEnd
 
             '#Mounting
             result+= trDetStart
@@ -6387,6 +6380,18 @@ Partial Class Methods_Order_DetailMethod
         result+= tableDetEnd
 
         Return result
+    End Function
+
+    Private Shared Function GetPart(list As List(Of String()), controlIndex As Integer, partIndex As Integer) As String
+        If controlIndex < 0 OrElse controlIndex >= list.Count Then
+            Return "" ' index kontrol tidak valid
+        End If
+        Dim arr As String() = list(controlIndex)
+        If arr Is Nothing Then Return ""
+        If partIndex < 0 OrElse partIndex >= arr.Length Then
+            Return "" ' index part tidak ada
+        End If
+        Return arr(partIndex)
     End Function
     
     '#------------------------------------------|| Print Detail - Roller Blinds||------------------------------------------#

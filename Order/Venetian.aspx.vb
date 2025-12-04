@@ -251,7 +251,7 @@ Partial Class Order_Venetian
             End If
 
             Dim blindName As String = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
-            If blindName = "50mm Mockwood" Or blindName = "63mm Mockwood" Then
+            If InStr(blindName, "Mockwood") > 0 Or InStr(blindName, "Wooden") > 0 Then
                 If ddlControlLift.SelectedValue = "" Then
                     Call MessageError(True, "CONTROL LIFT IS REQUIRED !")
                     ddlControlLift.CssClass = "form-select  is-invalid"
@@ -496,7 +496,7 @@ Partial Class Order_Venetian
                 Dim priceGroupId As String = publicCfg.GetPriceGroupId(designId, priceGroupName)
                 lblPriceGroupId.Text = UCase(priceGroupId).ToString()
 
-                If blindName = "50mm Mockwood" Or blindName = "63mm Mockwood" Then
+                If InStr(blindName, "Mockwood") > 0 Or InStr(blindName, "Wooden") > 0 Then
                     Dim mergeControl As String = ddlControlLift.SelectedValue & "|" & ddlControlTilt.SelectedValue
                     lblControlPosition.Text = mergeControl
                 Else
@@ -703,7 +703,7 @@ Partial Class Order_Venetian
                     divStyle.Visible = True
                 End If
 
-                If blindName = "50mm Mockwood" Or blindName = "63mm Mockwood" Then
+                If InStr(blindName, "Mockwood") > 0 Or InStr(blindName, "Wooden") > 0 Then
                     divControl.Visible = False
                     divPelmetSize.Visible = False
                     divControlMock.Visible = True

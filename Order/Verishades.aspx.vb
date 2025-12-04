@@ -4,6 +4,7 @@ Partial Class Order_Verishades
     Inherits Page
 
     Dim publicCfg As New PublicConfig
+    Dim orderCfg As New OrderConfig
 
     Public designId As String = String.Empty
 
@@ -18,8 +19,13 @@ Partial Class Order_Verishades
             Exit Sub
         End If
 
+        If Session("orderType") = "" Then
+            Response.Redirect("~/order/", False)
+            Exit Sub
+        End If
+
         If Session("itemAction") = "" Then
-            Response.Redirect("~/order/detail", False)
+            Response.Redirect("~/order/detail?param=" & Session("headerId") & "&ordertype=" & Session("orderType"), False)
             Exit Sub
         End If
 
@@ -30,6 +36,7 @@ Partial Class Order_Verishades
         End If
 
         lblHeaderId.Text = Session("headerId") : lblItemId.Text = ""
+        lblOrderType.Text = Session("orderType")
         lblOrderNo.Text = publicCfg.GetOrderNo(lblHeaderId.Text)
         lblOrderCust.Text = publicCfg.GetOrderCust(lblHeaderId.Text)
 
@@ -363,18 +370,19 @@ Partial Class Order_Verishades
                     txtWidth.Text = "0"
                 End If
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
                 If Session("itemAction") = "AddItem" Or Session("itemAction") = "CopyItem" Then
                     lblItemId.Text = publicCfg.CreateOrderItemId()
                     sdsPage.Insert()
-                    publicCfg.InsertActivity(userId, Page.Title, "INSERT ORDER DETAIL. ITEM ID : " & lblItemId.Text)
+                    Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Add Item Order"}
+                    orderCfg.Log_Orders(dataLog)
                     Call SetPricing(lblItemId.Text, lblHeaderId.Text)
                     Call myCancel()
                 End If
 
                 If Session("itemAction") = "EditItem" Or Session("itemAction") = "ViewItem" Then
                     sdsPage.Update()
-                    publicCfg.InsertActivity(userId, Page.Title, "UPDATE ORDER DETAIL. ITEM ID : " & lblItemId.Text)
+                    Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Update Item Order"}
+                    orderCfg.Log_Orders(dataLog)
                     Call SetPricing(lblItemId.Text, lblHeaderId.Text)
                     Call myCancel()
                 End If
@@ -640,8 +648,9 @@ Partial Class Order_Verishades
     End Sub
 
     Private Sub myCancel()
-        Session("headerId") = lblHeaderId.Text
-        Response.Redirect("~/order/detail", False)
+        Dim headerid As String = lblHeaderId.Text
+        Dim ordertype As String = lblOrderType.Text
+        Response.Redirect("~/order/detail?param=" & headerid & "&ordertype=" & ordertype, False)
     End Sub
 
     Private Sub MessageError(Show As Boolean, Msg As String)

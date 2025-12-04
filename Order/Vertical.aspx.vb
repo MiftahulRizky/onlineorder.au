@@ -4,6 +4,7 @@ Partial Class Order_Vertical
     Inherits Page
 
     Dim publicCfg As New PublicConfig
+    Dim orderCfg As New OrderConfig
 
     Dim designId As String = String.Empty
 
@@ -18,8 +19,13 @@ Partial Class Order_Vertical
             Exit Sub
         End If
 
+        If Session("orderType") = "" Then
+            Response.Redirect("~/order/", False)
+            Exit Sub
+        End If
+
         If Session("itemAction") = "" Then
-            Response.Redirect("~/order/detail", False)
+            Response.Redirect("~/order/detail?param=" & Session("headerId") & "&ordertype=" & Session("orderType"), False)
             Exit Sub
         End If
 
@@ -30,6 +36,7 @@ Partial Class Order_Vertical
         End If
 
         lblHeaderId.Text = Session("headerId") : lblItemId.Text = ""
+        lblOrderType.Text = Session("orderType")
         lblOrderNo.Text = publicCfg.GetOrderNo(lblHeaderId.Text)
         lblOrderCust.Text = publicCfg.GetOrderCust(lblHeaderId.Text)
 
@@ -498,7 +505,6 @@ Partial Class Order_Vertical
             If msgError.InnerText = "" Then
                 If txtMarkUp.Text = "" Then : txtMarkUp.Text = "0" : End If
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
                 lblKitId.Text = UCase(ddlControlType.SelectedValue).ToString()
                 lblSoeKitId.Text = publicCfg.GetSoeKitId(ddlControlType.SelectedValue)
 
@@ -607,7 +613,8 @@ Partial Class Order_Vertical
                     IF blindName = "Complete" Then
                         sdsComplete.Insert()
                     End if
-                    publicCfg.InsertActivity(userId, Page.Title, "INSERT ORDER DETAIL. ITEM ID : " & lblItemId.Text)
+                    Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Add Item Order"}
+                    orderCfg.Log_Orders(dataLog)
                 End If
 
                 If Session("itemAction") = "EditItem" Or Session("itemAction") = "ViewItem" Then
@@ -617,7 +624,8 @@ Partial Class Order_Vertical
                     IF blindName = "Complete" Then
                         sdsComplete.Update()
                     End if
-                    publicCfg.InsertActivity(userId, Page.Title, "UPDATE ORDER DETAIL. ITEM ID : " & lblItemId.Text)
+                    Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Update Item Order"}
+                    orderCfg.Log_Orders(dataLog)
                 End If
 
                 Call publicCfg.ResetPriceDetail(lblItemId.Text)
@@ -1175,8 +1183,9 @@ Partial Class Order_Vertical
     End Sub
 
     Private Sub myCancel()
-        Session("headerId") = lblHeaderId.Text
-        Response.Redirect("~/order/detail", False)
+        Dim headerid As String = lblHeaderId.Text
+        Dim ordertype As String = lblOrderType.Text
+        Response.Redirect("~/order/detail?param=" & headerid & "&ordertype=" & ordertype, False)
     End Sub
 
     Private Sub MessageError(Show As Boolean, Msg As String)
