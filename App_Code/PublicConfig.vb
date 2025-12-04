@@ -882,18 +882,6 @@ Public Class PublicConfig
 
             Dim size As String = "(" & width & " x " & drop & ")"
 
-            '#---------------------|| Panorama Shutter Only ||---------------------#
-            Dim findMetre As String = lnm
-            ' If designName = "Panorama PVC Shutters" Then 
-            If designName = "Panorama PVC Shutters" Then 
-                width = "0" 
-                drop = "0" 
-
-                If blindName = "Hinged" Or blindName = "Hinged Bi-fold" Then
-                    findMetre = sqm
-                End If
-            End If
-            '#---------------------|| /Panorama Shutter Only ||---------------------#
 
             Dim thisMatrix As Decimal = 0.00
 
@@ -907,16 +895,6 @@ Public Class PublicConfig
                 End If
                 '#---------------------/For Vertical Slat Only---------------------#
 
-                '#---------------------|| Panorama Shutter Only ||---------------------#
-                If designName = "Panorama PVC Shutters" Then 
-
-                    If blindName = "Hinged" And doorCutOut = "Yes" Then '#PVC Hinged with French Cut-Out
-                        getMatrix = getMatrix + 30.00
-                    End If
-
-                    getMatrix = getMatrix * Convert.ToDecimal(findMetre)
-                End If
-                '#---------------------|| /Panorama Shutter Only ||---------------------#
 
                 '#---------------------Discount For Store Account---------------------#
                 Dim thisDiscount As Decimal = HitungDiscount(storeId, priceGroupId, getMatrix)
@@ -943,15 +921,6 @@ Public Class PublicConfig
                         description = kitName
                     End If
                 End If
-
-                '#---------------------|| Panorama Shutter Only ||---------------------#
-                If designName = "Panorama PVC Shutters" Then
-                    description = kitName & " " & size
-                    If blindName = "Hinged" And doorCutOut = "Yes"  Then
-                        description = kitName & " " & size & " (Door Cut Out)"
-                    End If
-                End If
-                '#---------------------|| /Panorama Shutter Only ||---------------------#
 
                 
                 If designName = "Vertical Blinds" AndAlso blindName = "Slat Only" Then
