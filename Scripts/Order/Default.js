@@ -314,71 +314,77 @@ const submitChangeStatus = async () => {
 
 // --------------------------------------------||Binding Function ||-------------------------------------------
 // BIND ORDERS
-let tableData;
-const bindOrders = (status, ordertype, active, storetype, params) => {
+const bindOrders = async (status, ordertype, active, storetype, params) => {
   const paramData = {
     loginid: LOGINID,
     customerid: CUSTOMERID,
-    customeraccount: CUSTOMERACCOUNT, // Exm: Regular
-    customercompany: CUSTOMERCOMPANY, // SP or LOOP
+    customeraccount: CUSTOMERACCOUNT,
+    customercompany: CUSTOMERCOMPANY,
     rolename: ROLENAME,
     levelname: LEVELNAME,
-    status: status,
-    ordertype: ordertype, // from filter, Exm: Blinds or Panorama
-    active: active,
-    customeraccountfilter: storetype, // from filter
+    status,
+    ordertype,
+    active,
+    customeraccountfilter: storetype,
   };
 
   tableData = $(params).DataTable({
     processing: true,
     serverSide: true,
-    order: [],
     stateSave: true,
     stateDuration: -1,
+    order: [],
     pageLength: 25,
-    language: {
-      search: "",
-      lengthMenu: "_MENU_",
-    },
+    autoWidth: false,
     bPaginate: true,
     bInfo: true,
     bFilter: true,
     bDestroy: true,
-    autoWidth: false,
-    initComplete: function () {
+    language: {
+      search: "",
+      lengthMenu: "_MENU_",
+    },
+    initComplete: () => {
       stylingColumnSearchAndPaging(params);
     },
-    ajax: {
-      url: URIMETHOD + "/BindOrders",
-      type: "POST",
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      data: function (d) {
-        // console.log(JSON.stringify(paramData));
-        return JSON.stringify({
-          params: {
-            ...paramData,
-            draw: d.draw,
-            start: d.start,
-            length: d.length,
-            order: d.order,
-            columns: d.columns,
-            search: d.search,
+    ajax: async (data, callback) => {
+      try {
+        const response = await fetch(`${URIMETHOD}/BindOrders`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
           },
+          body: JSON.stringify({
+            params: {
+              ...paramData,
+              draw: data.draw,
+              start: data.start,
+              length: data.length,
+              order: data.order,
+              columns: data.columns,
+              search: data.search,
+            },
+          }),
         });
-      },
-      dataSrc: function (json) {
-        json.recordsTotal = json.d.recordsTotal;
-        json.recordsFiltered = json.d.recordsFiltered;
-        return json.d.data;
-      },
-      complete: function () {
-        loaderFadeOut();
-      },
-      error: function (xhr, thrownError, ajaxOptions) {
-        var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
+
+        if (!response.ok) {
+          throw new Error(`${response.status} ${response.statusText}`);
+        }
+
+        const json = await response.json();
+
+        callback({
+          draw: json.d.draw,
+          recordsTotal: json.d.recordsTotal,
+          recordsFiltered: json.d.recordsFiltered,
+          data: json.d.data,
+        });
+      } catch (err) {
+        const msg = `${err.message}`;
         isError(msg);
-      },
+      } finally {
+        loaderFadeOut();
+      }
     },
     columns: [
       {

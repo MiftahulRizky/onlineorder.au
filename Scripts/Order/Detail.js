@@ -580,7 +580,7 @@ const handlerDisplayElement = (item) => {
 };
 
 // HANDLER HEADER INFO
-const handlerHeaderInfo = (item) => {
+const handlerHeaderInfo = async (item) => {
   // INITIALIZE ELEMENTS
   // CARD 1
   const spanJoNumber = document.getElementById("spanJoNumber");
@@ -714,92 +714,67 @@ const handlerHeaderInfo = (item) => {
       }
     }
 
-    // GET CREATED BY
-    fetch(`${URIMETHOD}/GetCreatedBy`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({
-        id: item.CreatedBy,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          // Error dari server (misal 404, 500)
-          throw new Error(`${response.status} ${response.statusText}`);
-        }
-        return response.json();
-      })
-      .then((response) => {
-        const data = response.d;
-        if (!data) {
-          const msg =
-            ROLENAME === "Administrator"
-              ? "No data returned from server : handlerDisplayElement"
-              : "Please contact our IT team at support@onlineorder.au";
-          isError(msg);
-          return;
-        }
+    try {
+      // Jalankan 2 request secara paralel
+      const [createdByRes, priceRes] = await Promise.all([
+        fetch(`${URIMETHOD}/GetCreatedBy`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+          body: JSON.stringify({ id: item.CreatedBy }),
+        }),
+        fetch(`${URIMETHOD}/GetAmountPriceHeader`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+          body: JSON.stringify({
+            headerid: item.Id,
+            pricesaccess: PRICEACCESS,
+          }),
+        }),
+      ]);
 
-        spanCreatedBy.innerHTML = data.createdby ? data.createdby : "ERROR!";
-      })
-      .catch((error) => {
+      // Cek kedua response
+      if (!createdByRes.ok)
+        throw new Error(`${createdByRes.status} ${createdByRes.statusText}`);
+      if (!priceRes.ok)
+        throw new Error(`${priceRes.status} ${priceRes.statusText}`);
+
+      // Ambil JSONnya
+      const createdByJson = await createdByRes.json();
+      const priceJson = await priceRes.json();
+
+      const dataCreated = createdByJson.d;
+      const dataPrice = priceJson.d;
+
+      if (!dataCreated || !dataPrice) {
         const msg =
           ROLENAME === "Administrator"
-            ? error.message
+            ? "No data returned from server : handlerHeaderInfo"
             : "Please contact our IT team at support@onlineorder.au";
-        isError(msg);
-      });
+        return isError(msg);
+      }
 
-    // CARD INFORMATION HEADER 2 | PRICES INFORMATION
-    fetch(`${URIMETHOD}/GetAmountPriceHeader`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({
-        headerid: item.Id,
-        pricesaccess: PRICEACCESS,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          // Error dari server (misal 404, 500)
-          throw new Error(`${response.status} ${response.statusText}`);
-        }
-        return response.json();
-      })
-      .then((response) => {
-        const data = response.d;
-        if (!data) {
-          const msg =
-            ROLENAME === "Administrator"
-              ? "No data returned from server : handlerDisplayElement"
-              : "Please contact our IT team at support@onlineorder.au";
-          isError(msg);
-          return;
-        }
+      // CreatedBy
+      spanCreatedBy.innerHTML = dataCreated.createdby || "ERROR!";
 
-        spanTotal.innerHTML = data.amount
-          ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${data.amount}</span>`
-          : `<span style="font-size:larger;">0</span>`;
+      // Prices
+      spanTotal.innerHTML = dataPrice.amount
+        ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${dataPrice.amount}</span>`
+        : `<span style="font-size:larger;">0</span>`;
 
-        spanGST.innerHTML = data.gst
-          ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${data.gst}</span>`
-          : `<span style="font-size:larger;">0</span>`;
+      spanGST.innerHTML = dataPrice.gst
+        ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${dataPrice.gst}</span>`
+        : `<span style="font-size:larger;">0</span>`;
 
-        spanFinalTotal.innerHTML = data.finaltotal
-          ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${data.finaltotal}</span>`
-          : `<span style="font-size:larger;">0</span>`;
-      })
-      .catch((error) => {
-        const msg =
-          ROLENAME === "Administrator"
-            ? error.message
-            : "Please contact our IT team at support@onlineorder.au";
-        isError(msg);
-      });
+      spanFinalTotal.innerHTML = dataPrice.finaltotal
+        ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${dataPrice.finaltotal}</span>`
+        : `<span style="font-size:larger;">0</span>`;
+    } catch (error) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? error.message
+          : "Please contact our IT team at support@onlineorder.au";
+      isError(msg);
+    }
   }
 };
 
@@ -1193,15 +1168,6 @@ const handlerSelStatus = async (params, statusNow) => {
     option.text = item.text.toUpperCase();
     sel.appendChild(option);
   });
-
-  // for cardOrder => status
-  if (params === "#cardOrder #status") {
-    const status = sel.options[sel.selectedIndex].value;
-    const active = document.querySelector("#cardOrder #active").value;
-    const storeType = document.querySelector("#cardOrder #storetype").value;
-
-    await bindOrders(status, active, storeType);
-  }
 };
 
 // SET VALUE MODAL CHANGE STATUS
@@ -1823,9 +1789,9 @@ const bindOrderHeaderByID = async (headerid, ordertype) => {
 
     for (const item of data) {
       // await handlerReloadPricingOnReadyPage(item.Id, item.Status, "binding");
-      handlerHeaderInfo(item);
-      bindDetails(item.Id, item.Status, item.CreatedBy);
-      handlerDisplayElement(item);
+      await handlerHeaderInfo(item);
+      await bindDetails(item.Id, item.Status, item.CreatedBy);
+      await handlerDisplayElement(item);
       await handlerCheckOrder(item.Id, item.Status, item.CreatedBy);
       await loaderFadeOut();
     }
@@ -1840,7 +1806,7 @@ const bindOrderHeaderByID = async (headerid, ordertype) => {
 
 // BIND ORDER DETAILS
 let tableData;
-const bindDetails = (headerid, status, createdby) => {
+const bindDetails = async (headerid, status, createdby) => {
   const paramData = {
     headerid: headerid,
     status: status,
@@ -1898,49 +1864,38 @@ const bindDetails = (headerid, status, createdby) => {
   ];
 
   tableData = $("#tableAjax").DataTable({
-    processing: true,
-    serverSide: true, // <<< INI KUNCI PENTINGNYA
-    order: [], // Tetap bisa set default order di sini
-    pageLength: 100,
-    initComplete: function () {
-      return stylingColumnSearchAndPaging();
-    },
-    ajax: {
-      url: URIMETHOD + "/BindOrderDetails",
-      type: "POST",
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      data: function (d) {
-        return JSON.stringify({
-          params: {
-            ...paramData,
-            draw: d.draw,
-            start: d.start,
-            length: d.length,
-            order: d.order,
-            columns: d.columns,
-            search: d.search,
-          },
+    serverSide: true,
+    ajax: async function (data, callback) {
+      try {
+        const response = await fetch(URIMETHOD + "/BindOrderDetails", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            params: {
+              ...paramData,
+              draw: data.draw,
+              start: data.start,
+              length: data.length,
+              order: data.order,
+              columns: data.columns,
+              search: data.search,
+            },
+          }),
         });
-      },
-      dataSrc: function (json) {
-        json.recordsTotal = json.d.recordsTotal;
-        json.recordsFiltered = json.d.recordsFiltered;
-        // console.log(json);
-        return json.d.data;
-      },
-      complete: function () {
-        // loaderFadeOut(); // Loader disembunyikan setelah data Ajax berhasil
-      },
-      error: function (xhr, thrownError, ajaxOptions) {
-        var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
-        isError(msg);
-      },
+
+        const json = await response.json();
+
+        callback({
+          draw: json.d.draw,
+          recordsTotal: json.d.recordsTotal,
+          recordsFiltered: json.d.recordsFiltered,
+          data: json.d.data,
+        });
+      } catch (err) {
+        console.error(err);
+        isError(err);
+      }
     },
-    bPaginate: true,
-    bInfo: true,
-    bFilter: true,
-    bDestroy: true,
     columns: columnDefs,
   });
 };
