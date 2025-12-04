@@ -6564,12 +6564,12 @@ Partial Class Methods_Order_DetailMethod
             '#CLength
             result+= trDetStart
                 result+= tdTitleStart & "Control Length" & tdDetEnd
-                result+= tdDetStart & currentData("CLength1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CLength6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainLength1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainLength2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainLength3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainLength4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainLength5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("ChainLength6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#TubeSize

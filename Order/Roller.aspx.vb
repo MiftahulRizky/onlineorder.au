@@ -1100,6 +1100,7 @@ Partial Class Order_Roller
                 Dim blindName As String = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
                 If blindName = "Cassette" Then
                     lblBracketType.Text = "CASSETTE TYPE"
+                    lblColourType.Text = "CASSETTE COLOUR"
                 End If
 
                 ' If blindName = "Skin Only" Then
