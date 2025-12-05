@@ -218,7 +218,7 @@ const handlerSelDesigns = async (params) => {
         roleName === "Administrator"
           ? `${response.status}\n${response.statusText}`
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     const result = await response.json();
@@ -229,7 +229,7 @@ const handlerSelDesigns = async (params) => {
         roleName === "Administrator"
           ? "No data returned from server : handlerSelDesigns"
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     if (Array.isArray(data)) {
@@ -933,8 +933,6 @@ const bindKits = (designid, blindid, params) => {
 };
 // --------------------------------------------------|| Other Functions ||-----------------------------------------
 const checkSessionKit = () => {
-  setSessionAlive();
-  //   loaderFadeOut();
   handlerSelDesigns("#card-table #designid");
 };
 
