@@ -2163,37 +2163,33 @@ Partial Class Methods_Order_DetailMethod
         '#..........................................|| Cassette ||..........................................#
         If BlindName = "Cassette" Then
 
-            If InStr(KitName, "JAI") > 0 Then
-                If BracketType = "Headbox Only" Or BracketType = "Headbox & Side Channels" Then
-                    If TubeSize = "40" Then : result = Width - 28 : End IF
-                    If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 32 : End IF
-                    If TubeSize = "50" Then : result = Width - 28 : End IF
+            If InStr(KitName, "JAI") > 0 Or InStr(TubeType, "JAI") > 0 Then
+                If BracketType = "Headbox & Side Channels" Then
+                    If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 50 : End IF
+                End If
+                If BracketType = "Headbox Only" Then
+                    If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 40 : End IF
                 End If
             End If
 
-            If InStr(KitName, "Alpha RTS 45") > 0 Or InStr(KitName, "Alpha RTS 45H") > 0 Or InStr(KitName, "Alpha WF 45") > 0 Or InStr(KitName, "Alpha WF 45H") > 0 Or InStr(KitName, "Alpha WS 45") > 0 Or InStr(KitName, "Alpha WS 45H") > 0 Or InStr(KitName, "Somfy RTS 45") > 0 Or InStr(KitName, "Somfy RTS 45H") > 0 Or InStr(KitName, "Somfy WF 45") > 0 Or InStr(KitName, "Somfy WF 45H") > 0 Or InStr(KitName, "Somfy WS 45") > 0 Or InStr(KitName, "Somfy WS 45H") > 0 Then
-                '#-----------------------|| Single, Double, Linked, Double and Link ||-----------------------#
-                If BracketType = "Headbox Only" Or BracketType = "Headbox & Side Channels" Then
-                    '#-----------------------|| Left or Right Or N/A ||-----------------------#
-                    If ControlPosition = "Left" Or ControlPosition = "Right" Then
-                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 34 : End IF
-                    End If
-                    If ControlPosition = "" Or ControlPosition = "N/A" Then
-                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 24 : End IF
-                    End If
-                End If
-            End If
-
-            '#-----------------------|| Acmeda ||-----------------------#
-            If InStr(KitName, "Somfy RTS 63 Acmeda") > 0 Or InStr(KitName, "Somfy WS 63 Acmeda") > 0 Then
-                '#-----------------------|| Single, Double ||-----------------------#
-                If BracketType = "Headbox Only" Or BracketType = "Headbox & Side Channels"  Then
-                    '#-----------------------|| N/A ||-----------------------#
+            If InStr(TubeType, "Motorised") > 0 Then
+                If BracketType = "Headbox & Side Channels" Then
                     If ControlPosition <> "" Or Not ControlPosition <> "N/A" Then
-                       result = Width - 40
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 50 : End IF
+                    Else
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 40 : End IF
+                    End If
+                End If
+                If BracketType = "Headbox Only" Then
+                    If ControlPosition <> "" Or Not ControlPosition <> "N/A" Then
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 42 : End IF
+                    Else
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 32 : End IF
                     End If
                 End If
             End If
+
+            
         End If
 
 
