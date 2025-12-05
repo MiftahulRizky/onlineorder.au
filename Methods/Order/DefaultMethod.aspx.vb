@@ -24,6 +24,7 @@ Partial Class Methods_Order_DefaultMethod
         Public Property customeraccount As String
         Public Property customercompany As String
         Public Property rolename As String
+        Public Property username As String
         Public Property levelname As String
         Public Property status As String
         Public Property ordertype As String
@@ -185,9 +186,15 @@ Partial Class Methods_Order_DefaultMethod
                 End If
 
 
+                Dim whereOrderType As String = " AND (@OrderType = 'All' OR OrderType = @OrderType) "
+                If params.loginid = "admin" or params.username = "galih" Then
+                    whereOrderType = " AND OrderType <> 'Blinds' "
+                End If
+
+
                 '#---------------------------------------------------------|| Count Records ||---------------------------------------------------------#
                
-                Dim countSql As String = "SELECT COUNT( Id ) FROM view_order_headers WHERE Active = @Active " + whereRole + " AND (@OrderType = 'All' OR OrderType = @OrderType) " + statusMerged + " AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                Dim countSql As String = "SELECT COUNT( Id ) FROM view_order_headers WHERE Active = @Active " + whereRole + whereOrderType + statusMerged + " AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
                 Using countCmd As New SqlCommand(countSql, conn)
                     countCmd.Parameters.AddWithValue("@Status", params.status)
                     countCmd.Parameters.AddWithValue("@OrderType", params.ordertype)
@@ -199,7 +206,7 @@ Partial Class Methods_Order_DefaultMethod
                 '#---------------------------------------------------------|| Mian Query ||---------------------------------------------------------#
                 Dim sqlBuilder As New System.Text.StringBuilder()
                
-                Dim whereQueries As String = "WHERE Active = @Active " + whereRole + " AND (@OrderType = 'All' OR OrderType = @OrderType) " + statusMerged + " AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                Dim whereQueries As String = "WHERE Active = @Active " + whereRole + whereOrderType + statusMerged + " AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
                 sqlBuilder.AppendLine("SELECT Id, OrderId, JoNumberId, CustomerId, OrderNumber, OrderName, Delivery, OrderType, Status, StatusAdditional, CreatedDate, SubmittedDate,CanceledDate, CompletedDate, Active, CustomerName")
                 sqlBuilder.AppendLine("FROM view_order_headers")
                 sqlBuilder.AppendLine(whereQueries)

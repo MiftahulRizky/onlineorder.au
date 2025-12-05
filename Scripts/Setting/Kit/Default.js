@@ -218,7 +218,7 @@ const handlerSelDesigns = async (params) => {
         roleName === "Administrator"
           ? `${response.status}\n${response.statusText}`
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     const result = await response.json();
@@ -229,7 +229,7 @@ const handlerSelDesigns = async (params) => {
         roleName === "Administrator"
           ? "No data returned from server : handlerSelDesigns"
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     if (Array.isArray(data)) {
@@ -291,7 +291,7 @@ const handlerSelBlinds = async (params, designid, event) => {
         roleName === "Administrator"
           ? `${response.status}\n${response.statusText}`
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     const result = await response.json();
@@ -302,7 +302,7 @@ const handlerSelBlinds = async (params, designid, event) => {
         roleName === "Administrator"
           ? "No data returned from server : handlerSelBlinds"
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     if (Array.isArray(data)) {
@@ -366,7 +366,7 @@ const handlerSelBracket = async (params) => {
         roleName === "Administrator"
           ? `${response.status}\n${response.statusText}`
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     const result = await response.json();
@@ -377,7 +377,7 @@ const handlerSelBracket = async (params) => {
         roleName === "Administrator"
           ? "No data returned from server : handlerSelBracket"
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     if (Array.isArray(data)) {
@@ -424,7 +424,7 @@ const handlerSelTube = async (params) => {
         roleName === "Administrator"
           ? `${response.status}\n${response.statusText}`
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     const result = await response.json();
@@ -435,7 +435,7 @@ const handlerSelTube = async (params) => {
         roleName === "Administrator"
           ? "No data returned from server : handlerSelTube"
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     if (Array.isArray(data)) {
@@ -482,7 +482,7 @@ const handlerSelControl = async (params) => {
         roleName === "Administrator"
           ? `${response.status}\n${response.statusText}`
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     const result = await response.json();
@@ -493,7 +493,7 @@ const handlerSelControl = async (params) => {
         roleName === "Administrator"
           ? "No data returned from server : handlerSelControl"
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     if (Array.isArray(data)) {
@@ -540,7 +540,7 @@ const handlerSelColour = async (params) => {
         roleName === "Administrator"
           ? `${response.status}\n${response.statusText}`
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     const result = await response.json();
@@ -551,7 +551,7 @@ const handlerSelColour = async (params) => {
         roleName === "Administrator"
           ? "No data returned from server : handlerSelColour"
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     if (Array.isArray(data)) {
@@ -597,7 +597,7 @@ const handlerEdit = async (kitid) => {
         roleName === "Administrator"
           ? `${res.status} - ${res.statusText}`
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     const response = await res.json();
@@ -608,7 +608,7 @@ const handlerEdit = async (kitid) => {
         roleName === "Administrator"
           ? "No data returned from server : handlerEdit"
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     document.querySelector("#modalSubmit #modalSubmitLabel").innerHTML =
@@ -764,7 +764,7 @@ const handlerDelete = async (id) => {
         roleName === "Administrator"
           ? `${res.status} - ${res.statusText}`
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     const response = await res.json();
@@ -775,7 +775,7 @@ const handlerDelete = async (id) => {
         roleName === "Administrator"
           ? "No data returned from server : handlerDelete"
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     if (data.error) {
@@ -807,7 +807,7 @@ const handlerSwitch = async (id, active) => {
         roleName === "Administrator"
           ? `${res.status} - ${res.statusText}`
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     const response = await res.json();
@@ -818,7 +818,7 @@ const handlerSwitch = async (id, active) => {
         roleName === "Administrator"
           ? "No data returned from server : handlerSwitch"
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     if (data.error) {

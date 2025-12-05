@@ -1865,6 +1865,12 @@ const bindDetails = async (headerid, status, createdby) => {
 
   tableData = $("#tableAjax").DataTable({
     serverSide: true,
+    initComplete: function () {
+      $("#tableAjax_filter").hide();
+      $("#tableAjax_length").hide();
+      $("#tableAjax_info").hide();
+      $("#tableAjax_paginate").hide();
+    },
     ajax: async function (data, callback) {
       try {
         const response = await fetch(URIMETHOD + "/BindOrderDetails", {

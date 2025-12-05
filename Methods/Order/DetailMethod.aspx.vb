@@ -1866,6 +1866,14 @@ Partial Class Methods_Order_DetailMethod
                     ElseIf BlindName.Contains("Venetian") Then
                         BlindName = "Venetian"
                     End If
+                    
+                    If BlindName.Contains("Cassette") Then
+                        If BracketType = "Headbox & Side Channels" Then
+                            BlindName = "Cassette Complete"
+                        ElseIf BracketType = "Headbox Only" Then
+                            BlindName = "Cassette Headbox"
+                        End If
+                    End If
 
                     Dim lineString As String = "Line " & counter.ToString()
 
@@ -2150,6 +2158,42 @@ Partial Class Methods_Order_DetailMethod
                 End If
             End If
 
+        End If
+
+        '#..........................................|| Cassette ||..........................................#
+        If BlindName = "Cassette" Then
+
+            If InStr(KitName, "JAI") > 0 Then
+                If BracketType = "Headbox Only" Or BracketType = "Headbox & Side Channels" Then
+                    If TubeSize = "40" Then : result = Width - 28 : End IF
+                    If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 32 : End IF
+                    If TubeSize = "50" Then : result = Width - 28 : End IF
+                End If
+            End If
+
+            If InStr(KitName, "Alpha RTS 45") > 0 Or InStr(KitName, "Alpha RTS 45H") > 0 Or InStr(KitName, "Alpha WF 45") > 0 Or InStr(KitName, "Alpha WF 45H") > 0 Or InStr(KitName, "Alpha WS 45") > 0 Or InStr(KitName, "Alpha WS 45H") > 0 Or InStr(KitName, "Somfy RTS 45") > 0 Or InStr(KitName, "Somfy RTS 45H") > 0 Or InStr(KitName, "Somfy WF 45") > 0 Or InStr(KitName, "Somfy WF 45H") > 0 Or InStr(KitName, "Somfy WS 45") > 0 Or InStr(KitName, "Somfy WS 45H") > 0 Then
+                '#-----------------------|| Single, Double, Linked, Double and Link ||-----------------------#
+                If BracketType = "Headbox Only" Or BracketType = "Headbox & Side Channels" Then
+                    '#-----------------------|| Left or Right Or N/A ||-----------------------#
+                    If ControlPosition = "Left" Or ControlPosition = "Right" Then
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 34 : End IF
+                    End If
+                    If ControlPosition = "" Or ControlPosition = "N/A" Then
+                        If TubeSize = "45" Or TubeSize = "45H" Then : result = Width - 24 : End IF
+                    End If
+                End If
+            End If
+
+            '#-----------------------|| Acmeda ||-----------------------#
+            If InStr(KitName, "Somfy RTS 63 Acmeda") > 0 Or InStr(KitName, "Somfy WS 63 Acmeda") > 0 Then
+                '#-----------------------|| Single, Double ||-----------------------#
+                If BracketType = "Headbox Only" Or BracketType = "Headbox & Side Channels"  Then
+                    '#-----------------------|| N/A ||-----------------------#
+                    If ControlPosition <> "" Or Not ControlPosition <> "N/A" Then
+                       result = Width - 40
+                    End If
+                End If
+            End If
         End If
 
 
@@ -4585,7 +4629,7 @@ Partial Class Methods_Order_DetailMethod
         Dim result As String = String.Empty
         
         Select Case currentData("BlindName").ToString()
-            Case "Cassette"
+            Case "Cassette Complete", "Cassette Headbox"
                 result += PrintRollerCassette(currentData)
             Case "Motorised"
                 result += PrintRollerMotorised(currentData)
@@ -4682,8 +4726,10 @@ Partial Class Methods_Order_DetailMethod
                         goWithList.Add("H")
                 Case "Motorised"
                     goWithList.Add("Motorised")
-                Case "Cassette"
-                        goWithList.Add("Hc")
+                Case "Cassette Complete"
+                    goWithList.Add("Cc")
+                Case "Cassette Headbox"
+                    goWithList.Add("Ch")
                 Case "Skin Only"
                     goWithList.Add("Hs")
             End Select
@@ -4754,9 +4800,12 @@ Partial Class Methods_Order_DetailMethod
                         ReportType = "Holland Motorised"
                         ReportIcon = "HM"
 
-                    Case "Cassette"
-                        ReportType = "Holland Cassette"
-                        ReportIcon = "Hc"
+                    Case "Cassette Complete"
+                        ReportType = "Holland Cassette C"
+                        ReportIcon = "Cc"
+                    Case "Cassette Headbox"
+                        ReportType = "Holland Cassette H"
+                        ReportIcon = "Ch"
 
                     Case "Skin Only"
                         ReportType = "Holland Skin"
@@ -6423,6 +6472,27 @@ Partial Class Methods_Order_DetailMethod
         Dim BracketType5 As String = bracketTypes(4)
         Dim BracketType6 As String = bracketTypes(5)
 
+        
+
+        Dim ControlLength As String() = {
+            currentData("ChainLength1").ToString(),
+            currentData("ChainLength2").ToString(),
+            currentData("ChainLength3").ToString(),
+            currentData("ChainLength4").ToString(),
+            currentData("ChainLength5").ToString(),
+            currentData("ChainLength6").ToString()
+        }
+
+        For i As Integer = 0 To ControlLength.Length - 1
+            If String.IsNullOrEmpty(ControlLength(i)) OR ControlLength(i) = "0" Then
+                ControlLength(i) = ""
+            Else
+                ControlLength(i) = ControlLength(i) & " + joiner"
+            End If
+        Next
+
+        
+
         Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
 
 
@@ -6578,12 +6648,12 @@ Partial Class Methods_Order_DetailMethod
             '#CLength
             result+= trDetStart
                 result+= tdTitleStart & "Control Length" & tdDetEnd
-                result+= tdDetStart & currentData("CLength1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CLength6").ToString() & tdDetEnd
+                result+= tdDetStart & ControlLength(0) & tdDetEnd
+                result+= tdDetStart & ControlLength(1) & tdDetEnd
+                result+= tdDetStart & ControlLength(2) & tdDetEnd
+                result+= tdDetStart & ControlLength(3) & tdDetEnd
+                result+= tdDetStart & ControlLength(4) & tdDetEnd
+                result+= tdDetRight & ControlLength(5) & tdDetEnd
             result+= trDetEnd
 
             '#TubeSize

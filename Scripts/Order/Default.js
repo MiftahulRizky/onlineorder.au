@@ -322,6 +322,7 @@ const bindOrders = async (status, ordertype, active, storetype, params) => {
     customercompany: CUSTOMERCOMPANY,
     rolename: ROLENAME,
     levelname: LEVELNAME,
+    username: USERNAME,
     status,
     ordertype,
     active,
