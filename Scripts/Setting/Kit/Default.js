@@ -291,7 +291,7 @@ const handlerSelBlinds = async (params, designid, event) => {
         roleName === "Administrator"
           ? `${response.status}\n${response.statusText}`
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     const result = await response.json();
@@ -302,7 +302,7 @@ const handlerSelBlinds = async (params, designid, event) => {
         roleName === "Administrator"
           ? "No data returned from server : handlerSelBlinds"
           : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+      throw new Error(msg);
     }
 
     if (Array.isArray(data)) {
