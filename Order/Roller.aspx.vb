@@ -632,6 +632,10 @@ Partial Class Order_Roller
                 lblKitId.Text = UCase(ddlColourType.SelectedValue).ToString()
                 lblSoeKitId.Text = publicCfg.GetSoeKitId(lblKitId.Text)
 
+                Dim designName As String = publicCfg.GetDesignName(designId)
+                Dim exactName As String = designName & " - " & blindName
+                lblExactId.Text = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
+
                 Dim fabricGroup As String = publicCfg.GetFabricGroup(ddlFabricColour.SelectedValue)
 
                 Dim priceGroupName As String = "Roller Blind" & " - " & fabricGroup

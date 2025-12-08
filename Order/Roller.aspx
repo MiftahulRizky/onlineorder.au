@@ -611,6 +611,9 @@
 
         <asp:Label runat="server" ID="lblPriceGroupId"></asp:Label>
         <asp:Label runat="server" ID="lblCassetteExtraId"></asp:Label>
+        
+        <asp:Label runat="server" ID="lblExactId"></asp:Label>
+
 
         <asp:Label runat="server" ID="lblChainId"></asp:Label>
         <asp:Label runat="server" ID="lblChainLength"></asp:Label>
@@ -724,7 +727,7 @@
             </UpdateParameters>
         </asp:SqlDataSource>
 
-        <asp:SqlDataSource ID="sdsPage" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)" UpdateCommand="UPDATE OrderDetails SET BlindNo=@BlindNo, UniqueId=@UniqueId, KitId=@KitId, SoeKitId=@SoeKitId, FabricId=@FabricId, ChainId=@ChainId, BottomRailId=@BottomRailId, PriceGroupId=@PriceGroupId, CassetteExtraId=@CassetteExtraId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, RollDirection=@RollDirection, ControlPosition=@ControlPosition, ChainLength=@ChainLength, Accessory=@Accessory, TubeSize=@TubeSize, Trim=@Trim, BracketCover=@BracketCover, BracketExtension=@BracketExtension, ChildSafe=@ChildSafe, MotorStyle=@MotorStyle, MotorRemote=@MotorRemote, MotorBattery=@MotorBattery, MotorCharger=@MotorCharger, Connector=@Connector, AdditionalMotor=@AdditionalMotor, CableExitPoint=@CableExitPoint, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id">
+        <asp:SqlDataSource ID="sdsPage" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)" UpdateCommand="UPDATE OrderDetails SET BlindNo=@BlindNo, UniqueId=@UniqueId, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, BottomRailId=@BottomRailId, PriceGroupId=@PriceGroupId, CassetteExtraId=@CassetteExtraId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, RollDirection=@RollDirection, ControlPosition=@ControlPosition, ChainLength=@ChainLength, Accessory=@Accessory, TubeSize=@TubeSize, Trim=@Trim, BracketCover=@BracketCover, BracketExtension=@BracketExtension, ChildSafe=@ChildSafe, MotorStyle=@MotorStyle, MotorRemote=@MotorRemote, MotorBattery=@MotorBattery, MotorCharger=@MotorCharger, Connector=@Connector, AdditionalMotor=@AdditionalMotor, CableExitPoint=@CableExitPoint, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id">
             <InsertParameters>
                 <asp:ControlParameter ControlID="lblItemId" Name="Id" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblHeaderId" Name="HeaderId" PropertyName="Text" />
@@ -732,6 +735,7 @@
                 <asp:ControlParameter ControlID="lblBlindNo" Name="BlindNo" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblKitId" Name="KitId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblSoeKitId" Name="SoeKitId" PropertyName="Text" />
+                <asp:ControlParameter ControlID="lblExactId" Name="ExactId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlFabricColour" Name="FabricId" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="lblChainId" Name="ChainId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlRailColour" Name="BottomRailId" PropertyName="SelectedItem.Value" />
@@ -768,6 +772,7 @@
                 <asp:ControlParameter ControlID="lblBlindNo" Name="BlindNo" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblKitId" Name="KitId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblSoeKitId" Name="SoeKitId" PropertyName="Text" />
+                <asp:ControlParameter ControlID="lblExactId" Name="ExactId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlFabricColour" Name="FabricId" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="lblChainId" Name="ChainId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlRailColour" Name="BottomRailId" PropertyName="SelectedItem.Value" />
