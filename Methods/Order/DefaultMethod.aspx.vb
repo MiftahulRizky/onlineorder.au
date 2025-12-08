@@ -492,16 +492,16 @@ Partial Class Methods_Order_DefaultMethod
             End Select
 
             If Not String.IsNullOrEmpty(data.id) Then
-                Dim query As String = "UPDATE OrderHeaders SET Status='Draft', StatusDescription=NULL, SubmittedDate=NULL, CanceledDate=NULL, CompletedDate=NULL WHERE Id=@Id"
+                Dim query As String = "UPDATE OrderHeaders SET Status='Draft', StatusDescription=NULL, SubmittedDate=NULL, JobDate=NULL, CanceledDate=NULL, CompletedDate=NULL WHERE Id=@Id"
                 Select Case data.status
                     Case "New Order"
-                        query = "UPDATE OrderHeaders SET Status='New Order', StatusDescription=@StatusDescription, SubmittedDate=@SubmittedDate, CanceledDate=NULL, CompletedDate=NULL WHERE Id=@Id"
+                        query = "UPDATE OrderHeaders SET Status='New Order', StatusDescription=@StatusDescription, SubmittedDate=@SubmittedDate WHERE Id=@Id"
                     Case "In Production"
-                        query = "UPDATE OrderHeaders SET Status='In Production', StatusDescription=@StatusDescription, CanceledDate=NULL, CompletedDate=NULL WHERE Id=@Id"
+                        query = "UPDATE OrderHeaders SET Status='In Production', StatusDescription=@StatusDescription, JobDate=GETDATE() WHERE Id=@Id"
                     Case "On Hold"
-                        query = "UPDATE OrderHeaders SET Status='On Hold', StatusDescription=@StatusDescription, CanceledDate=NULL, CompletedDate=NULL WHERE Id=@Id"
+                        query = "UPDATE OrderHeaders SET Status='On Hold', StatusDescription=@StatusDescription WHERE Id=@Id"
                     Case "Completed"
-                        query = "UPDATE OrderHeaders SET Status='Completed', StatusDescription=@StatusDescription, CanceledDate=NULL, CompletedDate=@CompletedDate WHERE Id=@Id"
+                        query = "UPDATE OrderHeaders SET Status='Completed', StatusDescription=@StatusDescription, CompletedDate=@CompletedDate WHERE Id=@Id"
                     Case "Canceled"
                         query = "UPDATE OrderHeaders SET Status='Canceled', StatusDescription=@StatusDescription, CanceledDate=@CanceledDate WHERE Id=@Id"
                 End Select

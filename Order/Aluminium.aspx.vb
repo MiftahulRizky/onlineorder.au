@@ -428,6 +428,10 @@ Partial Class Order_Aluminium
                 Dim priceGroupName As String = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
                 Dim priceGroupId As String = publicCfg.GetPriceGroupId(designId, priceGroupName)
                 lblPriceGroupId.Text = UCase(priceGroupId).ToString()
+                
+                Dim designName As String = publicCfg.GetDesignName(designId)
+                Dim exactName As String = designName & " - " & blindName
+                lblExactId.Text = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
 
                 If txtTopLHSWidth.Text = "" Then : txtTopLHSWidth.Text = 0 : End If
                 If txtTopLHSHeigth.Text = "" Then : txtTopLHSHeigth.Text = 0 : End If

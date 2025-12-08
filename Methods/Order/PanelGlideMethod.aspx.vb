@@ -515,6 +515,10 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
             Dim peiceGroupName As String = "Panel Glide - " & fabricGroupName
             Dim priceGroupId As String = publicCfg.GetPriceGroupId(data.designId,peiceGroupName)
 
+            Dim designName As String = publicCfg.GetDesignName(data.designId)
+            Dim exactName As String = designName & " - " & blindName
+            Dim exactId As String = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
+
           
             '#-----------------------|| SUBMIT VALIDATE ||-----------------------#
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
@@ -522,11 +526,12 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 Dim itemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, PriceGroupId, BlindNo, Qty, Location, Mounting, Width, [Drop], Layout, NumOfPanel, TrackType, TrackColour, NumOfWand, WandPosition, WandLength, WandColour, Batten, BattenColour, Fitting, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @PriceGroupId, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @Layout, @NumOfPanel, @TrackType, @TrackColour, @NumOfWand, @WandPosition, @WandLength, @WandColour, @Batten, @BattenColour, @Fitting, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, ExactId, FabricId, PriceGroupId, BlindNo, Qty, Location, Mounting, Width, [Drop], Layout, NumOfPanel, TrackType, TrackColour, NumOfWand, WandPosition, WandLength, WandColour, Batten, BattenColour, Fitting, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @ExactId, @FabricId, @PriceGroupId, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @Layout, @NumOfPanel, @TrackType, @TrackColour, @NumOfWand, @WandPosition, @WandLength, @WandColour, @Batten, @BattenColour, @Fitting, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
                         myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
+                        myCmd.Parameters.AddWithValue("@ExactId", exactId)
                         myCmd.Parameters.AddWithValue("@FabricId", fabricId)
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
                         myCmd.Parameters.AddWithValue("@Qty", 1)
@@ -571,11 +576,12 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 Dim itemId As String = data.itemid
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET  KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, PriceGroupId = @PriceGroupId, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, Layout = @Layout, NumOfPanel = @NumOfPanel, TrackType = @TrackType, TrackColour = @TrackColour, NumOfWand = @NumOfWand, WandPosition = @WandPosition, WandLength = @WandLength, WandColour = @WandColour, Batten = @Batten, BattenColour = @BattenColour, Fitting = @Fitting, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET  KitId = @KitId, SoeKitId = @SoeKitId, ExactId = @ExactId, FabricId = @FabricId, PriceGroupId = @PriceGroupId, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, Layout = @Layout, NumOfPanel = @NumOfPanel, TrackType = @TrackType, TrackColour = @TrackColour, NumOfWand = @NumOfWand, WandPosition = @WandPosition, WandLength = @WandLength, WandColour = @WandColour, Batten = @Batten, BattenColour = @BattenColour, Fitting = @Fitting, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
                         myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
+                        myCmd.Parameters.AddWithValue("@ExactId", exactId)
                         myCmd.Parameters.AddWithValue("@FabricId", fabricId)
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
                         myCmd.Parameters.AddWithValue("@Qty", 1)
