@@ -492,6 +492,10 @@ Partial Class Order_Venetian
                 lblKitId.Text = UCase(ddlColour.SelectedValue).ToString()
                 lblSoeKitId.Text = publicCfg.GetSoeKitId(ddlColour.SelectedValue)
 
+                Dim designName As String = publicCfg.GetDesignName(designId)
+                Dim exactName As String = designName & " - " & blindName
+                lblExactId.Text = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
+
                 Dim priceGroupName As String = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
                 Dim priceGroupId As String = publicCfg.GetPriceGroupId(designId, priceGroupName)
                 lblPriceGroupId.Text = UCase(priceGroupId).ToString()

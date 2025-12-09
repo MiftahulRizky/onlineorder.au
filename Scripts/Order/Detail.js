@@ -1865,6 +1865,7 @@ const bindDetails = async (headerid, status, createdby) => {
 
   tableData = $("#tableAjax").DataTable({
     serverSide: true,
+    pageLength: 100,
     initComplete: function () {
       $("#tableAjax_filter").hide();
       $("#tableAjax_length").hide();

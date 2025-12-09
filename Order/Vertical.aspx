@@ -446,19 +446,22 @@
         <asp:Label runat="server" ID="lblSoeKitId"></asp:Label>
         <asp:Label runat="server" ID="lblBlindNo"></asp:Label>
 
+        <asp:Label runat="server" ID="lblExactId"></asp:Label>
+
         <asp:Label runat="server" ID="lblChainId"></asp:Label>
 
         <asp:Label runat="server" ID="lblPriceGroupId"></asp:Label>
         <asp:Label runat="server" ID="lblWandLength"></asp:Label>
 
         <!-- ====================Track & Slat Only  -->
-        <asp:SqlDataSource ID="sdsNoComplate" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, FabricId, ChainId, PriceGroupId, Qty, Location, Mounting, SlatSize, SlatQty, Width, [Drop], StackPosition, ControlPosition, TrackColour, ChainLength, WandColour, WandLength, BracketOption, BracketColour, HangerType, BottomHoldDown, InsertInTrack, Sloper, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @SlatSize, @SlatQty, @Width, @Drop, @StackPosition, @ControlPosition, @TrackColour, @ChainLength, @WandColour, @WandLength, @BracketOption, @BracketColour, @HangerType, @BottomHoldDown, @InsertInTrack, @Sloper, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)" UpdateCommand="UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, SlatSize=@SlatSize, SlatQty=@SlatQty, Width=@Width, [Drop]=@Drop, StackPosition=@StackPosition, ControlPosition=@ControlPosition, TrackColour=@TrackColour, ChainLength=@ChainLength, WandColour=@WandColour, WandLength=@WandLength, BracketOption=@BracketOption, BracketColour=@BracketColour, HangerType=@HangerType, BottomHoldDown=@BottomHoldDown, InsertInTrack=@InsertInTrack, Sloper=@Sloper, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id">
+        <asp:SqlDataSource ID="sdsNoComplate" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId,  FabricId, ChainId, PriceGroupId, Qty, Location, Mounting, SlatSize, SlatQty, Width, [Drop], StackPosition, ControlPosition, TrackColour, ChainLength, WandColour, WandLength, BracketOption, BracketColour, HangerType, BottomHoldDown, InsertInTrack, Sloper, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @SlatSize, @SlatQty, @Width, @Drop, @StackPosition, @ControlPosition, @TrackColour, @ChainLength, @WandColour, @WandLength, @BracketOption, @BracketColour, @HangerType, @BottomHoldDown, @InsertInTrack, @Sloper, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)" UpdateCommand="UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, SlatSize=@SlatSize, SlatQty=@SlatQty, Width=@Width, [Drop]=@Drop, StackPosition=@StackPosition, ControlPosition=@ControlPosition, TrackColour=@TrackColour, ChainLength=@ChainLength, WandColour=@WandColour, WandLength=@WandLength, BracketOption=@BracketOption, BracketColour=@BracketColour, HangerType=@HangerType, BottomHoldDown=@BottomHoldDown, InsertInTrack=@InsertInTrack, Sloper=@Sloper, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id">
             <InsertParameters>
                 <asp:ControlParameter ControlID="lblItemId" Name="Id" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblHeaderId" Name="HeaderId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblBlindNo" Name="BlindNo" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblKitId" Name="KitId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblSoeKitId" Name="SoeKitId" PropertyName="Text" />
+                <asp:ControlParameter ControlID="lblExactId" Name="ExactId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlFabricColour" Name="FabricId" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="lblChainId" Name="ChainId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblPriceGroupId" Name="PriceGroupId" PropertyName="Text" />
@@ -490,6 +493,7 @@
                 <asp:ControlParameter ControlID="lblBlindNo" Name="BlindNo" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblKitId" Name="KitId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblSoeKitId" Name="SoeKitId" PropertyName="Text" />
+                <asp:ControlParameter ControlID="lblExactId" Name="ExactId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlFabricColour" Name="FabricId" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="lblChainId" Name="ChainId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblPriceGroupId" Name="PriceGroupId" PropertyName="Text" />
@@ -519,13 +523,14 @@
 
 
         <!-- ==========Complate========== -->
-        <asp:SqlDataSource ID="sdsComplete" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, FabricId, ChainId, PriceGroupId, Qty, Location, Mounting, SlatSize, SlatQty, Width, [Drop], StackPosition, ControlPosition, TrackColour, ChainLength, WandColour, WandLength, BracketOption, BracketColour, HangerType, BottomHoldDown, InsertInTrack, Sloper, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @SlatSize, @SlatQty, @Width, @Drop, @StackPosition, @ControlPosition, @TrackColour, @ChainLength, @WandColour, @WandLength, @BracketOption, @BracketColour, @HangerType, @BottomHoldDown, @InsertInTrack, @Sloper, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)" UpdateCommand="UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, SlatSize=@SlatSize, SlatQty=@SlatQty, Width=@Width, [Drop]=@Drop, StackPosition=@StackPosition, ControlPosition=@ControlPosition, TrackColour=@TrackColour, ChainLength=@ChainLength, WandColour=@WandColour, WandLength=@WandLength, BracketOption=@BracketOption, BracketColour=@BracketColour, HangerType=@HangerType, BottomHoldDown=@BottomHoldDown, InsertInTrack=@InsertInTrack, Sloper=@Sloper, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id">
+        <asp:SqlDataSource ID="sdsComplete" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, Mounting, SlatSize, SlatQty, Width, [Drop], StackPosition, ControlPosition, TrackColour, ChainLength, WandColour, WandLength, BracketOption, BracketColour, HangerType, BottomHoldDown, InsertInTrack, Sloper, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @SlatSize, @SlatQty, @Width, @Drop, @StackPosition, @ControlPosition, @TrackColour, @ChainLength, @WandColour, @WandLength, @BracketOption, @BracketColour, @HangerType, @BottomHoldDown, @InsertInTrack, @Sloper, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)" UpdateCommand="UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, SlatSize=@SlatSize, SlatQty=@SlatQty, Width=@Width, [Drop]=@Drop, StackPosition=@StackPosition, ControlPosition=@ControlPosition, TrackColour=@TrackColour, ChainLength=@ChainLength, WandColour=@WandColour, WandLength=@WandLength, BracketOption=@BracketOption, BracketColour=@BracketColour, HangerType=@HangerType, BottomHoldDown=@BottomHoldDown, InsertInTrack=@InsertInTrack, Sloper=@Sloper, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id">
             <InsertParameters>
                 <asp:ControlParameter ControlID="lblItemId" Name="Id" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblHeaderId" Name="HeaderId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblBlindNo" Name="BlindNo" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblKitId" Name="KitId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblSoeKitId" Name="SoeKitId" PropertyName="Text" />
+                <asp:ControlParameter ControlID="lblExactId" Name="ExactId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlFabricColour" Name="FabricId" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="lblChainId" Name="ChainId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblPriceGroupId" Name="PriceGroupId" PropertyName="Text" />
@@ -557,6 +562,7 @@
                 <asp:ControlParameter ControlID="lblBlindNo" Name="BlindNo" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblKitId" Name="KitId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblSoeKitId" Name="SoeKitId" PropertyName="Text" />
+                <asp:ControlParameter ControlID="lblExactId" Name="ExactId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlFabricColour" Name="FabricId" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="lblChainId" Name="ChainId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblPriceGroupId" Name="PriceGroupId" PropertyName="Text" />

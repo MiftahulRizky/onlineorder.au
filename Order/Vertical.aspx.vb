@@ -508,6 +508,10 @@ Partial Class Order_Vertical
                 lblKitId.Text = UCase(ddlControlType.SelectedValue).ToString()
                 lblSoeKitId.Text = publicCfg.GetSoeKitId(ddlControlType.SelectedValue)
 
+                Dim designName As String = publicCfg.GetDesignName(designId)
+                Dim exactName As String = designName & " - " & blindName
+                lblExactId.Text = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
+
                 Dim fabricGroup As String = publicCfg.GetFabricGroup(ddlFabricColour.SelectedValue)
 
                 Dim priceGroupName As String = blindName & " - " & fabricGroup
@@ -517,6 +521,7 @@ Partial Class Order_Vertical
                 If blindName = "Slat Only" And ddlBottom.SelectedValue = "Top Hanger Only" Then
                     priceGroupName = blindName & " With Hanger - " & fabricGroup
                 End If
+
                 Dim priceGroupId As String = publicCfg.GetPriceGroupId(designId, priceGroupName)
                 lblPriceGroupId.Text = UCase(priceGroupId).ToString()
 

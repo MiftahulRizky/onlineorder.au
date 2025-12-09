@@ -324,15 +324,18 @@
         <asp:Label runat="server" ID="lblKitId"></asp:Label>
         <asp:Label runat="server" ID="lblSoeKitId"></asp:Label>
 
+        <asp:Label runat="server" ID="lblExactId"></asp:Label>
+
         <asp:Label runat="server" ID="lblPriceGroupId"></asp:Label>
         <asp:Label runat="server" ID="lblWandSize"></asp:Label>
 
-        <asp:SqlDataSource ID="sdsPage" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, PriceGroupId, BlindNo, Qty, BlindSize, Location, Mounting, Width, [Drop], StackPosition, TrackType, TrackColour, WandLength, WandColour, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES(@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @PriceGroupId, 'Blind 1', @Qty, @BlindSize, @Location, @Mounting, @Width, @Drop, @StackPosition, @TrackType, @TrackColour, @WandLength, @WandColour, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)" UpdateCommand="UPDATE OrderDetails SET KitId=@KitId, SoeKitId=@SoeKitId, FabricId=@FabricId, PriceGroupId=@PriceGroupId, BlindNo='Blind 1', Qty=@Qty, BlindSize=@BlindSize, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, StackPosition=@StackPosition, TrackType=@TrackType, TrackColour=@TrackColour, WandLength=@WandLength, WandColour=@WandColour, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id">
+        <asp:SqlDataSource ID="sdsPage" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, ExactId, FabricId, PriceGroupId, BlindNo, Qty, BlindSize, Location, Mounting, Width, [Drop], StackPosition, TrackType, TrackColour, WandLength, WandColour, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES(@Id, @HeaderId, @KitId, @SoeKitId, @ExactId, @FabricId, @PriceGroupId, 'Blind 1', @Qty, @BlindSize, @Location, @Mounting, @Width, @Drop, @StackPosition, @TrackType, @TrackColour, @WandLength, @WandColour, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)" UpdateCommand="UPDATE OrderDetails SET KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, PriceGroupId=@PriceGroupId, BlindNo='Blind 1', Qty=@Qty, BlindSize=@BlindSize, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, StackPosition=@StackPosition, TrackType=@TrackType, TrackColour=@TrackColour, WandLength=@WandLength, WandColour=@WandColour, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id">
             <InsertParameters>
                 <asp:ControlParameter ControlID="lblItemId" Name="Id" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblHeaderId" Name="HeaderId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblKitId" Name="KitId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblSoeKitId" Name="SoeKitId" PropertyName="Text" />
+                <asp:ControlParameter ControlID="lblExactId" Name="ExactId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlFabricColour" Name="FabricId" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="lblPriceGroupId" Name="PriceGroupId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlBlindSize" Name="BlindSize" PropertyName="SelectedItem.Value" />
@@ -354,6 +357,7 @@
                 <asp:ControlParameter ControlID="lblHeaderId" Name="HeaderId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblKitId" Name="KitId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblSoeKitId" Name="SoeKitId" PropertyName="Text" />
+                <asp:ControlParameter ControlID="lblExactId" Name="ExactId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlFabricColour" Name="FabricId" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="lblPriceGroupId" Name="PriceGroupId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlBlindSize" Name="BlindSize" PropertyName="SelectedItem.Value" />

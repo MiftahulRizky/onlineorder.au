@@ -379,8 +379,6 @@ const bindBlinds = async () => {
 
       const blindId = blindtype.value;
     }
-
-    if (ITEMACTION === "AddItem") loaderFadeOut();
   } catch (err) {
     // error karena jaringan / parsing JSON
     const msg =
@@ -649,7 +647,6 @@ const bindItemOrders = async (itemid) => {
       await bindFabricColours(item.DesignId, item.FabricType);
       await handlerElementVisibility(item.BlindId);
       await handlerSetElementValues(item);
-      if (ITEMACTION !== "AddItem") await loaderFadeOut();
     }
 
     return true; // ✅ success
@@ -716,7 +713,7 @@ const handlerSetElementValues = (itemData) => {
 };
 
 // --------------------------------------|| Other Functions ||--------------------------------------
-const checkSessionCellora = () => {
+const checkSessionCellora = async () => {
   if (!HEADERID) {
     window.location.href = "/order";
     return;
@@ -737,16 +734,16 @@ const checkSessionCellora = () => {
     return;
   }
 
-  setSessionAlive();
-
-  bindDesigns();
-  bindHeaders();
+  await bindDesigns();
+  await bindHeaders();
   bindFormAction(ITEMACTION);
 
   if (ITEMACTION === "AddItem") {
     handlerElementVisibility();
-    bindBlinds(DESIGNID);
+    await bindBlinds(DESIGNID);
+    loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    bindItemOrders(ITEMID);
+    await bindItemOrders(ITEMID);
+    loaderFadeOut();
   }
 };

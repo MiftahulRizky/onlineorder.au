@@ -573,6 +573,9 @@ Partial Class Methods_Order_RomanBlindMethod
             Dim peiceGroupName As String = "Roman Blind - " & fabricGroupName
             Dim priceGroupId As String = publicCfg.GetPriceGroupId(data.designId,peiceGroupName)
 
+            Dim designName As String = publicCfg.GetDesignName(data.designId)
+            Dim exactName As String = designName & " - " & blindName
+            Dim exactId As String = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
 
             
 
@@ -581,11 +584,12 @@ Partial Class Methods_Order_RomanBlindMethod
                 Dim itemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, ChainId, PriceGroupId, BlindNo, Qty, Location, Mounting, Width, [Drop], ControlPosition, MaterialChain, ChainLength, CordColour, CordLength, BattenColour,  AcornPlasticColour, Cleat, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @ChainId, @PriceGroupId, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @MaterialChain, @ChainLength, @CordColour, @CordLength, @BattenColour, @AcornPlasticColour, @Cleat, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, BlindNo, Qty, Location, Mounting, Width, [Drop], ControlPosition, MaterialChain, ChainLength, CordColour, CordLength, BattenColour,  AcornPlasticColour, Cleat, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @MaterialChain, @ChainLength, @CordColour, @CordLength, @BattenColour, @AcornPlasticColour, @Cleat, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
                         myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
+                        myCmd.Parameters.AddWithValue("@ExactId", exactId)
                         myCmd.Parameters.AddWithValue("@FabricId", fabricId)
                         myCmd.Parameters.AddWithValue("@ChainId", chainId)
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
@@ -626,11 +630,12 @@ Partial Class Methods_Order_RomanBlindMethod
                 Dim itemId As String = data.itemid
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId=@KitId, SoeKitId=@SoeKitId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, BlindNo='Blind 1', Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, ControlPosition=@ControlPosition, MaterialChain=@MaterialChain, ChainLength=@ChainLength, CordColour=@CordColour, CordLength=@CordLength, BattenColour=@BattenColour, AcornPlasticColour=@AcornPlasticColour, Cleat=@Cleat, Notes=@Notes, Matrix=0, Charge=0, Discount=0, TotalMatrix=0, TotalCharge=0, TotalDiscount=0, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, BlindNo='Blind 1', Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, ControlPosition=@ControlPosition, MaterialChain=@MaterialChain, ChainLength=@ChainLength, CordColour=@CordColour, CordLength=@CordLength, BattenColour=@BattenColour, AcornPlasticColour=@AcornPlasticColour, Cleat=@Cleat, Notes=@Notes, Matrix=0, Charge=0, Discount=0, TotalMatrix=0, TotalCharge=0, TotalDiscount=0, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
                         myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
+                        myCmd.Parameters.AddWithValue("@ExactId", exactId)
                         myCmd.Parameters.AddWithValue("@FabricId", fabricId)
                         myCmd.Parameters.AddWithValue("@ChainId", chainId)
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())

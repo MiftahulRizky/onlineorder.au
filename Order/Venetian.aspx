@@ -445,18 +445,21 @@
 
         <asp:Label runat="server" ID="lblPriceGroupId"></asp:Label>
 
+        <asp:Label runat="server" ID="lblExactId"></asp:Label>
+
         <asp:Label runat="server" ID="lblCutOut_LeftTop"></asp:Label>
         <asp:Label runat="server" ID="lblCutOut_LeftBottom"></asp:Label>
         <asp:Label runat="server" ID="lblCutOut_RightTop"></asp:Label>
         <asp:Label runat="server" ID="lblCutOut_RightBottom"></asp:Label>
         <asp:Label runat="server" ID="lblControlPosition"></asp:Label>
         
-        <asp:SqlDataSource ID="sdsPage" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], ControlPosition, ControlLength, BottomHoldDown, CutOut_LeftTop, CutOut_RightTop, CutOut_LeftBottom, CutOut_RightBottom, PelmetType, PelmetWidth, PelmetSize, PelmetReturnSize, PelmetReturnSize2, LHSWidth_Top, LHSHeight_Top, RHSWidth_Top, RHSHeight_Top, LHSWidth_Bottom, LHSHeight_Bottom, RHSWidth_Bottom, RHSHeight_Bottom, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES(@Id, @HeaderId, 'Blind 1', @KitId, @SoeKitId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @ControlLength, @BottomHoldDown, @CutOut_LeftTop, @CutOut_RightTop, @CutOut_LeftBottom, @CutOut_RightBottom, @PelmetType, @PelmetWidth, @PelmetSize, @PelmetReturnSize, @PelmetReturnSize2, @LHSWidth_Top, @LHSHeight_Top, @RHSWidth_Top, @RHSHeight_Top, @LHSWidth_Bottom, @LHSHeight_Bottom, @RHSWidth_Bottom, @RHSHeight_Bottom, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)" UpdateCommand="UPDATE OrderDetails SET BlindNo='Blind 1', KitId=@KitId, SoeKitId=@SoeKitId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, ControlPosition=@ControlPosition, ControlLength=@ControlLength, BottomHoldDown=@BottomHoldDown, CutOut_LeftTop=@CutOut_LeftTop, CutOut_RightTop=@CutOut_RightTop, CutOut_LeftBottom=@CutOut_LeftBottom, CutOut_RightBottom=@CutOut_RightBottom, PelmetType=@PelmetType, PelmetWidth=@PelmetWidth, PelmetSize=@PelmetSize, PelmetReturnSize=@PelmetReturnSize, PelmetReturnSize2=@PelmetReturnSize, LHSWidth_Top=@LHSWidth_Top, LHSHeight_Top=@LHSHeight_Top, RHSWidth_Top=@RHSWidth_Top, RHSHeight_Top=@RHSHeight_Top, LHSWidth_Bottom=@LHSWidth_Bottom, LHSHeight_Bottom=@LHSHeight_Bottom, RHSWidth_Bottom=@RHSWidth_Bottom, RHSHeight_Bottom=@RHSHeight_Bottom, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id">
+        <asp:SqlDataSource ID="sdsPage" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], ControlPosition, ControlLength, BottomHoldDown, CutOut_LeftTop, CutOut_RightTop, CutOut_LeftBottom, CutOut_RightBottom, PelmetType, PelmetWidth, PelmetSize, PelmetReturnSize, PelmetReturnSize2, LHSWidth_Top, LHSHeight_Top, RHSWidth_Top, RHSHeight_Top, LHSWidth_Bottom, LHSHeight_Bottom, RHSWidth_Bottom, RHSHeight_Bottom, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES(@Id, @HeaderId, 'Blind 1', @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @ControlLength, @BottomHoldDown, @CutOut_LeftTop, @CutOut_RightTop, @CutOut_LeftBottom, @CutOut_RightBottom, @PelmetType, @PelmetWidth, @PelmetSize, @PelmetReturnSize, @PelmetReturnSize2, @LHSWidth_Top, @LHSHeight_Top, @RHSWidth_Top, @RHSHeight_Top, @LHSWidth_Bottom, @LHSHeight_Bottom, @RHSWidth_Bottom, @RHSHeight_Bottom, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)" UpdateCommand="UPDATE OrderDetails SET BlindNo='Blind 1', KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, ControlPosition=@ControlPosition, ControlLength=@ControlLength, BottomHoldDown=@BottomHoldDown, CutOut_LeftTop=@CutOut_LeftTop, CutOut_RightTop=@CutOut_RightTop, CutOut_LeftBottom=@CutOut_LeftBottom, CutOut_RightBottom=@CutOut_RightBottom, PelmetType=@PelmetType, PelmetWidth=@PelmetWidth, PelmetSize=@PelmetSize, PelmetReturnSize=@PelmetReturnSize, PelmetReturnSize2=@PelmetReturnSize, LHSWidth_Top=@LHSWidth_Top, LHSHeight_Top=@LHSHeight_Top, RHSWidth_Top=@RHSWidth_Top, RHSHeight_Top=@RHSHeight_Top, LHSWidth_Bottom=@LHSWidth_Bottom, LHSHeight_Bottom=@LHSHeight_Bottom, RHSWidth_Bottom=@RHSWidth_Bottom, RHSHeight_Bottom=@RHSHeight_Bottom, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id">
             <InsertParameters>
                 <asp:ControlParameter ControlID="lblItemId" Name="Id" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblHeaderId" Name="HeaderId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblKitId" Name="KitId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblSoeKitId" Name="SoeKitId" PropertyName="Text" />
+                <asp:ControlParameter ControlID="lblExactId" Name="ExactId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblPriceGroupId" Name="PriceGroupId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtQty" Name="Qty" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtLocation" Name="Location" PropertyName="Text" />
@@ -491,6 +494,7 @@
                 <asp:ControlParameter ControlID="lblHeaderId" Name="HeaderId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblKitId" Name="KitId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblSoeKitId" Name="SoeKitId" PropertyName="Text" />
+                <asp:ControlParameter ControlID="lblExactId" Name="ExactId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblPriceGroupId" Name="PriceGroupId" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtQty" Name="Qty" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtLocation" Name="Location" PropertyName="Text" />

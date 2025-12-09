@@ -333,6 +333,10 @@ Partial Class Order_Verishades
                 lblKitId.Text = UCase(ddlKitId.SelectedValue).ToString()
                 lblSoeKitId.Text = publicCfg.GetSoeKitId(ddlKitId.SelectedValue)
 
+                Dim designName As String = publicCfg.GetDesignName(designId)
+                Dim exactName As String = designName & " - " & blindName
+                lblExactId.Text = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
+
                 Dim priceGroupName As String = blindName
                 Dim fabricGroup As String = publicCfg.GetFabricGroup(ddlFabricColour.SelectedValue)
                 If blindName = "Single" Then
