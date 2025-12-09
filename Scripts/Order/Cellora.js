@@ -123,7 +123,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
     // console.log("FormData snapshot:", [...formData.entries()]);
     // console.table(formObject);
     // console.table(extraData);
-    // console.table(finalData);
+    // return console.table(finalData);
     // console.groupEnd();
 
     // before send
@@ -666,6 +666,7 @@ const handlerSetElementValues = (itemData) => {
     drop: "Drop",
     controlposition: "ControlPosition",
     chainlength: "ChainLength",
+    holddown: "BottomHoldDown",
     notes: "Notes",
     markup: "MarkUp",
   };

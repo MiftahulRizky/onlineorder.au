@@ -145,6 +145,16 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="mb-3 row">
+                                        <label for="holddown" class="col-lg-3 text-uppercase fw-bold">Hold Down Bracket</label>
+                                        <div class="col-lg-3">
+                                            <select name="holddown" id="holddown" class="form-control ">
+                                                <option value="No">NO</option>
+                                                <option value="Yes">YES</option>
+                                            </select>
+                                        </div>
+                                    </div>
     
     
                                     <div class="mb-3 row" >

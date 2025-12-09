@@ -181,6 +181,7 @@ Partial Class Methods_Order_CelloraMethod
         Public Property drop As String
         Public Property controlposition As String
         Public Property chainlength As String
+        Public Property holddown As String
         Public Property notes As String
         Public Property markup As String
         Public Property headerid As String
@@ -221,11 +222,11 @@ Partial Class Methods_Order_CelloraMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "room to install is required !",.field = "room"}}
             End If
 
-            If Not blindName = "Cordless" Then
-                If String.IsNullOrEmpty(data.mounting) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "mounting is required !",.field = "mounting"}}
-                End If
-            End If
+            ' If InStr(blindName, "Cordless") = 0 OrElse InStr(blindName, "Corded") = 0 Then
+            '     If String.IsNullOrEmpty(data.mounting) Then
+            '         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "mounting is required !",.field = "mounting"}}
+            '     End If
+            ' End If
 
             If String.IsNullOrEmpty(data.fabrictype) Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
@@ -257,30 +258,36 @@ Partial Class Methods_Order_CelloraMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3000 !",.field = "drop"}}
             End If
 
-            If Not blindName = "Cordless" Then
-                If String.IsNullOrEmpty(data.controlposition) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control side is required !",.field = "controlposition"}}
-                End If
-            End If
             
-            If Not blindName = "Cordless" Then
-                Dim chainlength As Integer
-                If String.IsNullOrEmpty(data.chainlength) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length is required !",.field = "chainlength"}}
-                End If
-                If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
-                End If
-                If chainlength > 3000 Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chainl ength must be less than or equal to 3000 !",.field = "chainlength"}}
-                End If
 
-                If Not String.IsNullOrEmpty(data.notes) Then
-                    If data.notes.Trim().Length > 1000 Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must be less than 1000 characters !",.field = "notes"}}
-                    End If
-                End If
-            End IF
+            ' If InStr(blindName, "Cordless") = 0 OrElse InStr(blindName, "Corded") = 0 Then
+            '     If String.IsNullOrEmpty(data.controlposition) Then
+            '         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control side is required !",.field = "controlposition"}}
+            '     End If
+            ' End If
+            
+            ' If InStr(blindName, "Cordless") = 0 OrElse InStr(blindName, "Corded") = 0 Then
+            '     Dim chainlength As Integer
+            '     If String.IsNullOrEmpty(data.chainlength) Then
+            '         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length is required !",.field = "chainlength"}}
+            '     End If
+            '     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+            '         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+            '     End If
+            '     If chainlength > 3000 Then
+            '         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chainl ength must be less than or equal to 3000 !",.field = "chainlength"}}
+            '     End If
+
+            '     If Not String.IsNullOrEmpty(data.notes) Then
+            '         If data.notes.Trim().Length > 1000 Then
+            '             Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must be less than 1000 characters !",.field = "notes"}}
+            '         End If
+            '     End If
+            ' End IF
+
+            If String.IsNullOrEmpty(data.holddown) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "holddown"}}
+            End If
 
             Dim markup As Integer
             If Not String.IsNullOrEmpty(data.markup) Then
@@ -311,7 +318,7 @@ Partial Class Methods_Order_CelloraMethod
                 Dim itemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, PriceGroupId, BlindNo, Qty, Location, Mounting, Width, [Drop], ControlPosition, ChainLength, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @PriceGroupId, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @ChainLength, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, PriceGroupId, BlindNo, Qty, Location, Mounting, Width, [Drop], ControlPosition, ChainLength, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @PriceGroupId, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @ChainLength, @BottomHoldDown, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
@@ -325,6 +332,7 @@ Partial Class Methods_Order_CelloraMethod
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
+                        myCmd.Parameters.AddWithValue("@BottomHoldDown", data.holddown)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
                         myCmd.Connection = thisConn
@@ -347,7 +355,7 @@ Partial Class Methods_Order_CelloraMethod
                 Dim itemId As String = data.itemid
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET  KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, PriceGroupId = @PriceGroupId, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, ControlPosition = @ControlPosition, ChainLength = @ChainLength, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET  KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, PriceGroupId = @PriceGroupId, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, ControlPosition = @ControlPosition, ChainLength = @ChainLength, BottomHoldDown = @BottomHoldDown, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
@@ -361,6 +369,7 @@ Partial Class Methods_Order_CelloraMethod
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
+                        myCmd.Parameters.AddWithValue("@BottomHoldDown", data.holddown)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
                         myCmd.Connection = thisConn
