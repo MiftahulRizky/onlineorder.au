@@ -198,11 +198,13 @@ Partial Class Methods_Order_CelloraMethod
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "type is required !", .field = "blindtype"}}
             End If
 
+
             If String.IsNullOrEmpty(data.colourtype) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "colour is required !", .field = "colourtype"}}
             End If
 
             Dim blindName As String = publicCfg.GetItemData("SELECT Name FROM Blinds WHERE Id = '" + data.blindtype + "'")
+
 
             Dim qty As Integer
             If String.IsNullOrEmpty(data.qty) Then
@@ -219,17 +221,19 @@ Partial Class Methods_Order_CelloraMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "room to install is required !",.field = "room"}}
             End If
 
-            If String.IsNullOrEmpty(data.mounting) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "mounting is required !",.field = "mounting"}}
+            If Not blindName = "Cordless" Then
+                If String.IsNullOrEmpty(data.mounting) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "mounting is required !",.field = "mounting"}}
+                End If
             End If
 
-            ' If String.IsNullOrEmpty(data.fabrictype) Then
-            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
-            ' End If
+            If String.IsNullOrEmpty(data.fabrictype) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
+            End If
 
-            ' If String.IsNullOrEmpty(data.fabriccolour) Then
-            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
-            ' End If
+            If String.IsNullOrEmpty(data.fabriccolour) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
+            End If
 
             Dim width As Integer
             If String.IsNullOrEmpty(data.width) Then
@@ -253,26 +257,30 @@ Partial Class Methods_Order_CelloraMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3000 !",.field = "drop"}}
             End If
 
-            If String.IsNullOrEmpty(data.controlposition) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control side is required !",.field = "controlposition"}}
-            End If
-
-            Dim chainlength As Integer
-            If String.IsNullOrEmpty(data.chainlength) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length is required !",.field = "chainlength"}}
-            End If
-            If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
-            End If
-            If chainlength > 3000 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chainl ength must be less than or equal to 3000 !",.field = "chainlength"}}
-            End If
-
-            If Not String.IsNullOrEmpty(data.notes) Then
-                If data.notes.Trim().Length > 1000 Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must be less than 1000 characters !",.field = "notes"}}
+            If Not blindName = "Cordless" Then
+                If String.IsNullOrEmpty(data.controlposition) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control side is required !",.field = "controlposition"}}
                 End If
             End If
+            
+            If Not blindName = "Cordless" Then
+                Dim chainlength As Integer
+                If String.IsNullOrEmpty(data.chainlength) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length is required !",.field = "chainlength"}}
+                End If
+                If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                End If
+                If chainlength > 3000 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chainl ength must be less than or equal to 3000 !",.field = "chainlength"}}
+                End If
+
+                If Not String.IsNullOrEmpty(data.notes) Then
+                    If data.notes.Trim().Length > 1000 Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must be less than 1000 characters !",.field = "notes"}}
+                    End If
+                End If
+            End IF
 
             Dim markup As Integer
             If Not String.IsNullOrEmpty(data.markup) Then

@@ -129,8 +129,9 @@
                                         <div class="col-lg-3">
                                             <select name="controlposition" id="controlposition" class="form-control ">
                                                 <option value=""></option>
-                                                <option value="RHS">RHS</option>
-                                                <option value="LHS">LHS</option>
+                                                <option value="L">L</option>
+                                                <option value="R">R</option>
+                                                <option value="LR">LR</option>
                                             </select>
                                         </div>
                                     </div>
