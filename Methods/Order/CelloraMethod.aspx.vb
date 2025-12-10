@@ -182,6 +182,7 @@ Partial Class Methods_Order_CelloraMethod
         Public Property controlposition As String
         Public Property chainlength As String
         Public Property holddown As String
+        Public Property cutout As String
         Public Property notes As String
         Public Property markup As String
         Public Property headerid As String
@@ -318,7 +319,7 @@ Partial Class Methods_Order_CelloraMethod
                 Dim itemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, PriceGroupId, BlindNo, Qty, Location, Mounting, Width, [Drop], ControlPosition, ChainLength, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @PriceGroupId, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @ChainLength, @BottomHoldDown, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, PriceGroupId, BlindNo, Qty, Location, Mounting, Width, [Drop], ControlPosition, ChainLength, BottomHoldDown, DoorCutOut, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @PriceGroupId, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @ChainLength, @BottomHoldDown, @DoorCutOut, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
@@ -333,6 +334,7 @@ Partial Class Methods_Order_CelloraMethod
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.holddown)
+                        myCmd.Parameters.AddWithValue("@DoorCutOut", data.cutout)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
                         myCmd.Connection = thisConn
@@ -355,7 +357,7 @@ Partial Class Methods_Order_CelloraMethod
                 Dim itemId As String = data.itemid
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET  KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, PriceGroupId = @PriceGroupId, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, ControlPosition = @ControlPosition, ChainLength = @ChainLength, BottomHoldDown = @BottomHoldDown, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET  KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, PriceGroupId = @PriceGroupId, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, ControlPosition = @ControlPosition, ChainLength = @ChainLength, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
@@ -370,6 +372,7 @@ Partial Class Methods_Order_CelloraMethod
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.holddown)
+                        myCmd.Parameters.AddWithValue("@DoorCutOut", data.cutout)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
                         myCmd.Connection = thisConn

@@ -667,6 +667,7 @@ const handlerSetElementValues = (itemData) => {
     controlposition: "ControlPosition",
     chainlength: "ChainLength",
     holddown: "BottomHoldDown",
+    cutout: "DoorCutOut",
     notes: "Notes",
     markup: "MarkUp",
   };

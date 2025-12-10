@@ -155,6 +155,19 @@
                                             </select>
                                         </div>
                                     </div>
+
+                                    <div class="mb-3 row">
+                                        <label for="cutout" class="col-lg-3 text-uppercase fw-bold">cut out</label>
+                                        <div class="col-lg-2">
+                                            <select name="cutout" id="cutout" class="form-control ">
+                                                <option value=""></option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                            </select>
+                                        </div>
+                                    </div>
     
     
                                     <div class="mb-3 row" >
