@@ -293,7 +293,7 @@ Partial Class Scripts_Setting_Surcharges_SurchargeMethod
                         myCmd.Parameters.AddWithValue("@BlindNo", data.blindno)
                         myCmd.Parameters.AddWithValue("@Name", data.name)
                         myCmd.Parameters.AddWithValue("@FieldName", data.fieldname)
-                        myCmd.Parameters.AddWithValue("@Formula", data.fieldname + data.formula)
+                        myCmd.Parameters.AddWithValue("@Formula", data.fieldname + " " + data.formula)
                         myCmd.Parameters.AddWithValue("@Charge", data.charge)
                         myCmd.Parameters.AddWithValue("@Description", data.des)
                         myCmd.Parameters.AddWithValue("@Active", data.active)
@@ -307,7 +307,7 @@ Partial Class Scripts_Setting_Surcharges_SurchargeMethod
             End If
 
             If Not String.IsNullOrEmpty(data.id) Then
-                Dim formula As String = data.fieldname + data.formula
+                Dim formula As String = data.fieldname + " " + data.formula
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand("UPDATE Surcharges SET DesignId=@DesignId, BlindId=@BlindId, BlindNo=@BlindNo, Name=@Name, FieldName=@FieldName, Formula=@Formula, Charge=@Charge, Description=@Description, Active=@Active WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", UCase(data.id).ToString())
