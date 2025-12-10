@@ -392,6 +392,8 @@ Public Class PrintConfig
                 result += thStart & "Fabric" & thEnd
                 result += thStart & "Side" & thEnd
                 result += thStart & "Chain Length" & thEnd
+                result += thStart & "Hold Down Bracket" & thEnd
+                result += thStart & "Cut Out" & thEnd
                 result += trEnd
 
 
@@ -408,6 +410,8 @@ Public Class PrintConfig
                     result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ChainLength").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("DoorCutOut").ToString() & tdEnd
                     result += trEnd
 
                     If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
