@@ -540,9 +540,15 @@ Partial Class Order_Venetian
                 If txtPelmetWidth.Text = "" Or txtPelmetWidth.Text = "0" Then
                     If ddlMounting.SelectedValue = "Face Fit" Then
                         txtPelmetWidth.Text = txtWidth.Text + 20
+                        If InStr(blindName, "Timber") > 0 Then
+                            txtPelmetWidth.Text = txtWidth.Text + 20
+                        End If
                     End If
                     If ddlMounting.SelectedValue = "Reveal Fit" Then
                         txtPelmetWidth.Text = txtWidth.Text + 10
+                         If InStr(blindName, "Timber") > 0 Then
+                            txtPelmetWidth.Text = txtWidth.Text + 8
+                        End If
                     End If
                 End If
 
@@ -552,9 +558,11 @@ Partial Class Order_Venetian
                 End If
 
                 If ddlPelmetType.SelectedValue = "With Return" Then
-                    ' txtReturnLeft.Text = "67" : txtReturnRight.Text = "67"
                     If ddlMounting.SelectedValue = "Face Fit" Then
                         txtReturnLeft.Text = "77" : txtReturnRight.Text = "77"
+                        If InStr(blindName, "Timber") > 0 Then
+                            txtReturnLeft.Text = "67" : txtReturnRight.Text = "67"
+                        End If
                     End If
                     If ddlMounting.SelectedValue = "Reveal Fit" Then
                         txtReturnLeft.Text = "" : txtReturnRight.Text = ""
@@ -824,7 +832,6 @@ Partial Class Order_Venetian
         ddlHoldDown.Items.Clear()
         Try
             If InStr(blindName, "Timber") > 0 Then
-                ddlHoldDown.Items.Add(New ListItem("METAL ONLY", "Metal Only"))
                 ddlHoldDown.Items.Add(New ListItem("SILVER", "Silver"))
                 ddlHoldDown.Items.Add(New ListItem("GOLD", "Gold"))
             Else
