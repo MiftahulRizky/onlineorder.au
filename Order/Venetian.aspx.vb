@@ -96,6 +96,9 @@ Partial Class Order_Venetian
         End Try
         Call BindDataColour(ddlBlindType.SelectedValue, ddlStyle.SelectedValue)
 
+        Dim blindName As String = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
+        Call BindHoldDown(blindName)
+
         Call BindComponentForm(ddlColour.SelectedValue)
     End Sub
 
@@ -104,11 +107,17 @@ Partial Class Order_Venetian
 
         Call BindDataColour(ddlBlindType.SelectedValue, ddlStyle.SelectedValue)
 
+        Dim blindName As String = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
+        Call BindHoldDown(blindName)
+
         Call BindComponentForm(ddlColour.SelectedValue)
     End Sub
 
     Protected Sub ddlColour_SelectedIndexChanged(sender As Object, e As EventArgs)
         Call BackColor()
+
+        Dim blindName As String = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
+        Call BindHoldDown(blindName)
 
         Call BindComponentForm(ddlColour.SelectedValue)
     End Sub
@@ -539,9 +548,15 @@ Partial Class Order_Venetian
                 If txtPelmetWidth.Text = "" Or txtPelmetWidth.Text = "0" Then
                     If ddlMounting.SelectedValue = "Face Fit" Then
                         txtPelmetWidth.Text = txtWidth.Text + 20
+                        If InStr(blindName, "Timber") > 0 Then
+                            txtPelmetWidth.Text = txtWidth.Text + 20
+                        End If
                     End If
                     If ddlMounting.SelectedValue = "Reveal Fit" Then
                         txtPelmetWidth.Text = txtWidth.Text + 10
+                        If InStr(blindName, "Timber") > 0 Then
+                            txtPelmetWidth.Text = txtWidth.Text + 8
+                        End If
                     End If
                 End If
 
@@ -554,6 +569,9 @@ Partial Class Order_Venetian
                     ' txtReturnLeft.Text = "67" : txtReturnRight.Text = "67"
                     If ddlMounting.SelectedValue = "Face Fit" Then
                         txtReturnLeft.Text = "77" : txtReturnRight.Text = "77"
+                        If InStr(blindName, "Timber") > 0 Then
+                            txtReturnLeft.Text = "67" : txtReturnRight.Text = "67"
+                        End If
                     End If
                     If ddlMounting.SelectedValue = "Reveal Fit" Then
                         txtReturnLeft.Text = "" : txtReturnRight.Text = ""
@@ -632,6 +650,7 @@ Partial Class Order_Venetian
             Dim blindId As String = myData.Tables(0).Rows(0).Item("BlindId").ToString()
             Dim style As String = myData.Tables(0).Rows(0).Item("ControlType").ToString()
             Dim ControlPosition As String = myData.Tables(0).Rows(0).Item("ControlPosition").ToString()
+            Dim blindName As String = myData.Tables(0).Rows(0).Item("BlindName").ToString()
             If ControlPosition.Contains("|") Then
                 Dim ControlPositionParts As String() = ControlPosition.Split("|"c)
                 ddlControlLift.SelectedValue = ControlPositionParts(0)
@@ -643,6 +662,7 @@ Partial Class Order_Venetian
             Call BindDataBlind()
             Call BindDataStyle(blindId)
             Call BindDataColour(blindId, style)
+            Call BindHoldDown(blindName)
 
             ddlBlindType.SelectedValue = blindId : ddlBlindType.Enabled = False
             ddlStyle.SelectedValue = style
@@ -818,6 +838,31 @@ Partial Class Order_Venetian
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
                 publicCfg.MailError(Session("UserId"), Page.Title, "BindDataColour", ex.ToString())
+            End If
+        End Try
+    End Sub
+
+    Private Sub BindHoldDown(blindName As String)
+        ddlHoldDown.Items.Clear()
+        Try
+            If InStr(blindName, "Timber") > 0 Then
+                ddlHoldDown.Items.Add(New ListItem("SILVER", "Silver"))
+                ddlHoldDown.Items.Add(New ListItem("GOLD", "Gold"))
+            Else
+                ddlHoldDown.Items.Add(New ListItem("N/A", "N/A"))
+                ddlHoldDown.Items.Add(New ListItem("NO", "No"))
+                ddlHoldDown.Items.Add(New ListItem("YES", "Yes"))
+            End If
+           
+
+            If ddlHoldDown.Items.Count > 0 Then
+                ddlHoldDown.Items.Insert(0, New ListItem("", ""))
+            End If
+        Catch ex As Exception
+            Call MessageError(True, ex.ToString())
+            If Not Session("RoleName") = "Administrator" Then
+                Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
+                publicCfg.MailError(Session("UserId"), Page.Title, "BindHoldDown", ex.ToString())
             End If
         End Try
     End Sub
