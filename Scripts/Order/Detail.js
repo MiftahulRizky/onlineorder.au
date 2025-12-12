@@ -606,7 +606,7 @@ const handlerHeaderInfo = (item) => {
     };
     // CARD 1
     spanJoNumber.innerHTML = item.JoNumber
-      ? `<span class="badge badge-outline text-red">${item.JoNumber}</span> <a href="javascript:void(0);" id="btnCopyJoNumber" class="btn btn-sm" data-jonumber="${item.JoNumber}"><i class="ti ti-copy fs-2 opacity-50"></i></a>`
+      ? `<span class="badge badge-outline text-red">${item.JoNumber}</span> <a href="javascript:void(0);" id="btnCopyJoNumber" class="btn btn-sm border-0 bg-transparent" data-jonumber="${item.JoNumber}"><i class="ti ti-copy fs-2 opacity-50"></i></a>`
       : "-";
     spanOrderNo.innerHTML = item.OrderNo;
     spanOrderCust.innerHTML = item.OrderCust;
