@@ -1037,6 +1037,14 @@ Partial Class Order_Vertical
                     ddlTrackColour.Items.Add(New ListItem("SILVER", "Silver"))
                 End If
 
+                If tubeType = "Louvolite" Then
+                    ddlTrackColour.Items.Add(New ListItem("BEIGE", "Beige"))
+                    ddlTrackColour.Items.Add(New ListItem("BIRCH WHITE", "Birch White"))
+                    ddlTrackColour.Items.Add(New ListItem("BLACK", "Black"))
+                    ddlTrackColour.Items.Add(New ListItem("WHITE", "White"))
+                    ddlTrackColour.Items.Add(New ListItem("SILVER", "Silver"))
+                End If
+
             End If
             If ddlTrackColour.Items.Count > 1 Then
                 ddlTrackColour.Items.Insert(0, New ListItem("", ""))

@@ -120,6 +120,14 @@ document.querySelector("#btnReloadPricing").addEventListener("click", () => {
   handlerReloadPricing(HEADERID, statusOrder, "click");
 });
 
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("#btnCopyJoNumber, [data-jonumber]"); // id atau attribute
+  if (!btn) return;
+
+  const jonumber = btn.dataset.jonumber;
+  copyToClipboard(jonumber);
+});
+
 // BUTTON ADD ITEMS
 document.querySelector("#btnAddItem").addEventListener("click", () => {
   document
@@ -620,7 +628,7 @@ const handlerHeaderInfo = async (item) => {
     };
     // CARD 1
     spanJoNumber.innerHTML = item.JoNumberId
-      ? `<span class="badge badge-outline text-red">${item.JoNumberId}</span>`
+      ? `<span class="badge badge-outline text-red">${item.JoNumberId}</span> <a href="javascript:void(0);" id="btnCopyJoNumber" class="btn btn-sm  border-0 bg-transparent" data-jonumber="${item.JoNumberId}"><i class="ti ti-copy fs-2 opacity-50"></i></a>`
       : "-";
     spanOrderNo.innerHTML = item.OrderNumber;
     spanOrderCust.innerHTML = item.OrderName;
@@ -1913,6 +1921,33 @@ const checkSessionDetail = () => {
   if (!ULTRON || !INFYNITY) window.location.href = "/order";
 
   bindOrderHeaderByID(HEADERID, INFYNITY);
+};
+
+const copyToClipboard = (text) => {
+  // Jika Clipboard API tersedia
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(text)
+      .catch((err) => console.error("Clipboard API Error:", err));
+    return;
+  }
+
+  // Fallback (aman untuk HTTP)
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed"; // hindari scroll
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+
+  try {
+    document.execCommand("copy");
+  } catch (err) {
+    console.error("Fallback copy error:", err);
+  }
+
+  ta.remove();
 };
 
 // FORMAT DATE TIME
