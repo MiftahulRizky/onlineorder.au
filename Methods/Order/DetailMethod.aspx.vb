@@ -1656,8 +1656,16 @@ Partial Class Methods_Order_DetailMethod
             If action = "convert" then
                 JobId = CreateJobId()
                 JoNumber = CreateJobNumber()
-                UpdateOrderHeader(headerid, JoNumber)
-                CreateJobHeaders(JobId, headerid)
+
+                Dim resultUpdateOrderHeader As String = UpdateOrderHeader(headerid, JoNumber)
+                If resultUpdateOrderHeader <> "200" then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = resultUpdateOrderHeader}}
+                End If
+
+                Dim resultCreateJobHeaders As String = CreateJobHeaders(JobId, headerid)
+                If resultCreateJobHeaders <> "200" then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = resultCreateJobHeaders}}
+                End If
 
                 '# Create Job Details
                 Dim resultCreateJobDetails As String = CreateJobDetails(JobId, headerid)
@@ -1729,80 +1737,98 @@ Partial Class Methods_Order_DetailMethod
     End Function
 
     Private Shared Function CreateJobId() As String
-        Dim result As String = String.Empty
-        Dim idDetail As String = String.Empty
-        Using thisConn As New SqlConnection(myConn)
-            thisConn.Open()
-            Using myCmd As New SqlCommand("SELECT TOP 1 Id FROM JobHeaders ORDER BY Id DESC", thisConn)
-                Using rdResult = myCmd.ExecuteReader
-                    While rdResult.Read
-                        idDetail = rdResult.Item("Id").ToString()
-                    End While
+        Try
+            Dim result As String = String.Empty
+            Dim idDetail As String = String.Empty
+            Using thisConn As New SqlConnection(myConn)
+                thisConn.Open()
+                Using myCmd As New SqlCommand("SELECT TOP 1 Id FROM JobHeaders ORDER BY Id DESC", thisConn)
+                    Using rdResult = myCmd.ExecuteReader
+                        While rdResult.Read
+                            idDetail = rdResult.Item("Id").ToString()
+                        End While
+                    End Using
                 End Using
+                thisConn.Close()
             End Using
-            thisConn.Close()
-        End Using
-        If idDetail = "" Then : result = 1
-        Else : result = CInt(idDetail) + 1
-        End If
-        Return result
+            If idDetail = "" Then : result = 1
+            Else : result = CInt(idDetail) + 1
+            End If
+            Return result
+        Catch ex As Exception
+            Return "CreateJobId : " & ex.Message
+        End Try
     End Function
     
     Private Shared Function CreateJobNumber() As String
-        Dim result As String = String.Empty
-        Dim jobId As Integer = 1
-        Dim idDetail As String = String.Empty
+        Try
+            Dim result As String = String.Empty
+            Dim jobId As Integer = 1
+            Dim idDetail As String = String.Empty
 
-        Using thisConn As New SqlConnection(myConn)
-            thisConn.Open()
-            ' Mendapatkan JobNumber terbaru dari database
-            Using myCmd As New SqlCommand("SELECT TOP 1 JoNumber FROM JobHeaders ORDER BY JoNumber DESC", thisConn)
-                Using rdResult = myCmd.ExecuteReader
-                    If rdResult.Read() Then
-                        idDetail = rdResult.Item("JoNumber").ToString()
-                    End If
+            Using thisConn As New SqlConnection(myConn)
+                thisConn.Open()
+                ' Mendapatkan JobNumber terbaru dari database
+                Using myCmd As New SqlCommand("SELECT TOP 1 JoNumber FROM JobHeaders ORDER BY JoNumber DESC", thisConn)
+                    Using rdResult = myCmd.ExecuteReader
+                        If rdResult.Read() Then
+                            idDetail = rdResult.Item("JoNumber").ToString()
+                        End If
+                    End Using
                 End Using
+                thisConn.Close()
             End Using
-            thisConn.Close()
-        End Using
 
-        If String.IsNullOrEmpty(idDetail) Then
-            ' Jika tidak ada JobNumber, buat JobNumber baru "J000001"
-            result = "J" & jobId.ToString("D6")
-        Else
-            ' Jika JobNumber ada, ambil angka dari JobNumber dan tambah 1
-            jobId = Integer.Parse(idDetail.Substring(1)) + 1
-            result = "J" & jobId.ToString("D6")
-        End If
+            If String.IsNullOrEmpty(idDetail) Then
+                ' Jika tidak ada JobNumber, buat JobNumber baru "J000001"
+                result = "J" & jobId.ToString("D6")
+            Else
+                ' Jika JobNumber ada, ambil angka dari JobNumber dan tambah 1
+                jobId = Integer.Parse(idDetail.Substring(1)) + 1
+                result = "J" & jobId.ToString("D6")
+            End If
 
-        Return result
+            Return result
+        Catch ex As Exception
+            Return "CreateJobNumber : " & ex.Message
+        End Try
     End Function
 
-    Private Shared Sub UpdateOrderHeader(HeaderId As String, JoNumber As String)
-        Using thisConn As SqlConnection = New SqlConnection(myConn)
-            Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders SET JoNumber=@JoNumber WHERE Id=@HeaderId")
-                myCmd.Parameters.AddWithValue("@JoNumber", JoNumber)
-                myCmd.Parameters.AddWithValue("@HeaderId", HeaderId)
-                myCmd.Connection = thisConn
-                thisConn.Open()
-                myCmd.ExecuteNonQuery()
-                thisConn.Close()
+    Private Shared Function UpdateOrderHeader(HeaderId As String, JoNumber As String) As String
+        Try
+            Using thisConn As SqlConnection = New SqlConnection(myConn)
+                Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders SET JoNumber=@JoNumber WHERE Id=@HeaderId")
+                    myCmd.Parameters.AddWithValue("@JoNumber", JoNumber)
+                    myCmd.Parameters.AddWithValue("@HeaderId", HeaderId)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
             End Using
-        End Using
-    End Sub
+            Return "200"
+        Catch ex As Exception
+            Return "UpdateOrderHeader : " & ex.Message
+        End Try
+    End Function
 
-    Private Shared Sub CreateJobHeaders(JobId As String, HeaderId As String)
-        Using thisConn As SqlConnection = New SqlConnection(myConn)
-            Using myCmd As SqlCommand = New SqlCommand("INSERT INTO JobHeaders (Id, HeaderId, JoNumber, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, Address, Suburb, States, PostCode, Phone, Email, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, StatusDescription, CreatedDate, SubmittedDate, CompletedDate, Active, OrderId, UserName, StoreName, StoreCompany, StoreType) SELECT @JobId, Id As HeaderId, JoNumber, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, Address, Suburb, States, PostCode, Phone, Email, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, StatusDescription, CreatedDate, SubmittedDate, CompletedDate, Active, OrderId, UserName, StoreName, StoreCompany, StoreType FROM view_headers WHERE Id=@HeaderId", thisConn)
-                myCmd.Parameters.AddWithValue("@HeaderId", HeaderId)
-                myCmd.Parameters.AddWithValue("@JobId", JobId)
-                myCmd.Connection = thisConn
-                thisConn.Open()
-                myCmd.ExecuteNonQuery()
-                thisConn.Close()
+    Private Shared Function CreateJobHeaders(JobId As String, HeaderId As String) As String
+        Try 
+            Using thisConn As SqlConnection = New SqlConnection(myConn)
+                Using myCmd As SqlCommand = New SqlCommand("INSERT INTO JobHeaders (Id, HeaderId, JoNumber, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, Address, Suburb, States, PostCode, Phone, Email, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, StatusDescription, CreatedDate, SubmittedDate, CompletedDate, Active, OrderId, UserName, StoreName, StoreCompany, StoreType) SELECT @JobId, Id As HeaderId, JoNumber, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, Address, Suburb, States, PostCode, Phone, Email, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, StatusDescription, CreatedDate, SubmittedDate, CompletedDate, Active, OrderId, UserName, StoreName, StoreCompany, StoreType FROM view_headers WHERE Id=@HeaderId", thisConn)
+                    myCmd.Parameters.AddWithValue("@HeaderId", HeaderId)
+                    myCmd.Parameters.AddWithValue("@JobId", JobId)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
             End Using
-        End Using
-    End Sub
+            Return "200"
+        Catch ex As Exception
+            Return "CreateJobHeaders : " & ex.Message
+        End Try
+    End Function
 
     Private Shared Function CreateJobDetails(JobId As String, HeaderId As String) As String
         Try
@@ -1830,6 +1856,7 @@ Partial Class Methods_Order_DetailMethod
                     Dim BlindName As String = row("BlindName").ToString()
                     Dim KitName As String = row("KitName").ToString()
                     Dim BracketType As String = row("BracketType").ToString()
+                    Dim ControlType As String = row("ControlType").ToString()
                     If BracketType.Contains("Linked") Then
                         LinkBlind = "Linked"
                     End If
@@ -1840,10 +1867,22 @@ Partial Class Methods_Order_DetailMethod
                     NumBoldNuts = GetNumBoldNuts(row)
 
                     If KitName.Contains("Roman") Then
-                        If BlindName.Contains("Plantation") Then
-                            BlindName = "Roman Plantation"
+                        If BlindName.Contains("Classic") Then
+                            If ControlType.Contains("Cord") Then
+                                BlindName = "Roman Cord Classic"
+                            End If
+                        ElseIf BlindName.Contains("Plantation") Then
+                            If ControlType.Contains("Cord") Then
+                                BlindName = "Roman Cord Plantation"
+                            ElseIF ControlType.Contains("Chain") Then
+                                BlindName = "Roman Chain Plantation"
+                            End If
                         ElseIf BlindName.Contains("Sewless") Then
-                            BlindName = "Roman Sewless"
+                            If ControlType.Contains("Cord") Then
+                                BlindName = "Roman Cord Sewless"
+                            ElseIF ControlType.Contains("Chain") Then
+                                BlindName = "Roman Chain Sewless"
+                            End If
                         End If
                     End If
                     
@@ -4320,6 +4359,7 @@ Partial Class Methods_Order_DetailMethod
                 "JobSheet_Cellora",
                 "JobSheet_PanelGlides",
                 "JobSheet_RollerBlinds",
+                "JobSheet_RomanBlinds",
                 "JobSheet_Venetian",
                 "JobSheet_Verishades",
                 "JobSheet_Verticals"
@@ -4438,6 +4478,11 @@ Partial Class Methods_Order_DetailMethod
                                 fieldsToProcess.AddRange({"Line", "BlindNo", "LinkBlind", "Qty", "Location", "Mounting", "Width", "Drop", "RollDirection", "ControlPosition", "ControlLength", "MotorStyle", "MotorRemote", "MotorCharger", "Connector", "Accessory", "TubeSize", "Trim", "ChildSafe", "Notes", "KitName", "BracketType", "TubeType", "TubeSkinSize", "NumBoldNuts",  "ControlType",  "ColourType", "ChainName", "ChainColour", "ChainLength","BottomName", "BottomType", "BottomColour","FabricName", "FabricType", "FabricColour", "FabricWidth"})
 
                                 tableName = "JobSheet_RollerBlinds"
+
+                            Case "Roman Blinds"
+                                fieldsToProcess.AddRange({"Line", "BlindNo", "Qty", "Location", "Mounting", "Width", "Drop", "ControlPosition", "ChainLength", "MaterialChain", "CordColour", "CordLength", "AcornPlasticColour", "BattenColour", "Cleat", "Notes", "KitName", "VenetianType", "ControlType", "ChainName", "ChainColour", "CLength","FabricName", "FabricType", "FabricColour", "FabricWidth"})
+
+                                tableName = "JobSheet_RomanBlinds"
 
                             Case "Venetian Blinds"
                                 fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "ControlPosition", "ControlLength", "WandLength", "BracketOption", "BottomHoldDown", "PelmetType", "PelmetWidth", "PelmetSize", "PelmetReturn", "PelmetReturnPosition", "PelmetReturnSize", "PelmetReturnSize2", "CutOut_LeftTop", "CutOut_RightTop", "CutOut_LeftBottom", "CutOut_RightBottom", "LHSWidth_Top", "LHSHeight_Top", "RHSWidth_Top", "RHSHeight_Top", "LHSWidth_Bottom", "LHSHeight_Bottom", "RHSWidth_Bottom", "RHSHeight_Bottom", "Notes", "KitName", "VenetianType", "ControlType", "ColourType"})
@@ -4562,6 +4607,7 @@ Partial Class Methods_Order_DetailMethod
                 {"JobSheet_Cellora", AddressOf JobSheetCellora},
                 {"JobSheet_PanelGlides", AddressOf JobSheetPanelGlides},
                 {"JobSheet_RollerBlinds", AddressOf JobSheetRollerBlinds},
+                {"JobSheet_RomanBlinds", AddressOf JobSheetRomanBlinds},
                 {"JobSheet_Venetian", AddressOf JobSheetVenetian},
                 {"JobSheet_Verishades", AddressOf JobSheetVerishades},
                 {"JobSheet_Verticals", AddressOf JobSheetVerticals}
@@ -4684,6 +4730,23 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
+    Private Shared Function JobSheetRomanBlinds(currentData As DataRow) As String
+        Dim result As String = String.Empty
+        
+        ' Select Case currentData("BlindName").ToString()
+        '     Case "Cassette Complete", "Cassette Headbox"
+        '         result += PrintRollerCassette(currentData)
+        '     Case "Motorised"
+        '         result += PrintRollerMotorised(currentData)
+        '     Case "Roller Blind"
+        '         result += PrintRollerBlind(currentData)
+        '     Case "Skin Only"
+        '         result += PrintRollerSkin(currentData)
+        ' End Select
+
+        Return result
+    End Function
+
     Private Shared Function JobSheetVenetian(currentData As DataRow) As String
         Dim result As String = String.Empty
          Select Case currentData("BlindName").ToString()
@@ -4745,8 +4808,8 @@ Partial Class Methods_Order_DetailMethod
             Select Case designName
             ' Case "Cellora Blinds"
             '     goWithList.Add("Cel")
-            Case "Roman Blinds"
-                goWithList.Add("Rom")
+            ' Case "Roman Blinds"
+            '     goWithList.Add("Rom")
             ' Case "Panel Glides"
             '     goWithList.Add("PG")
             End Select
@@ -4762,6 +4825,12 @@ Partial Class Methods_Order_DetailMethod
         Dim celloraList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_Cellora WHERE JobId = '" & JobId & "'")
         For i As Integer = 0 To celloraList.Tables(0).Rows.Count - 1
             goWithList.Add("CL")
+        Next
+
+        '#Roman Blinds
+        Dim romList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_RomanBlinds WHERE JobId = '" & JobId & "'")
+        For i As Integer = 0 To romList.Tables(0).Rows.Count - 1
+            goWithList.Add("R")
         Next
 
         '#PanelGlides
@@ -4852,6 +4921,18 @@ Partial Class Methods_Order_DetailMethod
             Case "Panel Glides"
                 ReportIcon = "PG"
                 ReportType = "Panel Glide"
+
+                Select Case  currentData("BlindName").ToString()
+                    Case "Plain"
+                        ReportType = "Panel Glide Plain"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Plain</span>"
+                    Case "Panel Plantation"
+                        ReportType = "Panel Glide Plantation"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Plantation</span>"
+                    Case "Panel Sewless"
+                        ReportType = "Panel Glide Sewless"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Sewless</span>"
+                End Select
             
             Case "Roller Blinds"
                 ReportIcon = "H"
@@ -4881,6 +4962,24 @@ Partial Class Methods_Order_DetailMethod
             Case "Roman Blinds"
                 ReportIcon = "R"
                 ReportType = "Roman"
+
+                Select Case  currentData("BlindName").ToString()
+                    Case "Roman Cord Classic"
+                        ReportType = "Roman Classic"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Cord Classic</span>"
+                    Case "Roman Chain Plantation"
+                        ReportType = "Roman Plantation"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Chain Plantation</span>"
+                    Case "Roman Cord Plantation"
+                        ReportType = "Roman Plantation"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Cord Plantation</span>"
+                    Case "Roman Chain Sewless"
+                        ReportType = "Roman Sewless"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Chain Sewless</span>"
+                    Case "Roman Cord Sewless"
+                        ReportType = "Roman Sewless"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Cord Sewless</span>"
+                End Select
 
             Case "Venetian Blinds"
                 ReportIcon = "V"
@@ -4958,24 +5057,6 @@ Partial Class Methods_Order_DetailMethod
         Dim hightColumnNotes As String = "height: 30px;"
         If Not (String.IsNullOrEmpty(Notes1) Or String.IsNullOrEmpty(Notes2) Or String.IsNullOrEmpty(Notes3) Or String.IsNullOrEmpty(Notes4) Or String.IsNullOrEmpty(Notes5) Or String.IsNullOrEmpty(Notes6)) Then hightColumnNotes = ""
 
-        Dim IconDes As String = ""
-        Dim blind As String = ""
-        Select Case currentData("DesignName").ToString() 
-            Case "Panel Glides"
-                Select Case currentData("BlindName").ToString()
-                    Case "Plain"
-                        blind = "Plain"
-                    Case "Panel Plantation"
-                        blind = "Plantation"
-                    Case "Panel Sewless"
-                        blind = "Sewless"
-                End Select
-                IconDes = "<br/><span style='font-size: 15px;'>" & blind
-        End Select
-
-        
-
-
         '#header
         result+= "<table style='width: 100%; border-collapse: collapse;'>"
             '#Go With, Icon, & Job No
@@ -4985,7 +5066,7 @@ Partial Class Methods_Order_DetailMethod
                 result+= "<th style=' text-align: left; width: 350px; font-size: 15px; padding-bottom: 5px;'>: "& GoWith &" /</th>"
 
                 '#Heading Center This Only
-                result+= "<th style='font-family: Impact, sans-serif; text-align: center; font-size: 35px; width: auto;' rowspan='6'>" & ReportIcon & IconDes & "</span></th>"
+                result+= "<th style='font-family: Impact, sans-serif; text-align: center; font-size: 35px; width: auto;' rowspan='6'>" & ReportIcon & "</th>"
 
                 '#heading Right
                 ' result+= "<th style=' text-align: left; width: 80px; font-size: 15px; padding-bottom: 5px;'>Job No</th>"
@@ -5013,7 +5094,7 @@ Partial Class Methods_Order_DetailMethod
 
                 '#Heading Right
                 result+= "<td style=' text-align: left; width: 80px; font-size: 12px; padding-bottom: 5px;'>Design Type</td>"
-                result+= "<td style=' text-align: left; font-size: 12px; padding-bottom: 5px;'>: " & ReportType & " " & blind & "</td>"
+                result+= "<td style=' text-align: left; font-size: 12px; padding-bottom: 5px;'>: " & ReportType & "</td>"
             result+="</tr>"
 
             '#Store & Due Date
