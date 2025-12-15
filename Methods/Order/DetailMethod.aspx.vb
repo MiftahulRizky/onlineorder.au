@@ -1814,6 +1814,7 @@ Partial Class Methods_Order_DetailMethod
                     Dim BlindName As String = row("BlindName").ToString()
                     Dim KitName As String = row("KitName").ToString()
                     Dim BracketType As String = row("BracketType").ToString()
+                    Dim ControlType As String = row("ControlType").ToString()
                     If BracketType.Contains("Linked") Then
                         LinkBlind = "Linked"
                     End If
@@ -1824,10 +1825,22 @@ Partial Class Methods_Order_DetailMethod
                     NumBoldNuts = GetNumBoldNuts(row)
 
                     If KitName.Contains("Roman") Then
-                        If BlindName.Contains("Plantation") Then
-                            BlindName = "Roman Plantation"
+                        If BlindName.Contains("Classic") Then
+                            If ControlType.Contains("Cord") Then
+                                BlindName = "Roman Cord Classic"
+                            End If
+                        ElseIf BlindName.Contains("Plantation") Then
+                            If ControlType.Contains("Cord") Then
+                                BlindName = "Roman Cord Plantation"
+                            ElseIF ControlType.Contains("Chain") Then
+                                BlindName = "Roman Chain Plantation"
+                            End If
                         ElseIf BlindName.Contains("Sewless") Then
-                            BlindName = "Roman Sewless"
+                            If ControlType.Contains("Cord") Then
+                                BlindName = "Roman Cord Sewless"
+                            ElseIF ControlType.Contains("Chain") Then
+                                BlindName = "Roman Chain Sewless"
+                            End If
                         End If
                     End If
                     
@@ -4303,6 +4316,7 @@ Partial Class Methods_Order_DetailMethod
                 "JobSheet_Cellora",
                 "JobSheet_PanelGlides",
                 "JobSheet_RollerBlinds",
+                "JobSheet_RomanBlinds",
                 "JobSheet_Venetian",
                 "JobSheet_Verishades",
                 "JobSheet_Verticals"
@@ -4421,6 +4435,11 @@ Partial Class Methods_Order_DetailMethod
                                 fieldsToProcess.AddRange({"Line", "BlindNo", "LinkBlind", "Qty", "Location", "Mounting", "Width", "Drop", "RollDirection", "ControlPosition", "ControlLength", "MotorStyle", "MotorRemote", "MotorCharger", "Connector", "Accessory", "TubeSize", "Trim", "ChildSafe", "Notes", "KitName", "BracketType", "TubeType", "TubeSkinSize", "NumBoldNuts",  "ControlType",  "ColourType", "ChainName", "ChainColour", "ChainLength","BottomName", "BottomType", "BottomColour","FabricName", "FabricType", "FabricColour", "FabricWidth"})
 
                                 tableName = "JobSheet_RollerBlinds"
+
+                            Case "Roman Blinds"
+                                fieldsToProcess.AddRange({"Line", "BlindNo", "Qty", "Location", "Mounting", "Width", "Drop", "ControlPosition", "ChainLength", "MaterialChain", "CordColour", "CordLength", "AcornPlasticColour", "BattenColour", "Cleat", "Notes", "KitName", "VenetianType", "ControlType", "ChainName", "ChainColour", "CLength","FabricName", "FabricType", "FabricColour", "FabricWidth"})
+
+                                tableName = "JobSheet_RomanBlinds"
 
                             Case "Venetian Blinds"
                                 fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "ControlPosition", "ControlLength", "WandLength", "BracketOption", "BottomHoldDown", "PelmetType", "PelmetWidth", "PelmetSize", "PelmetReturn", "PelmetReturnPosition", "PelmetReturnSize", "PelmetReturnSize2", "CutOut_LeftTop", "CutOut_RightTop", "CutOut_LeftBottom", "CutOut_RightBottom", "LHSWidth_Top", "LHSHeight_Top", "RHSWidth_Top", "RHSHeight_Top", "LHSWidth_Bottom", "LHSHeight_Bottom", "RHSWidth_Bottom", "RHSHeight_Bottom", "Notes", "KitName", "VenetianType", "ControlType", "ColourType"})
@@ -4545,6 +4564,7 @@ Partial Class Methods_Order_DetailMethod
                 {"JobSheet_Cellora", AddressOf JobSheetCellora},
                 {"JobSheet_PanelGlides", AddressOf JobSheetPanelGlides},
                 {"JobSheet_RollerBlinds", AddressOf JobSheetRollerBlinds},
+                {"JobSheet_RomanBlinds", AddressOf JobSheetRomanBlinds},
                 {"JobSheet_Venetian", AddressOf JobSheetVenetian},
                 {"JobSheet_Verishades", AddressOf JobSheetVerishades},
                 {"JobSheet_Verticals", AddressOf JobSheetVerticals}
@@ -4650,19 +4670,6 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
-    Private Shared Function JobSheetVenetian(currentData As DataRow) As String
-        Dim result As String = String.Empty
-         Select Case currentData("BlindName").ToString()
-            Case "Mockwood Venetian"
-                result += PrintMockwoodVenetian(currentData)
-            Case "Timber Venetian"
-                result += PrintTimberVenetian(currentData)
-            Case "Wooden Venetian"
-                result += PrintWoodenVenetian(currentData)
-        End Select
-        Return result
-    End Function
-
     Private Shared Function JobSheetRollerBlinds(currentData As DataRow) As String
         Dim result As String = String.Empty
         
@@ -4677,6 +4684,36 @@ Partial Class Methods_Order_DetailMethod
                 result += PrintRollerSkin(currentData)
         End Select
 
+        Return result
+    End Function
+
+    Private Shared Function JobSheetRomanBlinds(currentData As DataRow) As String
+        Dim result As String = String.Empty
+        
+        ' Select Case currentData("BlindName").ToString()
+        '     Case "Cassette Complete", "Cassette Headbox"
+        '         result += PrintRollerCassette(currentData)
+        '     Case "Motorised"
+        '         result += PrintRollerMotorised(currentData)
+        '     Case "Roller Blind"
+        '         result += PrintRollerBlind(currentData)
+        '     Case "Skin Only"
+        '         result += PrintRollerSkin(currentData)
+        ' End Select
+
+        Return result
+    End Function
+
+    Private Shared Function JobSheetVenetian(currentData As DataRow) As String
+        Dim result As String = String.Empty
+         Select Case currentData("BlindName").ToString()
+            Case "Mockwood Venetian"
+                result += PrintMockwoodVenetian(currentData)
+            Case "Timber Venetian"
+                result += PrintTimberVenetian(currentData)
+            Case "Wooden Venetian"
+                result += PrintWoodenVenetian(currentData)
+        End Select
         Return result
     End Function
 
@@ -4725,14 +4762,14 @@ Partial Class Methods_Order_DetailMethod
         Dim all As DataSet = publicCfg.GetListData("SELECT DesignName, BlindName FROM Jobsheets WHERE JobId = '" & JobId & "'")
         For i As Integer = 0 To all.Tables(0).Rows.Count - 1
             Dim designName As String = all.Tables(0).Rows(i).Item("DesignName").ToString()
-            Select Case designName
-            ' Case "Cellora Blinds"
-            '     goWithList.Add("Cel")
-            Case "Roman Blinds"
-                goWithList.Add("Rom")
-            ' Case "Panel Glides"
-            '     goWithList.Add("PG")
-            End Select
+            ' Select Case designName
+            ' ' Case "Cellora Blinds"
+            ' '     goWithList.Add("Cel")
+            ' Case "Roman Blinds"
+            '     goWithList.Add("Rom")
+            ' ' Case "Panel Glides"
+            ' '     goWithList.Add("PG")
+            ' End Select
         Next
 
         '#Aluminium Blinds
@@ -4778,6 +4815,12 @@ Partial Class Methods_Order_DetailMethod
                 Case "Skin Only"
                     goWithList.Add("Hs")
             End Select
+        Next
+
+        '#Roman Blinds
+        Dim romList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_RomanBlinds WHERE JobId = '" & JobId & "'")
+        For i As Integer = 0 To romList.Tables(0).Rows.Count - 1
+            goWithList.Add("R")
         Next
 
         '#Venetian Blinds
@@ -4835,6 +4878,18 @@ Partial Class Methods_Order_DetailMethod
             Case "Panel Glides"
                 ReportIcon = "PG"
                 ReportType = "Panel Glide"
+                
+                Select Case  currentData("BlindName").ToString()
+                    Case "Plain"
+                        ReportType = "Panel Glide Plain"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Plain</span>"
+                    Case "Panel Plantation"
+                        ReportType = "Panel Glide Plantation"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Plantation</span>"
+                    Case "Panel Sewless"
+                        ReportType = "Panel Glide Sewless"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Sewless</span>"
+                End Select
             
             Case "Roller Blinds"
                 ReportIcon = "H"
@@ -4864,6 +4919,24 @@ Partial Class Methods_Order_DetailMethod
             Case "Roman Blinds"
                 ReportIcon = "R"
                 ReportType = "Roman"
+
+                Select Case  currentData("BlindName").ToString()
+                    Case "Roman Cord Classic"
+                        ReportType = "Roman Classic"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Cord Classic</span>"
+                    Case "Roman Chain Plantation"
+                        ReportType = "Roman Plantation"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Chain Plantation</span>"
+                    Case "Roman Cord Plantation"
+                        ReportType = "Roman Plantation"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Cord Plantation</span>"
+                    Case "Roman Chain Sewless"
+                        ReportType = "Roman Sewless"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Chain Sewless</span>"
+                    Case "Roman Cord Sewless"
+                        ReportType = "Roman Sewless"
+                        ReportIcon = "R <br/><span style='font-size: 15px;'>Cord Sewless</span>"
+                End Select
 
             Case "Venetian Blinds"
                 ReportIcon = "V"
@@ -4941,23 +5014,6 @@ Partial Class Methods_Order_DetailMethod
         Dim hightColumnNotes As String = "height: 30px;"
         If Not (String.IsNullOrEmpty(Notes1) Or String.IsNullOrEmpty(Notes2) Or String.IsNullOrEmpty(Notes3) Or String.IsNullOrEmpty(Notes4) Or String.IsNullOrEmpty(Notes5) Or String.IsNullOrEmpty(Notes6)) Then hightColumnNotes = ""
 
-        Dim IconDes As String = ""
-        Dim blind As String = ""
-        Select Case currentData("DesignName").ToString() 
-            Case "Panel Glides"
-                Select Case currentData("BlindName").ToString()
-                    Case "Plain"
-                        blind = "Plain"
-                    Case "Panel Plantation"
-                        blind = "Plantation"
-                    Case "Panel Sewless"
-                        blind = "Sewless"
-                End Select
-                IconDes = "<br/><span style='font-size: 15px;'>" & blind
-        End Select
-
-        
-
 
         '#header
         result+= "<table style='width: 100%; border-collapse: collapse;'>"
@@ -4968,7 +5024,7 @@ Partial Class Methods_Order_DetailMethod
                 result+= "<th style=' text-align: left; width: 350px; font-size: 15px; padding-bottom: 5px;'>: "& GoWith &" /</th>"
 
                 '#Heading Center This Only
-                result+= "<th style='font-family: Impact, sans-serif; text-align: center; font-size: 35px; width: auto;' rowspan='6'>" & ReportIcon & IconDes & "</span></th>"
+                result+= "<th style='font-family: Impact, sans-serif; text-align: center; font-size: 35px; width: auto;' rowspan='6'>" & ReportIcon & "</th>"
 
                 '#heading Right
                 ' result+= "<th style=' text-align: left; width: 80px; font-size: 15px; padding-bottom: 5px;'>Job No</th>"
@@ -4996,7 +5052,7 @@ Partial Class Methods_Order_DetailMethod
 
                 '#Heading Right
                 result+= "<td style=' text-align: left; width: 80px; font-size: 12px; padding-bottom: 5px;'>Design Type</td>"
-                result+= "<td style=' text-align: left; font-size: 12px; padding-bottom: 5px;'>: " & ReportType & " " & blind & "</td>"
+                result+= "<td style=' text-align: left; font-size: 12px; padding-bottom: 5px;'>: " & ReportType & "</td>"
             result+="</tr>"
 
             '#Store & Due Date
