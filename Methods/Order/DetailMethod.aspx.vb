@@ -4658,15 +4658,7 @@ Partial Class Methods_Order_DetailMethod
 
     Private Shared Function JobSheetPanelGlides(currentData As DataRow) As String
         Dim result As String = String.Empty
-                result +=PrintPanelGlides(currentData)
-        ' Select Case currentData("BlindName").ToString()
-        '     Case "Plain"
-        '         result += PrintPanelPlain(currentData)
-        '     Case "Panel Plantation"
-        '         result += PrintPanelPlantation(currentData)
-        '     Case "Panel Sewless"
-        '         result += PrintPanelSewless(currentData)
-        ' End Select
+        result +=PrintPanelGlides(currentData)
         Return result
     End Function
 
@@ -5647,12 +5639,12 @@ Partial Class Methods_Order_DetailMethod
             '#Total Rollers
             result+= trDetStart
                 result+= "<td style='width:100px; padding:5px 0px;'>" & "<span>Total Cellora : </span><span style='color:white;'>------</span><span style='font-weight:bold;'>" & TotalBlind & "</span>" &  tdDetEnd
-                result+= tdDetFooterStart &  "Issued By" & tdDetEnd
-                result+= tdDetFooterStart &  "Cutting Tube" & tdDetEnd
-                result+= tdDetFooterStart &  "Cutting Fabric" & tdDetEnd
-                result+= tdDetFooterStart &  "Sewing" & tdDetEnd
-                result+= tdDetFooterStart &  "Assembling, Packing" & tdDetEnd
-                result+= tdDetFooterStart &  "QC" & tdDetEnd
+                result+= tdDetFooterStart &  "" & tdDetEnd
+                result+= tdDetFooterStart &  "" & tdDetEnd
+                result+= tdDetFooterStart &  "" & tdDetEnd
+                result+= tdDetFooterStart &  "" & tdDetEnd
+                result+= tdDetFooterStart &  "" & tdDetEnd
+                result+= tdDetFooterStart &  "" & tdDetEnd
             result+= trDetEnd
             '#Page
             result+= trDetStart
@@ -5666,12 +5658,12 @@ Partial Class Methods_Order_DetailMethod
             result+= trDetEnd
             '#Of
             result+= trDetStart
-                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
-                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
-                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
-                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
-                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
-                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "" & tdDetEnd
+                result+= tdDetFooterStart & "" & tdDetEnd
+                result+= tdDetFooterStart & "" & tdDetEnd
+                result+= tdDetFooterStart & "" & tdDetEnd
+                result+= tdDetFooterStart & "" & tdDetEnd
+                result+= tdDetFooterStart & "" & tdDetEnd
             result+= trDetEnd
         result+= tableDetEnd
 
