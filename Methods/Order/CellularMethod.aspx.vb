@@ -63,13 +63,13 @@ Partial Class Methods_Order_CelloraMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindColourType(ByVal designid As String, ByVal blindid As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT Id, ColourType FROM HardwareKits WHERE DesignId = '" + designid + "' AND BlindId='" + UCase(blindid).ToString() + "' AND Active=1 ORDER BY ColourType ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT Id, ControlType FROM HardwareKits WHERE DesignId = '" + designid + "' AND BlindId='" + UCase(blindid).ToString() + "' AND Active=1 ORDER BY ControlType ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
                     Dim result As New Dictionary(Of String, String) From {
                         {"value", row("Id").ToString()},
-                        {"text", row("ColourType").ToString()}
+                        {"text", row("ControlType").ToString()}
                     }
                     list.Add(result)
                 Next

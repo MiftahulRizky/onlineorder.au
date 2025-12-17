@@ -1920,8 +1920,8 @@ Partial Class Methods_Order_DetailMethod
 
                     Dim lineString As String = "Line " & counter.ToString()
 
-                    Dim Spacer As String = GetCarrierSpacer(row)
-                    Dim CarrierQty As String = GetCarrierSpacer(row)
+                    Dim Spacer As String = GetCarrierSpacer(row, "Spacer1Type")
+                    Dim CarrierQty As String = GetCarrierSpacer(row, "CarrierQty")
                     Dim FabricCutDrop As Integer = GetFabricCutDrop(row, CarrierQty)
                     
 
@@ -4624,7 +4624,7 @@ Partial Class Methods_Order_DetailMethod
             Dim tableNames As String() = {
                 "JobSheets",
                 "JobSheet_Aluminium",
-                "JobSheet_Cellora",
+                "JobSheet_Cellular",
                 "JobSheet_PanelGlides",
                 "JobSheet_RollerBlinds",
                 "JobSheet_RomanBlinds",
@@ -4732,10 +4732,10 @@ Partial Class Methods_Order_DetailMethod
 
                                 tableName = "JobSheet_Aluminium"
 
-                            Case "Cellora Blinds"
-                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "DoorCutOut", "ControlPosition", "ChainLength", "BottomHoldDown", "Notes", "KitName", "VenetianType", "ColourType", "FabricName","FabricType","FabricColour","FabricWidth" })
+                            Case "Cellular Blinds"
+                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "DoorCutOut", "ControlPosition", "ChainLength", "BottomHoldDown", "Notes", "KitName", "VenetianType", "ControlType", "FabricName","FabricType","FabricColour","FabricWidth" })
 
-                                tableName = "JobSheet_Cellora"
+                                tableName = "JobSheet_Cellular"
 
                             Case "Panel Glides"
                                 fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "Layout", "NumOfPanel", "TrackType", "TrackColour", "NumOfWand", "WandPosition", "WandColour", "WandLength", "Batten", "BattenColour", "Fitting", "Notes", "KitName", "VenetianType", "ColourType", "FabricName", "FabricType", "FabricColour", "FabricWidth"})
@@ -4872,7 +4872,7 @@ Partial Class Methods_Order_DetailMethod
             Dim jobSheetSources As New Dictionary(Of String, Func(Of DataRow, String)) From {
                 {"JobSheets", AddressOf JobSheets},
                 {"JobSheet_Aluminium", AddressOf JobSheetAluminium},
-                {"JobSheet_Cellora", AddressOf JobSheetCellora},
+                {"JobSheet_Cellular", AddressOf JobSheetCellular},
                 {"JobSheet_PanelGlides", AddressOf JobSheetPanelGlides},
                 {"JobSheet_RollerBlinds", AddressOf JobSheetRollerBlinds},
                 {"JobSheet_RomanBlinds", AddressOf JobSheetRomanBlinds},
@@ -4961,9 +4961,9 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
-    Private Shared Function JobSheetCellora(currentData As DataRow) As String
+    Private Shared Function JobSheetCellular(currentData As DataRow) As String
         Dim result As String = String.Empty
-        result += PrintCellora(currentData)
+        result += PrintCellular(currentData)
         Return result
     End Function
 
@@ -5083,9 +5083,9 @@ Partial Class Methods_Order_DetailMethod
             goWithList.Add("Alu")
         Next
 
-        '#Cellora Blinds
-        Dim celloraList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_Cellora WHERE JobId = '" & JobId & "'")
-        For i As Integer = 0 To celloraList.Tables(0).Rows.Count - 1
+        '#Cellular Blinds
+        Dim cellularList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_Cellular WHERE JobId = '" & JobId & "'")
+        For i As Integer = 0 To cellularList.Tables(0).Rows.Count - 1
             goWithList.Add("CL")
         Next
 
@@ -5176,9 +5176,9 @@ Partial Class Methods_Order_DetailMethod
                 ReportIcon = "V-alu"
                 ReportType = "Venetian Aluminium"
             
-            Case "Cellora Blinds"
+            Case "Cellular Blinds"
                 ReportIcon = "CL"
-                ReportType = "Cellora"
+                ReportType = "Cellular"
 
             Case "Panel Glides"
                 ReportIcon = "PG"
@@ -5728,8 +5728,8 @@ Partial Class Methods_Order_DetailMethod
 
 
 
-    '#------------------------------------------|| Print Detail - Cellora PrintCellora ||------------------------------------------#
-    Private Shared Function PrintCellora(currentData As DataRow) As String
+    '#------------------------------------------|| Print Detail - Cellora PrintCellular ||------------------------------------------#
+    Private Shared Function PrintCellular(currentData As DataRow) As String
         Dim result As String = String.Empty
 
         Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
@@ -5821,15 +5821,15 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Drop6").ToString()), "0", currentData("Drop6").ToString()) & tdDetEnd
             result+= trDetEnd
 
-            '#ColourType
+            '#ControlType
             result+= trDetStart
                 result+= tdTitleStart & "Colour" & tdDetEnd
-                result+= tdDetStart & currentData("ColourType1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ColourType2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ColourType3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ColourType4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ColourType5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("ColourType6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlType1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlType2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlType3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlType4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlType5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("ControlType6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#ControlPosition

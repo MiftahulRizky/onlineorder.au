@@ -96,7 +96,7 @@ Public Class PrintConfig
         result += Print_AluminiumBlinds(HeaderId)
 
         'CELLORA
-        result += Print_CelloraBlinds(HeaderId)
+        result += Print_CellularBlinds(HeaderId)
 
         'PANEL GLIDES
         result += Print_PanelGlides(HeaderId)
@@ -370,14 +370,14 @@ Public Class PrintConfig
         Return result
     End Function
 
-    Protected Function Print_CelloraBlinds(HeaderId As String) As String
+    Protected Function Print_CellularBlinds(HeaderId As String) As String
         Dim result As String = String.Empty
 
         Try
-            Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Cellora Blinds' AND Active=1 ORDER BY Id, BlindNo ASC")
+            Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Cellular Blinds' AND Active=1 ORDER BY Id, BlindNo ASC")
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim tdNotes As String = "<td colspan='11' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
-                result += spanStart & "CELLORA BLINDS" & spanEnd
+                result += spanStart & "CELLULAR BLINDS" & spanEnd
                 result += tableStart
 
                 result += trStart
@@ -1610,7 +1610,7 @@ Public Class PrintConfig
 
         Dim separted As String = " | "
         Dim totalAluminium As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Aluminium Blinds' AND Active=1")
-        Dim totalCellora As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Cellora Blinds' AND Active=1")
+        Dim totalCellular As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Cellular Blinds' AND Active=1")
         Dim totalPG As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Panel Glides' AND Active=1")
         Dim totalVenetian As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Venetian Blinds' AND Active=1")
         Dim totalRoller As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roller Blinds' AND Active=1")
@@ -1619,7 +1619,7 @@ Public Class PrintConfig
         Dim totalVertical As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Vertical Blinds' AND Active=1")
 
         If totalAluminium = "" Then : totalAluminium = "-" : End If
-        If totalCellora = "" Then : totalCellora = "-" : End If
+        If totalCellular = "" Then : totalCellular = "-" : End If
         If totalPG = "" Then : totalPG = "-" : End If
         If totalVenetian = "" Then : totalVenetian = "-" : End If
         If totalRoller = "" Then : totalRoller = "-" : End If
@@ -1628,7 +1628,7 @@ Public Class PrintConfig
         If totalVertical = "" Then : totalVertical = "-" : End If
 
         Dim aluminiumblinds As String = "<b>Aluminium Blinds: " & totalAluminium & "</b>"
-        Dim celloraBlinds As String = "<b>Cellora Blinds: " & totalCellora & "</b>"
+        Dim celloraBlinds As String = "<b>Cellora Blinds: " & totalCellular & "</b>"
         Dim panelGlides As String = "<b>Panel Glides: " & totalPG & "</b>"
         Dim venetianblinds As String = "<b>Venetian Blinds:  " & totalVenetian & "</b>"
         Dim rollerblinds As String = "<b>Roller Blinds: " & totalRoller & "</b>"

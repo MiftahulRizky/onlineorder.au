@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Cellora Blind Order" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="Cellora.aspx.vb" Inherits="Order_Cellora" MaintainScrollPositionOnPostback="true" Debug="true"  %>
+﻿<%@ Page Title="Cellora Blind Order" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="Cellular.aspx.vb" Inherits="Order_Cellora" MaintainScrollPositionOnPostback="true" Debug="true"  %>
 
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
@@ -55,16 +55,16 @@
                             <div class="card-body">
             
                                 <div class="mb-3 row">
-                                    <label for="blindtype" class="col-lg-3 text-uppercase fw-bold">type</label>
+                                    <label for="blindtype" class="col-lg-3 text-uppercase fw-bold">cellular type</label>
                                     <div class="col-lg-5">
                                         <select type="text" name="blindtype" id="blindtype" class="form-control"></select>
                                     </div>  
                                 </div>
             
-                                <div class="mb-3 row" id="divColourType">
-                                    <label for="colourtype" class="col-lg-3 text-uppercase fw-bold">colour</label>
+                                <div class="mb-3 row" id="divControlType">
+                                    <label for="controltype" class="col-lg-3 text-uppercase fw-bold">control type</label>
                                     <div class="col-lg-5">
-                                        <select type="text" name="colourtype" id="colourtype" class="form-control "></select>
+                                        <select type="text" name="controltype" id="controltype" class="form-control "></select>
                                     </div>  
                                 </div>
     

@@ -29,13 +29,13 @@ document.querySelector("#blindtype").addEventListener("change", (e) => {
   const blindId = e.target.value;
   const fabricType = document.querySelector("#fabrictype").value;
 
-  bindColours(DESIGNID, blindId);
+  bindControls(DESIGNID, blindId);
   bindFabrics(DESIGNID);
   bindFabricColours(DESIGNID, fabricType);
 });
 
 // // change colours
-document.querySelector("#colourtype").addEventListener("change", (e) => {
+document.querySelector("#controltype").addEventListener("change", (e) => {
   handlerElementVisibility(e.target.value);
 });
 
@@ -179,7 +179,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
   }
 };
 
-const handlerElementVisibility = (colourtype) => {
+const handlerElementVisibility = (controltype) => {
   const btnSubmit = document.querySelector("#btnSubmit");
 
   const divFormDetail = document.getElementById("divFormDetail");
@@ -189,7 +189,7 @@ const handlerElementVisibility = (colourtype) => {
   btnSubmit.setAttribute("hidden", true);
   divFormDetail.setAttribute("hidden", true);
   divMarkUp.setAttribute("hidden", true);
-  if (colourtype) divFormDetail.removeAttribute("hidden");
+  if (controltype) divFormDetail.removeAttribute("hidden");
 
   // markup
   if (MARKUPACCESS === "True") divMarkUp.removeAttribute("hidden");
@@ -374,7 +374,7 @@ const bindBlinds = async () => {
 
       if (data.length === 1) {
         blindtype.selectedIndex = 0;
-        bindColours(DESIGNID, blindtype.value);
+        bindControls(DESIGNID, blindtype.value);
       }
 
       const blindId = blindtype.value;
@@ -389,9 +389,9 @@ const bindBlinds = async () => {
   }
 };
 
-const bindColours = async (designid, blindid) => {
-  const colourtype = document.getElementById("colourtype");
-  colourtype.innerHTML = ""; //reset
+const bindControls = async (designid, blindid) => {
+  const controltype = document.getElementById("controltype");
+  controltype.innerHTML = ""; //reset
 
   if (!blindid) return;
 
@@ -422,39 +422,39 @@ const bindColours = async (designid, blindid) => {
     if (!data) {
       const msg =
         ROLENAME === "Administrator"
-          ? "No data returned from server : bindColours"
+          ? "No data returned from server : bindControls"
           : "Please contact our IT team at support@onlineorder.au";
       return isError(msg);
     }
 
     // render ke elemen halaman
     if (Array.isArray(data)) {
-      colourtype.innerHTML = ""; //reset
+      controltype.innerHTML = ""; //reset
 
       if (data.length > 0) {
         const defaultOption = document.createElement("option");
         defaultOption.value = "";
         defaultOption.text = "";
-        colourtype.appendChild(defaultOption);
+        controltype.appendChild(defaultOption);
       }
 
       data.forEach((item) => {
         const option = document.createElement("option");
         option.value = item.value;
         option.text = item.text.toUpperCase();
-        colourtype.appendChild(option);
-        colourtype.classList.add("fw-bold");
+        controltype.appendChild(option);
+        controltype.classList.add("fw-bold");
       });
 
       if (data.length === 1) {
-        colourtype.selectedIndex = 0;
-        visibleElementForm(blindName, colourtype.value);
+        controltype.selectedIndex = 0;
+        visibleElementForm(blindName, controltype.value);
       }
 
       const sel = document.getElementById("blindtype");
       const blindName = sel.selectedOptions[0].getAttribute("data-name");
 
-      handlerElementVisibility(colourtype.value);
+      handlerElementVisibility(controltype.value);
     }
   } catch (err) {
     // error karena jaringan / parsing JSON
@@ -642,7 +642,7 @@ const bindItemOrders = async (itemid) => {
 
     for (const item of data) {
       await bindBlinds(item.DesignId);
-      await bindColours(item.DesignId, item.BlindId);
+      await bindControls(item.DesignId, item.BlindId);
       await bindFabrics(item.DesignId);
       await bindFabricColours(item.DesignId, item.FabricType);
       await handlerElementVisibility(item.BlindId);
@@ -659,7 +659,7 @@ const bindItemOrders = async (itemid) => {
 const handlerSetElementValues = (itemData) => {
   const mapping = {
     blindtype: "BlindId",
-    colourtype: "KitId",
+    controltype: "KitId",
     qty: "Qty",
     room: "Location",
     mounting: "Mounting",

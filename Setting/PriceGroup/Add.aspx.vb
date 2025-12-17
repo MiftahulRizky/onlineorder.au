@@ -43,7 +43,7 @@
             If msgError.InnerText = "" Then
                 sdsPage.Insert()
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
+                Dim userId As String = UCase(Session("LoginId")).ToString()
                 publicCfg.InsertActivity(userId, Page.Title, "INSERT PRICE GROUP. NAME : " & txtName.Text)
 
                 Response.Redirect("~/setting/pricegroup", False)
