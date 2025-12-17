@@ -62,13 +62,13 @@ Partial Class Methods_Order_CelloraMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindColourType(ByVal designId As String, ByVal blindId As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT Id, ColourType FROM HardwareKits WHERE DesignId = '" + designId + "' AND BlindId='" + UCase(blindId).ToString() + "' AND Active=1 ORDER BY ColourType ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT Id, ControlType FROM HardwareKits WHERE DesignId = '" + designId + "' AND BlindId='" + UCase(blindId).ToString() + "' AND Active=1 ORDER BY ControlType ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
                     Dim result As New Dictionary(Of String, String) From {
                         {"value", row("Id").ToString()},
-                        {"text", row("ColourType").ToString()}
+                        {"text", row("ControlType").ToString()}
                     }
                     list.Add(result)
                 Next
@@ -171,7 +171,7 @@ Partial Class Methods_Order_CelloraMethod
 
     Public Class FormData
         Public Property blindtype As String
-        Public Property colourtype As String
+        Public Property controltype As String
         Public Property qty As String
         Public Property room As String
         Public Property mounting As String
@@ -201,11 +201,12 @@ Partial Class Methods_Order_CelloraMethod
             End If
 
 
-            If String.IsNullOrEmpty(data.colourtype) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "colour is required !", .field = "colourtype"}}
+            If String.IsNullOrEmpty(data.controltype) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "colour is required !", .field = "controltype"}}
             End If
 
             Dim blindName As String = publicCfg.GetItemData("SELECT Name FROM Blinds WHERE Id = '" + data.blindtype + "'")
+            
 
 
             Dim qty As Integer
@@ -299,7 +300,7 @@ Partial Class Methods_Order_CelloraMethod
 
             Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
-            Dim soeKitId As String = publicCfg.GetItemData("SELECT SoeId FROM HardwareKits WHERE Id = '" + data.colourtype + "'")
+            Dim soeKitId As String = publicCfg.GetItemData("SELECT SoeId FROM HardwareKits WHERE Id = '" + data.controltype + "'")
             Dim fabricData As DataSet = publicCfg.GetListData("SELECT * FROM Fabrics WHERE Id = '" + data.fabriccolour + "'")
             If fabricData.Tables(0).Rows.Count = 0 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "203.1 : Something went wrong !",.field = ""}}
@@ -307,9 +308,13 @@ Partial Class Methods_Order_CelloraMethod
             
             Dim fabricId As String = fabricData.Tables(0).Rows(0).Item("Id").ToString()
             Dim fabricGroupName As String = fabricData.Tables(0).Rows(0).Item("Group").ToString()
+            Dim controlName As String = publicCfg.GetItemData("SELECT ControlType FROM HardwareKits WHERE Id = '" + data.ControlType + "'")
 
-            Dim peiceGroupName As String = "Cellora " & blindName & " - " & fabricGroupName
-            Dim priceGroupId As String = publicCfg.GetPriceGroupId(data.designId,peiceGroupName)
+            Dim priceGroupName As String =  blindName & " " & controlName & " - " & fabricGroupName
+            ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = priceGroupName,.field = ""}}
+
+
+            Dim priceGroupId As String = publicCfg.GetPriceGroupId(data.designId,priceGroupName)
             If String.IsNullOrEmpty(priceGroupId) Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "203.2 : Something went wrong !",.field = ""}}
             End If
@@ -322,7 +327,7 @@ Partial Class Methods_Order_CelloraMethod
                     Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, PriceGroupId, BlindNo, Qty, Location, Mounting, Width, [Drop], ControlPosition, ChainLength, BottomHoldDown, DoorCutOut, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @PriceGroupId, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @ChainLength, @BottomHoldDown, @DoorCutOut, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
-                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
+                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
                         myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
                         myCmd.Parameters.AddWithValue("@FabricId", fabricId)
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
@@ -360,7 +365,7 @@ Partial Class Methods_Order_CelloraMethod
                     Using myCmd As New SqlCommand("UPDATE OrderDetails SET  KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, PriceGroupId = @PriceGroupId, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, ControlPosition = @ControlPosition, ChainLength = @ChainLength, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
-                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
+                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
                         myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
                         myCmd.Parameters.AddWithValue("@FabricId", fabricId)
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
