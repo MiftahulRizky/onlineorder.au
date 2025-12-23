@@ -96,14 +96,26 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row">
-                                        <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold">fabric type x colour</label>
+                                    <div class="mb-3 row" id="divFabricDay">
+                                        <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">fabric type x colour</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <select name="fabrictype" id="fabrictype" class="form-control "></select>
                                             <small class="form-hint">* Type</small>
                                         </div>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <select name="fabriccolour" id="fabriccolour" class="form-control "></select>
+                                            <small class="form-hint">* Colour</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divFabricNight">
+                                        <label for="fabrictype2" class="col-lg-3 text-uppercase fw-bold" id="lblFabricNight">fabric type x colour</label>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <select name="fabrictype2" id="fabrictype2" class="form-control"></select>
+                                            <small class="form-hint">* Type</small>
+                                        </div>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <select name="fabriccolour2" id="fabriccolour2" class="form-control "></select>
                                             <small class="form-hint">* Colour</small>
                                         </div>
                                     </div>
