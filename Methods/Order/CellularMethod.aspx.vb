@@ -172,12 +172,14 @@ Partial Class Methods_Order_CelloraMethod
 
     Public Class FormData
         Public Property blindtype As String
-        Public Property colourtype As String
+        Public Property controltype As String
         Public Property qty As String
         Public Property room As String
         Public Property mounting As String
         Public Property fabrictype As String
         Public Property fabriccolour As String
+        Public Property fabrictype2 As String
+        Public Property fabriccolour2 As String
         Public Property width As String
         Public Property drop As String
         Public Property controlposition As String
@@ -201,11 +203,12 @@ Partial Class Methods_Order_CelloraMethod
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "type is required !", .field = "blindtype"}}
             End If
 
-            If String.IsNullOrEmpty(data.colourtype) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "colour is required !", .field = "colourtype"}}
+            If String.IsNullOrEmpty(data.controltype) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "colour is required !", .field = "controltype"}}
             End If
 
             Dim blindName As String = publicCfg.GetItemData("SELECT Name FROM Blinds WHERE Id = '" + data.blindtype + "'")
+            Dim controlName As String = publicCfg.GetItemData("SELECT ControlType FROM HardwareKits WHERE Id = '" + data.controltype + "'")
 
             Dim qty As Integer
             If String.IsNullOrEmpty(data.qty) Then
@@ -222,17 +225,34 @@ Partial Class Methods_Order_CelloraMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "room to install is required !",.field = "room"}}
             End If
 
+            If blindName = "Galaxy" And (controlName ="DN Corded" Or controlName ="DN Cordless") Then
+                If String.IsNullOrEmpty(data.fabrictype) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type day is required !",.field = "fabrictype"}}
+                End If
+
+                If String.IsNullOrEmpty(data.fabriccolour) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour day is required !",.field = "fabriccolour"}}
+                End If
+                If String.IsNullOrEmpty(data.fabrictype2) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type night is required !",.field = "fabrictype2"}}
+                End If
+
+                If String.IsNullOrEmpty(data.fabriccolour2) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour night is required !",.field = "fabriccolour2"}}
+                End If
+            Else
+                If String.IsNullOrEmpty(data.fabrictype) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
+                End If
+
+                If String.IsNullOrEmpty(data.fabriccolour) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
+                End If
+            End If
+
             If String.IsNullOrEmpty(data.mounting) Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "mounting is required !",.field = "mounting"}}
             End If
-
-            ' If String.IsNullOrEmpty(data.fabrictype) Then
-            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
-            ' End If
-
-            ' If String.IsNullOrEmpty(data.fabriccolour) Then
-            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
-            ' End If
 
             Dim width As Integer
             If String.IsNullOrEmpty(data.width) Then
@@ -286,22 +306,23 @@ Partial Class Methods_Order_CelloraMethod
 
             Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
-            Dim soeKitId As String = publicCfg.GetItemData("SELECT SoeId FROM HardwareKits WHERE Id = '" + data.colourtype + "'")
-            Dim fabricData As DataSet = publicCfg.GetListData("SELECT * FROM Fabrics WHERE Id = '" + data.fabriccolour + "'")
-            If fabricData.Tables(0).Rows.Count = 0 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "203.1 : Something went wrong !",.field = ""}}
+            Dim soeKitId As String = publicCfg.GetItemData("SELECT SoeId FROM HardwareKits WHERE Id = '" + data.controltype + "'")
+
+            '#price group 1
+            Dim priceGroupId As String = GetPriceGroupId(data.fabriccolour, blindName, controlName, data.designid)
+            If priceGroupId = "300" Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Price group not found !",.field = ""}}
+            End If
+
+            Dim priceGroupId2 As String = ""
+            If blindName = "Galaxy" And (controlName = "DN Corded" Or controlName = "DN Cordless") Then
+                priceGroupId2 = GetPriceGroupId(data.fabriccolour, blindName, controlName, data.designid)
+                If priceGroupId2 = "300" Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "203.2 : Something went wrong !",.field = ""}}
+                End If
             End If
             
-            Dim fabricId As String = fabricData.Tables(0).Rows(0).Item("Id").ToString()
-            Dim fabricGroupName As String = fabricData.Tables(0).Rows(0).Item("Group").ToString()
-
-            Dim peiceGroupName As String = "Cellora " & blindName & " - " & fabricGroupName
-            Dim priceGroupId As String = publicCfg.GetPriceGroupId(data.designId,peiceGroupName)
-            If String.IsNullOrEmpty(priceGroupId) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "203.2 : Something went wrong !",.field = ""}}
-            End If
-
-            Dim designName As String = publicCfg.GetDesignName(data.designId)
+             Dim designName As String = publicCfg.GetDesignName(data.designid)
             Dim exactName As String = designName & " - " & blindName
             Dim exactId As String = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
 
@@ -311,14 +332,16 @@ Partial Class Methods_Order_CelloraMethod
                 Dim itemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, PriceGroupId, BlindNo, Qty, Location, Mounting, Width, [Drop], ControlPosition, ChainLength, BottomHoldDown, DoorCutOut, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @PriceGroupId, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @ChainLength, @BottomHoldDown, @DoorCutOut, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, FabricIdB, PriceGroupId, PriceGroupIdB, BlindNo, Qty, Location, Mounting, Width, [Drop], ControlPosition, ChainLength, BottomHoldDown, DoorCutOut, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @FabricIdB, @PriceGroupId, @PriceGroupIdB, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @ChainLength, @BottomHoldDown, @DoorCutOut, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
-                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
+                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
                         myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
                         myCmd.Parameters.AddWithValue("@ExactId", exactId)
-                        myCmd.Parameters.AddWithValue("@FabricId", fabricId)
+                        myCmd.Parameters.AddWithValue("@FabricId", UCase(data.fabriccolour).ToString())
+                        myCmd.Parameters.AddWithValue("@FabricIdB", If(String.IsNullOrEmpty(data.fabriccolour2), DBNull.Value, UCase(data.fabriccolour2).ToString()))
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
+                        myCmd.Parameters.AddWithValue("@PriceGroupIdB", If(String.IsNullOrEmpty(priceGroupId2), DBNull.Value, UCase(priceGroupId2).ToString()))
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
@@ -352,14 +375,16 @@ Partial Class Methods_Order_CelloraMethod
                 Dim itemId As String = data.itemid
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET  KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, PriceGroupId = @PriceGroupId, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, ControlPosition = @ControlPosition, ChainLength = @ChainLength, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET  KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, ControlPosition = @ControlPosition, ChainLength = @ChainLength, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
-                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
+                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
                         myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
                         myCmd.Parameters.AddWithValue("@ExactId", exactId)
-                        myCmd.Parameters.AddWithValue("@FabricId", fabricId)
+                        myCmd.Parameters.AddWithValue("@FabricId", UCase(data.fabriccolour).ToString())
+                        myCmd.Parameters.AddWithValue("@FabricIdB", If(String.IsNullOrEmpty(data.fabriccolour2), DBNull.Value, UCase(data.fabriccolour2).ToString()))
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
+                        myCmd.Parameters.AddWithValue("@PriceGroupIdB", If(String.IsNullOrEmpty(priceGroupId2), DBNull.Value, UCase(priceGroupId2).ToString()))
                         myCmd.Parameters.AddWithValue("@Qty", 1)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
@@ -397,6 +422,29 @@ Partial Class Methods_Order_CelloraMethod
                     .field = ""
                 }
             }
+        End Try
+    End Function
+
+
+    Private Shared Function GetPriceGroupId(ByVal fabricid As String, ByVal blindname As String, ByVal controlname As String, ByVal designid As String) As String
+        Try
+            Dim fabricData As DataSet = publicCfg.GetListData("SELECT * FROM Fabrics WHERE Id = '" + fabricid + "'")
+            If fabricData.Tables(0).Rows.Count = 0 Then
+                Return "300"
+            End If
+            
+            Dim fabricGroupName As String = fabricData.Tables(0).Rows(0).Item("Group").ToString()
+
+            Dim priceGroupName As String =  blindName & " " & controlName & " - " & fabricGroupName
+
+            Dim priceGroupId As String = publicCfg.GetPriceGroupId(designid ,priceGroupName)
+            If String.IsNullOrEmpty(priceGroupId) Then
+                Return "300"
+            End If
+
+            Return priceGroupId
+        Catch ex As Exception
+            Return "300"
         End Try
     End Function
 End Class

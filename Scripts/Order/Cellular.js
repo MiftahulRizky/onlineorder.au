@@ -28,20 +28,32 @@ document.querySelector("#blindtype").addEventListener("change", (e) => {
 
   const blindId = e.target.value;
   const fabricType = document.querySelector("#fabrictype").value;
+  const fabricType2 = document.querySelector("#fabrictype2").value;
 
   bindControls(DESIGNID, blindId);
   bindFabrics(DESIGNID);
   bindFabricColours(DESIGNID, fabricType);
+  bindFabrics2(designId);
+  bindFabricColours2(designId, fabricType2);
 });
 
 // // change colours
 document.querySelector("#controltype").addEventListener("change", (e) => {
-  handlerElementVisibility(e.target.value);
+  const select = document.querySelector("#blindtype");
+  const blindName = select.options[select.selectedIndex].dataset.name;
+
+  const controlType = e.target.selectedOptions[0].dataset.name;
+
+
+  handlerElementVisibility(controlType, blindName);
 });
 
 // change fabrics
 document.querySelector("#fabrictype").addEventListener("change", (e) => {
   bindFabricColours(DESIGNID, e.target.value);
+});
+document.querySelector("#fabrictype2").addEventListener("change", (e) => {
+  bindFabricColours2(designId, e.target.value);
 });
 
 // input notes count length
@@ -179,17 +191,31 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
   }
 };
 
-const handlerElementVisibility = (controltype) => {
+const handlerElementVisibility = (controltype, blindname) => {
   const btnSubmit = document.querySelector("#btnSubmit");
 
   const divFormDetail = document.getElementById("divFormDetail");
   const divMarkUp = document.getElementById("divMarkUp");
 
+  const divFabricNight = document.getElementById("divFabricNight");
+  const lblFabricDay = document.getElementById("lblFabricDay");
+  const lblFabricNight = document.getElementById("lblFabricNight");
+
   // set default hide
   btnSubmit.setAttribute("hidden", true);
   divFormDetail.setAttribute("hidden", true);
   divMarkUp.setAttribute("hidden", true);
+  divFabricNight.setAttribute("hidden", true);
+
+  lblFabricDay.innerHTML = "fabric type x colour";
+  lblFabricNight.innerHTML = "fabric type x colour";
   if (controltype) divFormDetail.removeAttribute("hidden");
+
+    if (blindname == "Galaxy" && (controltype == "DN Corded" || controltype == "DN Cordless")) {
+    divFabricNight.removeAttribute("hidden");
+    lblFabricDay.innerHTML = "fabric type x colour day";
+    lblFabricNight.innerHTML = "fabric type x colour night";
+  }
 
   // markup
   if (MARKUPACCESS === "True") divMarkUp.removeAttribute("hidden");
@@ -442,6 +468,7 @@ const bindControls = async (designid, blindid) => {
         const option = document.createElement("option");
         option.value = item.value;
         option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
         controltype.appendChild(option);
         controltype.classList.add("fw-bold");
       });
@@ -454,7 +481,7 @@ const bindControls = async (designid, blindid) => {
       const sel = document.getElementById("blindtype");
       const blindName = sel.selectedOptions[0].getAttribute("data-name");
 
-      handlerElementVisibility(controltype.value);
+      handlerElementVisibility(controltype.value, blindName);
     }
   } catch (err) {
     // error karena jaringan / parsing JSON
@@ -468,6 +495,77 @@ const bindControls = async (designid, blindid) => {
 
 const bindFabrics = async (designid) => {
   const sel = document.getElementById("fabrictype");
+  sel.innerHTML = ""; //reset
+
+  if (!designid) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindFabricType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ designid: DESIGNID }),
+    });
+
+    // cek status HTTP (400, 500, dsb.)
+    if (!response.ok) {
+      const text = await response.text();
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${response.status}\n${text}`
+          : "Please contact our IT team at support@onlineorder.au";
+      return isError(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? "No data returned from server : bindFabrics"
+          : "Please contact our IT team at support@onlineorder.au";
+      return isError(msg);
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      sel.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        sel.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-type", item.text);
+        sel.add(option);
+      });
+
+      if (data.length === 1) {
+        sel.selectedIndex = 0;
+        bindFabricColours(designid, sel.value);
+      }
+    }
+  } catch (err) {
+    // error karena jaringan / parsing JSON
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+const bindFabrics2 = async (designid) => {
+  const sel = document.getElementById("fabrictype2");
   sel.innerHTML = ""; //reset
 
   if (!designid) return;
@@ -608,6 +706,76 @@ const bindFabricColours = async (designid, fabricType) => {
     isError(msg);
   }
 };
+const bindFabricColours2 = async (designid, fabricType) => {
+  const sel = document.getElementById("fabriccolour2");
+  sel.innerHTML = ""; //reset
+
+  if (!fabricType || !designid) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindFabricColour`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ designid, fabricType }),
+    });
+
+    // cek status HTTP (400, 500, dsb.)
+    if (!response.ok) {
+      const text = await response.text();
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${response.status}\n${text}`
+          : "Please contact our IT team at support@onlineorder.au";
+      return isError(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? "No data returned from server : bindFabricColours"
+          : "Please contact our IT team at support@onlineorder.au";
+      return isError(msg);
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      sel.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        sel.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-colour", item.text);
+        sel.add(option);
+      });
+
+      if (data.length === 1) {
+        sel.selectedIndex = 0;
+      }
+    }
+  } catch (err) {
+    // error karena jaringan / parsing JSON
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
 
 const bindItemOrders = async (itemid) => {
   try {
@@ -645,7 +813,9 @@ const bindItemOrders = async (itemid) => {
       await bindControls(item.DesignId, item.BlindId);
       await bindFabrics(item.DesignId);
       await bindFabricColours(item.DesignId, item.FabricType);
-      await handlerElementVisibility(item.BlindId);
+      await bindFabrics2(item.DesignId);
+      await bindFabricColours2(item.DesignId, item.FabricTypeB);
+      await handlerElementVisibility(item.ControlType, item.BlindName);
       await handlerSetElementValues(item);
     }
 
@@ -665,6 +835,8 @@ const handlerSetElementValues = (itemData) => {
     mounting: "Mounting",
     fabrictype: "FabricType",
     fabriccolour: "FabricId",
+    fabrictype2: "FabricTypeB",
+    fabriccolour2: "FabricIdB",
     width: "Width",
     drop: "Drop",
     controlposition: "ControlPosition",
