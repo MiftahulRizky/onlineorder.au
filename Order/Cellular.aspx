@@ -237,10 +237,10 @@
         let LOGINID = '<%= Session("LoginId") %>';
         let ROLENAME = '<%= Session("RoleName") %>';
         let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
-        let URIMETHOD = "/Methods/Order/CelloraMethod.aspx"
+        let URIMETHOD = "/Methods/Order/CellularMethod.aspx"
         
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/Cellora.js?<%= DateTime.Now.Ticks %>"></script>
+    <script type="text/javascript" src="/Scripts/Order/Cellular.js?<%= DateTime.Now.Ticks %>"></script>
 </asp:Content>
 

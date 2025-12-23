@@ -48,10 +48,8 @@
                         </div>
                         <div class="card-header" id="divInfo">
                             <div class="mx-auto alert alert-warning mb-0" role="alert">
-                                <div class="d-flex">
-                                    <div>
-                                       <i class="ti ti-alert-square-rounded fs-2 me-2"></i>
-                                    </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-exclamation-square fs-2 me-2"></i>
                                     <div>
                                         Please note that all draft orders will be removed from the system if there are no activities after 10 days. <b>Your order will go into order cancellation. </b>
                                     </div>
