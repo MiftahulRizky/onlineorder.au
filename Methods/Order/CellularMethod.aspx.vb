@@ -210,7 +210,7 @@ Partial Class Methods_Order_CelloraMethod
             End If
 
             Dim blindName As String = publicCfg.GetItemData("SELECT Name FROM Blinds WHERE Id = '" + data.blindtype + "'")
-            Dim controlName As String = publicCfg.GetItemData("SELECT ControlType FROM HardwareKits WHERE Id = '" + data.ControlType + "'")
+            Dim controlName As String = publicCfg.GetItemData("SELECT ControlType FROM HardwareKits WHERE Id = '" + data.controltype + "'")
             
 
 
@@ -299,7 +299,7 @@ Partial Class Methods_Order_CelloraMethod
 
             Dim priceGroupId2 As String = ""
             If blindName = "Galaxy" And (controlName = "DN Corded" Or controlName = "DN Cordless") Then
-                priceGroupId2 = GetPriceGroupId(data.fabriccolour, blindName, controlName, data.designId)
+                priceGroupId2 = GetPriceGroupId(data.fabriccolour2, blindName, controlName, data.designId)
                 If priceGroupId2 = "300" Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "203.2 : Something went wrong !",.field = ""}}
                 End If
@@ -350,7 +350,7 @@ Partial Class Methods_Order_CelloraMethod
                 Dim itemId As String = data.itemid
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET  KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, ControlPosition = @ControlPosition, ChainLength = @ChainLength, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, ControlPosition = @ControlPosition, ChainLength = @ChainLength, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
@@ -407,6 +407,15 @@ Partial Class Methods_Order_CelloraMethod
             Dim fabricGroupName As String = fabricData.Tables(0).Rows(0).Item("Group").ToString()
 
             Dim priceGroupName As String =  blindName & " " & controlName & " - " & fabricGroupName
+            If blindname = "Galaxy" Then
+                If controlname = "Corded" Or controlname = "Cordless" or controlname = "TDBU Corded" Or controlname = "TDBU Cordless" Then
+                    priceGroupName = "Galaxy Single - " & fabricGroupName
+                End If
+
+                If controlname = "DN Corded" Or controlname = "DN Cordless" Then
+                    priceGroupName = "Galaxy Double - " & fabricGroupName
+                End If
+            End If
 
             Dim priceGroupId As String = publicCfg.GetPriceGroupId(designid ,priceGroupName)
             If String.IsNullOrEmpty(priceGroupId) Then
