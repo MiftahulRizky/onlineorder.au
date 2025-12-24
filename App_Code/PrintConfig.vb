@@ -95,8 +95,10 @@ Public Class PrintConfig
         'ALUMINIUM
         result += Print_AluminiumBlinds(HeaderId)
 
-        'CELLORA
-        result += Print_CellularBlinds(HeaderId)
+        'CELLULAR
+        result += Print_CellularCellora(HeaderId)
+        result += Print_CellularGalaxy(HeaderId)
+        result += Print_CellularPotrait(HeaderId)
 
         'PANEL GLIDES
         result += Print_PanelGlides(HeaderId)
@@ -370,14 +372,14 @@ Public Class PrintConfig
         Return result
     End Function
 
-    Protected Function Print_CellularBlinds(HeaderId As String) As String
+    Protected Function Print_CellularCellora(HeaderId As String) As String
         Dim result As String = String.Empty
 
         Try
-            Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Cellular Blinds' AND Active=1 ORDER BY Id, BlindNo ASC")
+            Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Cellular Blinds' AND BlindName='Cellora' AND Active=1 ORDER BY Id, BlindNo ASC")
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim tdNotes As String = "<td colspan='11' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
-                result += spanStart & "CELLULAR BLINDS" & spanEnd
+                result += spanStart & "CELLULAR CELLORA" & spanEnd
                 result += tableStart
 
                 result += trStart
@@ -427,7 +429,133 @@ Public Class PrintConfig
                 result += tableEnd
             End If
         Catch ex As Exception
-            result = "ERROR CREATE PDF CELLORA BLINDS"
+            result = "ERROR CREATE PDF CELLORA CELLORA"
+        End Try
+        Return result
+    End Function
+
+    Protected Function Print_CellularGalaxy(HeaderId As String) As String
+        Dim result As String = String.Empty
+
+        Try
+            Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Cellular Blinds' AND BlindName='Galaxy' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='11' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
+                result += spanStart & "CELLULAR GALAXY" & spanEnd
+                result += tableStart
+
+                result += trStart
+                result += thStart & "No" & thEnd
+                result += thStart & "ID" & thEnd
+                result += thStart & "Qty" & thEnd
+                result += thStart & "Product" & thEnd
+                result += thStart & "Location" & thEnd
+                result += thStart & "Mounting" & thEnd
+                result += thStart & "Width" & thEnd
+                result += thStart & "Drop" & thEnd
+                result += thStart & "Fabric" & thEnd
+                result += thStart & "Fabric B" & thEnd
+                result += thStart & "Side" & thEnd
+                result += thStart & "Chain Length" & thEnd
+                result += thStart & "Hold Down Bracket" & thEnd
+                result += thStart & "Cut Out" & thEnd
+                result += trEnd
+
+
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricNameB").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ChainLength").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("DoorCutOut").ToString() & tdEnd
+                    result += trEnd
+
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result = "ERROR CREATE PDF CELLORA GALAXY"
+        End Try
+        Return result
+    End Function
+
+    Protected Function Print_CellularPotrait(HeaderId As String) As String
+        Dim result As String = String.Empty
+
+        Try
+            Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Cellular Blinds' AND BlindName='Potrait' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='11' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
+                result += spanStart & "CELLULAR POTAIT" & spanEnd
+                result += tableStart
+
+                result += trStart
+                result += thStart & "No" & thEnd
+                result += thStart & "ID" & thEnd
+                result += thStart & "Qty" & thEnd
+                result += thStart & "Product" & thEnd
+                result += thStart & "Location" & thEnd
+                result += thStart & "Mounting" & thEnd
+                result += thStart & "Width" & thEnd
+                result += thStart & "Drop" & thEnd
+                result += thStart & "Fabric" & thEnd
+                result += thStart & "Side" & thEnd
+                result += thStart & "Chain Length" & thEnd
+                result += thStart & "Hold Down Bracket" & thEnd
+                result += thStart & "Cut Out" & thEnd
+                result += trEnd
+
+
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ChainLength").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("DoorCutOut").ToString() & tdEnd
+                    result += trEnd
+
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result = "ERROR CREATE PDF CELLORA POTAIT"
         End Try
         Return result
     End Function
@@ -1628,7 +1756,7 @@ Public Class PrintConfig
         If totalVertical = "" Then : totalVertical = "-" : End If
 
         Dim aluminiumblinds As String = "<b>Aluminium Blinds: " & totalAluminium & "</b>"
-        Dim celloraBlinds As String = "<b>Cellora Blinds: " & totalCellular & "</b>"
+        Dim celloraBlinds As String = "<b>Cellular Blinds: " & totalCellular & "</b>"
         Dim panelGlides As String = "<b>Panel Glides: " & totalPG & "</b>"
         Dim venetianblinds As String = "<b>Venetian Blinds:  " & totalVenetian & "</b>"
         Dim rollerblinds As String = "<b>Roller Blinds: " & totalRoller & "</b>"
