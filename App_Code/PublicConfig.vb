@@ -870,10 +870,12 @@ Public Class PublicConfig
             Dim bracketType As String = thisData.Tables(0).Rows(0).Item("BracketType").ToString()
 
             Dim priceGroupId As String = thisData.Tables(0).Rows(0).Item("PriceGroupId").ToString()
+            Dim priceGroupIdB As String = thisData.Tables(0).Rows(0).Item("PriceGroupIdB").ToString()
             Dim qty As String = thisData.Tables(0).Rows(0).Item("Qty").ToString()
             Dim width As String = thisData.Tables(0).Rows(0).Item("Width").ToString()
             Dim drop As String = thisData.Tables(0).Rows(0).Item("Drop").ToString()
             Dim fabricType As String = thisData.Tables(0).Rows(0).Item("FabricType").ToString()
+            Dim fabricTypeB As String = thisData.Tables(0).Rows(0).Item("FabricTypeB").ToString()
             Dim ControlType As String = thisData.Tables(0).Rows(0).Item("ControlType").ToString()
             Dim SlatQty As String = thisData.Tables(0).Rows(0).Item("SlatQty").ToString()
             Dim doorCutOut As String = thisData.Tables(0).Rows(0).Item("DoorCutOut").ToString()
@@ -884,6 +886,8 @@ Public Class PublicConfig
 
 
             Dim thisMatrix As Decimal = 0.00
+            Dim thisMatrixB As Decimal = 0.00
+            Dim finalMatrix As Decimal = 0.00
 
             If Not priceGroupId = "" Then
                 Dim getMatrix As Decimal = GetGridCost(priceGroupId, delivery, drop, width)
@@ -893,13 +897,11 @@ Public Class PublicConfig
                     Dim getMatrixSlat As Decimal = getMatrix * Convert.ToDecimal(SlatQty)
                     If getMatrixSlat < 10 Then : getMatrix = 0.00 : End If
                 End If
-                '#---------------------/For Vertical Slat Only---------------------#
 
 
                 '#---------------------Discount For Store Account---------------------#
                 Dim thisDiscount As Decimal = HitungDiscount(storeId, priceGroupId, getMatrix)
                 thisMatrix = getMatrix - thisDiscount
-                '#---------------------/Discount For Store Account---------------------#
 
 
                 '#---------------------Custom Discount for Extra Discount---------------------#
@@ -907,8 +909,8 @@ Public Class PublicConfig
                 If thisCustomDiscount > 0  Then
                     thisMatrix = thisMatrix - thisCustomDiscount
                 End If
-                '#---------------------/Custom Discount for Extra Discount---------------------#
 
+                '#---------------------Create Description---------------------#
                 Dim description As String = kitName & " " & size
 
                 If designName = "Roller Blinds" Then
@@ -922,7 +924,16 @@ Public Class PublicConfig
                     End If
                 End If
 
-                
+                If blindName = "Galaxy" Then
+                    If ControlType = "DN Corded" Or ControlType = "DN Cordless" Then
+                        description = "Galaxy Double #" & fabricType & " " & size
+                    End If
+                    If ControlType = "Corded" Or ControlType = "Cordless" Or ControlType = "TDBU Corded" Or ControlType = "TDBU Cordless" Then
+                        description = "Galaxy Single #" & fabricType & " " & size
+                    End If
+                End If
+
+                '#---------------------Insert Order Detail Price---------------------#
                 If designName = "Vertical Blinds" AndAlso blindName = "Slat Only" Then
                     If thisMatrix > 0 Then
                         Call PriceDetail(HeaderId, ItemId, qty, description, thisMatrix)
@@ -930,8 +941,41 @@ Public Class PublicConfig
                 Else
                     Call PriceDetail(HeaderId, ItemId, qty, description, thisMatrix)
                 End If
+
             End If
-            Call UpdateMatrix(ItemId, qty, thisMatrix)
+
+            If Not PriceGroupIdB = "" Then
+                Dim getMatrixB As Decimal = GetGridCost(priceGroupIdB, delivery, drop, width)
+
+                '#---------------------Discount For Store Account---------------------#
+                Dim thisDiscountB As Decimal = HitungDiscount(storeId, priceGroupIdB, getMatrixB)
+                thisMatrixB = getMatrixB - thisDiscountB
+
+                '#---------------------Custom Discount for Extra Discount---------------------#
+                Dim thisCustomDiscountB As Decimal = HitungCustomDiscount(HeaderId,ItemId, thisMatrixB)
+                If thisCustomDiscountB > 0  Then
+                    thisMatrixB = thisMatrixB - thisCustomDiscountB
+                End If
+
+                '#---------------------Create Description---------------------#
+                Dim descriptionB As String = kitName & " " & size
+
+                If blindName = "Galaxy" Then
+                    If ControlType = "DN Corded" Or ControlType = "DN Cordless" Then
+                        descriptionB = "Galaxy Double #" & fabricTypeB & " " & size
+                    End If
+                    If ControlType = "Corded" Or ControlType = "Cordless" Or ControlType = "TDBU Corded" Or ControlType = "TDBU Cordless" Then
+                        descriptionB = "Galaxy Single #" & fabricTypeB & " " & size
+                    End If
+                End If
+
+                Call PriceDetail(HeaderId, ItemId, qty, descriptionB, thisMatrixB)
+            End If
+
+            '#---------------------Hitung Total Matrix---------------------#
+            finalMatrix = thisMatrix + thisMatrixB
+
+            Call UpdateMatrix(ItemId, qty, finalMatrix)
         End If
     End Sub
 
