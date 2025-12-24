@@ -285,26 +285,26 @@ Public Class ExactConfig
                 writer.WriteElementString("Date", jobDate)
                 writer.WriteEndElement()
 
-                ' Dim detailData As DataSet = GetListData("SELECT * FROM OrderDetails WHERE HeaderId = '" & Id & "' AND Active = 1 ORDER BY Id ASC")
+                Dim detailData As DataSet = GetListData("SELECT * FROM OrderDetails WHERE HeaderId = '" & Id & "' AND Active = 1 ORDER BY Id ASC")
 
-                ' For i As Integer = 0 To detailData.Tables(0).Rows.Count - 1
-                '     Dim itemId As String = detailData.Tables(0).Rows(i).Item("Id").ToString()
-                '     Dim kitId As String = detailData.Tables(0).Rows(i).Item("KitId").ToString()
-                '     Dim totalMatrix As Decimal = detailData.Tables(0).Rows(i).Item("TotalMatrix").ToString()
-                '     Dim totalCharge As Decimal = detailData.Tables(0).Rows(i).Item("TotalCharge").ToString()
-                '     Dim finalCost As Decimal = totalMatrix + totalCharge
-                '     Dim finalCostString As String = finalCost.ToString(CultureInfo.InvariantCulture)
+                For i As Integer = 0 To detailData.Tables(0).Rows.Count - 1
+                    Dim itemId As String = detailData.Tables(0).Rows(i).Item("Id").ToString()
+                    Dim kitId As String = detailData.Tables(0).Rows(i).Item("KitId").ToString()
+                    Dim totalMatrix As Decimal = detailData.Tables(0).Rows(i).Item("TotalMatrix").ToString()
+                    Dim totalCharge As Decimal = detailData.Tables(0).Rows(i).Item("TotalCharge").ToString()
+                    Dim finalCost As Decimal = totalMatrix + totalCharge
+                    Dim finalCostString As String = finalCost.ToString(CultureInfo.InvariantCulture)
 
-                '     Dim exactProduct As String = detailData.Tables(0).Rows(i).Item("ExactId").ToString()
-                '     If String.IsNullOrEmpty(exactProduct) Then
-                '         Dim designId As String = GetItemData("SELECT DesignId FROM HardwareKits WHERE Id='" + kitId + "'")
-                '         Dim blindId As String = GetItemData("SELECT BlindId FROM HardwareKits WHERE Id='" + kitId + "'")
-                '         Dim designName As String = GetItemData("SELECT Name FROM Designs WHERE Id = '" + designId + "'")
-                '         Dim blindName As String = GetItemData("SELECT Name FROM Blinds WHERE Id = '" + blindId + "'")
-                '         If designName = "Panorama PVC Shutters" Then
-                '             Dim exactName As String = designName & " - " & blindName
-                '             exactProduct = GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
-                '         End If
+                    Dim exactProduct As String = detailData.Tables(0).Rows(i).Item("ExactId").ToString()
+                    If String.IsNullOrEmpty(exactProduct) Then
+                        Dim designId As String = GetItemData("SELECT DesignId FROM HardwareKits WHERE Id='" + UCase(kitId) + "'")
+                        Dim blindId As String = GetItemData("SELECT BlindId FROM HardwareKits WHERE Id='" + UCase(kitId) + "'")
+                        Dim designName As String = GetItemData("SELECT Name FROM Designs WHERE Id = '" + designId + "'")
+                        Dim blindName As String = GetItemData("SELECT Name FROM Blinds WHERE Id = '" + blindId + "'")
+
+                        Dim exactName As String = designName & " - " & blindName
+                        exactProduct = GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
+
                 '         If designName = "Panorama PVC Parts" Then
                 '             Dim exactName As String = designName
                 '             exactProduct = GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
@@ -313,40 +313,40 @@ Public Class ExactConfig
                 '             Dim exactName As String = blindName
                 '             exactProduct = GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
                 '         End If
-                '     End If
+                    End If
 
-                '     Dim productName As String = GetItemData("SELECT Name FROM HardwareKits WHERE Id = '" & UCase(kitId) & "'")
-                '     Dim width As String = detailData.Tables(0).Rows(i).Item("Width").ToString()
-                '     Dim drop As String = detailData.Tables(0).Rows(i).Item("Drop").ToString()
-                '     Dim itemDescription As String = productName & " " & width & "x" & drop
+                    Dim productName As String = GetItemData("SELECT Name FROM HardwareKits WHERE Id = '" & UCase(kitId) & "'")
+                    Dim width As String = detailData.Tables(0).Rows(i).Item("Width").ToString()
+                    Dim drop As String = detailData.Tables(0).Rows(i).Item("Drop").ToString()
+                    Dim itemDescription As String = productName & " " & width & "x" & drop
 
-                '     writer.WriteStartElement("OrderLine")
+                    writer.WriteStartElement("OrderLine")
 
-                '     writer.WriteStartElement("Item")
-                '     writer.WriteAttributeString("code", exactProduct)
-                '     writer.WriteString("")
-                '     writer.WriteEndElement()
+                    writer.WriteStartElement("Item")
+                    writer.WriteAttributeString("code", exactProduct)
+                    writer.WriteString("")
+                    writer.WriteEndElement()
 
-                '     writer.WriteElementString("Quantity", "1")
+                    writer.WriteElementString("Quantity", "1")
 
-                '     writer.WriteStartElement("Price")
-                '     writer.WriteAttributeString("type", "S")
+                    writer.WriteStartElement("Price")
+                    writer.WriteAttributeString("type", "S")
 
-                '     writer.WriteStartElement("Currency")
-                '     writer.WriteAttributeString("code", "AUD")
-                '     writer.WriteString("")
-                '     writer.WriteEndElement()
+                    writer.WriteStartElement("Currency")
+                    writer.WriteAttributeString("code", "AUD")
+                    writer.WriteString("")
+                    writer.WriteEndElement()
 
-                '     writer.WriteElementString("Value", finalCostString)
-                '     writer.WriteEndElement() ' Price
+                    writer.WriteElementString("Value", finalCostString)
+                    writer.WriteEndElement() ' Price
 
-                '     writer.WriteStartElement("Delivery")
-                '     writer.WriteElementString("Date", etaCustomer)
-                '     writer.WriteEndElement()
+                    writer.WriteStartElement("Delivery")
+                    writer.WriteElementString("Date", etaCustomer)
+                    writer.WriteEndElement()
 
-                '     writer.WriteElementString("Text", itemDescription)
-                '     writer.WriteEndElement() ' OrderLine
-                ' Next
+                    writer.WriteElementString("Text", itemDescription)
+                    writer.WriteEndElement() ' OrderLine
+                Next
 
                 writer.WriteEndElement() ' Order
                 writer.WriteEndElement() ' Orders
