@@ -39,7 +39,7 @@ Partial Class Order_Vertical
         If Session("itemAction") = "AddItem" Then
             lblHeaderId.Text = Session("HeaderId")
             lblBlindNo.Text = "Blind 1"
-            btnSubmit.Visible = True : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Add Item)"
+            btnSubmit.Visible = True : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit"
             cardTitle.InnerHtml = "Add Item"
             If Not IsPostBack Then
                 txtQty.Text = "1"
@@ -65,7 +65,7 @@ Partial Class Order_Vertical
         If Session("itemAction") = "ViewItem" Then
             lblHeaderId.Text = Session("HeaderId")
             lblItemId.Text = Session("itemId")
-            btnSubmit.Visible = False : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Update Item)"
+            btnSubmit.Visible = False : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit"
             cardTitle.InnerHtml = "VIEW ITEM ID : " & lblItemId.Text
             If Session("RoleName") = "Administrator" Then : btnSubmit.Visible = True : End If
             If Not IsPostBack Then
@@ -76,7 +76,7 @@ Partial Class Order_Vertical
         If Session("itemAction") = "EditItem" Then
             lblHeaderId.Text = Session("HeaderId")
             lblItemId.Text = Session("itemId")
-            btnSubmit.Visible = True : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Update Item)"
+            btnSubmit.Visible = True : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit"
             If Session("RoleName") = "Manager" Or Session("RoleName") = "Account" Then
                 btnSubmit.Visible = False 
             End If
@@ -222,13 +222,6 @@ Partial Class Order_Vertical
                 End If
             End If
 
-            If Not blindName = "Slat Only" And ddlMounting.SelectedValue = "" Then
-                Call MessageError(True, "MOUNTING IS REQUIRED !")
-                ddlMounting.CssClass = "form-select  is-invalid"
-                ddlMounting.Focus()
-                Exit Sub
-            End If
-
             If Not txtLocation.Text = "" Then
                 If InStr(txtLocation.Text, "&") > 0 Then
                     Call MessageError(True, "CHARACTER [&] IS NO RECOMMENDED !")
@@ -237,56 +230,16 @@ Partial Class Order_Vertical
                     Exit Sub
                 End If
             End If
-
-            If blindName = "Slat Only" Then
-                ' If txtSlatQty.Text = "" Or txtSlatQty.Text = "0" Then
-                '     Call MessageError(True, "SLAT QTY IS REQUIRED !")
-                '     txtSlatQty.CssClass = "form-control  is-invalid"
-                '     txtSlatQty.Focus()
-                '     Exit Sub
-                ' End If
-
-                If Not txtSlatQty.Text = "" Then
-                    If Not IsNumeric(txtSlatQty.Text) Then
-                        Call MessageError(True, "SLAT QTY SHOULD BE NUMERIC !")
-                        txtSlatQty.CssClass = "form-control  is-invalid"
-                        txtSlatQty.Focus()
-                        Exit Sub
-                    End If
-
-                    ' If txtSlatQty.Text < 1 Then
-                    '     Call MessageError(True, "PLEASE CHECK YOUR SLAT QTY ORDER !")
-                    '     txtSlatQty.CssClass = "form-control  is-invalid"
-                    '     txtSlatQty.Focus()
-                    '     Exit Sub
-                    ' End If
-                End If
+            
+            If Not blindName = "Slat Only" And ddlMounting.SelectedValue = "" Then
+                Call MessageError(True, "MOUNTING IS REQUIRED !")
+                ddlMounting.CssClass = "form-select  is-invalid"
+                ddlMounting.Focus()
+                Exit Sub
             End If
 
-            If Not blindName = "Track Only" Then
-                If ddlFabricType.SelectedValue = "" Then
-                    Call MessageError(True, "FABRIC TYPE IS REQUIRED !")
-                    ddlFabricType.CssClass = "form-select  is-invalid"
-                    ddlFabricType.Focus()
-                    Exit Sub
-                End If
 
-                If ddlFabricLength.SelectedValue = "" Then
-                    Call MessageError(True, "FABRIC/SLAT SIZE IS REQUIRED !")
-                    ddlFabricLength.CssClass = "form-select  is-invalid"
-                    ddlFabricLength.Focus()
-                    Exit Sub
-                End If
-
-                If ddlFabricColour.SelectedValue = "" Then
-                    Call MessageError(True, "FABRIC COLOUR IS REQUIRED !")
-                    ddlFabricColour.CssClass = "form-select  is-invalid"
-                    ddlFabricColour.Focus()
-                    Exit Sub
-                End If
-            End If
-
-            If blindName = "Complete" Or blindName = "Track Only" Then
+             If blindName = "Complete" Or blindName = "Track Only" Then
                 If txtWidth.Text = "" Or txtWidth.Text = "0" Then
                     Call MessageError(True, "WIDTH IS REQUIRED !")
                     txtWidth.CssClass = "form-control  is-invalid"
@@ -349,6 +302,56 @@ Partial Class Order_Vertical
                     End If
                 End If
             End If
+
+            If blindName = "Slat Only" Then
+                ' If txtSlatQty.Text = "" Or txtSlatQty.Text = "0" Then
+                '     Call MessageError(True, "SLAT QTY IS REQUIRED !")
+                '     txtSlatQty.CssClass = "form-control  is-invalid"
+                '     txtSlatQty.Focus()
+                '     Exit Sub
+                ' End If
+
+                If Not txtSlatQty.Text = "" Then
+                    If Not IsNumeric(txtSlatQty.Text) Then
+                        Call MessageError(True, "SLAT QTY SHOULD BE NUMERIC !")
+                        txtSlatQty.CssClass = "form-control  is-invalid"
+                        txtSlatQty.Focus()
+                        Exit Sub
+                    End If
+
+                    ' If txtSlatQty.Text < 1 Then
+                    '     Call MessageError(True, "PLEASE CHECK YOUR SLAT QTY ORDER !")
+                    '     txtSlatQty.CssClass = "form-control  is-invalid"
+                    '     txtSlatQty.Focus()
+                    '     Exit Sub
+                    ' End If
+                End If
+            End If
+
+            If Not blindName = "Track Only" Then
+                If ddlFabricType.SelectedValue = "" Then
+                    Call MessageError(True, "FABRIC TYPE IS REQUIRED !")
+                    ddlFabricType.CssClass = "form-select  is-invalid"
+                    ddlFabricType.Focus()
+                    Exit Sub
+                End If
+
+                If ddlFabricLength.SelectedValue = "" Then
+                    Call MessageError(True, "FABRIC/SLAT SIZE IS REQUIRED !")
+                    ddlFabricLength.CssClass = "form-select  is-invalid"
+                    ddlFabricLength.Focus()
+                    Exit Sub
+                End If
+
+                If ddlFabricColour.SelectedValue = "" Then
+                    Call MessageError(True, "FABRIC COLOUR IS REQUIRED !")
+                    ddlFabricColour.CssClass = "form-select  is-invalid"
+                    ddlFabricColour.Focus()
+                    Exit Sub
+                End If
+            End If
+
+           
 
             If blindName = "Complete" Or blindName = "Track Only" Then
                 If ddlTrackColour.SelectedValue = "" Then

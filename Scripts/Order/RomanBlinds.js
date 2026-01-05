@@ -153,11 +153,11 @@ $("#markup").on("change", function (e) {
 function submitForm() {
   if (itemAction === "AddItem") {
     var htmlButtonSubmit =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Add Item)";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
   }
   if (itemAction === "EditItem" || itemAction === "CopyItem") {
     var htmlButtonSubmit =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Edit Item)";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
   }
 
   handlerResetFormError();
@@ -1049,11 +1049,11 @@ function handlerDisplayElemets(blindname, controlname) {
   if (itemAction == "AddItem") {
     //SET DEFAULT TEXT BUTTON SUBMIT
     btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Add Item)";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
   } else if (itemAction == "EditItem" || itemAction == "CopyItem") {
     //SET DEFAULT TEXT BUTTON SUBMIT
     btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Edit Item)";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
   } else if (itemAction == "ViewItem") {
     if (roleName !== "Administrator") btnSubmit.setAttribute("hidden", true);
   }

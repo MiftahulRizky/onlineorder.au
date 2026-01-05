@@ -54,6 +54,8 @@
                                          <th class="h3">REFERENCE</th>
                                          <th class="h3 text-center">DELIVERY</th>
                                          <th class="h3 text-center">STATUS</th>
+                                         <th class="h3 text-center">CREATED</th>
+                                         <th class="h3 text-center">SUBMITTED</th>
                                          <th class="text-center">ACTIONS</th>
                                      </tr>
                                  </thead>
@@ -67,6 +69,8 @@
                                          <th class="h3">REFERENCE</th>
                                          <th class="h3 text-center">DELIVERY</th>
                                          <th class="h3 text-center">STATUS</th>
+                                         <th class="h3 text-center">CREATED</th>
+                                         <th class="h3 text-center">SUBMITTED</th>
                                          <th class="text-center">ACTIONS</th>
                                      </tr>
                                  </thead>

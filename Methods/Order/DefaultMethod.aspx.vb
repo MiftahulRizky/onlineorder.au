@@ -226,8 +226,13 @@ Partial Class Methods_Order_DefaultMethod
 
                 Using reader As SqlDataReader = cmd.ExecuteReader()
                     Dim noCounter As Integer = params.start + 1 ' Mulai hitung dari offset
-
                     While reader.Read()
+
+                        Dim Created As String = If(IsDBNull(reader("CreatedDate")), "", Convert.ToDateTime(reader("CreatedDate")).ToString("dd MMM yyyy"))
+                        Dim Submitted As String = If(IsDBNull(reader("SubmittedDate")), "", Convert.ToDateTime(reader("SubmittedDate")).ToString("dd MMM yyyy"))
+                        Dim Canceled As String = If(IsDBNull(reader("CanceledDate")), "", Convert.ToDateTime(reader("CanceledDate")).ToString("dd MMM yyyy"))
+                        Dim Completed As String = If(IsDBNull(reader("CompletedDate")), "", Convert.ToDateTime(reader("CompletedDate")).ToString("dd MMM yyyy"))
+
                         Dim row As New OrdersMatrixReturnRow With {
                             .No = noCounter.ToString(),
                             .Id = reader("Id").ToString(),
@@ -238,10 +243,10 @@ Partial Class Methods_Order_DefaultMethod
                             .OrderCust = reader("OrderCust").ToString(),
                             .Delivery = reader("Delivery").ToString(),
                             .Status = reader("Status").ToString(),
-                            .CreatedDate = reader("CreatedDate").ToString(),
-                            .SubmittedDate = reader("SubmittedDate").ToString(),
-                            .CanceledDate = reader("CanceledDate").ToString(),
-                            .CompletedDate = reader("CompletedDate").ToString(),
+                            .CreatedDate = Created,
+                            .SubmittedDate = Submitted,
+                            .CanceledDate = Canceled,
+                            .CompletedDate = Completed,
                             .Active = reader("Active").ToString()
                         }
                         resultList.Add(row)

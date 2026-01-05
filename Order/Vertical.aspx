@@ -103,6 +103,23 @@
                                     </div>
                                 </div>
 
+                                <div class="mb-6 mt-5 row">
+                                    <asp:Label runat="server" CssClass="col-lg-3 col-form-label" ID="lblSize" Text="WIDTH x DROP"></asp:Label>
+                                    <div class="col-lg-2 col-md-12 col-sm-12" runat="server" id="divWidth">
+                                        <asp:TextBox runat="server" TextMode="Number" min="1" ID="txtWidth" CssClass="form-control" placeholder="Width ..." autocomplete="off"></asp:TextBox>
+                                        <small class="form-hint">* Width</small>
+                                    </div>
+
+                                    <div class="col-lg-2 col-md-12 col-sm-12" runat="server" id="divDrop">
+                                        <asp:TextBox runat="server" TextMode="Number" min="1" ID="txtDrop" CssClass="form-control" placeholder="Drop ..." autocomplete="off"></asp:TextBox>
+                                        <small class="form-hint">* Drop</small>
+                                    </div>
+
+                                    <div class="col-lg-2 col-md-12 col-sm-12">
+                                        <a class="btn btn-primary " data-bs-toggle="offcanvas" href="#canvasInfo" role="button" aria-controls="canvasInfo" onclick="return showInfo('Width x Drop');"><i class="bi bi-info-circle me-2"></i>Info</a>
+                                    </div>
+                                </div>
+
                                 <div class="mb-3 mt-6 row" runat="server" id="divSlatSize">
                                     <label class="col-lg-3 col-form-label">SLAT SIZE</label>
                                     <div class="col-lg-2 col-md-12 col-sm-12">
@@ -148,22 +165,7 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-6 mt-5 row">
-                                    <asp:Label runat="server" CssClass="col-lg-3 col-form-label" ID="lblSize" Text="WIDTH x DROP"></asp:Label>
-                                    <div class="col-lg-2 col-md-12 col-sm-12" runat="server" id="divWidth">
-                                        <asp:TextBox runat="server" TextMode="Number" min="1" ID="txtWidth" CssClass="form-control" placeholder="Width ..." autocomplete="off"></asp:TextBox>
-                                        <small class="form-hint">* Width</small>
-                                    </div>
-
-                                    <div class="col-lg-2 col-md-12 col-sm-12" runat="server" id="divDrop">
-                                        <asp:TextBox runat="server" TextMode="Number" min="1" ID="txtDrop" CssClass="form-control" placeholder="Drop ..." autocomplete="off"></asp:TextBox>
-                                        <small class="form-hint">* Drop</small>
-                                    </div>
-
-                                    <div class="col-lg-2 col-md-12 col-sm-12">
-                                        <a class="btn btn-primary " data-bs-toggle="offcanvas" href="#canvasInfo" role="button" aria-controls="canvasInfo" onclick="return showInfo('Width x Drop');"><i class="bi bi-info-circle me-2"></i>Info</a>
-                                    </div>
-                                </div>
+                                
 
                                 <div class="mb-3 row" runat="server" id="divTrackColour">
                                     <label class="col-lg-3 col-form-label">TRACK COLOUR</label>

@@ -229,6 +229,28 @@ Partial Class Methods_Order_CelloraMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "room to install is required !",.field = "room"}}
             End If
 
+            Dim width As Integer
+            If String.IsNullOrEmpty(data.width) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width is required !",.field = "width"}}
+            End If
+            If Not Integer.TryParse(data.width, width) OrElse width <= 0 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be a positive integer !",.field = "width"}}
+            End If
+            If width > 6000 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 6000 !",.field = "width"}}
+            End If
+
+            Dim drop As Integer
+            If String.IsNullOrEmpty(data.drop) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop is required !",.field = "drop"}}
+            End If
+            If Not Integer.TryParse(data.drop, drop) OrElse drop <= 0 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be a positive integer !",.field = "drop"}}
+            End If
+            If drop > 3000 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3000 !",.field = "drop"}}
+            End If
+
             If blindName = "Galaxy" And (controlName ="DN Corded" Or controlName ="DN Cordless") Then
                 If String.IsNullOrEmpty(data.fabrictype) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type day is required !",.field = "fabrictype"}}
@@ -254,27 +276,7 @@ Partial Class Methods_Order_CelloraMethod
                 End If
             End If
 
-            Dim width As Integer
-            If String.IsNullOrEmpty(data.width) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width is required !",.field = "width"}}
-            End If
-            If Not Integer.TryParse(data.width, width) OrElse width <= 0 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be a positive integer !",.field = "width"}}
-            End If
-            If width > 6000 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 6000 !",.field = "width"}}
-            End If
-
-            Dim drop As Integer
-            If String.IsNullOrEmpty(data.drop) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop is required !",.field = "drop"}}
-            End If
-            If Not Integer.TryParse(data.drop, drop) OrElse drop <= 0 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be a positive integer !",.field = "drop"}}
-            End If
-            If drop > 3000 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3000 !",.field = "drop"}}
-            End If
+            
 
             If String.IsNullOrEmpty(data.holddown) Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "holddown"}}

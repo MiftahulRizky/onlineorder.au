@@ -90,18 +90,6 @@
                                 </div>
 
                                 <div class="mb-3 row">
-                                    <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold">fabric type x colour</label>
-                                    <div class="col-lg-4 col-md-12 col-sm-12">
-                                        <select name="fabrictype" id="fabrictype" class="form-control "></select>
-                                        <small class="form-hint">* Type</small>
-                                    </div>
-                                    <div class="col-lg-4 col-md-12 col-sm-12">
-                                        <select name="fabriccolour" id="fabriccolour" class="form-control "></select>
-                                        <small class="form-hint">* Colour</small>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3 row">
                                     <label for="width" class="col-lg-3 text-uppercase fw-bold">width x drop</label>
                                     <div class="col-lg-4 col-md-12 col-sm-12">
                                     <div class="input-group">
@@ -119,6 +107,20 @@
                                     </div>
                                 </div>
 
+
+                                <div class="mb-3 row">
+                                    <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold">fabric type x colour</label>
+                                    <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <select name="fabrictype" id="fabrictype" class="form-control "></select>
+                                        <small class="form-hint">* Type</small>
+                                    </div>
+                                    <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <select name="fabriccolour" id="fabriccolour" class="form-control "></select>
+                                        <small class="form-hint">* Colour</small>
+                                    </div>
+                                </div>
+
+                                
                                 <div class="mb-3 row">
                                     <label for="controlposition" class="col-lg-3 text-uppercase fw-bold">control position</label>
                                     <div class="col-lg-3">
@@ -213,7 +215,7 @@
 
                         </div>
                         <div class="card-footer text-end">
-                           <button type="button" id="btnSubmit" class="btn btn-primary ">plain text</button>
+                           <button type="button" id="btnSubmit" class="btn btn-primary "></button>
                             <a href="javascript:void(0);" id="btnCancel"  class="btn btn-danger " >
                                 <i class="fa-solid fa-rotate-left me-2"></i> Cancel
                             </a>

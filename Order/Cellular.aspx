@@ -96,6 +96,22 @@
                                         </div>
                                     </div>
 
+                                    <div class="mb-3 row">
+                                        <label for="width" class="col-lg-3 text-uppercase fw-bold">width x drop</label>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="input-group">
+                                            <input type="number" min="1" name="width" id="width" class="form-control " autocomplete="off" placeholder="Width ...." />
+                                            <span class="input-group-text ">mm</span>
+                                        </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <div class="input-group">
+                                                <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off" placeholder="Drop ...." />
+                                                <span class="input-group-text ">mm</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="mb-3 row" id="divFabricDay">
                                         <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">fabric type x colour</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
@@ -120,21 +136,7 @@
                                         </div>
                                     </div>
     
-                                    <div class="mb-3 row">
-                                        <label for="width" class="col-lg-3 text-uppercase fw-bold">width x drop</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                        <div class="input-group">
-                                            <input type="number" min="1" name="width" id="width" class="form-control " autocomplete="off" placeholder="Width ...." />
-                                            <span class="input-group-text ">mm</span>
-                                        </div>
-                                        </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off" placeholder="Drop ...." />
-                                                <span class="input-group-text ">mm</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
     
                                     <div class="mb-3 row">
                                         <label for="controlposition" class="col-lg-3 text-uppercase fw-bold">control side</label>
@@ -206,7 +208,7 @@
                             </div>
     
                             <div class="card-footer text-end">
-                                <button type="submit" id="btnSubmit" class="btn btn-primary "><i class="ti ti-cloud-up fs-2 me-1"></i>Submit</button>
+                                <button type="submit" id="btnSubmit" class="btn btn-primary "></button>
                                 <a href="/order/detail" id="btnCancel"  class="btn btn-danger " >
                                    <i class="ti ti-cancel fs-2 me-1"></i> Cancel
                                 </a>

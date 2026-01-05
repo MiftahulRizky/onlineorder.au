@@ -343,7 +343,7 @@ const bindOrders = (status, active, storetype, params) => {
           return `<div class="text-center">${jobno}</div>`;
         },
       },
-      { width: "30%", data: "StoreName" },
+      { width: "20%", data: "StoreName" },
       { width: "15%", data: "OrderNo" },
       { width: "15%", data: "OrderCust" },
       {
@@ -389,6 +389,8 @@ const bindOrders = (status, active, storetype, params) => {
           return icon + " " + row.Status;
         },
       },
+      { width: "5%", data: "CreatedDate" },
+      { width: "5%", data: "SubmittedDate" },
       {
         width: "5%",
         data: null,
@@ -467,7 +469,7 @@ const bindOrders = (status, active, storetype, params) => {
                 </li>
                 <div class="dropdown-divider"></div>
                 <li>
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnDateInfo" data-id="${row.Id}">
+                  <a class="dropdown-item" href="javascript:void(0)" id="btnDateInfo" data-id="${row.Id}" hidden>
                     <i class="ti ti-calendar-event me-1 fs-2 opacity-50"></i>Date Information
                   </a>
                 </li>
