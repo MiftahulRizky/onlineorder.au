@@ -98,6 +98,7 @@ Partial Class Order_Venetian
 
         Dim blindName As String = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
         Call BindHoldDown(blindName)
+        Call BindDataBracket(ddlBlindType.SelectedValue)
 
         Call BindComponentForm(ddlColour.SelectedValue)
     End Sub
@@ -109,6 +110,7 @@ Partial Class Order_Venetian
 
         Dim blindName As String = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
         Call BindHoldDown(blindName)
+        Call BindDataBracket(ddlBlindType.SelectedValue)
 
         Call BindComponentForm(ddlColour.SelectedValue)
     End Sub
@@ -118,6 +120,7 @@ Partial Class Order_Venetian
 
         Dim blindName As String = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
         Call BindHoldDown(blindName)
+        Call BindDataBracket(ddlBlindType.SelectedValue)
 
         Call BindComponentForm(ddlColour.SelectedValue)
     End Sub
@@ -295,6 +298,22 @@ Partial Class Order_Venetian
                         txtControlLength.Focus()
                         Exit Sub
                     End If
+
+                    If blindName = "50mm Aluminium" And txtControlLength.Text < 450 Then
+                        Call MessageError(True, "MINIMUM CONTROL LENGTH IS 450mm !")
+                        txtControlLength.CssClass = "form-control  is-invalid"
+                        txtControlLength.Focus()
+                        Exit Sub
+                    End If
+                End If
+            End If
+
+            If InStr(blindName, "Aluminum") > 0 Then
+                If ddlBracket.SelectedValue = "" Then
+                    Call MessageError(True, "BRACKET IS REQUIRED !")
+                    ddlBracket.CssClass = "form-select  is-invalid"
+                    ddlBracket.Focus()
+                    Exit Sub
                 End If
             End If
 
@@ -663,6 +682,7 @@ Partial Class Order_Venetian
             Call BindDataStyle(blindId)
             Call BindDataColour(blindId, style)
             Call BindHoldDown(blindName)
+            Call BindDataBracket(blindId)
 
             ddlBlindType.SelectedValue = blindId : ddlBlindType.Enabled = False
             ddlStyle.SelectedValue = style
@@ -674,6 +694,7 @@ Partial Class Order_Venetian
             txtWidth.Text = myData.Tables(0).Rows(0).Item("Width").ToString()
             txtDrop.Text = myData.Tables(0).Rows(0).Item("Drop").ToString()
             txtControlLength.Text = myData.Tables(0).Rows(0).Item("ControlLength").ToString()
+            ddlBracket.SelectedValue = myData.Tables(0).Rows(0).Item("BracketOption").ToString()
             ddlHoldDown.SelectedValue = myData.Tables(0).Rows(0).Item("BottomHoldDown").ToString()
             ddlPelmetType.SelectedValue = myData.Tables(0).Rows(0).Item("PelmetType").ToString()
             txtPelmetWidth.Text = myData.Tables(0).Rows(0).Item("PelmetWidth").ToString()
@@ -718,11 +739,19 @@ Partial Class Order_Venetian
             divControl.Visible = False
             divControlMock.Visible = False
             divPelmetSize.Visible = False
+            divBotomHoldDown.Visible = False
+            divPelmetDetail.Visible = False
+            divBracket.Visible = False
 
 
             Dim blindName As String = String.Empty
             If Not ddlBlindType.SelectedValue = "" Then
                 blindName = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
+
+                If InStr(blindName, "Aluminium") > 0 Then
+                    divBracket.Visible = True
+                End If
+
                 If blindName = "50mm Timberstyle" Or blindName = "63mm Timberstyle" Then
                     divStyle.Visible = True
                 End If
@@ -731,6 +760,8 @@ Partial Class Order_Venetian
                     divControl.Visible = False
                     divPelmetSize.Visible = False
                     divControlMock.Visible = True
+                    divBotomHoldDown.Visible = True
+                    divPelmetDetail.Visible = True
                 Else
                     divControl.Visible = True
                     divPelmetSize.Visible = True
@@ -867,6 +898,31 @@ Partial Class Order_Venetian
         End Try
     End Sub
 
+    Private Sub BindDataBracket(blindId As String)
+        ddlBracket.Items.Clear()
+        Try
+            Dim blindName As String = publicCfg.GetBlindName(blindId)
+            If blindName = "25mm Aluminium" Then 
+                ddlBracket.Items.Add(New ListItem("SPRING", "Spring"))
+            End If
+
+            If blindName = "50mm Aluminium" Then
+                ddlBracket.Items.Add(New ListItem("END MOUNTING", "End Mounting"))
+                ddlBracket.Items.Add(New ListItem("SPRING", "Spring"))
+            End If
+
+            If ddlBracket.Items.Count > 1 Then
+                ddlBracket.Items.Insert(0, New ListItem("", ""))
+            End If
+        Catch ex As Exception
+            Call MessageError(True, ex.ToString())
+            If Not Session("RoleName") = "Administrator" Then
+                Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
+                publicCfg.MailError(Session("UserId"), Page.Title, "BindDataBracket", ex.ToString())
+            End If
+        End Try
+    End Sub
+
     Private Sub BackColor()
         Call MessageError(False, String.Empty)
 
@@ -882,6 +938,7 @@ Partial Class Order_Venetian
         ddlControlLift.CssClass = "form-select "
         ddlControlTilt.CssClass = "form-select "
         txtControlLength.CssClass = "form-control "
+        ddlBracket.CssClass = "form-select "
         ddlHoldDown.CssClass = "form-select "
         ddlPelmetType.CssClass = "form-select "
         txtPelmetWidth.CssClass = "form-control "
