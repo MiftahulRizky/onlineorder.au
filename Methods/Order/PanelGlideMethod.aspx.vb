@@ -281,25 +281,6 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 }
             End If
 
-            '#-----------------------|| fabrictype ||-----------------------#
-            If String.IsNullOrEmpty(data.fabrictype) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "fabric type is required !",
-                        .field = "fabrictype"
-                    }
-                }
-            End If
-
-            '#-----------------------|| fabriccolour ||-----------------------#
-            If String.IsNullOrEmpty(data.fabriccolour) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "fabric colour is required !",
-                        .field = "fabriccolour"
-                    }
-                }
-            End If
 
             '#-----------------------|| width ||-----------------------#
             Dim width As Integer
@@ -351,6 +332,26 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                     .error = New ErrorDetail With {
                         .message = "drop must be less than or equal to 3000 !",
                         .field = "drop"
+                    }
+                }
+            End If
+
+            '#-----------------------|| fabrictype ||-----------------------#
+            If String.IsNullOrEmpty(data.fabrictype) Then
+                Return New ErrorResponse With {
+                    .error = New ErrorDetail With {
+                        .message = "fabric type is required !",
+                        .field = "fabrictype"
+                    }
+                }
+            End If
+
+            '#-----------------------|| fabriccolour ||-----------------------#
+            If String.IsNullOrEmpty(data.fabriccolour) Then
+                Return New ErrorResponse With {
+                    .error = New ErrorDetail With {
+                        .message = "fabric colour is required !",
+                        .field = "fabriccolour"
                     }
                 }
             End If

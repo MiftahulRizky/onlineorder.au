@@ -50,7 +50,7 @@ Partial Class Order_Roller
             cardTitle.InnerHtml = "Add Item"
             lblHeaderId.Text = Session("HeaderId")
             lblBlindNo.Text = "Blind 1"
-            btnSubmit.Visible = True : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Add Item)"
+            btnSubmit.Visible = True : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit"
             btnReset.Visible = True
             If Not IsPostBack Then
                 txtQty.Text = "1"
@@ -82,7 +82,7 @@ Partial Class Order_Roller
         If Session("itemAction") = "EditItem" Then
             lblHeaderId.Text = Session("HeaderId")
             lblItemId.Text = Session("itemId")
-            btnSubmit.Visible = True : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Update Item)"
+            btnSubmit.Visible = True : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit"
             If Session("RoleName") = "Manager" Or Session("RoleName") = "Account" Then
                 btnSubmit.Visible = False 
             End If
@@ -95,7 +95,7 @@ Partial Class Order_Roller
         If Session("itemAction") = "NextItem" Then
             lblHeaderId.Text = Session("HeaderId")
             lblItemId.Text = Session("itemId")
-            btnSubmit.Visible = True : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Next Item)"
+            btnSubmit.Visible = True : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit"
             cardTitle.InnerHtml = "Next Item"
             If Not IsPostBack Then
                 Call BindDataItem(lblItemId.Text)
@@ -354,6 +354,66 @@ Partial Class Order_Roller
             '     End If
             ' End If
 
+            If txtWidth.Text = "" Or txtWidth.Text = "0" Then
+                Call MessageError(True, "WIDTH IS REQUIRED !")
+                txtWidth.CssClass = "form-control  is-invalid"
+                txtWidth.Focus()
+                Exit Sub
+            End If
+
+            If Not txtWidth.Text = "" Then
+                If Not IsNumeric(txtWidth.Text) Then
+                    Call MessageError(True, "WIDTH SHOULD BE NUMERIC !")
+                    txtWidth.CssClass = "form-control  is-invalid"
+                    txtWidth.Focus()
+                    Exit Sub
+                End If
+
+                If txtWidth.Text < 150 Then
+                    Call MessageError(True, "MINIMUM WIDTH FOR ROLLER BLIND IS 150mm !")
+                    txtWidth.CssClass = "form-control  is-invalid"
+                    txtWidth.Focus()
+                    Exit Sub
+                End If
+
+                If txtWidth.Text > 6000 Then
+                    Call MessageError(True, "MAXIMUM WIDTH FOR ROLLER BLIND IS 3000mm !")
+                    txtWidth.CssClass = "form-control  is-invalid"
+                    txtWidth.Focus()
+                    Exit Sub
+                End If
+            End If
+
+            If txtDrop.Text = "" Or txtDrop.Text = "0" Then
+                Call MessageError(True, "DROP IS REQUIRED !")
+                txtDrop.CssClass = "form-control  is-invalid"
+                txtDrop.Focus()
+                Exit Sub
+            End If
+
+            If Not txtDrop.Text = "" Then
+                If Not IsNumeric(txtDrop.Text) Then
+                    Call MessageError(True, "DROP SHOULD BE NUMERIC !")
+                    txtDrop.CssClass = "form-control  is-invalid"
+                    txtDrop.Focus()
+                    Exit Sub
+                End If
+
+                If txtDrop.Text < 150 Then
+                    Call MessageError(True, "MINIMUM DROP IS 150mm !")
+                    txtDrop.CssClass = "form-control  is-invalid"
+                    txtDrop.Focus()
+                    Exit Sub
+                End If
+
+                If txtDrop.Text > 3200 Then
+                    Call MessageError(True, "MAXIMUM DROP IS 3200mm !")
+                    txtDrop.CssClass = "form-control  is-invalid"
+                    txtDrop.Focus()
+                    Exit Sub
+                End If
+            End If
+
             If ddlFabricType.SelectedValue = "" Then
                 Call MessageError(True, "FABRIC TYPE IS REQUIRED !")
                 ddlFabricType.CssClass = "form-select  is-invalid"
@@ -512,65 +572,7 @@ Partial Class Order_Roller
                 End If
             End If
 
-            If txtWidth.Text = "" Or txtWidth.Text = "0" Then
-                Call MessageError(True, "WIDTH IS REQUIRED !")
-                txtWidth.CssClass = "form-control  is-invalid"
-                txtWidth.Focus()
-                Exit Sub
-            End If
-
-            If Not txtWidth.Text = "" Then
-                If Not IsNumeric(txtWidth.Text) Then
-                    Call MessageError(True, "WIDTH SHOULD BE NUMERIC !")
-                    txtWidth.CssClass = "form-control  is-invalid"
-                    txtWidth.Focus()
-                    Exit Sub
-                End If
-
-                If txtWidth.Text < 150 Then
-                    Call MessageError(True, "MINIMUM WIDTH FOR ROLLER BLIND IS 150mm !")
-                    txtWidth.CssClass = "form-control  is-invalid"
-                    txtWidth.Focus()
-                    Exit Sub
-                End If
-
-                If txtWidth.Text > 6000 Then
-                    Call MessageError(True, "MAXIMUM WIDTH FOR ROLLER BLIND IS 3000mm !")
-                    txtWidth.CssClass = "form-control  is-invalid"
-                    txtWidth.Focus()
-                    Exit Sub
-                End If
-            End If
-
-            If txtDrop.Text = "" Or txtDrop.Text = "0" Then
-                Call MessageError(True, "DROP IS REQUIRED !")
-                txtDrop.CssClass = "form-control  is-invalid"
-                txtDrop.Focus()
-                Exit Sub
-            End If
-
-            If Not txtDrop.Text = "" Then
-                If Not IsNumeric(txtDrop.Text) Then
-                    Call MessageError(True, "DROP SHOULD BE NUMERIC !")
-                    txtDrop.CssClass = "form-control  is-invalid"
-                    txtDrop.Focus()
-                    Exit Sub
-                End If
-
-                If txtDrop.Text < 150 Then
-                    Call MessageError(True, "MINIMUM DROP IS 150mm !")
-                    txtDrop.CssClass = "form-control  is-invalid"
-                    txtDrop.Focus()
-                    Exit Sub
-                End If
-
-                If txtDrop.Text > 3200 Then
-                    Call MessageError(True, "MAXIMUM DROP IS 3200mm !")
-                    txtDrop.CssClass = "form-control  is-invalid"
-                    txtDrop.Focus()
-                    Exit Sub
-                End If
-            End If
+            
 
             ' If Not blindName = "Skin Only" Then
             If blindName = "Roller Blind" Then

@@ -243,7 +243,7 @@
                             <h3 class="card-title">YOUR ITEMS</h3>
                             <div class="card-actions">
                                 <a href="javascript:void(0);" id="btnAddItem" class="btn btn-primary ">
-                                    <i class="fa-solid fa-circle-plus" style="margin-right: 0.3rem;"></i> New Item
+                                    <i class="fa-solid fa-circle-plus" style="margin-right: 0.3rem;"></i> Add Item
                                 </a>
                             </div>
                         </div>

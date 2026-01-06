@@ -868,11 +868,11 @@ function setFormValues(itemData) {
 function submitForm() {
   if (ITEMACTION === "AddItem") {
     var htmlButtonSubmit =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Add Item)";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
   }
   if (ITEMACTION === "EditItem" || ITEMACTION === "CopyItem") {
     var htmlButtonSubmit =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Edit Item)";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
   }
 
   resetFormError();
@@ -976,11 +976,11 @@ function visibleElementForm(blindname, colourtype) {
   if (ITEMACTION == "AddItem") {
     //SET DEFAULT TEXT BUTTON SUBMIT
     btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Add Item)";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
   } else if (ITEMACTION == "EditItem" || ITEMACTION == "CopyItem") {
     //SET DEFAULT TEXT BUTTON SUBMIT
     btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Process (Edit Item)";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
   } else if (ITEMACTION == "ViewItem") {
     if (ROLENAME !== "Administrator") btnSubmit.setAttribute("hidden", true);
   }

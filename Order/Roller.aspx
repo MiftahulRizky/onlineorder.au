@@ -143,6 +143,33 @@
                                     </div>
                                 </div>
 
+                                 <div class="mb-3 mt-6 row">
+                                    <label class="col-lg-3 col-form-label">WIDTH x DROP</label>
+                                    <div class="col-lg-2 col-md-12 col-sm-12">
+                                        <asp:TextBox runat="server" TextMode="Number" min="1" ID="txtWidth" CssClass="form-control" placeholder="Width ..." autocomplete="off"></asp:TextBox>
+                                        <small class="form-hint">* Width</small>
+                                    </div>
+                                    
+                                    <div class="col-lg-2 col-md-12 col-sm-12">
+                                        <asp:TextBox runat="server" TextMode="Number" min="1" ID="txtDrop" CssClass="form-control" placeholder="Drop ..." autocomplete="off"></asp:TextBox>
+                                        <small class="form-hint">* Drop</small>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3 mt-6 row" runat="server" id="divFabricType">
+                                    <label class="col-lg-3 col-form-label">FABRIC TYPE</label>
+                                    <div class="col-lg-5 col-md-12 col-sm-12">
+                                        <asp:DropDownList runat="server" ID="ddlFabricType" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlFabricType_SelectedIndexChanged"></asp:DropDownList>
+                                    </div>
+                                </div>
+
+                                <div class="mb-5 row" runat="server" id="divFabricColour">
+                                    <label class="col-lg-3 col-form-label">FABRIC COLOUR</label>
+                                    <div class="col-lg-4 col-sm-12">
+                                        <asp:DropDownList runat="server" ID="ddlFabricColour" CssClass="form-select"></asp:DropDownList>
+                                    </div>
+                                </div>
+
                                 <div class="mb-3 mt-5 row" runat="server" id="divMotorStyle">
                                     <label class="col-lg-3 col-form-label">MOTOR STYLE</label>
                                     <div class="col-lg-4 col-md-12 col-sm-12">
@@ -199,19 +226,7 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-3 mt-6 row" runat="server" id="divFabricType">
-                                    <label class="col-lg-3 col-form-label">FABRIC TYPE</label>
-                                    <div class="col-lg-5 col-md-12 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlFabricType" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlFabricType_SelectedIndexChanged"></asp:DropDownList>
-                                    </div>
-                                </div>
-
-                                <div class="mb-5 row" runat="server" id="divFabricColour">
-                                    <label class="col-lg-3 col-form-label">FABRIC COLOUR</label>
-                                    <div class="col-lg-4 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlFabricColour" CssClass="form-select"></asp:DropDownList>
-                                    </div>
-                                </div>
+                                
 
                                 <div class="mb-3 row" runat="server" id="divRollDirection">
                                     <label class="col-lg-3 col-form-label">ROLL DIRECTION</label>
@@ -287,19 +302,7 @@
                                     </div>
                                 </div>
                                 
-                                <div class="mb-3 mt-6 row">
-                                    <label class="col-lg-3 col-form-label">WIDTH x DROP</label>
-                                    <div class="col-lg-2 col-md-12 col-sm-12">
-                                        <asp:TextBox runat="server" TextMode="Number" min="1" ID="txtWidth" CssClass="form-control" placeholder="Width ..." autocomplete="off"></asp:TextBox>
-                                        <small class="form-hint">* Width</small>
-                                    </div>
-                                    
-                                    <div class="col-lg-2 col-md-12 col-sm-12">
-                                        <asp:TextBox runat="server" TextMode="Number" min="1" ID="txtDrop" CssClass="form-control" placeholder="Drop ..." autocomplete="off"></asp:TextBox>
-                                        <small class="form-hint">* Drop</small>
-                                    </div>
-                                </div>
-
+                               
                                 <div class="mb-3 mt-6 row" runat="server" id="divTubeSize">
                                     <label class="col-lg-3 col-form-label">TUBE SIZE</label>
                                     <div class="col-lg-2 col-md-12 col-sm-12">

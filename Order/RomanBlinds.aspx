@@ -90,18 +90,6 @@
                                 </div>
 
                                 <div class="mb-3 row">
-                                    <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold">fabric type x colour</label>
-                                    <div class="col-lg-4 col-md-12 col-sm-12">
-                                        <select name="fabrictype" id="fabrictype" class="form-control "></select>
-                                        <small class="form-hint">* Type</small>
-                                    </div>
-                                    <div class="col-lg-4 col-md-12 col-sm-12">
-                                        <select name="fabriccolour" id="fabriccolour" class="form-control "></select>
-                                        <small class="form-hint">* Colour</small>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3 row">
                                     <label for="width" class="col-lg-3 text-uppercase fw-bold">width x drop</label>
                                     <div class="col-lg-4 col-md-12 col-sm-12">
                                     <div class="input-group">
@@ -118,6 +106,20 @@
                                         <small class="form-hint">* Drop</small>
                                     </div>
                                 </div>
+
+                                <div class="mb-3 row">
+                                    <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold">fabric type x colour</label>
+                                    <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <select name="fabrictype" id="fabrictype" class="form-control "></select>
+                                        <small class="form-hint">* Type</small>
+                                    </div>
+                                    <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <select name="fabriccolour" id="fabriccolour" class="form-control "></select>
+                                        <small class="form-hint">* Colour</small>
+                                    </div>
+                                </div>
+
+                                
 
                                 <div class="mb-3 row">
                                     <label for="controlposition" class="col-lg-3 text-uppercase fw-bold">control position</label>

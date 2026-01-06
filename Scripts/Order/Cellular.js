@@ -83,13 +83,13 @@ buttonSubmit.addEventListener("click", (e) => {
   });
 
   // kirim form element & button ke handler
-  handlerSubmit(buttonSubmit.form, e.target, e.target.innerHTML);
+  handlerSubmit(buttonSubmit.form, e.target);
 });
 
 // =========================================||FUNCTIONS||=====================================
 
 // --------------------------------------|| handler Functions ||--------------------------------------
-const handlerSubmit = async (formEl, button, htmlButton) => {
+const handlerSubmit = async (formEl, button) => {
   try {
     // create FormData
     const formData = new FormData(formEl);
@@ -160,7 +160,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
 
     // restore button
     button.removeAttribute("disabled");
-    button.innerHTML = htmlButton;
+    button.innerHTML = "<i class='fa-solid fa-cloud-arrow-up me-2'></i> Submit";
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -219,6 +219,9 @@ const handlerElementVisibility = (controltype, blindname) => {
 
   // markup
   if (MARKUPACCESS === "True") divMarkUp.removeAttribute("hidden");
+
+  btnSubmit.innerHTML =
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i> Submit";
 
   if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
     btnSubmit.removeAttribute("hidden");

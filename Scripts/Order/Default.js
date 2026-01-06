@@ -399,8 +399,8 @@ const bindOrders = async (status, ordertype, active, storetype, params) => {
       { width: "5%", data: "Id", orderable: false },
       { width: "10%", data: "OrderId", orderable: false },
       { width: "20%", data: "CustomerName", orderable: false },
-      { width: "15%", data: "OrderNumber", orderable: false },
-      { width: "15%", data: "OrderName", orderable: false },
+      { width: "10%", data: "OrderNumber", orderable: false },
+      { width: "10%", data: "OrderName", orderable: false },
       { width: "5%", data: "OrderType", orderable: false },
       {
         width: "10%",
@@ -448,6 +448,8 @@ const bindOrders = async (status, ordertype, active, storetype, params) => {
           return `${icon} ${row.Status} <br> <span class="text-secondary">${addStat}</span>`;
         },
       },
+      { width: "5%", data: "CreatedDate", orderable: false },
+      { width: "5%", data: "SubmittedDate", orderable: false },
       {
         width: "3%",
         data: null,

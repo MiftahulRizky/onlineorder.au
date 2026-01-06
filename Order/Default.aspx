@@ -70,6 +70,8 @@
                                          <th class="h3 column-type">ORDER TYPE</th>
                                          <th class="h3">DELIVERY</th>
                                          <th class="h3">STATUS</th>
+                                         <th class="h3 text-center">CREATED</th>
+                                         <th class="h3 text-center">SUBMITTED</th>
                                          <th class="text-center">ACTIONS</th>
                                      </tr>
                                  </thead>
@@ -85,6 +87,8 @@
                                          <th class="h3 column-type">ORDER TYPE</th>
                                          <th class="h3 ">DELIVERY</th>
                                          <th class="h3 ">STATUS</th>
+                                         <th class="h3 text-center">CREATED</th>
+                                         <th class="h3 text-center">SUBMITTED</th>
                                          <th class="text-center">ACTIONS</th>
                                      </tr>
                                  </thead>
