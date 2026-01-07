@@ -60,6 +60,13 @@
                                         <select type="text" name="blindtype" id="blindtype" class="form-control"></select>
                                     </div>  
                                 </div>
+
+                                <div class="mb-3 row" id="divBracketType">
+                                    <label for="brackettype" class="col-lg-3 text-uppercase fw-bold">bracket type</label>
+                                    <div class="col-lg-5">
+                                        <select type="text" name="brackettype" id="brackettype" class="form-control "></select>
+                                    </div>  
+                                </div>
             
                                 <div class="mb-3 row" id="divControlType">
                                     <label for="controltype" class="col-lg-3 text-uppercase fw-bold">control type</label>
