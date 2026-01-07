@@ -130,7 +130,7 @@ document.querySelector("#btnAddItem").addEventListener("click", () => {
       e.classList.remove("is-invalid");
     });
 
-  const production = document.querySelector("#spanProduction")
+  const production = document.querySelector("#spanProduction");
 
   handlerSelDesignType("#modalAddItem #designid", production.innerHTML);
   handlerShowBSModal("modalAddItem");
@@ -1351,7 +1351,7 @@ const handlerSelDesignType = async (params, production) => {
         "Content-Type": "application/json; charset=utf-8",
       },
       body: JSON.stringify({
-       production
+        production,
       }),
     });
 
@@ -1483,10 +1483,7 @@ const handlerCopyItem = async (id, product, msgloading) => {
     Swal.close();
 
     if (resultData.error) {
-      await isError(
-        resultData.error.message.toUpperCase(),
-        resultData.error.field
-      );
+      throw new Error(resultData.error.message);
     } else {
       await isSuccess(resultData.success.message);
       location.reload();
