@@ -62,7 +62,7 @@
                                 </div>
 
                                 <div class="mb-3 row" id="divBracketType">
-                                    <label for="brackettype" class="col-lg-3 text-uppercase fw-bold">bracket type</label>
+                                    <label for="brackettype" class="col-lg-3 text-uppercase fw-bold">cell type</label>
                                     <div class="col-lg-5">
                                         <select type="text" name="brackettype" id="brackettype" class="form-control "></select>
                                     </div>  
@@ -143,7 +143,12 @@
                                         </div>
                                     </div>
     
-                                   
+                                    <div class="mb-4 row" id="divCordType">
+                                        <label for="cordtype" class="col-lg-3 text-uppercase fw-bold">cord type</label>
+                                        <div class="col-lg-3">
+                                            <select name="cordtype" id="cordtype" class="form-control "></select>   
+                                        </div>
+                                    </div>
     
                                     <div class="mb-3 row">
                                         <label for="controlposition" class="col-lg-3 text-uppercase fw-bold">control side</label>

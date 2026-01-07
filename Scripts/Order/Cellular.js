@@ -27,15 +27,16 @@ document.querySelector("#blindtype").addEventListener("change", (e) => {
   divFormDetail.setAttribute("hidden", true);
 
   const blindId = e.target.value;
-  // const fabricType = document.querySelector("#fabrictype").value;
-  // const fabricType2 = document.querySelector("#fabrictype2").value;
+  const select = document.querySelector("#blindtype");
+  const blindName = select.options[select.selectedIndex].dataset.name;
+
+  const divBracketType = document.querySelector("#divBracketType");
+  divBracketType.setAttribute("hidden", true);
+  if (blindName == "Galaxy") {
+    divBracketType.removeAttribute("hidden");
+  }
 
   bindBrackets(DESIGNID, blindId);
-  // bindControls(DESIGNID, blindId);
-  // bindFabrics(DESIGNID);
-  // bindFabricColours(DESIGNID, fabricType);
-  // bindFabrics2(designId);
-  // bindFabricColours2(designId, fabricType2);
 });
 
 // change brackets
@@ -63,6 +64,7 @@ document.querySelector("#controltype").addEventListener("change", (e) => {
 
   const controlType = e.target.selectedOptions[0].dataset.name;
 
+  bindCordType(controlType);
   handlerElementVisibility(controlType, blindName);
 });
 
@@ -215,15 +217,20 @@ const handlerElementVisibility = (controltype, blindname) => {
   const divFormDetail = document.getElementById("divFormDetail");
   const divMarkUp = document.getElementById("divMarkUp");
 
+  const divBracketType = document.getElementById("divBracketType");
+
   const divFabricNight = document.getElementById("divFabricNight");
   const lblFabricDay = document.getElementById("lblFabricDay");
   const lblFabricNight = document.getElementById("lblFabricNight");
+  const divCordType = document.getElementById("divCordType");
 
   // set default hide
   btnSubmit.setAttribute("hidden", true);
   divFormDetail.setAttribute("hidden", true);
+  divBracketType.setAttribute("hidden", true);
   divMarkUp.setAttribute("hidden", true);
   divFabricNight.setAttribute("hidden", true);
+  divCordType.setAttribute("hidden", true);
 
   lblFabricDay.innerHTML = "fabric type x colour";
   lblFabricNight.innerHTML = "fabric type x colour";
@@ -236,6 +243,14 @@ const handlerElementVisibility = (controltype, blindname) => {
     divFabricNight.removeAttribute("hidden");
     lblFabricDay.innerHTML = "fabric type x colour day";
     lblFabricNight.innerHTML = "fabric type x colour night";
+  }
+
+  if (blindname == "Galaxy") {
+    divBracketType.removeAttribute("hidden");
+  }
+
+  if (blindname == "Galaxy" && controltype.includes("Corded")) {
+    divCordType.removeAttribute("hidden");
   }
 
   // markup
@@ -886,6 +901,34 @@ const bindFabricColours2 = async (designid, fabricType) => {
   }
 };
 
+const bindCordType = (controltype) => {
+  const sel = document.getElementById("cordtype");
+  sel.innerHTML = ""; //reset
+
+  if (!controltype) return;
+
+  let data = [];
+  data = [
+    { value: "Standard Cord", text: "Standard Cord" },
+    { value: "Continous Cord", text: "Continous Cord" },
+  ];
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach(function (item) {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
 const bindItemOrders = async (itemid) => {
   try {
     if (!itemid) return;
@@ -925,6 +968,7 @@ const bindItemOrders = async (itemid) => {
       await bindFabricColours(item.DesignId, item.FabricType);
       await bindFabrics2(item.DesignId);
       await bindFabricColours2(item.DesignId, item.FabricTypeB);
+      await bindCordType(item.ControlType);
       await handlerElementVisibility(item.ControlType, item.BlindName);
       await handlerSetElementValues(item);
     }
@@ -950,6 +994,7 @@ const handlerSetElementValues = (itemData) => {
     fabriccolour2: "FabricIdB",
     width: "Width",
     drop: "Drop",
+    cordtype: "MaterialCord",
     controlposition: "ControlPosition",
     chainlength: "ChainLength",
     holddown: "BottomHoldDown",

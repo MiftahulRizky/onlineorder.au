@@ -201,6 +201,7 @@ Partial Class Methods_Order_CelloraMethod
         Public Property fabriccolour As String
         Public Property fabrictype2 As String
         Public Property fabriccolour2 As String
+        Public Property cordtype As String
         Public Property width As String
         Public Property drop As String
         Public Property controlposition As String
@@ -297,21 +298,14 @@ Partial Class Methods_Order_CelloraMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "mounting is required !",.field = "mounting"}}
             End If
 
-            
+            If blindName = "Galaxy" Then
+                If String.IsNullOrEmpty(data.cordtype) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cord type is required !",.field = "cordtype"}}
+                End If
+            End IF
 
             If String.IsNullOrEmpty(data.controlposition) Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control side is required !",.field = "controlposition"}}
-            End If
-
-            Dim chainlength As Integer
-            If String.IsNullOrEmpty(data.chainlength) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length is required !",.field = "chainlength"}}
-            End If
-            If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
-            End If
-            If chainlength > 3000 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chainl ength must be less than or equal to 3000 !",.field = "chainlength"}}
             End If
 
             If Not String.IsNullOrEmpty(data.notes) Then
@@ -355,7 +349,7 @@ Partial Class Methods_Order_CelloraMethod
                 Dim itemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, FabricIdB, PriceGroupId, PriceGroupIdB, BlindNo, Qty, Location, Mounting, Width, [Drop], ControlPosition, ChainLength, BottomHoldDown, DoorCutOut, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @FabricIdB, @PriceGroupId, @PriceGroupIdB, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @ChainLength, @BottomHoldDown, @DoorCutOut, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, FabricIdB, PriceGroupId, PriceGroupIdB, BlindNo, Qty, Location, Mounting, Width, [Drop], MaterialCord, ControlPosition, ChainLength, BottomHoldDown, DoorCutOut, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @FabricIdB, @PriceGroupId, @PriceGroupIdB, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @MaterialCord, @ControlPosition, @ChainLength, @BottomHoldDown, @DoorCutOut, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
@@ -370,6 +364,7 @@ Partial Class Methods_Order_CelloraMethod
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
+                        myCmd.Parameters.AddWithValue("@MaterialCord", data.cordtype)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.holddown)
@@ -398,7 +393,7 @@ Partial Class Methods_Order_CelloraMethod
                 Dim itemId As String = data.itemid
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, ControlPosition = @ControlPosition, ChainLength = @ChainLength, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, MaterialCord = @MaterialCord, ControlPosition = @ControlPosition, ChainLength = @ChainLength, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
@@ -413,6 +408,7 @@ Partial Class Methods_Order_CelloraMethod
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
+                        myCmd.Parameters.AddWithValue("@MaterialCord", data.cordtype)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.holddown)

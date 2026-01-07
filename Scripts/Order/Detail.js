@@ -136,7 +136,9 @@ document.querySelector("#btnAddItem").addEventListener("click", () => {
       e.classList.remove("is-invalid");
     });
 
-  handlerSelDesignType("#modalAddItem #designid");
+  const production = document.querySelector("#spanProduction");
+
+  handlerSelDesignType("#modalAddItem #designid", production);
   handlerShowBSModal("modalAddItem");
 });
 
@@ -1363,7 +1365,7 @@ const handlerReloadPricingOnReadyPage = async (headerid, status, action) => {
 };
 
 // HANDLER SELECT DESIGN TYPE
-const handlerSelDesignType = async (params) => {
+const handlerSelDesignType = async (params, production) => {
   const sel = document.querySelector(params);
   sel.innerHTML = ""; // reset
 
@@ -1373,7 +1375,11 @@ const handlerSelDesignType = async (params) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ customerid: CUSTOMERID, ordertype: INFYNITY }),
+      body: JSON.stringify({
+        customerid: CUSTOMERID,
+        ordertype: INFYNITY,
+        production,
+      }),
     });
 
     if (!response.ok) {
@@ -1503,10 +1509,7 @@ const handlerCopyItem = async (id, product, msgloading) => {
     Swal.close();
 
     if (resultData.error) {
-      await isError(
-        resultData.error.message.toUpperCase(),
-        resultData.error.field
-      );
+      throw new Error(resultData.error.message);
     } else {
       await isSuccess(resultData.success.message);
       location.reload();
