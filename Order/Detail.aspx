@@ -169,10 +169,16 @@
                                     <span id="spanStatusOrder" style="font-size:larger;font-weight:bold;"></span>
                                 </div>
 
-                                <div class="col-lg-3">
+                                <div class="col-lg-2">
                                     <span style="font-size:larger;">Delivery / Pick Up :</span>
                                     <br />
                                     <span id="spanDelivery" style="font-size:larger;font-weight:bold;"></span>
+                                </div>
+
+                                <div class="col-lg-2">
+                                    <span style="font-size:larger;">Production :</span>
+                                    <br />
+                                    <span id="spanProduction" style="font-size:larger;font-weight:bold;"></span>
                                 </div>
                             </div>
                         </div>

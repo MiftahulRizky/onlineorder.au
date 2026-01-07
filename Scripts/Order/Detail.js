@@ -130,7 +130,9 @@ document.querySelector("#btnAddItem").addEventListener("click", () => {
       e.classList.remove("is-invalid");
     });
 
-  handlerSelDesignType("#modalAddItem #designid");
+  const production = document.querySelector("#spanProduction")
+
+  handlerSelDesignType("#modalAddItem #designid", production.innerHTML);
   handlerShowBSModal("modalAddItem");
 });
 
@@ -1338,7 +1340,7 @@ const handlerReloadPricingOnReadyPage = async (headerid, status, action) => {
 };
 
 // HANDLER SELECT DESIGN TYPE
-const handlerSelDesignType = async (params) => {
+const handlerSelDesignType = async (params, production) => {
   const sel = document.querySelector(params);
   sel.innerHTML = ""; // reset
 
@@ -1348,6 +1350,9 @@ const handlerSelDesignType = async (params) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
+      body: JSON.stringify({
+       production
+      }),
     });
 
     if (!response.ok) {

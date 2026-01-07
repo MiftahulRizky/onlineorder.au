@@ -26,19 +26,39 @@ document.querySelector("#blindtype").addEventListener("change", (e) => {
   divFormDetail.setAttribute("hidden", true);
 
   const blindId = e.target.value;
+  // const fabricType = document.querySelector("#fabrictype").value;
+  // const fabricType2 = document.querySelector("#fabrictype2").value;
+
+
+  bindBrackets(designId, blindId);
+  // bindControls(designId, blindId);
+  // bindFabrics(designId);
+  // bindFabricColours(designId, fabricType);
+  // bindFabrics2(designId);
+  // bindFabricColours2(designId, fabricType2);
+  
+});
+
+// change brackets
+document.querySelector("#brackettype").addEventListener("change", (e) => {
+  const divFormDetail = document.querySelector("#divFormDetail");
+  divFormDetail.setAttribute("hidden", true);
+
+  const blindId = document.querySelector("#blindtype").value;
+  const bracketType = e.target.value;
+
   const fabricType = document.querySelector("#fabrictype").value;
   const fabricType2 = document.querySelector("#fabrictype2").value;
 
 
-  bindControls(designId, blindId);
+  bindControls(designId, blindId, bracketType);
   bindFabrics(designId);
   bindFabricColours(designId, fabricType);
   bindFabrics2(designId);
   bindFabricColours2(designId, fabricType2);
-  
 });
 
-// // change colours
+// // change controls
 document.querySelector("#controltype").addEventListener("change", (e) => {
   const select = document.querySelector("#blindtype");
   const blindName = select.options[select.selectedIndex].dataset.name;
@@ -418,19 +438,97 @@ const bindBlinds = async () => {
   }
 };
 
-const bindControls = async (designId, blindId) => {
+const bindBrackets = async (designId, blindId) => {
+  const brackettype = document.getElementById("brackettype");
+  brackettype.innerHTML = ""; //reset
+
+  if (!blindId) return;
+
+  try {
+    const response = await fetch(`${uriMethod}/BindBracketType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ designId, blindId }),
+    });
+
+    // cek status HTTP (400, 500, dsb.)
+    if (!response.ok) {
+      const text = await response.text();
+      const msg =
+        roleName === "Administrator"
+          ? `${response.status}\n${text}`
+          : "Please contact our IT team at support@onlineorder.au";
+      return isError(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      const msg =
+        roleName === "Administrator"
+          ? "No data returned from server : bindBrackets"
+          : "Please contact our IT team at support@onlineorder.au";
+      return isError(msg);
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      brackettype.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.text = "";
+        brackettype.appendChild(defaultOption);
+      }
+
+      data.forEach((item) => {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        brackettype.appendChild(option);
+        brackettype.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        brackettype.selectedIndex = 0;
+        bindControls(designId, blindId, brackettype.value);
+      }
+
+      // const sel = document.getElementById("blindtype");
+      // const blindName = sel.selectedOptions[0].getAttribute("data-name");
+
+      // handlerElementVisibility(brackettype.value, blindName);
+    }
+  } catch (err) {
+    // error karena jaringan / parsing JSON
+    const msg =
+      roleName === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const bindControls = async (designId, blindId, bracketType) => {
   const controltype = document.getElementById("controltype");
   controltype.innerHTML = ""; //reset
 
   if (!blindId) return;
 
   try {
-    const response = await fetch(`${uriMethod}/BindColourType`, {
+    const response = await fetch(`${uriMethod}/BindControlType`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designId, blindId }),
+      body: JSON.stringify({ designId, blindId, bracketType }),
     });
 
     // cek status HTTP (400, 500, dsb.)
@@ -813,7 +911,8 @@ const bindItemOrders = async (itemId) => {
 
     for (const item of data) {
       await bindBlinds(item.DesignId);
-      await bindControls(item.DesignId, item.BlindId);
+      await bindBrackets(item.DesignId, item.BlindId);
+      await bindControls(item.DesignId, item.BlindId, item.BracketType);
       await bindFabrics(item.DesignId);
       await bindFabricColours(item.DesignId, item.FabricType);
       await bindFabrics2(item.DesignId);
@@ -833,6 +932,7 @@ const bindItemOrders = async (itemId) => {
 const handlerSetElementValues = (itemData) => {
   const mapping = {
     blindtype: "BlindId",
+    brackettype: "BracketType",
     controltype: "KitId",
     qty: "Qty",
     room: "Location",

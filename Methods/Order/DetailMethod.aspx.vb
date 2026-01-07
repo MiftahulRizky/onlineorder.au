@@ -208,9 +208,17 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindDesignType() As Object
+    Public Shared Function BindDesignType(ByVal production As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Designs WHERE Active=1 ORDER BY Name ASC")
+            Dim company As String = " AND Company IN ('SP', 'AL', 'SG') "
+            If production = "Sunlight" Or production = "SUNLIGHT" Then    
+                company = " AND Company IN ('SP', 'AL') "
+            End If
+            If production = "Global" Or production = "GLOBAL" Then    
+                company = " AND Company = 'SG' "
+            End If
+
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Designs WHERE Active=1 "+ company +" ORDER BY Name ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
