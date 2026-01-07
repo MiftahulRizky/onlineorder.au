@@ -143,8 +143,13 @@
                                         </div>
                                     </div>
     
-                                    
-    
+                                    <div class="mb-4 row" id="divCordType">
+                                        <label for="cordtype" class="col-lg-3 text-uppercase fw-bold">cord type</label>
+                                        <div class="col-lg-3">
+                                            <select name="cordtype" id="cordtype" class="form-control "></select>   
+                                        </div>
+                                    </div>
+
                                     <div class="mb-3 row">
                                         <label for="controlposition" class="col-lg-3 text-uppercase fw-bold">control side</label>
                                         <div class="col-lg-3">

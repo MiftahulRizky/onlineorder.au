@@ -56,6 +56,8 @@ document.querySelector("#brackettype").addEventListener("change", (e) => {
   bindFabricColours(designId, fabricType);
   bindFabrics2(designId);
   bindFabricColours2(designId, fabricType2);
+
+  
 });
 
 // // change controls
@@ -65,7 +67,7 @@ document.querySelector("#controltype").addEventListener("change", (e) => {
 
   const controlType = e.target.selectedOptions[0].dataset.name;
 
-
+  bindCordType(controlType);
   handlerElementVisibility(controlType, blindName);
 });
 
@@ -878,6 +880,38 @@ const bindFabricColours2 = async (designId, fabricType) => {
   }
 };
 
+const bindCordType = (controltype) => {
+  const sel = document.getElementById("cordtype");
+  sel.innerHTML = ""; //reset
+
+  if (!controltype) return;
+
+  let data = [];
+  if (controltype == "Corded") {
+    data = [{ value: "Cord Standard", text: "Cord Standard" }];
+  }else{
+    data = [
+      { value: "Cord Standard", text: "Cord Standard" },
+      { value: "Continous Cord", text: "Continous Cord" }
+    ];
+  }
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach(function (item) {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+}
+
 const bindItemOrders = async (itemId) => {
   try {
     if (!itemId) return;
@@ -917,6 +951,7 @@ const bindItemOrders = async (itemId) => {
       await bindFabricColours(item.DesignId, item.FabricType);
       await bindFabrics2(item.DesignId);
       await bindFabricColours2(item.DesignId, item.FabricTypeB);
+      await bindCordType(item.ControlType);
       await handlerElementVisibility(item.ControlType, item.BlindName);
       await handlerSetElementValues(item);
       if (itemAction !== "AddItem") await loaderFadeOut();
@@ -943,6 +978,7 @@ const handlerSetElementValues = (itemData) => {
     fabriccolour2: "FabricIdB",
     width: "Width",
     drop: "Drop",
+    cordtype: "MaterialCord",
     controlposition: "ControlPosition",
     chainlength: "ChainLength",
     holddown: "BottomHoldDown",
