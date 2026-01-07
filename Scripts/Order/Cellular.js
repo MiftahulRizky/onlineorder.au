@@ -26,15 +26,16 @@ document.querySelector("#blindtype").addEventListener("change", (e) => {
   divFormDetail.setAttribute("hidden", true);
 
   const blindId = e.target.value;
-  // const fabricType = document.querySelector("#fabrictype").value;
-  // const fabricType2 = document.querySelector("#fabrictype2").value;
+  const select = document.querySelector("#blindtype");
+  const blindName = select.options[select.selectedIndex].dataset.name;
+
+  const divBracketType = document.querySelector("#divBracketType");
+  divBracketType.setAttribute("hidden", true);
+  if (blindName == "Galaxy") {
+    divBracketType.removeAttribute("hidden");
+  }
 
   bindBrackets(designId, blindId);
-  // bindControls(designId, blindId);
-  // bindFabrics(designId);
-  // bindFabricColours(designId, fabricType);
-  // bindFabrics2(designId);
-  // bindFabricColours2(designId, fabricType2);
 });
 
 // change brackets
@@ -210,6 +211,8 @@ const handlerElementVisibility = (controltype, blindname) => {
   const divFormDetail = document.getElementById("divFormDetail");
   const divMarkUp = document.getElementById("divMarkUp");
 
+  const divBracketType = document.getElementById("divBracketType");
+
   const divFabricNight = document.getElementById("divFabricNight");
   const lblFabricDay = document.getElementById("lblFabricDay");
   const lblFabricNight = document.getElementById("lblFabricNight");
@@ -218,6 +221,7 @@ const handlerElementVisibility = (controltype, blindname) => {
   // set default hide
   btnSubmit.setAttribute("hidden", true);
   divFormDetail.setAttribute("hidden", true);
+  divBracketType.setAttribute("hidden", true);
   divMarkUp.setAttribute("hidden", true);
   divFabricNight.setAttribute("hidden", true);
   divCordType.setAttribute("hidden", true);
@@ -233,6 +237,10 @@ const handlerElementVisibility = (controltype, blindname) => {
     divFabricNight.removeAttribute("hidden");
     lblFabricDay.innerHTML = "fabric type x colour day";
     lblFabricNight.innerHTML = "fabric type x colour night";
+  }
+
+  if (blindname == "Galaxy") {
+    divBracketType.removeAttribute("hidden");
   }
 
   if (blindname == "Galaxy" && controltype.includes("Corded")) {
