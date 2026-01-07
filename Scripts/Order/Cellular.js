@@ -235,7 +235,7 @@ const handlerElementVisibility = (controltype, blindname) => {
     lblFabricNight.innerHTML = "fabric type x colour night";
   }
 
-  if (blindname == "Galaxy") {
+  if (blindname == "Galaxy" && controltype.includes("Corded")) {
     divCordType.removeAttribute("hidden");
   }
 
@@ -890,14 +890,10 @@ const bindCordType = (controltype) => {
   if (!controltype) return;
 
   let data = [];
-  if (controltype == "Corded") {
-    data = [{ value: "Cord Standard", text: "Cord Standard" }];
-  } else {
-    data = [
-      { value: "Cord Standard", text: "Cord Standard" },
-      { value: "Continous Cord", text: "Continous Cord" },
-    ];
-  }
+  data = [
+    { value: "Cord Standard", text: "Cord Standard" },
+    { value: "Continous Cord", text: "Continous Cord" },
+  ];
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");

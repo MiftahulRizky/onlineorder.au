@@ -300,7 +300,7 @@ Partial Class Methods_Order_CelloraMethod
             End If
 
 
-            If blindName = "Galaxy" Then
+            If blindName = "Galaxy" And InStr(controlName, "Corded") > 0 Then
                 If String.IsNullOrEmpty(data.cordtype) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cord type is required !",.field = "cordtype"}}
                 End If
