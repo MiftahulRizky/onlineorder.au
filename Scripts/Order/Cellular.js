@@ -29,14 +29,12 @@ document.querySelector("#blindtype").addEventListener("change", (e) => {
   // const fabricType = document.querySelector("#fabrictype").value;
   // const fabricType2 = document.querySelector("#fabrictype2").value;
 
-
   bindBrackets(designId, blindId);
   // bindControls(designId, blindId);
   // bindFabrics(designId);
   // bindFabricColours(designId, fabricType);
   // bindFabrics2(designId);
   // bindFabricColours2(designId, fabricType2);
-  
 });
 
 // change brackets
@@ -50,14 +48,11 @@ document.querySelector("#brackettype").addEventListener("change", (e) => {
   const fabricType = document.querySelector("#fabrictype").value;
   const fabricType2 = document.querySelector("#fabrictype2").value;
 
-
   bindControls(designId, blindId, bracketType);
   bindFabrics(designId);
   bindFabricColours(designId, fabricType);
   bindFabrics2(designId);
   bindFabricColours2(designId, fabricType2);
-
-  
 });
 
 // // change controls
@@ -215,32 +210,40 @@ const handlerElementVisibility = (controltype, blindname) => {
   const divFormDetail = document.getElementById("divFormDetail");
   const divMarkUp = document.getElementById("divMarkUp");
 
-  
   const divFabricNight = document.getElementById("divFabricNight");
   const lblFabricDay = document.getElementById("lblFabricDay");
   const lblFabricNight = document.getElementById("lblFabricNight");
+  const divCordType = document.getElementById("divCordType");
 
   // set default hide
   btnSubmit.setAttribute("hidden", true);
   divFormDetail.setAttribute("hidden", true);
   divMarkUp.setAttribute("hidden", true);
   divFabricNight.setAttribute("hidden", true);
+  divCordType.setAttribute("hidden", true);
 
   lblFabricDay.innerHTML = "fabric type x colour";
   lblFabricNight.innerHTML = "fabric type x colour";
   if (controltype) divFormDetail.removeAttribute("hidden");
 
-  if (blindname == "Galaxy" && (controltype == "DN Corded" || controltype == "DN Cordless")) {
+  if (
+    blindname == "Galaxy" &&
+    (controltype == "DN Corded" || controltype == "DN Cordless")
+  ) {
     divFabricNight.removeAttribute("hidden");
     lblFabricDay.innerHTML = "fabric type x colour day";
     lblFabricNight.innerHTML = "fabric type x colour night";
+  }
+
+  if (blindname == "Galaxy") {
+    divCordType.removeAttribute("hidden");
   }
 
   // markup
   if (markupAccess === "True") divMarkUp.removeAttribute("hidden");
 
   btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i> Submit";
+    "<i class='fa-solid fa-cloud-arrow-up me-2'></i> Submit";
 
   if (["AddItem", "EditItem", "CopyItem"].includes(itemAction)) {
     btnSubmit.removeAttribute("hidden");
@@ -889,10 +892,10 @@ const bindCordType = (controltype) => {
   let data = [];
   if (controltype == "Corded") {
     data = [{ value: "Cord Standard", text: "Cord Standard" }];
-  }else{
+  } else {
     data = [
       { value: "Cord Standard", text: "Cord Standard" },
-      { value: "Continous Cord", text: "Continous Cord" }
+      { value: "Continous Cord", text: "Continous Cord" },
     ];
   }
 
@@ -910,7 +913,7 @@ const bindCordType = (controltype) => {
     option.setAttribute("data-name", item.text);
     sel.add(option);
   });
-}
+};
 
 const bindItemOrders = async (itemId) => {
   try {

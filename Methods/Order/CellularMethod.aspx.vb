@@ -300,9 +300,11 @@ Partial Class Methods_Order_CelloraMethod
             End If
 
 
-            If String.IsNullOrEmpty(data.cordtype) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cord type is required !",.field = "cordtype"}}
-            End If
+            If blindName = "Galaxy" Then
+                If String.IsNullOrEmpty(data.cordtype) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cord type is required !",.field = "cordtype"}}
+                End If
+            End IF
 
             If String.IsNullOrEmpty(data.controlposition) Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
