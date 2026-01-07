@@ -891,7 +891,7 @@ const bindCordType = (controltype) => {
 
   let data = [];
   data = [
-    { value: "Cord Standard", text: "Cord Standard" },
+    { value: "Standard Cord", text: "Standard Cord" },
     { value: "Continous Cord", text: "Continous Cord" },
   ];
 
