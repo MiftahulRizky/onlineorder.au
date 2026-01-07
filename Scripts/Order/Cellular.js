@@ -511,7 +511,15 @@ const bindBrackets = async (designId, blindId) => {
 
       if (data.length === 1) {
         brackettype.selectedIndex = 0;
+
+        const fabricType = document.querySelector("#fabrictype").value;
+        const fabricType2 = document.querySelector("#fabrictype2").value;
+
         bindControls(designId, blindId, brackettype.value);
+        bindFabrics(designId);
+        bindFabricColours(designId, fabricType);
+        bindFabrics2(designId);
+        bindFabricColours2(designId, fabricType2);
       }
 
       // const sel = document.getElementById("blindtype");
