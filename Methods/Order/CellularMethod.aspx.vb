@@ -195,6 +195,7 @@ Partial Class Methods_Order_CelloraMethod
 
     Public Class FormData
         Public Property blindtype As String
+        Public Property brackettype As String
         Public Property controltype As String
         Public Property qty As String
         Public Property room As String
@@ -326,14 +327,14 @@ Partial Class Methods_Order_CelloraMethod
             Dim soeKitId As String = publicCfg.GetItemData("SELECT SoeId FROM HardwareKits WHERE Id = '" + data.controltype + "'")
 
             '#price group 1
-            Dim priceGroupId As String = GetPriceGroupId(data.fabriccolour, blindName, controlName, data.designId)
+            Dim priceGroupId As String = GetPriceGroupId(data.fabriccolour, blindName, data.brackettype, controlName, data.designId)
             If priceGroupId = "300" Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Price group not found !",.field = ""}}
             End If
 
             Dim priceGroupId2 As String = ""
             If blindName = "Galaxy" And (controlName = "DN Corded" Or controlName = "DN Cordless") Then
-                priceGroupId2 = GetPriceGroupId(data.fabriccolour2, blindName, controlName, data.designId)
+                priceGroupId2 = GetPriceGroupId(data.fabriccolour2, blindName, data.brackettype, controlName, data.designId)
                 If priceGroupId2 = "300" Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "203.2 : Something went wrong !",.field = ""}}
                 End If
@@ -433,7 +434,7 @@ Partial Class Methods_Order_CelloraMethod
     End Function
 
 
-    Private Shared Function GetPriceGroupId(ByVal fabricid As String, ByVal blindname As String, ByVal controlname As String, ByVal designid As String) As String
+    Private Shared Function GetPriceGroupId(ByVal fabricid As String, ByVal blindname As String, ByVal brackettype As String, ByVal controlname As String, ByVal designid As String) As String
         Try
             Dim fabricData As DataSet = publicCfg.GetListData("SELECT * FROM Fabrics WHERE Id = '" + fabricid + "'")
             If fabricData.Tables(0).Rows.Count = 0 Then
@@ -444,13 +445,7 @@ Partial Class Methods_Order_CelloraMethod
 
             Dim priceGroupName As String =  blindName & " " & controlName & " - " & fabricGroupName
             If blindname = "Galaxy" Then
-                If controlname = "Corded" Or controlname = "Cordless" or controlname = "TDBU Corded" Or controlname = "TDBU Cordless" Then
-                    priceGroupName = "Galaxy Single - " & fabricGroupName
-                End If
-
-                If controlname = "DN Corded" Or controlname = "DN Cordless" Then
-                    priceGroupName = "Galaxy Double - " & fabricGroupName
-                End If
+                priceGroupName = blindName & " " & brackettype & " - " & fabricGroupName
             End If
 
             Dim priceGroupId As String = publicCfg.GetPriceGroupId(designid ,priceGroupName)

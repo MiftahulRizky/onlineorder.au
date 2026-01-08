@@ -73,11 +73,12 @@ Partial Class Setting_PriceGroup_Detail
             End If
 
             Call BindDataDesign()
-
+            Dim Active As Integer = Convert.ToInt32(myData.Tables(0).Rows(0).Item("Active"))
             ddlDesign.SelectedValue = myData.Tables(0).Rows(0).Item("DesignId").ToString()
             txtName.Text = myData.Tables(0).Rows(0).Item("Name").ToString()
+            ddlType.SelectedValue = myData.Tables(0).Rows(0).Item("Type").ToString()
             txtDescription.Text = myData.Tables(0).Rows(0).Item("Description").ToString()
-            ddlActive.SelectedValue = myData.Tables(0).Rows(0).Item("Active").ToString()
+            ddlActive.SelectedValue =Active
         Catch ex As Exception
             Call MessageError(True, ex.ToString())
         End Try

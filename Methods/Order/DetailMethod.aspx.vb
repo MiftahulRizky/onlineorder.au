@@ -324,7 +324,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, Qty, Location, DesignName, BlindName, KitName, BracketType, FabricType, BlindNo, UniqueId, Width, [Drop], Matrix, Charge, Markup")
+                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, Qty, Location, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], Matrix, Charge, Markup")
                 sqlBuilder.AppendLine("FROM view_details")
                 sqlBuilder.AppendLine("WHERE Active=@Active AND HeaderId=@HeaderId")
 
@@ -407,6 +407,7 @@ Partial Class Methods_Order_DetailMethod
                         Dim BlindName As String = reader("BlindName").ToString()
                         Dim KitName As String = reader("KitName").ToString()
                         Dim BracketType As String = reader("BracketType").ToString()
+                        Dim ControlType As String = reader("ControlType").ToString()
                         Dim FabricType As String = reader("FabricType").ToString()
                         Dim BlindNo As String = reader("BlindNo").ToString()
                         Dim UniqueId As String = reader("UniqueId").ToString()
@@ -627,8 +628,14 @@ Partial Class Methods_Order_DetailMethod
                             Product = KitName & " #" & FabricType & " (" & Width & " x " & Drop & ")"
                         End If
 
-                        If DesignName = "Cellora Blinds" Then
+                        If DesignName = "Cellular Blinds" Then
                             Product = KitName & " #" & FabricType & " (" & Width & " x " & Drop & ")"
+                            If BlindName = "Cellora" Then
+                                Product = BlindName & " " & ControlType & " #" & FabricType & " (" & Width & " x " & Drop & ")"
+                            End If
+                            If BlindName = "Galaxy" Then
+                                Product = BlindName & " (" & BracketType & ") " & ControlType & " #" & FabricType & " (" & Width & " x " & Drop & ")"
+                            End If
                         End If
 
                         '#----------------|| Hidden Button Next ||----------------#
@@ -1189,7 +1196,7 @@ Partial Class Methods_Order_DetailMethod
             End If
 
             ' Ambil semua detail sekaligus
-            Dim query As String = "SELECT Id, BlindName, TubeType, FabricId, DesignId, DesignName, BottomHoldDown, FabricGroups FROM view_details WHERE HeaderId='" & headerid & "' AND Active='1' ORDER BY Id, BlindNo, DesignName ASC"
+            Dim query As String = "SELECT Id, BlindName, TubeType, FabricId, FabricIdB, DesignId, DesignName, BottomHoldDown, FabricGroups FROM view_details WHERE HeaderId='" & headerid & "' AND Active='1' ORDER BY Id, BlindNo, DesignName ASC"
             Dim detailData As DataSet = publicCfg.GetListData(query)
 
             If detailData.Tables(0).Rows.Count < 1 Then
@@ -1201,6 +1208,7 @@ Partial Class Methods_Order_DetailMethod
                 Dim blindName = row("BlindName").ToString()
                 Dim tubeType = row("TubeType").ToString()
                 Dim fabricId = row("FabricId").ToString()
+                Dim fabricIdB = row("FabricIdB").ToString()
                 Dim designId = row("DesignId").ToString()
                 Dim designName = row("DesignName").ToString()
                 Dim bottomHold = row("BottomHoldDown").ToString()
@@ -1208,11 +1216,22 @@ Partial Class Methods_Order_DetailMethod
 
                 Dim fabricGroup = publicCfg.GetFabricGroup(fabricId)
 
-                Dim priceGroupName = GetPriceGroupName(designName, blindName, tubeType, bottomHold, fabricGroup, fabricGroups)
+                Dim priceGroupName = GetPriceGroupName(designName, blindName, tubeType, bottomHold, fabricGroup)
                 If Not String.IsNullOrEmpty(priceGroupName) Then
                     Dim priceGroupId = publicCfg.GetPriceGroupId(designId, priceGroupName)
                     If Not String.IsNullOrEmpty(priceGroupId) Then
                         publicCfg.UpdatePriceGroup(itemId, priceGroupId.ToUpper())
+                    End If
+                End If
+
+                IF Not fabricIdB = "" Then
+                    Dim fabricGroupB = publicCfg.GetFabricGroup(fabricIdB)
+                    Dim priceGroupNameB = GetPriceGroupName(designName, blindName, tubeType, bottomHold, fabricGroupB)
+                    If Not String.IsNullOrEmpty(priceGroupNameB) Then
+                        Dim priceGroupIdB = publicCfg.GetPriceGroupId(designId, priceGroupNameB)
+                        If Not String.IsNullOrEmpty(priceGroupIdB) Then
+                            publicCfg.UpdatePriceGroupB(itemId, priceGroupIdB.ToUpper())
+                        End If
                     End If
                 End If
 
@@ -1232,7 +1251,7 @@ Partial Class Methods_Order_DetailMethod
 
 
     ' # Fungsi bantu untuk menentukan PriceGroupName
-    Private Shared Function GetPriceGroupName(dname As String, bname As String, tube As String, bottomHold As String, fabricGroup As String, fabricGroups As String) As String
+    Private Shared Function GetPriceGroupName(dname As String, bname As String, tube As String, bottomHold As String, fabricGroup As String) As String
         Select Case dname
             Case "Vertical Blinds"
                 If bname = "Track Only" Then Return bname & " - " & tube
@@ -1250,9 +1269,9 @@ Partial Class Methods_Order_DetailMethod
             Case "Panorama Shutters"
                 Return "Panorama - " & bname
             Case "Panel Glides"
-                Return "Panel Glide - " & fabricGroups
+                Return "Panel Glide - " & fabricGroup
             Case "Roman Blinds"
-                Return "Roman Blind - " & fabricGroups
+                Return "Roman Blind - " & fabricGroup
             Case Else
                 Return ""
         End Select

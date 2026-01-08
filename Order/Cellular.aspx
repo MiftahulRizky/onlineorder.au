@@ -143,9 +143,9 @@
                                         </div>
                                     </div>
     
-                                    <div class="mb-4 row" id="divCordType">
+                                    <div class="mb-3 row" id="divCordType">
                                         <label for="cordtype" class="col-lg-3 text-uppercase fw-bold">cord type</label>
-                                        <div class="col-lg-3">
+                                        <div class="col-lg-4">
                                             <select name="cordtype" id="cordtype" class="form-control "></select>   
                                         </div>
                                     </div>

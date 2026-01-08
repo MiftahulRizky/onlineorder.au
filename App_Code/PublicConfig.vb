@@ -1022,6 +1022,12 @@ Public Class PublicConfig
                                 queryCharge = String.Format("SELECT TOP 1 [Cost] FROM CassetteExtra WHERE [PriceGroupId] = '{0}' AND Width >= '{1}' AND [Cost] > 0 ORDER BY [Drop], Width, [Cost] ASC", UCase(cassetteExtraId).ToString(), width)
                             End If
                         End If
+
+                        If InStr(charge, "Galaxy Extra") > 0 Then 
+                            Dim priceGroupId As String = GetItemData("SELECT Id FROM PricesGroup WHERE Name ='" + charge + "'")    
+                            queryCharge = String.Format("SELECT TOP 1 [Cost] FROM CassetteExtra WHERE [PriceGroupId] = '{0}' AND Width >= '{1}' AND [Cost] > 0 ORDER BY [Drop], Width, [Cost] ASC", UCase(priceGroupId).ToString(), width)
+                        End If
+
                         'thisCharge = GetItemData(queryCharge) 'Default Code Result
                         Dim chargeResult As String = GetItemData(queryCharge)
                         Dim chargeValue As Decimal = 0D
@@ -1142,6 +1148,18 @@ Public Class PublicConfig
             Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails SET PriceGroupId=@PriceGroupId WHERE Id=@Id")
                 myCmd.Parameters.AddWithValue("@Id", itemId)
                 myCmd.Parameters.AddWithValue("@PriceGroupId", PriceGroupId)
+                myCmd.Connection = thisConn
+                thisConn.Open()
+                myCmd.ExecuteNonQuery()
+                thisConn.Close()
+            End Using
+        End Using
+    End Sub
+    Public Sub UpdatePriceGroupB(itemId As String, PriceGroupIdB As String)
+        Using thisConn As SqlConnection = New SqlConnection(myConn)
+            Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderDetails SET PriceGroupIdB=@PriceGroupIdB WHERE Id=@Id")
+                myCmd.Parameters.AddWithValue("@Id", itemId)
+                myCmd.Parameters.AddWithValue("@PriceGroupIdB", PriceGroupIdB)
                 myCmd.Connection = thisConn
                 thisConn.Open()
                 myCmd.ExecuteNonQuery()
