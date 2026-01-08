@@ -455,6 +455,7 @@ Public Class PrintConfig
                 result += thStart & "Drop" & thEnd
                 result += thStart & "Fabric" & thEnd
                 result += thStart & "Fabric B" & thEnd
+                result += thStart & "Cord Type" & thEnd
                 result += thStart & "Side" & thEnd
                 result += thStart & "Chain Length" & thEnd
                 result += thStart & "Hold Down Bracket" & thEnd
@@ -474,6 +475,7 @@ Public Class PrintConfig
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("FabricNameB").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("MaterialCord").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ChainLength").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
