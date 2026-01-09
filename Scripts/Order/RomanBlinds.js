@@ -1055,6 +1055,8 @@ function handlerDisplayElemets(blindname, controlname) {
     btnSubmit.innerHTML =
       "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
   } else if (itemAction == "ViewItem") {
+    btnSubmit.innerHTML =
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
     if (roleName !== "Administrator") btnSubmit.setAttribute("hidden", true);
   }
 }

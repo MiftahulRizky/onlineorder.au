@@ -1043,14 +1043,24 @@ Public Class PublicConfig
     End Sub
 
     Private Sub PriceDetail(Header As String, Item As String, Qty As Integer, Desc As String, Cost As Decimal)
+        Dim CurrentOrdered As String = GetItemData("SELECT Ordered FROM OrderDetailsPrice WHERE HeaderId='" + Header + "' AND ItemId='" + Item + "'")
+
+        Dim UpdateOrdered As Integer = 0
+        If CurrentOrdered = "" Then
+            UpdateOrdered = 1
+        Else
+            UpdateOrdered = CInt(CurrentOrdered) + 1
+        End If
         Using thisConn As SqlConnection = New SqlConnection(myConn)
-            Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetailsPrice VALUES(NEWID(), @HeaderId, @ItemId, @Qty, @Description, @Cost, @FinalCost)")
+            Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetailsPrice VALUES(NEWID(), @Ordered, @HeaderId, @ItemId, @Qty, @Description, @Cost, @Discount, @FinalCost)")
                 Dim FinalCost As Decimal = Cost * Qty
+                myCmd.Parameters.AddWithValue("@Ordered", UpdateOrdered)
                 myCmd.Parameters.AddWithValue("@HeaderId", Header)
                 myCmd.Parameters.AddWithValue("@ItemId", Item)
                 myCmd.Parameters.AddWithValue("@Qty", Qty)
                 myCmd.Parameters.AddWithValue("@Description", Desc)
                 myCmd.Parameters.AddWithValue("@Cost", Cost)
+                myCmd.Parameters.AddWithValue("@Discount", 0.00)
                 myCmd.Parameters.AddWithValue("@FinalCost", FinalCost)
                 myCmd.Connection = thisConn
                 thisConn.Open()
