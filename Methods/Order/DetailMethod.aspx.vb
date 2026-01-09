@@ -5212,13 +5212,13 @@ Partial Class Methods_Order_DetailMethod
                 Select Case  currentData("BlindName").ToString()
                     Case "Plain"
                         ReportType = "Panel Glide Plain"
-                        ReportIcon = "R <br/><span style='font-size: 15px;'>Plain</span>"
+                        ReportIcon = "PG <br/><span style='font-size: 15px;'>Plain</span>"
                     Case "Panel Plantation"
                         ReportType = "Panel Glide Plantation"
-                        ReportIcon = "R <br/><span style='font-size: 15px;'>Plantation</span>"
+                        ReportIcon = "PG <br/><span style='font-size: 15px;'>Plantation</span>"
                     Case "Panel Sewless"
                         ReportType = "Panel Glide Sewless"
-                        ReportIcon = "R <br/><span style='font-size: 15px;'>Sewless</span>"
+                        ReportIcon = "PG <br/><span style='font-size: 15px;'>Sewless</span>"
                 End Select
             
             Case "Roller Blinds"
