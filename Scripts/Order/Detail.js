@@ -1322,7 +1322,7 @@ const handlerReloadPricingOnReadyPage = async (headerid, status, action) => {
     const result = data.d || data;
 
     if (result.error) {
-      return result.error.message; // sama seperti resolve(result.error.message)
+      throw new Error(result.error.message);
     } else {
       if (action === "binding") {
         if (roleName === "Administrator") {
