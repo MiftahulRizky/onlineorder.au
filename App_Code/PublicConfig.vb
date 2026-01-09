@@ -876,7 +876,7 @@ Public Class PublicConfig
             Dim drop As String = thisData.Tables(0).Rows(0).Item("Drop").ToString()
             Dim fabricType As String = thisData.Tables(0).Rows(0).Item("FabricType").ToString()
             Dim fabricTypeB As String = thisData.Tables(0).Rows(0).Item("FabricTypeB").ToString()
-            Dim ControlType As String = thisData.Tables(0).Rows(0).Item("ControlType").ToString()
+            Dim controlType As String = thisData.Tables(0).Rows(0).Item("ControlType").ToString()
             Dim SlatQty As String = thisData.Tables(0).Rows(0).Item("SlatQty").ToString()
             Dim doorCutOut As String = thisData.Tables(0).Rows(0).Item("DoorCutOut").ToString()
             Dim sqm As String = thisData.Tables(0).Rows(0).Item("SquareMetre").ToString()
@@ -925,9 +925,9 @@ Public Class PublicConfig
                 End If
 
                 If designName = "Cellular Blinds" Then
-                    description = blindName & " " & ControlType & " " & fabricType & " " & size
+                    description = blindName & " " & controlType & " " & fabricType & " " & size
                     If blindName = "Galaxy" Or blindName = "Potrait" Then
-                        description = blindName & " (" & bracketType & ") " & ControlType & " #" & fabricType & " " & size
+                        description = blindName & " (" & bracketType & ") " & controlType & " #" & fabricType & " " & size
                     End If
                 End If
 
@@ -959,12 +959,10 @@ Public Class PublicConfig
                 '#---------------------Create Description---------------------#
                 Dim descriptionB As String = kitName & " " & size
 
-                If blindName = "Galaxy" Then
-                    If ControlType = "DN Corded" Or ControlType = "DN Cordless" Then
-                        descriptionB = "Galaxy Double #" & fabricTypeB & " " & size
-                    End If
-                    If ControlType = "Corded" Or ControlType = "Cordless" Or ControlType = "TDBU Corded" Or ControlType = "TDBU Cordless" Then
-                        descriptionB = "Galaxy Single #" & fabricTypeB & " " & size
+                If designName = "Cellular Blinds" Then
+                    descriptionB = blindName & " " & controlType & " " & fabricTypeB & " " & size
+                    If blindName = "Galaxy" Or blindName = "Potrait" Then
+                        descriptionB = blindName & " (" & bracketType & ") " & controlType & " #" & fabricTypeB & " " & size
                     End If
                 End If
 
