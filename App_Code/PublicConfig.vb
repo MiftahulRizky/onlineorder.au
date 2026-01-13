@@ -834,7 +834,7 @@ Public Class PublicConfig
                         If fromDate = "" And toDate = "" Then
                             If InStr(chargeResult, "%") > 0 Then
                                 Dim replicent As String = Replace(chargeResult, "%", "")
-                                result = matrix * Decimal.Parse(replicent) / 100
+                                result = matrix * (Decimal.Parse(replicent) / 100)
                             End If
 
                             If InStr(chargeResult, "$") > 0 Then
@@ -848,7 +848,7 @@ Public Class PublicConfig
                             If DateTime.Parse(createdDate) >= DateTime.Parse(fromDate) Then
                                 If InStr(chargeResult, "%") > 0 Then
                                     Dim replicent As String = Replace(chargeResult, "%", "")
-                                    result = matrix * Decimal.Parse(replicent) / 100
+                                    result = matrix * (Decimal.Parse(replicent) / 100)
                                 End If
                                 
                                 If InStr(chargeResult, "$") > 0 Then
@@ -863,7 +863,7 @@ Public Class PublicConfig
                             If DateTime.Parse(createdDate) >= DateTime.Parse(fromDate) AndAlso DateTime.Parse(createdDate) < DateTime.Parse(toDate) Then
                                 If InStr(chargeResult, "%") > 0 Then
                                     Dim replicent As String = Replace(chargeResult, "%", "")
-                                    result = matrix * Decimal.Parse(replicent) / 100
+                                    result = matrix * (Decimal.Parse(replicent) / 100)
                                 End If
                                 
                                 If InStr(chargeResult, "$") > 0 Then
@@ -872,7 +872,7 @@ Public Class PublicConfig
                                 End If
                             End If
                         End If
-                        Call PriceDetail(headerId, itemId, "Discount", qty, description, 0, 0, result)
+                        ' Call PriceDetail(headerId, itemId, "Discount", qty, description, 0, 0, result) 
                     End If
                     Call UpdateDiscount(itemId, qty, result)
                 Next
