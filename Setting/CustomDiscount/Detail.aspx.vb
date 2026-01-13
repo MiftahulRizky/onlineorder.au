@@ -53,7 +53,7 @@ Partial Class Setting_CustomDiscount_Detail
 
     Private Sub BindData(Id As String)
         Try
-            Dim myData As  DataSet = publicCfg.GetListData("SELECT * FROM CustomDiscount WHERE Id = '" + Id + "'")
+            Dim myData As  DataSet = publicCfg.GetListData("SELECT * FROM CustomDiscounts WHERE Id = '" + Id + "'")
             If myData.Tables(0).Rows.Count = 0 Then
                 Response.Redirect("~/setting/customdiscount", False)
                 Exit Sub
@@ -69,6 +69,7 @@ Partial Class Setting_CustomDiscount_Detail
             ddlBlindId.SelectedValue = myData.Tables(0).Rows(0).Item("BlindId").ToString()
             ddlBlindNo.SelectedValue = myData.Tables(0).Rows(0).Item("BlindNo").ToString()
             txtName.Text = myData.Tables(0).Rows(0).Item("Name").ToString()
+            ddlType.Text = myData.Tables(0).Rows(0).Item("Type").ToString()
             ddlFieldName.SelectedValue = myData.Tables(0).Rows(0).Item("FieldName").ToString()
             txtFormula.Text = myData.Tables(0).Rows(0).Item("Formula").ToString().Replace(ddlFieldName.SelectedValue, "")
             txtCharge.Text = myData.Tables(0).Rows(0).Item("Charge").ToString()

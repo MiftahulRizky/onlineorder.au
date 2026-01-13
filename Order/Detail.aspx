@@ -345,7 +345,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title" id="modalAddItemLabel">Add Item</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
                 </div>
                 <div class="modal-body row">
                     <div class="col-12">
@@ -386,6 +386,7 @@
                                     <th class="h3 text-center">Qty</th>
                                     <th class="h3">Descpription</th>
                                     <th class="h3">Cost / Qty</th>
+                                    <th class="h3">Discount / Qty</th>
                                     <th class="h3 ">Sub Total</th>
                                 </tr>
                             </thead>

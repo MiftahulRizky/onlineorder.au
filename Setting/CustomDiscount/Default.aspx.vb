@@ -118,7 +118,7 @@ Partial Class Setting_CustomDiscount_Default
             Dim rowIndex As Integer = Convert.ToInt32(TryCast(TryCast(sender, LinkButton).NamingContainer, GridViewRow).RowIndex)
             Dim row As GridViewRow = gvList.Rows(rowIndex)
 
-            Dim active As String = row.Cells(7).Text
+            Dim active As String = row.Cells(8).Text
 
             Dim newActive As Integer = 0
             If active = "False" Then : newActive = 1 : End If
@@ -146,19 +146,19 @@ Partial Class Setting_CustomDiscount_Default
             Dim searchString As String = ""
 
             If Design <> "" Then
-                designString = " And CustomDiscount.DesignId = '" + UCase(Design).ToString() + "'"
+                designString = " And CustomDiscounts.DesignId = '" + UCase(Design).ToString() + "'"
             End If
 
             If Blind <> "" Then
-                blindString = " AND CustomDiscount.BlindId = '" + UCase(Blind).ToString() + "'"
+                blindString = " AND CustomDiscounts.BlindId = '" + UCase(Blind).ToString() + "'"
             End If
 
             If Search <> "" Then
-                searchString = " AND (CustomDiscount.BlindNo LIKE '%" + Search + "%' OR CustomDiscount.Name LIKE '%" + Search + "%' OR CustomDiscount.FieldName LIKE '%" + Search + "%' OR CustomDiscount.Formula LIKE '%" + Search + "%' OR CustomDiscount.Charge LIKE '%" + Search + "%' OR CustomDiscount.Description LIKE '%" + Search + "%')"
+                searchString = " AND (CustomDiscounts.BlindNo LIKE '%" + Search + "%' OR CustomDiscounts.Name LIKE '%" + Search + "%' OR CustomDiscounts.FieldName LIKE '%" + Search + "%' OR CustomDiscounts.Formula LIKE '%" + Search + "%' OR CustomDiscounts.Charge LIKE '%" + Search + "%' OR CustomDiscounts.Description LIKE '%" + Search + "%')"
             End If
 
-            ' Dim thisQuery As String = String.Format("SELECT CustomDiscount.*, Designs.Name + ' | ' + Blinds.Name AS Product FROM CustomDiscount INNER JOIN Designs ON CustomDiscount.DesignId = Designs.Id INNER JOIN Blinds ON CustomDiscount.BlindId = Blinds.Id WHERE CustomDiscount.Active <> '' {0} {1} {2} ORDER BY Designs.Name, Blinds.Name, CustomDiscount.BlindNo, CustomDiscount.FieldName ASC", designString, blindString, searchString)
-            Dim thisQuery As String = String.Format("SELECT CustomDiscount.*, Designs.Name + ' | ' + Blinds.Name AS Product FROM CustomDiscount INNER JOIN Designs ON CustomDiscount.DesignId = Designs.Id INNER JOIN Blinds ON CustomDiscount.BlindId = Blinds.Id WHERE CustomDiscount.Active >= '0' {0} {1} {2} ORDER BY Designs.Name, Blinds.Name, CustomDiscount.BlindNo, CustomDiscount.FieldName ASC", designString, blindString, searchString)
+            ' Dim thisQuery As String = String.Format("SELECT CustomDiscounts.*, Designs.Name + ' | ' + Blinds.Name AS Product FROM CustomDiscounts INNER JOIN Designs ON CustomDiscounts.DesignId = Designs.Id INNER JOIN Blinds ON CustomDiscounts.BlindId = Blinds.Id WHERE CustomDiscounts.Active <> '' {0} {1} {2} ORDER BY Designs.Name, Blinds.Name, CustomDiscounts.BlindNo, CustomDiscounts.FieldName ASC", designString, blindString, searchString)
+            Dim thisQuery As String = String.Format("SELECT CustomDiscounts.*, Designs.Name + ' | ' + Blinds.Name AS Product FROM CustomDiscounts INNER JOIN Designs ON CustomDiscounts.DesignId = Designs.Id INNER JOIN Blinds ON CustomDiscounts.BlindId = Blinds.Id WHERE CustomDiscounts.Active >= '0' {0} {1} {2} ORDER BY Designs.Name, Blinds.Name, CustomDiscounts.BlindNo, CustomDiscounts.FieldName ASC", designString, blindString, searchString)
 
 
             gvList.DataSource = publicCfg.GetListData(thisQuery)

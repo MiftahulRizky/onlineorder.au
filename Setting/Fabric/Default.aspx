@@ -48,6 +48,7 @@
                                     <th>fabric name</th>
                                     <th>width</th>
                                     <th>group</th>
+                                    <th>description</th>
                                     <th>action</th>
                                 </tr>
                             </thead>
