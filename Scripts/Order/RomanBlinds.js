@@ -377,7 +377,20 @@ function bindControlType(designId, blindId) {
             controltype.selectedIndex = 0;
             const controlname =
               controltype.selectedOptions[0].getAttribute("data-name");
+
+            const fabrictype = $(this).find("option:selected").data("type");
+            bindMounting(blindName);
             bindFabricType(designId, blindName, controlname);
+            bindFabricColour(designId, fabrictype);
+            bindControlPosition(blindName);
+            //for chained
+            bindMaterialChain(blindName);
+            bindChainColour(blindName);
+            //for cordlock
+            bindCordColour(blindName);
+            bindBattenColour(blindName);
+            bindPlasticColour(blindName);
+            bindCleat(blindName);
             handlerDisplayElemets(blindName, controlname);
           }
         }
