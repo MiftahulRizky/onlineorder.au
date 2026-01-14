@@ -338,6 +338,8 @@ Partial Class Methods_Order_CelloraMethod
                 If priceGroupId2 = "300" Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "203.2 : Something went wrong !",.field = ""}}
                 End If
+            Else
+                data.fabriccolour2 = ""
             End If
             
              Dim designName As String = publicCfg.GetDesignName(data.designid)

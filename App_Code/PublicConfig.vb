@@ -806,7 +806,7 @@ Public Class PublicConfig
         Return result
     End Function
 
-    Public Function HitungCustomDiscount(headerId As String, itemId As String, matrix As Decimal) As Decimal
+    Public Function HitungCustomDiscount(headerId As String, itemId As String, matrix As Decimal, type As String) As Decimal
         Dim result As Decimal = 0.00
         Dim createdDate As String = GetItemData("SELECT CreatedDate FROM OrderHeaders WHERE Id= '" + headerId + "'")
         Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE Id='" + itemId + "' AND Active=1 ORDER BY Id ASC")
@@ -817,7 +817,7 @@ Public Class PublicConfig
             Dim blindId As String = thisData.Tables(0).Rows(0).Item("BlindId").ToString()
             Dim blindNo As String = thisData.Tables(0).Rows(0).Item("BlindNo").ToString()
             
-            Dim customDisData As DataSet = GetListData("SELECT * FROM CustomDiscount WHERE DesignId='" + UCase(designId).ToString() + "' AND BlindId='" + blindId + "' AND BlindNo = '" + blindNo + "' AND Active=1 ORDER BY Id ASC")
+            Dim customDisData As DataSet = GetListData("SELECT * FROM CustomDiscount WHERE DesignId='" + UCase(designId).ToString() + "' AND BlindId='" + blindId + "' AND BlindNo = '" + blindNo + "' AND Type='" + type + "' AND Active=1 ORDER BY Id ASC")
             ' result = result + 1.00 'debug
             If customDisData.Tables(0).Rows.Count > 0 Then
                 For i As Integer = 0 To customDisData.Tables(0).Rows.Count - 1
@@ -832,23 +832,47 @@ Public Class PublicConfig
                     If Not cekFormula = "" Then
 
                         If fromDate = "" And toDate = "" Then
-                            result = matrix * chargeResult / 100
+                            If InStr(chargeResult, "%") > 0 Then
+                                Dim replicent As String = Replace(chargeResult, "%", "")
+                                result = matrix * Decimal.Parse(replicent) / 100
+                            End If
+
+                            If InStr(chargeResult, "$") > 0 Then
+                                Dim replicent As String = Replace(chargeResult, "$", "")
+                                result = Decimal.Parse(replicent)
+                            End If
                         End If
 
                         '# discount start only
                         If fromDate <> "" AndAlso toDate = "" Then
                             If DateTime.Parse(createdDate) >= DateTime.Parse(fromDate) Then
-                                result = matrix * chargeResult / 100
+                                If InStr(chargeResult, "%") > 0 Then
+                                    Dim replicent As String = Replace(chargeResult, "%", "")
+                                    result = matrix * Decimal.Parse(replicent) / 100
+                                End If
+                                
+                                If InStr(chargeResult, "$") > 0 Then
+                                    Dim replicent As String = Replace(chargeResult, "$", "")
+                                    result = Decimal.Parse(replicent)
+                                End If
                             End If
                         End If
 
                         '# discount start and end
                         If fromDate <> "" AndAlso toDate <> "" Then 
                             If DateTime.Parse(createdDate) >= DateTime.Parse(fromDate) AndAlso DateTime.Parse(createdDate) < DateTime.Parse(toDate) Then
-                                result = matrix * chargeResult / 100
+                                If InStr(chargeResult, "%") > 0 Then
+                                    Dim replicent As String = Replace(chargeResult, "%", "")
+                                    result = matrix * Decimal.Parse(replicent) / 100
+                                End If
+                                
+                                If InStr(chargeResult, "$") > 0 Then
+                                    Dim replicent As String = Replace(chargeResult, "$", "")
+                                    result = Decimal.Parse(replicent)
+                                End If
                             End If
                         End If
-                        ' Call PriceDetail(headerId, itemId, qty, description, result)
+                        Call PriceDetail(headerId, itemId, "Discount", qty, description, 0, 0, result)
                     End If
                     Call UpdateDiscount(itemId, qty, result)
                 Next
@@ -890,6 +914,7 @@ Public Class PublicConfig
             Dim finalMatrix As Decimal = 0.00
 
             If Not priceGroupId = "" Then
+                Dim Type As String = "Matrix"
                 Dim getMatrix As Decimal = GetGridCost(priceGroupId, delivery, drop, width)
                 
                 '#---------------------For Vertical Slat Only---------------------#
@@ -902,10 +927,11 @@ Public Class PublicConfig
                 '#---------------------Discount For Store Account---------------------#
                 Dim thisDiscount As Decimal = HitungDiscount(storeId, priceGroupId, getMatrix)
                 thisMatrix = getMatrix - thisDiscount
+                Dim realMatrix As Decimal = thisMatrix
 
 
                 '#---------------------Custom Discount for Extra Discount---------------------#
-                Dim thisCustomDiscount As Decimal = HitungCustomDiscount(HeaderId,ItemId, thisMatrix)
+                Dim thisCustomDiscount As Decimal = HitungCustomDiscount(HeaderId,ItemId, thisMatrix, Type)
                 If thisCustomDiscount > 0  Then
                     thisMatrix = thisMatrix - thisCustomDiscount
                 End If
@@ -934,23 +960,25 @@ Public Class PublicConfig
                 '#---------------------Insert Order Detail Price---------------------#
                 If designName = "Vertical Blinds" AndAlso blindName = "Slat Only" Then
                     If thisMatrix > 0 Then
-                        Call PriceDetail(HeaderId, ItemId, qty, description, thisMatrix)
+                        Call PriceDetail(HeaderId, ItemId, Type, qty, description, realMatrix, thisMatrix, thisCustomDiscount)
                     End If
                 Else
-                    Call PriceDetail(HeaderId, ItemId, qty, description, thisMatrix)
+                    Call PriceDetail(HeaderId, ItemId, Type, qty, description, realMatrix, thisMatrix, thisCustomDiscount)
                 End If
 
             End If
 
             If Not PriceGroupIdB = "" Then
+                Dim TypeB As String = "Matrix"
                 Dim getMatrixB As Decimal = GetGridCost(priceGroupIdB, delivery, drop, width)
 
                 '#---------------------Discount For Store Account---------------------#
                 Dim thisDiscountB As Decimal = HitungDiscount(storeId, priceGroupIdB, getMatrixB)
                 thisMatrixB = getMatrixB - thisDiscountB
+                Dim realMatrixB As Decimal = thisMatrixB
 
                 '#---------------------Custom Discount for Extra Discount---------------------#
-                Dim thisCustomDiscountB As Decimal = HitungCustomDiscount(HeaderId,ItemId, thisMatrixB)
+                Dim thisCustomDiscountB As Decimal = HitungCustomDiscount(HeaderId,ItemId, thisMatrixB, TypeB)
                 If thisCustomDiscountB > 0  Then
                     thisMatrixB = thisMatrixB - thisCustomDiscountB
                 End If
@@ -967,7 +995,7 @@ Public Class PublicConfig
                     End If
                 End If
 
-                Call PriceDetail(HeaderId, ItemId, qty, descriptionB, thisMatrixB)
+                Call PriceDetail(HeaderId, ItemId, TypeB, qty, descriptionB, realMatrixB, thisMatrixB, thisCustomDiscountB)
             End If
 
             '#---------------------Hitung Total Matrix---------------------#
@@ -1011,6 +1039,7 @@ Public Class PublicConfig
 
 
                     If Not cekFormula = "" Then
+                        Dim type As String = "Charge"
                         Dim queryCharge As String = "SELECT " + charge + " FROM view_details WHERE Id='" + itemId + "'"
                         If charge = "Extra Surcharge" Then
                             queryCharge = String.Format("SELECT TOP 1 [Cost] FROM CassetteExtra WHERE [PriceGroupId] = '{0}' AND [Drop] >= '{1}' AND Width >= '{2}' AND [Cost] > 0 ORDER BY [Drop], Width, [Cost] ASC", UCase(cassetteExtraId).ToString(), drop, width)
@@ -1034,7 +1063,22 @@ Public Class PublicConfig
                             thisCharge = 0D ' Set default jika parsing gagal
                         End If
 
-                        Call PriceDetail(headerId, itemId, qty, description, thisCharge)
+                        Dim realCharge As Decimal = thisCharge
+                        
+                        Dim checkDiscount As DataSet = GetListData("SELECT * FROM CustomDiscounts WHERE DesignId='" + UCase(designId).ToString() + "' AND BlindId='" + blindId + "' AND BlindNo = '" + blindNo + "' AND Type='" + type + "' AND Active=1 ORDER BY Id ASC")
+
+                        Dim customDiscount As Decimal = 0.00
+                        If checkDiscount.Tables(0).Rows.Count > 0 Then
+                            Dim FormulaCustomDiscount As String = checkDiscount.Tables(0).Rows(0).Item("Formula").ToString()
+                            If formula = FormulaCustomDiscount Then
+                                customDiscount = HitungCustomDiscount(headerId, itemId, thisCharge, type)
+                                If customDiscount > 0 Then
+                                    thisCharge = thisCharge - customDiscount
+                                End If
+                            End If
+                        End If
+
+                        Call PriceDetail(headerId, itemId, type, qty, description, realCharge, thisCharge, customDiscount)
                     End If
                     surcharge = surcharge + thisCharge
                 Next
@@ -1043,25 +1087,37 @@ Public Class PublicConfig
         End If
     End Sub
 
-    Private Sub PriceDetail(Header As String, Item As String, Qty As Integer, Desc As String, Cost As Decimal)
-        Dim CurrentOrdered As String = GetItemData("SELECT Ordered FROM OrderDetailsPrice WHERE HeaderId='" + Header + "' AND ItemId='" + Item + "'")
+    Private Sub PriceDetail(Header As String, Item As String, Type As String, Qty As Integer, Desc As String, RealCost As Decimal, Cost As Decimal, CustomDiscount As Decimal)
+        ' Dim CurrentOrdered As String = GetItemData("SELECT Ordered FROM OrderDetailsPrice WHERE HeaderId='" + Header + "' AND ItemId='" + Item + "'")
 
-        Dim UpdateOrdered As Integer = 0
-        If CurrentOrdered = "" Then
-            UpdateOrdered = 1
-        Else
-            UpdateOrdered = CInt(CurrentOrdered) + 1
+        ' Dim UpdateOrdered As Integer = 0
+        ' If CurrentOrdered = "" Then
+        '     UpdateOrdered = 1
+        ' Else
+        '     UpdateOrdered = CInt(CurrentOrdered) + 1
+        ' End If
+
+        Dim RealFinalCost As Decimal = RealCost * Qty
+        Dim FinalCost As Decimal = Cost * Qty
+        If Type = "Discount" Then
+            RealCost = 0
+            Cost = 0
+            RealFinalCost = 0
+            FinalCost = 0
         End If
         Using thisConn As SqlConnection = New SqlConnection(myConn)
-            Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetailsPrice VALUES(NEWID(), @Ordered, @HeaderId, @ItemId, @Qty, @Description, @Cost, @Discount, @FinalCost)")
+            Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetailsPrice VALUES(NEWID(), @HeaderId, @ItemId, @Type, @Qty, @Description,@RealCost, @Cost, @Discount, @RealFinalCost, @FinalCost)")
                 Dim FinalCost As Decimal = Cost * Qty
-                myCmd.Parameters.AddWithValue("@Ordered", UpdateOrdered)
+                ' myCmd.Parameters.AddWithValue("@Ordered", UpdateOrdered)
                 myCmd.Parameters.AddWithValue("@HeaderId", Header)
                 myCmd.Parameters.AddWithValue("@ItemId", Item)
+                myCmd.Parameters.AddWithValue("@Type", Type)
                 myCmd.Parameters.AddWithValue("@Qty", Qty)
                 myCmd.Parameters.AddWithValue("@Description", Desc)
+                myCmd.Parameters.AddWithValue("@RealCost", RealCost)
                 myCmd.Parameters.AddWithValue("@Cost", Cost)
-                myCmd.Parameters.AddWithValue("@Discount", 0.00)
+                myCmd.Parameters.AddWithValue("@Discount", CustomDiscount)
+                myCmd.Parameters.AddWithValue("@RealFinalCost", RealFinalCost)
                 myCmd.Parameters.AddWithValue("@FinalCost", FinalCost)
                 myCmd.Connection = thisConn
                 thisConn.Open()

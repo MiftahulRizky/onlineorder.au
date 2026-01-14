@@ -386,6 +386,7 @@
                                     <th class="h3 text-center">Qty</th>
                                     <th class="h3">Descpription</th>
                                     <th class="h3">Cost / Qty</th>
+                                    <th class="h3">Discount / Qty</th>
                                     <th class="h3 ">Sub Total</th>
                                 </tr>
                             </thead>

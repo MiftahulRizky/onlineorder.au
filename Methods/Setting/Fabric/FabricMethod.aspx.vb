@@ -59,6 +59,7 @@ Partial Class Methods_Setting_Fabric_FabricMethod
         Public Property FabricName As String
         Public Property Width As String 
         Public Property Group As String 
+        Public Property Description As String 
         Public Property Active As String
     End Class
 
@@ -218,6 +219,7 @@ Partial Class Methods_Setting_Fabric_FabricMethod
                             .FabricName = reader("Name").ToString(),
                             .Width = reader("Width").ToString(),
                             .Group = reader("Group").ToString(),
+                            .Description = reader("Description").ToString(),
                             .Active = reader("Active").ToString()
                         }
                         resultList.Add(row)
@@ -373,6 +375,47 @@ Partial Class Methods_Setting_Fabric_FabricMethod
             
 
             Return New SuccessResponse With {.success = "Switch Successfully."}
+        Catch ex As Exception
+            Return New ErrorResponse With {
+                .error = New ErrorDetail With {
+                    .message = ex.Message,
+                    .field = ""
+                }
+            }
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function Copy(ByVal id As String) As Object
+        Try
+            If String.IsNullOrEmpty(id) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "key is invalid !", .field = ""}}
+            End If
+
+            Dim thisData = publicCfg.GetListData("SELECT * FROM Fabrics WHERE Id = '" + UCase(id).ToString() + "'")
+            If thisData.Tables.Count = 0 Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "key is missing !", .field = ""}}
+            End If
+
+            Dim lastID As Integer = publicCfg.GetItemData("SELECT TOP 1 Id FROM Fabrics ORDER BY Id DESC")
+
+
+            Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString    
+
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("INSERT INTO Fabrics ( Id, DesignId, Name, Type, Colour, Width, [Group], Description, Active ) SELECT @NewId, DesignId, Name + ' - Copy' As Name, Type, Colour, Width, [Group], Description, Active FROM Fabrics WHERE Id=@Id", thisConn)
+                    myCmd.Parameters.AddWithValue("@Id", id)
+                    myCmd.Parameters.AddWithValue("@NewId", lastID + 1)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+            
+
+            Return New SuccessResponse With {.success = "Duplicate Successfully."}
         Catch ex As Exception
             Return New ErrorResponse With {
                 .error = New ErrorDetail With {

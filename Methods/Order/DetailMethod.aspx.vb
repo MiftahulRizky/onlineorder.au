@@ -137,6 +137,7 @@ Partial Class Methods_Order_DetailMethod
         Public Property Qty As String 
         Public Property Description As String 
         Public Property Cost As String 
+        Public Property Discount As String 
         Public Property FinalCost As String 
     End Class
     '#---------------------------------------|| /Server side Order Detail Pricing Class || ---------------------------------------#
@@ -1493,7 +1494,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT *, FORMAT ( CASE WHEN Description LIKE '%Discount%' THEN - Cost ELSE Cost END, 'C', 'en-US' ) AS FormatCost, FORMAT ( CASE WHEN Description LIKE '%Discount%' THEN - FinalCost ELSE FinalCost END, 'C', 'en-US' ) AS FormatFinalCost")
+                sqlBuilder.AppendLine("SELECT *, FORMAT(RealCost, 'C', 'en-US') AS FormatRealCost, FORMAT(Cost, 'C', 'en-US') AS FormatCost, FORMAT(Discount, 'C', 'en-US') AS FormatDiscount,FORMAT(RealFinalCost, 'C', 'en-US') AS FormatRealFinalCost, FORMAT(FinalCost, 'C', 'en-US') AS FormatFinalCost")
                 sqlBuilder.AppendLine("FROM OrderDetailsPrice")
                 sqlBuilder.AppendLine("WHERE ItemId = @ItemId")
 
@@ -1527,8 +1528,7 @@ Partial Class Methods_Order_DetailMethod
                 If params.order IsNot Nothing AndAlso params.order.Count > 0 Then
                     '# Notes: File di bawah ini untuk menambahkan order by ke query
                     Dim columnMap As New Dictionary(Of Integer, String) From { _
-                        {0, "No"}, _
-                        {1, "Qty"} _
+                        {0, "No"} _
                     }
                     Dim orderColumnIndex As Integer = params.order(0).column
                     Dim orderDirection As String = params.order(0).dir.ToUpper()
@@ -1538,11 +1538,11 @@ Partial Class Methods_Order_DetailMethod
                         orderByClause.AppendLine(" ORDER BY " & columnMap(orderColumnIndex) & " " & orderDirection)
                     Else
                         ' Default order jika kolom No atau kolom yang tidak bisa di-sort dipilih
-                        orderByClause.AppendLine(" ORDER BY Ordered ASC")
+                        orderByClause.AppendLine(" ORDER BY CASE WHEN Type = 'Matrix' THEN 1 WHEN Type = 'Charge' THEN 2 WHEN Type = 'Discount' THEN 3 ELSE 4 END")
                     End If
                 Else
                     ' Default order jika tidak ada order dari DataTables
-                    orderByClause.AppendLine(" ORDER BY Ordered ASC")
+                    orderByClause.AppendLine(" ORDER BY CASE WHEN Type = 'Matrix' THEN 1 WHEN Type = 'Charge' THEN 2 WHEN Type = 'Discount' THEN 3 ELSE 4 END")
                 End If
                 sqlBuilder.Append(orderByClause.ToString())
                 
@@ -1560,10 +1560,14 @@ Partial Class Methods_Order_DetailMethod
                         Dim Id As String = reader("Id").ToString()
                         Dim HeaderId As String = reader("HeaderId").ToString()
                         Dim ItemId As String = reader("ItemId").ToString()
+                        Dim Type As String = reader("Type").ToString()
                         Dim Qty As String = reader("Qty").ToString()
                         Dim Description As String = reader("Description").ToString()
-                        Dim Cost As String = reader("FormatCost").ToString()
-                        Dim FinalCost As String = reader("FormatFinalCost").ToString()
+                        Dim Discount As String = reader("Discount").ToString() 
+                        Dim RealCost As String = "<br><span class='text-decoration-line-through text-secondary'>" & reader("FormatRealCost").ToString() & "</span>"
+                        Dim Cost As String = reader("FormatCost").ToString() & If(Discount = "0,00", "", RealCost)
+                        Dim RealFinalCost As String = "<br><span class='text-decoration-line-through text-secondary'>" & reader("FormatRealFinalCost").ToString() & "</span>"
+                        Dim FinalCost As String = reader("FormatFinalCost").ToString() & If(Discount = "0,00", "", RealFinalCost)
 
 
                         Dim row As New OrdersMatrixReturnRowPricing With {
@@ -1573,8 +1577,9 @@ Partial Class Methods_Order_DetailMethod
                             .ItemId = ItemId,
                             .Qty = Qty,
                             .Description = Description,
-                            .Cost = Cost,
-                            .FinalCost = FinalCost
+                            .Cost = If(Type = "Discount", "", Cost),
+                            .Discount = If(Discount = "0,00", "", "-" & reader("FormatDiscount").ToString()),
+                            .FinalCost = If(Type = "Discount", "", FinalCost)
                         }
                         resultList.Add(row)
                         noCounter += 1

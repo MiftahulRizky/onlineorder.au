@@ -32,9 +32,30 @@ $("#blindtype").on("change", function (e) {
   const fabrictype = $(this).find("option:selected").data("type");
 
   bindControlType(DESIGNID, blindid);
+  // bindMounting(blindname);
+  // bindFabricType(DESIGNID, blindname, controlname);
+  // bindFabricColour(DESIGNID, fabrictype);
+  // bindControlPosition(blindname);
+  // //for chained
+  // bindMaterialChain(blindname);
+  // bindChainColour(blindname);
+  // //for cordlock
+  // bindCordColour(blindname);
+  // bindBattenColour(blindname);
+  // bindPlasticColour(blindname);
+  // bindCleat(blindname);
+});
+
+// CHANGE CONTROL TYPE
+$("#controltype").on("change", function (e) {
+  $(this).removeClass("is-invalid");
+
+  const blindname = $("#blindtype option:selected").data("name");
+  const controlname = $(this).find("option:selected").data("name");
+  const fabrictype = $(this).find("option:selected").data("type");
   bindMounting(blindname);
-  bindFabricType(DESIGNID, blindname, controlname);
-  bindFabricColour(DESIGNID, fabrictype);
+  bindFabricType(designId, blindname, controlname);
+  bindFabricColour(designId, fabrictype);
   bindControlPosition(blindname);
   //for chained
   bindMaterialChain(blindname);
@@ -44,15 +65,6 @@ $("#blindtype").on("change", function (e) {
   bindBattenColour(blindname);
   bindPlasticColour(blindname);
   bindCleat(blindname);
-});
-
-// CHANGE CONTROL TYPE
-$("#controltype").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-
-  const blindname = $("#blindtype option:selected").data("name");
-  const controlname = $(this).find("option:selected").data("name");
-  bindFabricType(DESIGNID, blindname, controlname);
   handlerDisplayElemets(blindname, controlname);
 });
 

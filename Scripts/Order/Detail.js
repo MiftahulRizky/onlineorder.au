@@ -1588,9 +1588,10 @@ const handlerPricingItem = (id) => {
       orderable: false,
       render: (row) => `<div class="text-center">${row.Qty}</div>`,
     },
-    { width: "60%", data: "Description" },
-    { width: "15%", data: "Cost" },
-    { width: "15%", data: "FinalCost" },
+    { width: "45%", orderable: false, data: "Description" },
+    { width: "15%", orderable: false, data: "Cost" },
+    { width: "15%", orderable: false, data: "Discount" },
+    { width: "15%", orderable: false, data: "FinalCost" },
   ];
 
   tablePricingData = $("#tablePricingDetail").DataTable({
@@ -1598,6 +1599,11 @@ const handlerPricingItem = (id) => {
     serverSide: true, // <<< INI KUNCI PENTINGNYA
     order: [], // Tetap bisa set default order di sini
     pageLength: 25,
+    bPaginate: true,
+    bInfo: true,
+    bFilter: true,
+    bDestroy: true,
+    autoWidth: false,
     initComplete: function () {
       $("#tablePricingDetail_filter").hide();
       $("#tablePricingDetail_length").hide();
@@ -1633,10 +1639,6 @@ const handlerPricingItem = (id) => {
         isError(msg);
       },
     },
-    bPaginate: true,
-    bInfo: true,
-    bFilter: true,
-    bDestroy: true,
     columns: columnDefs,
   });
 };
@@ -1877,6 +1879,11 @@ const bindDetails = async (headerid, status, createdby) => {
   tableData = $("#tableAjax").DataTable({
     serverSide: true,
     pageLength: 100,
+    bPaginate: true,
+    bInfo: true,
+    bFilter: true,
+    bDestroy: true,
+    autoWidth: false,
     initComplete: function () {
       $("#tableAjax_filter").hide();
       $("#tableAjax_length").hide();
