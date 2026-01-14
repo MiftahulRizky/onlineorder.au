@@ -457,9 +457,9 @@ Partial Class Order_Method
             If heightDeduct > 1500 Then Return "[MIDRAIL HEIGHT | SECOND SECTION] MAXIMUM PANEL HEIGHT IS 1500MM !"
         End If
 
-        If data.frametype = "Insert L 49mm" And (blindName = "Hinged" Or blindName = "Hinged Bi-fold") Then
-            If String.IsNullOrEmpty(data.buildout) Then Return "BUILDOUT IS REQUIRED !"
-        End If
+        ' If data.frametype = "Insert L 49mm" And (blindName = "Hinged" Or blindName = "Hinged Bi-fold") Then
+        '     If String.IsNullOrEmpty(data.buildout) Then Return "BUILDOUT IS REQUIRED !"
+        ' End If
 
         If blindName = "Track Bi-fold" Or blindName = "Track Sliding" Or blindName = "Track Sliding Single Track" Then
             If data.framebottom = "No" And data.bottomtracktype = "" Then
@@ -652,7 +652,9 @@ Partial Class Order_Method
             If Not Integer.TryParse(data.markup, markup) OrElse markup < 0 Then Return "PLEASE CHECK YOUR MARK UP ORDER !"
         End If
 
-        Dim productpriceGroupName As String = orderCfg.GetItemData("SELECT Name FROM Designs WHERE Id = '" + data.designid + "'")
+        Dim customerPriceGroup As String = orderCfg.GetItemData("SELECT Customers.Pricing FROM Customers INNER JOIN OrderHeaders ON Customers.Id = OrderHeaders.CustomerId WHERE OrderHeaders.Id='" + data.headerid + "'")
+
+        Dim productpriceGroupName As String = String.Format("Evolve {0}", customerPriceGroup)
         Dim productpriceGroupId As String = orderCfg.GetProductPriceGroupId(data.designid, productpriceGroupName)
 
         If blindName = "Panel Only" Then
@@ -1406,40 +1408,7 @@ Partial Class Order_Method
         If midrailHeight2 >= drop Then
             Return "THE HEIGHT OF MIDRAIL 2 SHOULD NOT BE EQUAL TO OR MORE THAN YOUR ORDER HEIGHT"
         End If
-        If roleName = "Customer" Then
-            'If drop > 1600 Then
-            '    If midrailHeight1 = 0 Then
-            '        Return "MIDRAIL HEIGHT IS REQUIRED. <br /> MAXIMUM ONE SECTION IS 1500MM !"
-            '    End If
-            'End If
-
-            'If midrailHeight1 > 0 And midrailHeight2 = 0 Then
-            '    If midrailHeight1 > 1600 Then
-            '        Return "MAXIMUM MIDRAIL HEIGHT 1 IS 1500MM !"
-            '    End If
-            '    If drop - midrailHeight1 > 1600 Then
-            '        Return "MAXIMUM MIDRAIL HEIGHT FOR OTHER SECTIONS IS 1500mm !"
-            '    End If
-            'End If
-            'If midrailHeight1 > 0 And midrailHeight2 > 0 Then
-            '    If midrailHeight1 = midrailHeight2 Then
-            '        Return "MIDRAIL HEIGHT IS IN THE SAME POSITION. PLEASE CHANGE MIDRAIL HEIGHT POSITION 2"
-            '    End If
-            '    If midrailHeight1 > midrailHeight2 Then
-            '        Return "THE HEIGHT OF MIDRAIL 1 SHOULD NOT BE GREATER THAN THE HEIGHT OF MIDRAIL 2 !"
-            '    End If
-
-            '    If midrailHeight1 > 1500 Then
-            '        Return "MAXIMUM ONE SECTION IS 1500MM "
-            '    End If
-            '    If midrailHeight2 - midrailHeight1 > 1500 Then
-            '        Return "MAXIMUM ONE SECTION IS 1500MM !"
-            '    End If
-            '    If drop - midrailHeight2 > 1500 Then
-            '        Return "MAXIMUM ONE SECTION IS 1500MM !"
-            '    End If
-            'End If
-        End If
+        
 
         If blindName = "Hinged" Or blindName = "Hinged Bi-fold" Or blindName = "Track Bi-fold" Then
             If String.IsNullOrEmpty(data.hingecolour) Then Return "HINGE COLOUR IS REQUIRED !"

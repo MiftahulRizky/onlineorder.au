@@ -1,0 +1,44 @@
+{
+  "App_Code": {
+    "OrderConfig.vb": "Shutters",
+    "DepositRequestConfig.vb": "Shutters",
+    "ExactConfig.vb": "Shutters",
+    "ShuttersPreviewConfig.vb": "Shutters",
+    "ShipmentConfig.vb": "Shutters",
+    "LogConfig.vb": "Shutters",
+    "MailConfig.vb": "Shutters",
+    "MicronetConfig.vb": "Shutters",
+    "PreviewConfig.vb": "Shutters",
+    "QuoteConfig.vb": "Shutters",
+    "ReportConfig.vb": "Shutters"
+  },
+  "Order": {
+    "Evolve.aspx": "Shutters",
+    "Evolve.aspx.vb": "Shutters",
+    "EvolveParts.aspx": "Shutters",
+    "EvolveParts.aspx.vb": "Shutters",
+    "Method.aspx": "Shutters",
+    "Method.aspx.vb": "Shutters",
+    "Panorama.aspx": "Shutters",
+    "Panorama.aspx.vb": "Shutters",
+    "PanoramaParts.aspx": "Shutters",
+    "PanoramaParts.aspx.vb": "Shutters"
+  },
+  "Setting": {
+    "Access": "Shutters",
+    "Log": "Shutters",
+    "Other": "Shutters",
+    "Price": "Shutters",
+    "Product": "Shutters",
+    "System": "Shutters",
+    "Customer": "Shutters"
+  },
+  "Scripts": {
+    "Order": {
+      "Evolve.js": "Shutters",
+      "EvolveParts.js": "Shutters",
+      "Panorama.js": "Shutters",
+      "PanoramaParts.js": "Shutters"
+    }
+  }
+}

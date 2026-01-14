@@ -1231,7 +1231,7 @@ Public Class OrderConfig
                 If designName = "Vertical" And blindName = "Blades Only" Then widthExecute = qtyBlade
                 If designName = "Additional" Then widthExecute = 0 : dropExecute = 0
                 If designName = "Curtain" Then dropExecute = 0
-                If designName = "Evolve Parts" Or designName = "Evolve Parts" Or designName = "Evolve Shutters" Or designName = "Panorama PVC Shutters" Or designName = "Panorama PVC Parts" Then widthExecute = 0 : dropExecute = 0
+                If designName = "Evolve Parts" Or designName = "Evolve Shutters" Or designName = "Panorama PVC Shutters" Or designName = "Panorama PVC Parts" Then widthExecute = 0 : dropExecute = 0
 
                 Dim descriptionPrice As String = String.Empty
 
@@ -1505,6 +1505,10 @@ Public Class OrderConfig
                     End If
 
                     If designName = "Panorama PVC Parts" Then
+                        thisCost = thisGridMatrix + thisSurcharge
+                    End If
+                    
+                    If designName = "Evolve Shutters" Then
                         thisCost = thisGridMatrix + thisSurcharge
                     End If
 
@@ -3096,6 +3100,10 @@ Public Class OrderConfig
         Dim frameBottom As String = Convert.ToString(data(5))
         Dim deductType As String = Convert.ToString(data(6))
 
+        If blindName = "Panel Only" Then
+            result = drop
+        End If
+
         If blindName = "Hinged" Or blindName = "Hinged Bi-fold" Then
             Dim frameDeduction As Decimal = 0
             Dim mountingDeduction As Decimal = 0
@@ -3129,6 +3137,79 @@ Public Class OrderConfig
                 End If
             End If
             result = drop - frameDeduction - mountingDeduction - standardGap
+        End If
+
+        If blindName = "Fixed" Then
+            Dim frameDeduction As Decimal = 0
+
+            If frameType = "U Channel" Then
+                If deductType = "Bottom" And frameBottom = "U Channel" Then
+                    frameDeduction = 9
+                End If
+                If deductType = "Top" And frameTop = "U Channel" Then
+                    frameDeduction = 17
+                End If
+            End If
+
+            If frameType = "19x19 Light Block" Then
+                frameDeduction = 1
+            End If
+
+            result = drop - frameDeduction
+        End If
+
+        If blindName = "Track Bi-fold" Then
+            Dim frameDeduction As Decimal = 0
+            Dim mountDeduction As Decimal = 0
+            Dim bottomDeduction As Decimal = 2
+
+            If deductType = "Bottom" Then
+                If frameBottom = "Yes" Then
+                    frameDeduction = 46
+                End If
+                If frameBottom = "No" Then
+                    frameDeduction = 24
+                End If
+            End If
+
+            If deductType = "Top" Then
+                If frameTop = "Yes" Then
+                    frameDeduction = 73
+                End If
+                
+                If mounting = "Inside" Then
+                    mountDeduction = 1
+                End If
+            End If
+            
+            result = drop - frameDeduction - mountDeduction - bottomDeduction
+        End If
+
+        If blindName = "Track Sliding" Or blindName = "Track Sliding Single Track" Then
+            Dim frameDeduction As Decimal = 0
+            Dim mountDeduction As Decimal = 0
+            Dim bottomDeduction As Decimal = 2
+
+            If deductType = "Bottom" Then
+                If frameBottom = "Yes" Then
+                    frameDeduction = 45
+                End If
+                If frameBottom = "No" Then
+                    frameDeduction = 23
+                End If
+            End If
+
+            If deductType = "Top" Then
+                If frameTop = "Yes" Then
+                    frameDeduction = 73
+                End If
+
+                If mounting = "Inside" Then
+                    mountDeduction = 1
+                End If
+            End If
+            
+            result = drop - frameDeduction - mountDeduction - bottomDeduction
         End If
 
         Return result

@@ -725,7 +725,8 @@ function bindLeftFrame(frameType) {
                 { value: "Yes", text: "YES" },
                 { value: "No", text: "NO" },
                 { value: "Light Block", text: "LIGHT BLOCK" },
-                { value: "Bullnose Z Sill Plate", text: "BULLNOSE Z SILL PLATE" },
+                //{ value: "Bullnose Z Sill Plate", text: "BULLNOSE Z SILL PLATE" },
+                { value: "Sill Plate (Bullnose Z)", text: "SILL PLATE (BULLNOSE Z)" },
             ];
         } else if (frameType === "No Frame") {
             options = [{ value: "Light Block", text: "LIGHT BLOCK" }];
@@ -736,9 +737,9 @@ function bindLeftFrame(frameType) {
                 { value: "No", text: "NO" }
             ];
         } else if (frameType === "U Channel") {
-            options = [
-                { value: "No", text: "NO" }
-            ];
+            options = [{ value: "No", text: "NO" }];
+        } else if(frameType === "19x19 Light Block"){
+            options = [{ value: "No", text: "NO" }];
         }
         options.forEach(opt => {
             let optionElement = document.createElement("option");
@@ -776,7 +777,8 @@ function bindRightFrame(frameType) {
                 { value: "Yes", text: "YES" },
                 { value: "No", text: "NO" },
                 { value: "Light Block", text: "LIGHT BLOCK" },
-                { value: "Bullnose Z Sill Plate", text: "BULLNOSE Z SILL PLATE" },
+                //{ value: "Bullnose Z Sill Plate", text: "BULLNOSE Z SILL PLATE" },
+                { value: "Sill Plate (Bullnose Z)", text: "SILL PLATE (BULLNOSE Z)" },
             ];
         } else if (frameType === "No Frame") {
             options = [{ value: "Light Block", text: "LIGHT BLOCK" }];
@@ -787,9 +789,9 @@ function bindRightFrame(frameType) {
                 { value: "No", text: "NO" }
             ];
         } else if (frameType === "U Channel") {
-            options = [
-                { value: "No", text: "NO" }
-            ];
+            options = [{ value: "No", text: "NO" }];
+        } else if(frameType === "19x19 Light Block"){
+            options = [{ value: "No", text: "NO" }];
         }
         options.forEach(opt => {
             let optionElement = document.createElement("option");
@@ -827,7 +829,8 @@ function bindTopFrame(frameType, mounting) {
                 { value: "Yes", text: "YES" },
                 { value: "No", text: "NO" },
                 { value: "Light Block", text: "LIGHT BLOCK" },
-                { value: "Bullnose Z Sill Plate", text: "BULLNOSE Z SILL PLATE" },
+                //{ value: "Bullnose Z Sill Plate", text: "BULLNOSE Z SILL PLATE" },
+                { value: "Sill Plate (Bullnose Z)", text: "SILL PLATE (BULLNOSE Z)" },
                 { value: "Roller Catch Ramp", text: "ROLLER CATCH RAMP" }
             ];
         } else if (frameType === "No Frame") {
@@ -847,6 +850,8 @@ function bindTopFrame(frameType, mounting) {
                 { value: "No", text: "NO" },
                 { value: "U Channel", text: "U CHANNEL" }
             ];
+        } else if(frameType === "19x19 Light Block"){
+            options = [{ value: "No", text: "NO" }];
         }
         options.forEach(opt => {
             let optionElement = document.createElement("option");
@@ -885,7 +890,8 @@ function bindBottomFrame(frameType) {
                 { value: "Yes", text: "YES" },
                 { value: "No", text: "NO" },
                 { value: "Light Block", text: "LIGHT BLOCK" },
-                { value: "Bullnose Z Sill Plate", text: "BULLNOSE Z SILL PLATE" },
+                //{ value: "Bullnose Z Sill Plate", text: "BULLNOSE Z SILL PLATE" },
+                { value: "Sill Plate (Bullnose Z)", text: "SILL PLATE (BULLNOSE Z)" },
                 { value: "Roller Catch Ramp", text: "ROLLER CATCH RAMP" }
             ];
         } else if (frameType === "No Frame") {
@@ -902,6 +908,8 @@ function bindBottomFrame(frameType) {
                 { value: "No", text: "NO" },
                 { value: "U Channel", text: "U CHANNEL" }
             ];
+        } else if(frameType === "19x19 Light Block"){
+            options = [{ value: "No", text: "NO" }];
         }
         options.forEach(opt => {
             let optionElement = document.createElement("option");
@@ -1409,8 +1417,6 @@ function bindItemOrder(itemId) {
                     Mounting: mounting,
                     MidrailHeight1: height1,
                     MidrailHeight2: height2,
-                    LouvreSize: louvreSize,
-                    LouvrePosition: louvrePosition,
                     Buildout: buildout,
                     FrameType: frameType,
                     FrameBottom: bottomFrame,
@@ -1434,10 +1440,10 @@ function bindItemOrder(itemId) {
                     .then(() =>
                         bindFrameType(blindtype, mounting)
                     )
-                    .then(() => bindLeftFrame(frameType, mounting))
-                    .then(() => bindRightFrame(frameType, mounting))
+                    .then(() => bindLeftFrame(frameType))
+                    .then(() => bindRightFrame(frameType))
                     .then(() => bindTopFrame(frameType, mounting))
-                    .then(() => bindBottomFrame(frameType, mounting))
+                    .then(() => bindBottomFrame(frameType))
                     .then(() => bindBottomTrack(blindtype, bottomFrame))
                     .then(() => bindTiltrodSplit(height1))
                     .then(() => setFormValues(itemData))
