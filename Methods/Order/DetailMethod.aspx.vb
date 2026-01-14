@@ -1204,7 +1204,7 @@ Partial Class Methods_Order_DetailMethod
             End If
 
             ' Ambil semua detail sekaligus
-            Dim query As String = "SELECT Id, BlindName, TubeType, FabricId, FabricIdB, DesignId, DesignName, BottomHoldDown, FabricGroups FROM view_details WHERE HeaderId='" & headerid & "' AND Active='1' ORDER BY Id, BlindNo, DesignName ASC"
+            Dim query As String = "SELECT Id, BlindName, BracketType, TubeType, ControlType, FabricId, FabricIdB, DesignId, DesignName, BottomHoldDown, FabricGroups FROM view_details WHERE HeaderId='" & headerid & "' AND Active='1' ORDER BY Id, BlindNo, DesignName ASC"
             Dim detailData As DataSet = publicCfg.GetListData(query)
 
             If detailData.Tables(0).Rows.Count < 1 Then
@@ -1214,6 +1214,8 @@ Partial Class Methods_Order_DetailMethod
             For Each row As DataRow In detailData.Tables(0).Rows
                 Dim itemId = row("Id").ToString()
                 Dim blindName = row("BlindName").ToString()
+                Dim bracketType = row("BracketType").ToString()
+                Dim controlType = row("ControlType").ToString()
                 Dim tubeType = row("TubeType").ToString()
                 Dim fabricId = row("FabricId").ToString()
                 Dim fabricIdB = row("FabricIdB").ToString()
@@ -1224,7 +1226,7 @@ Partial Class Methods_Order_DetailMethod
 
                 Dim fabricGroup = publicCfg.GetFabricGroup(fabricId)
 
-                Dim priceGroupName = GetPriceGroupName(designName, blindName, tubeType, bottomHold, fabricGroup)
+                Dim priceGroupName = GetPriceGroupName(designName, blindName, bracketType, controlType, tubeType, bottomHold, fabricGroup)
                 If Not String.IsNullOrEmpty(priceGroupName) Then
                     Dim priceGroupId = publicCfg.GetPriceGroupId(designId, priceGroupName)
                     If Not String.IsNullOrEmpty(priceGroupId) Then
@@ -1234,7 +1236,7 @@ Partial Class Methods_Order_DetailMethod
 
                 IF Not fabricIdB = "" Then
                     Dim fabricGroupB = publicCfg.GetFabricGroup(fabricIdB)
-                    Dim priceGroupNameB = GetPriceGroupName(designName, blindName, tubeType, bottomHold, fabricGroupB)
+                    Dim priceGroupNameB = GetPriceGroupName(designName, blindName, bracketType, controlType, tubeType, bottomHold, fabricGroupB)
                     If Not String.IsNullOrEmpty(priceGroupNameB) Then
                         Dim priceGroupIdB = publicCfg.GetPriceGroupId(designId, priceGroupNameB)
                         If Not String.IsNullOrEmpty(priceGroupIdB) Then
@@ -1259,27 +1261,38 @@ Partial Class Methods_Order_DetailMethod
 
 
     ' # Fungsi bantu untuk menentukan PriceGroupName
-    Private Shared Function GetPriceGroupName(dname As String, bname As String, tube As String, bottomHold As String, fabricGroup As String) As String
+    Private Shared Function GetPriceGroupName(dname As String, bname As String, brackettype As String, controltype As String, tube As String, bottomHold As String, fabricGroup As String) As String
         Select Case dname
-            Case "Vertical Blinds"
-                If bname = "Track Only" Then Return bname & " - " & tube
-                If bname = "Slat Only" AndAlso bottomHold = "Top Hanger Only" Then Return bname & " With Hanger - " & fabricGroup
-                Return bname & " - " & fabricGroup
+            Case "Cellular Blinds"
+                
+                If bname = "Galaxy" Then
+                    Return bname & " " & brackettype & " - " & fabricGroup
+                End If
+
+                Return bname & " " & controltype & " - " & fabricGroup
+
+            Case "Panel Glides"
+                Return "Panel Glide - " & fabricGroup
+
+            Case "Roller Blinds"
+                If bname = "Skin Only" Then Return "Roller Skin Only - " & fabricGroup
+                Return "Roller Blind - " & fabricGroup
+
+            Case "Roman Blinds"
+                Return "Roman Blind - " & fabricGroup
+
+            Case "Venetian Blinds", "Aluminium Blinds"
+                Return bname
+
             Case "Veri Shades"
                 If bname = "Single" Then Return "Veri Shades - " & fabricGroup
                 If bname = "Slat Only" Then Return bname & " - " & fabricGroup
                 Return bname
-            Case "Venetian Blinds", "Aluminium Blinds"
-                Return bname
-            Case "Roller Blinds"
-                If bname = "Skin Only" Then Return "Roller Skin Only - " & fabricGroup
-                Return "Roller Blind - " & fabricGroup
-            Case "Panorama Shutters"
-                Return "Panorama - " & bname
-            Case "Panel Glides"
-                Return "Panel Glide - " & fabricGroup
-            Case "Roman Blinds"
-                Return "Roman Blind - " & fabricGroup
+
+            Case "Vertical Blinds"
+                If bname = "Track Only" Then Return bname & " - " & tube
+                If bname = "Slat Only" AndAlso bottomHold = "Top Hanger Only" Then Return bname & " With Hanger - " & fabricGroup
+                Return bname & " - " & fabricGroup
             Case Else
                 Return ""
         End Select

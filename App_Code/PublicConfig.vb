@@ -924,12 +924,10 @@ Public Class PublicConfig
                     End If
                 End If
 
-                If blindName = "Galaxy" Then
-                    If ControlType = "DN Corded" Or ControlType = "DN Cordless" Then
-                        description = "Galaxy Double #" & fabricType & " " & size
-                    End If
-                    If ControlType = "Corded" Or ControlType = "Cordless" Or ControlType = "TDBU Corded" Or ControlType = "TDBU Cordless" Then
-                        description = "Galaxy Single #" & fabricType & " " & size
+                If designName = "Cellular Blinds" Then
+                    description = blindName & " " & ControlType & " " & fabricType & " " & size
+                    If blindName = "Galaxy" Or blindName = "Potrait" Then
+                        description = blindName & " (" & bracketType & ") " & ControlType & " #" & fabricType & " " & size
                     End If
                 End If
 
