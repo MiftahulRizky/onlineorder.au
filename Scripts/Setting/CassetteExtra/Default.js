@@ -150,6 +150,7 @@ function submitSave() {
       } else {
         isSuccess(result.success).then(() => {
           handlerHideBSModal("modalSaveData");
+          tableData.ajax.reload();
         });
       }
     },
@@ -203,6 +204,7 @@ function submitFormImport() {
         } else {
           isSuccess(result.success).then(() => {
             handlerHideBSModal("modalImport");
+            tableData.ajax.reload();
           });
         }
       },
@@ -271,6 +273,7 @@ function uploadCSVFile(callback) {
 }
 // #-------------------------|| Bind Function ||-------------------------#
 // BIND CASSETTE EXTRA
+let tableData;
 function bindCassetteExtra(pricegroupid, width, drop) {
   if ($.fn.DataTable.isDataTable("#tableAjax")) {
     $("#tableAjax").DataTable().destroy(); // Hancurkan instance DataTables yang ada

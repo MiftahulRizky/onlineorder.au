@@ -67,9 +67,6 @@
 
             sdsPage.Delete()
 
-            Dim userId As String = UCase(Session("UserId")).ToString()
-            publicCfg.InsertActivity(userId, Page.Title, "DELETE PRICE GROUP. ID : " & lblId.Text)
-
             Call BindData(ddlDesign.SelectedValue, txtSearch.Text)
         Catch ex As Exception
             Call MessageError(True, ex.ToString())
@@ -82,7 +79,7 @@
             Dim rowIndex As Integer = Convert.ToInt32(TryCast(TryCast(sender, LinkButton).NamingContainer, GridViewRow).RowIndex)
             Dim row As GridViewRow = gvList.Rows(rowIndex)
 
-            Dim active As String = row.Cells(5).Text
+            Dim active As String = row.Cells(6).Text
 
             Dim newActive As Integer = 0
             If active = "False" Then : newActive = 1 : End If
@@ -91,9 +88,6 @@
             lblActive.Text = newActive
 
             sdsPage.Update()
-
-            Dim userId As String = UCase(Session("UserId")).ToString()
-            publicCfg.InsertActivity(userId, Page.Title, "ACTIVE PRICE GROUP. ID : " & lblId.Text)
 
             Call BindData(ddlDesign.SelectedValue, txtSearch.Text)
         Catch ex As Exception

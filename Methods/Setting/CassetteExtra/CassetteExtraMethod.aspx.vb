@@ -116,7 +116,7 @@ Partial Class Methods_SettingPage_CassetteExtra_CassetteExtraMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindPriceGroup() As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM PricesGroup WHERE Name LIKE '%Headbox%' ORDER BY Name ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM PricesGroup WHERE Type='Extra' ORDER BY Name ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
