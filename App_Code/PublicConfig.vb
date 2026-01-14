@@ -817,7 +817,7 @@ Public Class PublicConfig
             Dim blindId As String = thisData.Tables(0).Rows(0).Item("BlindId").ToString()
             Dim blindNo As String = thisData.Tables(0).Rows(0).Item("BlindNo").ToString()
             
-            Dim customDisData As DataSet = GetListData("SELECT * FROM CustomDiscount WHERE DesignId='" + UCase(designId).ToString() + "' AND BlindId='" + blindId + "' AND BlindNo = '" + blindNo + "' AND Type='" + type + "' AND Active=1 ORDER BY Id ASC")
+            Dim customDisData As DataSet = GetListData("SELECT * FROM CustomDiscounts WHERE DesignId='" + UCase(designId).ToString() + "' AND BlindId='" + blindId + "' AND BlindNo = '" + blindNo + "' AND Type='" + type + "' AND Active=1 ORDER BY Id ASC")
             ' result = result + 1.00 'debug
             If customDisData.Tables(0).Rows.Count > 0 Then
                 For i As Integer = 0 To customDisData.Tables(0).Rows.Count - 1
@@ -834,7 +834,7 @@ Public Class PublicConfig
                         If fromDate = "" And toDate = "" Then
                             If InStr(chargeResult, "%") > 0 Then
                                 Dim replicent As String = Replace(chargeResult, "%", "")
-                                result = matrix * Decimal.Parse(replicent) / 100
+                                result = matrix * (Decimal.Parse(replicent) / 100)
                             End If
 
                             If InStr(chargeResult, "$") > 0 Then
@@ -848,7 +848,7 @@ Public Class PublicConfig
                             If DateTime.Parse(createdDate) >= DateTime.Parse(fromDate) Then
                                 If InStr(chargeResult, "%") > 0 Then
                                     Dim replicent As String = Replace(chargeResult, "%", "")
-                                    result = matrix * Decimal.Parse(replicent) / 100
+                                    result = matrix * (Decimal.Parse(replicent) / 100)
                                 End If
                                 
                                 If InStr(chargeResult, "$") > 0 Then
@@ -863,7 +863,7 @@ Public Class PublicConfig
                             If DateTime.Parse(createdDate) >= DateTime.Parse(fromDate) AndAlso DateTime.Parse(createdDate) < DateTime.Parse(toDate) Then
                                 If InStr(chargeResult, "%") > 0 Then
                                     Dim replicent As String = Replace(chargeResult, "%", "")
-                                    result = matrix * Decimal.Parse(replicent) / 100
+                                    result = matrix * (Decimal.Parse(replicent) / 100)
                                 End If
                                 
                                 If InStr(chargeResult, "$") > 0 Then
@@ -872,7 +872,7 @@ Public Class PublicConfig
                                 End If
                             End If
                         End If
-                        Call PriceDetail(headerId, itemId, "Discount", qty, description, 0, 0, result)
+                        ' Call PriceDetail(headerId, itemId, "Discount", qty, description, 0, 0, result)
                     End If
                     Call UpdateDiscount(itemId, qty, result)
                 Next
@@ -986,12 +986,10 @@ Public Class PublicConfig
                 '#---------------------Create Description---------------------#
                 Dim descriptionB As String = kitName & " " & size
 
-                If blindName = "Galaxy" Then
-                    If ControlType = "DN Corded" Or ControlType = "DN Cordless" Then
-                        descriptionB = "Galaxy Double #" & fabricTypeB & " " & size
-                    End If
-                    If ControlType = "Corded" Or ControlType = "Cordless" Or ControlType = "TDBU Corded" Or ControlType = "TDBU Cordless" Then
-                        descriptionB = "Galaxy Single #" & fabricTypeB & " " & size
+                If designName = "Cellular Blinds" Then
+                    descriptionB = blindName & " " & controlType & " " & fabricTypeB & " " & size
+                    If blindName = "Galaxy" Or blindName = "Potrait" Then
+                        descriptionB = blindName & " (" & bracketType & ") " & controlType & " #" & fabricTypeB & " " & size
                     End If
                 End If
 
@@ -1107,7 +1105,6 @@ Public Class PublicConfig
         End If
         Using thisConn As SqlConnection = New SqlConnection(myConn)
             Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetailsPrice VALUES(NEWID(), @HeaderId, @ItemId, @Type, @Qty, @Description,@RealCost, @Cost, @Discount, @RealFinalCost, @FinalCost)")
-                Dim FinalCost As Decimal = Cost * Qty
                 ' myCmd.Parameters.AddWithValue("@Ordered", UpdateOrdered)
                 myCmd.Parameters.AddWithValue("@HeaderId", Header)
                 myCmd.Parameters.AddWithValue("@ItemId", Item)

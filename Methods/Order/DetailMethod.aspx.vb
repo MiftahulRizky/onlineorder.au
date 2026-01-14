@@ -1563,11 +1563,12 @@ Partial Class Methods_Order_DetailMethod
                         Dim Type As String = reader("Type").ToString()
                         Dim Qty As String = reader("Qty").ToString()
                         Dim Description As String = reader("Description").ToString()
-                        Dim Discount As String = reader("Discount").ToString() 
+                        Dim Discount As Integer = CInt(reader("Discount"))
                         Dim RealCost As String = "<br><span class='text-decoration-line-through text-secondary'>" & reader("FormatRealCost").ToString() & "</span>"
-                        Dim Cost As String = reader("FormatCost").ToString() & If(Discount = "0,00", "", RealCost)
+                        Dim Cost As String = reader("FormatCost").ToString() & If(Discount = 0, "", RealCost)
                         Dim RealFinalCost As String = "<br><span class='text-decoration-line-through text-secondary'>" & reader("FormatRealFinalCost").ToString() & "</span>"
-                        Dim FinalCost As String = reader("FormatFinalCost").ToString() & If(Discount = "0,00", "", RealFinalCost)
+                        Dim FinalCost As String = reader("FormatFinalCost").ToString() & If(Discount = 0, "", RealFinalCost)
+
 
 
                         Dim row As New OrdersMatrixReturnRowPricing With {
@@ -1578,7 +1579,7 @@ Partial Class Methods_Order_DetailMethod
                             .Qty = Qty,
                             .Description = Description,
                             .Cost = If(Type = "Discount", "", Cost),
-                            .Discount = If(Discount = "0,00", "", "-" & reader("FormatDiscount").ToString()),
+                            .Discount = If(Discount = 0, "", "-" & reader("FormatDiscount").ToString()),
                             .FinalCost = If(Type = "Discount", "", FinalCost)
                         }
                         resultList.Add(row)

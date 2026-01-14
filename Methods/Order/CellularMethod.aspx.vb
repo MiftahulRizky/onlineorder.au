@@ -295,11 +295,8 @@ Partial Class Methods_Order_CelloraMethod
                 End If
             End If
 
-            If String.IsNullOrEmpty(data.mounting) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "mounting is required !",.field = "mounting"}}
-            End If
 
-            If blindName = "Galaxy" Then
+            If blindName = "Galaxy" And InStr(controlName, "Corded") > 0 Then
                 If String.IsNullOrEmpty(data.cordtype) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cord type is required !",.field = "cordtype"}}
                 End If
@@ -406,7 +403,7 @@ Partial Class Methods_Order_CelloraMethod
                         myCmd.Parameters.AddWithValue("@FabricIdB", If(String.IsNullOrEmpty(data.fabriccolour2), DBNull.Value, UCase(data.fabriccolour2).ToString()))
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
                         myCmd.Parameters.AddWithValue("@PriceGroupIdB", If(String.IsNullOrEmpty(priceGroupId2), DBNull.Value, UCase(priceGroupId2).ToString()))
-                        myCmd.Parameters.AddWithValue("@Qty", 1)
+                        myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
                         myCmd.Parameters.AddWithValue("@Width", width)
