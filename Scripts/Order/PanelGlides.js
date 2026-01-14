@@ -828,6 +828,7 @@ function setFormValues(itemData) {
     wandposition: "WandPosition",
     wandlength: "WandLength",
     wandcolour: "WandColour",
+    bottomrail: "BottomHoldDown",
     batten: "Batten",
     battencolour: "BattenColour",
     fitting: "Fitting",
@@ -894,6 +895,7 @@ function submitForm() {
     "wandposition", // as New WandPosition
     "wandlength", // as WandLength
     "wandcolour", // as WandColour
+    "bottomrail", // as BottomHoldDown
     "batten", // as New Batten
     "battencolour", // as New BattenColour
     "fitting", // as New Fitting
@@ -982,6 +984,8 @@ function visibleElementForm(blindname, colourtype) {
     btnSubmit.innerHTML =
       "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
   } else if (ITEMACTION == "ViewItem") {
+    btnSubmit.innerHTML =
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i> Submit";
     if (ROLENAME !== "Administrator") btnSubmit.setAttribute("hidden", true);
   }
 }

@@ -586,6 +586,7 @@ Public Class PrintConfig
                 result += thStartRowSpan2 & "No Panel" & thEnd
                 result += thStartColSpan2 & "Track" & thEnd
                 result += thStartColSpan3 & "Wand" & thEnd
+                result += thStartRowSpan2 & "Bottom Rail" & thEnd
                 result += thStartRowSpan2 & "Batten" & thEnd
                 result += thStartRowSpan2 & "Batten Colour" & thEnd
                 result += thStartRowSpan2 & "Fitting" & thEnd
@@ -618,6 +619,7 @@ Public Class PrintConfig
                     result += tdStart & thisData.Tables(0).Rows(i).Item("WandPosition").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("WandLength").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("WandColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Batten").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BattenColour").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Fitting").ToString() & tdEnd

@@ -1538,11 +1538,11 @@ Partial Class Methods_Order_DetailMethod
                         orderByClause.AppendLine(" ORDER BY " & columnMap(orderColumnIndex) & " " & orderDirection)
                     Else
                         ' Default order jika kolom No atau kolom yang tidak bisa di-sort dipilih
-                        orderByClause.AppendLine(" ORDER BY Description ASC")
+                        orderByClause.AppendLine(" ORDER BY Ordered ASC")
                     End If
                 Else
                     ' Default order jika tidak ada order dari DataTables
-                    orderByClause.AppendLine(" ORDER BY Description ASC")
+                    orderByClause.AppendLine(" ORDER BY Ordered ASC")
                 End If
                 sqlBuilder.Append(orderByClause.ToString())
                 
@@ -4775,7 +4775,7 @@ Partial Class Methods_Order_DetailMethod
                                 tableName = "JobSheet_Cellular"
 
                             Case "Panel Glides"
-                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "Layout", "NumOfPanel", "TrackType", "TrackColour", "NumOfWand", "WandPosition", "WandColour", "WandLength", "Batten", "BattenColour", "Fitting", "Notes", "KitName", "VenetianType", "ColourType", "FabricName", "FabricType", "FabricColour", "FabricWidth"})
+                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "Layout", "NumOfPanel", "TrackType", "TrackColour", "NumOfWand", "WandPosition", "WandColour", "WandLength", "Batten", "BattenColour", "Fitting", "BottomHoldDown", "Notes", "KitName", "VenetianType", "ColourType", "FabricName", "FabricType", "FabricColour", "FabricWidth"})
 
                                 tableName = "JobSheet_PanelGlides"
 
@@ -5247,13 +5247,13 @@ Partial Class Methods_Order_DetailMethod
                 Select Case  currentData("BlindName").ToString()
                     Case "Plain"
                         ReportType = "Panel Glide Plain"
-                        ReportIcon = "R <br/><span style='font-size: 15px;'>Plain</span>"
+                        ReportIcon = "PG <br/><span style='font-size: 15px;'>Plain</span>"
                     Case "Panel Plantation"
                         ReportType = "Panel Glide Plantation"
-                        ReportIcon = "R <br/><span style='font-size: 15px;'>Plantation</span>"
+                        ReportIcon = "PG <br/><span style='font-size: 15px;'>Plantation</span>"
                     Case "Panel Sewless"
                         ReportType = "Panel Glide Sewless"
-                        ReportIcon = "R <br/><span style='font-size: 15px;'>Sewless</span>"
+                        ReportIcon = "PG <br/><span style='font-size: 15px;'>Sewless</span>"
                 End Select
             
             Case "Roller Blinds"
@@ -6749,6 +6749,17 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetStart & currentData("Layout4").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("Layout5").ToString() & tdDetEnd
                 result+= tdDetRight & currentData("Layout6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#BottomHoldDown
+            result+= trDetStart
+                result+= tdTitleStart & "Bottom Rail" & tdDetEnd
+                result+= tdDetStart & currentData("BottomHoldDown1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BottomHoldDown2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BottomHoldDown3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BottomHoldDown4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BottomHoldDown5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("BottomHoldDown6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#Batten

@@ -170,6 +170,17 @@
                                     </div>
                                 </div>
 
+                                <div class="mb-3 row" id="divBottomRail">
+                                    <label for="bottomrail" class="col-lg-3 text-uppercase fw-bold">bottom rail</label>
+                                    <div class="col-lg-4">
+                                        <select name="bottomrail" id="bottomrail" class="form-control ">
+                                            <option value=""></option>
+                                            <option value="Standard (Plain Pocket)">STANDARD (PLAIN POCKET)</option>
+                                            <option value="Fabric Covered">FABRIC COVERED</option>
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <div class="mb-3 row" id="divBatten">
                                     <label for="batten" class="col-lg-3 text-uppercase fw-bold">batten</label>
                                     <div class="col-lg-2">
