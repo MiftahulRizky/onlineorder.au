@@ -615,11 +615,8 @@ function bindBattenColour(blindName) {
 
     let data = [];
     switch (blindName) {
-      case "Classic":
       case "Plantation":
-      case "Sewless":
         data = [
-          { value: "", label: "" },
           { value: "Alabaster", label: "Alabaster" },
           { value: "Batlic", label: "Batlic" },
           { value: "Black", label: "Black" },
@@ -629,7 +626,16 @@ function bindBattenColour(blindName) {
           { value: "Teak", label: "Teak" },
           { value: "White", label: "White" },
         ];
+      case "Sewless":
+        data = [{ value: "Aluminium-Ivory", label: "Aluminium-Ivory" }];
         break;
+    }
+
+    if (data.length > 1) {
+      const defaultOption = document.createElement("option");
+      defaultOption.text = "";
+      defaultOption.value = "";
+      select.add(defaultOption);
     }
 
     data.forEach((item) => {
