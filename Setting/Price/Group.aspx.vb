@@ -218,7 +218,7 @@ Partial Class Setting_Price_Group
             gvList.DataBind()
 
             btnAdd.Visible = False
-            If Session("RoleName") = "Administrator" And Session("LevelName") = "Leader" Then btnAdd.Visible = True
+            If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" OR Session("LevelName") = "Super Admin") Then btnAdd.Visible = True
         Catch ex As Exception
             MessageError(True, ex.ToString())
         End Try

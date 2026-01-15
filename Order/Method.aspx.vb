@@ -652,10 +652,12 @@ Partial Class Order_Method
             If Not Integer.TryParse(data.markup, markup) OrElse markup < 0 Then Return "PLEASE CHECK YOUR MARK UP ORDER !"
         End If
 
-        Dim customerPriceGroup As String = orderCfg.GetItemData("SELECT Customers.Pricing FROM Customers INNER JOIN OrderHeaders ON Customers.Id = OrderHeaders.CustomerId WHERE OrderHeaders.Id='" + data.headerid + "'")
+        Dim customerPriceGroup As String = orderCfg.GetItemData("SELECT Customers.Pricing FROM Customers INNER JOIN OrderHeaders_Shutters ON Customers.Id = OrderHeaders_Shutters.CustomerId WHERE OrderHeaders_Shutters.Id='" + data.headerid + "'")
+        If String.IsNullOrEmpty(customerPriceGroup) Then Return "CUSTOMER PRICING NOT FOUND <br /> PLEASE CONTACT YOUR ADMIN !"
 
         Dim productpriceGroupName As String = String.Format("Evolve {0}", customerPriceGroup)
         Dim productpriceGroupId As String = orderCfg.GetProductPriceGroupId(data.designid, productpriceGroupName)
+        If String.IsNullOrEmpty(productpriceGroupId) Then Return "PRODUCT PRICE GROUP NOT FOUND <br /> PLEASE CONTACT YOUR ADMIN !"
 
         If blindName = "Panel Only" Then
             data.louvreposition = ""

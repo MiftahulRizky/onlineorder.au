@@ -599,7 +599,6 @@ function handlerSelPriceGroup(designid, params) {
   return new Promise((resolve, reject) => {
     const sel = document.querySelector(params);
     sel.innerHTML = ""; //reset
-
     $.ajax({
       type: "POST",
       url: uriMethod + "/PriceMatrixMethod.aspx/BindPriceGroup",
@@ -822,8 +821,12 @@ function handlerDelete(id, name, type, width, drop, cost) {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, delete it!",
+    customClass: {
+      popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
+      swalLoadingShow("Processing...");
       $.ajax({
         type: "post",
         url: uriMethod + "/PriceMatrixMethod.aspx/DeletePriceMatrix",
@@ -865,8 +868,12 @@ const handlerDeleteByGroupAndType = (groupid, type, htmlgroupid) => {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, delete it!",
+    customClass: {
+      popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
+      swalLoadingShow("Processing...");
       $.ajax({
         type: "post",
         url: uriMethod + "/PriceMatrixMethod.aspx/DeletePriceMatrixByGroup",
