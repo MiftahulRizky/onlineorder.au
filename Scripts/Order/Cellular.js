@@ -26,13 +26,28 @@ document.querySelector("#blindtype").addEventListener("change", (e) => {
   divFormDetail.setAttribute("hidden", true);
 
   const blindId = e.target.value;
-  const select = document.querySelector("#blindtype");
-  const blindName = select.options[select.selectedIndex].dataset.name;
+  const blindName = e.target.selectedOptions[0].dataset.name;
+
+  const lblBracketType = document.querySelector("#lblBracketType");
+  lblBracketType.innerHTML = "cell type";
 
   const divBracketType = document.querySelector("#divBracketType");
+  const divControlType = document.querySelector("#divControlType");
   divBracketType.setAttribute("hidden", true);
+  divControlType.setAttribute("hidden", true);
+
+  if (blindName == "Cellora") {
+    divControlType.removeAttribute("hidden");
+  }
   if (blindName == "Galaxy") {
     divBracketType.removeAttribute("hidden");
+    divControlType.removeAttribute("hidden");
+    const bracketType = document.querySelector("#brackettype").value;
+    bindControls(designId, blindId, bracketType); // for reset
+  }
+  if (blindName == "Potrait") {
+    divBracketType.removeAttribute("hidden");
+    lblBracketType.innerHTML = "system type";
   }
 
   bindBrackets(designId, blindId);
@@ -43,16 +58,18 @@ document.querySelector("#brackettype").addEventListener("change", (e) => {
   const divFormDetail = document.querySelector("#divFormDetail");
   divFormDetail.setAttribute("hidden", true);
 
-  const blindId = document.querySelector("#blindtype").value;
+  const select = document.querySelector("#blindtype");
+  const blindName = select.options[select.selectedIndex].dataset.name;
+  const blindId = select.value;
   const bracketType = e.target.value;
 
   const fabricType = document.querySelector("#fabrictype").value;
   const fabricType2 = document.querySelector("#fabrictype2").value;
 
   bindControls(designId, blindId, bracketType);
-  bindFabrics(designId);
+  bindFabrics(designId, blindName);
   bindFabricColours(designId, fabricType);
-  bindFabrics2(designId);
+  bindFabrics2(designId, blindName);
   bindFabricColours2(designId, fabricType2);
 });
 
@@ -63,6 +80,13 @@ document.querySelector("#controltype").addEventListener("change", (e) => {
 
   const controlType = e.target.selectedOptions[0].dataset.name;
 
+  const fabricType = document.querySelector("#fabrictype").value;
+  const fabricType2 = document.querySelector("#fabrictype2").value;
+
+  bindFabrics(designId, blindName);
+  bindFabricColours(designId, fabricType);
+  bindFabrics2(designId, blindName);
+  bindFabricColours2(designId, fabricType2);
   bindCordType(controlType);
   handlerElementVisibility(controlType, blindName);
 });
@@ -212,39 +236,57 @@ const handlerElementVisibility = (controltype, blindname) => {
   const divMarkUp = document.getElementById("divMarkUp");
 
   const divBracketType = document.getElementById("divBracketType");
+  const divControlType = document.getElementById("divControlType");
 
   const divFabricNight = document.getElementById("divFabricNight");
   const lblFabricDay = document.getElementById("lblFabricDay");
   const lblFabricNight = document.getElementById("lblFabricNight");
+  const divFabricDayType = document.getElementById("divFabricDayType");
+  const divFabricDayColour = document.getElementById("divFabricDayColour");
   const divCordType = document.getElementById("divCordType");
 
   // set default hide
   btnSubmit.setAttribute("hidden", true);
   divFormDetail.setAttribute("hidden", true);
   divBracketType.setAttribute("hidden", true);
+  divControlType.setAttribute("hidden", true);
   divMarkUp.setAttribute("hidden", true);
   divFabricNight.setAttribute("hidden", true);
   divCordType.setAttribute("hidden", true);
 
   lblFabricDay.innerHTML = "fabric type x colour";
   lblFabricNight.innerHTML = "fabric type x colour";
+
+  divFabricDayType.classList.remove("col-lg-8");
+  divFabricDayType.classList.add("col-lg-4");
+  divFabricDayColour.removeAttribute("hidden");
   if (controltype) divFormDetail.removeAttribute("hidden");
 
-  if (
-    blindname == "Galaxy" &&
-    (controltype == "DN Corded" || controltype == "DN Cordless")
-  ) {
-    divFabricNight.removeAttribute("hidden");
-    lblFabricDay.innerHTML = "fabric type x colour day";
-    lblFabricNight.innerHTML = "fabric type x colour night";
+  if (blindname == "Cellora") {
+    divControlType.removeAttribute("hidden");
   }
 
   if (blindname == "Galaxy") {
     divBracketType.removeAttribute("hidden");
+    divControlType.removeAttribute("hidden");
+
+    if (controltype == "DN Corded" || controltype == "DN Cordless") {
+      divFabricNight.removeAttribute("hidden");
+      lblFabricDay.innerHTML = "fabric type x colour day";
+      lblFabricNight.innerHTML = "fabric type x colour night";
+    }
+
+    if (controltype.includes("Corded")) {
+      divCordType.removeAttribute("hidden");
+    }
   }
 
-  if (blindname == "Galaxy" && controltype.includes("Corded")) {
-    divCordType.removeAttribute("hidden");
+  if (blindname == "Potrait") {
+    divBracketType.removeAttribute("hidden");
+    lblFabricDay.innerHTML = "fabric";
+    divFabricDayType.classList.remove("col-lg-4");
+    divFabricDayType.classList.add("col-lg-8");
+    divFabricDayColour.setAttribute("hidden", true);
   }
 
   // markup
@@ -515,17 +557,15 @@ const bindBrackets = async (designId, blindId) => {
         const fabricType = document.querySelector("#fabrictype").value;
         const fabricType2 = document.querySelector("#fabrictype2").value;
 
+        const select = document.querySelector("#blindtype");
+        const blindName = select.options[select.selectedIndex].dataset.name;
+
         bindControls(designId, blindId, brackettype.value);
-        bindFabrics(designId);
+        bindFabrics(designId, blindName);
         bindFabricColours(designId, fabricType);
-        bindFabrics2(designId);
+        bindFabrics2(designId, blindName);
         bindFabricColours2(designId, fabricType2);
       }
-
-      // const sel = document.getElementById("blindtype");
-      // const blindName = sel.selectedOptions[0].getAttribute("data-name");
-
-      // handlerElementVisibility(brackettype.value, blindName);
     }
   } catch (err) {
     // error karena jaringan / parsing JSON
@@ -579,7 +619,7 @@ const bindControls = async (designId, blindId, bracketType) => {
     if (Array.isArray(data)) {
       controltype.innerHTML = ""; //reset
 
-      if (data.length > 0) {
+      if (data.length > 1) {
         const defaultOption = document.createElement("option");
         defaultOption.value = "";
         defaultOption.text = "";
@@ -596,14 +636,18 @@ const bindControls = async (designId, blindId, bracketType) => {
       });
 
       if (data.length === 1) {
-        controltype.selectedIndex = 0;
-        visibleElementForm(blindName, controltype.value);
+        const sel = document.getElementById("blindtype");
+        const blindName = sel.selectedOptions[0].getAttribute("data-name");
+        const fabricType = document.querySelector("#fabrictype").value;
+        const fabricType2 = document.querySelector("#fabrictype2").value;
+
+        bindFabrics(designId, blindName);
+        bindFabricColours(designId, fabricType);
+        bindFabrics2(designId, blindName);
+        bindFabricColours2(designId, fabricType2);
+        bindCordType(controltype.value);
+        handlerElementVisibility(controltype.value, blindName);
       }
-
-      const sel = document.getElementById("blindtype");
-      const blindName = sel.selectedOptions[0].getAttribute("data-name");
-
-      handlerElementVisibility(controltype.value, blindName);
     }
   } catch (err) {
     // error karena jaringan / parsing JSON
@@ -615,7 +659,7 @@ const bindControls = async (designId, blindId, bracketType) => {
   }
 };
 
-const bindFabrics = async (designId) => {
+const bindFabrics = async (designId, blindName) => {
   const sel = document.getElementById("fabrictype");
   sel.innerHTML = ""; //reset
 
@@ -627,7 +671,7 @@ const bindFabrics = async (designId) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designId }),
+      body: JSON.stringify({ designId, blindName }),
     });
 
     // cek status HTTP (400, 500, dsb.)
@@ -686,7 +730,7 @@ const bindFabrics = async (designId) => {
     isError(msg);
   }
 };
-const bindFabrics2 = async (designId) => {
+const bindFabrics2 = async (designId, blindName) => {
   const sel = document.getElementById("fabrictype2");
   sel.innerHTML = ""; //reset
 
@@ -698,7 +742,7 @@ const bindFabrics2 = async (designId) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designId }),
+      body: JSON.stringify({ designId, blindName }),
     });
 
     // cek status HTTP (400, 500, dsb.)
@@ -962,9 +1006,9 @@ const bindItemOrders = async (itemId) => {
       await bindBlinds(item.DesignId);
       await bindBrackets(item.DesignId, item.BlindId);
       await bindControls(item.DesignId, item.BlindId, item.BracketType);
-      await bindFabrics(item.DesignId);
+      await bindFabrics(item.DesignId, item.BlindName);
       await bindFabricColours(item.DesignId, item.FabricType);
-      await bindFabrics2(item.DesignId);
+      await bindFabrics2(item.DesignId, item.BlindName);
       await bindFabricColours2(item.DesignId, item.FabricTypeB);
       await bindCordType(item.ControlType);
       await handlerElementVisibility(item.ControlType, item.BlindName);

@@ -105,10 +105,14 @@ Partial Class Methods_Order_CelloraMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindFabricType(ByVal designId As String) As Object
+    Public Shared Function BindFabricType(ByVal designId As String, ByVal blindName As String) As Object
         Try
+            Dim AditionalQueries As String = "Description NOT LIKE '%Potrait%' AND"
+            If blindName = "Potrait" Then
+                AditionalQueries = "Description LIKE '%Potrait%' AND"
+            End If
             
-            Dim datas As DataSet = publicCfg.GetListData("SELECT Type FROM Fabrics WHERE DesignId='" + designId + "' AND Active='1' GROUP BY Type ORDER BY Type ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT Type FROM Fabrics WHERE DesignId='" + designId + "' AND " + AditionalQueries + " Active='1' GROUP BY Type ORDER BY Type ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -342,12 +346,19 @@ Partial Class Methods_Order_CelloraMethod
                 data.fabriccolour2 = ""
             End If
 
+            Dim squareMetre As Decimal = Math.Round(width * drop / 1000000, 4)
+            Dim linearMetre As Decimal = Math.Round(width / 1000, 4)
+            If Not blindName = "Potrait" Then
+                squareMetre = 0
+                linearMetre = 0
+            End If
+
             Dim msg As String = String.Empty
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim itemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, FabricIdB, PriceGroupId, PriceGroupIdB, BlindNo, Qty, Location, Mounting, Width, [Drop], MaterialCord, ControlPosition, ChainLength, BottomHoldDown, DoorCutOut, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @FabricIdB, @PriceGroupId, @PriceGroupIdB, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @MaterialCord, @ControlPosition, @ChainLength, @BottomHoldDown, @DoorCutOut, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, FabricIdB, PriceGroupId, PriceGroupIdB, BlindNo, Qty, Location, Mounting, Width, [Drop], MaterialCord, ControlPosition, ChainLength, BottomHoldDown, DoorCutOut, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @FabricIdB, @PriceGroupId, @PriceGroupIdB, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @MaterialCord, @ControlPosition, @ChainLength, @BottomHoldDown, @DoorCutOut, @SquareMetre, @LinearMetre, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
@@ -366,6 +377,8 @@ Partial Class Methods_Order_CelloraMethod
                         myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.holddown)
                         myCmd.Parameters.AddWithValue("@DoorCutOut", data.cutout)
+                        myCmd.Parameters.AddWithValue("@SquareMetre", squareMetre)
+                        myCmd.Parameters.AddWithValue("@LinearMetre", linearMetre)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
                         myCmd.Connection = thisConn
@@ -388,7 +401,7 @@ Partial Class Methods_Order_CelloraMethod
                 Dim itemId As String = data.itemid
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, MaterialCord = @MaterialCord, ControlPosition = @ControlPosition, ChainLength = @ChainLength, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, MaterialCord = @MaterialCord, ControlPosition = @ControlPosition, ChainLength = @ChainLength, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
@@ -407,6 +420,8 @@ Partial Class Methods_Order_CelloraMethod
                         myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.holddown)
                         myCmd.Parameters.AddWithValue("@DoorCutOut", data.cutout)
+                        myCmd.Parameters.AddWithValue("@SquareMetre", squareMetre)
+                        myCmd.Parameters.AddWithValue("@LinearMetre", linearMetre)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
                         myCmd.Connection = thisConn
@@ -445,10 +460,19 @@ Partial Class Methods_Order_CelloraMethod
             
             Dim fabricGroupName As String = fabricData.Tables(0).Rows(0).Item("Group").ToString()
 
-            Dim priceGroupName As String =  blindName & " " & controlName & " - " & fabricGroupName
+            Dim priceGroupName As String = String.Format("{0} {1} - {2}", blindname, controlname, fabricGroupName)
             If blindname = "Galaxy" Then
-                priceGroupName = blindName & " " & brackettype & " - " & fabricGroupName
+                priceGroupName = String.Format("Galaxy {0} - {1}", brackettype, fabricGroupName)
             End If
+
+            If blindname = "Potrait" Then
+                Dim bracket As String = "Standard"
+                If brackettype = "Patio Door Vertical" Then
+                    bracket = "Patio"
+                End If
+                priceGroupName = String.Format("Potrait {0} - {1}", bracket, fabricGroupName)
+            End If
+
 
             Dim priceGroupId As String = publicCfg.GetPriceGroupId(designid ,priceGroupName)
             If String.IsNullOrEmpty(priceGroupId) Then

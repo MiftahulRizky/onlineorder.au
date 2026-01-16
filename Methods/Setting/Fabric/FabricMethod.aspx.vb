@@ -90,7 +90,7 @@ Partial Class Methods_Setting_Fabric_FabricMethod
         Public Property success As String
     End Class
 
-   <WebMethod()>
+    <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Find(ByVal id As String) As Object
         Try
@@ -111,6 +111,23 @@ Partial Class Methods_Setting_Fabric_FabricMethod
             End If
 
             Return resultList
+        Catch ex As Exception
+            ' Tangani error agar bisa dikenali di JavaScript
+            Return New With {.error = True, .message = ex.Message}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function GetLastId() As Object
+        Try
+            Dim This As Integer = publicCfg.GetItemData("SELECT TOP 1 Id FROM Fabrics Order By Id DESC")
+            Dim TempResult As String = This + 1
+            Dim result As New Dictionary(Of String, String) From {
+                {"lastid", TempResult}
+            }
+           
+            Return result
         Catch ex As Exception
             ' Tangani error agar bisa dikenali di JavaScript
             Return New With {.error = True, .message = ex.Message}
@@ -158,7 +175,7 @@ Partial Class Methods_Setting_Fabric_FabricMethod
                 If Not String.IsNullOrEmpty(params.search.value) Then
                     Dim searchValue As String = "%" & params.search.value.Trim() & "%"
                     ' whereClause.AppendLine(" AND ( Fabrics.Id LIKE @SearchValue OR Fabrics.Name LIKE @SearchValue OR Fabrics.Width LIKE @SearchValue OR Fabrics.Group LIKE @SearchValue )")
-                    whereClause.AppendLine(" AND ( Fabrics.Id LIKE @SearchValue OR Fabrics.Name LIKE @SearchValue OR Fabrics.Width LIKE @SearchValue OR Fabrics.[Group] LIKE @SearchValue)")
+                    whereClause.AppendLine(" AND ( Fabrics.Id LIKE @SearchValue OR Fabrics.Name LIKE @SearchValue OR Fabrics.Width LIKE @SearchValue OR Fabrics.[Group] LIKE @SearchValue OR Fabrics.Description LIKE @SearchValue )")
                     cmd.Parameters.AddWithValue("@SearchValue", searchValue)
                 End If
 

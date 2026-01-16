@@ -62,7 +62,7 @@
                                 </div>
             
                                 <div class="mb-3 row" id="divBracketType">
-                                    <label for="brackettype" class="col-lg-3 text-uppercase fw-bold">cell type</label>
+                                    <label for="brackettype" class="col-lg-3 text-uppercase fw-bold" id="lblBracketType">cell type</label>
                                     <div class="col-lg-5">
                                         <select type="text" name="brackettype" id="brackettype" class="form-control "></select>
                                     </div>  
@@ -121,11 +121,11 @@
 
                                     <div class="mb-3 row" id="divFabricDay">
                                         <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">fabric type x colour</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="col-lg-4 col-md-12 col-sm-12" id="divFabricDayType">
                                             <select name="fabrictype" id="fabrictype" class="form-control "></select>
                                             <small class="form-hint">* Type</small>
                                         </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="col-lg-4 col-md-12 col-sm-12" id="divFabricDayColour">
                                             <select name="fabriccolour" id="fabriccolour" class="form-control "></select>
                                             <small class="form-hint">* Colour</small>
                                         </div>

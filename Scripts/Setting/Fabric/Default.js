@@ -50,6 +50,7 @@ document.querySelector("#card-table #btn-add").addEventListener("click", () => {
   document.querySelector("#modalSubmit #modalSubmitLabel").innerHTML =
     "Create Fabric";
   handlerSelDesigns("#modalSubmit #designtype");
+  handlerGetLastId();
 });
 // --------------------------------------------------||#card-table #data-table ||-----------------------------------
 // edit / detail
@@ -295,6 +296,38 @@ const handlerSelDesigns = async (params) => {
         ? error.message || error
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg); // langsung tampilkan error, tidak perlu reject
+  }
+};
+
+const handlerGetLastId = async () => {
+  try {
+    const res = await fetch(`${uriMethod}/GetLastId`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+    });
+
+    if (!res.ok) {
+      const msg = `${res.status} - ${res.statusText}`;
+      throw isError(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d || response;
+
+    if (!data || data.length === 0) {
+      const msg = "No data returned from server : handlerGetLastId";
+      throw isError(msg);
+    }
+
+    document.querySelector("#modalSubmit #id").value = data.lastid;
+  } catch (error) {
+    const msg =
+      roleName === "Administrator"
+        ? error.message || error
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
   }
 };
 

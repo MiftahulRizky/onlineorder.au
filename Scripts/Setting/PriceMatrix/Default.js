@@ -231,6 +231,7 @@ function submitSave() {
       } else {
         isSuccess(result.success).then(() => {
           handlerHideBSModal("modalSaveData");
+          tableData.ajax.reload();
         });
       }
     },
@@ -822,6 +823,9 @@ function handlerDelete(id, name, type, width, drop, cost) {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, delete it!",
+    customClass: {
+      popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       $.ajax({
@@ -865,6 +869,9 @@ const handlerDeleteByGroupAndType = (groupid, type, htmlgroupid) => {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, delete it!",
+    customClass: {
+      popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       $.ajax({
