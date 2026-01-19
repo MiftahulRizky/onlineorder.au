@@ -28,26 +28,26 @@ document.querySelector("#blindtype").addEventListener("change", (e) => {
   const blindId = e.target.value;
   const blindName = e.target.selectedOptions[0].dataset.name;
 
-  const lblBracketType = document.querySelector("#lblBracketType");
-  lblBracketType.innerHTML = "cell type";
+  // const lblBracketType = document.querySelector("#lblBracketType");
+  // lblBracketType.innerHTML = "cell type";
 
   const divBracketType = document.querySelector("#divBracketType");
-  const divControlType = document.querySelector("#divControlType");
+  // const divControlType = document.querySelector("#divControlType");
   divBracketType.setAttribute("hidden", true);
-  divControlType.setAttribute("hidden", true);
+  // divControlType.setAttribute("hidden", true);
 
   if (blindName == "Cellora") {
-    divControlType.removeAttribute("hidden");
+    // divControlType.removeAttribute("hidden");
   }
   if (blindName == "Galaxy") {
     divBracketType.removeAttribute("hidden");
-    divControlType.removeAttribute("hidden");
+    // divControlType.removeAttribute("hidden");
     const bracketType = document.querySelector("#brackettype").value;
     bindControls(designId, blindId, bracketType); // for reset
   }
   if (blindName == "Potrait") {
     divBracketType.removeAttribute("hidden");
-    lblBracketType.innerHTML = "system type";
+    // lblBracketType.innerHTML = "system type";
   }
 
   bindBrackets(designId, blindId);
@@ -249,7 +249,7 @@ const handlerElementVisibility = (controltype, blindname) => {
   btnSubmit.setAttribute("hidden", true);
   divFormDetail.setAttribute("hidden", true);
   divBracketType.setAttribute("hidden", true);
-  divControlType.setAttribute("hidden", true);
+  // divControlType.setAttribute("hidden", true);
   divMarkUp.setAttribute("hidden", true);
   divFabricNight.setAttribute("hidden", true);
   divCordType.setAttribute("hidden", true);
@@ -263,12 +263,12 @@ const handlerElementVisibility = (controltype, blindname) => {
   if (controltype) divFormDetail.removeAttribute("hidden");
 
   if (blindname == "Cellora") {
-    divControlType.removeAttribute("hidden");
+    // divControlType.removeAttribute("hidden");
   }
 
   if (blindname == "Galaxy") {
     divBracketType.removeAttribute("hidden");
-    divControlType.removeAttribute("hidden");
+    // divControlType.removeAttribute("hidden");
 
     if (controltype == "DN Corded" || controltype == "DN Cordless") {
       divFabricNight.removeAttribute("hidden");

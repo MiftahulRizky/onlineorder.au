@@ -53,6 +53,17 @@ $("#tableAjax").on("click", "#btnDelete", function () {
   );
 });
 
+$("#tableAjax").on("click", "#btnCopy", function () {
+  handlerCopy(
+    $(this).data("id"),
+    $(this).data("name"),
+    $(this).data("type"),
+    $(this).data("width"),
+    $(this).data("drop"),
+    $(this).data("cost")
+  );
+});
+
 // #-------------------------|| Filter Event ||-------------------------#
 // CHANGE DESIGN TYPE
 $("#canvasFilter #designid").on("change", function () {
@@ -452,6 +463,17 @@ function bindPriceMatrix(pricegroupid, type, width, drop) {
                         </a>
                       </li>
                       <li>
+                        <a class="dropdown-item" href="javascript:void(0)" id="btnCopy" 
+                        data-id="${row.Id}" 
+                        data-name="${row.PriceGroupName}"
+                        data-type="${row.Type}"
+                        data-width="${row.Width}"
+                        data-drop="${row.Drop}"
+                        data-cost="${row.Cost}">
+                          <i class="ti ti-copy-plus me-1 opacity-50 fs-2"></i>Copy / Duplicate
+                        </a>
+                      </li>
+                      <li>
                         <a class="dropdown-item text-danger" href="javascript:void(0)" id="btnDelete"
                             data-id="${row.Id}"
                             data-name="${row.PriceGroupName}"
@@ -805,6 +827,62 @@ function setFormValues(itemData) {
   });
 }
 
+// HANDLER Copy
+function handlerCopy(id, name, type, width, drop, cost) {
+  Swal.fire({
+    title: name,
+    html:
+      "Sure to duplicate this data? <br/><br/> <b>Type :</b>" +
+      type +
+      " <b>Width :</b>" +
+      width +
+      " <b>Drop :</b>" +
+      drop +
+      " <b>Cost :</b>" +
+      cost,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, duplicate it!",
+    customClass: {
+      popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        type: "post",
+        url: uriMethod + "/PriceMatrixMethod.aspx/DuplicatePriceMatrix",
+        data: JSON.stringify({
+          id: id,
+        }),
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+
+        success: function (response) {
+          const result = response.d || response;
+          if (result.error) {
+            isError(result.error.message.toUpperCase()).then(() => {
+              const el = document.getElementById(result.error.field);
+              if (el) {
+                // el.focus();
+                el.classList.add("is-invalid");
+              }
+            });
+          } else {
+            isSuccess(result.success);
+            tableData.ajax.reload();
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
+          isError(msg);
+        },
+      });
+    }
+  });
+}
+
 // HANDLER DELETE
 function handlerDelete(id, name, type, width, drop, cost) {
   Swal.fire({
@@ -849,6 +927,7 @@ function handlerDelete(id, name, type, width, drop, cost) {
             });
           } else {
             isSuccess(result.success);
+            tableData.ajax.reload();
           }
         },
         error: function (xhr, ajaxOptions, thrownError) {

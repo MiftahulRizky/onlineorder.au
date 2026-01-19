@@ -537,6 +537,38 @@ Partial Class Methods_SettingPage_PriceMatrix_PriceMatrixMethod
 
 
     <WebMethod()>
+    Public Shared Function DuplicatePriceMatrix(ByVal id As String) As Object
+        Try
+         Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
+
+        '#DELETE
+        If Not String.IsNullOrEmpty(id) Then
+
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("INSERT INTO Prices ( Id, PriceGroupId, Type, [Drop], Width, Cost ) SELECT NEWID( ) AS Id, PriceGroupId, Type, [Drop], Width, Cost FROM Prices WHERE Id=@Id", thisConn)
+                    myCmd.Parameters.AddWithValue("@Id", id)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+        End If 
+
+
+        Return New SuccessResponse With { .success = "Data has been duplicated successfully." }
+        Catch ex As Exception
+            Return New ErrorResponse With {
+                .error = New ErrorDetail With {
+                    .message = ex.Message,
+                    .field = ""
+                }
+            }
+        End Try
+    End Function
+
+    <WebMethod()>
     Public Shared Function DeletePriceMatrix(ByVal id As String) As Object
         Try
          Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString

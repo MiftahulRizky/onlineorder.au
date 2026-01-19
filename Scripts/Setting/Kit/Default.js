@@ -83,6 +83,32 @@ document
     }
   });
 
+// copy
+document
+  .querySelector("#card-table #data-table")
+  .addEventListener("click", (e) => {
+    if (e.target.matches("#btn-copy")) {
+      const id = e.target.getAttribute("data-id");
+      const name = e.target.getAttribute("data-name");
+      Swal.fire({
+        customClass: {
+          popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+        },
+        title: name,
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, duplicate it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          handlerCopy(id);
+        }
+      });
+    }
+  });
+
 // delete
 document
   .querySelector("#card-table #data-table")
@@ -738,12 +764,55 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
         field.classList.add("is-invalid");
       }
     } else {
-      await isSuccess(dataResult.success);
       handlerHideBSModal("modalSubmit");
+      await isSuccess(dataResult.success);
       tableData.ajax.reload();
     }
   } catch (err) {
     await isError(err.message);
+  }
+};
+
+const handlerCopy = async (id) => {
+  try {
+    if (!id) return;
+
+    const res = await fetch(`${uriMethod}/Copy`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    if (!res.ok) {
+      const msg =
+        roleName === "Administrator"
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d || response;
+
+    if (!data || data.length === 0) {
+      const msg =
+        roleName === "Administrator"
+          ? "No data returned from server : handlerCopy"
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
+    }
+
+    if (data.error) {
+      await isError(data.error.message.toUpperCase());
+    } else {
+      await isSuccess(data.success);
+      tableData.ajax.reload();
+    }
+  } catch (error) {
+    console.error("handlerCopy error:", error);
+    throw error;
   }
 };
 
@@ -957,6 +1026,11 @@ const dropdownActionButton = (data, type, row) => {
                 <li>
                   <a class="dropdown-item" href="javascript:void(0)" id="btn-edit" data-id="${row.Id}">
                     <i class="ti ti-edit me-1 opacity-50 fs-2" ></i>Edit / Detail
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="javascript:void(0)" id="btn-copy" data-id="${row.Id}" data-name="${row.Name}">
+                    <i class="ti ti-copy-plus me-1 opacity-50 fs-2"></i>Copy / Duplicate
                   </a>
                 </li>
                 <li>
