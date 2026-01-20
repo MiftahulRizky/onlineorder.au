@@ -915,14 +915,25 @@ Public Class PublicConfig
 
             If Not priceGroupId = "" Then
                 Dim Type As String = "Matrix"
+
+                Dim findMetre As String = lnm
+                If designName = "Cellular Blinds" And blindName = "Potrait" Then
+                    width = "0"
+                    drop = "0"
+                    findMetre = sqm
+                End If
+
                 Dim getMatrix As Decimal = GetGridCost(priceGroupId, delivery, drop, width)
                 
-                '#---------------------For Vertical Slat Only---------------------#
+                '#---------------------Custom Matrix---------------------#
                 If designName = "Vertical Blinds" AndAlso blindName = "Slat Only" Then
                     Dim getMatrixSlat As Decimal = getMatrix * Convert.ToDecimal(SlatQty)
                     If getMatrixSlat < 10 Then : getMatrix = 0.00 : End If
                 End If
 
+                If designName = "Cellular Blinds" And blindName = "Potrait" Then
+                    getMatrix = getMatrix * Convert.ToDecimal(findMetre)
+                End If
 
                 '#---------------------Discount For Store Account---------------------#
                 Dim thisDiscount As Decimal = HitungDiscount(storeId, priceGroupId, getMatrix)
@@ -951,9 +962,14 @@ Public Class PublicConfig
                 End If
 
                 If designName = "Cellular Blinds" Then
-                    description = blindName & " " & controlType & " " & fabricType & " " & size
-                    If blindName = "Galaxy" Or blindName = "Potrait" Then
-                        description = blindName & " (" & bracketType & ") " & controlType & " #" & fabricType & " " & size
+                    description = String.Format("{0} {1} {2} {3}", blindName, controlType, fabricType, size)
+
+                    If blindName = "Galaxy" Then
+                        description = String.Format("{0} ({1}) {2} #{3} {4}", blindName, bracketType, controlType, fabricType, size) 
+                    End If
+
+                    If blindName = "Potrait" Then 
+                        description = String.Format("{0} {1} #{2} {3}", blindName, bracketType, fabricType, size)
                     End If
                 End If
 
@@ -987,9 +1003,9 @@ Public Class PublicConfig
                 Dim descriptionB As String = kitName & " " & size
 
                 If designName = "Cellular Blinds" Then
-                    descriptionB = blindName & " " & controlType & " " & fabricTypeB & " " & size
-                    If blindName = "Galaxy" Or blindName = "Potrait" Then
-                        descriptionB = blindName & " (" & bracketType & ") " & controlType & " #" & fabricTypeB & " " & size
+                    descriptionB = String.Format("{0} {1} {2} {3}", blindName, controlType, fabricTypeB, size)
+                    If blindName = "Galaxy" Then
+                        descriptionB = String.Format("{0} ({1}) {2} #{3} {4}", blindName, bracketType, controlType, fabricTypeB, size) 
                     End If
                 End If
 

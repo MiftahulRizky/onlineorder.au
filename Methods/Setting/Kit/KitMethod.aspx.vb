@@ -335,6 +335,44 @@ Partial Class Methods_Setting_Kit_KitMethod
         End Try
     End Function
 
+    
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function Copy(ByVal id As String) As Object
+        Try
+            If String.IsNullOrEmpty(id) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "key is invalid !", .field = ""}}
+            End If
+
+            Dim thisData = publicCfg.GetListData("SELECT * FROM HardwareKits WHERE Id = '" + UCase(id).ToString() + "'")
+            If thisData.Tables.Count = 0 Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "key is missing !", .field = ""}}
+            End If
+
+            Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString    
+
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("INSERT INTO HardwareKits ( Id, SoeId, DesignId, BlindId, Name, BracketType, TubeType, ControlType, ColourType, Description, Active ) SELECT NEWID() As Id, SoeId, DesignId, BlindId, Name + ' - Copy' AS Name, BracketType, TubeType, ControlType, ColourType, Description, Active FROM HardwareKits WHERE Id=@Id", thisConn)
+                    myCmd.Parameters.AddWithValue("@Id", UCase(id).ToString())
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+            
+
+            Return New SuccessResponse With {.success = "Data has been copied successfully."}
+        Catch ex As Exception
+            Return New ErrorResponse With {
+                .error = New ErrorDetail With {
+                    .message = ex.Message,
+                    .field = ""
+                }
+            }
+        End Try
+    End Function
+
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Delete(ByVal id As String) As Object
@@ -361,7 +399,7 @@ Partial Class Methods_Setting_Kit_KitMethod
             End Using
             
 
-            Return New SuccessResponse With {.success = "Delete Surcharge Successfully."}
+            Return New SuccessResponse With {.success = "Data has been deleted successfully."}
         Catch ex As Exception
             Return New ErrorResponse With {
                 .error = New ErrorDetail With {
@@ -402,7 +440,7 @@ Partial Class Methods_Setting_Kit_KitMethod
             End Using
             
 
-            Return New SuccessResponse With {.success = "Switch Surcharge Successfully."}
+            Return New SuccessResponse With {.success = "Data has been updated successfully."}
         Catch ex As Exception
             Return New ErrorResponse With {
                 .error = New ErrorDetail With {

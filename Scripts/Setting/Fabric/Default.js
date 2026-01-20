@@ -50,6 +50,7 @@ document.querySelector("#card-table #btn-add").addEventListener("click", () => {
   document.querySelector("#modalSubmit #modalSubmitLabel").innerHTML =
     "Create Fabric";
   handlerSelDesigns("#modalSubmit #designtype");
+  handlerGetLastId();
 });
 // --------------------------------------------------||#card-table #data-table ||-----------------------------------
 // edit / detail
@@ -59,7 +60,7 @@ document
     if (e.target.matches("#btn-edit")) {
       document
         .querySelectorAll(
-          "#modalSubmit .form-control, #modalSubmit .form-select"
+          "#modalSubmit .form-control, #modalSubmit .form-select",
         )
         .forEach((el) => {
           el.classList.remove("is-invalid");
@@ -298,6 +299,38 @@ const handlerSelDesigns = async (params) => {
   }
 };
 
+const handlerGetLastId = async () => {
+  try {
+    const res = await fetch(`${uriMethod}/GetLastId`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+    });
+
+    if (!res.ok) {
+      const msg = `${res.status} - ${res.statusText}`;
+      throw isError(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d || response;
+
+    if (!data || data.length === 0) {
+      const msg = "No data returned from server : handlerGetLastId";
+      throw isError(msg);
+    }
+
+    document.querySelector("#modalSubmit #id").value = data.lastid;
+  } catch (error) {
+    const msg =
+      roleName === "Administrator"
+        ? error.message || error
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
 const handlerEdit = async (id) => {
   try {
     if (!id) return;
@@ -396,7 +429,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
     ];
 
     formObject = Object.fromEntries(
-      Object.entries(formObject).filter(([key]) => !excludeKeys.includes(key))
+      Object.entries(formObject).filter(([key]) => !excludeKeys.includes(key)),
     );
 
     // gabungkan
@@ -432,7 +465,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
       throw new Error(
         roleName === "Administrator"
           ? `${response.status}\n${errorText}`
-          : "Something went wrong, please try again!"
+          : "Something went wrong, please try again!",
       );
     }
 

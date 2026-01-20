@@ -54,7 +54,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                           <div id="table-default" class="table-responsive">
+                           <div id="table-default">
                                 <table class="table table-vcenter table-hover card-table" id="tableAjax"  width="100%">
                                  <thead>
                                      <tr>

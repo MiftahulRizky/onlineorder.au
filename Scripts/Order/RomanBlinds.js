@@ -15,7 +15,7 @@ $(document).ready(function () {
 $("#btnCancel").on(
   "click",
   () =>
-    (window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`)
+    (window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`),
 );
 
 // BUTTON SUBMIT
@@ -373,7 +373,7 @@ function bindControlType(designid, blindid) {
 
           handlerDisplayElemets(
             blindName,
-            controltype.selectedOptions[0].getAttribute("data-name")
+            controltype.selectedOptions[0].getAttribute("data-name"),
           );
 
           if (data.length === 1) {
@@ -618,11 +618,8 @@ function bindBattenColour(blindName) {
 
     let data = [];
     switch (blindName) {
-      case "Classic":
       case "Plantation":
-      case "Sewless":
         data = [
-          { value: "", label: "" },
           { value: "Alabaster", label: "Alabaster" },
           { value: "Batlic", label: "Batlic" },
           { value: "Black", label: "Black" },
@@ -632,7 +629,16 @@ function bindBattenColour(blindName) {
           { value: "Teak", label: "Teak" },
           { value: "White", label: "White" },
         ];
+      case "Sewless":
+        data = [{ value: "Aluminium-Ivory", label: "Aluminium-Ivory" }];
         break;
+    }
+
+    if (data.length > 1) {
+      const defaultOption = document.createElement("option");
+      defaultOption.text = "";
+      defaultOption.value = "";
+      select.add(defaultOption);
     }
 
     data.forEach((item) => {
@@ -846,7 +852,7 @@ function bindItemOrder(itemid) {
             .then(() => bindControlType(item.DesignId, item.BlindId))
             .then(() => bindMounting(item.BlindName))
             .then(() =>
-              bindFabricType(item.DesignId, item.BlindName, item.ControlType)
+              bindFabricType(item.DesignId, item.BlindName, item.ControlType),
             )
             .then(() => bindFabricColour(item.DesignId, item.FabricType))
             .then(() => bindBattenColour(item.BlindName))
@@ -858,7 +864,7 @@ function bindItemOrder(itemid) {
             .then(() => bindCleat(item.BlindName))
             .then(() => setFormValues(item))
             .then(() =>
-              handlerDisplayElemets(item.BlindName, item.ControlType)
+              handlerDisplayElemets(item.BlindName, item.ControlType),
             );
           // .then(() => {
           //   return Promise.all([visibleBattenColour(item.Batten)])

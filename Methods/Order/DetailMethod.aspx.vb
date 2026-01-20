@@ -452,14 +452,15 @@ Partial Class Methods_Order_DetailMethod
                         End If
 
                         '#-------------------|| Product ||-------------------#
-                        Dim Product As String = KitName & " (" & width & " x " & drop & ")"
+                        Dim Size As String = String.Format("({0} x {1})", Width, Drop)
+                        Dim Product As String = String.Format("{0} {1}", KitName, Size)
                     
                         If DesignName = "Aluminium Blinds" Or DesignName = "Venetian Blinds" Then
-                            Product = KitName & " (" & Width & " x " & Drop & ")"
+                            Product = String.Format("{0} {1}", KitName, Size)
                         End If
 
                          If DesignName = "Roller Blinds" Then
-                            Product = KitName & " #" & FabricType & " (" & Width & " x " & Drop & ")"
+                            Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
 
                             '#Linked 3 Blinds (Dep) & Linked 3 Blinds (Ind)
                             If BracketType = "Linked 3 Blinds (Dep)" Or BracketType = "Linked 3 Blinds (Ind)" Then
@@ -615,35 +616,33 @@ Partial Class Methods_Order_DetailMethod
                          End If
 
                         If DesignName = "Vari Shades" Or DesignName = "Vertical Blinds" Then
-                            '#Single & Complate
-                            Product = KitName & " #" & FabricType & " (" & Width & " x " & Drop & ")"
+                            Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
                             If BlindName = "Slat Only" Then
-                                Product = KitName & " #" & FabricType & " (Drop : " & Drop & "mm)"
+                                Product = String.Format("{0} #{1} (Drop : {2}mm)", KitName, FabricType, Drop)
                             End If
                             If BlindName = "Track Only" Then
-                                Product = KitName & " (Width : " & Width & "mm)"
+                                Product = String.Format("{0} (Width : {1}mm)", KitName, Width)
                             End If
-                        End If
-
-                        If DesignName = "Panorama PVC Shutters" Then
-                            Product = DesignName & " " & KitName & " - " & Width & "mm x " & Drop & "mm"
                         End If
 
                         If DesignName = "Panel Glides" Then
-                            Product = KitName & " #" & FabricType & " (" & Width & " x " & Drop & ")"
+                            Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
                         End If
 
                         If DesignName = "Roman Blinds" Then
-                            Product = KitName & " #" & FabricType & " (" & Width & " x " & Drop & ")"
+                            Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
                         End If
 
                         If DesignName = "Cellular Blinds" Then
-                            Product = KitName & " #" & FabricType & " (" & Width & " x " & Drop & ")"
+                            Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
                             If BlindName = "Cellora" Then
-                                Product = BlindName & " " & ControlType & " #" & FabricType & " (" & Width & " x " & Drop & ")"
+                                Product = String.Format("{0} {1} #{2} {3}", BlindName, controltype, FabricType, Size)
                             End If
                             If BlindName = "Galaxy" Then
-                                Product = BlindName & " (" & BracketType & ") " & ControlType & " #" & FabricType & " (" & Width & " x " & Drop & ")"
+                                Product = String.Format("{0} ({1}) {2} #{3} {4}", BlindName, BracketType, ControlType, FabricType, Size)
+                            End If
+                            If BlindName = "Potrait" Then
+                                Product = String.Format("{0} ({1}) {2} #{3} {4}", BlindName, BracketType, ControlType, FabricType, Size)
                             End If
                         End If
 

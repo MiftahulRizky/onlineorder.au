@@ -132,6 +132,9 @@ Partial Class Methods_Order_RomanBlindMethod
                     If controlname = "Cord" Then
                         des = "Cord Classic"
                     End If
+                    If controlname = "Chain" Then
+                        des = "Chain Classic"
+                    End If
                 Case "Plantation"
                     If controlname = "Chain" Then
                         des = "Chain Plantation"
