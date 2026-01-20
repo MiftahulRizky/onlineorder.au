@@ -104,9 +104,8 @@ document.querySelector("#fabrictype2").addEventListener("change", (e) => {
 document.querySelector("#notes").addEventListener("input", (e) => {
   let maxLength = 1000;
   let currentLength = e.target.value.length;
-  document.querySelector(
-    "#notescount"
-  ).textContent = `${currentLength}/${maxLength}`;
+  document.querySelector("#notescount").textContent =
+    `${currentLength}/${maxLength}`;
 });
 
 // submit form
@@ -160,7 +159,7 @@ const handlerSubmit = async (formEl, button) => {
     ];
 
     formObject = Object.fromEntries(
-      Object.entries(formObject).filter(([key]) => !excludeKeys.includes(key))
+      Object.entries(formObject).filter(([key]) => !excludeKeys.includes(key)),
     );
 
     // data tambahan
@@ -205,7 +204,7 @@ const handlerSubmit = async (formEl, button) => {
       throw new Error(
         roleName === "Administrator"
           ? `${response.status}\n${errorText}`
-          : "Something went wrong, please try again!"
+          : "Something went wrong, please try again!",
       );
     }
 
@@ -663,7 +662,7 @@ const bindFabrics = async (designId, blindName) => {
   const sel = document.getElementById("fabrictype");
   sel.innerHTML = ""; //reset
 
-  if (!designId) return;
+  if (!designId || !blindName) return;
 
   try {
     const response = await fetch(`${uriMethod}/BindFabricType`, {
@@ -734,7 +733,7 @@ const bindFabrics2 = async (designId, blindName) => {
   const sel = document.getElementById("fabrictype2");
   sel.innerHTML = ""; //reset
 
-  if (!designId) return;
+  if (!designId || !blindName) return;
 
   try {
     const response = await fetch(`${uriMethod}/BindFabricType`, {
