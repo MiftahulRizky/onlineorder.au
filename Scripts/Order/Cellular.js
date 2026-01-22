@@ -332,7 +332,7 @@ const handlerElementVisibility = (controltype, blindname, controlsystem) => {
     // divFabricDayColour.setAttribute("hidden", true);
   }
 
-  if (controlsystem.includes("Motorised")) {
+  if (controlsystem && controlsystem.includes("Motorised")) {
     divMotor.removeAttribute("hidden");
   }
 
