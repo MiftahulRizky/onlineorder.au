@@ -213,7 +213,7 @@ Partial Class Methods_Order_CelloraMethod
         Public Property drop As String
         Public Property controlposition As String
         Public Property chainlength As String
-        Public Property controlsystem As List(Of String)
+        Public Property controlsystem As Object
         Public Property motortype As String
         Public Property motorextra As String
         Public Property holddown As String
@@ -307,6 +307,18 @@ Partial Class Methods_Order_CelloraMethod
                 End If
             End If
 
+            Dim csList As New List(Of String)
+            If TypeOf data.controlsystem Is String Then
+                csList.Add(data.controlsystem.ToString())
+            ElseIf TypeOf data.controlsystem Is Array Then
+                For Each item In CType(data.controlsystem, Object())
+                    csList.Add(item.ToString())
+                Next
+            End If
+
+            If csList Is Nothing OrElse csList.Count = 0 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control system is required !",.field = "controlsystem"}}
+            End If
 
             If blindName = "Galaxy" And InStr(controlName, "Corded") > 0 Then
                 If String.IsNullOrEmpty(data.cordtype) Then
@@ -315,11 +327,20 @@ Partial Class Methods_Order_CelloraMethod
             End IF
 
             If String.IsNullOrEmpty(data.controlposition) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control side is required !",.field = "controlposition"}}
             End If
 
-            If String.IsNullOrEmpty(data.holddown) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "holddown is required !",.field = "holddown"}}
+            Dim controlsystem As String = String.Join(",", csList)
+            If InStr(controlsystem, "Motorised") > 0  Then
+
+                If String.IsNullOrEmpty(data.motortype) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor type is required !",.field = "motortype"}}
+                End IF
+
+                If String.IsNullOrEmpty(data.motorextra) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor extra is required !",.field = "motorextra"}}
+                End IF
+
             End If
 
             Dim markup As Integer
@@ -359,7 +380,6 @@ Partial Class Methods_Order_CelloraMethod
             Dim msg As String = String.Empty
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim itemId As String = publicCfg.CreateOrderItemId()
-                Dim controlCsv As String = String.Join(",", data.controlsystem)
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, FabricIdB, PriceGroupId, PriceGroupIdB, BlindNo, Qty, Location, Mounting, Width, [Drop], MaterialCord, HangerType, ControlPosition, ChainLength, MotorStyle, AdditionalMotor, BottomHoldDown, DoorCutOut, SquareMetre, LinearMetre, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @FabricIdB, @PriceGroupId, @PriceGroupIdB, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @MaterialCord, @HangerType, @ControlPosition, @ChainLength, @MotorStyle, @AdditionalMotor, @BottomHoldDown, @DoorCutOut, @SquareMetre, @LinearMetre, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
@@ -377,7 +397,7 @@ Partial Class Methods_Order_CelloraMethod
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@MaterialCord", data.cordtype)
-                        myCmd.Parameters.AddWithValue("@HangerType", controlCsv)
+                        myCmd.Parameters.AddWithValue("@HangerType", controlsystem)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
                         myCmd.Parameters.AddWithValue("@MotorStyle", data.motortype)
@@ -406,7 +426,6 @@ Partial Class Methods_Order_CelloraMethod
             If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
 
                 Dim itemId As String = data.itemid
-                Dim controlCsv As String = String.Join(",", data.controlsystem)
                 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, MaterialCord = @MaterialCord, HangerType = @HangerType, ControlPosition = @ControlPosition, ChainLength = @ChainLength, MotorStyle = @MotorStyle, AdditionalMotor = @AdditionalMotor, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
@@ -424,7 +443,7 @@ Partial Class Methods_Order_CelloraMethod
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@MaterialCord", data.cordtype)
-                        myCmd.Parameters.AddWithValue("@HangerType", controlCsv)
+                        myCmd.Parameters.AddWithValue("@HangerType", controlsystem)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
                         myCmd.Parameters.AddWithValue("@MotorStyle", data.motortype)
