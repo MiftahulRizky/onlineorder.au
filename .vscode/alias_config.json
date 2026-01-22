@@ -1,4 +1,6 @@
 {
+  "Handler": "Shutters",
+  "Shipment": "Shutters",
   "App_Code": {
     "OrderConfig.vb": "Shutters",
     "DepositRequestConfig.vb": "Shutters",

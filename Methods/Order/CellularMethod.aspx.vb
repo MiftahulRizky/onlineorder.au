@@ -105,12 +105,12 @@ Partial Class Methods_Order_CelloraMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindFabricType(ByVal designid As String, ByVal blindname As String) As Object
+    Public Shared Function BindFabricType(ByVal designid As String, ByVal blindname As String, ByVal bracketname As String, ByVal controlname As String) As Object
         Try
             
             Dim AditionalQueries As String = "Description NOT LIKE '%Potrait%' AND"
             If blindname = "Potrait" Then
-                AditionalQueries = "Description LIKE '%Potrait%' AND"
+                AditionalQueries = String.Format("Description LIKE '%{0}%' AND", bracketname)
             End If
             
             Dim datas As DataSet = publicCfg.GetListData("SELECT Type FROM Fabrics WHERE DesignId='" + designid + "' AND " + AditionalQueries + " Active='1' GROUP BY Type ORDER BY Type ASC")
@@ -212,6 +212,9 @@ Partial Class Methods_Order_CelloraMethod
         Public Property drop As String
         Public Property controlposition As String
         Public Property chainlength As String
+        Public Property controlsystem As Object
+        Public Property motortype As String
+        Public Property motorextra As String
         Public Property holddown As String
         Public Property cutout As String
         Public Property notes As String
@@ -300,6 +303,19 @@ Partial Class Methods_Order_CelloraMethod
                 End If
             End If
 
+            Dim csList As New List(Of String)
+            If TypeOf data.controlsystem Is String Then
+                csList.Add(data.controlsystem.ToString())
+            ElseIf TypeOf data.controlsystem Is Array Then
+                For Each item In CType(data.controlsystem, Object())
+                    csList.Add(item.ToString())
+                Next
+            End If
+
+
+            If csList Is Nothing OrElse csList.Count = 0 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control system is required !",.field = "controlsystem"}}
+            End If
 
             If blindName = "Galaxy" And InStr(controlName, "Corded") > 0 Then
                 If String.IsNullOrEmpty(data.cordtype) Then
@@ -311,6 +327,19 @@ Partial Class Methods_Order_CelloraMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control side is required !",.field = "controlposition"}}
             End If
 
+            Dim controlsystem As String = String.Join(",", csList)
+            If InStr(controlsystem, "Motorised") > 0  Then
+
+                If String.IsNullOrEmpty(data.motortype) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor type is required !",.field = "motortype"}}
+                End IF
+
+                If String.IsNullOrEmpty(data.motorextra) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor extra is required !",.field = "motorextra"}}
+                End IF
+
+            End If
+            
             If Not String.IsNullOrEmpty(data.notes) Then
                 If data.notes.Trim().Length > 1000 Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must be less than 1000 characters !",.field = "notes"}}
@@ -360,8 +389,9 @@ Partial Class Methods_Order_CelloraMethod
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim itemId As String = publicCfg.CreateOrderItemId()
 
+
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, FabricIdB, PriceGroupId, PriceGroupIdB, BlindNo, Qty, Location, Mounting, Width, [Drop], MaterialCord, ControlPosition, ChainLength, BottomHoldDown, DoorCutOut, SquareMetre, LinearMetre, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @FabricIdB, @PriceGroupId, @PriceGroupIdB, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @MaterialCord, @ControlPosition, @ChainLength, @BottomHoldDown, @DoorCutOut, @SquareMetre, @LinearMetre, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, FabricId, FabricIdB, PriceGroupId, PriceGroupIdB, BlindNo, Qty, Location, Mounting, Width, [Drop], MaterialCord, HangerType, ControlPosition, ChainLength, MotorStyle, AdditionalMotor, BottomHoldDown, DoorCutOut, SquareMetre, LinearMetre, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @FabricId, @FabricIdB, @PriceGroupId, @PriceGroupIdB, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @MaterialCord, @HangerType, @ControlPosition, @ChainLength, @MotorStyle, @AdditionalMotor, @BottomHoldDown, @DoorCutOut, @SquareMetre, @LinearMetre, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
@@ -377,8 +407,11 @@ Partial Class Methods_Order_CelloraMethod
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@MaterialCord", data.cordtype)
+                        myCmd.Parameters.AddWithValue("@HangerType", controlsystem)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
+                        myCmd.Parameters.AddWithValue("@MotorStyle", data.motortype)
+                        myCmd.Parameters.AddWithValue("@AdditionalMotor", data.motorextra)
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.holddown)
                         myCmd.Parameters.AddWithValue("@DoorCutOut", data.cutout)
                         myCmd.Parameters.AddWithValue("@SquareMetre", squareMetre)
@@ -406,8 +439,9 @@ Partial Class Methods_Order_CelloraMethod
 
                 Dim itemId As String = data.itemid
 
+
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, MaterialCord = @MaterialCord, ControlPosition = @ControlPosition, ChainLength = @ChainLength, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId = @KitId, SoeKitId = @SoeKitId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, MaterialCord = @MaterialCord, HangerType = @HangerType, ControlPosition = @ControlPosition, ChainLength = @ChainLength,  MotorStyle = @MotorStyle, AdditionalMotor = @AdditionalMotor, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
@@ -423,8 +457,11 @@ Partial Class Methods_Order_CelloraMethod
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@MaterialCord", data.cordtype)
+                        myCmd.Parameters.AddWithValue("@HangerType", controlsystem)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
+                        myCmd.Parameters.AddWithValue("@MotorStyle", data.motortype)
+                        myCmd.Parameters.AddWithValue("@AdditionalMotor", data.motorextra)
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.holddown)
                         myCmd.Parameters.AddWithValue("@DoorCutOut", data.cutout)
                         myCmd.Parameters.AddWithValue("@SquareMetre", squareMetre)
@@ -477,7 +514,7 @@ Partial Class Methods_Order_CelloraMethod
 
             If blindname = "Potrait" Then
                 Dim bracket As String = "Standard"
-                If brackettype = "Patio Door Vertical" Then
+                If controlname = "Patio Door Vertical" Then
                     bracket = "Patio"
                 End If
                 priceGroupName = String.Format("Potrait {0} - {1}", bracket, fabricGroupName)
