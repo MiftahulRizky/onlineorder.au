@@ -31,6 +31,9 @@ document.querySelector("#blindtype").addEventListener("change", (e) => {
   // const lblBracketType = document.querySelector("#lblBracketType");
   // lblBracketType.innerHTML = "cell type";
 
+  const lblControlType = document.querySelector("#lblControlType");
+  lblControlType.innerHTML = "control type";
+
   const divBracketType = document.querySelector("#divBracketType");
   // const divControlType = document.querySelector("#divControlType");
   divBracketType.setAttribute("hidden", true);
@@ -48,6 +51,7 @@ document.querySelector("#blindtype").addEventListener("change", (e) => {
   if (blindName == "Potrait") {
     divBracketType.removeAttribute("hidden");
     // lblBracketType.innerHTML = "system type";
+    lblControlType.innerHTML = "system type";
   }
 
   bindBrackets(designId, blindId);
@@ -58,37 +62,47 @@ document.querySelector("#brackettype").addEventListener("change", (e) => {
   const divFormDetail = document.querySelector("#divFormDetail");
   divFormDetail.setAttribute("hidden", true);
 
-  const select = document.querySelector("#blindtype");
-  const blindName = select.options[select.selectedIndex].dataset.name;
-  const blindId = select.value;
+  const blinds = document.querySelector("#blindtype");
+  const blindName = blinds.options[blinds.selectedIndex].dataset.name;
+
+  const controls = document.querySelector("#controltype");
+  const controlName =
+    controls?.options?.[controls.selectedIndex]?.dataset?.name;
+
+  const blindId = blinds.value;
   const bracketType = e.target.value;
+  const bracketName = e.target.selectedOptions[0].dataset.name;
 
   const fabricType = document.querySelector("#fabrictype").value;
   const fabricType2 = document.querySelector("#fabrictype2").value;
 
   bindControls(designId, blindId, bracketType);
-  bindFabrics(designId, blindName);
+  bindFabrics(designId, blindName, bracketName, controlName);
   bindFabricColours(designId, fabricType);
-  bindFabrics2(designId, blindName);
+  bindFabrics2(designId, blindName, bracketName, controlName);
   bindFabricColours2(designId, fabricType2);
 });
 
 // // change controls
 document.querySelector("#controltype").addEventListener("change", (e) => {
-  const select = document.querySelector("#blindtype");
-  const blindName = select.options[select.selectedIndex].dataset.name;
+  const blinds = document.querySelector("#blindtype");
+  const blindName = blinds.options[blinds.selectedIndex].dataset.name;
 
-  const controlType = e.target.selectedOptions[0].dataset.name;
+  const brackets = document.querySelector("#brackettype");
+  const bracketName = brackets.options[brackets.selectedIndex].dataset.name;
+
+  const controlName = e.target.selectedOptions[0].dataset.name;
 
   const fabricType = document.querySelector("#fabrictype").value;
   const fabricType2 = document.querySelector("#fabrictype2").value;
 
-  bindFabrics(designId, blindName);
+  bindFabrics(designId, blindName, bracketName, controlName);
   bindFabricColours(designId, fabricType);
-  bindFabrics2(designId, blindName);
+  bindFabrics2(designId, blindName, bracketName, controlName);
   bindFabricColours2(designId, fabricType2);
-  bindCordType(controlType);
-  handlerElementVisibility(controlType, blindName);
+  bindControlSystem(controlName);
+  bindCordType(controlName);
+  handlerElementVisibility(controlName, blindName);
 });
 
 // change fabrics
@@ -98,6 +112,22 @@ document.querySelector("#fabrictype").addEventListener("change", (e) => {
 
 document.querySelector("#fabrictype2").addEventListener("change", (e) => {
   bindFabricColours2(designId, e.target.value);
+});
+
+// change control system
+const controlSelect = document.querySelector("#controlsystem");
+controlSelect.addEventListener("change", () => {
+  const values = controlSelect.tomselect.getValue(); // array
+
+  const divMotor = document.querySelector("#divMotor");
+  divMotor.setAttribute("hidden", true);
+
+  if (values.includes("Motorised")) {
+    divMotor.removeAttribute("hidden");
+  }
+
+  bindMotorType(values);
+  bindMotorExtra(values);
 });
 
 // input notes count length
@@ -130,21 +160,30 @@ const handlerSubmit = async (formEl, button) => {
   try {
     // create FormData
     const formData = new FormData(formEl);
+    let formObject = {};
 
     // loop semua elemen form
-    [...formEl.elements].forEach((el) => {
-      if (!el.name) return; // skip elemen tanpa name
+    // [...formEl.elements].forEach((el) => {
+    //   if (!el.name) return; // skip elemen tanpa name
 
-      // khusus number → pakai value langsung, jangan biarkan kosong
-      if (el.type === "number") {
-        formData.append(el.name, el.value ?? "");
-      } else {
-        formData.append(el.name, el.value);
-      }
-    });
+    //   // khusus number → pakai value langsung, jangan biarkan kosong
+    //   if (el.type === "number") {
+    //     formData.append(el.name, el.value ?? "");
+    //   } else {
+    //     formData.append(el.name, el.value);
+    //   }
+    // });
+
+    for (const key of formData.keys()) {
+      const values = formData.getAll(key);
+
+      // jika lebih dari satu → array
+      // jika satu → single value
+      formObject[key] = values.length > 1 ? values : values[0];
+    }
 
     // ubah FormData menjadi object
-    let formObject = Object.fromEntries(formData.entries());
+    // let formObject = Object.fromEntries(formData.entries());
 
     // filter field ASP.NET yang tidak dibutuhkan
     const excludeKeys = [
@@ -228,7 +267,7 @@ const handlerSubmit = async (formEl, button) => {
   }
 };
 
-const handlerElementVisibility = (controltype, blindname) => {
+const handlerElementVisibility = (controltype, blindname, controlsystem) => {
   const btnSubmit = document.querySelector("#btnSubmit");
 
   const divFormDetail = document.getElementById("divFormDetail");
@@ -236,6 +275,7 @@ const handlerElementVisibility = (controltype, blindname) => {
 
   const divBracketType = document.getElementById("divBracketType");
   const divControlType = document.getElementById("divControlType");
+  const lblControlType = document.getElementById("lblControlType");
 
   const divFabricNight = document.getElementById("divFabricNight");
   const lblFabricDay = document.getElementById("lblFabricDay");
@@ -243,6 +283,7 @@ const handlerElementVisibility = (controltype, blindname) => {
   const divFabricDayType = document.getElementById("divFabricDayType");
   const divFabricDayColour = document.getElementById("divFabricDayColour");
   const divCordType = document.getElementById("divCordType");
+  const divMotor = document.getElementById("divMotor");
 
   // set default hide
   btnSubmit.setAttribute("hidden", true);
@@ -252,13 +293,15 @@ const handlerElementVisibility = (controltype, blindname) => {
   divMarkUp.setAttribute("hidden", true);
   divFabricNight.setAttribute("hidden", true);
   divCordType.setAttribute("hidden", true);
+  divMotor.setAttribute("hidden", true);
 
+  lblControlType.innerHTML = "control type";
   lblFabricDay.innerHTML = "fabric type x colour";
   lblFabricNight.innerHTML = "fabric type x colour";
 
-  divFabricDayType.classList.remove("col-lg-8");
-  divFabricDayType.classList.add("col-lg-4");
-  divFabricDayColour.removeAttribute("hidden");
+  // divFabricDayType.classList.remove("col-lg-8");
+  // divFabricDayType.classList.add("col-lg-4");
+  // divFabricDayColour.removeAttribute("hidden");
   if (controltype) divFormDetail.removeAttribute("hidden");
 
   if (blindname == "Cellora") {
@@ -282,10 +325,15 @@ const handlerElementVisibility = (controltype, blindname) => {
 
   if (blindname == "Potrait") {
     divBracketType.removeAttribute("hidden");
-    lblFabricDay.innerHTML = "fabric";
-    divFabricDayType.classList.remove("col-lg-4");
-    divFabricDayType.classList.add("col-lg-8");
-    divFabricDayColour.setAttribute("hidden", true);
+    lblControlType.innerHTML = "system type";
+    // lblFabricDay.innerHTML = "fabric";
+    // divFabricDayType.classList.remove("col-lg-4");
+    // divFabricDayType.classList.add("col-lg-8");
+    // divFabricDayColour.setAttribute("hidden", true);
+  }
+
+  if (controlsystem.includes("Motorised")) {
+    divMotor.removeAttribute("hidden");
   }
 
   // markup
@@ -556,13 +604,19 @@ const bindBrackets = async (designId, blindId) => {
         const fabricType = document.querySelector("#fabrictype").value;
         const fabricType2 = document.querySelector("#fabrictype2").value;
 
-        const select = document.querySelector("#blindtype");
-        const blindName = select.options[select.selectedIndex].dataset.name;
+        const blinds = document.querySelector("#blindtype");
+        const blindName = blinds.options[blinds.selectedIndex].dataset.name;
+
+        const bracketName = brackettype.value;
+
+        const controls = document.querySelector("#controltype");
+        const controlName =
+          controls?.options?.[controls.selectedIndex]?.dataset?.name;
 
         bindControls(designId, blindId, brackettype.value);
-        bindFabrics(designId, blindName);
+        bindFabrics(designId, blindName, bracketName, controlName);
         bindFabricColours(designId, fabricType);
-        bindFabrics2(designId, blindName);
+        bindFabrics2(designId, blindName, bracketName, controlName);
         bindFabricColours2(designId, fabricType2);
       }
     }
@@ -570,7 +624,7 @@ const bindBrackets = async (designId, blindId) => {
     // error karena jaringan / parsing JSON
     const msg =
       roleName === "Administrator"
-        ? err.message
+        ? "bindBrackets : " + err.message
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
   }
@@ -635,17 +689,26 @@ const bindControls = async (designId, blindId, bracketType) => {
       });
 
       if (data.length === 1) {
-        const sel = document.getElementById("blindtype");
-        const blindName = sel.selectedOptions[0].getAttribute("data-name");
+        const blinds = document.getElementById("blindtype");
+        const blindName = blinds.options[blinds.selectedIndex].dataset.name;
+
+        const brackets = document.getElementById("brackettype");
+        const bracketName =
+          brackets.options[brackets.selectedIndex].dataset.name;
+
+        const controlName =
+          controltype.options[controltype.selectedIndex].dataset.name;
+
         const fabricType = document.querySelector("#fabrictype").value;
         const fabricType2 = document.querySelector("#fabrictype2").value;
 
-        bindFabrics(designId, blindName);
+        bindFabrics(designId, blindName, bracketName, controlName);
         bindFabricColours(designId, fabricType);
-        bindFabrics2(designId, blindName);
+        bindFabrics2(designId, blindName, bracketName, controlName);
         bindFabricColours2(designId, fabricType2);
-        bindCordType(controltype.value);
-        handlerElementVisibility(controltype.value, blindName);
+        bindControlSystem(controlName);
+        bindCordType(controlName);
+        handlerElementVisibility(controlName, blindName);
       }
     }
   } catch (err) {
@@ -658,11 +721,11 @@ const bindControls = async (designId, blindId, bracketType) => {
   }
 };
 
-const bindFabrics = async (designId, blindName) => {
+const bindFabrics = async (designId, blindName, bracketName, controlName) => {
   const sel = document.getElementById("fabrictype");
   sel.innerHTML = ""; //reset
 
-  if (!designId || !blindName) return;
+  if (!designId || !blindName || !bracketName || !controlName) return;
 
   try {
     const response = await fetch(`${uriMethod}/BindFabricType`, {
@@ -670,7 +733,7 @@ const bindFabrics = async (designId, blindName) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designId, blindName }),
+      body: JSON.stringify({ designId, blindName, bracketName, controlName }),
     });
 
     // cek status HTTP (400, 500, dsb.)
@@ -729,11 +792,11 @@ const bindFabrics = async (designId, blindName) => {
     isError(msg);
   }
 };
-const bindFabrics2 = async (designId, blindName) => {
+const bindFabrics2 = async (designId, blindName, bracketName, controlName) => {
   const sel = document.getElementById("fabrictype2");
   sel.innerHTML = ""; //reset
 
-  if (!designId || !blindName) return;
+  if (!designId || !blindName || !bracketName || !controlName) return;
 
   try {
     const response = await fetch(`${uriMethod}/BindFabricType`, {
@@ -741,7 +804,7 @@ const bindFabrics2 = async (designId, blindName) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designId, blindName }),
+      body: JSON.stringify({ designId, blindName, bracketName, controlName }),
     });
 
     // cek status HTTP (400, 500, dsb.)
@@ -942,16 +1005,156 @@ const bindFabricColours2 = async (designId, fabricType) => {
   }
 };
 
-const bindCordType = (controltype) => {
+const bindControlSystem = (controlname) => {
+  const sel = document.getElementById("controlsystem");
+  sel.innerHTML = ""; //reset
+
+  controlSystemTS.clear(); // clear selected
+  controlSystemTS.clearOptions(); // clear dropdown
+
+  if (!controlname) return;
+
+  let data = [];
+  if (controlname == "Standard Corded") {
+    data = [
+      { value: "SmartRise Cordless System", text: "SmartRise Cordless System" },
+      {
+        value: "Cood Loop Operating System",
+        text: "Cood Loop Operating System",
+      },
+      {
+        value: "SmartRelease Cord Loop System",
+        text: "SmartRelease Cord Loop System",
+      },
+      { value: "Corded TDBU System - STD", text: "Corded TDBU System - STD" },
+      { value: "SmartFit System", text: "SmartFit System" },
+      { value: "SmartFit Sloped System", text: "SmartFit Sloped System" },
+      { value: "SmartFit Day & Night", text: "SmartFit Day & Night" },
+      { value: "Day & Night", text: "Day & Night" },
+      { value: "Cordless TDBU", text: "Cordless TDBU" },
+      { value: "Cord Loop TDBU", text: "Cord Loop TDBU" },
+      { value: "Cordless Day & Night", text: "Cordless Day & Night" },
+      { value: "Cord Loop Day & Night", text: "Cord Loop Day & Night" },
+      { value: "Decoflex System", text: "Decoflex System" },
+      { value: "Decoflex for Skylight", text: "Decoflex for Skylight" },
+      { value: "Decoflex Day & Night", text: "Decoflex Day & Night" },
+      { value: "Motorised", text: "Motorised" },
+    ];
+  }
+  if (controlname == "Patio Door Vertical") {
+    data = [
+      {
+        value: "Patio Door Vertical - Centre Stack",
+        text: "Patio Door Vertical - Centre Stack",
+      },
+      {
+        value: "Patio Vertical Vertical - Centre Opening",
+        text: "Patio Vertical Vertical - Centre Opening",
+      },
+      {
+        value: "Patio Door Vertical Day & Night",
+        text: "Patio Door Vertical Day & Night",
+      },
+    ];
+  }
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach(function (item) {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+
+  controlSystemTS.addOptions(data);
+  controlSystemTS.refreshOptions(false);
+};
+
+const bindCordType = (controlname) => {
   const sel = document.getElementById("cordtype");
   sel.innerHTML = ""; //reset
 
-  if (!controltype) return;
+  if (!controlname) return;
 
   let data = [];
   data = [
     { value: "Standard Cord", text: "Standard Cord" },
     { value: "Continous Cord", text: "Continous Cord" },
+  ];
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach(function (item) {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindMotorType = (controlsystem) => {
+  const sel = document.getElementById("motortype");
+  sel.innerHTML = ""; //reset
+
+  if (!controlsystem) return;
+
+  let data = [];
+  data = [
+    { value: "STD 36W", text: "STD 36W" },
+    { value: "STD Rechargable", text: "STD Rechargable" },
+    { value: "TDBU 36W", text: "TDBU 36W" },
+    { value: "TDBU Rechargable", text: "TDBU Rechargable" },
+    { value: "D&N 36W", text: "D&N 36W" },
+    { value: "D&N Rechargable", text: "D&N Rechargable" },
+  ];
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach(function (item) {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindMotorExtra = (controlsystem) => {
+  const sel = document.getElementById("motorextra");
+  sel.innerHTML = ""; //reset
+
+  if (!controlsystem) return;
+
+  let data = [];
+  data = [
+    { value: "36W Adapter", text: "36W Adapter" },
+    { value: "Ext. Cable for PowerBar", text: "Ext. Cable for PowerBar" },
+    { value: "Corded PowerBar", text: "Corded PowerBar" },
+    { value: "Cordess PowerBar", text: "Cordess PowerBar" },
+    { value: "Ext.Rod-910mm", text: "Ext.Rod-910mm" },
+    { value: "Remote Holder", text: "Remote Holder" },
+    { value: "G2 SmartDial Remote", text: "G2 SmartDial Remote" },
+    { value: "G2 SmartDial Colour Ring", text: "G2 SmartDial Colour Ring" },
+    { value: "G2 ShadeAuto Hub", text: "G2 ShadeAuto Hub" },
+    { value: "Repeater", text: "Repeater" },
   ];
 
   if (data.length > 1) {
@@ -1005,12 +1208,29 @@ const bindItemOrders = async (itemId) => {
       await bindBlinds(item.DesignId);
       await bindBrackets(item.DesignId, item.BlindId);
       await bindControls(item.DesignId, item.BlindId, item.BracketType);
-      await bindFabrics(item.DesignId, item.BlindName);
+      await bindFabrics(
+        item.DesignId,
+        item.BlindName,
+        item.BracketType,
+        item.ControlType,
+      );
       await bindFabricColours(item.DesignId, item.FabricType);
-      await bindFabrics2(item.DesignId, item.BlindName);
+      await bindFabrics2(
+        item.DesignId,
+        item.BlindName,
+        item.BracketType,
+        item.ControlType,
+      );
       await bindFabricColours2(item.DesignId, item.FabricTypeB);
+      await bindControlSystem(item.ControlType);
+      await bindMotorType(item.HangerType);
+      await bindMotorExtra(item.HangerType);
       await bindCordType(item.ControlType);
-      await handlerElementVisibility(item.ControlType, item.BlindName);
+      await handlerElementVisibility(
+        item.ControlType,
+        item.BlindName,
+        item.HangerType,
+      );
       await handlerSetElementValues(item);
       if (itemAction !== "AddItem") await loaderFadeOut();
     }
@@ -1039,6 +1259,8 @@ const handlerSetElementValues = (itemData) => {
     cordtype: "MaterialCord",
     controlposition: "ControlPosition",
     chainlength: "ChainLength",
+    motortype: "MotorStyle",
+    motorextra: "AdditionalMotor",
     holddown: "BottomHoldDown",
     cutout: "DoorCutOut",
     notes: "Notes",
@@ -1061,6 +1283,26 @@ const handlerSetElementValues = (itemData) => {
     // jika nilainya "0" → kosong
     if (el.value === "0") el.value = "";
   });
+
+  const controlSystemEl = document.getElementById("controlsystem");
+
+  if (controlSystemEl?.tomselect) {
+    let csValue = itemData["HangerType"];
+
+    // normalisasi → array
+    if (typeof csValue === "string") {
+      csValue = csValue
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean);
+    }
+
+    if (Array.isArray(csValue)) {
+      // pastikan option sudah ada
+      controlSystemEl.tomselect.clear();
+      controlSystemEl.tomselect.setValue(csValue, true);
+    }
+  }
 
   // Update counter untuk Notes
   const maxLength = 1000;
@@ -1111,4 +1353,43 @@ const checkSessionCellora = () => {
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(itemAction)) {
     bindItemOrders(itemId);
   }
+
+  tomSelectPlug("controlsystem");
+};
+
+let controlSystemTS;
+const tomSelectPlug = (param) => {
+  const el = document.getElementById(param);
+  if (!el) return;
+  controlSystemTS = new TomSelect(el, {
+    copyClassesToDropdown: false,
+    dropdownParent: "body",
+    controlInput: "<input>",
+    render: {
+      item: function (data, escape) {
+        if (data.customProperties) {
+          return (
+            '<div><span class="dropdown-item-indicator">' +
+            data.customProperties +
+            "</span>" +
+            escape(data.text.toUpperCase()) +
+            "</div>"
+          );
+        }
+        return "<div>" + escape(data.text.toUpperCase()) + "</div>";
+      },
+      option: function (data, escape) {
+        if (data.customProperties) {
+          return (
+            '<div><span class="dropdown-item-indicator">' +
+            data.customProperties +
+            "</span>" +
+            escape(data.text.toUpperCase()) +
+            "</div>"
+          );
+        }
+        return "<div>" + escape(data.text.toUpperCase()) + "</div>";
+      },
+    },
+  });
 };

@@ -181,7 +181,7 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Add Price Group" %>
           PropertyName="Text"
         />
         <asp:ControlParameter
-          ControlID="txtType"
+          ControlID="ddlType"
           Name="Type"
           PropertyName="SelectedItem.Value"
         />

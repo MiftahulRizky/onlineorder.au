@@ -69,7 +69,7 @@
                                 </div>
 
                                 <div class="mb-3 row" id="divControlType">
-                                    <label for="controltype" class="col-lg-3 text-uppercase fw-bold">control type</label>
+                                    <label for="controltype" class="col-lg-3 text-uppercase fw-bold" id="lblControlType">control type</label>
                                     <div class="col-lg-5">
                                         <select type="text" name="controltype" id="controltype" class="form-control "></select>
                                     </div>  
@@ -143,6 +143,13 @@
                                         </div>
                                     </div>
     
+                                    <div class="mb-3 row" id="divControlSystem">
+                                        <label for="controlsystem" class="col-lg-3 text-uppercase fw-bold">control system</label>
+                                        <div class="col-lg-6">
+                                            <select name="controlsystem" id="controlsystem" class="form-control" multiple ></select>   
+                                        </div>
+                                    </div>
+
                                     <div class="mb-3 row" id="divCordType">
                                         <label for="cordtype" class="col-lg-3 text-uppercase fw-bold">cord type</label>
                                         <div class="col-lg-4">
@@ -168,6 +175,21 @@
                                             <div class="input-group">
                                                 <input type="number" min="1" name="chainlength" id="chainlength" class="form-control  " autocomplete="off" />
                                                 <span class="input-group-text ">mm</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="divMotor">
+                                        <div class="mb-3 row">
+                                            <label for="motortype" class="col-lg-3 text-uppercase fw-bold">motor type</label>
+                                            <div class="col-lg-4">
+                                                <select name="motortype" id="motortype" class="form-control "></select>   
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 row">
+                                            <label for="motorextra" class="col-lg-3 text-uppercase fw-bold">motor extra</label>
+                                            <div class="col-lg-4">
+                                                <select name="motorextra" id="motorextra" class="form-control "></select>   
                                             </div>
                                         </div>
                                     </div>
