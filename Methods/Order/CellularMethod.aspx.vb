@@ -130,6 +130,28 @@ Partial Class Methods_Order_CelloraMethod
         End Try
     End Function
 
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindControlSystem(ByVal controlname As String) As Object
+        Try            
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Name FROM ControlType WHERE Description LIKE '%{0}%' ORDER BY Name ASC", controlname))
+            Dim list As New List(Of Dictionary(Of String, String))()
+            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
+                For Each row As DataRow In datas.Tables(0).Rows
+                    Dim result As New Dictionary(Of String, String) From {
+                        {"value", row("Name").ToString()},
+                        {"text", row("Name").ToString()}
+                    }
+                    list.Add(result)
+                Next
+            End If
+            Return list
+        Catch ex As Exception
+            ' Return sebagai objek error agar bisa ditangani di sisi client
+            Return New With {.error = ex.Message}
+        End Try
+    End Function
+
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>

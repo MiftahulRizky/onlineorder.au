@@ -106,6 +106,7 @@ document.querySelector("#controltype").addEventListener("change", (e) => {
   bindAdditional();
   bindCordType(controlName);
   handlerElementVisibility(controlName, blindName);
+  console.log(" bracketName: " + bracketName);
 });
 
 // change fabrics
@@ -1015,7 +1016,7 @@ const bindFabricColours2 = async (designId, fabricType) => {
   }
 };
 
-const bindControlSystem = (controlname) => {
+const bindControlSystem = async (controlname) => {
   const sel = document.getElementById("controlsystem");
   sel.innerHTML = ""; //reset
 
@@ -1024,68 +1025,60 @@ const bindControlSystem = (controlname) => {
 
   if (!controlname) return;
 
-  let data = [];
-  if (controlname == "Standard Corded") {
-    data = [
-      { value: "SmartRise Cordless", text: "SmartRise Cordless" },
-      {
-        value: "Cood Loop",
-        text: "Cood Loop",
+  try {
+    const response = await fetch(`${uriMethod}/BindControlSystem`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
       },
-      {
-        value: "SmartRelease Cord Loop",
-        text: "SmartRelease Cord Loop",
-      },
-      { value: "Corded", text: "Corded" },
-      { value: "Corded TDBU", text: "Corded TDBU" },
-      { value: "SmartFit", text: "SmartFit" },
-      { value: "SmartFit Sloped", text: "SmartFit Sloped" },
-      { value: "SmartFit Day & Night", text: "SmartFit Day & Night" },
-      { value: "Corded Day & Night", text: "Corded Day & Night" },
-      { value: "Cordless TDBU", text: "Cordless TDBU" },
-      { value: "Cord Loop TDBU", text: "Cord Loop TDBU" },
-      { value: "Cordless Day & Night", text: "Cordless Day & Night" },
-      { value: "Cord Loop Day & Night", text: "Cord Loop Day & Night" },
-      { value: "Decoflex System", text: "Decoflex System" },
-      { value: "Decoflex for Skylight", text: "Decoflex for Skylight" },
-      { value: "Decoflex Day & Night", text: "Decoflex Day & Night" },
-      { value: "Motorised", text: "Motorised" },
-    ];
-  }
-  if (controlname == "Patio Door Vertical") {
-    data = [
-      {
-        value: "Patio Door Vertical",
-        text: "Patio Door Vertical",
-      },
-      {
-        value: "Patio Vertical Vertical",
-        text: "Patio Vertical Vertical",
-      },
-      {
-        value: "Patio Door Vertical Day & Night",
-        text: "Patio Door Vertical Day & Night",
-      },
-    ];
-  }
+      body: JSON.stringify({ controlname }),
+    });
 
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      return isError(msg);
+    }
+
+    const result = await response.json();
+    const data = result.d;
+
+    if (!data) {
+      return isError("No data returned from server : bindControlSystem");
+    }
+
+    if (Array.isArray(data)) {
+      sel.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        sel.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-colour", item.text);
+        sel.add(option);
+      });
+
+      if (data.length === 1) {
+        sel.selectedIndex = 0;
+      }
+
+      controlSystemTS.addOptions(data);
+      controlSystemTS.refreshOptions(false);
+    }
+  } catch (err) {
+    const msg =
+      roleName === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
   }
-
-  data.forEach(function (item) {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-
-  controlSystemTS.addOptions(data);
-  controlSystemTS.refreshOptions(false);
 };
 
 const bindCordType = (controlname) => {

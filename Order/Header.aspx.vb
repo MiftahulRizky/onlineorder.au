@@ -21,6 +21,7 @@ Partial Class Order_Header
                 lblUserId.Text = UCase(Session("UserId")).ToString()
                 Call BackColor()
                 Call BindDataStore()
+                Call VisibleElement(ddlStore.SelectedValue)
             End If
         End If
 
@@ -35,6 +36,18 @@ Partial Class Order_Header
                 Call BindDataHeader(lblHeaderId.Text)
             End If
         End If
+    End Sub
+
+    Protected Sub ddlStore_SelectedIndexChanged(sender As Object, e As EventArgs)
+        Try
+            Call VisibleElement(ddlStore.SelectedValue)
+        Catch ex As Exception
+            Call MessageError(True, ex.ToString())
+            If Not Session("RoleName") = "Administrator" Then
+                Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
+                publicCfg.MailError(Session("UserId"), Page.Title, "btnSubmit_Click", ex.ToString())
+            End If
+        End Try
     End Sub
 
     Protected Sub btnFindStore_Click(sender As Object, e As EventArgs)
@@ -187,14 +200,22 @@ Partial Class Order_Header
                 Exit Sub
             End If
 
-            If ddlDelivery.SelectedValue = "" Then
-                Call MessageError(True, "DELIVERY / PICK UP IS REQUIRED !")
-                ddlDelivery.CssClass = "form-select  is-invalid"
-                ddlDelivery.Focus()
-                Exit Sub
+            Dim StoreDelivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM Stores WHERE Id = '{0}'", ddlStore.SelectedValue))
+            If StoreDelivery = "" Then
+                If ddlDelivery.SelectedValue = "" Then
+                    Call MessageError(True, "DELIVERY / PICK UP IS REQUIRED !")
+                    ddlDelivery.CssClass = "form-select  is-invalid"
+                    ddlDelivery.Focus()
+                    Exit Sub
+                End If
             End If
 
             If msgError.InnerText = "" Then
+                lblDelivery.Text = ddlDelivery.SelectedValue
+                If Not StoreDelivery = "" Then
+                    lblDelivery.Text = StoreDelivery
+                End If
+                
                 If Session("headerAction") = "AddHeader" Then
                     lblHeaderId.Text = publicCfg.CreateOrderHeaderId()
 
@@ -235,15 +256,21 @@ Partial Class Order_Header
                 Exit Sub
             End If
 
+            Dim StoreId = myData.Tables(0).Rows(0).Item("StoreId").ToString()
+            Dim Delivery = myData.Tables(0).Rows(0).Item("Delivery").ToString()
             Call BindDataStore()
 
+
             lblUserId.Text = UCase(myData.Tables(0).Rows(0).Item("UserId").ToString())
-            ddlStore.SelectedValue = myData.Tables(0).Rows(0).Item("StoreId").ToString()
+            ddlStore.SelectedValue = StoreId
             txtOrderNo.Text = myData.Tables(0).Rows(0).Item("OrderNo").ToString()
             lblOrderNo.Text = myData.Tables(0).Rows(0).Item("OrderNo").ToString()
             txtReference.Text = myData.Tables(0).Rows(0).Item("OrderCust").ToString()
-            ddlDelivery.SelectedValue = myData.Tables(0).Rows(0).Item("Delivery").ToString()
+            ddlDelivery.SelectedValue = Delivery
             txtNote.Text = myData.Tables(0).Rows(0).Item("Note").ToString()
+
+            Call VisibleElement(StoreId)
+
         Catch ex As Exception
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
@@ -286,6 +313,16 @@ Partial Class Order_Header
         txtOrderNo.CssClass = "form-control "
         txtReference.CssClass = "form-control "
         ddlDelivery.CssClass = "form-select "
+    End Sub
+
+    Private Sub VisibleElement(StoreId As String)
+        Dim Delivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM Stores WHERE Id = '{0}'", StoreId))
+
+        divDelivery.Visible = False
+
+        If Delivery = "" Then
+            divDelivery.Visible = True
+        End If
     End Sub
 
     Private Sub MessageError(Show As Boolean, Msg As String)
