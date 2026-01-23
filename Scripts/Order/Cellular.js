@@ -104,6 +104,7 @@ document.querySelector("#controltype").addEventListener("change", (e) => {
   bindControlSystem(controlName);
   bindMotorType();
   bindMotorExtra();
+  bindAdditional();
   bindCordType(controlName);
   handlerElementVisibility(controlName, blindName);
 });
@@ -283,10 +284,16 @@ const handlerElementVisibility = (controltype, blindname, controlsystem) => {
   const lblControlType = document.getElementById("lblControlType");
 
   const divFabricNight = document.getElementById("divFabricNight");
+
   const lblFabricDay = document.getElementById("lblFabricDay");
   const lblFabricNight = document.getElementById("lblFabricNight");
+
   const divFabricDayType = document.getElementById("divFabricDayType");
   const divFabricDayColour = document.getElementById("divFabricDayColour");
+
+  const divControlSystem = document.getElementById("divControlSystem");
+  const divAdditional = document.getElementById("divAdditional");
+
   const divCordType = document.getElementById("divCordType");
   const divMotor = document.getElementById("divMotor");
 
@@ -295,10 +302,12 @@ const handlerElementVisibility = (controltype, blindname, controlsystem) => {
   divFormDetail.setAttribute("hidden", true);
   divBracketType.setAttribute("hidden", true);
   // divControlType.setAttribute("hidden", true);
-  divMarkUp.setAttribute("hidden", true);
   divFabricNight.setAttribute("hidden", true);
+  divControlSystem.setAttribute("hidden", true);
+  divAdditional.setAttribute("hidden", true);
   divCordType.setAttribute("hidden", true);
   divMotor.setAttribute("hidden", true);
+  divMarkUp.setAttribute("hidden", true);
 
   lblControlType.innerHTML = "control type";
   lblFabricDay.innerHTML = "fabric type x colour";
@@ -330,6 +339,8 @@ const handlerElementVisibility = (controltype, blindname, controlsystem) => {
 
   if (blindname == "Potrait") {
     divBracketType.removeAttribute("hidden");
+    divControlSystem.removeAttribute("hidden");
+    divAdditional.removeAttribute("hidden");
     lblControlType.innerHTML = "system type";
     // lblFabricDay.innerHTML = "fabric";
     // divFabricDayType.classList.remove("col-lg-4");
@@ -1020,25 +1031,25 @@ const bindControlSystem = (controlname) => {
   let data = [];
   if (controlname == "Standard Corded") {
     data = [
-      { value: "SmartRise Cordless System", text: "SmartRise Cordless System" },
+      { value: "SmartRise Cordless", text: "SmartRise Cordless" },
       {
-        value: "Cood Loop Operating System",
-        text: "Cood Loop Operating System",
+        value: "Cood Loop Operating",
+        text: "Cood Loop Operating",
       },
       {
-        value: "SmartRelease Cord Loop System",
-        text: "SmartRelease Cord Loop System",
+        value: "SmartRelease Cord Loop",
+        text: "SmartRelease Cord Loop",
       },
-      { value: "Corded TDBU System - STD", text: "Corded TDBU System - STD" },
-      { value: "SmartFit System", text: "SmartFit System" },
-      { value: "SmartFit Sloped System", text: "SmartFit Sloped System" },
+      { value: "Corded TDBU", text: "Corded TDBU" },
+      { value: "SmartFit", text: "SmartFit" },
+      { value: "SmartFit Sloped", text: "SmartFit Sloped" },
       { value: "SmartFit Day & Night", text: "SmartFit Day & Night" },
       { value: "Day & Night", text: "Day & Night" },
       { value: "Cordless TDBU", text: "Cordless TDBU" },
       { value: "Cord Loop TDBU", text: "Cord Loop TDBU" },
       { value: "Cordless Day & Night", text: "Cordless Day & Night" },
       { value: "Cord Loop Day & Night", text: "Cord Loop Day & Night" },
-      { value: "Decoflex System", text: "Decoflex System" },
+      { value: "Decoflex", text: "Decoflex" },
       { value: "Decoflex for Skylight", text: "Decoflex for Skylight" },
       { value: "Decoflex Day & Night", text: "Decoflex Day & Night" },
       { value: "Motorised", text: "Motorised" },
@@ -1047,12 +1058,12 @@ const bindControlSystem = (controlname) => {
   if (controlname == "Patio Door Vertical") {
     data = [
       {
-        value: "Patio Door Vertical - Centre Stack",
-        text: "Patio Door Vertical - Centre Stack",
+        value: "Patio Door Vertical",
+        text: "Patio Door Vertical",
       },
       {
-        value: "Patio Vertical Vertical - Centre Opening",
-        text: "Patio Vertical Vertical - Centre Opening",
+        value: "Patio Vertical Vertical",
+        text: "Patio Vertical Vertical",
       },
       {
         value: "Patio Door Vertical Day & Night",
@@ -1108,7 +1119,7 @@ const bindCordType = (controlname) => {
   });
 };
 
-const bindMotorType = (controlsystem) => {
+const bindMotorType = () => {
   const sel = document.getElementById("motortype");
   sel.innerHTML = ""; //reset
 
@@ -1140,7 +1151,7 @@ const bindMotorType = (controlsystem) => {
   });
 };
 
-const bindMotorExtra = (controlsystem) => {
+const bindMotorExtra = () => {
   const sel = document.getElementById("motorextra");
   sel.innerHTML = ""; //reset
 
@@ -1153,11 +1164,51 @@ const bindMotorExtra = (controlsystem) => {
     { value: "Corded PowerBar", text: "Corded PowerBar" },
     { value: "Cordess PowerBar", text: "Cordess PowerBar" },
     { value: "Ext.Rod-910mm", text: "Ext.Rod-910mm" },
-    { value: "Remote Holder", text: "Remote Holder" },
+    { value: "Remote With Holder", text: "Remote With Holder" },
+    { value: "Additional Remote Holder", text: "Additional Remote Holder" },
     { value: "G2 SmartDial Remote", text: "G2 SmartDial Remote" },
     { value: "G2 SmartDial Colour Ring", text: "G2 SmartDial Colour Ring" },
     { value: "G2 ShadeAuto Hub", text: "G2 ShadeAuto Hub" },
     { value: "Repeater", text: "Repeater" },
+  ];
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach(function (item) {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindAdditional = () => {
+  const sel = document.getElementById("additional");
+  sel.innerHTML = ""; //reset
+
+  // if (!controlsystem) return;
+
+  let data = [];
+  data = [
+    {
+      value: "Dual Shade (2 on 1)",
+      text: "Dual Shade (2 on 1)",
+    },
+    {
+      value: "Decoflex Fram Colour",
+      text: "Decoflex Fram Colour",
+    },
+    {
+      value: "Pre-drilled Frames",
+      text: "Pre-drilled Frames",
+    },
+    { value: "Specialty shapes", text: "Specialty shapes" },
   ];
 
   if (data.length > 1) {
@@ -1226,8 +1277,9 @@ const bindItemOrders = async (itemid) => {
       );
       await bindFabricColours2(item.DesignId, item.FabricTypeB);
       await bindControlSystem(item.ControlType);
-      await bindMotorType(item.HangerType);
-      await bindMotorExtra(item.HangerType);
+      await bindMotorType();
+      await bindMotorExtra();
+      await bindAdditional();
       await bindCordType(item.ControlType);
       await handlerElementVisibility(
         item.ControlType,
@@ -1265,6 +1317,7 @@ const handlerSetElementValues = (itemData) => {
     motorextra: "AdditionalMotor",
     holddown: "BottomHoldDown",
     cutout: "DoorCutOut",
+    additional: "Accessory",
     notes: "Notes",
     markup: "MarkUp",
   };

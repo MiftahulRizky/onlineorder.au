@@ -145,6 +145,10 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Control Type" %>
                     </ItemTemplate>
                   </asp:TemplateField>
                   <asp:BoundField
+                    DataField="Description"
+                    HeaderText="Description"
+                  />
+                  <asp:BoundField
                     DataField="Active"
                     HeaderStyle-CssClass="hiddencol"
                     ItemStyle-CssClass="hiddencol"

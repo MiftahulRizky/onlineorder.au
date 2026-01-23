@@ -99,6 +99,7 @@
                                                 <option value=""></option>
                                                 <option value="Reveal Fit">REVEAL FIT</option>
                                                 <option value="Face Fit">FACE FIT</option>
+                                                <option value="Make Size">MAKE SIZE</option>
                                             </select>
                                         </div>
                                     </div>
@@ -144,7 +145,7 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divControlSystem">
-                                        <label for="controlsystem" class="col-lg-3 text-uppercase fw-bold">control system</label>
+                                        <label for="controlsystem" class="col-lg-3 text-uppercase fw-bold">control type</label>
                                         <div class="col-lg-6">
                                             <select name="controlsystem" id="controlsystem" class="form-control" multiple ></select>   
                                         </div>
@@ -216,7 +217,13 @@
                                             </select>
                                         </div>
                                     </div>
-    
+
+                                    <div class="mb-3 row" id="divAdditional">
+                                        <label for="additional" class="col-lg-3 text-uppercase fw-bold">Additional</label>
+                                        <div class="col-lg-4">
+                                            <select name="additional" id="additional" class="form-control "></select>
+                                        </div>
+                                    </div>
     
                                     <div class="mb-3 row" >
                                         <label for="notes" class="col-lg-3 text-uppercase fw-bold">special information</label>
