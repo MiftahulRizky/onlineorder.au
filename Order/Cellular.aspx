@@ -99,6 +99,7 @@
                                                 <option value=""></option>
                                                 <option value="Reveal Fit">REVEAL FIT</option>
                                                 <option value="Face Fit">FACE FIT</option>
+                                                <option value="Make Size">MAKE SIZE</option>
                                             </select>
                                         </div>
                                     </div>
@@ -144,7 +145,7 @@
                                     </div>
     
                                     <div class="mb-3 row" id="divControlSystem">
-                                        <label for="controlsystem" class="col-lg-3 text-uppercase fw-bold">control system</label>
+                                        <label for="controlsystem" class="col-lg-3 text-uppercase fw-bold">control type</label>
                                         <div class="col-lg-6">
                                             <select name="controlsystem" id="controlsystem" class="form-control" multiple ></select>   
                                         </div>
@@ -165,6 +166,16 @@
                                                 <option value="L">L</option>
                                                 <option value="R">R</option>
                                                 <option value="LR">LR</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divDualShade">
+                                        <label for="dualshade" class="col-lg-3 text-uppercase fw-bold">dual shade</label>
+                                        <div class="col-lg-3">
+                                            <select name="dualshade" id="dualshade" class="form-control ">
+                                                <option value="No">NO</option>
+                                                <option value="Yes">YES</option>
                                             </select>
                                         </div>
                                     </div>
@@ -194,6 +205,7 @@
                                         </div>
                                     </div>
 
+                                    
                                     <div class="mb-3 row">
                                         <label for="holddown" class="col-lg-3 text-uppercase fw-bold">Hold Down Bracket</label>
                                         <div class="col-lg-3">
@@ -214,6 +226,13 @@
                                                 <option value="3">3</option>
                                                 <option value="4">4</option>
                                             </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divAdditional">
+                                        <label for="additional" class="col-lg-3 text-uppercase fw-bold">Additional</label>
+                                        <div class="col-lg-4">
+                                            <select name="additional" id="additional" class="form-control "></select>
                                         </div>
                                     </div>
     
