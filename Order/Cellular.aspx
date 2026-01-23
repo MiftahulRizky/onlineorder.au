@@ -170,16 +170,6 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row" id="divDualShade">
-                                        <label for="dualshade" class="col-lg-3 text-uppercase fw-bold">dual shade</label>
-                                        <div class="col-lg-3">
-                                            <select name="dualshade" id="dualshade" class="form-control ">
-                                                <option value="No">NO</option>
-                                                <option value="Yes">YES</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
                                     <div class="mb-3 row">
                                         <label for="qty" class="col-lg-3 text-uppercase fw-bold">chain length</label>
                                         <div class="col-lg-3">
