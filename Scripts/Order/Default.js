@@ -128,7 +128,7 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnChangeStatus") {
     document
       .querySelectorAll(
-        "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
+        "#modalChangeStatus .form-control, #modalChangeStatus .form-select",
       )
       .forEach((el) => {
         el.classList.remove("is-invalid");
@@ -199,7 +199,7 @@ document
   .addEventListener("change", (e) => {
     document
       .querySelectorAll(
-        "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
+        "#modalChangeStatus .form-control, #modalChangeStatus .form-select",
       )
       .forEach((el) => {
         el.classList.remove("is-invalid");
@@ -210,7 +210,7 @@ document
 
 document
   .querySelectorAll(
-    "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
+    "#modalChangeStatus .form-control, #modalChangeStatus .form-select",
   )
   .forEach((el) => {
     el.addEventListener("change", () => {
@@ -240,11 +240,11 @@ const submitChangeStatus = async () => {
   // Hapus class invalid saat user ubah input
   document
     .querySelectorAll(
-      "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
+      "#modalChangeStatus .form-control, #modalChangeStatus .form-select",
     )
     .forEach((el) => {
       ["change", "input"].forEach((evt) =>
-        el.addEventListener(evt, () => el.classList.remove("is-invalid"))
+        el.addEventListener(evt, () => el.classList.remove("is-invalid")),
       );
     });
 
@@ -265,7 +265,7 @@ const submitChangeStatus = async () => {
   }
 
   const btnSubmit = document.querySelector(
-    "#modalChangeStatus #submitChangeStatus"
+    "#modalChangeStatus #submitChangeStatus",
   );
 
   try {
@@ -412,6 +412,8 @@ const bindOrders = async (status, ordertype, active, storetype, params) => {
             findDelivery = `<span class='badge bg-pink-lt'><i class='bi bi-truck-front'></i> ${row.Delivery}</span>`;
           } else if (row.Delivery === "Delivery") {
             findDelivery = `<span class='badge bg-cyan-lt'><i class='bi bi-box-seam'></i> ${row.Delivery}</span>`;
+          } else if (row.Delivery.includes("INT")) {
+            findDelivery = `<span class='badge bg-orange-lt'><i class='bi bi-buildings'></i> ${row.Delivery}</span>`;
           }
           return `<div class="text-center">${findDelivery}</div>`;
         },
@@ -654,7 +656,7 @@ const handlerSelStatus = (params, statusNow) => {
       orderTypeToUse,
       activeToUse,
       storeTypeToUse,
-      "#cardOrder #tableAjax"
+      "#cardOrder #tableAjax",
     );
   }
 };
@@ -885,21 +887,21 @@ const parseCustomDate = (value) => {
 
   // Format: 10/07/2025 08:42:01 (24 jam)
   const match24 = value.match(
-    /^(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/
+    /^(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/,
   );
   if (match24) {
     const [_, day, month, year, hour, minute, second] = match24;
     return new Date(
       `${year}-${month.padStart(2, "0")}-${day.padStart(
         2,
-        "0"
-      )}T${hour}:${minute}:${second}`
+        "0",
+      )}T${hour}:${minute}:${second}`,
     );
   }
 
   // Format: 13/07/2025 1:06:07 PM (12 jam)
   const match12 = value.match(
-    /^(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{1,2}):(\d{2}):(\d{2}) (\w{2})$/
+    /^(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{1,2}):(\d{2}):(\d{2}) (\w{2})$/,
   );
   if (match12) {
     let [_, day, month, year, hour, minute, second, period] = match12;
@@ -909,7 +911,7 @@ const parseCustomDate = (value) => {
     return new Date(
       `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}T${hour
         .toString()
-        .padStart(2, "0")}:${minute}:${second}`
+        .padStart(2, "0")}:${minute}:${second}`,
     );
   }
 

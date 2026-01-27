@@ -10,10 +10,21 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   el.addEventListener("change", async (e) => {
     e.target.classList.remove("is-invalid");
 
-    if (e.target.id !== "ordertype") return;
+    if (e.target.id == "ordertype") {
+      const ortype = e.target.value;
+      await visibleElementFormOnChange(ortype);
+    }
 
-    const ortype = e.target.value;
-    await visibleElementFormOnChange(ortype);
+    if (e.target.id == "customer") {
+      const selectedOption = e.target.options[e.target.selectedIndex];
+      const delivery = selectedOption?.dataset?.delivery;
+
+      const divDelivery = document.querySelector("#divDelivery");
+      divDelivery.setAttribute("hidden", true);
+      if (!delivery) {
+        divDelivery.removeAttribute("hidden");
+      }
+    }
   });
 });
 
@@ -34,7 +45,7 @@ document.querySelector("#btnInfoOrderName").addEventListener("click", (e) => {
 document.querySelector("#shipping").addEventListener("click", (e) => {
   document
     .querySelectorAll(
-      "#modalShipping, #modalShipping .form-control, #modalShipping .form-select"
+      "#modalShipping, #modalShipping .form-control, #modalShipping .form-select",
     )
     .forEach((el) => {
       el.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
@@ -94,7 +105,7 @@ document
 
     document
       .querySelectorAll(
-        "#modalShipping, #modalShipping .form-control, #modalShipping .form-select"
+        "#modalShipping, #modalShipping .form-control, #modalShipping .form-select",
       )
       .forEach((el) => {
         el.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
@@ -141,7 +152,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
     ];
 
     formObject = Object.fromEntries(
-      Object.entries(formObject).filter(([key]) => !excludeKeys.includes(key))
+      Object.entries(formObject).filter(([key]) => !excludeKeys.includes(key)),
     );
 
     const additionalData = {
@@ -178,7 +189,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
       throw new Error(
         ROLENAME === "Administrator"
           ? `${response.status}\n${errorText}`
-          : "Something went wrong, please try again!"
+          : "Something went wrong, please try again!",
       );
     }
 
@@ -219,7 +230,7 @@ const handlerSubmitShipping = async (formEl, button, htmlButton) => {
     ];
 
     formObject = Object.fromEntries(
-      Object.entries(formObject).filter(([key]) => !excludeKeys.includes(key))
+      Object.entries(formObject).filter(([key]) => !excludeKeys.includes(key)),
     );
 
     const additionalData = {
@@ -255,7 +266,7 @@ const handlerSubmitShipping = async (formEl, button, htmlButton) => {
       throw new Error(
         ROLENAME === "Administrator"
           ? `${response.status}\n${errorText}`
-          : "Something went wrong, please try again!"
+          : "Something went wrong, please try again!",
       );
     }
 
@@ -296,10 +307,7 @@ const handlerSelCustomer = async (ordertype, params) => {
     });
 
     if (!response.ok) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? `${response.status}\n${response.statusText}`
-          : "Please contact our IT team at support@onlineorder.au";
+      const msg = `${response.status}\n${response.statusText}`;
       throw new Error(msg);
     }
 
@@ -307,11 +315,7 @@ const handlerSelCustomer = async (ordertype, params) => {
     const data = result.d;
 
     if (!data || data.length === 0) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? "No data returned from server : handlerSelCustomer"
-          : "Please contact our IT team at support@onlineorder.au";
-      throw new Error(msg);
+      throw new Error("No data returned from server : handlerSelCustomer");
     }
 
     if (Array.isArray(data)) {
@@ -327,7 +331,7 @@ const handlerSelCustomer = async (ordertype, params) => {
 
         option.value = item.value;
         option.text = item.text.toUpperCase();
-        // option.setAttribute("data-name", item.text);
+        option.setAttribute("data-delivery", item.delivery);
         sel.add(option);
       });
 
@@ -496,7 +500,7 @@ const handlerShipping = async (customerid) => {
     for (const item of data) {
       const shipping = document.querySelector("#shipping");
       const modalShippingLabel = document.querySelector(
-        "#modalShipping #modalShippingLabel"
+        "#modalShipping #modalShippingLabel",
       );
       const customer = document.querySelector("#customer");
 
@@ -729,7 +733,12 @@ const visibleElementForm = (item) => {
   orderid.classList.add("text-secondary");
 
   if (item.OrderType == "Blinds") {
-    divDelivery.removeAttribute("hidden");
+    const customer = document.getElementById("customer");
+    const customerDelivery =
+      customer?.options?.[customer.selectedIndex]?.dataset?.delivery;
+    if (customerDelivery) {
+      divDelivery.removeAttribute("hidden");
+    }
   }
 
   if (item.OrderType == "Panorama" || item.OrderType == "Evolve") {
@@ -812,7 +821,12 @@ const visibleElementFormOnChange = async (ordertype) => {
       divCustomer.removeAttribute("hidden");
     }
 
-    divDelivery.removeAttribute("hidden");
+    const customer = document.getElementById("customer");
+    const customerDelivery =
+      customer?.options?.[customer.selectedIndex]?.dataset?.delivery;
+    if (!customerDelivery) {
+      divDelivery.removeAttribute("hidden");
+    }
   } else if (value == "Panorama" || value == "Evolve") {
     handlerSelUser("#createdby");
     if (

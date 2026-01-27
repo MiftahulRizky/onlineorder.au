@@ -106,7 +106,7 @@
         Try
             Dim search As String = String.Empty
             If Not SearchText = "" Then
-                search = " WHERE Id LIKE '%" + SearchText + "%' OR Name LIKE '%" + SearchText + "%'"
+                search = String.Format(" WHERE Id LIKE '%{0}%' OR Name LIKE '%{0}%' OR Description LIKE '%{0}%'", SearchText)
             End If
             gvList.DataSource = publicCfg.GetListData(String.Format("SELECT * FROM ControlType {0} ORDER BY Name ASC", search))
             gvList.DataBind()

@@ -102,7 +102,7 @@ Partial Class Methods_Order_CreateMethod
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "customer is required !", .field = "customer"}}
             End If
 
-            If Not String.IsNullOrEmpty(data.ordertype) AndAlso data.ordertype = "panorama" Then
+            If Not String.IsNullOrEmpty(data.ordertype) AndAlso data.ordertype = "Panorama" Then
                 If String.IsNullOrEmpty(data.createdby) Then
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "created by is required !", .field = "createdby"}}
                 End If
@@ -166,10 +166,17 @@ Partial Class Methods_Order_CreateMethod
                 End If
             End If
 
-            If Not String.IsNullOrEmpty(data.ordertype) AndAlso data.ordertype = "blinds" Then
-                If String.IsNullOrEmpty(data.delivery) Then
+            Dim CustomerDelivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM Customers WHERE Id = '{0}'", data.customer))
+            If data.ordertype = "Blinds" Then
+
+                If CustomerDelivery = "" And String.IsNullOrEmpty(data.delivery) Then
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "delivery is required !", .field = "delivery"}}
                 End If
+            End If
+
+            Dim FinalDelivery As String = data.delivery
+            If Not CustomerDelivery = "" Then
+                FinalDelivery = CustomerDelivery
             End If
 
             Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString    
@@ -187,7 +194,7 @@ Partial Class Methods_Order_CreateMethod
                             myCmd.Parameters.AddWithValue("@StoreId", UCase(data.customer).ToString())
                             myCmd.Parameters.AddWithValue("@OrderNo", data.ordernumber)
                             myCmd.Parameters.AddWithValue("@OrderCust", data.ordername)
-                            myCmd.Parameters.AddWithValue("@Delivery", data.delivery)
+                            myCmd.Parameters.AddWithValue("@Delivery", FinalDelivery)
                             myCmd.Parameters.AddWithValue("@Note", data.Note)
                             myCmd.Connection = thisConn
                             thisConn.Open()
@@ -215,8 +222,8 @@ Partial Class Methods_Order_CreateMethod
                             myCmd.Parameters.AddWithValue("@CustomerId", UCase(data.customer).ToString())
                             myCmd.Parameters.AddWithValue("@OrderNumber", data.ordernumber.Trim())
                             myCmd.Parameters.AddWithValue("@OrderName", data.ordernumber.Trim())
-                            myCmd.Parameters.AddWithValue("@OrderNote",data.Note.Trim())
-                            myCmd.Parameters.AddWithValue("@OrderType",data.ordertype)
+                            myCmd.Parameters.AddWithValue("@OrderNote", data.Note.Trim())
+                            myCmd.Parameters.AddWithValue("@OrderType", data.ordertype)
                             myCmd.Parameters.AddWithValue("@CreatedBy", createdBy)
                             myCmd.Parameters.AddWithValue("@CreatedDate", data.createddate)
 
@@ -245,7 +252,7 @@ Partial Class Methods_Order_CreateMethod
                             myCmd.Parameters.AddWithValue("@StoreId", UCase(data.customer).ToString())
                             myCmd.Parameters.AddWithValue("@OrderNo", data.ordernumber)
                             myCmd.Parameters.AddWithValue("@OrderCust", data.ordername)
-                            myCmd.Parameters.AddWithValue("@Delivery", data.delivery)
+                            myCmd.Parameters.AddWithValue("@Delivery", FinalDelivery)
                             myCmd.Parameters.AddWithValue("@Note", data.Note)
                             myCmd.Connection = thisConn
                             thisConn.Open()
@@ -380,7 +387,7 @@ Partial Class Methods_Order_CreateMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindCustomer(ByVal ordertype As String, ByVal rolename As String) As Object
         Try
-            Dim query As String = "SELECT Id, Name, Company, Active FROM Customers WHERE Active='1' AND Id <> 'DEFAULT' ORDER BY Name ASC"
+            Dim query As String = "SELECT Id, Name, Company, Delivery, Active FROM Customers WHERE Active='1' AND Id <> 'DEFAULT' ORDER BY Name ASC"
 
             Dim datas As DataSet = publicCfg.GetListData(query)
             Dim list As New List(Of Dictionary(Of String, String))()
@@ -388,7 +395,8 @@ Partial Class Methods_Order_CreateMethod
                 For Each row As DataRow In datas.Tables(0).Rows
                     Dim result As New Dictionary(Of String, String) From {
                         {"value", row("Id").ToString()},
-                        {"text", row("Name").ToString()}
+                        {"text", row("Name").ToString()},
+                        {"delivery", row("Delivery").ToString()}
                     }
                     list.Add(result)
                 Next
