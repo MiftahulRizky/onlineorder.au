@@ -3133,7 +3133,7 @@ Partial Class Order_Detail
             Dim designType As String = orderCfg.GetItemData("SELECT Type FROM Designs WHERE Id = '" + designId + "'")
 
             If spanStatusOrder.InnerText = "Unsubmitted" Then
-                If Session("RoleName") = "Customer" Or Session("RoleName") = "Representative" Then
+                If Session("RoleName") = "Customer" Or Session("RoleName") = "Representative"  Or Session("RoleName") = "Data Entry" Then
                     If designType = "Evolve" Or designType = "Panorama" Then
                         result = True
                     End If

@@ -1576,9 +1576,9 @@ Partial Class Order_Method
                 If panelWidth < 200 Then Return "MINIMUM PANEL WIDTH IS 200MM !"
                 If panelWidth > 900 Then Return "MAXIMUM PANEL WIDTH IS 900MM !"
 
-                If panelHeight < 282 And data.louvresize = "63" Then Return "MINIMUM PANEL HEIGHT IS 282MM !"
-                If panelHeight < 333 And data.louvresize = "89" Then Return "MINIMUM PANEL HEIGHT IS 333MM !"
-                If panelHeight < 384 And data.louvresize = "114" Then Return "MINIMUM PANEL HEIGHT IS 384MM !"
+                ' If panelHeight < 282 And data.louvresize = "63" Then Return "MINIMUM PANEL HEIGHT IS 282MM !"
+                ' If panelHeight < 333 And data.louvresize = "89" Then Return "MINIMUM PANEL HEIGHT IS 333MM !"
+                ' If panelHeight < 384 And data.louvresize = "114" Then Return "MINIMUM PANEL HEIGHT IS 384MM !"
 
                 If panelHeight > 1900 And blindName = "Hinged Bi-fold" And (data.framebottom = "No" Or data.framebottom = "Light Block" Or data.framebottom = "L Striker Plate") Then
                     Return "MAXIMUM PANEL HEIGHT IS 1900mm !"
@@ -1592,9 +1592,10 @@ Partial Class Order_Method
             If blindName = "Hinged Bi-fold" Then
                 If panelWidth < 200 Then Return "MINIMUM PANEL WIDTH IS 200mm !"
                 If panelWidth > 900 Then Return "MAXIMUM PANEL WIDTH IS 900mm !"
-                If panelHeight < 282 And data.louvresize = "63" Then Return "MINIMUM PANEL HEIGHT IS 282mm !"
-                If panelHeight < 333 And data.louvresize = "89" Then Return "MINIMUM PANEL HEIGHT IS 333mm !"
-                If panelHeight < 384 And data.louvresize = "114" Then Return "MINIMUM PANEL HEIGHT IS 384mm !"
+
+                ' If panelHeight < 282 And data.louvresize = "63" Then Return "MINIMUM PANEL HEIGHT IS 282mm !"
+                ' If panelHeight < 333 And data.louvresize = "89" Then Return "MINIMUM PANEL HEIGHT IS 333mm !"
+                ' If panelHeight < 384 And data.louvresize = "114" Then Return "MINIMUM PANEL HEIGHT IS 384mm !"
 
                 If panelHeight > 1900 And (data.framebottom = "No") Then Return "MAXIMUM PANEL HEIGHT IS 1900mm !"
 
@@ -1790,7 +1791,7 @@ Partial Class Order_Method
                 data.buildoutposition = String.Empty
             End If
 
-            If Not layoutCode.Contains("T") AndAlso Not layoutCode.Contains("B") AndAlso layoutCode.Contains("C") AndAlso layoutCode.Contains("G") Then
+            If Not (layoutCode.Contains("T") OrElse layoutCode.Contains("B") OrElse layoutCode.Contains("C") OrElse layoutCode.Contains("G")) Then
                 data.samesizepanel = String.Empty
                 gap1 = 0 : gap2 = 0 : gap3 = 0 : gap4 = 0 : gap5 = 0
             End If
