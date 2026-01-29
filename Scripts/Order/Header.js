@@ -659,7 +659,19 @@ const handlerSelOrderType = async (params) => {
   ];
 
   if (CUSTOMERID == "LS-A224") {
-    data = [{ value: "Panorama", text: "Panorama" }];
+    // JPM Direct
+    data = [
+      { value: "", text: "" },
+      { value: "Panorama", text: "Panorama" },
+    ];
+  }
+
+  if (CUSTOMERID == "DEFAULT" && USERNAME == "galih") {
+    data = [
+      { value: "", text: "" },
+      { value: "Panorama", text: "Panorama" },
+      { value: "Evolve", text: "Evolve" },
+    ];
   }
 
   for (const { value, text } of data) {

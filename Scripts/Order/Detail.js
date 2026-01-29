@@ -2038,6 +2038,12 @@ const bindDetails = async (headerid, status, createdby) => {
 const checkSessionDetail = () => {
   if (!ULTRON || !ORDERTYPE) window.location.href = "/order";
 
+  if (CUSTOMERID == "LS-A224") window.location.href = "/order"; // JPM Direct
+
+  if (CUSTOMERID == "DEFAULT" && USERNAME == "galih") {
+    window.location.href = "/order";
+  }
+
   bindOrderHeaderByID(HEADERID, ORDERTYPE);
 };
 

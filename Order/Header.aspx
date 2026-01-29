@@ -214,6 +214,7 @@
         const ORDERTYPE = params.get("ordertype"); // As ordertype
         let HEADER_ACTION = '<%= Session("headerAction") %>';
         let CUSTOMERID = '<%= Session("CustomerId") %>';
+        let USERNAME = '<%= Session("UserName") %>';
         let ROLENAME = '<%= Session("RoleName") %>';
         let LEVELNAME = '<%= Session("LevelName") %>';
         let LOGINID = '<%= Session("LoginId") %>';
