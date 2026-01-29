@@ -512,7 +512,7 @@ const submitEditPricing = async () => {
     } else {
       handlerHideBSModal("modalEditPricingItem");
       await isSuccess(data.success.message);
-      tableData.ajax.reload();
+      window.location.href = "/order/detail";
     }
   } catch (error) {
     const msg =

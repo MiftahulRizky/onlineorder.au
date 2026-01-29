@@ -1745,6 +1745,33 @@ Partial Class Methods_Order_DetailMethod
                 Dim UniqueId As String = detailData.Tables(0).Rows(i).Item("UniqueId").ToString()
                 Dim DesignName As String = detailData.Tables(0).Rows(i).Item("DesignName").ToString()
                 Dim BracketType As String = detailData.Tables(0).Rows(i).Item("BracketType").ToString()
+                Dim FabricGroups As String = detailData.Tables(0).Rows(i).Item("FabricGroups").ToString()
+
+                If FabricGroups = "POA" Then
+                    Dim Poa As Integer = publicCfg.GetItemData(String.Format("SELECT Poa FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, Id))
+                    If Poa = 0 Then
+                        Using thisConn As New SqlConnection(myConn)
+                            Using myCmd As New SqlCommand("UPDATE OrderHeaders SET Status='Pending Price Approval' WHERE Id = @Id")
+                                myCmd.Parameters.AddWithValue("@Id", headerid)
+                                myCmd.Connection = thisConn
+                                thisConn.Open()
+                                myCmd.ExecuteNonQuery()
+                                thisConn.Close()
+                            End Using
+                        End Using
+                    End If
+                    If Poa > 0  Then
+                        Using thisConn As New SqlConnection(myConn)
+                            Using myCmd As New SqlCommand("UPDATE OrderHeaders SET Status='Draft' WHERE Id = @Id")
+                                myCmd.Parameters.AddWithValue("@Id", headerid)
+                                myCmd.Connection = thisConn
+                                thisConn.Open()
+                                myCmd.ExecuteNonQuery()
+                                thisConn.Close()
+                            End Using
+                        End Using
+                    End If
+                End If
 
                 Dim TotalBlind As Integer = publicCfg.GetItemData("SELECT COUNT(*) FROM view_details WHERE UniqueId = '" + UniqueId + "' AND Active = 1")
                 If DesignName = "Roller Blinds" Then
