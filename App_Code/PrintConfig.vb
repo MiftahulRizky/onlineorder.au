@@ -522,8 +522,11 @@ Public Class PrintConfig
                 result += thStart & "Fabric" & thEnd
                 result += thStart & "Side" & thEnd
                 result += thStart & "Control" & thEnd
+                result += thStart & "Motor type" & thEnd
+                result += thStart & "Motor Extra" & thEnd
                 result += thStart & "Chain Length" & thEnd
                 result += thStart & "Hold Down Bracket" & thEnd
+                result += thStart & "Additional" & thEnd
                 result += thStart & "Cut Out" & thEnd
                 result += trEnd
 
@@ -541,8 +544,11 @@ Public Class PrintConfig
                     result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("HangerType").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("MotorStyle").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("AdditionalMotor").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ChainLength").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Accessory").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("DoorCutOut").ToString() & tdEnd
                     result += trEnd
 
