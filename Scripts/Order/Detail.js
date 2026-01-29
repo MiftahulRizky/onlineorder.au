@@ -25,7 +25,7 @@ document.querySelector("#btnPreviewPrint").addEventListener("click", () => {
   handlerCreatePDFOrder(
     headerId,
     "preview",
-    "Please wait while we generate the document."
+    "Please wait while we generate the document.",
   );
 });
 
@@ -34,7 +34,7 @@ document.querySelector("#btnPreviewPDF").addEventListener("click", () => {
   handlerCreatePDFOrder(
     headerId,
     "download",
-    "Please wait while we generate the document."
+    "Please wait while we generate the document.",
   );
 });
 
@@ -53,7 +53,7 @@ document.querySelector("#btnSubmit").addEventListener("click", () => {
   handlerSubmitOrder(
     headerId,
     "submit",
-    "Please wait while we submit the order."
+    "Please wait while we submit the order.",
   );
 });
 
@@ -73,7 +73,7 @@ document.querySelector("#btnQuoteDetail").addEventListener("click", () => {
     headerId,
     userName,
     "preview",
-    "Please wait while we generate the document."
+    "Please wait while we generate the document.",
   );
 });
 
@@ -83,7 +83,7 @@ document.querySelector("#btnDownloadQuote").addEventListener("click", () => {
     headerId,
     userName,
     "download",
-    "Please wait while we generate the document."
+    "Please wait while we generate the document.",
   );
 });
 
@@ -91,7 +91,7 @@ document.querySelector("#btnDownloadQuote").addEventListener("click", () => {
 document.querySelector("#btnChangeStatus").addEventListener("click", () => {
   document
     .querySelectorAll(
-      "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
+      "#modalChangeStatus .form-control, #modalChangeStatus .form-select",
     )
     .forEach((e) => {
       e.classList.remove("is-invalid");
@@ -104,7 +104,7 @@ document.querySelector("#btnSendOrderMail").addEventListener("click", () => {
   handlerCreatePDFOrder(
     headerId,
     "mail",
-    "Please wait while we generate the document."
+    "Please wait while we generate the document.",
   );
 });
 
@@ -164,7 +164,7 @@ document
 
 document
   .querySelectorAll(
-    "#modalChangeStatus .form-control, #modalChangeStatus .form-select"
+    "#modalChangeStatus .form-control, #modalChangeStatus .form-select",
   )
   .forEach((e) => {
     e.addEventListener("change", (e) => {
@@ -188,6 +188,24 @@ document
   .querySelector("#modalChangeStatus #submitChangeStatus")
   .addEventListener("click", () => {
     submitChangeStatus();
+  });
+
+// ------------------------------------------||modalEditPricingItem Event ||------------------------------------
+document
+  .querySelectorAll("#modalEditPricingItem .form-control")
+  .forEach((e) => {
+    e.addEventListener("change", (e) => {
+      e.target.classList.remove("is-invalid");
+    });
+    e.addEventListener("input", (e) => {
+      e.target.classList.remove("is-invalid");
+    });
+  });
+
+document
+  .querySelector("#modalEditPricingItem #submitEditPricingItem")
+  .addEventListener("click", () => {
+    submitEditPricing();
   });
 
 // ------------------------------------------||tableAjax Event ||------------------------------------
@@ -228,6 +246,26 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
   }
 });
 
+// BUTTON EDIT PRICING ITEM
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnEditPricingItem") {
+    const id = e.target.dataset.id;
+    const cost = e.target.dataset.cost || "0.00";
+
+    document
+      .querySelectorAll("#modalEditPricingItem .form-control")
+      .forEach((e) => {
+        e.classList.remove("is-invalid");
+        e.value = "";
+      });
+
+    document.querySelector("#modalEditPricingItem #id").value = id;
+    document.querySelector("#modalEditPricingItem #cost").value = cost;
+    // handlerEditPricingItem(id);
+    handlerShowBSModal("modalEditPricingItem");
+  }
+});
+
 // BUTTON PRICING ITEM
 document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnPricingItem") {
@@ -257,7 +295,7 @@ const submitChangeStatus = async () => {
     .forEach((e) => e.classList.remove("is-invalid"));
 
   const btnSubmit = document.querySelector(
-    "#modalChangeStatus #submitChangeStatus"
+    "#modalChangeStatus #submitChangeStatus",
   );
 
   const fields = [
@@ -335,7 +373,7 @@ const submitSelectProduct = (headerid, action, designid) => {
       if (!headerid) {
         isError("HEADER ID NOT FOUND !").then(() => {
           const fieldElement = document.querySelector(
-            "#modalAddItem #designid"
+            "#modalAddItem #designid",
           );
           if (fieldElement) {
             fieldElement.focus();
@@ -346,7 +384,7 @@ const submitSelectProduct = (headerid, action, designid) => {
       if (!action) {
         isError("ACTION NOT FOUND !").then(() => {
           const fieldElement = document.querySelector(
-            "#modalAddItem #designid"
+            "#modalAddItem #designid",
           );
           if (fieldElement) {
             fieldElement.focus();
@@ -357,7 +395,7 @@ const submitSelectProduct = (headerid, action, designid) => {
       if (!designid) {
         isError("DESIGN ID NOT FOUND !").then(() => {
           const fieldElement = document.querySelector(
-            "#modalAddItem #designid"
+            "#modalAddItem #designid",
           );
           if (fieldElement) {
             fieldElement.focus();
@@ -425,9 +463,71 @@ const submitSelectProduct = (headerid, action, designid) => {
   });
 };
 
+// SUBMIT EDIT PRICING
+const submitEditPricing = async () => {
+  document
+    .querySelectorAll("#modalEditPricingItem .form-control")
+    .forEach((e) => e.classList.remove("is-invalid"));
+
+  const btnSubmit = document.querySelector(
+    "#modalEditPricingItem #submitEditPricingItem",
+  );
+
+  const fields = ["id", "cost", "newcost"];
+
+  const Params = { username: userName, headerid: headerId };
+
+  fields.forEach((field) => {
+    const el = document.querySelector(`#modalEditPricingItem #${field}`);
+    Params[field] = el ? el.value : "";
+  });
+
+  try {
+    btnSubmit.setAttribute("disabled", "disabled");
+    btnSubmit.innerHTML = '<i class="fa fa-spin fa-spinner"></i>';
+    swalLoadingShow("Please wait...");
+
+    const response = await fetch(`${uriMethod}/OverridePricing`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: Params }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const data = result.d || result;
+
+    if (data.error) {
+      await isError(data.error.message.toUpperCase());
+      if (data.error.field) {
+        const fieldElement = document.querySelector(data.error.field);
+        fieldElement.focus();
+        fieldElement.classList.add("is-invalid");
+      }
+    } else {
+      handlerHideBSModal("modalEditPricingItem");
+      await isSuccess(data.success.message);
+      tableData.ajax.reload();
+    }
+  } catch (error) {
+    const msg =
+      roleName === "Administrator"
+        ? "submitEditPricing : " + error.message
+        : "Something went wrong, please try again!";
+    await isError(msg);
+  } finally {
+    btnSubmit.removeAttribute("disabled");
+    btnSubmit.innerHTML = `<i class="fa-solid fa-cloud-arrow-up me-2"></i> Submit`;
+  }
+};
 // ------------------------------------------||Handler Function ||-------------------------------------------
 // HANDLER HIDE BOOTSTRAP MODAL
-const handlerHideBSModal = (id) => {
+function handlerHideBSModal(id) {
   var modalEl = document.getElementById(id);
   var modalInstance = bootstrap.Modal.getInstance(modalEl);
 
@@ -438,7 +538,7 @@ const handlerHideBSModal = (id) => {
     modalInstance = new bootstrap.Modal(modalEl);
     modalInstance.hide();
   }
-};
+}
 
 // HANDLER SHOW BOOTSTRAP MODAL
 const handlerShowBSModal = (params) => {
@@ -501,7 +601,7 @@ const handlerDisplayElement = (item) => {
   }
 
   // btnSubmit, btnEditHeader, btnDeleteHeader, & btnAddItem
-  if (item.Status === "Draft") {
+  if (item.Status === "Draft" || item.Status === "Pending Price Approval") {
     switch (roleName) {
       case "Customer":
         btnSubmit.removeAttribute("hidden");
@@ -656,7 +756,7 @@ const handlerHeaderInfo = (item) => {
       } else {
         spanSubmittedDate.innerHTML = customDate.toLocaleDateString(
           "en-US",
-          indo
+          indo,
         );
       }
     }
@@ -677,7 +777,7 @@ const handlerHeaderInfo = (item) => {
       } else {
         spanCompletedDate.innerHTML = customDate.toLocaleDateString(
           "en-US",
-          indo
+          indo,
         );
       }
     }
@@ -698,7 +798,7 @@ const handlerHeaderInfo = (item) => {
       } else {
         spanCanceledDate.innerHTML = customDate.toLocaleDateString(
           "en-US",
-          indo
+          indo,
         );
       }
     }
@@ -840,7 +940,7 @@ const handlerSubmitOrder = async (headerid, action, msgloading) => {
         if (resultData.error) {
           isError(
             resultData.error.message.toUpperCase(),
-            resultData.error.field
+            resultData.error.field,
           );
         } else {
           handlerCreatePDFOrder(headerid, action, msgloading);
@@ -879,9 +979,13 @@ const handlerConvertToJob = async (headerid, action, msgloading) => {
     return isError("Order status not found.");
   }
 
-  if (["Draft", "Completed", "Canceled"].includes(statusOrder)) {
+  if (
+    ["Draft", "Pending Price Approval", "Completed", "Canceled"].includes(
+      statusOrder,
+    )
+  ) {
     await isError(
-      `Cannot convert this order as the status is <b>${statusOrder}</b>`
+      `Cannot convert this order as the status is <b>${statusOrder}</b>`,
     );
     return;
   }
@@ -996,7 +1100,7 @@ const handlerDeleteHeader = async (headerid) => {
     if (resultData.error) {
       await isError(
         resultData.error.message.toUpperCase(),
-        resultData.error.field
+        resultData.error.field,
       );
     } else {
       await isSuccess(resultData.success.message);
@@ -1014,7 +1118,7 @@ const handlerCreatePDFQuote = async (
   headerid,
   username,
   action,
-  msgloading
+  msgloading,
 ) => {
   try {
     // Tampilkan loading SweetAlert
@@ -1105,6 +1209,10 @@ const handlerSelStatus = async (params, statusNow) => {
   // for cardChangeStatus => status
   if (params === "#modalChangeStatus #status" && statusNow) {
     switch (statusNow) {
+      case "Pending Price Approval":
+        data = [{ value: "Draft", text: "Draft" }];
+        break;
+
       case "Draft":
         data = [
           { value: "New Order", text: "New Order" },
@@ -1297,7 +1405,10 @@ const handlerReloadPricing = async (headerid, status, action) => {
 const handlerReloadPricingOnReadyPage = async (headerid, status, action) => {
   if (!headerid) return;
 
-  if (action === "binding" && status !== "Draft") {
+  if (
+    action === "binding" &&
+    (status !== "Draft" || status !== "Pending Price Approval")
+  ) {
     return;
   }
 
@@ -1562,8 +1673,9 @@ const handlerPricingItem = (id) => {
       orderable: false,
       render: (row) => `<div class="text-center">${row.Qty}</div>`,
     },
-    { width: "45%", orderable: false, data: "Description" },
+    { width: "100%", orderable: false, data: "Description" },
     { width: "15%", orderable: false, data: "Cost" },
+    { width: "15%", orderable: false, data: "Poa" },
     { width: "15%", orderable: false, data: "Discount" },
     { width: "15%", orderable: false, data: "FinalCost" },
   ];
@@ -1849,7 +1961,10 @@ const bindDetails = (headerid, status, userid) => {
     render: (row) => {
       // HIDE BUTTON DETAIL
       let hideDetail = "";
-      if (row.StatusHeader === "Draft") {
+      if (
+        row.StatusHeader === "Draft" ||
+        row.StatusHeader === "Pending Price Approval"
+      ) {
         hideDetail = "hidden";
         if (roleName === "PPIC & DE" && userid !== row.UserId) {
           hideDetail = "";
@@ -1858,7 +1973,10 @@ const bindDetails = (headerid, status, userid) => {
 
       // HIDE BUTTON EDIT
       let hideEdit = "hidden";
-      if (row.StatusHeader === "Draft") {
+      if (
+        row.StatusHeader === "Draft" ||
+        row.StatusHeader === "Pending Price Approval"
+      ) {
         hideEdit = "";
         if (roleName === "PPIC & DE" && userid !== row.UserId) {
           hideEdit = "hidden";
@@ -1867,7 +1985,10 @@ const bindDetails = (headerid, status, userid) => {
 
       // HIDE BUTTON COPY
       let hideCopy = "hidden";
-      if (row.StatusHeader === "Draft") {
+      if (
+        row.StatusHeader === "Draft" ||
+        row.StatusHeader === "Pending Price Approval"
+      ) {
         hideCopy = "";
         if (roleName === "PPIC & DE" && userid !== row.UserId) {
           hideCopy = "hidden";
@@ -1878,13 +1999,22 @@ const bindDetails = (headerid, status, userid) => {
 
       // HIDE BUTTON DELETE
       let hideDelete = "hidden";
-      if (row.StatusHeader === "Draft") {
+      if (
+        row.StatusHeader === "Draft" ||
+        row.StatusHeader === "Pending Price Approval"
+      ) {
         hideDelete = "";
         if (roleName === "PPIC & DE" && userid !== row.UserId) {
           hideDelete = "hidden";
         } else if (roleName === "Manager" || roleName === "Account") {
           hideDelete = "hidden";
         }
+      }
+
+      // HIDE BUTTON EDIT PRICING
+      let hideEditPricing = "hidden";
+      if (row.Group === "POA") {
+        hideEditPricing = "";
       }
 
       return `
@@ -1914,6 +2044,11 @@ const bindDetails = (headerid, status, userid) => {
             </a>
           </li>
           <div class="dropdown-divider"></div>
+          <li ${hideEditPricing}>
+            <a class="dropdown-item " href="javascript:void(0);" id="btnEditPricingItem" data-id="${row.Id}" data-cost="${row.RealCost}">
+              <i class="ti ti-pencil-dollar text-success fs-1 me-1 opacity-50"></i>Edit Pricing
+            </a>
+          </li>
           <li>
             <a class="dropdown-item " href="javascript:void(0);" id="btnPricingItem" data-id="${row.Id}">
               <i class="ti ti-tags fs-1 me-1 opacity-50"></i>Pricing
@@ -2023,21 +2158,21 @@ const parseCustomDate = (value) => {
 
   // Format: 10/07/2025 08:42:01 (24 jam)
   const match24 = value.match(
-    /^(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/
+    /^(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/,
   );
   if (match24) {
     const [_, day, month, year, hour, minute, second] = match24;
     return new Date(
       `${year}-${month.padStart(2, "0")}-${day.padStart(
         2,
-        "0"
-      )}T${hour}:${minute}:${second}`
+        "0",
+      )}T${hour}:${minute}:${second}`,
     );
   }
 
   // Format: 13/07/2025 1:06:07 PM (12 jam)
   const match12 = value.match(
-    /^(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{1,2}):(\d{2}):(\d{2}) (\w{2})$/
+    /^(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{1,2}):(\d{2}):(\d{2}) (\w{2})$/,
   );
   if (match12) {
     let [_, day, month, year, hour, minute, second, period] = match12;
@@ -2047,7 +2182,7 @@ const parseCustomDate = (value) => {
     return new Date(
       `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}T${hour
         .toString()
-        .padStart(2, "0")}:${minute}:${second}`
+        .padStart(2, "0")}:${minute}:${second}`,
     );
   }
 

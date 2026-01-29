@@ -86,8 +86,10 @@ Partial Class Methods_Order_DetailMethod
         Public Property KitName As String 
         Public Property Matrix As String 
         Public Property Product As String 
+        Public Property RealCost As String 
         Public Property Cost As String 
         Public Property MarkUp As String 
+        Public Property Group As String 
     End Class
     '#---------------------------------------|| /Server side Order Detail Class || ---------------------------------------#
 
@@ -138,6 +140,7 @@ Partial Class Methods_Order_DetailMethod
         Public Property Description As String 
         Public Property Cost As String 
         Public Property Discount As String 
+        Public Property Poa As String 
         Public Property FinalCost As String 
     End Class
     '#---------------------------------------|| /Server side Order Detail Pricing Class || ---------------------------------------#
@@ -152,6 +155,15 @@ Partial Class Methods_Order_DetailMethod
         Public Property description As String
 
         Public Property username As String
+    End Class
+
+    Public Class ParamOverridePricing
+        Public Property id  As String
+        Public Property cost As String
+        Public Property newcost As String
+
+        Public Property username As String
+        Public Property headerid As String
     End Class
 
 
@@ -325,7 +337,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, Qty, Location, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], Matrix, Charge, Markup")
+                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, Qty, Location, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], Matrix, Charge, Markup, FabricGroups")
                 sqlBuilder.AppendLine("FROM view_details")
                 sqlBuilder.AppendLine("WHERE Active=@Active AND HeaderId=@HeaderId")
 
@@ -417,6 +429,7 @@ Partial Class Methods_Order_DetailMethod
                         Dim Matrix As String = reader("Matrix").ToString()
                         Dim Charge As String = reader("Charge").ToString()
                         Dim MarkUp As String = reader("MarkUp").ToString()
+                        Dim FabricGroups As String = reader("FabricGroups").ToString()
 
                         '#-------------------|| Cost ||-------------------#
                         Dim Cost As String = String.Empty
@@ -436,6 +449,10 @@ Partial Class Methods_Order_DetailMethod
                                 Cost = "$" & totalCost.ToString("N2", enUS)
                             End If
                         End If
+
+                       
+
+
 
                         '#-------------------|| Markup ||-------------------#
                         Dim FindMarkUp As String = String.Empty
@@ -697,6 +714,8 @@ Partial Class Methods_Order_DetailMethod
                             End If
                         End If
 
+                        Dim RealCost As String = publicCfg.GetItemData(String.Format("SELECT FORMAT(Cost, 'N2', 'en-US') AS FormatRealCost FROM OrderDetailsPrice WHERE Type ='Matrix' And HeaderId = '{0}' And ItemId = '{1}'", HeaderId, Id))
+
                         Dim row As New OrdersMatrixReturnRow With {
                             .No = noCounter.ToString(),
                             .Id = Id,
@@ -709,8 +728,10 @@ Partial Class Methods_Order_DetailMethod
                             .Product = Product,
                             .HideNext = HideNext,
                             .TextNext = TextNext,
-                            .Cost = Cost,
-                            .MarkUp = FindMarkUp
+                            .RealCost = RealCost,
+                            .Cost =  If(FabricGroups = "POA" AND CInt(RealCost) = 0, "<span class='badge bg-orange-lt'>POA</span>", Cost),
+                            .MarkUp = FindMarkUp,
+                            .Group = FabricGroups
                         }
                         resultList.Add(row)
                         noCounter += 1
@@ -1171,6 +1192,86 @@ Partial Class Methods_Order_DetailMethod
         End Try
     End Function
 
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function OverridePricing(data As ParamOverridePricing) As Object
+        Try
+            Dim msg As String
+
+            If String.IsNullOrEmpty(data.id) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "this order is missing !", .field = "" }}
+            End If
+
+            Dim cost As Decimal
+            If String.IsNullOrEmpty(data.cost) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "base price is required !", .field = "#cost" }}
+            End If
+
+            If Not Decimal.TryParse(data.cost, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, cost) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "invalid base price !", .field = "#cost" }}
+            End If
+
+            Dim newcost As Decimal
+            If String.IsNullOrEmpty(data.newcost) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "override price is required !", .field = "#newcost" }}
+            End If
+
+            If Not Decimal.TryParse(data.newcost, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, newcost) OrElse newcost <= 0D Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "invalid override price !", .field = "#newcost" }}
+            End If
+
+
+            If Not String.IsNullOrEmpty(data.id) Then
+                Dim qty As Integer = publicCfg.GetItemData(String.Format("SELECT Qty FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", data.headerid, data.id))
+              
+                Dim RealFinalCost As Decimal = qty * cost
+                Dim FinalCost As Decimal = qty * newcost
+
+
+                Dim Res As String = UpdateOverridePricing(data.id, cost, newcost, RealFinalCost, FinalCost)
+                IF Not Res = "200" Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = Res, .field = "#cost" }}
+                End If
+
+                Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", data.headerid, data.id))
+                publicCfg.UpdateMatrix(UCase(data.id).ToString(), qty, Matrix)
+
+
+                msg = "Pricing has been updated successfully."   
+             End If
+
+            Return New SuccessResponse With {
+                .Success = New SuccessDetail With { .message = msg}
+            }
+        Catch ex As Exception
+            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ex.Message, .field = ""}}
+        End Try
+    End Function
+
+
+    Private Shared Function UpdateOverridePricing(id As String, cost As Decimal, poa As Decimal, rfinalcost As Decimal, finalcost As Decimal) As String
+        Try
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET RealCost=@RealCost, Cost=@Poa, Poa=@Poa, RealFinalCost=@RealFinalCost, FinalCost=@FinalCost WHERE ItemId=@Id", thisConn)
+                    myCmd.Parameters.AddWithValue("@Id", UCase(id).ToString())
+                    myCmd.Parameters.AddWithValue("@RealCost", cost)
+                    ' myCmd.Parameters.AddWithValue("@Cost", poa)
+                    myCmd.Parameters.AddWithValue("@Poa", poa)
+                    myCmd.Parameters.AddWithValue("@RealFinalCost", rfinalcost)
+                    myCmd.Parameters.AddWithValue("@FinalCost", finalcost)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return "200"
+        Catch ex As Exception
+            Return ex.Message
+        End Try
+    End Function
+
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
@@ -1237,9 +1338,31 @@ Partial Class Methods_Order_DetailMethod
                     End If
                 End If
 
+
+
+                Dim Qty As Integer = publicCfg.GetItemData(String.Format("SELECT Qty FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, itemId))
+                Dim RealCost As Decimal = publicCfg.GetItemData(String.Format("SELECT RealCost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, itemId))
+                Dim Cost As Decimal = publicCfg.GetItemData(String.Format("SELECT Cost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, itemId))
+                Dim Poa As Decimal = publicCfg.GetItemData(String.Format("SELECT Poa FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, itemId))
+
+                Dim RealFinalCost As Decimal = Qty * RealCost
+                Dim FinalCost As Decimal = Qty * Cost
+               
+
                 publicCfg.ResetPriceDetail(itemId)
                 publicCfg.HitungHarga(headerid, itemId)
                 publicCfg.HitungSurcharge(headerid, itemId)
+
+
+                IF fabricGroup = "POA" Then
+                    Dim Res As String = UpdateOverridePricing(itemId, RealCost, Cost, RealFinalCost, FinalCost)
+                    IF Not Res = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res}}
+                    End If
+
+                    Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", headerid, itemId))
+                    publicCfg.UpdateMatrix(UCase(itemId).ToString(), Qty, Matrix)
+                End If
             Next
 
             Return New SuccessResponse With {
@@ -1485,7 +1608,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT *, FORMAT(RealCost, 'C', 'en-US') AS FormatRealCost, FORMAT(Cost, 'C', 'en-US') AS FormatCost, FORMAT(Discount, 'C', 'en-US') AS FormatDiscount,FORMAT(RealFinalCost, 'C', 'en-US') AS FormatRealFinalCost, FORMAT(FinalCost, 'C', 'en-US') AS FormatFinalCost")
+                sqlBuilder.AppendLine("SELECT *, FORMAT(RealCost, 'C', 'en-US') AS FormatRealCost, FORMAT(Cost, 'C', 'en-US') AS FormatCost, FORMAT(Discount, 'C', 'en-US') AS FormatDiscount, FORMAT ( Poa, 'C', 'en-US' ) AS FormatPoa, FORMAT(RealFinalCost, 'C', 'en-US') AS FormatRealFinalCost, FORMAT(FinalCost, 'C', 'en-US') AS FormatFinalCost")
                 sqlBuilder.AppendLine("FROM OrderDetailsPrice")
                 sqlBuilder.AppendLine("WHERE ItemId = @ItemId")
 
@@ -1555,10 +1678,11 @@ Partial Class Methods_Order_DetailMethod
                         Dim Qty As String = reader("Qty").ToString()
                         Dim Description As String = reader("Description").ToString()
                         Dim Discount As Integer = CInt(reader("Discount"))
+                        Dim Poa As Integer = CInt(reader("Poa"))
                         Dim RealCost As String = "<br><span class='text-decoration-line-through text-secondary'>" & reader("FormatRealCost").ToString() & "</span>"
-                        Dim Cost As String = reader("FormatCost").ToString() & If(Discount = 0, "", RealCost)
+                        Dim Cost As String = reader("FormatCost").ToString() & If(Discount = 0 AND Poa = 0,"", RealCost)
                         Dim RealFinalCost As String = "<br><span class='text-decoration-line-through text-secondary'>" & reader("FormatRealFinalCost").ToString() & "</span>"
-                        Dim FinalCost As String = reader("FormatFinalCost").ToString() & If(Discount = 0, "", RealFinalCost)
+                        Dim FinalCost As String = reader("FormatFinalCost").ToString() & If(Discount = 0 AND Poa = 0, "", RealFinalCost)
 
 
                         Dim row As New OrdersMatrixReturnRowPricing With {
@@ -1570,6 +1694,7 @@ Partial Class Methods_Order_DetailMethod
                             .Description = Description,
                             .Cost = If(Type = "Discount", "", Cost),
                             .Discount = If(Discount = 0, "", "-" & reader("FormatDiscount").ToString()),
+                            .Poa = If(Poa = 0, "", reader("FormatPoa").ToString()),
                             .FinalCost = If(Type = "Discount", "", FinalCost)
                         }
                         resultList.Add(row)
@@ -1929,9 +2054,9 @@ Partial Class Methods_Order_DetailMethod
 
 
                     ' === INSERT QUERY ===
-                    fields = "JobId, ItemId, HeaderId, LinkBlind, BlindNo, Line, Qty, Location, Mounting, Width, WidthB, WidthMiddle, WidthBottom, [Drop], DropB, DropMiddle, DropRight, SemiInsideMount, LouvreSize, LouvrePosition, HingeColour, MidrailHeight1, MidrailHeight2, MidrailCritical, Layout, LayoutSpecial, CustomHeaderLength, FrameType, FrameLeft, FrameRight, FrameTop, FrameBottom, BottomTrackType, BottomTrackRecess, Buildout, BuildoutPosition, PanelQty, TrackQty, PanelSize, NumOfPanel, HingeQtyPerPanel, PanelQtyWithHinge, LocationTPost1, LocationTPost2, LocationTPost3, LocationTPost4, LocationTPost5, HorizontalTPost, HorizontalTPostHeight, JoinedPanels, ReverseHinged, PelmetFlat, ExtraFascia, HingesLoose, TiltrodType, TiltrodSplit, SplitHeight1, SplitHeight2, DoorCutOut, SpecialShape, TemplateProvided, SquareMetre, LinearMetre, StackPosition, TilterPosition, RollDirection, ControlPosition, ControlColour, ControlLength, ChainLength, MaterialChain, MotorStyle, MotorRemote, MotorRequired, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, TrackType, TrackColour, TrackLength, NumOfWand, WandPosition, WandColour, WandLength, CordColour, CordLength, AcornPlasticColour, Accessory, SideBySide, SlatSize, SlatQty, TubeSize, [Trim], Batten, BattenColour, BracketOption, BracketColour, BracketCover, BracketExtension, Fitting, FlatType, ChildSafe, Cleat, BottomHoldDown, HangerType, PelmetType, PelmetWidth, PelmetSize, PelmetReturn, PelmetReturnPosition, PelmetReturnSize, PelmetReturnSize2, CutOut_LeftTop, CutOut_RightTop, CutOut_LeftBottom, CutOut_RightBottom, LHSWidth_Top, LHSHeight_Top, RHSWidth_Top, RHSHeight_Top, LHSWidth_Bottom, LHSHeight_Bottom, RHSWidth_Bottom, RHSHeight_Bottom, BlindSize, Sloper, InsertInTrack, Notes, KitName, VenetianType, BracketType, TubeType, TubeSkinSize, NumBoldNuts, Spacer, CarrierQty, FabricCutDrop,  ControlType, ColourType, DesignName, BlindName, ChainName, ChainColour, CLength, BottomName, BottomType, BottomColour, FabricName, FabricType, FabricColour, FabricWidth, FabricGroups, FabricNameB, FabricTypeB, FabricColourB, FabricWidthB, FabricGroupsB, OrderDelivery, PriceGroupName"
+                    fields = "JobId, ItemId, HeaderId, LinkBlind, BlindNo, Line, Qty, Location, Mounting, Width, WidthB, WidthMiddle, WidthBottom, [Drop], DropB, DropMiddle, DropRight, SemiInsideMount, LouvreSize, LouvrePosition, HingeColour, MidrailHeight1, MidrailHeight2, MidrailCritical, Layout, LayoutSpecial, CustomHeaderLength, FrameType, FrameLeft, FrameRight, FrameTop, FrameBottom, BottomTrackType, BottomTrackRecess, Buildout, BuildoutPosition, PanelQty, TrackQty, PanelSize, NumOfPanel, HingeQtyPerPanel, PanelQtyWithHinge, LocationTPost1, LocationTPost2, LocationTPost3, LocationTPost4, LocationTPost5, HorizontalTPost, HorizontalTPostHeight, JoinedPanels, ReverseHinged, PelmetFlat, ExtraFascia, HingesLoose, TiltrodType, TiltrodSplit, SplitHeight1, SplitHeight2, DoorCutOut, SpecialShape, TemplateProvided, SquareMetre, LinearMetre, StackPosition, TilterPosition, RollDirection, ControlPosition, ControlColour, ControlLength, ChainLength, MaterialChain, MotorStyle, MotorRemote, MotorRequired, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, TrackType, TrackColour, TrackLength, NumOfWand, WandPosition, WandColour, WandLength, CordColour, CordLength, MaterialCord, AcornPlasticColour, Accessory, SideBySide, SlatSize, SlatQty, TubeSize, [Trim], Batten, BattenColour, BracketOption, BracketColour, BracketCover, BracketExtension, Fitting, FlatType, ChildSafe, Cleat, BottomHoldDown, HangerType, PelmetType, PelmetWidth, PelmetSize, PelmetReturn, PelmetReturnPosition, PelmetReturnSize, PelmetReturnSize2, CutOut_LeftTop, CutOut_RightTop, CutOut_LeftBottom, CutOut_RightBottom, LHSWidth_Top, LHSHeight_Top, RHSWidth_Top, RHSHeight_Top, LHSWidth_Bottom, LHSHeight_Bottom, RHSWidth_Bottom, RHSHeight_Bottom, BlindSize, Sloper, InsertInTrack, Notes, KitName, VenetianType, BracketType, TubeType, TubeSkinSize, NumBoldNuts, Spacer, CarrierQty, FabricCutDrop,  ControlType, ColourType, DesignName, BlindName, ChainName, ChainColour, CLength, BottomName, BottomType, BottomColour, FabricName, FabricType, FabricColour, FabricWidth, FabricGroups, FabricNameB, FabricTypeB, FabricColourB, FabricWidthB, FabricGroupsB, OrderDelivery, PriceGroupName"
 
-                    values = "@JobId, @ItemId, @HeaderId, @LinkBlind, @BlindNo, @Line, @Qty, @Location, @Mounting, @Width, @WidthB, @WidthMiddle, @WidthBottom, @Drop, @DropB, @DropMiddle, @DropRight, @SemiInsideMount, @LouvreSize, @LouvrePosition, @HingeColour, @MidrailHeight1, @MidrailHeight2, @MidrailCritical, @Layout, @LayoutSpecial, @CustomHeaderLength, @FrameType, @FrameLeft, @FrameRight, @FrameTop, @FrameBottom, @BottomTrackType, @BottomTrackRecess, @Buildout, @BuildoutPosition, @PanelQty, @TrackQty, @PanelSize, @NumOfPanel, @HingeQtyPerPanel, @PanelQtyWithHinge, @LocationTPost1, @LocationTPost2, @LocationTPost3, @LocationTPost4, @LocationTPost5, @HorizontalTPost, @HorizontalTPostHeight, @JoinedPanels, @ReverseHinged, @PelmetFlat, @ExtraFascia, @HingesLoose, @TiltrodType, @TiltrodSplit, @SplitHeight1, @SplitHeight2, @DoorCutOut, @SpecialShape, @TemplateProvided, @SquareMetre, @LinearMetre, @StackPosition, @TilterPosition, @RollDirection, @ControlPosition, @ControlColour, @ControlLength, @ChainLength, @MaterialChain, @MotorStyle, @MotorRemote, @MotorRequired, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @TrackType, @TrackColour, @TrackLength, @NumOfWand, @WandPosition, @WandColour, @WandLength, @CordColour, @CordLength, @AcornPlasticColour, @Accessory, @SideBySide, @SlatSize, @SlatQty, @TubeSize, @Trim, @Batten, @BattenColour, @BracketOption, @BracketColour, @BracketCover, @BracketExtension, @Fitting, @FlatType, @ChildSafe, @Cleat, @BottomHoldDown, @HangerType, @PelmetType, @PelmetWidth, @PelmetSize, @PelmetReturn, @PelmetReturnPosition, @PelmetReturnSize, @PelmetReturnSize2, @CutOut_LeftTop, @CutOut_RightTop, @CutOut_LeftBottom, @CutOut_RightBottom, @LHSWidth_Top, @LHSHeight_Top, @RHSWidth_Top, @RHSHeight_Top, @LHSWidth_Bottom, @LHSHeight_Bottom, @RHSWidth_Bottom, @RHSHeight_Bottom, @BlindSize, @Sloper, @InsertInTrack, @Notes, @KitName, @VenetianType, @BracketType, @TubeType, @TubeSkinSize, @NumBoldNuts, @Spacer, @CarrierQty, @FabricCutDrop, @ControlType, @ColourType, @DesignName, @BlindName, @ChainName, @ChainColour, @CLength, @BottomName, @BottomType, @BottomColour, @FabricName, @FabricType, @FabricColour, @FabricWidth, @FabricGroups, @FabricNameB, @FabricTypeB, @FabricColourB, @FabricWidthB, @FabricGroupsB, @OrderDelivery, @PriceGroupName"
+                    values = "@JobId, @ItemId, @HeaderId, @LinkBlind, @BlindNo, @Line, @Qty, @Location, @Mounting, @Width, @WidthB, @WidthMiddle, @WidthBottom, @Drop, @DropB, @DropMiddle, @DropRight, @SemiInsideMount, @LouvreSize, @LouvrePosition, @HingeColour, @MidrailHeight1, @MidrailHeight2, @MidrailCritical, @Layout, @LayoutSpecial, @CustomHeaderLength, @FrameType, @FrameLeft, @FrameRight, @FrameTop, @FrameBottom, @BottomTrackType, @BottomTrackRecess, @Buildout, @BuildoutPosition, @PanelQty, @TrackQty, @PanelSize, @NumOfPanel, @HingeQtyPerPanel, @PanelQtyWithHinge, @LocationTPost1, @LocationTPost2, @LocationTPost3, @LocationTPost4, @LocationTPost5, @HorizontalTPost, @HorizontalTPostHeight, @JoinedPanels, @ReverseHinged, @PelmetFlat, @ExtraFascia, @HingesLoose, @TiltrodType, @TiltrodSplit, @SplitHeight1, @SplitHeight2, @DoorCutOut, @SpecialShape, @TemplateProvided, @SquareMetre, @LinearMetre, @StackPosition, @TilterPosition, @RollDirection, @ControlPosition, @ControlColour, @ControlLength, @ChainLength, @MaterialChain, @MotorStyle, @MotorRemote, @MotorRequired, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @TrackType, @TrackColour, @TrackLength, @NumOfWand, @WandPosition, @WandColour, @WandLength, @CordColour, @CordLength, @MaterialCord, @AcornPlasticColour, @Accessory, @SideBySide, @SlatSize, @SlatQty, @TubeSize, @Trim, @Batten, @BattenColour, @BracketOption, @BracketColour, @BracketCover, @BracketExtension, @Fitting, @FlatType, @ChildSafe, @Cleat, @BottomHoldDown, @HangerType, @PelmetType, @PelmetWidth, @PelmetSize, @PelmetReturn, @PelmetReturnPosition, @PelmetReturnSize, @PelmetReturnSize2, @CutOut_LeftTop, @CutOut_RightTop, @CutOut_LeftBottom, @CutOut_RightBottom, @LHSWidth_Top, @LHSHeight_Top, @RHSWidth_Top, @RHSHeight_Top, @LHSWidth_Bottom, @LHSHeight_Bottom, @RHSWidth_Bottom, @RHSHeight_Bottom, @BlindSize, @Sloper, @InsertInTrack, @Notes, @KitName, @VenetianType, @BracketType, @TubeType, @TubeSkinSize, @NumBoldNuts, @Spacer, @CarrierQty, @FabricCutDrop, @ControlType, @ColourType, @DesignName, @BlindName, @ChainName, @ChainColour, @CLength, @BottomName, @BottomType, @BottomColour, @FabricName, @FabricType, @FabricColour, @FabricWidth, @FabricGroups, @FabricNameB, @FabricTypeB, @FabricColourB, @FabricWidthB, @FabricGroupsB, @OrderDelivery, @PriceGroupName"
 
                     Dim insertQuery As String = "INSERT INTO JobDetails (" & fields & ") VALUES (" & values & ")"
 
@@ -2024,6 +2149,7 @@ Partial Class Methods_Order_DetailMethod
                         insertCmd.Parameters.AddWithValue("@WandLength", row("WandLength"))
                         insertCmd.Parameters.AddWithValue("@CordColour", row("CordColour"))
                         insertCmd.Parameters.AddWithValue("@CordLength", row("CordLength"))
+                        insertCmd.Parameters.AddWithValue("@MaterialCord", row("MaterialCord"))
                         insertCmd.Parameters.AddWithValue("@AcornPlasticColour", row("AcornPlasticColour"))
                         insertCmd.Parameters.AddWithValue("@Accessory", row("Accessory"))
                         insertCmd.Parameters.AddWithValue("@SideBySide", row("SideBySide"))
@@ -4738,12 +4864,12 @@ Partial Class Methods_Order_DetailMethod
                                 tableName = "JobSheet_Aluminium"
 
                             Case "Cellular Blinds"
-                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "DoorCutOut", "ControlPosition", "ChainLength", "BottomHoldDown", "Notes", "KitName", "VenetianType", "ControlType", "FabricName","FabricType","FabricColour","FabricWidth", "FabricGroups", "FabricNameB","FabricTypeB","FabricColourB","FabricWidthB", "FabricGroupsB" })
+                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "DoorCutOut", "ControlPosition", "ChainLength", "MotorStyle", "AdditionalMotor", "MaterialCord", "Accessory", "BottomHoldDown", "HangerType", "Notes", "KitName", "VenetianType", "BracketType", "ControlType", "FabricName","FabricType","FabricColour","FabricWidth", "FabricGroups", "FabricNameB","FabricTypeB","FabricColourB","FabricWidthB", "FabricGroupsB" })
 
                                 tableName = "JobSheet_Cellular"
 
                             Case "Panel Glides"
-                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "Layout", "NumOfPanel", "TrackType", "TrackColour", "NumOfWand", "WandPosition", "WandColour", "WandLength", "Batten", "BattenColour", "Fitting", "BottomHoldDown", "Notes", "KitName", "VenetianType", "ColourType", "FabricName", "FabricType", "FabricColour", "FabricWidth"})
+                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "Layout", "NumOfPanel", "TrackType", "TrackColour", "NumOfWand", "WandPosition", "WandColour", "WandLength", "Batten", "BattenColour", "Fitting", "BottomHoldDown", "Notes", "KitName", "VenetianType",  "ColourType", "FabricName", "FabricType", "FabricColour", "FabricWidth"})
 
                                 tableName = "JobSheet_PanelGlides"
 
@@ -6333,6 +6459,28 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & boldStart & fs12Start & currentData("VenetianType6").ToString() & fsEnd & boldEnd & tdDetEnd
             result+= trDetEnd
 
+            '#BracketType
+            result+= trDetStart
+                result+= tdTitleStart & "Cell" & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("BracketType1").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("BracketType2").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("BracketType3").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("BracketType4").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("BracketType5").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs12Start & currentData("BracketType6").ToString() & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#ControlType
+            result+= trDetStart
+                result+= tdTitleStart & "System" & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("ControlType1").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("ControlType2").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("ControlType3").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("ControlType4").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("ControlType5").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs12Start & currentData("ControlType6").ToString() & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
+
             '#FabricType
             result+= trDetStart
                 result+= tdTitleStart & "Fabric Material" & tdDetEnd
@@ -6376,15 +6524,15 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Drop6").ToString()), "0", currentData("Drop6").ToString()) & tdDetEnd
             result+= trDetEnd
 
-            '#ControlType
+            '#HangerType
             result+= trDetStart
                 result+= tdTitleStart & "Control" & tdDetEnd
-                result+= tdDetStart & currentData("ControlType1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ControlType2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ControlType3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ControlType4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ControlType5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("ControlType6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("HangerType1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("HangerType2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("HangerType3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("HangerType4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("HangerType5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("HangerType6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#ControlPosition
@@ -6407,6 +6555,28 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetStart & currentData("ChainLength4").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("ChainLength5").ToString() & tdDetEnd
                 result+= tdDetRight & currentData("ChainLength6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#MotorStyle
+            result+= trDetStart
+                result+= tdTitleStart & "Motor Type" & tdDetEnd
+                result+= tdDetStart & currentData("MotorStyle1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorStyle2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorStyle3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorStyle4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorStyle5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("MotorStyle6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#AdditionalMotor
+            result+= trDetStart
+                result+= tdTitleStart & "Motor Extra" & tdDetEnd
+                result+= tdDetStart & currentData("AdditionalMotor1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("AdditionalMotor2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("AdditionalMotor3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("AdditionalMotor4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("AdditionalMotor5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("AdditionalMotor6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#BottomHoldDown
@@ -6440,6 +6610,17 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & currentData("DoorCutOut6").ToString() & tdDetEnd
             result+= trDetEnd
 
+            '#Accessory
+            result+= trDetStart
+                result+= tdTitleStart & "Additional" & tdDetEnd
+                result+= tdDetStart & currentData("Accessory1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Accessory2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Accessory3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Accessory4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Accessory5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Accessory6").ToString() & tdDetEnd
+            result+= trDetEnd
+
             '#Location
             result+= trDetStart
                 result+= tdTitleStart & "Location" & tdDetEnd
@@ -6463,7 +6644,7 @@ Partial Class Methods_Order_DetailMethod
         '     result+= trDetEnd
 
         '     '#Line Blank
-            result+= BlankLineEachRow(17)
+            result+= BlankLineEachRow(12)
 
         result+= tableDetEnd
 
