@@ -1232,6 +1232,7 @@ Partial Class Methods_Order_DetailMethod
                 IF Not Res = "200" Then
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = Res, .field = "#cost" }}
                 End If
+                
 
                 Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", data.headerid, data.id))
                 publicCfg.UpdateMatrix(UCase(data.id).ToString(), qty, Matrix)
@@ -1268,7 +1269,7 @@ Partial Class Methods_Order_DetailMethod
 
             Return "200"
         Catch ex As Exception
-            Return ex.Message
+            Return  "UpdateOverridePricing : " & ex.Message
         End Try
     End Function
 
@@ -1339,29 +1340,33 @@ Partial Class Methods_Order_DetailMethod
                 End If
 
 
-
-                Dim Qty As Integer = publicCfg.GetItemData(String.Format("SELECT Qty FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, itemId))
-                Dim RealCost As Decimal = publicCfg.GetItemData(String.Format("SELECT RealCost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, itemId))
-                Dim Cost As Decimal = publicCfg.GetItemData(String.Format("SELECT Cost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, itemId))
-                Dim Poa As Decimal = publicCfg.GetItemData(String.Format("SELECT Poa FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, itemId))
-
-                Dim RealFinalCost As Decimal = Qty * RealCost
-                Dim FinalCost As Decimal = Qty * Cost
-               
-
-                publicCfg.ResetPriceDetail(itemId)
-                publicCfg.HitungHarga(headerid, itemId)
-                publicCfg.HitungSurcharge(headerid, itemId)
-
-
                 IF fabricGroup = "POA" Then
-                    Dim Res As String = UpdateOverridePricing(itemId, RealCost, Cost, RealFinalCost, FinalCost)
-                    IF Not Res = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res}}
-                    End If
+                    Dim Prices As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", headerid, itemId))
+                    If Prices.Tables(0).Rows.Count > 0 Then
+                        Dim Qty As Integer = Convert.ToInt32(Prices.Tables(0).Rows(0)("Qty"))
+                        Dim RealCost As Decimal = Convert.ToDecimal(Prices.Tables(0).Rows(0)("RealCost"))
+                        Dim Cost As Decimal = Convert.ToDecimal(Prices.Tables(0).Rows(0)("Cost"))
+                        Dim Poa As Decimal = Convert.ToDecimal(Prices.Tables(0).Rows(0)("Poa"))
 
-                    Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", headerid, itemId))
-                    publicCfg.UpdateMatrix(UCase(itemId).ToString(), Qty, Matrix)
+                        Dim RealFinalCost As Decimal = Qty * RealCost
+                        Dim FinalCost As Decimal = Qty * Cost
+
+                        publicCfg.ResetPriceDetail(itemId)
+                        publicCfg.HitungHarga(headerid, itemId)
+                        publicCfg.HitungSurcharge(headerid, itemId)
+
+                        Dim Res As String = UpdateOverridePricing(itemId, RealCost, Cost, RealFinalCost, FinalCost)
+                        IF Not Res = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res}}
+                        End If
+
+                        Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", headerid, itemId))
+                        publicCfg.UpdateMatrix(UCase(itemId).ToString(), Qty, Matrix)
+                    Else
+                        publicCfg.ResetPriceDetail(itemId)
+                        publicCfg.HitungHarga(headerid, itemId)
+                        publicCfg.HitungSurcharge(headerid, itemId)
+                    End If
                 End If
             Next
 
