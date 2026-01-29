@@ -431,6 +431,9 @@ const bindOrders = async (status, ordertype, active, storetype, params) => {
             case "Unsubmitted":
               icon = `<i class="bi opacity-50 bi-stopwatch"></i>`;
               break;
+            case "Pending Price Approval":
+              icon = `<i class="bi opacity-50 bi-stopwatch"></i>`;
+              break;
             case "New Order":
               icon = `<i class="bi opacity-50 bi-clipboard-check"></i>`;
               break;
@@ -553,6 +556,7 @@ const handlerSelStatus = (params, statusNow) => {
     if (ROLENAME === "PPIC & DE") {
       data = [
         { value: "all", text: "All" },
+        { value: "Pending Price Approval", text: "Pending Price Approval" },
         { value: "New Order", text: "New Order" },
         { value: "In Production", text: "In Production" },
         { value: "On Hold", text: "On Hold" },
@@ -562,6 +566,7 @@ const handlerSelStatus = (params, statusNow) => {
     } else if (ROLENAME == "Sunlight Product" || ROLENAME == "Account") {
       data = [
         { value: "all", text: "All" },
+        { value: "Pending Price Approval", text: "Pending Price Approval" },
         { value: "New Order", text: "New Order" },
         { value: "In Production", text: "In Production" },
         { value: "On Hold", text: "On Hold" },
@@ -570,6 +575,7 @@ const handlerSelStatus = (params, statusNow) => {
     } else if (ROLENAME == "Customer Service") {
       data = [
         { value: "all", text: "All" },
+        { value: "Pending Price Approval", text: "Pending Price Approval" },
         { value: "Draft", text: "Draft / Unsubmitted" },
         { value: "New Order", text: "New Order" },
         { value: "In Production", text: "In Production" },
@@ -579,6 +585,7 @@ const handlerSelStatus = (params, statusNow) => {
     } else {
       data = [
         { value: "all", text: "All" },
+        { value: "Pending Price Approval", text: "Pending Price Approval" },
         { value: "Draft", text: "Draft / Unsubmitted" },
         { value: "New Order", text: "New Order" },
         { value: "In Production", text: "In Production" },
@@ -592,6 +599,9 @@ const handlerSelStatus = (params, statusNow) => {
   // === modalChangeStatus => status ===
   if (params === "#modalChangeStatus #status" && statusNow) {
     switch (statusNow) {
+      case "Pending Price Approval":
+        data = [{ value: "Draft", text: "Draft" }];
+        break;
       case "Draft":
         data = [
           { value: "New Order", text: "New Order" },

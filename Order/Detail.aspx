@@ -366,9 +366,42 @@
         </div>
     </div>
 
-    
+    <!-- modalEditPricingItem -->
+    <div class="modal fade" id="modalEditPricingItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalEditPricingItemLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title " id="modalEditPricingItemLabel">Edit Pricing</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class=" col-4 col-lg-4 col-md-4">
+                            <label for="" class="form-label">Base Price</label>
+                             <div class="input-group ">
+                                <span class="input-group-text">$</span>
+                                <input type="text" class="form-control" id="cost" name="cost" readonly>
+                            </div>
+                            <input type="text" class="form-control" id="id" name="id" readonly hidden>
+                        </div>
+                        <div class="col-8 col-lg-8 col-md-8">
+                            <label for="" class="form-label">Override Price</label>
+                            <div class="input-group ">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="newcost" name="newcost" autocomplete="off" placeholder="Example : 107.65">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="submitEditPricingItem">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Modal -->
+    <!-- modalPricingItem -->
     <div class="modal fade" id="modalPricingItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalPricingItemLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -386,6 +419,7 @@
                                     <th class="h3 text-center">Qty</th>
                                     <th class="h3">Descpription</th>
                                     <th class="h3">Cost / Qty</th>
+                                    <th class="h3">POA / Qty</th>
                                     <th class="h3">Discount / Qty</th>
                                     <th class="h3 ">Sub Total</th>
                                 </tr>
@@ -412,6 +446,7 @@
         const INFYNITY = params.get("ordertype"); // AS OrderType
 
         let HEADERID = ULTRON;
+        let ORDERTYPE = INFYNITY;
         let CUSTOMERID = '<%= Session("CustomerId") %>';
         let CUSTOMERCOMPANY = '<%= Session("CustomerCompany") %>';
         let CUSTOMERCONTACTID = '<%= Session("CustomerContactId") %>';

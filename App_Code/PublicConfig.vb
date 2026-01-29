@@ -1110,7 +1110,7 @@ Public Class PublicConfig
         ' Else
         '     UpdateOrdered = CInt(CurrentOrdered) + 1
         ' End If
-
+        Dim Poa As Decimal = 0
         Dim RealFinalCost As Decimal = RealCost * Qty
         Dim FinalCost As Decimal = Cost * Qty
         If Type = "Discount" Then
@@ -1120,7 +1120,7 @@ Public Class PublicConfig
             FinalCost = 0
         End If
         Using thisConn As SqlConnection = New SqlConnection(myConn)
-            Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetailsPrice VALUES(NEWID(), @HeaderId, @ItemId, @Type, @Qty, @Description,@RealCost, @Cost, @Discount, @RealFinalCost, @FinalCost)")
+            Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetailsPrice VALUES(NEWID(), @HeaderId, @ItemId, @Type, @Qty, @Description, @Poa, @RealCost, @Cost, @Discount, @RealFinalCost, @FinalCost)")
                 ' myCmd.Parameters.AddWithValue("@Ordered", UpdateOrdered)
                 myCmd.Parameters.AddWithValue("@HeaderId", Header)
                 myCmd.Parameters.AddWithValue("@ItemId", Item)
@@ -1130,6 +1130,7 @@ Public Class PublicConfig
                 myCmd.Parameters.AddWithValue("@RealCost", RealCost)
                 myCmd.Parameters.AddWithValue("@Cost", Cost)
                 myCmd.Parameters.AddWithValue("@Discount", CustomDiscount)
+                myCmd.Parameters.AddWithValue("@Poa", Poa)
                 myCmd.Parameters.AddWithValue("@RealFinalCost", RealFinalCost)
                 myCmd.Parameters.AddWithValue("@FinalCost", FinalCost)
                 myCmd.Connection = thisConn

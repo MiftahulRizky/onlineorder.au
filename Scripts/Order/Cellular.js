@@ -948,11 +948,11 @@ const bindFabricColours = async (designid, fabrictype) => {
     isError(msg);
   }
 };
-const bindFabricColours2 = async (designid, fabricType) => {
+const bindFabricColours2 = async (designid, fabrictype) => {
   const sel = document.getElementById("fabriccolour2");
   sel.innerHTML = ""; //reset
 
-  if (!fabricType || !designid) return;
+  if (!fabrictype || !designid) return;
 
   try {
     const response = await fetch(`${URIMETHOD}/BindFabricColour`, {
@@ -960,7 +960,7 @@ const bindFabricColours2 = async (designid, fabricType) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designid, fabricType }),
+      body: JSON.stringify({ designid, fabrictype }),
     });
 
     // cek status HTTP (400, 500, dsb.)

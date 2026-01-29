@@ -335,6 +335,7 @@ Partial Class Methods_Order_CelloraMethod
                 Next
             End If
 
+            Dim controlsystem As String = String.Join(",", csList)
 
             If blindName = "Potrait" And (csList Is Nothing OrElse csList.Count = 0) Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control system is required !",.field = "controlsystem"}}
@@ -346,11 +347,12 @@ Partial Class Methods_Order_CelloraMethod
                 End If
             End IF
 
-            If String.IsNullOrEmpty(data.controlposition) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control side is required !",.field = "controlposition"}}
+            If InStr(controlsystem, "Cordless") = 0  Then
+                If String.IsNullOrEmpty(data.controlposition) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control side is required !",.field = "controlposition"}}
+                End If
             End If
 
-            Dim controlsystem As String = String.Join(",", csList)
             If InStr(controlsystem, "Motorised") > 0  Then
 
                 If String.IsNullOrEmpty(data.motortype) Then
@@ -415,6 +417,11 @@ Partial Class Methods_Order_CelloraMethod
             If Not blindName = "Potrait" Then
                 squareMetre = 0
                 linearMetre = 0
+            End If
+
+            Dim ResponseUpdateStatusOrder As String = UpdateStatusOrder(data.headerid, data.fabriccolour)
+            If Not ResponseUpdateStatusOrder = "200" Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResponseUpdateStatusOrder,.field = ""}}
             End If
             
             Dim designName As String = publicCfg.GetDesignName(data.designid)
@@ -514,9 +521,27 @@ Partial Class Methods_Order_CelloraMethod
                     End Using
                 End Using
 
+                Dim Group As String = publicCfg.GetItemData(String.Format("SELECT [Group] FROM Fabrics WHERE Id = '{0}'", data.fabriccolour))
+                Dim RealCost As Decimal = publicCfg.GetItemData(String.Format("SELECT RealCost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", data.headerid, itemId))
+                Dim Cost As Decimal = publicCfg.GetItemData(String.Format("SELECT Cost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", data.headerid, itemId))
+                Dim Poa As Decimal = publicCfg.GetItemData(String.Format("SELECT Poa FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", data.headerid, itemId))
+
+                Dim RealFinalCost As Decimal = qty * RealCost
+                Dim FinalCost As Decimal = qty * Cost
+
                 publicCfg.ResetPriceDetail(itemId)
                 publicCfg.HitungHarga(data.headerid, itemId)
                 publicCfg.HitungSurcharge(data.headerid, itemId)
+
+                IF Group = "POA" Then
+                    Dim Res As String = UpdateOverridePricing(itemId, RealCost, Cost, RealFinalCost, FinalCost)
+                    IF Not Res = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res}}
+                    End If
+
+                    Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", data.headerid, itemId))
+                    publicCfg.UpdateMatrix(UCase(itemId).ToString(), qty, Matrix)
+                End If
 
                 Dim dataLog As Object() = {data.headerid, itemId, "Blinds", data.loginid, "Update Item Order"}
                 orderCfg.Log_Orders(dataLog)
@@ -536,6 +561,29 @@ Partial Class Methods_Order_CelloraMethod
         End Try
     End Function
 
+    Private Shared Function UpdateOverridePricing(id As String, cost As Decimal, poa As Decimal, rfinalcost As Decimal, finalcost As Decimal) As String
+        Try
+            Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET RealCost=@RealCost, Cost=@Poa, Poa=@Poa, RealFinalCost=@RealFinalCost, FinalCost=@FinalCost WHERE ItemId=@Id", thisConn)
+                    myCmd.Parameters.AddWithValue("@Id", UCase(id).ToString())
+                    myCmd.Parameters.AddWithValue("@RealCost", cost)
+                    ' myCmd.Parameters.AddWithValue("@Cost", poa)
+                    myCmd.Parameters.AddWithValue("@Poa", poa)
+                    myCmd.Parameters.AddWithValue("@RealFinalCost", rfinalcost)
+                    myCmd.Parameters.AddWithValue("@FinalCost", finalcost)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return "200"
+        Catch ex As Exception
+            Return ex.Message
+        End Try
+    End Function
 
     Private Shared Function GetPriceGroupId(ByVal fabricid As String, ByVal blindname As String, ByVal brackettype As String, ByVal controlname As String, ByVal designid As String) As String
         Try
@@ -567,6 +615,34 @@ Partial Class Methods_Order_CelloraMethod
             Return priceGroupId
         Catch ex As Exception
             Return "300"
+        End Try
+    End Function
+
+    Private Shared Function UpdateStatusOrder(ByVal headerid As String, ByVal fabricid As String) As String
+        Try
+            Dim Group As String = publicCfg.GetItemData(String.Format("SELECT [Group] FROM Fabrics WHERE Id = '{0}'", fabricid))
+            If String.IsNullOrEmpty(Group) Then
+                Return "Group Not Found !"
+            End If
+
+            If Not Group = "POA" Then
+                Return "200"
+            End If
+
+            Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET Status = 'Pending Price Approval' WHERE Id = @Id")
+                    myCmd.Parameters.AddWithValue("@Id",  UCase(headerid).ToString())
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return "200"
+        Catch ex As Exception
+            Return "UpdateStatusOrder Error: " + ex.Message
         End Try
     End Function
 End Class
