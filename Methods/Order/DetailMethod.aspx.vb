@@ -714,7 +714,14 @@ Partial Class Methods_Order_DetailMethod
                             End If
                         End If
 
+                        Dim FindCost As String = Cost
                         Dim RealCost As String = publicCfg.GetItemData(String.Format("SELECT FORMAT(Cost, 'N2', 'en-US') AS FormatRealCost FROM OrderDetailsPrice WHERE Type ='Matrix' And HeaderId = '{0}' And ItemId = '{1}'", HeaderId, Id))
+                        If FabricGroups = "POA" Then
+                            Dim realCostValue As Decimal
+                            If Decimal.TryParse(RealCost, realCostValue) AndAlso realCostValue = 0D Then
+                                FindCost = "<span class='badge bg-orange-lt'>POA</span>"
+                            End If
+                        End If
 
                         Dim row As New OrdersMatrixReturnRow With {
                             .No = noCounter.ToString(),
@@ -729,7 +736,7 @@ Partial Class Methods_Order_DetailMethod
                             .HideNext = HideNext,
                             .TextNext = TextNext,
                             .RealCost = RealCost,
-                            .Cost =  If(FabricGroups = "POA" AND CInt(RealCost) = 0, "<span class='badge bg-orange-lt'>POA</span>", Cost),
+                            .Cost =  FindCost,
                             .MarkUp = FindMarkUp,
                             .Group = FabricGroups
                         }
@@ -1362,11 +1369,11 @@ Partial Class Methods_Order_DetailMethod
 
                         Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", headerid, itemId))
                         publicCfg.UpdateMatrix(UCase(itemId).ToString(), Qty, Matrix)
-                    Else
-                        publicCfg.ResetPriceDetail(itemId)
-                        publicCfg.HitungHarga(headerid, itemId)
-                        publicCfg.HitungSurcharge(headerid, itemId)
                     End If
+                Else
+                    publicCfg.ResetPriceDetail(itemId)
+                    publicCfg.HitungHarga(headerid, itemId)
+                    publicCfg.HitungSurcharge(headerid, itemId)
                 End If
             Next
 
