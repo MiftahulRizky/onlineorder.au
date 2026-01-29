@@ -1120,7 +1120,7 @@ Public Class PublicConfig
             FinalCost = 0
         End If
         Using thisConn As SqlConnection = New SqlConnection(myConn)
-            Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetailsPrice VALUES(NEWID(), @HeaderId, @ItemId, @Type, @Qty, @Description, @Poa, @RealCost, @Cost, @Discount, @RealFinalCost, @FinalCost)")
+            Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetailsPrice VALUES(NEWID(), @HeaderId, @ItemId, @Type, @Qty, @Description, @RealCost, @Cost, @Discount, @Poa, @RealFinalCost, @FinalCost)")
                 ' myCmd.Parameters.AddWithValue("@Ordered", UpdateOrdered)
                 myCmd.Parameters.AddWithValue("@HeaderId", Header)
                 myCmd.Parameters.AddWithValue("@ItemId", Item)

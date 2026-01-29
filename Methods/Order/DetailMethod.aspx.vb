@@ -719,7 +719,14 @@ Partial Class Methods_Order_DetailMethod
                             End If
                         End If
 
+                        Dim FindCost As String = Cost
                         Dim RealCost As String = publicCfg.GetItemData(String.Format("SELECT FORMAT(Cost, 'N2', 'en-US') AS FormatRealCost FROM OrderDetailsPrice WHERE Type ='Matrix' And HeaderId = '{0}' And ItemId = '{1}'", HeaderId, Id))
+                        If FabricGroups = "POA" Then
+                            Dim realCostValue As Decimal
+                            If Decimal.TryParse(RealCost, realCostValue) AndAlso realCostValue = 0D Then
+                                FindCost = "<span class='badge bg-orange-lt'>POA</span>"
+                            End If
+                        End If
 
                         Dim row As New OrdersMatrixReturnRow With {
                             .No = noCounter.ToString(),
@@ -734,7 +741,7 @@ Partial Class Methods_Order_DetailMethod
                             .HideNext = HideNext,
                             .TextNext = TextNext,
                             .RealCost = RealCost,
-                            .Cost =  If(FabricGroups = "POA" AND CInt(RealCost) = 0, "<span class='badge bg-orange-lt'>POA</span>", Cost),
+                            .Cost =  FindCost,
                             .MarkUp = FindMarkUp,
                             .Group = FabricGroups
                         }
@@ -1273,7 +1280,7 @@ Partial Class Methods_Order_DetailMethod
 
             Return "200"
         Catch ex As Exception
-            Return ex.Message
+            Return   "UpdateOverridePricing : " & ex.Message
         End Try
     End Function
 
@@ -1341,26 +1348,33 @@ Partial Class Methods_Order_DetailMethod
                     End If
                 End If
 
-                Dim Qty As Integer = publicCfg.GetItemData(String.Format("SELECT Qty FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, itemId))
-                Dim RealCost As Decimal = publicCfg.GetItemData(String.Format("SELECT RealCost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, itemId))
-                Dim Cost As Decimal = publicCfg.GetItemData(String.Format("SELECT Cost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, itemId))
-                Dim Poa As Decimal = publicCfg.GetItemData(String.Format("SELECT Poa FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, itemId))
-
-                Dim RealFinalCost As Decimal = Qty * RealCost
-                Dim FinalCost As Decimal = Qty * Cost
-
-                publicCfg.ResetPriceDetail(itemId)
-                publicCfg.HitungHarga(headerid, itemId)
-                publicCfg.HitungSurcharge(headerid, itemId)
-
                 IF fabricGroup = "POA" Then
-                    Dim Res As String = UpdateOverridePricing(itemId, RealCost, Cost, RealFinalCost, FinalCost)
-                    IF Not Res = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res}}
-                    End If
+                    Dim Prices As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", headerid, itemId))
+                    If Prices.Tables(0).Rows.Count > 0 Then
+                        Dim Qty As Integer = Convert.ToInt32(Prices.Tables(0).Rows(0)("Qty"))
+                        Dim RealCost As Decimal = Convert.ToDecimal(Prices.Tables(0).Rows(0)("RealCost"))
+                        Dim Cost As Decimal = Convert.ToDecimal(Prices.Tables(0).Rows(0)("Cost"))
+                        Dim Poa As Decimal = Convert.ToDecimal(Prices.Tables(0).Rows(0)("Poa"))
 
-                    Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", headerid, itemId))
-                    publicCfg.UpdateMatrix(UCase(itemId).ToString(), Qty, Matrix)
+                        Dim RealFinalCost As Decimal = Qty * RealCost
+                        Dim FinalCost As Decimal = Qty * Cost
+
+                        publicCfg.ResetPriceDetail(itemId)
+                        publicCfg.HitungHarga(headerid, itemId)
+                        publicCfg.HitungSurcharge(headerid, itemId)
+
+                        Dim Res As String = UpdateOverridePricing(itemId, RealCost, Cost, RealFinalCost, FinalCost)
+                        IF Not Res = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res}}
+                        End If
+
+                        Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", headerid, itemId))
+                        publicCfg.UpdateMatrix(UCase(itemId).ToString(), Qty, Matrix)
+                    End If
+                Else
+                    publicCfg.ResetPriceDetail(itemId)
+                    publicCfg.HitungHarga(headerid, itemId)
+                    publicCfg.HitungSurcharge(headerid, itemId)
                 End If
             Next
 
