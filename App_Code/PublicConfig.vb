@@ -526,11 +526,12 @@ Public Class PublicConfig
 
         Dim appId As String = GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE UserId = '" + UCase(userId).ToString() + "'")
         Dim mailData As DataSet = GetListData("SELECT * FROM MailConfiguration WHERE AppId = '" + UCase(appId).ToString() + "' AND Name = 'SUBMIT ORDER' AND Active=1")
+        Dim mailDevelopment As DataSet = GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
 
         If Not mailData.Tables.Count = 0 Then
-            Dim storeName As String = GetItemData("SELECT Name FROM Stores WHERE Id = '" + storeId + "'")
-            Dim userMail As String = GetItemData("SELECT Email FROM Users WHERE UserId = '" + UCase(userId).ToString() + "'")
-            Dim storeMail As String = GetItemData("SELECT Email FROM Stores WHERE Id = '" + storeId + "'")
+            Dim storeName As String = GetItemData(String.Format("SELECT Name FROM Customers WHERE Id = '{0}'", storeId))
+            Dim userMail As String = GetItemData(String.Format("SELECT Email FROM CustomerContacts  WHERE CustomerId =", userId))
+            Dim storeMail As String = GetItemData(String.Format("SELECT Email FROM Customers WHERE Id = '{0}'", storeId))
 
             Dim mailServer As String = mailData.Tables(0).Rows(0).Item("Server").ToString()
             Dim mailAlias As String = mailData.Tables(0).Rows(0).Item("Alias").ToString()
@@ -572,9 +573,23 @@ Public Class PublicConfig
             myMail.From = New MailAddress(mailServer, mailAlias)
 
             'START VALIDASI MAIL TO
-            myMail.To.Add(userMail)
-            If Not storeMail = "" Then
-                myMail.To.Add(storeMail)
+            If mailDevelopment.Tables.Count > 0 Then
+                Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+
+                If activeDev = "True" Or activeDev = "1" Then
+                    myMail.To.Add(mdev)
+                Else
+                    myMail.To.Add(userMail)
+                    If Not storeMail = "" Then
+                        myMail.To.Add(storeMail)
+                    End If
+                End If
+            Else
+                myMail.To.Add(userMail)
+                If Not storeMail = "" Then
+                    myMail.To.Add(storeMail)
+                End If
             End If
             'END VALIDASI MAIL TO
 
