@@ -524,7 +524,7 @@ Public Class PublicConfig
         Dim orderCust As String = myData.Tables(0).Rows(0).Item("OrderCust").ToString()
         Dim delivery As String = myData.Tables(0).Rows(0).Item("Delivery").ToString()
 
-        Dim appId As String = GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE UserId = '" + UCase(userId).ToString() + "'")
+        Dim appId As String = GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE CustomerId = '" + UCase(storeId).ToString() + "'")
         Dim mailData As DataSet = GetListData("SELECT * FROM MailConfiguration WHERE AppId = '" + UCase(appId).ToString() + "' AND Name = 'SUBMIT ORDER' AND Active=1")
         Dim mailDevelopment As DataSet = GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
 
