@@ -530,7 +530,7 @@ Public Class PublicConfig
 
         If Not mailData.Tables.Count = 0 Then
             Dim storeName As String = GetItemData(String.Format("SELECT Name FROM Customers WHERE Id = '{0}'", storeId))
-            Dim userMail As String = GetItemData(String.Format("SELECT Email FROM CustomerContacts  WHERE CustomerId =", userId))
+            Dim userMail As String = GetItemData(String.Format("SELECT Email FROM CustomerContacts  WHERE CustomerId ='{0}'", userId))
             Dim storeMail As String = GetItemData(String.Format("SELECT Email FROM Customers WHERE Id = '{0}'", storeId))
 
             Dim mailServer As String = mailData.Tables(0).Rows(0).Item("Server").ToString()
