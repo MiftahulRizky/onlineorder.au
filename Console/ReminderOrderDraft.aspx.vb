@@ -94,10 +94,14 @@ Partial Class Console_ReminderOrderDraft
         Try
             Using thisConn As SqlConnection = New SqlConnection(myConn)
                 Using myCmd As SqlCommand = New SqlCommand("INSERT INTO Log_OrderDraft (Id, OrderId, OrderType, DraftDate) VALUES (@Id, @OrderId, @OrderType, @DraftDate)")
-                    myCmd.Parameters.AddWithValue("@Id", Id)
-                    myCmd.Parameters.AddWithValue("@OrderId", OrderId)
-                    myCmd.Parameters.AddWithValue("@OrderType", OrderType)
-                    myCmd.Parameters.AddWithValue("@DraftDate", CreatedDate)
+                    ' myCmd.Parameters.AddWithValue("@Id", Id)
+                    ' myCmd.Parameters.AddWithValue("@OrderId", OrderId)
+                    ' myCmd.Parameters.AddWithValue("@OrderType", OrderType)
+                    ' myCmd.Parameters.AddWithValue("@DraftDate", CreatedDate)
+                     myCmd.Parameters.Add("@Id", SqlDbType.VarChar).Value = Id
+                    myCmd.Parameters.Add("@OrderId", SqlDbType.VarChar).Value = OrderId
+                    myCmd.Parameters.Add("@OrderType", SqlDbType.VarChar).Value = OrderType
+                    myCmd.Parameters.Add("@DraftDate", SqlDbType.DateTime).Value = CreatedDate
                     myCmd.Connection = thisConn
                     thisConn.Open()
                     myCmd.ExecuteNonQuery()
@@ -115,10 +119,12 @@ Partial Class Console_ReminderOrderDraft
         Try
             Dim Appid As String = publicCfg.GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE Id = '" + UCase(CreatedBy).ToString() + "'")
             Dim Mail As String = publicCfg.GetItemData("SELECT Email FROM CustomerContacts WHERE CustomerId = '" + CustomerId + "' AND [Primary] = 1")
-            Mail = "miftah@bigblinds.co.id" '#For Testing
+            ' Mail = "miftah@bigblinds.co.id" '#For Testing
 
             Dim mailData As DataSet = publicCfg.GetListData("SELECT * FROM Mailings WHERE ApplicationId = '" + UCase(Appid).ToString() + "' AND Name = 'Reminder Order Draft/Unsubmitted' AND Active=1")
-            If mailData.Tables(0).Rows.Count = 0 Then Return "Mailing No Found"
+            If mailData.Tables(0).Rows.Count = 0 Then Return "Mailings No Found"
+            
+            Dim mailDevelopment As DataSet = publicCfg.GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
 
             Dim mailServer As String = mailData.Tables(0).Rows(0)("Server").ToString()
             Dim mailHost As String = mailData.Tables(0).Rows(0)("Host").ToString()
@@ -164,10 +170,24 @@ Partial Class Console_ReminderOrderDraft
                 myMail.Body = mailBody
                 myMail.IsBodyHtml = True
 
+            If mailDevelopment.Tables.Count > 0 Then
+                Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+
+                If activeDev = "True" Or activeDev = "1" Then
+                    myMail.To.Add(mdev)
+                Else
+                    myMail.To.Add(Mail)
+                    If Not String.IsNullOrEmpty(mailTo) Then myMail.To.Add(mailTo)
+                    If Not String.IsNullOrEmpty(mailCc) Then myMail.CC.Add(mailCc)
+                    If Not String.IsNullOrEmpty(mailBcc) Then myMail.Bcc.Add(mailBcc)
+                End If
+            Else
                 myMail.To.Add(Mail)
                 If Not String.IsNullOrEmpty(mailTo) Then myMail.To.Add(mailTo)
                 If Not String.IsNullOrEmpty(mailCc) Then myMail.CC.Add(mailCc)
                 If Not String.IsNullOrEmpty(mailBcc) Then myMail.Bcc.Add(mailBcc)
+            End If
 
                 Using smtpClient As New SmtpClient(mailHost, mailPort)
                     smtpClient.EnableSsl = mailEnableSSL
@@ -241,7 +261,8 @@ Partial Class Console_ReminderOrderDraft
         If row.Table.Columns.Contains(column) AndAlso Not IsDBNull(row(column)) Then
             Return row(column).ToString()
         End If
-        Return "<span style='color:red;'>(null)</span>"
+        ' Return "<span style='color:red;'>(null)</span>"
+        Return ""
     End Function
 
 

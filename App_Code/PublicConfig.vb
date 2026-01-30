@@ -584,34 +584,45 @@ Public Class PublicConfig
                     If Not storeMail = "" Then
                         myMail.To.Add(storeMail)
                     End If
+
+                    If Not mailCc = "" Then
+                        Dim ccArray() As String = mailCc.Split(";")
+                        Dim thisMail As String = ""
+                        For Each thisMail In ccArray
+                            myMail.CC.Add(thisMail)
+                        Next
+                    End If
+        
+                    If Not mailBcc = "" Then
+                        Dim bccArray() As String = mailBcc.Split(";")
+                        Dim thisMail As String = ""
+                        For Each thisMail In bccArray
+                            myMail.Bcc.Add(thisMail)
+                        Next
+                    End If
                 End If
             Else
                 myMail.To.Add(userMail)
                 If Not storeMail = "" Then
                     myMail.To.Add(storeMail)
                 End If
-            End If
-            'END VALIDASI MAIL TO
 
-            'START VALIDASI MAIL CC
-            If Not mailCc = "" Then
-                Dim ccArray() As String = mailCc.Split(";")
-                Dim thisMail As String = ""
-                For Each thisMail In ccArray
-                    myMail.CC.Add(thisMail)
-                Next
+                If Not mailCc = "" Then
+                    Dim ccArray() As String = mailCc.Split(";")
+                    Dim thisMail As String = ""
+                    For Each thisMail In ccArray
+                        myMail.CC.Add(thisMail)
+                    Next
+                End If
+    
+                If Not mailBcc = "" Then
+                    Dim bccArray() As String = mailBcc.Split(";")
+                    Dim thisMail As String = ""
+                    For Each thisMail In bccArray
+                        myMail.Bcc.Add(thisMail)
+                    Next
+                End If
             End If
-            'END VALIDASI MAIL CC
-
-            'START VALIDASI MAIL BCC
-            If Not mailBcc = "" Then
-                Dim bccArray() As String = mailBcc.Split(";")
-                Dim thisMail As String = ""
-                For Each thisMail In bccArray
-                    myMail.Bcc.Add(thisMail)
-                Next
-            End If
-            'END VALIDASI MAIL BCC
 
             myMail.Body = vBody
             ' SETUP ATTACMENT FILE
