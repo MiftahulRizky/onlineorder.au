@@ -70,8 +70,7 @@
                 lblAppId.Text = UCase(ddlAppId.SelectedValue).ToString()
                 sdsPage.Insert()
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
-                publicCfg.InsertActivity(userId, Page.Title, "INSERT MAIL CONFIGURATION. NAME : " & txtName.Text)
+                
 
                 Response.Redirect("~/setting/email", False)
             End If

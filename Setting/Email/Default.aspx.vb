@@ -55,8 +55,7 @@
             lblId.Text = txtIdDelete.Text
             sdsPage.Delete()
 
-            Dim userId As String = UCase(Session("UserId")).ToString()
-            publicCfg.InsertActivity(userId, Page.Title, "DELETE MAIL CONFIGURATION. ID : " & lblId.Text)
+           
 
             Call BindData(txtSearch.Text)
         Catch ex As Exception
@@ -80,9 +79,7 @@
 
             sdsPage.Update()
 
-            Dim userId As String = UCase(Session("UserId")).ToString()
-            publicCfg.InsertActivity(userId, Page.Title, "ACTIVE/DEACTIVATE MAIL CONFIGURATION. ID : " & lblId.Text)
-
+           
             Call BindData(txtSearch.Text)
         Catch ex As Exception
             Call MessageError(True, ex.ToString())

@@ -77,9 +77,6 @@ Partial Class Setting_Email_Detail
                 lblAppId.Text = UCase(ddlAppId.SelectedValue).ToString()
                 sdsPage.Update()
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
-                publicCfg.InsertActivity(userId, Page.Title, "UPDATE MAIL CONFIGURATION. NAME : " & txtName.Text)
-
                 Response.Redirect("~/setting/email", False)
             End If
         Catch ex As Exception
