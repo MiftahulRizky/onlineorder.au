@@ -13201,10 +13201,10 @@ Partial Class Methods_Order_DetailMethod
             Dim Delivery As String = OrderData.Tables(0).Rows(0).Item("Delivery").ToString()
 
             Dim AppId As String = publicCfg.GetItemData(String.Format("SELECT ApplicationId FROM CustomerLogins WHERE CustomerId = '{0}'", CustomerId))
-            Dim MailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM Mailings WHERE ApplicationId = '{0}' AND Name = 'Submit Order Blinds' AND Active = '1' ", AppId))
+            Dim mailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM Mailings WHERE ApplicationId = '{0}' AND Name = 'Submit Order Blinds' AND Active = '1' ", AppId))
             Dim mailDevelopment As DataSet = publicCfg.GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
 
-            If MailData.Tables(0).Rows.Count = 0 Then Return "invalid mailings"
+            If mailData.Tables(0).Rows.Count = 0 Then Return "invalid mailings"
             Dim CustomerName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Customers WHERE Id = '{0}'", CustomerId))
             Dim Mail As String = publicCfg.GetItemData("SELECT Email FROM CustomerContacts WHERE CustomerId = '" + CustomerId + "' AND [Primary] = 1")
             If Mail = "" Then Return String.Format("please set primary contact on customer : {0}", CustomerName)
