@@ -13223,6 +13223,7 @@ Partial Class Methods_Order_DetailMethod
             Dim mailEnableSSL As Boolean = CBool(mailData.Tables(0).Rows(0)("EnableSSL"))
    
             Dim mailBody As String ="Thank you for your order."
+            mailBody += "<br />"
             mailBody += "This is an automated message confirming the receipt of your order. Your order has been successfully registered and has been forwarded directly to our production system for processing. Please note that due to this streamlined process, we regret to inform you that we are unable to accept cancellations or modifications for this order. For any inquiries or assistance, kindly contact our office.<br /><b>Please do not reply to this email as it is unattended. We appreciate your understanding and trust in our products & services</b>."
             mailBody += "<br /><br />"
             mailBody += "Store Order No : " & OrderNumber
@@ -13246,7 +13247,6 @@ Partial Class Methods_Order_DetailMethod
                 myMail.Subject = "Order No " & OrderNumber & " | " & OrderName & " Confirmed"
                 myMail.From = New MailAddress(mailServer, mailAlias)
                 myMail.Body = mailBody
-                ' myMail.Attachments.Add(New Attachment(directory & "/" & fileName))
                 myMail.IsBodyHtml = True
 
                 If mailDevelopment.Tables.Count > 0 Then
@@ -13301,72 +13301,6 @@ Partial Class Methods_Order_DetailMethod
                     End Using
                 End Using
             End Using
-
-
-            ' Dim myMail As New MailMessage
-            ' myMail.Subject = "Order No " & OrderNumber & " | " & OrderName & " Confirmed"
-            ' myMail.From = New MailAddress(mailServer, mailAlias)
-
-            ' 'START VALIDASI MAIL TO
-            ' If mailDevelopment.Tables.Count > 0 Then
-            '     Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
-            '     Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
-
-            '     If activeDev = "True" Or activeDev = "1" Then
-            '         myMail.To.Add(mdev)
-            '     Else
-            '         myMail.To.Add(Mail)
-            '         If Not mailCc = "" Then
-            '             Dim ccArray() As String = mailCc.Split(";")
-            '             Dim thisMail As String = ""
-            '             For Each thisMail In ccArray
-            '                 myMail.CC.Add(thisMail)
-            '             Next
-            '         End If
-        
-            '         If Not mailBcc = "" Then
-            '             Dim bccArray() As String = mailBcc.Split(";")
-            '             Dim thisMail As String = ""
-            '             For Each thisMail In bccArray
-            '                 myMail.Bcc.Add(thisMail)
-            '             Next
-            '         End If
-            '     End If
-            ' Else
-            '     myMail.To.Add(Mail)
-            '     If Not mailCc = "" Then
-            '         Dim ccArray() As String = mailCc.Split(";")
-            '         Dim thisMail As String = ""
-            '         For Each thisMail In ccArray
-            '             myMail.CC.Add(thisMail)
-            '         Next
-            '     End If
-    
-            '     If Not mailBcc = "" Then
-            '         Dim bccArray() As String = mailBcc.Split(";")
-            '         Dim thisMail As String = ""
-            '         For Each thisMail In bccArray
-            '             myMail.Bcc.Add(thisMail)
-            '         Next
-            '     End If
-            ' End If
-
-            ' myMail.Body = mailBody
-            ' ' SETUP ATTACMENT FILE
-            ' Dim fileName As String = Trim("-ORDER-" & OrderNumber.Replace(" ", "") & "-" & CustomerId & ".pdf")
-            ' myMail.Attachments.Add(New Attachment(directory & "/" & fileName))
-            ' myMail.IsBodyHtml = True
-            ' Dim smtpClient As New SmtpClient()
-            ' smtpClient.Host = mailHost
-            ' smtpClient.EnableSsl = mailEnableSsl
-            ' Dim NetworkCredl As New NetworkCredential()
-            ' NetworkCredl.UserName = mailAccount
-            ' NetworkCredl.Password = mailPassword
-            ' smtpClient.UseDefaultCredentials = mailDefaultCredentials
-            ' smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network
-            ' smtpClient.Credentials = NetworkCredl
-            ' smtpClient.Port = mailPort
-            ' smtpClient.Send(myMail)
 
             Return "200"
         Catch ex As Exception
