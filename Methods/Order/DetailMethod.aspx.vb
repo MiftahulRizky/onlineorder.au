@@ -13190,19 +13190,53 @@ Partial Class Methods_Order_DetailMethod
 
     Private Shared Function MailSubmitOrder(headerid As String, directory As String) As String
         Try
-            Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType = 'Blinds' ", headerid))
-            If OrderData.Tables(0).Rows.Count = 0 Then Return "invalid orders"
+            ' Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType = 'Blinds' ", headerid))
+            ' If OrderData.Tables(0).Rows.Count = 0 Then Return "invalid orders"
 
-            Dim CustomerId As String = OrderData.Tables(0).Rows(0).Item("CustomerId").ToString()
+            ' Dim CustomerId As String = OrderData.Tables(0).Rows(0).Item("CustomerId").ToString()
+            ' Dim OrderNumber As String = OrderData.Tables(0).Rows(0).Item("OrderNumber").ToString()
+            ' Dim OrderName As String = OrderData.Tables(0).Rows(0).Item("OrderName").ToString()
+            ' Dim Delivery As String = OrderData.Tables(0).Rows(0).Item("Delivery").ToString()
 
-            Dim AppId As String = publicCfg.GetItemData(String.Format("SELECT AppId FROM CustomerLogins WHERE CustomerId = '{0}'", CustomerId))
-            Dim MailData As DataSet = publicCfg.GetItemData(String.Format("SELECT * FROM Mailings WHERE ApplicationId = '{0}' AND Name = 'Submit Order' AND Active = '1' ", AppId))
-            Dim mailDevelopment As DataSet = publicCfg.GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
+            ' Dim AppId As String = publicCfg.GetItemData(String.Format("SELECT AppId FROM CustomerLogins WHERE CustomerId = '{0}'", CustomerId))
+            ' Dim MailData As DataSet = publicCfg.GetItemData(String.Format("SELECT * FROM Mailings WHERE ApplicationId = '{0}' AND Name = 'Submit Order' AND Active = '1' ", AppId))
+            ' Dim mailDevelopment As DataSet = publicCfg.GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
 
-            If MailData.Tables(0).Rows.Count = 0 Then Return "invalid mailings"
-            Dim CustomerName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Customers WHERE Id = '{0}'", CustomerId))
-            Dim CustomerMail As String = publicCfg.GetItemData("SELECT Email FROM CustomerContacts WHERE CustomerId = '" + CustomerId + "' AND [Primary] = 1")
+            ' If MailData.Tables(0).Rows.Count = 0 Then Return "invalid mailings"
+            ' Dim CustomerName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Customers WHERE Id = '{0}'", CustomerId))
+            ' Dim CustomerMail As String = publicCfg.GetItemData("SELECT Email FROM CustomerContacts WHERE CustomerId = '" + CustomerId + "' AND [Primary] = 1")
+
+            ' Dim Server As String = MailData.Tables(0).Rows(0).Item("Server").ToString()
+            ' Dim Host As String = MailData.Tables(0).Rows(0).Item("Host").ToString()
+            ' Dim Post As String = MailData.Tables(0).Rows(0).Item("Post").ToString()
+            ' Dim NetworkCredentials As String = MailData.Tables(0).Rows(0).Item("NetworkCredentials").ToString()
+            ' Dim DefaultCredentials As String = MailData.Tables(0).Rows(0).Item("DefaultCredentials").ToString()
+            ' Dim EnableSSL As String = MailData.Tables(0).Rows(0).Item("EnableSSL").ToString()
+            ' Dim Account As String = MailData.Tables(0).Rows(0).Item("Account").ToString()
+            ' Dim Password As String = MailData.Tables(0).Rows(0).Item("Password").ToString()
+            ' Dim Alias As String = MailData.Tables(0).Rows(0).Item("Alias").ToString()
+            ' Dim Subject As String = MailData.Tables(0).Rows(0).Item("Subject").ToString()
+            ' Dim To As String = MailData.Tables(0).Rows(0).Item("To").ToString()
+            ' Dim Cc As String = MailData.Tables(0).Rows(0).Item("Cc").ToString()
+            ' Dim Bcc As String = MailData.Tables(0).Rows(0).Item("Bcc").ToString()
    
+            ' Dim Body As String ="Thank you for your order."
+            ' Body += "This is an automated message confirming the receipt of your order. Your order has been successfully registered and has been forwarded directly to our production system for processing. Please note that due to this streamlined process, we regret to inform you that we are unable to accept cancellations or modifications for this order. For any inquiries or assistance, kindly contact our office.<br /><b>Please do not reply to this email as it is unattended. We appreciate your understanding and trust in our products & services</b>."
+            ' Body += "<br /><br />"
+            ' Body += "Store Order No : " & OrderNumber
+            ' Body += "<br />"
+            ' Body += "Store Customer : " & OrderName
+            ' Body += "<br />"
+            ' Body += "Delivery / Pick Up : " & Delivery
+            ' Body += "<br /><br />"
+            ' Body += "Detail order as attached PDF."
+
+            ' Body += "<br /><br />"
+            ' Body += "Kind regards,"
+            ' Body += "<br /><br />"
+
+            ' Body += "<br /><br />"
+            ' Body += "<b>Sunlight Products Pty Ltd</b>"
 
             Return "200"
         Catch ex As Exception
