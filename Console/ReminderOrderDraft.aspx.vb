@@ -63,6 +63,10 @@ Partial Class Console_ReminderOrderDraft
                             dump.AppendLine("Mail Status: " & statusText & " (Code: " & ResponseMail & ")")
                             dump.AppendLine("</div>")
                         End If
+                    Else
+                        dump.AppendLine("<div style='padding:6px 10px; border-radius:6px; margin-bottom:4px; font-weight:bold; color: blue; border:1px solid blue;'>")
+                        dump.AppendLine("Nothing order draft on < 3 days.")
+                        dump.AppendLine("</div>")
                     End If
 
                     If DaysDiff > 10 Then
@@ -71,6 +75,10 @@ Partial Class Console_ReminderOrderDraft
                         Dim statusText As String =  If(ResponseDelete = "200", "Success", "Failed")
                         dump.AppendLine("<div style='padding:6px 10px; border-radius:6px; margin-bottom:4px; font-weight:bold; color:" & statusColor & "; border:1px solid " & statusColor &";'>")
                         dump.AppendLine("Delete Status: " & statusText & " (Code: " & ResponseDelete & ")")
+                        dump.AppendLine("</div>")
+                    Else
+                        dump.AppendLine("<div style='padding:6px 10px; border-radius:6px; margin-bottom:4px; font-weight:bold; color: blue; border:1px solid blue;'>")
+                        dump.AppendLine("Nothing order draft on < 10 days.")
                         dump.AppendLine("</div>")
                     End If
                 Else
