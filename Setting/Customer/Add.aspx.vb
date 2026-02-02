@@ -103,7 +103,7 @@ Partial Class Setting_Customer_Add
                 End If
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As SqlCommand = New SqlCommand("INSERT INTO Customers VALUES (@Id, @Account, @MasterId, NULL, @ExactId, @Name, 'Shutters', NULL, @PriceGroup, 'Office', @OnStop, @CashSale, @Newsletter, @MininimuOrderSurcharge, 1)")
+                    Using myCmd As SqlCommand = New SqlCommand("INSERT INTO Customers (Id, Account, MasterId, MicronetId, ExactId, Name, Type, [Group], Pricing, SalesPerson, OnStop, CashSale, Newsletter, MinimumOrderSurcharge, Active) VALUES (@Id, @Account, @MasterId, NULL, @ExactId, @Name, 'Shutters', NULL, @PriceGroup, 'Office', @OnStop, @CashSale, @Newsletter, @MininimuOrderSurcharge, 1)")
                         myCmd.Parameters.AddWithValue("@Id", txtId.Text.Trim())
                         myCmd.Parameters.AddWithValue("@Account", ddlAccount.SelectedValue)
                         myCmd.Parameters.AddWithValue("@MasterId", ddlMaster.SelectedValue)

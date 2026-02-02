@@ -1328,35 +1328,8 @@ Public Class OrderConfig
                     If designName = "Panorama PVC Shutters" Then
                         Dim sqm As Decimal = Math.Round(width * drop / 1000000, 4)
                         thisGridMatrix = gridMatrix * sqm
-                        If sqm < 0.5 Then
-                            If customerPriceGroup = "" Or customerPriceGroup = "Standard" Then
-                                thisGridMatrix = gridMatrix / 2
-                            End If
-                            If customerPriceGroup = "$164" Then
-                                thisGridMatrix = gridMatrix / 2
-                            End If
-                            If customerPriceGroup = "$168" Then
-                                thisGridMatrix = gridMatrix / 2
-                            End If
-                            If customerPriceGroup = "$185" Then
-                                thisGridMatrix = gridMatrix / 2
-                            End If
-                            If customerPriceGroup = "$190" Then
-                                thisGridMatrix = gridMatrix / 2
-                            End If
-                            If customerPriceGroup = "B" Then
-                                thisGridMatrix = gridMatrix / 2
-                            End If
-                            descriptionPrice = "Minimum Opening Size Charge (" & priceGroupName & ")"
-                        End If
-
-                        If sqm < 0.7 Then
-                            If customerPriceGroup = "SISStandard" Then
-                                thisGridMatrix = gridMatrix / 2
-                            End If
-                            If customerPriceGroup = "SISCorporate" Then
-                                thisGridMatrix = gridMatrix / 2
-                            End If
+                        If sqm < 1 Then
+                            thisGridMatrix = gridMatrix
                             descriptionPrice = "Minimum Opening Size Charge (" & priceGroupName & ")"
                         End If
                     End If

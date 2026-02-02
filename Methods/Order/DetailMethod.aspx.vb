@@ -863,8 +863,12 @@ Partial Class Methods_Order_DetailMethod
 
                 ' Hanya kirim email jika domain sesuai
                 printCfg.CreatePDFOrder(headerid, fileDirectory, fileName)
-                If currentDomain.Contains("onlineorder.au") Then
-                    publicCfg.MailOrder(headerid, fileDirectory)
+                ' If currentDomain.Contains("onlineorder.au") Then
+                '     publicCfg.MailOrder(headerid, fileDirectory)
+                ' End If
+                Dim Res As String = MailSubmitOrder(headerid, fileDirectory)
+                IF Not Res = "200" Then
+                    Return New ErrorResponse With { .[error] = New ErrorDetail With { .message = Res}}
                 End If
             End If
             '# --------------------------|| Generate PDF Core ||-------------------------------
@@ -13182,16 +13186,29 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
-    	
+    '#------------------------------------------|| Mailing Blinds ||------------------------------------------#
 
+    Private Shared Function MailSubmitOrder(headerid As String, directory As String) As String
+        Try
+            Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType = 'Blinds' ", headerid))
+            If OrderData.Tables(0).Rows.Count = 0 Then Return "invalid orders"
 
+            Dim CustomerId As String = OrderData.Tables(0).Rows(0).Item("CustomerId").ToString()
 
+            Dim AppId As String = publicCfg.GetItemData(String.Format("SELECT AppId FROM CustomerLogins WHERE CustomerId = '{0}'", CustomerId))
+            Dim MailData As DataSet = publicCfg.GetItemData(String.Format("SELECT * FROM Mailings WHERE ApplicationId = '{0}' AND Name = 'Submit Order' AND Active = '1' ", AppId))
+            Dim mailDevelopment As DataSet = publicCfg.GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
 
-
-
+            If MailData.Tables(0).Rows.Count = 0 Then Return "invalid mailings"
+            Dim CustomerName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Customers WHERE Id = '{0}'", CustomerId))
+            Dim CustomerMail As String = publicCfg.GetItemData("SELECT Email FROM CustomerContacts WHERE CustomerId = '" + CustomerId + "' AND [Primary] = 1")
    
 
-
-
+            Return "200"
+        Catch ex As Exception
+            Return "MailSubmitOrder : " & ex.Message
+        End Try
+    End Function
+    
 
 End Class
