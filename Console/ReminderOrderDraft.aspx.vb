@@ -38,7 +38,7 @@ Partial Class Console_ReminderOrderDraft
                 Dim ThisTime As DateTime
                 If DateTime.TryParse(CreatedDate, ThisTime) Then
                     Dim CurrentDate As DateTime = DateTime.Now
-                    Dim DaysDiff As Integer = (CurrentDate - ThisTime.Date).Days '#Hitung selisih hari
+                    Dim DaysDiff As Integer = CalculateWorkingDays(ThisTime.Date, CurrentDate) '(CurrentDate - ThisTime.Date).Days '#Hitung selisih hari
                     Dim Log_OrderDraft As DataSet = publicCfg.GetListData("SELECT * FROM Log_OrderDraft WHERE Id = '" & Id & "' AND OrderType = '" & OrderType & "'")
 
                     If DaysDiff < 3 Then
@@ -87,11 +87,30 @@ Partial Class Console_ReminderOrderDraft
         End Try
     End sub
 
-    
+    Public Function CalculateWorkingDays(startDate As DateTime, endDate As DateTime) As Integer
+        Dim totalDays As Integer = 0
+        Dim currentDate As DateTime = startDate.Date
+        
+        While currentDate <= endDate.Date
+            ' Cek apakah hari bukan Sabtu (DayOfWeek.Saturday = 6) dan bukan Minggu (DayOfWeek.Sunday = 0)
+            If currentDate.DayOfWeek <> DayOfWeek.Saturday AndAlso currentDate.DayOfWeek <> DayOfWeek.Sunday Then
+                totalDays += 1
+            End If
+            currentDate = currentDate.AddDays(1)
+        End While
+        
+        Return totalDays
+    End Function
 
 
     Public Function InsertLogOrderDraft(Id As String, OrderId As String, OrderType As String, CreatedDate As String) As String
         Try
+            Dim mailDevelopment As DataSet = publicCfg.GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
+            IF mailDevelopment.Tables.Count > 0 then
+                Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+                If activeDev = "True" Or activeDev = "1" Then Return "200"
+            End If
+
             Using thisConn As SqlConnection = New SqlConnection(myConn)
                 Using myCmd As SqlCommand = New SqlCommand("INSERT INTO Log_OrderDraft (Id, OrderId, OrderType, DraftDate) VALUES (@Id, @OrderId, @OrderType, @DraftDate)")
                     ' myCmd.Parameters.AddWithValue("@Id", Id)
@@ -222,6 +241,12 @@ Partial Class Console_ReminderOrderDraft
 
     Public Function DeleteOrderDraft(Id As String, OrderType As String) As String
         Try
+            Dim mailDevelopment As DataSet = publicCfg.GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
+            IF mailDevelopment.Tables.Count > 0 then
+                Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+                If activeDev = "True" Or activeDev = "1" Then Return "200"
+            End If
+
             Dim query As String = "UPDATE OrderHeaders SET Active=0 WHERE Id = @Id"
             If Not OrderType = "Blinds" Then
                 query = "UPDATE OrderHeaders_Shutters SET Active=0 WHERE Id = @Id"
