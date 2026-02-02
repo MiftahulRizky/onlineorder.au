@@ -917,7 +917,7 @@ const handlerCreatePDFOrder = async (headerid, action, msgloading) => {
 
     if (result.error) {
       await isError(result.error.message.toUpperCase());
-      location.reload();
+      // location.reload();
     } else {
       await isSuccess(result.success.message);
 

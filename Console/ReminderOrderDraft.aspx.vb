@@ -170,24 +170,24 @@ Partial Class Console_ReminderOrderDraft
                 myMail.Body = mailBody
                 myMail.IsBodyHtml = True
 
-            If mailDevelopment.Tables.Count > 0 Then
-                Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
-                Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+                If mailDevelopment.Tables.Count > 0 Then
+                    Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                    Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
 
-                If activeDev = "True" Or activeDev = "1" Then
-                    myMail.To.Add(mdev)
+                    If activeDev = "True" Or activeDev = "1" Then
+                        myMail.To.Add(mdev)
+                    Else
+                        myMail.To.Add(Mail)
+                        If Not String.IsNullOrEmpty(mailTo) Then myMail.To.Add(mailTo)
+                        If Not String.IsNullOrEmpty(mailCc) Then myMail.CC.Add(mailCc)
+                        If Not String.IsNullOrEmpty(mailBcc) Then myMail.Bcc.Add(mailBcc)
+                    End If
                 Else
                     myMail.To.Add(Mail)
                     If Not String.IsNullOrEmpty(mailTo) Then myMail.To.Add(mailTo)
                     If Not String.IsNullOrEmpty(mailCc) Then myMail.CC.Add(mailCc)
                     If Not String.IsNullOrEmpty(mailBcc) Then myMail.Bcc.Add(mailBcc)
                 End If
-            Else
-                myMail.To.Add(Mail)
-                If Not String.IsNullOrEmpty(mailTo) Then myMail.To.Add(mailTo)
-                If Not String.IsNullOrEmpty(mailCc) Then myMail.CC.Add(mailCc)
-                If Not String.IsNullOrEmpty(mailBcc) Then myMail.Bcc.Add(mailBcc)
-            End If
 
                 Using smtpClient As New SmtpClient(mailHost, mailPort)
                     smtpClient.EnableSsl = mailEnableSSL

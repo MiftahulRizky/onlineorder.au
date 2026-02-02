@@ -17,6 +17,7 @@ Imports iTextSharp.tool.xml
 Imports Microsoft.VisualBasic
 Imports Newtonsoft.Json
 Imports System.Net
+Imports System.Net.Mail
 
 
 
@@ -863,12 +864,13 @@ Partial Class Methods_Order_DetailMethod
 
                 ' Hanya kirim email jika domain sesuai
                 printCfg.CreatePDFOrder(headerid, fileDirectory, fileName)
-                ' If currentDomain.Contains("onlineorder.au") Then
-                '     publicCfg.MailOrder(headerid, fileDirectory)
-                ' End If
-                Dim Res As String = MailSubmitOrder(headerid, fileDirectory)
-                IF Not Res = "200" Then
-                    Return New ErrorResponse With { .[error] = New ErrorDetail With { .message = Res}}
+                If currentDomain.Contains("onlineorder.au") Then
+                    ' publicCfg.MailOrder(headerid, fileDirectory)
+                ' Else
+                    Dim Res As String = MailSubmitOrder(headerid, fileDirectory)
+                    IF Not Res = "200" Then
+                        Return New ErrorResponse With { .[error] = New ErrorDetail With { .message = Res}}
+                    End If
                 End If
             End If
             '# --------------------------|| Generate PDF Core ||-------------------------------
@@ -13190,57 +13192,189 @@ Partial Class Methods_Order_DetailMethod
 
     Private Shared Function MailSubmitOrder(headerid As String, directory As String) As String
         Try
-            ' Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType = 'Blinds' ", headerid))
-            ' If OrderData.Tables(0).Rows.Count = 0 Then Return "invalid orders"
+            Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType = 'Blinds' ", headerid))
+            If OrderData.Tables(0).Rows.Count = 0 Then Return "invalid orders"
 
-            ' Dim CustomerId As String = OrderData.Tables(0).Rows(0).Item("CustomerId").ToString()
-            ' Dim OrderNumber As String = OrderData.Tables(0).Rows(0).Item("OrderNumber").ToString()
-            ' Dim OrderName As String = OrderData.Tables(0).Rows(0).Item("OrderName").ToString()
-            ' Dim Delivery As String = OrderData.Tables(0).Rows(0).Item("Delivery").ToString()
+            Dim CustomerId As String = OrderData.Tables(0).Rows(0).Item("CustomerId").ToString()
+            Dim OrderNumber As String = OrderData.Tables(0).Rows(0).Item("OrderNumber").ToString()
+            Dim OrderName As String = OrderData.Tables(0).Rows(0).Item("OrderName").ToString()
+            Dim Delivery As String = OrderData.Tables(0).Rows(0).Item("Delivery").ToString()
 
-            ' Dim AppId As String = publicCfg.GetItemData(String.Format("SELECT AppId FROM CustomerLogins WHERE CustomerId = '{0}'", CustomerId))
-            ' Dim MailData As DataSet = publicCfg.GetItemData(String.Format("SELECT * FROM Mailings WHERE ApplicationId = '{0}' AND Name = 'Submit Order' AND Active = '1' ", AppId))
-            ' Dim mailDevelopment As DataSet = publicCfg.GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
+            Dim AppId As String = publicCfg.GetItemData(String.Format("SELECT ApplicationId FROM CustomerLogins WHERE CustomerId = '{0}'", CustomerId))
+            Dim MailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM Mailings WHERE ApplicationId = '{0}' AND Name = 'Submit Order Blinds' AND Active = '1' ", AppId))
+            Dim mailDevelopment As DataSet = publicCfg.GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
 
-            ' If MailData.Tables(0).Rows.Count = 0 Then Return "invalid mailings"
-            ' Dim CustomerName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Customers WHERE Id = '{0}'", CustomerId))
-            ' Dim CustomerMail As String = publicCfg.GetItemData("SELECT Email FROM CustomerContacts WHERE CustomerId = '" + CustomerId + "' AND [Primary] = 1")
+            If MailData.Tables(0).Rows.Count = 0 Then Return "invalid mailings"
+            Dim CustomerName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Customers WHERE Id = '{0}'", CustomerId))
+            Dim Mail As String = publicCfg.GetItemData("SELECT Email FROM CustomerContacts WHERE CustomerId = '" + CustomerId + "' AND [Primary] = 1")
+            If Mail = "" Then Return String.Format("please set primary contact on customer : {0}", CustomerName)
 
-            ' Dim Server As String = MailData.Tables(0).Rows(0).Item("Server").ToString()
-            ' Dim Host As String = MailData.Tables(0).Rows(0).Item("Host").ToString()
-            ' Dim Post As String = MailData.Tables(0).Rows(0).Item("Post").ToString()
-            ' Dim NetworkCredentials As String = MailData.Tables(0).Rows(0).Item("NetworkCredentials").ToString()
-            ' Dim DefaultCredentials As String = MailData.Tables(0).Rows(0).Item("DefaultCredentials").ToString()
-            ' Dim EnableSSL As String = MailData.Tables(0).Rows(0).Item("EnableSSL").ToString()
-            ' Dim Account As String = MailData.Tables(0).Rows(0).Item("Account").ToString()
-            ' Dim Password As String = MailData.Tables(0).Rows(0).Item("Password").ToString()
-            ' Dim Alias As String = MailData.Tables(0).Rows(0).Item("Alias").ToString()
-            ' Dim Subject As String = MailData.Tables(0).Rows(0).Item("Subject").ToString()
-            ' Dim To As String = MailData.Tables(0).Rows(0).Item("To").ToString()
-            ' Dim Cc As String = MailData.Tables(0).Rows(0).Item("Cc").ToString()
-            ' Dim Bcc As String = MailData.Tables(0).Rows(0).Item("Bcc").ToString()
+            Dim mailServer As String = mailData.Tables(0).Rows(0)("Server").ToString()
+            Dim mailHost As String = mailData.Tables(0).Rows(0)("Host").ToString()
+            Dim mailPort As Integer = CInt(mailData.Tables(0).Rows(0)("Port"))
+            Dim mailAccount As String = mailData.Tables(0).Rows(0)("Account").ToString()
+            Dim mailPassword As String = mailData.Tables(0).Rows(0)("Password").ToString()
+            Dim mailAlias As String = mailData.Tables(0).Rows(0)("Alias").ToString()
+            Dim mailTo As String = mailData.Tables(0).Rows(0)("To").ToString()
+            Dim mailCc As String = mailData.Tables(0).Rows(0)("Cc").ToString()
+            Dim mailBcc As String = mailData.Tables(0).Rows(0)("Bcc").ToString()
+            Dim mailNetworkCredentials As Boolean = CBool(mailData.Tables(0).Rows(0)("NetworkCredentials"))
+            Dim mailDefaultCredentials As Boolean = CBool(mailData.Tables(0).Rows(0)("DefaultCredentials"))
+            Dim mailEnableSSL As Boolean = CBool(mailData.Tables(0).Rows(0)("EnableSSL"))
    
-            ' Dim Body As String ="Thank you for your order."
-            ' Body += "This is an automated message confirming the receipt of your order. Your order has been successfully registered and has been forwarded directly to our production system for processing. Please note that due to this streamlined process, we regret to inform you that we are unable to accept cancellations or modifications for this order. For any inquiries or assistance, kindly contact our office.<br /><b>Please do not reply to this email as it is unattended. We appreciate your understanding and trust in our products & services</b>."
-            ' Body += "<br /><br />"
-            ' Body += "Store Order No : " & OrderNumber
-            ' Body += "<br />"
-            ' Body += "Store Customer : " & OrderName
-            ' Body += "<br />"
-            ' Body += "Delivery / Pick Up : " & Delivery
-            ' Body += "<br /><br />"
-            ' Body += "Detail order as attached PDF."
+            Dim mailBody As String ="Thank you for your order."
+            mailBody += "This is an automated message confirming the receipt of your order. Your order has been successfully registered and has been forwarded directly to our production system for processing. Please note that due to this streamlined process, we regret to inform you that we are unable to accept cancellations or modifications for this order. For any inquiries or assistance, kindly contact our office.<br /><b>Please do not reply to this email as it is unattended. We appreciate your understanding and trust in our products & services</b>."
+            mailBody += "<br /><br />"
+            mailBody += "Store Order No : " & OrderNumber
+            mailBody += "<br />"
+            mailBody += "Store Customer : " & OrderName
+            mailBody += "<br />"
+            mailBody += "Delivery / Pick Up : " & Delivery
+            mailBody += "<br /><br />"
+            mailBody += "Detail order as attached PDF."
 
-            ' Body += "<br /><br />"
-            ' Body += "Kind regards,"
-            ' Body += "<br /><br />"
+            mailBody += "<br /><br />"
+            mailBody += "Kind regards,"
+            mailBody += "<br /><br />"
 
-            ' Body += "<br /><br />"
-            ' Body += "<b>Sunlight Products Pty Ltd</b>"
+            mailBody += "<br /><br />"
+            mailBody += "<b>Sunlight Products Pty Ltd</b>"
+
+
+            Using myMail As New MailMessage()
+                Dim fileName As String = Trim("-ORDER-" & OrderNumber.Replace(" ", "") & "-" & CustomerId & ".pdf")
+                myMail.Subject = "Order No " & OrderNumber & " | " & OrderName & " Confirmed"
+                myMail.From = New MailAddress(mailServer, mailAlias)
+                myMail.Body = mailBody
+                ' myMail.Attachments.Add(New Attachment(directory & "/" & fileName))
+                myMail.IsBodyHtml = True
+
+                If mailDevelopment.Tables.Count > 0 Then
+                    Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                    Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+
+                    If activeDev = "True" Or activeDev = "1" Then
+                        myMail.To.Add(mdev)
+                    Else
+                        myMail.To.Add(Mail)
+                        If Not String.IsNullOrEmpty(mailTo) Then myMail.To.Add(mailTo)
+                        If Not String.IsNullOrEmpty(mailCc) Then myMail.CC.Add(mailCc)
+                        If Not String.IsNullOrEmpty(mailBcc) Then
+                            Dim BccList() As String = mailBcc.Split(";")
+                            Dim ThisMail As String = ""
+                            For Each ThisMail In BccList
+                                myMail.Bcc.Add(ThisMail)
+                            Next
+                        End If
+                    End If
+                Else
+                    myMail.To.Add(Mail)
+                    If Not String.IsNullOrEmpty(mailTo) Then myMail.To.Add(mailTo)
+                    If Not String.IsNullOrEmpty(mailCc) Then myMail.CC.Add(mailCc)
+                    If Not String.IsNullOrEmpty(mailBcc) Then
+                        Dim BccList() As String = mailBcc.Split(";")
+                        Dim ThisMail As String = ""
+                        For Each ThisMail In BccList
+                            myMail.Bcc.Add(ThisMail)
+                        Next
+                    End If
+                End If
+
+                Dim fullPath = Path.Combine(directory, fileName)
+                Using fs As New FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read)
+                Dim attach As New Attachment(fs, fileName)
+                myMail.Attachments.Add(attach)
+                    Using smtpClient As New SmtpClient(mailHost, mailPort)
+                        smtpClient.EnableSsl = mailEnableSSL
+                        smtpClient.UseDefaultCredentials = mailDefaultCredentials
+                        smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network
+
+                        If mailNetworkCredentials Then
+                            smtpClient.Credentials = New NetworkCredential(mailAccount, mailPassword)
+                        ElseIf mailDefaultCredentials Then
+                            smtpClient.UseDefaultCredentials = True
+                        Else
+                            smtpClient.Credentials = CredentialCache.DefaultNetworkCredentials
+                        End If
+
+                        smtpClient.Send(myMail)
+                    End Using
+                End Using
+            End Using
+
+
+            ' Dim myMail As New MailMessage
+            ' myMail.Subject = "Order No " & OrderNumber & " | " & OrderName & " Confirmed"
+            ' myMail.From = New MailAddress(mailServer, mailAlias)
+
+            ' 'START VALIDASI MAIL TO
+            ' If mailDevelopment.Tables.Count > 0 Then
+            '     Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+            '     Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+
+            '     If activeDev = "True" Or activeDev = "1" Then
+            '         myMail.To.Add(mdev)
+            '     Else
+            '         myMail.To.Add(Mail)
+            '         If Not mailCc = "" Then
+            '             Dim ccArray() As String = mailCc.Split(";")
+            '             Dim thisMail As String = ""
+            '             For Each thisMail In ccArray
+            '                 myMail.CC.Add(thisMail)
+            '             Next
+            '         End If
+        
+            '         If Not mailBcc = "" Then
+            '             Dim bccArray() As String = mailBcc.Split(";")
+            '             Dim thisMail As String = ""
+            '             For Each thisMail In bccArray
+            '                 myMail.Bcc.Add(thisMail)
+            '             Next
+            '         End If
+            '     End If
+            ' Else
+            '     myMail.To.Add(Mail)
+            '     If Not mailCc = "" Then
+            '         Dim ccArray() As String = mailCc.Split(";")
+            '         Dim thisMail As String = ""
+            '         For Each thisMail In ccArray
+            '             myMail.CC.Add(thisMail)
+            '         Next
+            '     End If
+    
+            '     If Not mailBcc = "" Then
+            '         Dim bccArray() As String = mailBcc.Split(";")
+            '         Dim thisMail As String = ""
+            '         For Each thisMail In bccArray
+            '             myMail.Bcc.Add(thisMail)
+            '         Next
+            '     End If
+            ' End If
+
+            ' myMail.Body = mailBody
+            ' ' SETUP ATTACMENT FILE
+            ' Dim fileName As String = Trim("-ORDER-" & OrderNumber.Replace(" ", "") & "-" & CustomerId & ".pdf")
+            ' myMail.Attachments.Add(New Attachment(directory & "/" & fileName))
+            ' myMail.IsBodyHtml = True
+            ' Dim smtpClient As New SmtpClient()
+            ' smtpClient.Host = mailHost
+            ' smtpClient.EnableSsl = mailEnableSsl
+            ' Dim NetworkCredl As New NetworkCredential()
+            ' NetworkCredl.UserName = mailAccount
+            ' NetworkCredl.Password = mailPassword
+            ' smtpClient.UseDefaultCredentials = mailDefaultCredentials
+            ' smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network
+            ' smtpClient.Credentials = NetworkCredl
+            ' smtpClient.Port = mailPort
+            ' smtpClient.Send(myMail)
 
             Return "200"
         Catch ex As Exception
-            Return "MailSubmitOrder : " & ex.Message
+            Dim errorMessage As String = "Failure sending mail. " & ex.Message
+            If ex.InnerException IsNot Nothing Then
+                errorMessage &= " Inner Exception: " & ex.InnerException.Message
+            End If
+            Return errorMessage
         End Try
     End Function
     
