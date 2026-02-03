@@ -91,6 +91,8 @@ Public Class MailConfig
                "SELECT * FROM Mailings WHERE ApplicationId = '" + UCase(appId).ToString() + "' AND Name = 'New Order Shutters' AND Active = 1",
                "SELECT * FROM Mailings WHERE ApplicationId = '" + UCase(appId).ToString() + "' AND Name = 'New Order' AND Active = 1")
 
+            Dim mailDevelopment As DataSet = GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
+
             If customerId = "DEFAULT" Then Exit Sub
 
             Dim mailData As DataSet = GetListData(queryMailings)
@@ -138,24 +140,53 @@ Public Class MailConfig
 
             ' Siapkan MailMessage
             myMail = New MailMessage()
-            If Not String.IsNullOrEmpty(mailTo) Then
-                For Each thisMail In mailTo.Split(";"c)
-                    myMail.To.Add(thisMail)
-                Next
+            IF mailDevelopment.Tables.Count > 0 then
+                Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+
+                If activeDev = "True" Or activeDev = "1" Then
+                    myMail.To.Add(mdev)
+                Else
+                    If Not String.IsNullOrEmpty(mailTo) Then
+                        For Each thisMail In mailTo.Split(";"c)
+                            myMail.To.Add(thisMail)
+                        Next
+                    Else
+                        myMail.To.Add("reza@bigblinds.co.id")
+                    End If
+
+                    If Not String.IsNullOrEmpty(mailCc) Then
+                        For Each thisMail In mailCc.Split(";"c)
+                            myMail.CC.Add(thisMail)
+                        Next
+                    End If
+
+                    If Not String.IsNullOrEmpty(mailBcc) Then
+                        For Each thisMail In mailBcc.Split(";"c)
+                            myMail.Bcc.Add(thisMail)
+                        Next
+                    End If
+                End If
             Else
-                myMail.To.Add("reza@bigblinds.co.id")
-            End If
+                If Not String.IsNullOrEmpty(mailTo) Then
+                    For Each thisMail In mailTo.Split(";"c)
+                        myMail.To.Add(thisMail)
+                    Next
+                Else
+                    myMail.To.Add("reza@bigblinds.co.id")
+                End If
 
-            If Not String.IsNullOrEmpty(mailCc) Then
-                For Each thisMail In mailCc.Split(";"c)
-                    myMail.CC.Add(thisMail)
-                Next
-            End If
+                If Not String.IsNullOrEmpty(mailCc) Then
+                    For Each thisMail In mailCc.Split(";"c)
+                        myMail.CC.Add(thisMail)
+                    Next
+                End If
 
-            If Not String.IsNullOrEmpty(mailBcc) Then
-                For Each thisMail In mailBcc.Split(";"c)
-                    myMail.Bcc.Add(thisMail)
-                Next
+                If Not String.IsNullOrEmpty(mailBcc) Then
+                    For Each thisMail In mailBcc.Split(";"c)
+                        myMail.Bcc.Add(thisMail)
+                    Next
+                End If
             End If
 
             myMail.Subject = String.Format("{0} - {1} - {2} - New Order #{3}", customerName, orderName, orderNumber, orderId)
@@ -219,6 +250,8 @@ Public Class MailConfig
                 queryMailings = "SELECT * FROM Mailings WHERE ApplicationId = '" & UCase(appId) & "' AND Name = 'Deposit Request Shutters' AND Active = 1"
             End If
 
+            Dim mailDevelopment As DataSet = GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
+
             Dim mailData As DataSet = GetListData(queryMailings)
             If mailData.Tables(0).Rows.Count = 0 Then Exit Sub
 
@@ -267,31 +300,66 @@ Public Class MailConfig
                 myMail.Body = mailContent.ToString()
                 myMail.IsBodyHtml = True
 
-                If Not String.IsNullOrEmpty(StrTo) AndAlso IsValidEmail(StrTo) Then
-                    myMail.To.Add(StrTo)
-                ElseIf Not String.IsNullOrEmpty(mailTo) Then
-                    For Each thisMail In mailTo.Split(";"c)
-                        If IsValidEmail(thisMail.Trim()) Then myMail.To.Add(thisMail.Trim())
-                    Next
+                IF mailDevelopment.Tables.Count > 0 then
+                    Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                    Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+
+                    If activeDev = "True" Or activeDev = "1" Then
+                        myMail.To.Add(mdev)
+                    Else
+                        If Not String.IsNullOrEmpty(StrTo) AndAlso IsValidEmail(StrTo) Then
+                            myMail.To.Add(StrTo)
+                        ElseIf Not String.IsNullOrEmpty(mailTo) Then
+                            For Each thisMail In mailTo.Split(";"c)
+                                If IsValidEmail(thisMail.Trim()) Then myMail.To.Add(thisMail.Trim())
+                            Next
+                        Else
+                            myMail.To.Add("reza@bigblinds.co.id")
+                        End If
+
+                        If Not String.IsNullOrEmpty(mailCc) Then
+                            For Each thisMail In mailCc.Split(";"c)
+                                If IsValidEmail(thisMail.Trim()) Then myMail.CC.Add(thisMail.Trim())
+                            Next
+                        End If
+
+                        If Not String.IsNullOrEmpty(StrCC) AndAlso IsValidEmail(StrCC) Then
+                            myMail.CC.Add(StrCC)
+                        End If
+
+                        If Not String.IsNullOrEmpty(mailBcc) Then
+                            For Each thisMail In mailBcc.Split(";"c)
+                                If IsValidEmail(thisMail.Trim()) Then myMail.Bcc.Add(thisMail.Trim())
+                            Next
+                        End If
+                    End If
                 Else
-                    myMail.To.Add("reza@bigblinds.co.id")
-                End If
+                    If Not String.IsNullOrEmpty(StrTo) AndAlso IsValidEmail(StrTo) Then
+                        myMail.To.Add(StrTo)
+                    ElseIf Not String.IsNullOrEmpty(mailTo) Then
+                        For Each thisMail In mailTo.Split(";"c)
+                            If IsValidEmail(thisMail.Trim()) Then myMail.To.Add(thisMail.Trim())
+                        Next
+                    Else
+                        myMail.To.Add("reza@bigblinds.co.id")
+                    End If
 
-                If Not String.IsNullOrEmpty(mailCc) Then
-                    For Each thisMail In mailCc.Split(";"c)
-                        If IsValidEmail(thisMail.Trim()) Then myMail.CC.Add(thisMail.Trim())
-                    Next
-                End If
+                    If Not String.IsNullOrEmpty(mailCc) Then
+                        For Each thisMail In mailCc.Split(";"c)
+                            If IsValidEmail(thisMail.Trim()) Then myMail.CC.Add(thisMail.Trim())
+                        Next
+                    End If
 
-                If Not String.IsNullOrEmpty(StrCC) AndAlso IsValidEmail(StrCC) Then
-                    myMail.CC.Add(StrCC)
-                End If
+                    If Not String.IsNullOrEmpty(StrCC) AndAlso IsValidEmail(StrCC) Then
+                        myMail.CC.Add(StrCC)
+                    End If
 
-                If Not String.IsNullOrEmpty(mailBcc) Then
-                    For Each thisMail In mailBcc.Split(";"c)
-                        If IsValidEmail(thisMail.Trim()) Then myMail.Bcc.Add(thisMail.Trim())
-                    Next
-                End If
+                    If Not String.IsNullOrEmpty(mailBcc) Then
+                        For Each thisMail In mailBcc.Split(";"c)
+                            If IsValidEmail(thisMail.Trim()) Then myMail.Bcc.Add(thisMail.Trim())
+                        Next
+                    End If
+                End IF
 
                 If File.Exists(FilePDF) Then
                     fs = New FileStream(FilePDF, FileMode.Open, FileAccess.Read)
@@ -348,6 +416,9 @@ Public Class MailConfig
                 queryMailing = "SELECT * FROM Mailings WHERE ApplicationId = '" + UCase(appId) + "' AND Name = 'Quote Order Shutters' AND Active = 1"
             End If
 
+            Dim mailDevelopment As DataSet = GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
+
+
             Dim mailData As DataSet = GetListData(queryMailing)
             If mailData.Tables(0).Rows.Count = 0 Then Exit Sub
 
@@ -380,29 +451,63 @@ Public Class MailConfig
                 myMail.Body = mailContent
                 myMail.IsBodyHtml = True
 
-                If Not String.IsNullOrEmpty(MTo) AndAlso IsValidEmail(MTo) Then
-                    myMail.To.Add(MTo)
-                ElseIf Not String.IsNullOrEmpty(mailTo) Then
-                    For Each addr In mailTo.Split(";"c)
-                        myMail.To.Add(addr)
-                    Next
+                IF mailDevelopment.Tables.Count > 0 then
+                    Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                    Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+
+                    If activeDev = "True" Or activeDev = "1" Then
+                        myMail.To.Add(mdev)
+                    Else
+                        If Not String.IsNullOrEmpty(MTo) AndAlso IsValidEmail(MTo) Then
+                            myMail.To.Add(MTo)
+                        ElseIf Not String.IsNullOrEmpty(mailTo) Then
+                            For Each addr In mailTo.Split(";"c)
+                                myMail.To.Add(addr)
+                            Next
+                        Else
+                            myMail.To.Add("reza@bigblinds.co.id")
+                        End If
+
+                        If Not String.IsNullOrEmpty(mailCc) Then
+                            For Each thisMail In mailCc.Split(";"c)
+                                If IsValidEmail(thisMail.Trim()) Then myMail.CC.Add(thisMail.Trim())
+                            Next
+                        End If
+                        If Not String.IsNullOrEmpty(mailBcc) Then
+                            For Each thisMail In mailBcc.Split(";"c)
+                                If IsValidEmail(thisMail.Trim()) Then myMail.Bcc.Add(thisMail.Trim())
+                            Next
+                        End If
+
+                        If Not String.IsNullOrEmpty(MCc) AndAlso IsValidEmail(MCc) Then
+                            myMail.CC.Add(MCc)
+                        End If
+                    End If
                 Else
-                    myMail.To.Add("reza@bigblinds.co.id")
-                End If
+                    If Not String.IsNullOrEmpty(MTo) AndAlso IsValidEmail(MTo) Then
+                        myMail.To.Add(MTo)
+                    ElseIf Not String.IsNullOrEmpty(mailTo) Then
+                        For Each addr In mailTo.Split(";"c)
+                            myMail.To.Add(addr)
+                        Next
+                    Else
+                        myMail.To.Add("reza@bigblinds.co.id")
+                    End If
 
-                If Not String.IsNullOrEmpty(mailCc) Then
-                    For Each thisMail In mailCc.Split(";"c)
-                        If IsValidEmail(thisMail.Trim()) Then myMail.CC.Add(thisMail.Trim())
-                    Next
-                End If
-                If Not String.IsNullOrEmpty(mailBcc) Then
-                    For Each thisMail In mailBcc.Split(";"c)
-                        If IsValidEmail(thisMail.Trim()) Then myMail.Bcc.Add(thisMail.Trim())
-                    Next
-                End If
+                    If Not String.IsNullOrEmpty(mailCc) Then
+                        For Each thisMail In mailCc.Split(";"c)
+                            If IsValidEmail(thisMail.Trim()) Then myMail.CC.Add(thisMail.Trim())
+                        Next
+                    End If
+                    If Not String.IsNullOrEmpty(mailBcc) Then
+                        For Each thisMail In mailBcc.Split(";"c)
+                            If IsValidEmail(thisMail.Trim()) Then myMail.Bcc.Add(thisMail.Trim())
+                        Next
+                    End If
 
-                If Not String.IsNullOrEmpty(MCc) AndAlso IsValidEmail(MCc) Then
-                    myMail.CC.Add(MCc)
+                    If Not String.IsNullOrEmpty(MCc) AndAlso IsValidEmail(MCc) Then
+                        myMail.CC.Add(MCc)
+                    End If
                 End If
 
                 Using attach1 As New Attachment(QFile), attach2 As New Attachment(PFile)
@@ -460,6 +565,8 @@ Public Class MailConfig
                     If orderType = "Panorama" OrElse orderType = "Evolve" Then
                         queryMailings = "SELECT * FROM Mailings WHERE ApplicationId = '" + UCase(appId).ToString() + "' AND Name = 'Production Order Shutters' AND Active = 1"
                     End If
+
+                    Dim mailDevelopment As DataSet = GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
 
                     Dim mailData As DataSet = GetListData(queryMailings)
                     If Not mailData.Tables(0).Rows.Count = 0 Then
@@ -721,31 +828,66 @@ Public Class MailConfig
                         Dim myMail As New MailMessage
                         myMail.Subject = mailSubject
                         myMail.From = New MailAddress(mailServer, mailAlias)
+                        
+                        IF mailDevelopment.Tables.Count > 0 then
+                            Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                            Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
 
-                        If Not customerMail = "" Then
-                            Dim thisArray() As String = customerMail.Split(";")
-                            Dim thisMail As String = String.Empty
-                            For Each thisMail In thisArray
-                                If IsValidEmail(thisMail) Then
-                                    myMail.To.Add(thisMail)
+                            If activeDev = "True" Or activeDev = "1" Then
+                                myMail.To.Add(mdev)
+                            Else
+                                If Not customerMail = "" Then
+                                    Dim thisArray() As String = customerMail.Split(";")
+                                    Dim thisMail As String = String.Empty
+                                    For Each thisMail In thisArray
+                                        If IsValidEmail(thisMail) Then
+                                            myMail.To.Add(thisMail)
+                                        End If
+                                    Next
                                 End If
-                            Next
-                        End If
 
-                        If Not mailCc = "" Then
-                            Dim thisArray() As String = mailCc.Split(";")
-                            Dim thisMail As String = String.Empty
-                            For Each thisMail In thisArray
-                                myMail.CC.Add(thisMail)
-                            Next
-                        End If
+                                If Not mailCc = "" Then
+                                    Dim thisArray() As String = mailCc.Split(";")
+                                    Dim thisMail As String = String.Empty
+                                    For Each thisMail In thisArray
+                                        myMail.CC.Add(thisMail)
+                                    Next
+                                End If
 
-                        If Not mailBcc = "" Then
-                            Dim thisArray() As String = mailBcc.Split(";")
-                            Dim thisMail As String = String.Empty
-                            For Each thisMail In thisArray
-                                myMail.Bcc.Add(thisMail)
-                            Next
+                                If Not mailBcc = "" Then
+                                    Dim thisArray() As String = mailBcc.Split(";")
+                                    Dim thisMail As String = String.Empty
+                                    For Each thisMail In thisArray
+                                        myMail.Bcc.Add(thisMail)
+                                    Next
+                                End If
+                            End IF
+                        Else
+                            If Not customerMail = "" Then
+                                Dim thisArray() As String = customerMail.Split(";")
+                                Dim thisMail As String = String.Empty
+                                For Each thisMail In thisArray
+                                    If IsValidEmail(thisMail) Then
+                                        myMail.To.Add(thisMail)
+                                    End If
+                                Next
+                            End If
+
+                            If Not mailCc = "" Then
+                                Dim thisArray() As String = mailCc.Split(";")
+                                Dim thisMail As String = String.Empty
+                                For Each thisMail In thisArray
+                                    myMail.CC.Add(thisMail)
+                                Next
+                            End If
+
+                            If Not mailBcc = "" Then
+                                Dim thisArray() As String = mailBcc.Split(";")
+                                Dim thisMail As String = String.Empty
+                                For Each thisMail In thisArray
+                                    myMail.Bcc.Add(thisMail)
+                                Next
+                            End If
                         End If
 
                         myMail.Body = mailContent
@@ -799,6 +941,8 @@ Public Class MailConfig
         If String.IsNullOrEmpty(appId) Then Exit Sub
 
         Dim mailData As DataSet = GetListData("SELECT * FROM Mailings WHERE ApplicationId = '" & appId & "' AND Name = 'Supplier Shutters' AND Active = 1")
+        Dim mailDevelopment As DataSet = GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
+
         If mailData.Tables(0).Rows.Count = 0 Then Exit Sub
 
         Dim mailRow As DataRow = mailData.Tables(0).Rows(0)
@@ -837,27 +981,59 @@ Public Class MailConfig
                 myMail.Body = mailContent
                 myMail.IsBodyHtml = True
 
-                ' To
-                If Not String.IsNullOrWhiteSpace(mailTo) Then
-                    For Each email In mailTo.Split(";"c)
-                        If IsValidEmail(email) Then myMail.To.Add(email)
-                    Next
+                IF mailDevelopment.Tables.Count > 0 then
+                    Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                    Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+
+                    If activeDev = "True" Or activeDev = "1" Then
+                        myMail.To.Add(mdev)
+                    Else
+                        ' To
+                        If Not String.IsNullOrWhiteSpace(mailTo) Then
+                            For Each email In mailTo.Split(";"c)
+                                If IsValidEmail(email) Then myMail.To.Add(email)
+                            Next
+                        Else
+                            myMail.To.Add("reza@bigblinds.co.id")
+                        End If
+
+                        ' Cc
+                        If Not String.IsNullOrWhiteSpace(mailCc) Then
+                            For Each email In mailCc.Split(";"c)
+                                If IsValidEmail(email) Then myMail.CC.Add(email)
+                            Next
+                        End If
+
+                        ' Bcc
+                        If Not String.IsNullOrWhiteSpace(mailBcc) Then
+                            For Each email In mailBcc.Split(";"c)
+                                If IsValidEmail(email) Then myMail.Bcc.Add(email)
+                            Next
+                        End If
+                    End If
                 Else
-                    myMail.To.Add("reza@bigblinds.co.id")
-                End If
+                    ' To
+                    If Not String.IsNullOrWhiteSpace(mailTo) Then
+                        For Each email In mailTo.Split(";"c)
+                            If IsValidEmail(email) Then myMail.To.Add(email)
+                        Next
+                    Else
+                        myMail.To.Add("reza@bigblinds.co.id")
+                    End If
 
-                ' Cc
-                If Not String.IsNullOrWhiteSpace(mailCc) Then
-                    For Each email In mailCc.Split(";"c)
-                        If IsValidEmail(email) Then myMail.CC.Add(email)
-                    Next
-                End If
+                    ' Cc
+                    If Not String.IsNullOrWhiteSpace(mailCc) Then
+                        For Each email In mailCc.Split(";"c)
+                            If IsValidEmail(email) Then myMail.CC.Add(email)
+                        Next
+                    End If
 
-                ' Bcc
-                If Not String.IsNullOrWhiteSpace(mailBcc) Then
-                    For Each email In mailBcc.Split(";"c)
-                        If IsValidEmail(email) Then myMail.Bcc.Add(email)
-                    Next
+                    ' Bcc
+                    If Not String.IsNullOrWhiteSpace(mailBcc) Then
+                        For Each email In mailBcc.Split(";"c)
+                            If IsValidEmail(email) Then myMail.Bcc.Add(email)
+                        Next
+                    End If
                 End If
 
                 ' Attachment tanpa FileStream agar tidak lock
@@ -915,6 +1091,8 @@ Public Class MailConfig
 
             If Not myData.Tables(0).Rows.Count = 0 Then
                 Dim mailData As DataSet = GetListData("SELECT * FROM Mailings WHERE ApplicationId = '" + UCase(appId).ToString() + "' AND Name = 'New Shipment' AND Active = 1")
+                Dim mailDevelopment As DataSet = GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
+
                 If Not mailData.Tables(0).Rows.Count = 0 Then
                     Dim mailServer As String = mailData.Tables(0).Rows(0).Item("Server").ToString()
                     Dim mailHost As String = mailData.Tables(0).Rows(0).Item("Host").ToString()
@@ -957,33 +1135,67 @@ Public Class MailConfig
                     mailContent &= "<br />"
 
                     Dim myMail As New MailMessage
+                    
+                    IF mailDevelopment.Tables.Count > 0 then
+                        Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                        Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
 
-                    If Not customerEmail = "" Then
-                        myMail.To.Add(customerEmail)
+                        If activeDev = "True" Or activeDev = "1" Then
+                            myMail.To.Add(mdev)
+                        Else
+                            If Not customerEmail = "" Then
+                                myMail.To.Add(customerEmail)
+                            Else
+                                Dim thisArray() As String = mailTo.Split(";")
+                                Dim thisMail As String = String.Empty
+                                For Each thisMail In thisArray
+                                    myMail.To.Add(thisMail)
+                                Next
+                            End If
+
+                            If Not mailCc = "" Then
+                                Dim thisArray() As String = mailCc.Split(";")
+                                Dim thisMail As String = String.Empty
+                                For Each thisMail In thisArray
+                                    myMail.CC.Add(thisMail)
+                                Next
+                            End If
+
+                            If Not mailBcc = "" Then
+                                Dim thisArray() As String = mailBcc.Split(";")
+                                Dim thisMail As String = String.Empty
+                                For Each thisMail In thisArray
+                                    myMail.Bcc.Add(thisMail)
+                                Next
+                            End If
+                        End If
                     Else
-                        Dim thisArray() As String = mailTo.Split(";")
-                        Dim thisMail As String = String.Empty
-                        For Each thisMail In thisArray
-                            myMail.To.Add(thisMail)
-                        Next
-                    End If
+                        If Not customerEmail = "" Then
+                            myMail.To.Add(customerEmail)
+                        Else
+                            Dim thisArray() As String = mailTo.Split(";")
+                            Dim thisMail As String = String.Empty
+                            For Each thisMail In thisArray
+                                myMail.To.Add(thisMail)
+                            Next
+                        End If
 
-                    If Not mailCc = "" Then
-                        Dim thisArray() As String = mailCc.Split(";")
-                        Dim thisMail As String = String.Empty
-                        For Each thisMail In thisArray
-                            myMail.CC.Add(thisMail)
-                        Next
-                    End If
+                        If Not mailCc = "" Then
+                            Dim thisArray() As String = mailCc.Split(";")
+                            Dim thisMail As String = String.Empty
+                            For Each thisMail In thisArray
+                                myMail.CC.Add(thisMail)
+                            Next
+                        End If
 
-                    If Not mailBcc = "" Then
-                        Dim thisArray() As String = mailBcc.Split(";")
-                        Dim thisMail As String = String.Empty
-                        For Each thisMail In thisArray
-                            myMail.Bcc.Add(thisMail)
-                        Next
+                        If Not mailBcc = "" Then
+                            Dim thisArray() As String = mailBcc.Split(";")
+                            Dim thisMail As String = String.Empty
+                            For Each thisMail In thisArray
+                                myMail.Bcc.Add(thisMail)
+                            Next
+                        End If
                     End If
-
                     myMail.Subject = "Order " & orderId & " | " & mailSubject
                     myMail.From = New MailAddress(mailServer, mailAlias)
                     myMail.Body = mailContent
@@ -1035,6 +1247,7 @@ Public Class MailConfig
 
             If Not myData.Tables(0).Rows.Count = 0 Then
                 Dim mailData As DataSet = GetListData("SELECT * FROM Mailings WHERE ApplicationId = '" + UCase(appId).ToString() + "' AND Name = 'Amended Shipment' AND Active = 1")
+                Dim mailDevelopment As DataSet = GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
                 If Not mailData.Tables(0).Rows.Count = 0 Then
                     Dim mailServer As String = mailData.Tables(0).Rows(0).Item("Server").ToString()
                     Dim mailHost As String = mailData.Tables(0).Rows(0).Item("Host").ToString()
@@ -1074,31 +1287,66 @@ Public Class MailConfig
                     mailContent &= "<br />"
 
                     Dim myMail As New MailMessage
+                    
+                    IF mailDevelopment.Tables.Count > 0 then
+                        Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                        Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
 
-                    If Not customerEmail = "" Then
-                        myMail.To.Add(customerEmail)
+                        If activeDev = "True" Or activeDev = "1" Then
+                            myMail.To.Add(mdev)
+                        Else
+                            If Not customerEmail = "" Then
+                                myMail.To.Add(customerEmail)
+                            Else
+                                Dim thisArray() As String = mailTo.Split(";")
+                                Dim thisMail As String = String.Empty
+                                For Each thisMail In thisArray
+                                    myMail.To.Add(thisMail)
+                                Next
+                            End If
+
+                            If Not mailCc = "" Then
+                                Dim thisArray() As String = mailCc.Split(";")
+                                Dim thisMail As String = String.Empty
+                                For Each thisMail In thisArray
+                                    myMail.CC.Add(thisMail)
+                                Next
+                            End If
+
+                            If Not mailBcc = "" Then
+                                Dim thisArray() As String = mailBcc.Split(";")
+                                Dim thisMail As String = String.Empty
+                                For Each thisMail In thisArray
+                                    myMail.Bcc.Add(thisMail)
+                                Next
+                            End If
+                        End If
                     Else
-                        Dim thisArray() As String = mailTo.Split(";")
-                        Dim thisMail As String = String.Empty
-                        For Each thisMail In thisArray
-                            myMail.To.Add(thisMail)
-                        Next
-                    End If
+                        If Not customerEmail = "" Then
+                            myMail.To.Add(customerEmail)
+                        Else
+                            Dim thisArray() As String = mailTo.Split(";")
+                            Dim thisMail As String = String.Empty
+                            For Each thisMail In thisArray
+                                myMail.To.Add(thisMail)
+                            Next
+                        End If
 
-                    If Not mailCc = "" Then
-                        Dim thisArray() As String = mailCc.Split(";")
-                        Dim thisMail As String = String.Empty
-                        For Each thisMail In thisArray
-                            myMail.CC.Add(thisMail)
-                        Next
-                    End If
+                        If Not mailCc = "" Then
+                            Dim thisArray() As String = mailCc.Split(";")
+                            Dim thisMail As String = String.Empty
+                            For Each thisMail In thisArray
+                                myMail.CC.Add(thisMail)
+                            Next
+                        End If
 
-                    If Not mailBcc = "" Then
-                        Dim thisArray() As String = mailBcc.Split(";")
-                        Dim thisMail As String = String.Empty
-                        For Each thisMail In thisArray
-                            myMail.Bcc.Add(thisMail)
-                        Next
+                        If Not mailBcc = "" Then
+                            Dim thisArray() As String = mailBcc.Split(";")
+                            Dim thisMail As String = String.Empty
+                            For Each thisMail In thisArray
+                                myMail.Bcc.Add(thisMail)
+                            Next
+                        End If
                     End If
 
                     myMail.Subject = "Order " & orderId & " | " & mailSubject
@@ -1133,6 +1381,8 @@ Public Class MailConfig
             If custData.Tables(0).Rows.Count > 0 Then
                 Dim appId As String = GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE Id = '" + UCase(LoginId).ToString() + "'")
                 Dim mailData As DataSet = GetListData("SELECT * FROM Mailings WHERE ApplicationId = '" + UCase(appId).ToString() + "' AND Name = 'Login Detail' AND Active = 1")
+                Dim mailDevelopment As DataSet = GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
+
 
                 Dim customerName As String = GetItemData("SELECT Name FROM Customers WHERE Id = '" + CustomerId + "'")
                 Dim customerMail As String = GetItemData("SELECT Email FROM CustomerContacts WHERE CustomerId = '" + CustomerId + "' AND [Primary] = 1")
@@ -1196,22 +1446,49 @@ Public Class MailConfig
                     myMail.Subject = mailSubject
                     myMail.From = New MailAddress(mailServer, mailAlias)
 
-                    If Not customerMail = "" Then
-                        If IsValidEmail(customerMail) Then
-                            myMail.To.Add(customerMail)
+                    IF mailDevelopment.Tables.Count > 0 then
+                        Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                        Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+
+                        If activeDev = "True" Or activeDev = "1" Then
+                            myMail.To.Add(mdev)
+                        Else
+                            If Not customerMail = "" Then
+                                If IsValidEmail(customerMail) Then
+                                    myMail.To.Add(customerMail)
+                                Else
+                                    myMail.To.Add(mailTo)
+                                End If
+                            Else
+                                myMail.To.Add(mailTo)
+                            End If
+
+                            If Not mailCc = "" Then
+                                Dim ccArray() As String = mailCc.Split(";")
+                                Dim thisMail As String = ""
+                                For Each thisMail In ccArray
+                                    myMail.CC.Add(thisMail)
+                                Next
+                            End If
+                        End If
+                    Else
+                        If Not customerMail = "" Then
+                            If IsValidEmail(customerMail) Then
+                                myMail.To.Add(customerMail)
+                            Else
+                                myMail.To.Add(mailTo)
+                            End If
                         Else
                             myMail.To.Add(mailTo)
                         End If
-                    Else
-                        myMail.To.Add(mailTo)
-                    End If
 
-                    If Not mailCc = "" Then
-                        Dim ccArray() As String = mailCc.Split(";")
-                        Dim thisMail As String = ""
-                        For Each thisMail In ccArray
-                            myMail.CC.Add(thisMail)
-                        Next
+                        If Not mailCc = "" Then
+                            Dim ccArray() As String = mailCc.Split(";")
+                            Dim thisMail As String = ""
+                            For Each thisMail In ccArray
+                                myMail.CC.Add(thisMail)
+                            Next
+                        End If
                     End If
 
                     myMail.Body = mailContent.ToString()
@@ -1383,7 +1660,7 @@ Public Class MailConfig
 
     Public Function IsValidEmail(email As String) As Boolean
         Dim emailPattern As String = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-        Dim regex As New Regex(emailPattern)
+        Dim regex As New Regex(emailPattern)    
         Return regex.IsMatch(email)
     End Function
 End Class

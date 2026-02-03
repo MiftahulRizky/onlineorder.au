@@ -65,7 +65,7 @@ Partial Class Console_ReminderOrderDraft
                         End If
                     Else
                         dump.AppendLine("<div style='padding:6px 10px; border-radius:6px; margin-bottom:4px; font-weight:bold; color: blue; border:1px solid blue;'>")
-                        dump.AppendLine("Nothing order draft on < 3 days.")
+                        dump.AppendLine(String.Format("Nothing order draft on < 3 days. | {0} | Days Dif ({1} Day)", OrderNumber, DaysDiff))
                         dump.AppendLine("</div>")
                     End If
 
@@ -78,7 +78,7 @@ Partial Class Console_ReminderOrderDraft
                         dump.AppendLine("</div>")
                     Else
                         dump.AppendLine("<div style='padding:6px 10px; border-radius:6px; margin-bottom:4px; font-weight:bold; color: blue; border:1px solid blue;'>")
-                        dump.AppendLine("Nothing order draft on < 10 days.")
+                        dump.AppendLine(String.Format("Nothing order draft on > 10 days. | {0} | Days Dif ({1} Day)", OrderNumber, DaysDiff))
                         dump.AppendLine("</div>")
                     End If
                 Else
