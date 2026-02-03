@@ -81,7 +81,7 @@ Partial Class Setting_Discount_Detail
     Private Sub BindStore()
         ddlStoreId.Items.Clear()
         Try
-            ddlStoreId.DataSource = publicCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Stores WHERE Active=1 ORDER BY Name ASC")
+            ddlStoreId.DataSource = publicCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Customers WHERE Active=1 ORDER BY Name ASC")
             ddlStoreId.DataTextField = "NameText"
             ddlStoreId.DataValueField = "Id"
             ddlStoreId.DataBind()

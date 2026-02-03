@@ -565,7 +565,7 @@ Partial Class Methods_Order_CelloraMethod
         Try
             Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET RealCost=@RealCost, Cost=@Poa, Poa=@Poa, RealFinalCost=@RealFinalCost, FinalCost=@FinalCost WHERE ItemId=@Id", thisConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET RealCost=@RealCost, Cost=@Poa, Poa=@Poa, RealFinalCost=@RealFinalCost, FinalCost=@FinalCost WHERE Type='Matrix' AND ItemId=@Id", thisConn)
                     myCmd.Parameters.AddWithValue("@Id", UCase(id).ToString())
                     myCmd.Parameters.AddWithValue("@RealCost", cost)
                     ' myCmd.Parameters.AddWithValue("@Cost", poa)

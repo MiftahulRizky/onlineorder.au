@@ -21,7 +21,7 @@
         Call BackColor()
         Try
             If Not txtStoreId.Text = "" Then
-                If txtStoreId.Text = publicCfg.GetItemData("SELECT Id FROM Stores WHERE Id = '" + txtStoreId.Text + "'") Then
+                If txtStoreId.Text = publicCfg.GetItemData("SELECT Id FROM Customers WHERE Id = '" + txtStoreId.Text + "'") Then
                     ddlStoreId.SelectedValue = txtStoreId.Text
                 End If
             End If
@@ -34,14 +34,14 @@
         Call BackColor()
         Try
             If ddlStoreId.SelectedValue = "" And txtStoreId.Text = "" Then
-                Call MessageError(True, "STORE ACCOUNT IS REQUIRED !")
+                Call MessageError(True, "CUSTOMER IS REQUIRED !")
                 ddlStoreId.BackColor = Drawing.Color.Red
                 ddlStoreId.Focus()
                 Exit Sub
             End If
 
             If Not ddlStoreId.SelectedValue = "" And Not txtStoreId.Text = "" Then
-                Call MessageError(True, "PILIH SATU AJA !")
+                Call MessageError(True, "PLEASE SELECT ONE !")
                 ddlStoreId.BackColor = Drawing.Color.Red
                 ddlStoreId.Focus()
                 txtStoreId.BackColor = Drawing.Color.Red
@@ -50,7 +50,7 @@
             End If
 
             If ddlStoreId.SelectedValue = "" And Not txtStoreId.Text = "" Then
-                If Not txtStoreId.Text = publicCfg.GetItemData("SELECT Id FROM Stores WHERE Id = '" + txtStoreId.Text + "'") Then
+                If Not txtStoreId.Text = publicCfg.GetItemData("SELECT Id FROM Customers WHERE Id = '" + txtStoreId.Text + "'") Then
                     Call MessageError(True, "STORE ACCOUNT NOT FOUND !")
                     txtStoreId.BackColor = Drawing.Color.Red
                     txtStoreId.Focus()
@@ -98,7 +98,7 @@
     Private Sub BindStore()
         ddlStoreId.Items.Clear()
         Try
-            ddlStoreId.DataSource = publicCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Stores WHERE Active=1 ORDER BY Name ASC")
+            ddlStoreId.DataSource = publicCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Customers WHERE Active=1 ORDER BY Name ASC")
             ddlStoreId.DataTextField = "NameText"
             ddlStoreId.DataValueField = "Id"
             ddlStoreId.DataBind()

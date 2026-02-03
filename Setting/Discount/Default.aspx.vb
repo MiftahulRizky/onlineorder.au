@@ -98,9 +98,9 @@
         Try
             Dim search As String = String.Empty
             If Not SearchText = "" Then
-                search = " WHERE Stores.Id LIKE '%" + SearchText + "%' OR Stores.Name LIKE '%" + SearchText + "%' OR Designs.Name LIKE '%" + SearchText + "%' OR PricesGroup.Name LIKE '%" + SearchText + "%'"
+                search = " WHERE Customers.Id LIKE '%" + SearchText + "%' OR Customers.Name LIKE '%" + SearchText + "%' OR Designs.Name LIKE '%" + SearchText + "%' OR PricesGroup.Name LIKE '%" + SearchText + "%'"
             End If
-            Dim myQuery As String = String.Format("SELECT Discounts.*, Stores.Name AS StoreName, Designs.Name + ', ' + PricesGroup.Name AS PriceGroupName FROM Discounts INNER JOIN Stores ON Discounts.StoreId = Stores.Id INNER JOIN PricesGroup ON Discounts.PriceGroupId = PricesGroup.Id INNER JOIN Designs ON PricesGroup.DesignId = Designs.Id {0} ORDER BY Discounts.StoreId, PricesGroup.Name ASC", search)
+            Dim myQuery As String = String.Format("SELECT Discounts.*, Customers.Name AS StoreName, Designs.Name + ', ' + PricesGroup.Name AS PriceGroupName FROM Discounts INNER JOIN Customers ON Discounts.StoreId = Customers.Id INNER JOIN PricesGroup ON Discounts.PriceGroupId = PricesGroup.Id INNER JOIN Designs ON PricesGroup.DesignId = Designs.Id {0} ORDER BY Discounts.StoreId, PricesGroup.Name ASC", search)
 
             gvList.DataSource = publicCfg.GetListData(myQuery)
             gvList.DataBind()
