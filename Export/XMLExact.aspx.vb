@@ -35,7 +35,7 @@ Partial Class Export_XMLExact
                 Dim finalPath As String = Path.Combine(filePath, fileName)
 
                 exactCfg.CreateXML(id, fileName, filePath)
-                ' exactCfg.Connect(finalPath)
+                exactCfg.Connect(finalPath)
             Next
         End If
 
@@ -52,7 +52,7 @@ Partial Class Export_XMLExact
                 Dim finalPath As String = Path.Combine(filePath, fileName)
 
                 exactCfg.CreateXMLB(id, fileName, filePath)
-                ' exactCfg.Connect(finalPath)
+                exactCfg.Connect(finalPath)
             Next
         End If
 
