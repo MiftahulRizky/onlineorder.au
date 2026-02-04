@@ -124,7 +124,7 @@ Partial Class Setting_Customer_Detail
                 Exit Sub
             End If
 
-            If txtOrderNumber.Text = settingCfg.GetItemData("SELECT OrderNumber FROM OrderHeaders WHERE OrderNumber = '" + txtOrderNumber.Text + "' AND CustomerId = '" + lblId.Text + "' AND Active=1") Then
+            If txtOrderNumber.Text = settingCfg.GetItemData("SELECT OrderNumber FROM OrderHeaders_Shutters WHERE OrderNumber = '" + txtOrderNumber.Text + "' AND CustomerId = '" + lblId.Text + "' AND Active=1") Then
                 MessageError_CreateOrder(True, "RETAILER ORDER NUMBER ALREADY EXISTS !")
                 ClientScript.RegisterStartupScript(Me.GetType(), "showCreateOrder", thisScript, True)
                 Exit Sub
@@ -138,7 +138,7 @@ Partial Class Setting_Customer_Detail
                 Dim createdBy As String = UCase(Session("LoginId").ToString())
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderHeaders(Id, OrderId, CustomerId, OrderNumber, OrderName, OrderNote, Status, CreatedBy, CreatedDate, Deposit, Approved, Active) VALUES (@Id, @OrderId, @CustomerId, @OrderNumber, @OrderName, @OrderNote, 'Unsubmitted', @CreatedBy, GETDATE(), 0, 0, 1) INSERT INTO OrderQuotes VALUES (@Id, '', '', '', '', '', '', 0.00, 0.00, 0.00, 0.00)")
+                    Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderHeaders_Shutters(Id, OrderId, CustomerId, OrderNumber, OrderName, OrderNote, Status, CreatedBy, CreatedDate, Deposit, Approved, Active) VALUES (@Id, @OrderId, @CustomerId, @OrderNumber, @OrderName, @OrderNote, 'Unsubmitted', @CreatedBy, GETDATE(), 0, 0, 1) INSERT INTO OrderQuotes VALUES (@Id, '', '', '', '', '', '', 0.00, 0.00, 0.00, 0.00)")
                         myCmd.Parameters.AddWithValue("@Id", headerId)
                         myCmd.Parameters.AddWithValue("@OrderId", orderId)
                         myCmd.Parameters.AddWithValue("@CustomerId", lblId.Text)
