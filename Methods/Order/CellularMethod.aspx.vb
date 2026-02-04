@@ -522,9 +522,9 @@ Partial Class Methods_Order_CelloraMethod
                 End Using
 
                 Dim Group As String = publicCfg.GetItemData(String.Format("SELECT [Group] FROM Fabrics WHERE Id = '{0}'", data.fabriccolour))
-                Dim RealCost As Decimal = publicCfg.GetItemData(String.Format("SELECT RealCost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", data.headerid, itemId))
-                Dim Cost As Decimal = publicCfg.GetItemData(String.Format("SELECT Cost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", data.headerid, itemId))
-                Dim Poa As Decimal = publicCfg.GetItemData(String.Format("SELECT Poa FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", data.headerid, itemId))
+                Dim RealCost As Decimal = publicCfg.GetItemData(String.Format("SELECT RealCost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1} AND Type='Matrix'", data.headerid, itemId))
+                Dim Cost As Decimal = publicCfg.GetItemData(String.Format("SELECT Cost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1} AND Type='Matrix'", data.headerid, itemId))
+                Dim Poa As Decimal = publicCfg.GetItemData(String.Format("SELECT Poa FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1} AND Type='Matrix'", data.headerid, itemId))
 
                 Dim RealFinalCost As Decimal = qty * RealCost
                 Dim FinalCost As Decimal = qty * Cost
@@ -539,7 +539,7 @@ Partial Class Methods_Order_CelloraMethod
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res}}
                     End If
 
-                    Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", data.headerid, itemId))
+                    Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix'", data.headerid, itemId))
                     publicCfg.UpdateMatrix(UCase(itemId).ToString(), qty, Matrix)
                 End If
 

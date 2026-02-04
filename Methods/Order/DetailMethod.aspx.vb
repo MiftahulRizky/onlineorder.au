@@ -1251,7 +1251,7 @@ Partial Class Methods_Order_DetailMethod
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = Res, .field = "#cost" }}
                 End If
 
-                Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", data.headerid, data.id))
+                Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix'", data.headerid, data.id))
                 publicCfg.UpdateMatrix(UCase(data.id).ToString(), qty, Matrix)
 
 
@@ -1270,7 +1270,7 @@ Partial Class Methods_Order_DetailMethod
     Private Shared Function UpdateOverridePricing(id As String, cost As Decimal, poa As Decimal, rfinalcost As Decimal, finalcost As Decimal) As String
         Try
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET RealCost=@RealCost, Cost=@Poa, Poa=@Poa, RealFinalCost=@RealFinalCost, FinalCost=@FinalCost WHERE ItemId=@Id", thisConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET RealCost=@RealCost, Cost=@Poa, Poa=@Poa, RealFinalCost=@RealFinalCost, FinalCost=@FinalCost WHERE ItemId=@Id AND Type='Matrix'", thisConn)
                     myCmd.Parameters.AddWithValue("@Id", UCase(id).ToString())
                     myCmd.Parameters.AddWithValue("@RealCost", cost)
                     ' myCmd.Parameters.AddWithValue("@Cost", poa)
@@ -1355,7 +1355,7 @@ Partial Class Methods_Order_DetailMethod
                 End If
 
                 IF fabricGroup = "POA" Then
-                    Dim Prices As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", headerid, itemId))
+                    Dim Prices As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix'", headerid, itemId))
                     If Prices.Tables(0).Rows.Count > 0 Then
                         Dim Qty As Integer = Convert.ToInt32(Prices.Tables(0).Rows(0)("Qty"))
                         Dim RealCost As Decimal = Convert.ToDecimal(Prices.Tables(0).Rows(0)("RealCost"))
@@ -1374,7 +1374,7 @@ Partial Class Methods_Order_DetailMethod
                             Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res}}
                         End If
 
-                        Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1}", headerid, itemId))
+                        Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix' ", headerid, itemId))
                         publicCfg.UpdateMatrix(UCase(itemId).ToString(), Qty, Matrix)
                     End If
                 Else
