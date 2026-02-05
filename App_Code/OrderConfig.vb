@@ -259,7 +259,7 @@ Public Class OrderConfig
             If Not fabricId = "" Then
                 Using thisConn As New SqlConnection(myConn)
                     thisConn.Open()
-                    Using myCmd As New SqlCommand("SELECT Weight FROM Fabrics WHERE Id = '" + fabricId + "'", thisConn)
+                    Using myCmd As New SqlCommand("SELECT Weight FROM Fabrics_Shutters WHERE Id = '" + fabricId + "'", thisConn)
                         Using rdResult = myCmd.ExecuteReader
                             While rdResult.Read
                                 result = rdResult.Item("Weight").ToString()

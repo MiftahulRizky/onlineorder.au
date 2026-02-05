@@ -8,6 +8,8 @@ Imports System.Threading.Tasks
 Public Class Json : Implements IHttpHandler
 
     Dim orderCfg As New OrderConfig
+    Dim connStr As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
+    
 
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         context.Response.ContentType = "application/json"
@@ -41,7 +43,6 @@ Public Class Json : Implements IHttpHandler
         Try
             Dim orderData As OrderData = serializer.Deserialize(Of OrderData)(jsonString)
 
-            Dim connStr As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
             Using conn As New SqlConnection(connStr)
                 conn.Open()
                 Dim transaction As SqlTransaction = conn.BeginTransaction()
@@ -180,7 +181,9 @@ Public Class Json : Implements IHttpHandler
 
                             Dim findItemId As Integer = ItemId - 1
                             processedItems.Add(findItemId)
+                            
                         Next
+
 
                         Task.Run(Sub()
                                      Try
@@ -194,18 +197,23 @@ Public Class Json : Implements IHttpHandler
                                              orderCfg.ResetAuthorization(headerId, findItemId)
 
                                              ' --- Logging ---
-                                             Dim dataLog As Object() = {headerId, findItemId, "699A6B77-BF0C-4583-9DF2-2A16DEC6FC89", "Add Item Order"}
+                                             Dim dataLog As Object() = {headerId, findItemId, "Panorama", "699A6B77-BF0C-4583-9DF2-2A16DEC6FC89", "Add Item Order"}
                                              orderCfg.Log_Orders(dataLog)
+                                           
                                          Next
 
                                          ' --- Update product type sekali saja ---
                                          orderCfg.UpdateProductType(headerId)
 
                                      Catch ex As Exception
-                                         ' Tangani error agar tidak crash
-                                         Console.WriteLine("Async error: " & ex.Message)
+                                        transaction.Rollback()
+                                        context.Response.StatusCode = 500
+                                        context.Response.Write("{""status"":""error"",""message"":""Tasks failed: " & ex.Message.Replace("""", "\""") & """}")
+                                        context.ApplicationInstance.CompleteRequest()
                                      End Try
                                  End Sub)
+
+                        
 
 
                     End If
@@ -236,6 +244,7 @@ Public Class Json : Implements IHttpHandler
             Return False
         End Get
     End Property
+
 
 End Class
 
