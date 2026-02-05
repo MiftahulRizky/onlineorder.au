@@ -58,7 +58,7 @@ Public Class Json : Implements IHttpHandler
                     Dim FieldValue As String = "@Id, @OrderId, @JobId, @CustomerId, @OrderNumber, @OrderName, @OrderNote, @OrderType, 'New Order', @CreatedBy, GETDATE(), @SubmittedBy, GETDATE(), @Deposit, 1, 1"
 
                     '#OrderHeader
-                    Using cmd As New SqlCommand("INSERT INTO OrderHeaders({FieldName}) VALUES ({FieldValue}); INSERT INTO OrderQuotes (Id) VALUES (@Id);", conn, transaction)
+                    Using cmd As New SqlCommand("INSERT INTO OrderHeaders_Shutters ({FieldName}) VALUES ({FieldValue}); INSERT INTO OrderQuotes (Id) VALUES (@Id);", conn, transaction)
                         cmd.Parameters.AddWithValue("@Id", headerId)
                         cmd.Parameters.AddWithValue("@OrderId", orderId)
                         cmd.Parameters.AddWithValue("@JobId", DBNull.Value)
@@ -73,7 +73,7 @@ Public Class Json : Implements IHttpHandler
                         cmd.ExecuteNonQuery()
                     End Using
 
-                    '#OrderDetails
+                    '#OrderDetails_Shutters
                     If orderData.Details IsNot Nothing AndAlso orderData.Details.Count > 0 Then
                         Dim fieldNameList As New List(Of String) From {
                             "Id", "Number", "HeaderId", "ProductId", "ExactId", "ProductPriceGroupId", "Qty", "Room", "Mounting", "Width", "[Drop]", "TrackLength", "TrackQty", "Layout", "LayoutSpecial", "PanelQty", "CustomHeaderLength", "SemiInsideMount", "BottomTrackType", "BottomTrackRecess", "LouvreSize", "LouvrePosition", "HingeColour", "HingeQtyPerPanel", "PanelQtyWithHinge", "MidrailHeight1", "MidrailHeight2", "MidrailCritical", "FrameType", "FrameLeft", "FrameRight", "FrameTop", "FrameBottom", "Buildout", "BuildoutPosition", "LocationTPost1", "LocationTPost2", "LocationTPost3", "LocationTPost4", "LocationTPost5", "HorizontalTPost", "HorizontalTPostHeight", "JoinedPanels", "TiltrodType", "TiltrodSplit", "SplitHeight1", "SplitHeight2", "ReverseHinged", "PelmetFlat", "ExtraFascia", "HingesLoose", "DoorCutOut", "SpecialShape", "TemplateProvided", "LinearMetre", "SquareMetre", "Notes", "Cost", "CostOverride", "Discount", "FinalCost", "MarkUp", "TotalBlinds", "Production", "Paid", "Active"
@@ -131,7 +131,7 @@ Public Class Json : Implements IHttpHandler
 
                             Dim ProductPriceGroupId = orderCfg.GetProductPriceGroupId(DesignId, productPriceGroupName)
 
-                            Using cmd As New SqlCommand(String.Format("INSERT INTO OrderDetails({0}) VALUES({1})", columns, placeholders), conn, transaction)
+                            Using cmd As New SqlCommand(String.Format("INSERT INTO OrderDetails_Shutters({0}) VALUES({1})", columns, placeholders), conn, transaction)
                                 For Each propName In propertyNames
                                     Dim value As Object = Nothing
                                     If defaultValues.ContainsKey(propName) Then
