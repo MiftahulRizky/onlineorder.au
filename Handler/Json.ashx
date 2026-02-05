@@ -128,9 +128,30 @@ Public Class Json : Implements IHttpHandler
                             Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", exactName))
 
                             Dim doorCutOut As String = If(IsDBNull(props("DoorCutOut")), String.Empty, props("DoorCutOut").ToString())
-                            Dim productPriceGroupName As String = If(doorCutOut = "Yes", "Panorama Sunlight - French Door Cut-Out", "Panorama Sunlight")
+                            ' Dim productPriceGroupName As String = If(doorCutOut = "Yes", "Panorama Sunlight - French Door Cut-Out", "Panorama Sunlight")
+
+                            Dim customerPriceGroup As String = orderCfg.GetItemData("SELECT Customers.Pricing FROM Customers INNER JOIN OrderHeaders_Shutters ON Customers.Id = OrderHeaders_Shutters.CustomerId WHERE OrderHeaders_Shutters.Id='" + headerId + "'")
+
+                            Dim productpriceGroupName As String = String.Format("Panorama {0}", customerPriceGroup)
+                            Dim customerId As String = "LS-A224"
+                            If customerPriceGroup = "" Then
+                                productpriceGroupName = "Panorama Standard"
+                            End If
+
+                            If customerPriceGroup = "B" Then
+                                If doorCutOut = "Yes" Then
+                                    productpriceGroupName = String.Format("Panorama {0} - " & "French Door Cut-Out", customerPriceGroup)
+                                End If
+                                If BlindName = "Hinged Bi-fold" Or BlindName = "Track Bi-fold" Then
+                                    productpriceGroupName = "Panorama B - Bi-fold"
+                                End If
+                                If BlindName = "Track Sliding" Or BlindName = "Track Sliding Single Track" Then
+                                    productpriceGroupName = "Panorama B - Sliding"
+                                End If
+                            End If
 
                             Dim ProductPriceGroupId = orderCfg.GetProductPriceGroupId(DesignId, productPriceGroupName)
+                            If ProductPriceGroupId = "" Then Throw New Exception("ProductPriceGroupId not found")
 
                             Using cmd As New SqlCommand(String.Format("INSERT INTO OrderDetails_Shutters({0}) VALUES({1})", columns, placeholders), conn, transaction)
                                 For Each propName In propertyNames
