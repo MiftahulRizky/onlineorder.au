@@ -2188,6 +2188,18 @@ const dropdownActionButton = (row, createdby) => {
     hideEditPricing = "";
   }
 
+  //  HIDE BUTTON PRICING
+  let hidePricing = "hidden";
+  if (PRICEACCESS == "True" || PRICEACCESS == "1") {
+    hidePricing = "";
+  }
+
+  // HIDE DIVIDER
+  let hideDivider = "";
+  if (hideEditPricing == "hidden" && hideEditPricing == "hidden") {
+    hideDivider = "hidden";
+  }
+
   return `
       <div class="dropdown text-center">
         <button class="border-0 bg-transparent dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -2214,14 +2226,14 @@ const dropdownActionButton = (row, createdby) => {
               <i class="ti ti-trash-x me-1 opacity-50 fs-2"></i>Delete
             </a>
           </li>
-          <div class="dropdown-divider"></div>
+          <div ${hideDivider} class="dropdown-divider"></div>
           <li ${hideEditPricing}>
             <a class="dropdown-item " href="javascript:void(0);" id="btnEditPricingItem" data-id="${row.Id}" data-cost="${row.RealCost}">
               <i class="ti ti-pencil-dollar text-success fs-1 me-1 opacity-50"></i>Edit Pricing
             </a>
           </li>
           <li>
-            <a class="dropdown-item " href="javascript:void(0);" id="btnPricingItem" data-id="${row.Id}">
+            <a ${hidePricing} class="dropdown-item " href="javascript:void(0);" id="btnPricingItem" data-id="${row.Id}">
               <i class="ti ti-tags me-1 opacity-50 fs-2"></i>Pricing
             </a>
           </li>
