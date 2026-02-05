@@ -58,7 +58,7 @@ Public Class Json : Implements IHttpHandler
                     Dim FieldValue As String = "@Id, @OrderId, @JobId, @CustomerId, @OrderNumber, @OrderName, @OrderNote, @OrderType, 'New Order', @CreatedBy, GETDATE(), @SubmittedBy, GETDATE(), @Deposit, 1, 1"
 
                     '#OrderHeader
-                    Using cmd As New SqlCommand("INSERT INTO OrderHeaders_Shutters ({FieldName}) VALUES ({FieldValue}); INSERT INTO OrderQuotes (Id) VALUES (@Id);", conn, transaction)
+                    Using cmd As New SqlCommand(String.Format("INSERT INTO OrderHeaders_Shutters({0}) VALUES ({1}); INSERT INTO OrderQuotes (Id) VALUES (@Id);", fieldName, fieldValue), conn, transaction)
                         cmd.Parameters.AddWithValue("@Id", headerId)
                         cmd.Parameters.AddWithValue("@OrderId", orderId)
                         cmd.Parameters.AddWithValue("@JobId", DBNull.Value)
@@ -153,7 +153,27 @@ Public Class Json : Implements IHttpHandler
                                     ElseIf props.ContainsKey(propName) Then
                                         value = props(propName)
                                     End If
-                                    cmd.Parameters.AddWithValue(String.Format("@{0}", propName), If(value IsNot Nothing, value, DBNull.Value))
+                                    ' cmd.Parameters.AddWithValue(String.Format("@{0}", propName), If(value IsNot Nothing, value, DBNull.Value))
+
+                                    Dim paramValue As Object = DBNull.Value
+
+                                    If value IsNot Nothing Then
+                                        If TypeOf value Is String Then
+                                            ' Jika string kosong atau whitespace, set ke DBNull
+                                            If String.IsNullOrWhiteSpace(value.ToString()) Then
+                                                paramValue = DBNull.Value
+                                            Else
+                                                paramValue = value
+                                            End If
+                                        Else
+                                            ' Untuk tipe data lain, gunakan nilai asli
+                                            paramValue = value
+                                        End If
+                                    Else
+                                        paramValue = DBNull.Value
+                                    End If
+
+                                    cmd.Parameters.AddWithValue(String.Format("@{0}", propName), paramValue)
                                 Next
                                 cmd.ExecuteNonQuery()
                             End Using
