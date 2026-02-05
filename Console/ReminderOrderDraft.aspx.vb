@@ -257,7 +257,8 @@ Partial Class Console_ReminderOrderDraft
 
             Dim query As String = "UPDATE OrderHeaders SET Active=0 WHERE Id = @Id"
             If Not OrderType = "Blinds" Then
-                query = "UPDATE OrderHeaders_Shutters SET Active=0 WHERE Id = @Id"
+                ' query = "UPDATE OrderHeaders_Shutters SET Active=0 WHERE Id = @Id"
+                Return "200"
             End If
             Using thisConn As SqlConnection = New SqlConnection(myConn)
                 Using myCmd As SqlCommand = New SqlCommand(query)

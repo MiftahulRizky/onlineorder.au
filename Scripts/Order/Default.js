@@ -1382,7 +1382,7 @@ const visibleColumnServerside = () => {
   id.forEach((item) => item.setAttribute("hidden", true));
   retailer.forEach((item) => item.setAttribute("hidden", true));
   ordertype.forEach((item) => item.removeAttribute("hidden"));
-  filterOrderType.setAttribute("hidden", true);
+  // filterOrderType.setAttribute("hidden", true);
 
   if (
     ROLENAME == "Administrator" &&
@@ -1390,7 +1390,7 @@ const visibleColumnServerside = () => {
   ) {
     tableData.columns(1).visible(true); // ID
     id.forEach((item) => item.removeAttribute("hidden"));
-    filterOrderType.removeAttribute("hidden");
+    // filterOrderType.removeAttribute("hidden");
   }
 
   if (
