@@ -2196,7 +2196,7 @@ const dropdownActionButton = (row, createdby) => {
 
   // HIDE DIVIDER
   let hideDivider = "";
-  if (hideEditPricing == "hidden" && hideEditPricing == "hidden") {
+  if (hideEditPricing == "hidden" && hidePricing == "hidden") {
     hideDivider = "hidden";
   }
 
