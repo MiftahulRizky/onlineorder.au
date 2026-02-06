@@ -607,6 +607,8 @@ const handlerSetElementValues = (itemData) => {
     note: "OrderNote",
   };
 
+  console.table(itemData);
+
   Object.entries(mapping).forEach(([id, key]) => {
     const el = document.getElementById(id);
     if (!el) {

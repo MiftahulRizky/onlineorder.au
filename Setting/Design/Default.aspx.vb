@@ -56,8 +56,6 @@
             lblId.Text = txtIdDelete.Text
             sdsPage.Delete()
 
-            Dim LoginId As String = UCase(Session("LoginId")).ToString()
-            publicCfg.InsertActivity(LoginId, Page.Title, "DELETE DESIGN TYPE. ID : " & lblId.Text)
 
             Call BindData(txtSearch.Text)
         Catch ex As Exception
@@ -71,7 +69,7 @@
             Dim rowIndex As Integer = Convert.ToInt32(TryCast(TryCast(sender, LinkButton).NamingContainer, GridViewRow).RowIndex)
             Dim row As GridViewRow = gvList.Rows(rowIndex)
 
-            Dim active As String = row.Cells(5).Text
+            Dim active As String = row.Cells(6).Text
 
             Dim newActive As Integer = 0
             If active = "False" Then : newActive = 1 : End If
@@ -80,9 +78,6 @@
             lblActive.Text = newActive
 
             sdsPage.Update()
-
-            Dim LoginId As String = UCase(Session("LoginId")).ToString()
-            publicCfg.InsertActivity(LoginId, Page.Title, "ACTIVE DESIGN. ID : " & lblId.Text)
 
             Call BindData(txtSearch.Text)
         Catch ex As Exception
@@ -95,7 +90,7 @@
         Try
             Dim bySearch As String = String.Empty
             If Not SearchText = "" Then
-                bySearch = " WHERE Id LIKE '%" + SearchText + "%' OR Name LIKE '%" + SearchText + "%' OR Company LIKE '%" + SearchText + "%' OR Page LIKE '%" + SearchText + "%'"
+                bySearch = String.Format(" WHERE Id LIKE '%{0}%' OR Name LIKE '%{0}%' OR Company LIKE '%{0}%' OR Page LIKE '%{0}%' OR Description LIKE '%{0}%' ", SearchText)
             End If
             gvList.DataSource = publicCfg.GetListData(String.Format("SELECT * FROM Designs {0} ORDER BY Name ASC", bySearch))
             gvList.DataBind()

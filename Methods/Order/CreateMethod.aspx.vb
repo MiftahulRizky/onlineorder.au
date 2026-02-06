@@ -221,7 +221,7 @@ Partial Class Methods_Order_CreateMethod
                             myCmd.Parameters.AddWithValue("@OrderId", orderId)
                             myCmd.Parameters.AddWithValue("@CustomerId", UCase(data.customer).ToString())
                             myCmd.Parameters.AddWithValue("@OrderNumber", data.ordernumber.Trim())
-                            myCmd.Parameters.AddWithValue("@OrderName", data.ordernumber.Trim())
+                            myCmd.Parameters.AddWithValue("@OrderName", data.ordername.Trim())
                             myCmd.Parameters.AddWithValue("@OrderNote", data.Note.Trim())
                             myCmd.Parameters.AddWithValue("@OrderType", data.ordertype)
                             myCmd.Parameters.AddWithValue("@CreatedBy", createdBy)
