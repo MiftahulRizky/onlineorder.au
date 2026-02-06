@@ -263,7 +263,7 @@ Partial Class Methods_Order_CreateMethod
                     url = "/order/detail?param=" & id & "&ordertype=" & data.ordertype.ToLower()
                 Else If data.ordertype = "Panorama" Or data.ordertype = "Evolve" Then
                     Using thisConn As New SqlConnection(myConn)
-                        Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders_Shutters SET OrderId=@OrderId, JobId=@JobId, JobDate=@JobDate, ShipmentId=@ShipmentId, CustomerId=@CustomerId, CreatedBy=@CreatedBy, CreatedDate=@CreatedDate, OrderNumber=@OrderNumber, OrderName=@OrderName, OrderNote=@OrderNote WHERE Id=@Id")
+                        Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders_Shutters SET OrderId=@OrderId, JobId=@JobId, JobDate=@JobDate, ShipmentId=@ShipmentId, CustomerId=@CustomerId, CreatedBy=@CreatedBy, OrderNumber=@OrderNumber, OrderName=@OrderName, OrderNote=@OrderNote WHERE Id=@Id")
                             myCmd.Parameters.AddWithValue("@Id", data.id)
                             myCmd.Parameters.AddWithValue("@OrderId", data.orderid)
                             myCmd.Parameters.AddWithValue("@JobId", data.jobid)
