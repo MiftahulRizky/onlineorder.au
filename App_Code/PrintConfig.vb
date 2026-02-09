@@ -1830,7 +1830,7 @@ Public Class PrintConfig
         result += "<table style='width:100%;margin-bottom:25px;'>"
         result += trStart
         result += "<td valign='top' style='width:50%;'>"
-        result += String.Format("<img width='200px' src='{0}' />", src)
+        result += String.Format("<img width='100px' src='{0}' />", src)
         result += tdEnd
         result += "<td valign='bottom' style='width:50%;text-align:right;font-weight:bold;margin-right:20px;'>QUOTE ORDER</td>"
         result += trEnd
