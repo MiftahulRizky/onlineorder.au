@@ -420,7 +420,7 @@ Public Class DepositEvents
         headerTable.TotalWidth = document.PageSize.Width - 72
         headerTable.LockedWidth = True
 
-        Dim imageUrl As String = "https://shutters.onlineorder.au/Content/static/ShutterLogo.png"
+        Dim imageUrl As String = "https://shutters.onlineorder.au/Content/static/new-icon.png"
         Dim img As Image = Image.GetInstance(imageUrl)
         img.ScaleToFit(120, 60)
 
