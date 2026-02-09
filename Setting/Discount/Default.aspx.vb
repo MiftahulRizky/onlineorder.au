@@ -84,9 +84,7 @@
 
             sdsApp.Update()
 
-            Dim userId As String = UCase(Session("UserId")).ToString()
-            publicCfg.InsertActivity(userId, Page.Title, "ACTIVE / DEACTIVATE DISCOUNT. ID : " & lblId.Text)
-
+           
             Call BindData(txtSearch.Text)
         Catch ex As Exception
             Call MessageError(True, ex.ToString())

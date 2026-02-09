@@ -1000,12 +1000,26 @@ Public Class PublicConfig
                 End If
 
                 '#---------------------Insert Order Detail Price---------------------#
+                Dim ListParam As New List(Of Object) From {
+                    HeaderId,
+                    ItemId,
+                    Type,
+                    qty,
+                    description,
+                    getMatrix,
+                    realMatrix,
+                    thisMatrix,
+                    thisDiscount,
+                    thisCustomDiscount
+                }
                 If designName = "Vertical Blinds" AndAlso blindName = "Slat Only" Then
                     If thisMatrix > 0 Then
-                        Call PriceDetail(HeaderId, ItemId, Type, qty, description, realMatrix, thisMatrix, thisCustomDiscount)
+                        ' Call PriceDetail(HeaderId, ItemId, Type, qty, description, realMatrix, thisMatrix, thisDiscount, thisCustomDiscount)
+                        Call PriceDetail(ListParam)
                     End If
                 Else
-                    Call PriceDetail(HeaderId, ItemId, Type, qty, description, realMatrix, thisMatrix, thisCustomDiscount)
+                    ' Call PriceDetail(HeaderId, ItemId, Type, qty, description, realMatrix, thisMatrix, thisDiscount, thisCustomDiscount)
+                    Call PriceDetail(ListParam)
                 End If
 
             End If
@@ -1035,7 +1049,21 @@ Public Class PublicConfig
                     End If
                 End If
 
-                Call PriceDetail(HeaderId, ItemId, TypeB, qty, descriptionB, realMatrixB, thisMatrixB, thisCustomDiscountB)
+                Dim ListParamB As New List(Of Object) From {
+                    HeaderId,
+                    ItemId,
+                    TypeB,
+                    qty,
+                    descriptionB,
+                    getMatrixB,
+                    realMatrixB,
+                    thisMatrixB,
+                    thisDiscountB,
+                    thisCustomDiscountB
+                }
+
+                ' Call PriceDetail(HeaderId, ItemId, TypeB, qty, descriptionB, realMatrixB, thisMatrixB, thisDiscountB, thisCustomDiscountB)
+                Call PriceDetail(ListParamB)
             End If
 
             '#---------------------Hitung Total Matrix---------------------#
@@ -1118,7 +1146,20 @@ Public Class PublicConfig
                             End If
                         End If
 
-                        Call PriceDetail(headerId, itemId, type, qty, description, realCharge, thisCharge, customDiscount)
+                        Dim ListParam As New List(Of Object) From {
+                            headerId,
+                            itemId,
+                            type,
+                            qty,
+                            description,
+                            charge,
+                            realCharge,
+                            thisCharge,
+                            0,
+                            customDiscount
+                        }
+                        ' Call PriceDetail(headerId, itemId, type, qty, description, realCharge, thisCharge, 0, customDiscount)
+                        Call PriceDetail(ListParam)
                     End If
                     surcharge = surcharge + thisCharge
                 Next
@@ -1127,24 +1168,41 @@ Public Class PublicConfig
         End If
     End Sub
 
-    Private Sub PriceDetail(Header As String, Item As String, Type As String, Qty As Integer, Desc As String, RealCost As Decimal, Cost As Decimal, CustomDiscount As Decimal)
-        ' Dim CurrentOrdered As String = GetItemData("SELECT Ordered FROM OrderDetailsPrice WHERE HeaderId='" + Header + "' AND ItemId='" + Item + "'")
+    ' Private Sub PriceDetail(Header As String, Item As String, Type As String, Qty As Integer, Desc As String, RealCost As Decimal, Cost As Decimal, Discount As Decimal, CustomDiscount As Decimal)
+    Private Sub PriceDetail(ListParam As List(Of Object))
 
-        ' Dim UpdateOrdered As Integer = 0
-        ' If CurrentOrdered = "" Then
-        '     UpdateOrdered = 1
-        ' Else
-        '     UpdateOrdered = CInt(CurrentOrdered) + 1
-        ' End If
+        Dim Header As String = CStr(ListParam(0))
+        Dim Item As String = CStr(ListParam(1))
+        Dim Type As String = CStr(ListParam(2))
+        Dim Qty As Integer = CInt(ListParam(3))
+        Dim Desc As String = CStr(ListParam(4))
+        Dim GetCost As String = CStr(ListParam(5))
+        Dim RealCost As Decimal = CDec(ListParam(6))
+        Dim Cost As Decimal = CDec(ListParam(7))
+        Dim Discount As Decimal = CDec(ListParam(8))
+        Dim CustomDiscount As Decimal = CDec(ListParam(9))
+
+ 
         Dim Poa As Decimal = 0
         Dim RealFinalCost As Decimal = RealCost * Qty
         Dim FinalCost As Decimal = Cost * Qty
+        
         If Type = "Discount" Then
             RealCost = 0
             Cost = 0
             RealFinalCost = 0
             FinalCost = 0
         End If
+        
+        Dim FindDiscount As Decimal = CustomDiscount
+        Dim FindRealCost As Decimal = RealCost
+        Dim FindRealFinalCost As Decimal = RealFinalCost
+        If Type = "Matrix" Then
+            FindDiscount = Discount
+            FindRealCost = GetCost
+            FindRealFinalCost = FindRealCost * Qty
+        End If
+
         Using thisConn As SqlConnection = New SqlConnection(myConn)
             Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetailsPrice VALUES(NEWID(), @HeaderId, @ItemId, @Type, @Qty, @Description, @RealCost, @Cost, @Discount, @Poa, @RealFinalCost, @FinalCost)")
                 ' myCmd.Parameters.AddWithValue("@Ordered", UpdateOrdered)
@@ -1153,11 +1211,11 @@ Public Class PublicConfig
                 myCmd.Parameters.AddWithValue("@Type", Type)
                 myCmd.Parameters.AddWithValue("@Qty", Qty)
                 myCmd.Parameters.AddWithValue("@Description", Desc)
-                myCmd.Parameters.AddWithValue("@RealCost", RealCost)
+                myCmd.Parameters.AddWithValue("@RealCost", FindRealCost)
                 myCmd.Parameters.AddWithValue("@Cost", Cost)
-                myCmd.Parameters.AddWithValue("@Discount", CustomDiscount)
+                myCmd.Parameters.AddWithValue("@Discount", FindDiscount)
                 myCmd.Parameters.AddWithValue("@Poa", Poa)
-                myCmd.Parameters.AddWithValue("@RealFinalCost", RealFinalCost)
+                myCmd.Parameters.AddWithValue("@RealFinalCost", FindRealFinalCost)
                 myCmd.Parameters.AddWithValue("@FinalCost", FinalCost)
                 myCmd.Connection = thisConn
                 thisConn.Open()
