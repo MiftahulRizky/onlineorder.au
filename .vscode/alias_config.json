@@ -1,6 +1,8 @@
 {
   "Handler": "Shutters",
   "Shipment": "Shutters",
+  "Export": "Shutters",
+  "System": "Shutters",
   "App_Code": {
     "OrderConfig.vb": "Shutters",
     "DepositRequestConfig.vb": "Shutters",
@@ -33,7 +35,11 @@
     "Price": "Shutters",
     "Product": "Shutters",
     "System": "Shutters",
-    "Customer": "Shutters"
+    "Customer": "Shutters",
+    "Logo.aspx": "Shutters",
+    "Logo.aspx.vb": "Shutters",
+    "Terms.aspx": "Shutters",
+    "Terms.aspx.vb": "Shutters"
   },
   "Scripts": {
     "Order": {

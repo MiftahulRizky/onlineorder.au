@@ -984,7 +984,7 @@ Inherits="SiteMaster" %>
                               id="aDiscountB"
                               class="dropdown-item"
                               href="~/setting/discount"
-                              >Discount</a
+                              >Customer Discount</a
                             >
 
                             <div

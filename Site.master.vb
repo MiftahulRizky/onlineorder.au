@@ -135,6 +135,7 @@ Partial Public Class SiteMaster
             divDividerCustomer.Visible = False '#shutter
             divDividerCustomerDisc.Visible = False '#shutter
             aCustomerDiscount.Visible = False '#shutter
+            aDiscountB.Visible = False '#shutter
             divCustomerAdmin.Visible = False '#shutter
 
             divProduct.Visible = False
@@ -228,6 +229,7 @@ Partial Public Class SiteMaster
                 divDividerCustomer.Visible = True
                 divDividerCustomerDisc.Visible = True
                 aCustomerDiscount.Visible = True
+                aDiscountB.Visible = True
             End If
 
             If Session("RoleName") = "Data Entry" Then
@@ -243,6 +245,7 @@ Partial Public Class SiteMaster
                 aCustomer.Visible = True
                 divDividerCustomerDisc.Visible = True
                 aCustomerDiscount.Visible = True
+                aDiscountB.Visible = True
             End If
 
             If Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Manager" Then
