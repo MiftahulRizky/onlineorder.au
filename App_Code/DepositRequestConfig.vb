@@ -134,7 +134,7 @@ Public Class DepositRequestConfig
             table.AddCell(CreateHeaderCell("Qty"))
             table.AddCell(CreateHeaderCell("Total Price"))
 
-            Dim detailData As DataSet = GetListData("SELECT OrderDetails.*, Products.Name AS ProductName FROM OrderDetails LEFT JOIN Products ON OrderDetails.ProductId = Products.Id WHERE OrderDetails.HeaderId='" + Id + "' AND OrderDetails.Active=1 ORDER BY OrderDetails.Number ASC")
+            Dim detailData As DataSet = GetListData("SELECT OrderDetails_Shutters.*, Products.Name AS ProductName FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id WHERE OrderDetails_Shutters.HeaderId='" + Id + "' AND OrderDetails_Shutters.Active=1 ORDER BY OrderDetails_Shutters.Number ASC")
             If detailData.Tables(0).Rows.Count > 0 Then
                 For i As Integer = 0 To detailData.Tables(0).Rows.Count - 1
                     Dim finalCost As Decimal = detailData.Tables(0).Rows(i)("FinalCost")
@@ -330,7 +330,7 @@ Public Class DepositRequestConfig
                 table.AddCell(CreateCell("No data available"))
             End If
 
-            Dim totalAllPrice As Decimal = GetItemData_Decimal("SELECT SUM(FinalCost) FROM OrderDetails WHERE HeaderId='" + Id + "' AND Active=1")
+            Dim totalAllPrice As Decimal = GetItemData_Decimal("SELECT SUM(FinalCost) FROM OrderDetails_Shutters WHERE HeaderId='" + Id + "' AND Active=1")
             Dim gst As Decimal = totalAllPrice * 10 / 100
             Dim inclGST As Decimal = totalAllPrice + gst
             Dim minDeposit As Decimal = inclGST * 40 / 100

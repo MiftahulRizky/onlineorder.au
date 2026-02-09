@@ -759,7 +759,7 @@ Public Class QuoteEvents
 
         Dim request As HttpRequest = HttpContext.Current.Request
         Dim baseUrl As String = request.Url.Scheme & "://" & request.Url.Authority & request.ApplicationPath.TrimEnd("/"c)
-        Dim imageUrl As String = baseUrl & "/Content/static/new-icon.png"
+        Dim imageUrl As String = "https://shutters.onlineorder.au/Content/static/new-icon.png" 'baseUrl & "/Content/static/new-icon.png"
         Dim img As Image = Image.GetInstance(imageUrl)
         img.ScaleToFit(120, 60)
 
@@ -862,7 +862,7 @@ Public Class QuoteCustomerEvents
         Try
             Dim request As HttpRequest = HttpContext.Current.Request
             Dim baseUrl As String = request.Url.Scheme & "://" & request.Url.Authority & request.ApplicationPath.TrimEnd("/"c)
-            Dim imageUrl As String = baseUrl & "/Content/static/customers/" & Me.logoText
+            Dim imageUrl As String = "https://shutters.onlineorder.au/Content/static/new-icon.png" 'baseUrl & "/Content/static/customers/" & Me.logoText
             Dim img As Image = Image.GetInstance(imageUrl)
 
             img.ScaleToFit(120, 60)

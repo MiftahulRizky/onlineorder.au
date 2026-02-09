@@ -159,7 +159,8 @@ Public Class PrintConfig
         result += "<table style='width:100%;margin-bottom:10px;margin-top:25px;font-size:smaller;'>"
         result += trStart
         result += "<td style='vertical-align:top;width:40%;font-size:small;'>"
-        result += "<img width='100%' src='"& baseUrl &"/Content/static/new-icon.png' alt='Your Logo'/>"
+        ' result += "<img width='100%' src='"& baseUrl &"/Content/static/new-icon.png' alt='Your Logo'/>"
+        result += "<img width='100%' src='https://shutters.onlineorder.au/Content/static/new-icon.png' alt='Your Logo'/>"
         result += "<br />"
         result += "<p style='font-size:small;'>"
         result += "<b>Sunlight Products Pty Ltd</b>"
@@ -1815,15 +1816,18 @@ Public Class PrintConfig
 
         Dim request As HttpRequest = HttpContext.Current.Request
         Dim baseUrl As String = request.Url.Scheme & "://" & request.Url.Authority & request.ApplicationPath.TrimEnd("/"c)
-        Dim fileDirectory As String = baseUrl & "/Content/static/stores/"
+        Dim fileDirectory As String = baseUrl & "/Content/static/customers/"
         Dim fileName As String = GetItemData("SELECT [Image] FROM Customers WHERE Id = '" + StoreId + "'")
 
         Dim src As String = fileDirectory & fileName
+        If String.IsNullOrEmpty(fileName) Then
+            src = "https://shutters.onlineorder.au/Content/static/new-icon.png"
+        End If
 
         result += "<table style='width:100%;margin-bottom:25px;'>"
         result += trStart
         result += "<td valign='top' style='width:50%;'>"
-        result += "<img width='200px' src='" & src & "' />"
+        result += "<img width='200px' src='https://shutters.onlineorder.au/Content/static/new-icon.png' />"
         result += tdEnd
         result += "<td valign='bottom' style='width:50%;text-align:right;font-weight:bold;margin-right:20px;'>QUOTE ORDER</td>"
         result += trEnd
