@@ -1127,7 +1127,7 @@ Inherits="SiteMaster" %>
                                   id="aCassetteExtra"
                                   class="dropdown-item"
                                   href="~/setting/cassetteextra"
-                                  >Cassette Extra</a
+                                  >Price Extra</a
                                 >
                                 <a
                                   runat="server"

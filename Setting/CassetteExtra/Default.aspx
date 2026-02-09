@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Cassette Extra" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="Default.aspx.vb" Inherits="Setting_CassetteExtra_Default" MaintainScrollPositionOnPostback="true" Debug="true" %>
+﻿<%@ Page Title="Price Extra" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="Default.aspx.vb" Inherits="Setting_CassetteExtra_Default" MaintainScrollPositionOnPostback="true" Debug="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
 
@@ -7,7 +7,7 @@
             <div class="row g-2 align-items-center">
                 <div class="col">
                     <div class="page-pretitle">Setting / Master Price</div>
-                    <h2 class="page-title">Cassette Extra</h2>
+                    <h2 class="page-title">Price Extra</h2>
                 </div>
             </div>
         </div>
@@ -23,7 +23,7 @@
                         <div class="card-header row">
                             <h3 class="card-title col-lg-9">
                                 <i class="fa-solid fa-table me-2"></i>
-                                Data Cassette Extra
+                                Data Price Extra
                             </h3>
                             <div class="col-lg-3">
                                 <div class="dropdown">
