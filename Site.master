@@ -979,6 +979,13 @@ Inherits="SiteMaster" %>
                               hidden
                               >Customer Discount</a
                             >
+                            <a
+                              runat="server"
+                              id="aDiscountB"
+                              class="dropdown-item"
+                              href="~/setting/discount"
+                              >Discount</a
+                            >
 
                             <div
                               class="dropend"

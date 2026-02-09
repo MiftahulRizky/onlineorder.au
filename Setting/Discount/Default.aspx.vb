@@ -6,7 +6,7 @@
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         'If Session("RoleName") <> "Administrator" AndAlso Session("RoleName") <> "Account" Then
         ' If Session("RoleName") <> "Administrator" Then
-        If Not Session("RoleName") = "Administrator" And Not Session("RoleName") = "Account" Then
+        If Not (Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service") Then
             Response.Redirect("~/setting", False)
             Exit Sub
         End If

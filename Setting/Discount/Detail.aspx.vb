@@ -5,7 +5,7 @@ Partial Class Setting_Discount_Detail
     Dim publicCfg As New PublicConfig
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
-        If Not Session("RoleName") = "Administrator" Then
+        If Not (Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service") Then
             Response.Redirect("~/setting/blind", False)
             Exit Sub
         End If
@@ -43,8 +43,6 @@ Partial Class Setting_Discount_Detail
             If msgError.InnerText = "" Then
                 sdsPage.Update()
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
-                publicCfg.InsertActivity(userId, Page.Title, "INSERT NEW DISCOUNT. STORE ID : " & ddlStoreId.SelectedValue)
 
                 Response.Redirect("~/setting/discount", False)
             End If

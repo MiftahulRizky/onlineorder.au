@@ -62,7 +62,7 @@ Public Class DepositRequestConfig
         Using fs As New FileStream(pdfFilePath, FileMode.Create)
             Dim writer As PdfWriter = PdfWriter.GetInstance(doc, fs)
 
-            Dim headerData As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Id='" + Id + "'")
+            Dim headerData As DataSet = GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Id='" + Id + "'")
 
             Dim customerId As String = headerData.Tables(0).Rows(0)("CustomerId").ToString()
             Dim orderId As String = headerData.Tables(0).Rows(0)("OrderId").ToString()
