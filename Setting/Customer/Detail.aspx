@@ -419,7 +419,7 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Customer Detail" %>
                     >LOGINS</a
                   >
                 </li>
-                <li class="nav-item" runat="server" id="liDiscount">
+                <li class="nav-item" runat="server" id="liDiscount" hidden>
                   <a
                     href="#tabsDiscount"
                     class="nav-link"
