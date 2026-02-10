@@ -822,9 +822,16 @@ Public Class PublicConfig
         End Using
     End Sub
 
-    Public Function HitungDiscount(StoreId As String, PriceGroupId As String, Matrix As Decimal) As Decimal
+    ' Public Function HitungDiscount(StoreId As String, PriceGroupId As String, Matrix As Decimal) As Decimal
+    Public Function HitungDiscount(ListParam As List(Of Object)) As Decimal
+        Dim StoreId As String = CStr(ListParam(0))
+        Dim PriceGroupId As String = CStr(ListParam(1))
+        Dim Matrix As Decimal = CDec(ListParam(2))
+        Dim DesignId As String = CStr(ListParam(3))
+
         Dim result As Decimal = 0.00
-        Dim thisData As DataSet = GetListData("SELECT Discount FROM Discounts WHERE StoreId = '" + StoreId + "' AND PriceGroupId = '" + PriceGroupId + "' AND Active=1")
+        ' Dim thisData As DataSet = GetListData("SELECT Discount FROM Discounts WHERE StoreId = '" + StoreId + "' AND PriceGroupId = '" + PriceGroupId + "' AND Active=1")
+        Dim thisData As DataSet = GetListData(String.Format("SELECT Discount FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND Active='1'", StoreId, DesignId))
         If Not thisData.Tables(0).Rows.Count = 0 Then
             Dim discount As Integer = thisData.Tables(0).Rows(0).Item("Discount").ToString()
             result = Matrix * discount / 100
@@ -914,6 +921,7 @@ Public Class PublicConfig
 
         Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE Id='" + ItemId + "' AND Active=1 ORDER BY Id ASC")
         If Not thisData.Tables(0).Rows.Count = 0 Then
+            Dim designId As String = thisData.Tables(0).Rows(0).Item("DesignId").ToString()
             Dim kitName As String = thisData.Tables(0).Rows(0).Item("KitName").ToString()
             Dim designName As String = thisData.Tables(0).Rows(0).Item("DesignName").ToString()
             Dim blindName As String = thisData.Tables(0).Rows(0).Item("BlindName").ToString()
@@ -962,7 +970,13 @@ Public Class PublicConfig
                 End If
 
                 '#---------------------Discount For Store Account---------------------#
-                Dim thisDiscount As Decimal = HitungDiscount(storeId, priceGroupId, getMatrix)
+                Dim ListParamDiscount As New List(Of Object) From {
+                    storeId,
+                    priceGroupId,
+                    getMatrix,
+                    designId
+                }
+                Dim thisDiscount As Decimal = HitungDiscount(ListParamDiscount) 'HitungDiscount(storeId, priceGroupId, getMatrix)
                 thisMatrix = getMatrix - thisDiscount
                 Dim realMatrix As Decimal = thisMatrix
 
@@ -1029,7 +1043,13 @@ Public Class PublicConfig
                 Dim getMatrixB As Decimal = GetGridCost(priceGroupIdB, delivery, drop, width)
 
                 '#---------------------Discount For Store Account---------------------#
-                Dim thisDiscountB As Decimal = HitungDiscount(storeId, priceGroupIdB, getMatrixB)
+                Dim ListParamDiscountB As New List(Of Object) From {
+                    storeId,
+                    priceGroupIdB,
+                    getMatrixB,
+                    designId
+                }
+                Dim thisDiscountB As Decimal = HitungDiscount(ListParamDiscountB) 'HitungDiscount(storeId, priceGroupIdB, getMatrixB)
                 thisMatrixB = getMatrixB - thisDiscountB
                 Dim realMatrixB As Decimal = thisMatrixB
 

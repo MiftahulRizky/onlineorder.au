@@ -967,19 +967,21 @@ Inherits="SiteMaster" %>
                               >Customer Price Group</a
                             >
                             <div
+                              hidden
                               class="dropdown-divider"
                               runat="server"
                               id="divDividerCustomerDisc"
                             ></div>
                             <a
+                              hidden
                               runat="server"
                               id="aCustomerDiscount"
                               class="dropdown-item"
                               href="~/setting/customer/discount"
-                              hidden
                               >Customer Discount</a
                             >
                             <a
+                              hidden
                               runat="server"
                               id="aDiscountB"
                               class="dropdown-item"

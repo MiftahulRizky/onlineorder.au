@@ -419,7 +419,7 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Customer Detail" %>
                     >LOGINS</a
                   >
                 </li>
-                <li class="nav-item" runat="server" id="liDiscount" hidden>
+                <li class="nav-item" runat="server" id="liDiscount">
                   <a
                     href="#tabsDiscount"
                     class="nav-link"
@@ -1396,6 +1396,7 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Customer Detail" %>
                         Text="Add Custom Discount (Fabric)"
                         CssClass="btn btn-secondary"
                         OnClick="btnAddCustomDiscount_Click"
+                        hidden
                       />
                     </div>
                   </div>
@@ -3133,7 +3134,8 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Customer Detail" %>
                 ClientIDMode="Static"
               >
                 <asp:ListItem Value="Product" Text="Product"></asp:ListItem>
-                <asp:ListItem Value="Fabric" Text="Fabric"></asp:ListItem>
+                <%--
+                <asp:ListItem Value="Fabric" Text="Fabric"></asp:ListItem> --%>
               </asp:DropDownList>
             </div>
             <div class="col-8 product">
