@@ -1392,6 +1392,49 @@ Partial Class Methods_Order_DetailMethod
         End Try
     End Function
 
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function DownloadBarcode(ByVal headerid As String) As Object
+        Try
+            Dim msg As String = "Barcode has been downloaded."
+            Dim url As String = ""
+            Dim rolename As String = HttpContext.Current.Session("rolename").ToString()
+
+            
+
+            Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_headers WHERE Id='" & headerid & "'")
+            If HeaderData.Tables(0).Rows.Count < 1 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Order Header not found."}}
+            End If
+
+            ' Dim status As String = HeaderData.Tables(0).Rows(0)("Status").ToString()
+            ' If rolename <> "Administrator" AndAlso status <> "Draft" Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Permission denied : not administrator."}}
+            ' End If
+
+            Dim OrderNo As String = HeaderData.Tables(0).Rows(0).Item("OrderNo").ToString()
+            Dim StoreId As String = HeaderData.Tables(0).Rows(0).Item("StoreId").ToString()
+            Dim FileName As String = ("-BARCODE-ORDER-" & OrderNo & "-" & StoreId & ".pdf").Replace(" ", "")
+
+            Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE HeaderId='{0}' And Active='1' ORDER BY Id ASC", headerid))
+            If DetailData.Tables(0).Rows.Count < 1 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Please add item first."}}
+            End If
+
+            For i As Integer = 0 To DetailData.Tables(0).Rows.Count - 1
+               Dim Barcode As String = String.Empty
+            Next
+            
+            Return New ErrorResponse With {.error = New ErrorDetail With {.message = FileName}}
+
+            Return New SuccessResponse With {
+                .Success = New SuccessDetail With {.message = msg, .url = url}
+            }
+        Catch ex As Exception
+            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ex.Message}}
+        End Try
+    End Function
+
 
 
     ' # Fungsi bantu untuk menentukan PriceGroupName

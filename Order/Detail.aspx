@@ -90,7 +90,7 @@
                     </div>
 
                     <!-- button administrator -->
-                    <button class="btn  btn-dark dropdown-toggle" data-bs-toggle="dropdown" id="btnAdministrator">Admin</button>
+                    <!-- <button class="btn  btn-dark dropdown-toggle" data-bs-toggle="dropdown" id="btnAdministrator">Admin</button>
                     <div class="dropdown-menu dropdown-menu-end">
                         <a href="javascript:void(0)" id="btnChangeStatus" class="dropdown-item">
                             <i class="bi bi-clipboard-check me-2 opacity-50"></i> Change Status
@@ -98,12 +98,47 @@
                         <a href="javascript:void(0)" id="btnSendOrderMail" class="dropdown-item">
                             <i class="bi bi-send-fill me-2 opacity-50"></i> Send Manual Order
                         </a>
+                    </div> -->
+
+                    <!-- button refresh pricing -->
+                     <button class="btn  btn-purple dropdown-toggle" data-bs-toggle="dropdown" id="btnMoreAction">
+                        <i class="ti ti-category fs-3 me-2" ></i> More
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+
+                        <a href="javascript:void(0)" id="btnReloadPricing" class="dropdown-item">
+                            <i class="ti ti-credit-card me-2 fs-2 opacity-50"></i> Reload Pricing
+                        </a>
+                        <a href="javascript:void(0)" id="btnChangeStatus" class="dropdown-item">
+                            <i class="ti ti-exchange fs-2 me-2 opacity-50"></i> Change Status
+                        </a>
+                        <a href="javascript:void(0)" id="btnSendOrderMail" class="dropdown-item">
+                            <i class="ti ti-mail-forward fs-2 me-2 opacity-50"></i> Send Manual Order
+                        </a>
+                        <a href="javascript:void(0)" id="btnDownloadBarcode" class="dropdown-item">
+                            <i class="ti ti-file-barcode fs-2 me-2 opacity-50"></i> Download Barcode
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+                        <a href="javascript:void(0)" id="btnPrintQuote" class="dropdown-item">
+                            <i class="ti ti-printer fs-2 me-2 opacity-50"></i> Print Quote
+                        </a>
+                        <a href="javascript:void(0)" id="btnEmailQuote" class="dropdown-item">
+                            <i class="ti ti-mail fs-2 me-2 opacity-50"></i> Email Quote
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+                        <a href="javascript:void(0)" id="btnEmailDeposit" class="dropdown-item">
+                            <i class="ti ti-mail-dollar fs-2 me-2 opacity-50"></i> Email Deposite Request
+                        </a>
+                        
+                       
                     </div>
 
-                        <!-- button refresh pricing -->
-                    <button type="button" id="btnReloadPricing" class="btn  btn-outline-indigo">
+                    <!-- button refresh pricing -->
+                    <!-- <button type="button" id="btnReloadPricing" class="btn  btn-outline-indigo">
                         <i class="bi bi-credit-card-2-back me-2"></i> Reload Pricing
-                    </button>
+                    </button> -->
 
                 </div>
 

@@ -736,6 +736,7 @@ const visibleElementForm = (item) => {
     visibleElementFormOnChange(ordertype.value);
     return;
   }
+
   if (!item) return;
 
   divOrderType.setAttribute("hidden", true); // edit
@@ -825,13 +826,17 @@ const visibleElementFormOnChange = async (ordertype) => {
   divShipping.setAttribute("hidden", true);
 
   const value = ordertype;
-  // if (!value) return;
+  if (!value) return;
 
   await handlerSelCustomer(value, "#customer");
   formDetail.removeAttribute("hidden");
   console.log(value);
   if (value == "Blinds") {
-    if (ROLENAME == "Administrator" || ROLENAME == "Customer Service") {
+    if (
+      ROLENAME == "Administrator" ||
+      ROLENAME == "Customer Service" ||
+      ROLENAME == "PPIC & DE"
+    ) {
       divCustomer.removeAttribute("hidden");
     }
 

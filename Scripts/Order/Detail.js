@@ -120,6 +120,12 @@ document.querySelector("#btnReloadPricing").addEventListener("click", () => {
   handlerReloadPricing(HEADERID, statusOrder, "click");
 });
 
+// BTN DOWNLOAD BARCODE
+document.querySelector("#btnDownloadBarcode").addEventListener("click", () => {
+  handlerDownloadBarcode(HEADERID);
+});
+
+// BTN COPY JO NUMBER
 document.addEventListener("click", (e) => {
   const btn = e.target.closest("#btnCopyJoNumber, [data-jonumber]"); // id atau attribute
   if (!btn) return;
@@ -570,7 +576,7 @@ const handlerDisplayElement = (item) => {
   const btnQuote = document.getElementById("btnQuote");
   const btnQuoteDetail = document.getElementById("btnQuoteDetail");
   const btnDownloadQuote = document.getElementById("btnDownloadQuote");
-  const btnAdministrator = document.getElementById("btnAdministrator");
+  const btnMoreAction = document.getElementById("btnMoreAction");
   const btnChangeStatus = document.getElementById("btnChangeStatus");
   const btnSendOrderMail = document.getElementById("btnSendOrderMail");
   const btnReloadPricing = document.getElementById("btnReloadPricing");
@@ -591,7 +597,7 @@ const handlerDisplayElement = (item) => {
   btnQuote.setAttribute("hidden", true);
   btnQuoteDetail.setAttribute("hidden", true);
   btnDownloadQuote.setAttribute("hidden", true);
-  btnAdministrator.setAttribute("hidden", true);
+  btnMoreAction.setAttribute("hidden", true);
   btnChangeStatus.setAttribute("hidden", true);
   btnSendOrderMail.setAttribute("hidden", true);
   btnReloadPricing.setAttribute("hidden", true);
@@ -652,7 +658,7 @@ const handlerDisplayElement = (item) => {
     btnDownloadQuote.removeAttribute("hidden");
   }
 
-  // btnAdministrator, btnChangeStatus, btnAddItem, & btnSendOrderMail
+  //  btnChangeStatus, btnAddItem, & btnSendOrderMail
   switch (item.Status) {
     case "New Order":
     case "In Production":
@@ -660,7 +666,6 @@ const handlerDisplayElement = (item) => {
     case "On Hold":
       msgThanks.removeAttribute("hidden");
       if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
-        btnAdministrator.removeAttribute("hidden");
         btnChangeStatus.removeAttribute("hidden");
         if (ROLENAME === "Administrator") {
           btnSendOrderMail.removeAttribute("hidden");
@@ -668,6 +673,11 @@ const handlerDisplayElement = (item) => {
         }
       }
       break;
+  }
+
+  // btnMoreAction
+  if (ROLENAME === "Administrator") {
+    btnMoreAction.removeAttribute("hidden");
   }
 
   // btnReloadPricing
@@ -1195,7 +1205,7 @@ const handlerChangeStatus = async (headerid) => {
     const response = await fetch(`${URIMETHOD}/BindOrderHeaderByID`, {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=utf-8" },
-      body: JSON.stringify({ headerid }),
+      body: JSON.stringify({ headerid, ordertype: ORDERTYPE }),
     });
 
     if (!response.ok) {
@@ -1468,6 +1478,38 @@ const handlerReloadPricingOnReadyPage = async (headerid, status, action) => {
   } catch (error) {
     console.error("Reload pricing failed:", error);
     isError(error.message);
+  }
+};
+
+// HANDLER DOWNLOAD BARCODE
+const handlerDownloadBarcode = async (headerid) => {
+  swalLoadingShow("Please wait while we download the barcode.");
+  try {
+    const response = await fetch(`${URIMETHOD}/DownloadBarcode`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ headerid }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result = data.d || data;
+    if (result.error) {
+      throw new Error(result.error.message);
+    } else {
+      console.log(result.success.message);
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME != "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
   }
 };
 

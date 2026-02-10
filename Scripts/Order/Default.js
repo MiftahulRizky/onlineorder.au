@@ -1325,7 +1325,7 @@ const dropdownActionButton = (data, type, row, params) => {
             
             <li class="${displayChangeStatus}">
               <a class="dropdown-item" href="javascript:void(0)" id="btnChangeStatus" data-id="${row.Id}">
-                <i class="ti ti-checkup-list me-1 fs-2 opacity-50"></i>Change Status
+                <i class="ti ti-exchange me-1 fs-2 opacity-50"></i>Change Status
               </a>
             </li>
             <li class="${displayDownloadCSV}">
