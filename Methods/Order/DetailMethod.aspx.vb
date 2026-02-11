@@ -1412,8 +1412,11 @@ Partial Class Methods_Order_DetailMethod
             '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Permission denied : not administrator."}}
             ' End If
 
+            Dim OrderCust As String = HeaderData.Tables(0).Rows(0).Item("OrderCust").ToString()
             Dim OrderNo As String = HeaderData.Tables(0).Rows(0).Item("OrderNo").ToString()
             Dim StoreId As String = HeaderData.Tables(0).Rows(0).Item("StoreId").ToString()
+            Dim StoreName As String = HeaderData.Tables(0).Rows(0).Item("StoreName").ToString()
+            Dim Delivery As String = HeaderData.Tables(0).Rows(0).Item("Delivery").ToString()
             Dim FileName As String = ("-BARCODE-ORDER-" & OrderNo & "-" & StoreId & ".pdf").Replace(" ", "")
 
             Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE HeaderId='{0}' And Active='1' ORDER BY Id ASC", headerid))
@@ -1421,8 +1424,31 @@ Partial Class Methods_Order_DetailMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Please add item first."}}
             End If
 
+            
             For i As Integer = 0 To DetailData.Tables(0).Rows.Count - 1
-               Dim Barcode As String = String.Empty
+                Dim Barcode As String = String.Empty
+                Dim Qty As String = DetailData.Tables(0).Rows(i).Item("Qty").ToString()
+                Dim Location As String = DetailData.Tables(0).Rows(i).Item("Location").ToString()
+                Dim Width As String = DetailData.Tables(0).Rows(i).Item("Width").ToString()
+                Dim Drop As String = DetailData.Tables(0).Rows(i).Item("Drop").ToString()
+                Dim DesignName As String = DetailData.Tables(0).Rows(i).Item("DesignName").ToString()
+                Dim FabricName As String = DetailData.Tables(0).Rows(i).Item("FabricName").ToString()
+                Dim Product As String = String.Format("{0} X {1} {2}", Width, Drop, DesignName)
+
+                Barcode = "^XA"
+                Barcode += "^FO17,50"
+                Barcode += String.Format("^FO35,10^A0N,45,45^CI13^FH^FD{0}^FS", StoreName)
+                Barcode += String.Format("^FO35,50^A0N,40,40^CI13^FH^FD{0}^FS", OrderCust)
+                Barcode += String.Format("^FO600,90^A0N,40,40^CI13^FH^FD{0}^FS", OrderNo)
+                Barcode += String.Format("^FO35,90^A0N,45,45^CI13^FH^FD{0}^FS", headerid)
+                Barcode += String.Format("^FO600,130^A0N,25,25^CI13^FH^FD{0}^FS", Location)
+                Barcode += String.Format("^FO35,140^A0N,25,25^CI13^FH^FD{0}^FS", FabricName)
+                Barcode += String.Format("^FO35,173^A0N,25,25^CI13^FH^FD{0}^FS", Product)
+                Barcode += String.Format("^FO610,155^A0N,30,30^CI13^FH^FD({0} OF 2)^FS", Qty)
+                Barcode += String.Format("^FO630,49^A0N,45,45^CI13^FH^FD{0}^FS", Delivery)
+                Barcode += "^PQ1,0,0,Y"
+                Barcode += "^XZ"
+                Barcode += " "
             Next
             
             Return New ErrorResponse With {.error = New ErrorDetail With {.message = FileName}}

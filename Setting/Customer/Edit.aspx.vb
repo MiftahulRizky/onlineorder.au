@@ -80,6 +80,19 @@ Partial Class Setting_Customer_Edit
                     End Using
                 End Using
 
+                Dim CustomerQuotes As DataSet = settingCfg.GetListData("SELECT * FROM CustomerQuotes WHERE Id = '" + txtId.Text.Trim() + "'")
+                If CustomerQuotes.Tables(0).Rows.Count = 0 Then
+                    Using thisConn As New SqlConnection(myConn)
+                        Using myCmd As SqlCommand = New SqlCommand("INSERT INTO CustomerQuotes VALUES (@Id, 'LS.png', Null)")
+                            myCmd.Parameters.AddWithValue("@Id", txtId.Text.Trim())
+                            myCmd.Connection = thisConn
+                            thisConn.Open()
+                            myCmd.ExecuteNonQuery()
+                            thisConn.Close()
+                        End Using
+                    End Using
+                End If
+
                 Dim dataLog As Object() = {"Customers", txtId.Text, Session("LoginId"), "Customers Updated"}
                 settingCfg.Log_Customer(dataLog)
 
