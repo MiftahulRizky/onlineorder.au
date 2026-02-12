@@ -1813,14 +1813,11 @@ Public Class PrintConfig
         End Using
     End Sub
 
-    Public Function BuildLogoQuote(StoreId As String, Key As String) As String
+    Public Function BuildLogoQuote(CustomerId As String, Key As String) As String
         Dim result As String = String.Empty
 
-        ' Dim request As HttpRequest = HttpContext.Current.Request
-        ' Dim baseUrl As String = request.Url.Scheme & "://" & request.Url.Authority & request.ApplicationPath.TrimEnd("/"c)
-        ' Dim fileDirectory As String = baseUrl & "/Content/static/customers/"
         Dim Path As String = System.Web.HttpContext.Current.Server.MapPath("~/Content/static/customers/")
-        Dim fileName As String = GetItemData("SELECT Logo FROM CustomerQuotes WHERE Id = '" + StoreId + "'")
+        Dim fileName As String = GetItemData("SELECT Logo FROM CustomerQuotes WHERE Id = '" + CustomerId + "'")
         
         Dim src As String = Path & fileName
         If String.IsNullOrEmpty(fileName) Then
@@ -1830,10 +1827,31 @@ Public Class PrintConfig
             src = System.Web.HttpContext.Current.Server.MapPath("~/Content/static/new-icon.png")
         End If
 
+        Dim customerAddressData As DataSet = GetListData("SELECT * FROM CustomerAddress WHERE CustomerId='" + CustomerId + "' AND [Primary]=1")
+        Dim fullAddress As String = String.Empty
+        If customerAddressData.Tables(0).Rows.Count > 0 Then
+            Dim unitNumber As String = customerAddressData.Tables(0).Rows(0)("UnitNumber").ToString()
+            Dim street As String = customerAddressData.Tables(0).Rows(0)("Street").ToString()
+            Dim address As String = unitNumber & " " & street
+            If unitNumber = "" Then
+                address = street
+            End If
+
+            Dim suburb As String = customerAddressData.Tables(0).Rows(0)("Suburb").ToString()
+            Dim states As String = customerAddressData.Tables(0).Rows(0)("States").ToString()
+            Dim postCode As String = customerAddressData.Tables(0).Rows(0)("PostCode").ToString()
+
+            fullAddress = address & ", " & suburb & ", " & states & " " & postCode
+        End If 
+
+        Dim Phone As String = GetItemData("SELECT Phone FROM CustomerContacts WHERE CustomerId='" + customerId + "' AND [Primary]=1")
+
         result += "<table style='width:100%;margin-bottom:25px;'>"
         result += trStart
         result += "<td valign='top' style='width:50%;'>"
         result += String.Format("<img width='100px' src='{0}' />", src)
+        result += String.Format("<br /> <span style='font-size:small;'>{0}</span>", fullAddress)
+        result += String.Format("<br /> <span style='font-size:small;'>Phone : {0}</span>", Phone)
         result += tdEnd
         result += "<td valign='bottom' style='width:50%;text-align:right;font-weight:bold;margin-right:20px;'>QUOTE ORDER</td>"
         result += trEnd
@@ -1855,7 +1873,8 @@ Public Class PrintConfig
         Dim postCode As String = thisData.Tables(0).Rows(0).Item("PostCode").ToString
         Dim phone As String = thisData.Tables(0).Rows(0).Item("Phone").ToString
         Dim email As String = thisData.Tables(0).Rows(0).Item("Email").ToString
-
+        Dim CreatedDate As DateTime = Convert.ToDateTime(thisData.Tables(0).Rows(0).Item("CreatedDate"))
+        Dim orderId As String = "SP-" & HeaderId
         Dim CustomerName As String = GetItemData("SELECT Name FROM Customers WHERE Id = '" + StoreId + "'")
 
         Dim fullAddress As String = address & " " & suburb
@@ -1874,14 +1893,20 @@ Public Class PrintConfig
         Dim Line1V As String = orderCust
         Dim Line2V As String = fullAddress
         Dim Line3V As String = email & ", " & phone
+        Dim Line4V As String = orderNo
+        Dim Line5V As String = CreatedDate.ToString("MMM dd, yyyy")
 
         If Key = "Origin" Then
             Line1 = "To"
             Line2 = "Order Number"
             Line3 = "Customer Name"
+            Line4 = "Order #"
+            Line5 = "Date"
             Line1V = CustomerName
             Line2V = orderNo
             Line3V = orderCust
+            Line4V = orderId
+            Line5V = CreatedDate.ToString("MMM dd, yyyy")
         End If
 
         result += tableStart
@@ -1923,19 +1948,24 @@ Public Class PrintConfig
         result += tableStart
 
         result += trStart
-        result += tdStartTitle2 & "Quote No" & tdEnd
-        result += tdStartContent & ": <b>" & orderNo & "</b>" & tdEnd
+        result += tdStartTitle2 & "ㅤ" & tdEnd
+        result += tdStartContent & "ㅤ" & tdEnd
         result += trEnd
 
         result += trStart
-        result += tdStartTitle2 & "Date:" & tdEnd
-        result += tdStartContent & ": <b>" & DateTime.Now.ToString("MMM dd, yyyy") & "</b>" & tdEnd
+        result += tdStartTitle2 & Line4 & tdEnd
+        result += tdStartContent & ": <b>" & Line4V & "</b>" & tdEnd
         result += trEnd
 
         result += trStart
-        result += tdStartTitle2 & "Operator:" & tdEnd
-        result += tdStartContent & ": <b>" & UserName & "</b>" & tdEnd
+        result += tdStartTitle2 & Line5 & tdEnd
+        result += tdStartContent & ": <b>" & Line5V & "</b>" & tdEnd
         result += trEnd
+
+        ' result += trStart
+        ' result += tdStartTitle2 & "Operator:" & tdEnd
+        ' result += tdStartContent & ": <b>" & UserName & "</b>" & tdEnd
+        ' result += trEnd
 
         result += tableEnd
 
@@ -2106,36 +2136,14 @@ Public Class PrintConfig
         Return result
     End Function
 
-    Public Function BuildFooterQuote(StoreId As String) As String
+    Public Function BuildFooterQuote(CustomerId As String) As String
         Dim result As String = String.Empty
 
-        Dim resultStore As DataSet = GetListData("SELECT * FROM Customers WHERE Id = '" + StoreId + "'")
+        Dim Terms As String = GetItemData("SELECT Terms FROM CustomerQuotes WHERE Id = '" + CustomerId + "'")
 
-        Dim storeName As String = resultStore.Tables(0).Rows(0).Item("Name").ToString()
-        Dim storeAddress As String = resultStore.Tables(0).Rows(0).Item("Address").ToString()
-        Dim storePhone As String = resultStore.Tables(0).Rows(0).Item("Phone").ToString()
-        Dim storeABN As String = resultStore.Tables(0).Rows(0).Item("ABN").ToString()
-        Dim storeFax As String = resultStore.Tables(0).Rows(0).Item("Fax").ToString()
-        Dim storeTerms As String = resultStore.Tables(0).Rows(0).Item("Terms").ToString()
-
-        If Not storeAddress = "" Then
-            result += "<p style='font-size:13px;'>Address : <b>" & storeAddress & "</b></p>"
-        End If
-
-        If storePhone = "" Then : storePhone = "-" : End If
-        If storeFax = "" Then : storeFax = "-" : End If
-        If storeABN = "" Then : storeABN = "-" : End If
-
-        result += "<p style='font-size:13px;'>"
-        result += "Phone : <b>" & storePhone & "</b>, "
-        result += "Fax : <b>" & storeFax & "</b>, "
-        result += "ABN : <b>" & storeABN & "</b>"
-        result += "</p>"
         result += "<p style='font-size:13px;'><b>Terms & Conditions : </b></p>"
-        result += "<p style='font-size:13px;'>" & storeTerms & "</p>"
+        result += "<p style='font-size:13px;'>" & Terms & "</p>"
 
-        result += "<p style='margin-top:65px;font-size:13px;'><b>Best Regards</b></p>"
-        result += "<p style='margin-top:5px;font-size:13px;'><b>" & storeName & "</b></p>"
 
         Return result
     End Function

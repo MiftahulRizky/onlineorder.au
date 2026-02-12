@@ -574,7 +574,7 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Customer Detail" %>
                                     stroke-width="2"
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
-                                    class="icon icon-tabler icons-tabler-outline icon-tabler-circle-check"
+                                    class="icon icon-tabler icons-tabler-outline text-success icon-tabler-circle-check"
                                   >
                                     <path
                                       stroke="none"
@@ -601,7 +601,7 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Customer Detail" %>
                                     stroke-width="2"
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
-                                    class="icon icon-tabler icons-tabler-outline icon-tabler-circle-x"
+                                    class="icon icon-tabler icons-tabler-outline text-danger icon-tabler-circle-x"
                                   >
                                     <path
                                       stroke="none"
@@ -817,7 +817,7 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Customer Detail" %>
                                     stroke-width="2"
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
-                                    class="icon icon-tabler icons-tabler-outline icon-tabler-circle-check"
+                                    class="icon icon-tabler text-success icons-tabler-outline icon-tabler-circle-check"
                                   >
                                     <path
                                       stroke="none"
@@ -845,7 +845,7 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Customer Detail" %>
                                     stroke-width="2"
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
-                                    class="icon icon-tabler icons-tabler-outline icon-tabler-circle-x"
+                                    class="icon icon-tabler text-danger icons-tabler-outline icon-tabler-circle-x"
                                   >
                                     <path
                                       stroke="none"

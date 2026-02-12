@@ -731,11 +731,11 @@ const visibleElementForm = (item) => {
   divShipmentId.setAttribute("hidden", true);
   divShipping.setAttribute("hidden", true);
 
-  if (CUSTOMERID == "LS-A224") {
-    divOrderType.setAttribute("hidden", true);
-    visibleElementFormOnChange(ordertype.value);
-    return;
-  }
+  // if (CUSTOMERID == "LS-A224") {
+  //   divOrderType.setAttribute("hidden", true);
+  //   visibleElementFormOnChange(ordertype.value);
+  //   return;
+  // }
 
   if (!item) return;
 
