@@ -29,7 +29,7 @@
                     <div class="card" id="cardOrder">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="bi bi-cart3"></i>
+                                <i class="ti ti-shopping-cart me-1 opacity-50 fs-2"></i>
                                 Data Order
                             </h3>
                             <div class="card-actions d-flex">

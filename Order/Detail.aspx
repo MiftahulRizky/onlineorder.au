@@ -17,45 +17,45 @@
 
                     <!-- buton finish -->
                     <button type="button" class="btn  btn-cyan" id="btnFinish">
-                        <i class="bi bi-check-lg me-2"></i>
+                        <i class="ti ti-checks fs-2 opacity-50 me-2"></i>
                         Finish
                     </button>
 
                     <!-- button preview -->
                     <button class="btn  btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="bi bi-file-earmark-text me-2"></i>
+                        <i class="ti ti-file-invoice fs-2 opacity-50 me-2"></i>
                         Preview
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
                         <li>
                             <a class="dropdown-item" href="javascript:void(0)" id="btnPreviewPrint">
-                                <i class="bi bi-printer me-2 opacity-50"></i> Print
+                                <i class="ti ti-printer fs-2 me-2 opacity-50"></i> Preview / Print
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item" href="javascript:void(0)" id="btnPreviewPDF">
-                                    <i class="bi bi-file-earmark-pdf me-2 opacity-50"></i> Download PDF
+                                    <i class="ti ti-file-type-pdf fs-2 me-2 opacity-50"></i> Download PDF
                             </a>
                         </li>
                     </div>
 
                     <!-- button creat job sheet -->
                     <button class="btn btn-outline-teal dropdown-toggle " type="button" data-bs-toggle="dropdown" aria-expanded="false" id="btnJobSheet">
-                        <i class="bi bi-file-text me-2"></i> Job Sheet
+                        <i class="ti ti-file-text fs-2 opacity-50 me-2"></i> Job Sheet
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
                             <a href="javascript:void(0)" id="btnConvertToJob" class="dropdown-item">
-                                <i class="bi bi-file-earmark-zip me-2 opacity-50"></i> Convert To Job
+                                <i class="ti ti-file-zip fs-2 me-2 opacity-50"></i> Convert To Job
                             </a>
                         </li>
                         <li>
                             <a href="javascript:void(0)" id="btnReprintJobSheet" class="dropdown-item">
-                                <i class="bi bi-printer me-2 opacity-50"></i> Reprint Job Sheet
+                                <i class="ti ti-printer fs-2 me-2 opacity-50"></i> Reprint Job Sheet
                             </a>
                         </li>
                         <li>
-                            <a href="javascript:void(0)" id="btnChangeJobStatus" class="dropdown-item" >
+                            <a href="javascript:void(0)" id="btnChangeJobStatus" class="dropdown-item" hidden >
                                 <i class="bi bi-clipboard-check me-2 opacity-50"></i> Change Job Status
                             </a>
                         </li>
@@ -63,29 +63,29 @@
 
                     <!-- button submit -->
                     <a href="javascript:void(0)" id="btnSubmit" class="btn  btn-success">
-                        <i class="fa-regular  fa-paper-plane me-2" ></i> Submit
+                        <i class="ti ti-send fs-2 opacity-50 me-2" ></i> Submit
                     </a>
 
                         <!-- button edit -->
                     <button type="button" id="btnEditHeader" class="btn  btn-primary">
-                        <i class="fa-regular  fa-pen-to-square me-2" ></i> Edit
+                        <i class="ti ti-edit fs-2 opacity-50 me-2" ></i> Edit
                     </button>
 
                     <!-- button delete -->
                     <a href="javascript:void(0)" id="btnDeleteHeader" class="btn  btn-danger">
-                        <i class="fa-regular  fa-trash-can me-2" ></i> Delete
+                        <i class="ti ti-trash fs-2 opacity-50 me-2" ></i> Delete
                     </a>
 
                     <!-- button quote -->
                     <button class="btn  btn-dark dropdown-toggle" data-bs-toggle="dropdown" id="btnQuote">
-                        <i class="bi bi-chat-right-quote me-2" ></i> Quote
+                        <i class="ti ti-file-description fs-2 me-2 opacity-50" ></i> Quote
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
                         <a href="javascript:void(0)" id="btnQuoteDetail" class="dropdown-item">
-                            <i class="bi bi-info-circle me-2 opacity-50"></i> Detail
+                            <i class="ti ti-alert-square-rounded fs-2 me-2 opacity-50"></i> Detail
                         </a>
                         <a href="javascript:void(0)" id="btnDownloadQuote" class="dropdown-item">
-                            <i class="bi bi-cloud-arrow-down me-2 opacity-50"></i> Download
+                            <i class="ti ti-file-download fs-2 me-2 opacity-50"></i> Download
                         </a>
                     </div>
 
@@ -102,7 +102,7 @@
 
                     <!-- button refresh pricing -->
                      <button class="btn  btn-purple dropdown-toggle" data-bs-toggle="dropdown" id="btnMoreAction">
-                        <i class="ti ti-category fs-3 me-2" ></i> More
+                        <i class="ti ti-category fs-2 me-2 opacity-50" ></i> More
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
 
@@ -284,7 +284,7 @@
                             <h3 class="card-title">YOUR ITEMS</h3>
                             <div class="card-actions">
                                 <a href="javascript:void(0);" id="btnAddItem" class="btn btn-primary ">
-                                    <i class="fa-solid fa-circle-plus" style="margin-right: 0.3rem;"></i> Add Item
+                                    <i class="ti ti-clipboard-plus fs-2 me-2 opacity-50"></i> Add Item
                                 </a>
                             </div>
                         </div>

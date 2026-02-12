@@ -24,6 +24,7 @@ Imports System.Net.Mail
 Partial Class Methods_Order_DetailMethod
     Inherits System.Web.UI.Page
 
+    Shared orderCfg As New OrderConfig()
     Shared publicCfg As New PublicConfig()
     Shared printCfg As New PrintConfig()
     Shared jobsheet As New HalperJobSheetRenderer()
@@ -894,7 +895,7 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function SubmitOrder(ByVal headerid As String) As Object
+    Public Shared Function SubmitOrder(ByVal headerid As String, ByVal loginid As String) As Object
         Try
             If String.IsNullOrEmpty(headerid) Then
                 Return New ErrorResponse With {
@@ -927,6 +928,9 @@ Partial Class Methods_Order_DetailMethod
                     thisConn.Close()
                 End Using
             End Using
+
+            Dim dataLog As Object() = {headerid, "", "Blinds", loginid, "Submit Order"}
+            orderCfg.Log_Orders(dataLog)
 
             Return New SuccessResponse With {
                 .Success = New SuccessDetail With { 
@@ -987,7 +991,7 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function CreatePDFQuote(ByVal headerid As String, ByVal username As String, ByVal action As String) As Object
+    Public Shared Function CreatePDFCustomerQuote(ByVal headerid As String, ByVal username As String, ByVal action As String) As Object
         Try
             Dim msg As String = ""
             Dim url As String = ""
@@ -1022,8 +1026,10 @@ Partial Class Methods_Order_DetailMethod
 
             '# --------------------------|| Prepare Generate PDF ||-------------------------------
 
+            Dim Key As String = "Customer"
             If action = "reprint" or action = "preview" Then
                 HttpContext.Current.Session("Reprint") = fileName
+                HttpContext.Current.Session("KeyReprint") = Key
                 msg = "Print page is successfully prepared. <br> Click <b>OK</b> to open it."
                 url = "/order/printquote"
             End If
@@ -1033,7 +1039,7 @@ Partial Class Methods_Order_DetailMethod
                 url = "/Methods/Order/Handler/DowloadPDFOrder.ashx?file=" & fileName & "&keyDownload=quote"
             End If
             
-            printCfg.CreatePDFQuote(headerid, username, fileDirectory, fileName)
+            printCfg.CreatePDFQuote(headerid, username, fileDirectory, fileName, Key)
 
             ' Kembalikan respon sukses berupa pesan string
             Return New SuccessResponse With {
@@ -1417,14 +1423,21 @@ Partial Class Methods_Order_DetailMethod
             Dim StoreId As String = HeaderData.Tables(0).Rows(0).Item("StoreId").ToString()
             Dim StoreName As String = HeaderData.Tables(0).Rows(0).Item("StoreName").ToString()
             Dim Delivery As String = HeaderData.Tables(0).Rows(0).Item("Delivery").ToString()
-            Dim FileName As String = ("-BARCODE-ORDER-" & OrderNo & "-" & StoreId & ".pdf").Replace(" ", "")
+            Dim FileName As String = ("-BARCODE-ORDER-" & OrderNo & "-" & StoreId & ".txt").Replace(" ", "")
+
+            Dim dirPath As String = HttpContext.Current.Server.MapPath("~/File/Order/Barcode/")
+            If Not Directory.Exists(dirPath) Then
+                Directory.CreateDirectory(dirPath)
+            End If
+
+            Dim fullPath As String = Path.Combine(dirPath, FileName)
 
             Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE HeaderId='{0}' And Active='1' ORDER BY Id ASC", headerid))
             If DetailData.Tables(0).Rows.Count < 1 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Please add item first."}}
             End If
 
-            
+            Dim sb As New StringBuilder()
             For i As Integer = 0 To DetailData.Tables(0).Rows.Count - 1
                 Dim Barcode As String = String.Empty
                 Dim Qty As String = DetailData.Tables(0).Rows(i).Item("Qty").ToString()
@@ -1435,23 +1448,81 @@ Partial Class Methods_Order_DetailMethod
                 Dim FabricName As String = DetailData.Tables(0).Rows(i).Item("FabricName").ToString()
                 Dim Product As String = String.Format("{0} X {1} {2}", Width, Drop, DesignName)
 
-                Barcode = "^XA"
-                Barcode += "^FO17,50"
-                Barcode += String.Format("^FO35,10^A0N,45,45^CI13^FH^FD{0}^FS", StoreName)
-                Barcode += String.Format("^FO35,50^A0N,40,40^CI13^FH^FD{0}^FS", OrderCust)
-                Barcode += String.Format("^FO600,90^A0N,40,40^CI13^FH^FD{0}^FS", OrderNo)
-                Barcode += String.Format("^FO35,90^A0N,45,45^CI13^FH^FD{0}^FS", headerid)
-                Barcode += String.Format("^FO600,130^A0N,25,25^CI13^FH^FD{0}^FS", Location)
-                Barcode += String.Format("^FO35,140^A0N,25,25^CI13^FH^FD{0}^FS", FabricName)
-                Barcode += String.Format("^FO35,173^A0N,25,25^CI13^FH^FD{0}^FS", Product)
-                Barcode += String.Format("^FO610,155^A0N,30,30^CI13^FH^FD({0} OF 2)^FS", Qty)
-                Barcode += String.Format("^FO630,49^A0N,45,45^CI13^FH^FD{0}^FS", Delivery)
-                Barcode += "^PQ1,0,0,Y"
-                Barcode += "^XZ"
-                Barcode += " "
+                sb.AppendLine("^XA")
+                sb.AppendLine("^FO17,50")
+                sb.AppendLine(String.Format("^FO35,10^A0N,45,45^CI13^FH^FD{0}^FS", StoreName))
+                sb.AppendLine(String.Format("^FO35,50^A0N,40,40^CI13^FH^FD{0}^FS", OrderCust))
+                sb.AppendLine(String.Format("^FO600,90^A0N,40,40^CI13^FH^FD{0}^FS", OrderNo))
+                sb.AppendLine(String.Format("^FO35,90^A0N,45,45^CI13^FH^FD{0}^FS", headerid))
+                sb.AppendLine(String.Format("^FO600,130^A0N,25,25^CI13^FH^FD{0}^FS", Location))
+                sb.AppendLine(String.Format("^FO35,140^A0N,25,25^CI13^FH^FD{0}^FS", FabricName))
+                sb.AppendLine(String.Format("^FO35,173^A0N,25,25^CI13^FH^FD{0}^FS", Product))
+                sb.AppendLine(String.Format("^FO610,155^A0N,30,30^CI13^FH^FD({0} OF 2)^FS", Qty))
+                sb.AppendLine(String.Format("^FO630,49^A0N,45,45^CI13^FH^FD{0}^FS", Delivery))
+                sb.AppendLine("^PQ1,0,0,Y")
+                sb.AppendLine("^XZ")
+                sb.AppendLine()
+                sb.AppendLine()
             Next
+
+            File.WriteAllText(fullPath, sb.ToString(), Encoding.ASCII)
             
-            Return New ErrorResponse With {.error = New ErrorDetail With {.message = FileName}}
+            url = String.Format("/Methods/Order/Handler/DowloadPDFOrder.ashx?file={0}&keyDownload=barcode", FileName)
+
+            Return New SuccessResponse With {
+                .Success = New SuccessDetail With {.message = msg, .url = url}
+            }
+        Catch ex As Exception
+            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ex.Message}}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function CreatePDFQuote(ByVal headerid As String, ByVal action As String, ByVal username As String) As Object
+        Try
+            Dim msg As String = "Barcode has been downloaded."
+            Dim url As String = ""
+            Dim rolename As String = HttpContext.Current.Session("rolename").ToString()
+
+            
+
+            Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_headers WHERE Id='" & headerid & "'")
+            If HeaderData.Tables(0).Rows.Count < 1 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Order Header not found."}}
+            End If
+
+            ' Dim status As String = HeaderData.Tables(0).Rows(0)("Status").ToString()
+            ' If rolename <> "Administrator" AndAlso status <> "Draft" Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Permission denied : not administrator."}}
+            ' End If
+
+            Dim OrderCust As String = HeaderData.Tables(0).Rows(0).Item("OrderCust").ToString()
+            Dim OrderNo As String = HeaderData.Tables(0).Rows(0).Item("OrderNo").ToString()
+            Dim StoreId As String = HeaderData.Tables(0).Rows(0).Item("StoreId").ToString()
+            Dim StoreName As String = HeaderData.Tables(0).Rows(0).Item("StoreName").ToString()
+            Dim Delivery As String = HeaderData.Tables(0).Rows(0).Item("Delivery").ToString()
+            Dim FileName As String = ("-QUOTE-ORDER-" & OrderNo & "-" & StoreId & ".pdf").Replace(" ", "")
+
+            Dim dirPath As String = HttpContext.Current.Server.MapPath("~/File/Order/Quote/Origin/")
+            If Not Directory.Exists(dirPath) Then
+                Directory.CreateDirectory(dirPath)
+            End If
+            Dim fullPath As String = Path.Combine(dirPath, FileName)
+
+            Dim Key As String = "Origin"
+            If action = "preview" Then
+                HttpContext.Current.Session("Reprint") = FileName
+                HttpContext.Current.Session("KeyReprint") = Key
+                msg = "Print page is successfully prepared. <br> Click <b>OK</b> to open it."
+                url = "/order/printquote"
+            End IF
+
+            If action = "mail" Then
+                msg = "Email has been sent successfully. <br> Click <b>OK</b> to continue."
+            End If
+
+            printCfg.CreatePDFQuote(headerid, username, dirPath, FileName, Key)
 
             Return New SuccessResponse With {
                 .Success = New SuccessDetail With {.message = msg, .url = url}

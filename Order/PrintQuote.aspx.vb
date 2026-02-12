@@ -5,7 +5,10 @@
         If Session("Reprint") <> "" Then
             Dim request As HttpRequest = HttpContext.Current.Request
             Dim baseUrl As String = request.Url.Scheme & "://" & request.Url.Authority & request.ApplicationPath.TrimEnd("/"c)
-            Dim thisString As String = String.Format(baseUrl & "/file/order/quote/{0}", Session("Reprint"))
+            Dim thisString As String = String.Format("{0}/file/order/quote/{1}", baseUrl, Session("Reprint"))
+            IF Session("KeyReprint") = "Origin" Then
+                thisString = String.Format("{0}/file/order/quote/origin/{1}", baseUrl, Session("Reprint"))
+            End If
             embPrint.Attributes.Add("src", thisString)
         End If
     End Sub

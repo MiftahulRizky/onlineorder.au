@@ -75,7 +75,7 @@ document.querySelector("#btnDeleteHeader").addEventListener("click", () => {
 
 // BUTTON QUOTE DETAIL
 document.querySelector("#btnQuoteDetail").addEventListener("click", () => {
-  handlerCreatePDFQuote(
+  handlerCreatePDFCustomerQuote(
     HEADERID,
     USERNAME,
     "preview",
@@ -85,7 +85,7 @@ document.querySelector("#btnQuoteDetail").addEventListener("click", () => {
 
 // BUTTON DOWNLOAD QUOTE
 document.querySelector("#btnDownloadQuote").addEventListener("click", () => {
-  handlerCreatePDFQuote(
+  handlerCreatePDFCustomerQuote(
     HEADERID,
     USERNAME,
     "download",
@@ -123,6 +123,11 @@ document.querySelector("#btnReloadPricing").addEventListener("click", () => {
 // BTN DOWNLOAD BARCODE
 document.querySelector("#btnDownloadBarcode").addEventListener("click", () => {
   handlerDownloadBarcode(HEADERID);
+});
+
+// BTN PRINT QUOTE
+document.querySelector("#btnPrintQuote").addEventListener("click", () => {
+  handlerPrintQuote(HEADERID, "preview");
 });
 
 // BTN COPY JO NUMBER
@@ -972,6 +977,7 @@ const handlerSubmitOrder = async (headerid, action, msgloading) => {
           },
           body: JSON.stringify({
             headerid: headerid,
+            loginid: LOGINID,
           }),
         });
 
@@ -1155,7 +1161,7 @@ const handlerDeleteHeader = async (headerid) => {
 };
 
 // HANDLER CREATE PDF QUOTE
-const handlerCreatePDFQuote = async (
+const handlerCreatePDFCustomerQuote = async (
   headerid,
   username,
   action,
@@ -1165,7 +1171,7 @@ const handlerCreatePDFQuote = async (
     // Tampilkan loading SweetAlert
     swalLoadingShow(msgloading);
 
-    const response = await fetch(`${URIMETHOD}/CreatePDFQuote`, {
+    const response = await fetch(`${URIMETHOD}/CreatePDFCustomerQuote`, {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify({ headerid, username, action }),
@@ -1193,7 +1199,7 @@ const handlerCreatePDFQuote = async (
     }
   } catch (error) {
     Swal.close(); // Tutup loading Swal jika error
-    isError(`Gagal membuat PDF Quote: ${error.message}`);
+    isError(`Gagal membuat PDF Customer Quote: ${error.message}`);
   }
 };
 
@@ -1502,7 +1508,43 @@ const handlerDownloadBarcode = async (headerid) => {
     if (result.error) {
       throw new Error(result.error.message);
     } else {
-      console.log(result.success.message);
+      isSuccess(result.success.message).then(() => {
+        window.open(result.success.url, "_blank");
+      });
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME != "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  }
+};
+
+// HANDLER DOWNLOAD BARCODE
+const handlerPrintQuote = async (headerid, action) => {
+  swalLoadingShow("Please wait while we print the quote.");
+  try {
+    const response = await fetch(`${URIMETHOD}/CreatePDFQuote`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ headerid, action, username: USERNAME }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result = data.d || data;
+    if (result.error) {
+      throw new Error(result.error.message);
+    } else {
+      isSuccess(result.success.message).then(() => {
+        window.open(result.success.url, "_blank");
+      });
     }
   } catch (error) {
     var msg = error.message;

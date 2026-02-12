@@ -107,7 +107,9 @@ Partial Class Order_Roller
             lblItemId.Text = Session("itemId")
             btnSubmit.Visible = False
             cardTitle.InnerHtml = "VIEW ITEM ID : " & lblItemId.Text
-            If Session("RoleName") = "Administrator" Then : btnSubmit.Visible = True : End If
+            If Session("RoleName") = "Administrator" Then 
+                 btnSubmit.Visible = True : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit"
+            End If
             If Not IsPostBack Then
                 Call BindDataItem(lblItemId.Text)
             End If

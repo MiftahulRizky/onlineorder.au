@@ -1783,17 +1783,17 @@ Public Class PrintConfig
         Return result
     End Function
 
-    Public Sub CreatePDFQuote(Id As String, User As String, Dir As String, Name As String)
+    Public Sub CreatePDFQuote(Id As String, User As String, Dir As String, Name As String, Key As String)
         Dim build As String = String.Empty
 
         Dim thisData As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Id = '" + Id + "'")
 
         Dim storeId As String = thisData.Tables(0).Rows(0).Item("StoreId").ToString
 
-        build += BuildLogoQuote(storeId)
+        build += BuildLogoQuote(storeId, Key)
         build += "<br /><br /><br />"
-        build += BuildHeaderQuote(Id, User)
-        build += BuildDescQuote(Id)
+        build += BuildHeaderQuote(Id, User, Key)
+        build += BuildDescQuote(Id, Key)
         build += BuildTotalQuote(Id)
 
         build += "<hr />"
@@ -1813,17 +1813,20 @@ Public Class PrintConfig
         End Using
     End Sub
 
-    Public Function BuildLogoQuote(StoreId As String) As String
+    Public Function BuildLogoQuote(StoreId As String, Key As String) As String
         Dim result As String = String.Empty
 
         ' Dim request As HttpRequest = HttpContext.Current.Request
         ' Dim baseUrl As String = request.Url.Scheme & "://" & request.Url.Authority & request.ApplicationPath.TrimEnd("/"c)
         ' Dim fileDirectory As String = baseUrl & "/Content/static/customers/"
         Dim Path As String = System.Web.HttpContext.Current.Server.MapPath("~/Content/static/customers/")
-        Dim fileName As String = GetItemData("SELECT [Image] FROM Customers WHERE Id = '" + StoreId + "'")
+        Dim fileName As String = GetItemData("SELECT Logo FROM CustomerQuotes WHERE Id = '" + StoreId + "'")
         
         Dim src As String = Path & fileName
         If String.IsNullOrEmpty(fileName) Then
+            src = System.Web.HttpContext.Current.Server.MapPath("~/Content/static/new-icon.png")
+        End If
+        If Key = "Origin" Then
             src = System.Web.HttpContext.Current.Server.MapPath("~/Content/static/new-icon.png")
         End If
 
@@ -1838,11 +1841,12 @@ Public Class PrintConfig
         Return result
     End Function
 
-    Public Function BuildHeaderQuote(HeaderId As String, UserName As String) As String
+    Public Function BuildHeaderQuote(HeaderId As String, UserName As String, Key As String) As String
         Dim result As String = String.Empty
 
         Dim thisData As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Id = '" + HeaderId + "'")
 
+        Dim StoreId As String = thisData.Tables(0).Rows(0).Item("StoreId").ToString
         Dim orderNo As String = thisData.Tables(0).Rows(0).Item("OrderNo").ToString
         Dim orderCust As String = thisData.Tables(0).Rows(0).Item("OrderCust").ToString
         Dim address As String = thisData.Tables(0).Rows(0).Item("Address").ToString
@@ -1852,6 +1856,8 @@ Public Class PrintConfig
         Dim phone As String = thisData.Tables(0).Rows(0).Item("Phone").ToString
         Dim email As String = thisData.Tables(0).Rows(0).Item("Email").ToString
 
+        Dim CustomerName As String = GetItemData("SELECT Name FROM Customers WHERE Id = '" + StoreId + "'")
+
         Dim fullAddress As String = address & " " & suburb
         fullAddress += "<br />" & states & " " & postCode
 
@@ -1859,6 +1865,24 @@ Public Class PrintConfig
         Dim tdStartTitle1 As String = "<td valign='top' style='height:auto;width:25%;font-size:12px;padding-top:5px;padding-bottom:5px;'>"
         Dim tdStartTitle2 As String = "<td valign='top' style='height:auto;width:auto;font-size:12px;padding-top:5px;padding-bottom:5px;'>"
         Dim tdStartContent As String = "<td valign='top' style='height:auto;text-align:left;width:auto;font-size:12px;padding-top:5px;padding-bottom:5px;'>"
+
+        Dim Line1 As String = "To"
+        Dim Line2 As String = "Address"
+        Dim Line3 As String = "Email, Phone"
+        Dim Line4 As String = "Order Number"
+        Dim Line5 As String = "Date"
+        Dim Line1V As String = orderCust
+        Dim Line2V As String = fullAddress
+        Dim Line3V As String = email & ", " & phone
+
+        If Key = "Origin" Then
+            Line1 = "To"
+            Line2 = "Order Number"
+            Line3 = "Customer Name"
+            Line1V = CustomerName
+            Line2V = orderNo
+            Line3V = orderCust
+        End If
 
         result += tableStart
         result += trStart
@@ -1869,24 +1893,24 @@ Public Class PrintConfig
         result += tableStart
 
         result += trStart
-        result += tdStartTitle1 & "Customer Name:" & tdEnd
-        result += tdStartContent & "<b>" & orderCust & "</b>" & tdEnd
+        result += tdStartTitle1 & Line1 & tdEnd
+        result += tdStartContent & ": <b>" & Line1V & "</b>" & tdEnd
         result += trEnd
 
         result += trStart
-        result += tdStartTitle1 & "Address:" & tdEnd
-        result += tdStartContent & fullAddress & tdEnd
+        result += tdStartTitle1 & Line2 & tdEnd
+        result += tdStartContent & ": " & Line2V & tdEnd
         result += trEnd
 
         result += trStart
-        result += tdStartTitle1 & "Phone:" & tdEnd
-        result += tdStartContent & phone & tdEnd
+        result += tdStartTitle1 & Line3 & tdEnd
+        result += tdStartContent & ": " & Line3V & tdEnd
         result += trEnd
 
-        result += trStart
-        result += tdStartTitle1 & "Email:" & tdEnd
-        result += tdStartContent & email & tdEnd
-        result += trEnd
+        ' result += trStart
+        ' result += tdStartTitle1 & "Email" & tdEnd
+        ' result += tdStartContent & ": " & email & tdEnd
+        ' result += trEnd
 
         result += tableEnd
 
@@ -1899,18 +1923,18 @@ Public Class PrintConfig
         result += tableStart
 
         result += trStart
-        result += tdStartTitle2 & "Quote No:" & tdEnd
-        result += tdStartContent & "<b>" & orderNo & "</b>" & tdEnd
+        result += tdStartTitle2 & "Quote No" & tdEnd
+        result += tdStartContent & ": <b>" & orderNo & "</b>" & tdEnd
         result += trEnd
 
         result += trStart
         result += tdStartTitle2 & "Date:" & tdEnd
-        result += tdStartContent & "<b>" & DateTime.Now.ToString("MMM dd, yyyy") & "</b>" & tdEnd
+        result += tdStartContent & ": <b>" & DateTime.Now.ToString("MMM dd, yyyy") & "</b>" & tdEnd
         result += trEnd
 
         result += trStart
         result += tdStartTitle2 & "Operator:" & tdEnd
-        result += tdStartContent & "<b>" & UserName & "</b>" & tdEnd
+        result += tdStartContent & ": <b>" & UserName & "</b>" & tdEnd
         result += trEnd
 
         result += tableEnd
@@ -1923,7 +1947,7 @@ Public Class PrintConfig
         Return result
     End Function
 
-    Public Function BuildDescQuote(HeaderId As String) As String
+    Public Function BuildDescQuote(HeaderId As String, Key As String) As String
         Dim result As String = String.Empty
 
         Dim detailData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND Active=1 ORDER BY Id ASC")
@@ -1953,6 +1977,10 @@ Public Class PrintConfig
             Dim cost As Decimal = detailData.Tables(0).Rows(i).Item("TotalMatrix") + detailData.Tables(0).Rows(i).Item("TotalCharge")
             Dim markUp As Decimal = detailData.Tables(0).Rows(i).Item("MarkUp")
             Dim unitPrice As Decimal = Math.Round(cost + (cost * markUp / 100), 2)
+            
+            If Key = "Origin" Then
+                unitPrice = Math.Round(cost, 2)
+            End If
 
             Dim description As String = kitName
 
@@ -1994,7 +2022,7 @@ Public Class PrintConfig
         Dim dataGst As String = dataQuote.Tables(0).Rows(0).Item("QuoteGST").ToString()
 
         Dim minCharge As Decimal = 0.00
-        Dim gst As Decimal = 0.00
+        Dim gst As Decimal = sumPrice * 10 / 100'0.00
         Dim total As Decimal = 0.00
         Dim finalTotal As Decimal = 0.00
 

@@ -26,10 +26,11 @@ Public Class DowloadPDFOrder : Implements IHttpHandler
 
             ' Mapping dari symbolic key ke virtual folder
             Dim pathMap As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase) From {
-                {"invoice", "~/file/order/preview/"},
-                {"jobsheet", "~/file/order/job/"},
-                {"mail", "~/file/order/mail/"},
-                {"quote", "~/file/order/quote/"}
+                {"invoice", "~/File/Order/Preview/"},
+                {"jobsheet", "~/File/Order/Job/"},
+                {"mail", "~/File/Order/Mail/"},
+                {"barcode", "~/File/Order/Barcode/"},
+                {"quote", "~/File/Order/Quote/"}
             }
 
             If Not pathMap.ContainsKey(keyDownload) Then
