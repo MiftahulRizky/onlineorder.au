@@ -3150,12 +3150,13 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Customer Detail" %>
             </div>
 
             <div class="col-12 producttype">
-              <label class="form-label required">Product Type</label>
+              <label class="form-label">Product Type</label>
               <asp:DropDownList
                 runat="server"
                 ID="ddlDiscountBlind"
                 CssClass="form-select"
               ></asp:DropDownList>
+              <small class="form-hint">* Select if needed.</small>
             </div>
 
             <div class="col-8 fabric">
