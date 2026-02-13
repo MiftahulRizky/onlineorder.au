@@ -1796,9 +1796,17 @@ Public Class PrintConfig
         build += BuildDescQuote(Id, Key)
         build += BuildTotalQuote(Id)
 
-        build += "<hr />"
+        ' build += "<hr />"
 
-        build += BuildFooterQuote(storeId)
+        ' build += BuildFooterQuote(storeId, Key)
+        Dim Terms As String = GetItemData("SELECT Terms FROM CustomerQuotes WHERE Id = '" + storeId + "'")
+
+        If Key = "Origin" Then 
+            Terms = "• Quote valid for 30 days from date of issue." & vbCrLf & 
+            "• Quote is subject to Check Measure or finalised order." & vbCrLf & 
+            "• Clear access to windows is necessary prior to check measure (if applicable)." & vbCrLf & 
+            "• Additional charges may incur for removal of blinds and/or shutters before the installation of produdcts (if applicable)."
+        End If 
 
         Dim html As String = build
 
@@ -1808,6 +1816,22 @@ Public Class PrintConfig
             pdfDoc.Open()
             Dim sr As StringReader = New StringReader(html)
             XMLWorkerHelper.GetInstance().ParseXHtml(writer, pdfDoc, sr)
+
+            Dim cb As PdfContentByte = writer.DirectContent
+            Dim fontNormal As Font = FontFactory.GetFont(FontFactory.HELVETICA, 9)
+            Dim fontBold As Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9)
+
+            Dim leftX As Single = pdfDoc.LeftMargin
+            Dim bottomY As Single = pdfDoc.BottomMargin
+
+            Dim ct As New ColumnText(cb)
+            ct.SetSimpleColumn(leftX, 42, 600, 150)
+
+            ct.AddElement(New Paragraph("Terms & Conditions :", fontBold))
+            ct.AddElement(New Paragraph(Terms, fontNormal))
+
+            ct.Go()
+
             pdfDoc.Close()
             stream.Close()
         End Using
@@ -1815,6 +1839,10 @@ Public Class PrintConfig
 
     Public Function BuildLogoQuote(CustomerId As String, Key As String) As String
         Dim result As String = String.Empty
+        If Key = "Origin" Then
+            '#Sunlight Products Pty Ltd
+            CustomerId = "LS-A328"
+        End If
 
         Dim Path As String = System.Web.HttpContext.Current.Server.MapPath("~/Content/static/customers/")
         Dim fileName As String = GetItemData("SELECT Logo FROM CustomerQuotes WHERE Id = '" + CustomerId + "'")
@@ -1844,14 +1872,33 @@ Public Class PrintConfig
             fullAddress = address & ", " & suburb & ", " & states & " " & postCode
         End If 
 
-        Dim Phone As String = GetItemData("SELECT Phone FROM CustomerContacts WHERE CustomerId='" + customerId + "' AND [Primary]=1")
+        Dim customerContactData As DataSet = GetListData("SELECT * FROM CustomerContacts WHERE CustomerId='" + CustomerId + "' AND [Primary]=1")
+       
+        Dim fullContact As String = ""
+        If customerContactData.Tables(0).Rows.Count > 0 Then
+            Dim email As String = customerContactData.Tables(0).Rows(0)("Email").ToString()
+            Dim phone As String = customerContactData.Tables(0).Rows(0)("Phone").ToString()
+            If email = "" Then : email = "-" : End If
+            If phone = "" Then : phone = "-" : End If
+
+            fullContact = "Email: " & email & " , " & "Phone: " & phone
+        End If
+
+        If Key = "Origin" Then
+            If customerContactData.Tables(0).Rows.Count > 0 Then
+                Dim phone As String = customerContactData.Tables(0).Rows(0)("Phone").ToString()
+                If phone = "" Then : phone = "-" : End If
+
+                fullContact = "Phone: " & phone
+            End If
+        End If
 
         result += "<table style='width:100%;margin-bottom:25px;'>"
         result += trStart
         result += "<td valign='top' style='width:50%;'>"
         result += String.Format("<img width='100px' src='{0}' />", src)
         result += String.Format("<br /> <span style='font-size:small;'>{0}</span>", fullAddress)
-        result += String.Format("<br /> <span style='font-size:small;'>Phone : {0}</span>", Phone)
+        result += String.Format("<br /> <span style='font-size:small;'>{0}</span>", fullContact)
         result += tdEnd
         result += "<td valign='bottom' style='width:50%;text-align:right;font-weight:bold;margin-right:20px;'>QUOTE ORDER</td>"
         result += trEnd
@@ -2136,13 +2183,20 @@ Public Class PrintConfig
         Return result
     End Function
 
-    Public Function BuildFooterQuote(CustomerId As String) As String
+    Public Function BuildFooterQuote(CustomerId As String, Key As String) As String
         Dim result As String = String.Empty
 
         Dim Terms As String = GetItemData("SELECT Terms FROM CustomerQuotes WHERE Id = '" + CustomerId + "'")
 
-        result += "<p style='font-size:13px;'><b>Terms & Conditions : </b></p>"
-        result += "<p style='font-size:13px;'>" & Terms & "</p>"
+        If Key = "Origin" Then 
+            Terms = "• Quote valid for 30 days from date of issue."
+            Terms += "<br/>• Quote is subject to Check Measure or finalised order."
+            Terms += "<br/>• Clear access to windows is necessary prior to check measure (if applicable)."
+            Terms += "<br/>• Additional charges may incur for removal of blinds and/or shutters before the installation of produdcts (if applicable)."
+        End If  
+
+        result += "<p style='margin:0;'><b>Terms & Conditions :</b></p>"
+        result += "<p style='margin:0;'>" & Terms & "</p>"
 
 
         Return result

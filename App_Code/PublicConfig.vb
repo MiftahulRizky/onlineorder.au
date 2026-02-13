@@ -824,14 +824,19 @@ Public Class PublicConfig
 
     ' Public Function HitungDiscount(StoreId As String, PriceGroupId As String, Matrix As Decimal) As Decimal
     Public Function HitungDiscount(ListParam As List(Of Object)) As Decimal
-        Dim StoreId As String = CStr(ListParam(0))
+        Dim CustomerId As String = CStr(ListParam(0))
         Dim PriceGroupId As String = CStr(ListParam(1))
         Dim Matrix As Decimal = CDec(ListParam(2))
         Dim DesignId As String = CStr(ListParam(3))
 
         Dim result As Decimal = 0.00
         ' Dim thisData As DataSet = GetListData("SELECT Discount FROM Discounts WHERE StoreId = '" + StoreId + "' AND PriceGroupId = '" + PriceGroupId + "' AND Active=1")
-        Dim thisData As DataSet = GetListData(String.Format("SELECT Discount FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND Active='1'", StoreId, DesignId))
+        Dim BlindId As String = GetItemData(String.Format("SELECT BlindId FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND Active='1'", CustomerId, DesignId))
+        Dim thisData As DataSet = GetListData(String.Format("SELECT * FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND Active='1'", CustomerId, DesignId))
+        If Not String.IsNullOrEmpty(BlindId) Then
+            thisData = GetListData(String.Format("SELECT * FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND BlindId='{2}' AND Active='1'", CustomerId, DesignId, BlindId))
+        End If
+
         If Not thisData.Tables(0).Rows.Count = 0 Then
             Dim discount As Integer = thisData.Tables(0).Rows(0).Item("Discount").ToString()
             result = Matrix * discount / 100

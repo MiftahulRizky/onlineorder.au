@@ -103,8 +103,6 @@ Partial Class Setting_CustomDiscount_Default
 
             sdsPage.Delete()
 
-            Dim userId As String = UCase(Session("UserId")).ToString()
-            publicCfg.InsertActivity(userId, Page.Title, "DELETE SURCHARGE. ID : " & lblId.Text)
 
             Call BindData(ddlDesignId.SelectedValue, ddlBlindId.SelectedValue, txtSearch.Text)
         Catch ex As Exception
@@ -128,8 +126,6 @@ Partial Class Setting_CustomDiscount_Default
 
             sdsPage.Update()
 
-            Dim userId As String = UCase(Session("UserId")).ToString()
-            publicCfg.InsertActivity(userId, Page.Title, "ACTIVE SURCHARGE. ID : " & lblId.Text)
 
             Call BindData(ddlDesignId.SelectedValue, ddlBlindId.SelectedValue, txtSearch.Text)
         Catch ex As Exception

@@ -3125,7 +3125,7 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Customer Detail" %>
 
         <div class="modal-body">
           <div class="mb-3 row">
-            <div class="col-4">
+            <div class="col-4 mb-3">
               <label class="form-label required">Discount Type</label>
               <asp:DropDownList
                 runat="server"
@@ -3134,15 +3134,26 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Customer Detail" %>
                 ClientIDMode="Static"
               >
                 <asp:ListItem Value="Product" Text="Product"></asp:ListItem>
-                <%--
-                <asp:ListItem Value="Fabric" Text="Fabric"></asp:ListItem> --%>
+                <%--<asp:ListItem Value="Fabric" Text="Fabric"></asp:ListItem
+                >--%>
               </asp:DropDownList>
             </div>
-            <div class="col-8 product">
+            <div class="col-8 mb-3 product">
               <label class="form-label required">Product</label>
               <asp:DropDownList
                 runat="server"
                 ID="ddlDiscountDesign"
+                CssClass="form-select"
+                OnSelectedIndexChanged="ddlDiscountBlind_SelectedIndexChanged"
+                AutoPostBack="true"
+              ></asp:DropDownList>
+            </div>
+
+            <div class="col-12 producttype">
+              <label class="form-label required">Product Type</label>
+              <asp:DropDownList
+                runat="server"
+                ID="ddlDiscountBlind"
                 CssClass="form-select"
               ></asp:DropDownList>
             </div>

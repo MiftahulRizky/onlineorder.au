@@ -2,12 +2,15 @@
 Imports System.Data.SqlClient
 Imports System.Globalization
 Imports System.Web.Services
+Imports System.Web.Script.Services
+Imports System.Web.Script.Serialization
 
 Partial Class Setting_Customer_Detail
     Inherits Page
 
     Dim settingCfg As New SettingConfig
     Dim mailCfg As New MailConfig
+    Shared publicCfg As New PublicConfig()
 
     Dim enUS As CultureInfo = New CultureInfo("en-US")
     Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
@@ -1466,6 +1469,7 @@ Partial Class Setting_Customer_Detail
                 MessageErrorProcess_Discount(False, String.Empty)
                 DiscountDesign()
                 DiscountFabric()
+               
 
                 Dim thisScript As String = "window.onload = function() { showProcessDiscount(); };"
                 Try
@@ -1477,10 +1481,11 @@ Partial Class Setting_Customer_Detail
                     divFabricProduct.Visible = False
 
                     Dim myData As DataSet = settingCfg.GetListData("SELECT * FROM CustomerDiscounts WHERE Id = '" + lblIdDiscount.Text + "'")
-
+                    BindBlindType(myData.Tables(0).Rows(0).Item("DesignId").ToString())
                     ddlDiscountType.SelectedValue = myData.Tables(0).Rows(0).Item("DiscountType").ToString()
                     If ddlDiscountType.SelectedValue = "Product" Then
                         ddlDiscountDesign.SelectedValue = UCase(myData.Tables(0).Rows(0).Item("DesignId").ToString())
+                        ddlDiscountBlind.SelectedValue = myData.Tables(0).Rows(0).Item("BlindId").ToString()
                         ddlDiscountFabric.SelectedValue = ""
                     End If
                     If ddlDiscountType.SelectedValue = "Fabric" Then
@@ -1683,11 +1688,12 @@ Partial Class Setting_Customer_Detail
                     Dim thisId = settingCfg.CreateId("SELECT TOP 1 Id FROM CustomerDiscounts ORDER BY Id DESC")
 
                     Using thisConn As New SqlConnection(myConn)
-                        Using myCmd As SqlCommand = New SqlCommand("INSERT INTO CustomerDiscounts VALUES (@Id, 'CustomerAccount', @CustomerId, @DiscountType, @DesignId, @FabricId, NULL, 0, NULL, @Discount, @StartDate, @EndDate, @FinalDiscount, 1)")
+                        Using myCmd As SqlCommand = New SqlCommand("INSERT INTO CustomerDiscounts VALUES (@Id, 'CustomerAccount', @CustomerId, @DiscountType, @DesignId, @BlindId, @FabricId, NULL, 0, NULL, @Discount, @StartDate, @EndDate, @FinalDiscount, 1)")
                             myCmd.Parameters.AddWithValue("@Id", thisId)
                             myCmd.Parameters.AddWithValue("@CustomerId", lblId.Text)
                             myCmd.Parameters.AddWithValue("@DiscountType", ddlDiscountType.SelectedValue)
                             myCmd.Parameters.AddWithValue("@DesignId", If(String.IsNullOrEmpty(ddlDiscountDesign.SelectedValue), CType(DBNull.Value, Object), ddlDiscountDesign.SelectedValue))
+                            myCmd.Parameters.AddWithValue("@BlindId", If(String.IsNullOrEmpty(ddlDiscountBlind.SelectedValue), CType(DBNull.Value, Object), ddlDiscountBlind.SelectedValue))
                             myCmd.Parameters.AddWithValue("@FabricId", If(String.IsNullOrEmpty(ddlDiscountFabric.SelectedValue), CType(DBNull.Value, Object), ddlDiscountFabric.SelectedValue))
                             myCmd.Parameters.AddWithValue("@Discount", txtDiscountValue.Text)
                             myCmd.Parameters.AddWithValue("@StartDate", If(String.IsNullOrEmpty(txtDiscountStart.Text), CType(DBNull.Value, Object), txtDiscountStart.Text))
@@ -1709,11 +1715,12 @@ Partial Class Setting_Customer_Detail
 
                 If lblActionDiscount.Text = "Edit" Then
                     Using thisConn As New SqlConnection(myConn)
-                        Using myCmd As SqlCommand = New SqlCommand("UPDATE CustomerDiscounts SET CustomerBy='CustomerAccount', CustomerData=@CustomerId, DiscountType=@DiscountType, DesignId=@DesignId, FabricId=@FabricId, FabricColourId=@FabricColourId, FabricCustom=@FabricCustom, FabricProduct=@FabricProduct, Discount=@Discount, StartDate=@StartDate, EndDate=@EndDate, FinalDiscount=@FinalDiscount WHERE Id=@Id")
+                        Using myCmd As SqlCommand = New SqlCommand("UPDATE CustomerDiscounts SET CustomerBy='CustomerAccount', CustomerData=@CustomerId, DiscountType=@DiscountType, DesignId=@DesignId, BlindId=@BlindId, FabricId=@FabricId, FabricColourId=@FabricColourId, FabricCustom=@FabricCustom, FabricProduct=@FabricProduct, Discount=@Discount, StartDate=@StartDate, EndDate=@EndDate, FinalDiscount=@FinalDiscount WHERE Id=@Id")
                             myCmd.Parameters.AddWithValue("@Id", lblIdDiscount.Text)
                             myCmd.Parameters.AddWithValue("@CustomerId", lblId.Text)
                             myCmd.Parameters.AddWithValue("@DiscountType", ddlDiscountType.SelectedValue)
                             myCmd.Parameters.AddWithValue("@DesignId", If(String.IsNullOrEmpty(ddlDiscountDesign.SelectedValue), CType(DBNull.Value, Object), ddlDiscountDesign.SelectedValue))
+                            myCmd.Parameters.AddWithValue("@BlindId", If(String.IsNullOrEmpty(ddlDiscountBlind.SelectedValue), CType(DBNull.Value, Object), ddlDiscountBlind.SelectedValue))
                             myCmd.Parameters.AddWithValue("@FabricId", If(String.IsNullOrEmpty(ddlDiscountFabric.SelectedValue), CType(DBNull.Value, Object), ddlDiscountFabric.SelectedValue))
                             myCmd.Parameters.AddWithValue("@FabricColourId", If(String.IsNullOrEmpty(fabricColourId), CType(DBNull.Value, Object), fabricColourId))
                             myCmd.Parameters.AddWithValue("@FabricCustom", fabricCustom)
@@ -1773,6 +1780,41 @@ Partial Class Setting_Customer_Detail
         End Try
     End Sub
 
+    Protected Sub ddlDiscountBlind_SelectedIndexChanged(sender As Object, e As EventArgs)
+        MessageError_Discount(False, String.Empty)
+        Session("selectedTabCustomer") = "tabsDiscounts"
+        Dim thisScript As String = "window.onload = function() { showProcessDiscount(); };"
+        Try
+            Dim DesignId As String = ddlDiscountDesign.SelectedValue
+
+            BindBlindType(DesignId)
+            ClientScript.RegisterStartupScript(Me.GetType(), "showProcessDiscount", thisScript, True)
+        Catch ex As Exception
+             MessageErrorProcess_Discount(True, ex.ToString())
+            If Not Session("RoleName") = "Administrator" Then
+                MessageErrorProcess_Discount(True, "Please contact IT at reza@bigblinds.co.id !")
+                mailCfg.MailError(Page.Title, "ddlDiscountBlind_SelectedIndexChanged", Session("LoginId"), ex.ToString())
+            End If
+            ClientScript.RegisterStartupScript(Me.GetType(), "showProcessDiscount", thisScript, True)
+        End Try
+    End Sub
+
+    Private Sub BindBlindType(DesignId As String)
+        ddlDiscountBlind.Items.Clear()
+        Try
+            ddlDiscountBlind.DataSource = publicCfg.GetListData(String.Format("SELECT UPPER(Name) AS NameText, * FROM Blinds WHERE DesignId = '{0}' AND Active=1 ORDER BY Name ASC", DesignId))
+            ddlDiscountBlind.DataTextField = "NameText"
+            ddlDiscountBlind.DataValueField = "Id"
+            ddlDiscountBlind.DataBind()
+
+            If ddlDiscountBlind.Items.Count > 1 Then
+                ddlDiscountBlind.Items.Insert(0, New ListItem("", ""))
+            End If
+        Catch ex As Exception
+          
+        End Try
+    End Sub
+
     Private Sub BindDiscount(Id As String)
         MessageError_Discount(False, String.Empty)
         Session("customerDiscount") = String.Empty
@@ -1803,7 +1845,7 @@ Partial Class Setting_Customer_Detail
     Private Sub DiscountDesign()
         ddlDiscountDesign.Items.Clear()
         Try
-            Dim thisQuery As String = "SELECT *, UPPER(Id) AS IdText FROM Designs WHERE Type <> 'Additional' ORDER BY Name ASC"
+            Dim thisQuery As String = "SELECT *, UPPER(Id) AS IdText FROM Designs WHERE Type <> 'Additional' AND Active = 1 ORDER BY Name ASC"
 
             ddlDiscountDesign.DataSource = settingCfg.GetListData(thisQuery)
             ddlDiscountDesign.DataTextField = "Name"
@@ -1889,8 +1931,17 @@ Partial Class Setting_Customer_Detail
             Dim type As String = thisData.Tables(0).Rows(0).Item("DiscountType").ToString()
             If type = "Product" Then
                 Dim designId As String = thisData.Tables(0).Rows(0).Item("DesignId").ToString()
+                Dim blindId As String = thisData.Tables(0).Rows(0).Item("BlindId").ToString()
                 Dim designName As String = settingCfg.GetItemData("SELECT Name FROM Designs WHERE Id = '" + designId + "'")
-                result = "Product : " & designName
+
+                result = String.Format("Product : {0}", designName)
+                If Not String.IsNullOrEmpty(blindId) Then
+                    Dim blindName As String = settingCfg.GetItemData("SELECT Name FROM Blinds WHERE Id = '" + blindId + "'")
+                    If Not String.IsNullOrEmpty(blindName) Then
+                        result = String.Format("Product : {0}, {1}", designName, blindName)
+                    End If
+                End If
+
             End If
 
             If type = "Fabric" Then
