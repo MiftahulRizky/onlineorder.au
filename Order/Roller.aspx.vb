@@ -848,6 +848,7 @@ Partial Class Order_Roller
                 '#update Items
                 If Session("itemAction") = "EditItem" Or Session("itemAction") = "ViewItem" Then
                     sdsPage.Update()
+                    
 
                     If bracketName = "Double" Then
                         sdsNext.Update()

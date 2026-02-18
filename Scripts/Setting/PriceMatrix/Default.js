@@ -240,8 +240,8 @@ function submitSave() {
           }
         });
       } else {
+        handlerHideBSModal("modalSaveData");
         isSuccess(result.success).then(() => {
-          handlerHideBSModal("modalSaveData");
           tableData.ajax.reload();
         });
       }

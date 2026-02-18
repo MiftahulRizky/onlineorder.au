@@ -130,6 +130,49 @@ document.querySelector("#btnPrintQuote").addEventListener("click", () => {
   handlerPrintQuote(HEADERID, "preview");
 });
 
+// BTN SEND MAIL QUOTE
+document.querySelector("#btnEmailQuote").addEventListener("click", async () => {
+  try {
+    document
+      .querySelectorAll(
+        "#modalSendMailQuote .form-control, #modalSendMailQuote .form-select",
+      )
+      .forEach((e) => {
+        e.classList.remove("is-invalid");
+        e.value = "";
+      });
+
+    const id = await getItemData(
+      `SELECT Id FROM Mailings WHERE ApplicationId ='${APPLICATIONID}' AND Name = 'Quote Order Shutters' AND Active = 1`,
+    );
+    const from = await getItemData(
+      `SELECT Server FROM Mailings WHERE ApplicationId ='${APPLICATIONID}' AND Name = 'Quote Order Shutters' AND Active = 1`,
+    );
+    if (!from || !id) {
+      throw new Error("Server Mailings Not Found");
+    }
+    const customerid = document.querySelector("#spanRetailerId").innerHTML;
+    const to = await getItemData(
+      `SELECT Email FROM CustomerContacts WHERE CustomerId = '${customerid}' AND [Primary]=1`,
+    );
+    if (!to) {
+      throw new Error("Please Setup Customer Email");
+    }
+
+    document.querySelector("#modalSendMailQuote #id").value = id;
+    document.querySelector("#modalSendMailQuote #from").value = from;
+    document.querySelector("#modalSendMailQuote #mailto").value = to;
+
+    handlerShowBSModal("modalSendMailQuote");
+  } catch (error) {
+    var msg = error.message ? error.message : error;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    await isError(msg);
+  }
+});
+
 // BTN COPY JO NUMBER
 document.addEventListener("click", (e) => {
   const btn = e.target.closest("#btnCopyJoNumber, [data-jonumber]"); // id atau attribute
@@ -153,6 +196,49 @@ document.querySelector("#btnAddItem").addEventListener("click", () => {
   handlerShowBSModal("modalAddItem");
 });
 
+// BUTTON ADD SERVICE
+document.querySelector("#btnAddService").addEventListener("click", () => {
+  // reset form
+  document
+    .querySelectorAll(
+      "#modalAddService .form-control, #modalAddService .form-select",
+    )
+    .forEach((e) => {
+      e.classList.remove("is-invalid");
+      e.value = "";
+    });
+
+  // binding
+  handlerSelService("#modalAddService #category");
+
+  // visible element
+  const divType = document.getElementById("divType");
+  const lblType = document.getElementById("lblType");
+  const modalLabel = document.getElementById("modalAddServiceLabel");
+
+  modalLabel.innerHTML = "Add New Service";
+  divType.setAttribute("hidden", true);
+  lblType.innerHTML = "Catgory Type";
+
+  handlerShowBSModal("modalAddService");
+});
+
+// ------------------------------------------||modalSendMailQuote Event ||------------------------------------
+document
+  .querySelectorAll(
+    "#modalSendMailQuote .form-control, #modalSendMailQuote .form-select",
+  )
+  .forEach((e) => {
+    e.addEventListener("input", (e) => {
+      e.target.classList.remove("is-invalid");
+    });
+  });
+
+document
+  .querySelector("#modalSendMailQuote #btnSendMailQuote")
+  .addEventListener("click", () => {
+    submitSendMailQuote();
+  });
 // ------------------------------------------||modalAddItem Event ||------------------------------------
 // CHANGE DESIGN TYPE
 document.querySelectorAll("#modalAddItem .form-select").forEach((e) => {
@@ -168,6 +254,43 @@ document
     const designId = document.querySelector("#modalAddItem #designid").value;
     const action = "AddItem";
     submitSelectProduct(HEADERID, ORDERTYPE, action, designId);
+  });
+
+// ------------------------------------------||modalAddService Event ||-------------------------------------
+document
+  .querySelectorAll(
+    "#modalAddService .form-control, #modalAddService .form-select",
+  )
+  .forEach((e) => {
+    e.addEventListener("change", async (e) => {
+      e.target.classList.remove("is-invalid");
+
+      // change category
+      if (e.target.id == "category") {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        const id = selectedOption.value;
+        const category = selectedOption.dataset.name;
+
+        // binding
+        await bindHardwareKit("#modalAddService #type", id);
+
+        const divType = document.getElementById("divType");
+        const lblType = document.getElementById("lblType");
+
+        if (category == "Long Length Surcharge") {
+          lblType.innerHTML = "Type";
+        }
+      }
+    });
+    e.addEventListener("input", (e) => {
+      e.target.classList.remove("is-invalid");
+    });
+  });
+
+document
+  .querySelector("#modalAddService #btnSubmitService")
+  .addEventListener("click", () => {
+    submitService();
   });
 
 // ------------------------------------------||modalChangeStatus Event ||------------------------------------
@@ -233,7 +356,8 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const designid = e.target.dataset.designid;
     const headerid = e.target.dataset.headerid;
     const ordertype = ORDERTYPE;
-    handlerEditItem(id, headerid, ordertype, "ViewItem", designid);
+    const designname = e.target.dataset.designname;
+    handlerEditItem(id, headerid, ordertype, "ViewItem", designid, designname);
   }
 });
 
@@ -243,7 +367,8 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const designid = e.target.dataset.designid;
     const headerid = e.target.dataset.headerid;
     const ordertype = ORDERTYPE;
-    handlerEditItem(id, headerid, ordertype, "EditItem", designid);
+    const designname = e.target.dataset.designname;
+    handlerEditItem(id, headerid, ordertype, "EditItem", designid, designname);
   }
 });
 
@@ -483,6 +608,158 @@ const submitSelectProduct = (headerid, ordertype, action, designid) => {
   });
 };
 
+// SUBMIT SERVICE
+const submitService = async () => {
+  // Hapus semua tanda invalid di awal
+  document
+    .querySelectorAll(
+      "#modalAddService .form-control, #modalAddService .form-select",
+    )
+    .forEach((e) => e.classList.remove("is-invalid"));
+
+  const btnSubmit = document.querySelector(
+    "#modalAddService #btnSubmitService",
+  );
+
+  const fields = ["id", "category", "type"];
+
+  const additionalParams = {
+    username: USERNAME,
+    headerid: HEADERID,
+    loginid: LOGINID,
+  };
+
+  fields.forEach((field) => {
+    const el = document.querySelector(`#modalAddService #${field}`);
+    additionalParams[field] = el ? el.value : "";
+  });
+
+  try {
+    // === Sebelum request ===
+    btnSubmit.setAttribute("disabled", "disabled");
+    btnSubmit.innerHTML = '<i class="fa fa-spin fa-spinner"></i>';
+    swalLoadingShow("Please wait a moment");
+
+    // === Kirim request ===
+    const response = await fetch(`${URIMETHOD}/SubmitService`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: additionalParams }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const data = result.d || result;
+
+    // === Setelah sukses ===
+    if (data.error) {
+      await isError(data.error.message.toUpperCase());
+      const fieldElement = document.querySelector(data.error.field);
+      if (fieldElement) {
+        fieldElement.focus();
+        fieldElement.classList.add("is-invalid");
+      }
+    } else {
+      handlerHideBSModal("modalAddService");
+      await isSuccess(data.success.message);
+      location.reload();
+    }
+  } catch (error) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? error.message
+        : "Something went wrong, please try again!";
+    await isError(msg);
+  } finally {
+    // === Setelah request selesai (sukses atau error) ===
+    btnSubmit.removeAttribute("disabled");
+    btnSubmit.innerHTML = `Submit`;
+  }
+
+  return false;
+};
+
+// SUBMIT SEND MAIL QUOTE
+const submitSendMailQuote = async () => {
+  // Hapus semua tanda invalid di awal
+  document
+    .querySelectorAll(
+      "#modalSendMailQuote .form-control, #modalSendMailQuote .form-select",
+    )
+    .forEach((e) => e.classList.remove("is-invalid"));
+
+  const btnSubmit = document.querySelector(
+    "#modalSendMailQuote #btnSendMailQuote",
+  );
+
+  const fields = ["id", "from", "mailto", "cc"];
+
+  const additionalParams = {
+    username: USERNAME,
+    headerid: HEADERID,
+    loginid: LOGINID,
+  };
+
+  fields.forEach((field) => {
+    const el = document.querySelector(`#modalSendMailQuote #${field}`);
+    additionalParams[field] = el ? el.value : "";
+  });
+
+  try {
+    // === Sebelum request ===
+    btnSubmit.setAttribute("disabled", "disabled");
+    btnSubmit.innerHTML = '<i class="fa fa-spin fa-spinner"></i>';
+    swalLoadingShow("Please wait a moment");
+
+    // === Kirim request ===
+    const response = await fetch(`${URIMETHOD}/SubmitSendMailQuote`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: additionalParams }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const data = result.d || result;
+
+    // === Setelah sukses ===
+    if (data.error) {
+      await isError(data.error.message.toUpperCase());
+      const fieldElement = document.querySelector(data.error.field);
+      if (fieldElement) {
+        fieldElement.focus();
+        fieldElement.classList.add("is-invalid");
+      }
+    } else {
+      handlerHideBSModal("modalSendMailQuote");
+      await isSuccess(data.success.message);
+      tableData.ajax.reload();
+    }
+  } catch (error) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? error.message
+        : "Something went wrong, please try again!";
+    await isError(msg);
+  } finally {
+    // === Setelah request selesai (sukses atau error) ===
+    btnSubmit.removeAttribute("disabled");
+    btnSubmit.innerHTML = `Send`;
+  }
+
+  return false;
+};
+
 // SUBMIT EDIT PRICING
 const submitEditPricing = async () => {
   document
@@ -582,10 +859,13 @@ const handlerDisplayElement = (item) => {
   const btnQuoteDetail = document.getElementById("btnQuoteDetail");
   const btnDownloadQuote = document.getElementById("btnDownloadQuote");
   const btnMoreAction = document.getElementById("btnMoreAction");
+  const btnEmailDeposit = document.getElementById("btnEmailDeposit");
+  const dividerEmailDeposit = document.getElementById("dividerEmailDeposit");
   const btnChangeStatus = document.getElementById("btnChangeStatus");
   const btnSendOrderMail = document.getElementById("btnSendOrderMail");
   const btnReloadPricing = document.getElementById("btnReloadPricing");
   const btnAddItem = document.getElementById("btnAddItem");
+  const btnAddService = document.getElementById("btnAddService");
   const divPrice = document.getElementById("divPrice");
   const msgThanks = document.getElementById("msgThanks");
 
@@ -603,10 +883,13 @@ const handlerDisplayElement = (item) => {
   btnQuoteDetail.setAttribute("hidden", true);
   btnDownloadQuote.setAttribute("hidden", true);
   btnMoreAction.setAttribute("hidden", true);
+  btnEmailDeposit.setAttribute("hidden", true);
+  dividerEmailDeposit.setAttribute("hidden", true);
   btnChangeStatus.setAttribute("hidden", true);
   btnSendOrderMail.setAttribute("hidden", true);
   btnReloadPricing.setAttribute("hidden", true);
   btnAddItem.setAttribute("hidden", true);
+  btnAddService.setAttribute("hidden", true);
   divPrice.setAttribute("hidden", true);
   msgThanks.setAttribute("hidden", true);
 
@@ -656,6 +939,18 @@ const handlerDisplayElement = (item) => {
     }
   }
 
+  // btnAddService
+  if (
+    ROLENAME === "Administrator" ||
+    ROLENAME === "PPIC & DE" ||
+    ROLENAME === "Customer Service"
+  ) {
+    // if (ROLENAME === "Administrator") {
+    if (item.Status !== "Completed") {
+      btnAddService.removeAttribute("hidden");
+    }
+  }
+
   // btnQuote, btnQuoteDetail, & btnDownloadQuote
   if (ROLENAME === "Administrator" || ROLENAME === "Customer") {
     btnQuote.removeAttribute("hidden");
@@ -681,8 +976,18 @@ const handlerDisplayElement = (item) => {
   }
 
   // btnMoreAction
-  if (ROLENAME === "Administrator") {
+  if (
+    ROLENAME === "Administrator" ||
+    ROLENAME === "PPIC & DE" ||
+    ROLENAME === "Customer Service"
+  ) {
     btnMoreAction.removeAttribute("hidden");
+  }
+
+  // btnEmailDeposit & dividerEmailDeposit
+  if (ROLENAME === "Administrator") {
+    btnEmailDeposit.removeAttribute("hidden");
+    dividerEmailDeposit.removeAttribute("hidden");
   }
 
   // btnReloadPricing
@@ -709,6 +1014,9 @@ const handlerDisplayElement = (item) => {
 const handlerHeaderInfo = async (item) => {
   // INITIALIZE ELEMENTS
   // CARD 1
+  const spanRetailerName = document.getElementById("spanRetailerName");
+  const spanRetailerId = document.getElementById("spanRetailerId");
+  const spanOrderId = document.getElementById("spanOrderId");
   const spanJoNumber = document.getElementById("spanJoNumber");
   const spanOrderNo = document.getElementById("spanOrderNo");
   const spanOrderCust = document.getElementById("spanOrderCust");
@@ -744,6 +1052,11 @@ const handlerHeaderInfo = async (item) => {
       month: "long",
       day: "2-digit",
     };
+
+    spanRetailerName.innerHTML = item.CustomerName;
+    spanRetailerId.innerHTML = item.CustomerId;
+    spanOrderId.innerHTML = item.OrderId;
+
     // CARD 1
     spanJoNumber.innerHTML = item.JoNumberId
       ? `<span class="badge badge-outline text-red">${item.JoNumberId}</span> <a href="javascript:void(0);" id="btnCopyJoNumber" class="btn btn-sm  border-0 bg-transparent" data-jonumber="${item.JoNumberId}"><i class="ti ti-copy fs-2 opacity-50"></i></a>`
@@ -778,7 +1091,7 @@ const handlerHeaderInfo = async (item) => {
     if (!item.SubmittedDate) spanSubmittedDate.innerHTML = "-";
     if (item.SubmittedDate) {
       const cardPrice = document.getElementById("cardPrice");
-      cardPrice.classList.add("mb-3", "mt-1");
+      // cardPrice.classList.add("mb-3", "mt-1");
 
       const customDate = parseCustomDate(item.SubmittedDate);
       if (!customDate || isNaN(customDate.getTime())) {
@@ -841,58 +1154,47 @@ const handlerHeaderInfo = async (item) => {
     }
 
     try {
-      // Jalankan 2 request secara paralel
-      const [createdByRes, priceRes] = await Promise.all([
-        fetch(`${URIMETHOD}/GetCreatedBy`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json; charset=utf-8" },
-          body: JSON.stringify({ id: item.CreatedBy }),
-        }),
-        fetch(`${URIMETHOD}/GetAmountPriceHeader`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json; charset=utf-8" },
-          body: JSON.stringify({
-            headerid: item.Id,
-            pricesaccess: PRICEACCESS,
-          }),
-        }),
-      ]);
+      const CreatedBy = await getItemData(
+        `SELECT FullName FROM CustomerLogins WHERE Id='${item.CreatedBy}'`,
+      );
+      spanCreatedBy.innerHTML = CreatedBy || "-";
 
-      // Cek kedua response
-      if (!createdByRes.ok)
-        throw new Error(`${createdByRes.status} ${createdByRes.statusText}`);
-      if (!priceRes.ok)
-        throw new Error(`${priceRes.status} ${priceRes.statusText}`);
+      let SumPrice = 0;
+      let Gst = 0;
+      let FinalTotal = 0;
 
-      // Ambil JSONnya
-      const createdByJson = await createdByRes.json();
-      const priceJson = await priceRes.json();
+      if (PRICEACCESS == "1" || PRICEACCESS == "True") {
+        SumPrice = await getItemData(
+          `SELECT SUM(TotalMatrix + TotalCharge) AS SumPrice FROM OrderDetails WHERE HeaderId = '${item.Id}' AND Active=1`,
+        );
 
-      const dataCreated = createdByJson.d;
-      const dataPrice = priceJson.d;
+        // convert string "556,40" -> number 556.40
+        SumPrice = parseFloat(SumPrice.toString().replace(",", ".")) || 0;
 
-      if (!dataCreated || !dataPrice) {
-        const msg =
-          ROLENAME === "Administrator"
-            ? "No data returned from server : handlerHeaderInfo"
-            : "Please contact our IT team at support@onlineorder.au";
-        return isError(msg);
+        if (SumPrice) {
+          Gst = (SumPrice * 10) / 100;
+          FinalTotal = SumPrice + Gst;
+        }
       }
 
-      // CreatedBy
-      spanCreatedBy.innerHTML = dataCreated.createdby || "ERROR!";
+      const formatCurrency = (num) => {
+        return num.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      };
 
-      // Prices
-      spanTotal.innerHTML = dataPrice.amount
-        ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${dataPrice.amount}</span>`
+      // Render
+      spanTotal.innerHTML = SumPrice
+        ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${formatCurrency(SumPrice)}</span>`
         : `<span style="font-size:larger;">0</span>`;
 
-      spanGST.innerHTML = dataPrice.gst
-        ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${dataPrice.gst}</span>`
+      spanGST.innerHTML = Gst
+        ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${formatCurrency(Gst)}</span>`
         : `<span style="font-size:larger;">0</span>`;
 
-      spanFinalTotal.innerHTML = dataPrice.finaltotal
-        ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${dataPrice.finaltotal}</span>`
+      spanFinalTotal.innerHTML = FinalTotal
+        ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${formatCurrency(FinalTotal)}</span>`
         : `<span style="font-size:larger;">0</span>`;
     } catch (error) {
       const msg =
@@ -1614,34 +1916,21 @@ const handlerSelDesignType = async (params, production) => {
   }
 };
 
-// HANDLER EDIT ITEM
-const handlerEditItem = async (id, headerid, ordertype, action, designid) => {
-  if (!id || !headerid || !action || !designid) {
-    if (ROLENAME === "Administrator") {
-      if (!id) await isError("ID NOT FOUND!");
-      if (!headerid) await isError("HEADER ID NOT FOUND!");
-      if (!action) await isError("ACTION NOT FOUND!");
-      if (!designid) await isError("DESIGN ID NOT FOUND!");
-      return;
-    }
-
-    await isError("Please contact our IT team at support@onlineorder.au");
-    return;
-  }
+// HANDLER SELECT DESIGN TYPE
+const handlerSelService = async (params) => {
+  const sel = document.querySelector(params);
+  sel.innerHTML = ""; // reset
 
   try {
-    const response = await fetch(`${URIMETHOD}/SetSessionOpenPageInputItem`, {
+    const response = await fetch(`${URIMETHOD}/BindService`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({
-        id,
-        headerid,
-        ordertype,
-        action,
-        designid,
-      }),
+      // body: JSON.stringify({
+      //   customerid: CUSTOMERID,
+      //   ordertype: ORDERTYPE,
+      // }),
     });
 
     if (!response.ok) {
@@ -1649,16 +1938,227 @@ const handlerEditItem = async (id, headerid, ordertype, action, designid) => {
     }
 
     const data = await response.json();
-    const result = data.d || data;
+    const result = data.d;
 
-    const finePage = result.success.message.replace("~", "");
-    window.location.href = finePage;
+    if (!result || result.length === 0) {
+      throw new Error("No data returned from server : handlerSelService");
+    }
+
+    if (Array.isArray(result)) {
+      sel.innerHTML = ""; // reset ulang
+
+      const defaultOption = document.createElement("option");
+      defaultOption.text = "";
+      defaultOption.value = "";
+      sel.add(defaultOption);
+
+      result.forEach((item) => {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        sel.add(option);
+      });
+    }
   } catch (error) {
     const msg =
       ROLENAME === "Administrator"
-        ? "Gagal menyetel session: " + error.message
+        ? error.message
         : "Please contact our IT team at support@onlineorder.au";
     await isError(msg);
+  }
+};
+
+const bindHardwareKit = async (params, blindid) => {
+  const sel = document.querySelector(params);
+  sel.innerHTML = ""; // reset
+
+  if (!blindid) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindHardwareKit`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ blindid }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result = data.d;
+
+    if (!result || result.length === 0) {
+      throw new Error("No data returned from server : bindHardwareKit");
+    }
+
+    if (Array.isArray(result)) {
+      sel.innerHTML = ""; // reset ulang
+
+      if (result.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        sel.add(defaultOption);
+      }
+
+      result.forEach((item) => {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        sel.add(option);
+      });
+
+      if (result.length === 1) {
+        sel.selectedIndex = 0;
+      }
+
+      if (result.length > 1) {
+        divType.removeAttribute("hidden");
+      }
+    }
+  } catch (error) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    await isError(msg);
+  }
+};
+
+// HANDLER EDIT ITEM
+const handlerEditItem = async (
+  id,
+  headerid,
+  ordertype,
+  action,
+  designid,
+  designname,
+) => {
+  if (!id || !headerid || !action || !designid || !designname) {
+    if (ROLENAME === "Administrator") {
+      if (!id) await isError("ID NOT FOUND!");
+      if (!headerid) await isError("HEADER ID NOT FOUND!");
+      if (!action) await isError("ACTION NOT FOUND!");
+      if (!designid) await isError("DESIGN ID NOT FOUND!");
+      if (!designname) await isError("DESIGN NAME NOT FOUND!");
+      return;
+    }
+
+    await isError("Please contact our IT team at support@onlineorder.au");
+    return;
+  }
+  if (designname == "Additional") {
+    swalLoadingShow("Please wait while we prepare the data.");
+    try {
+      const response = await fetch(`${URIMETHOD}/BindOrderDetailsByID`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify({ itemid: id }),
+      });
+
+      if (!response.ok) {
+        const msg = `${response.status} - ${response.statusText}`;
+        throw new Error(msg);
+      }
+
+      const dataResponse = await response.json();
+      const data = dataResponse.d;
+
+      if (!data || data.length === 0) {
+        throw new Error("No data returned from server : handlerEditItem");
+      }
+
+      for (const item of data) {
+        await handlerSelService("#modalAddService #category");
+        await bindHardwareKit("#modalAddService #type", item.BlindId);
+        await setFormValues(item);
+        await visibleFormService(item);
+        await Swal.close();
+        await handlerShowBSModal("modalAddService");
+      }
+    } catch (error) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? error.message
+          : "Please contact our IT team at support@onlineorder.au";
+      await isError(msg);
+    }
+  } else {
+    try {
+      const response = await fetch(`${URIMETHOD}/SetSessionOpenPageInputItem`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify({
+          id,
+          headerid,
+          ordertype,
+          action,
+          designid,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const result = data.d || data;
+
+      const finePage = result.success.message.replace("~", "");
+      window.location.href = finePage;
+    } catch (error) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? "Gagal menyetel session: " + error.message
+          : "Please contact our IT team at support@onlineorder.au";
+      await isError(msg);
+    }
+  }
+};
+
+const setFormValues = (itemData) => {
+  const mapping = {
+    id: "Id",
+    category: "BlindId",
+    type: "KitId",
+  };
+
+  Object.keys(mapping).forEach((id) => {
+    const el = document.querySelector("#modalAddService #" + id);
+    if (!el) {
+      console.warn(`Elemen '${id}' tidak ditemukan.`);
+      return;
+    }
+
+    let value = itemData[mapping[id]];
+    if (id === "markup" && value === 0) value = "";
+    el.value = value || "";
+
+    // Set value to empty if value is 0
+    if (el) el.value = el.value === "0" ? "" : el.value;
+  });
+};
+
+const visibleFormService = (itemData) => {
+  const divType = document.getElementById("divType");
+  const lblType = document.getElementById("lblType");
+  const modalLabel = document.getElementById("modalAddServiceLabel");
+
+  divType.setAttribute("hidden", true);
+  lblType.innerHTML = "Type";
+  modalLabel.innerHTML = "Edit Ervice Service";
+
+  if (itemData.BlindName == "Long Length Surcharge") {
+    divType.removeAttribute("hidden");
   }
 };
 
@@ -2200,6 +2700,22 @@ const parseCustomDate = (value) => {
   return null;
 };
 
+const getItemData = async (query) => {
+  try {
+    const response = await fetch(`${URIMETHOD}/GetItemData`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: query }), // ✅ FIX
+    });
+
+    const json = await response.json();
+    return json.d;
+  } catch (err) {
+    console.error(err);
+    isError(err);
+  }
+};
+
 // --------------------------------------------||Additional Serverside ||-------------------------------------------
 const dropdownActionButton = (row, createdby) => {
   // HIDE BUTTON DETAIL
@@ -2296,7 +2812,7 @@ const dropdownActionButton = (row, createdby) => {
             </a>
           </li>
           <li ${hideEdit}>
-            <a class="dropdown-item" href="javascript:void(0);" id="btnEditItem" data-id="${row.Id}" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}">
+            <a class="dropdown-item" href="javascript:void(0);" id="btnEditItem" data-id="${row.Id}" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}" data-designname="${row.DesignName}">
             <i class="ti ti-edit me-1 opacity-50 fs-2"></i>Edit
             </a>
           </li>

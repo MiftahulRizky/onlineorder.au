@@ -127,7 +127,7 @@
                             <i class="ti ti-mail fs-2 me-2 opacity-50"></i> Email Quote
                         </a>
 
-                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-divider" id="dividerEmailDeposit"></div>
                         <a href="javascript:void(0)" id="btnEmailDeposit" class="dropdown-item">
                             <i class="ti ti-mail-dollar fs-2 me-2 opacity-50"></i> Email Deposite Request
                         </a>
@@ -151,81 +151,89 @@
 
             <!-- card information header 1-->
             <div class="row mb-3">
-                <div class="col-lg-12">
+                <div class="col-lg-7">
                     <div class="card">
                         <div class="card-body border-bottom py-3">
                             <div class="row mb-4">
-                                <div class="col-lg-2">
-                                    <span style="font-size:larger;">Jo Number :</span>
+                                <div class="col-12 col-lg-12 col-md-12 mb-4">
+                                    <span style="font-size:larger;">Retailer Name :</span>
                                     <br />
-                                    <div  id="spanJoNumber" style="font-size: larger;" ></div>
+                                    <span  id="spanRetailerName" style="font-size: larger; font-weight: bold;" ></span>
+                                    <span  id="spanRetailerId" style="font-size: larger; font-weight: bold;" hidden></span>
                                 </div>
 
-                                <div class="col-lg-3">
-                                    <span style="font-size:larger;">Order Number :</span>
+                                <div class="col-lg-4">
+                                    <span style="font-size:larger;">Order # :</span>
+                                    <br />
+                                    <span  id="spanOrderId" style="font-size:larger;font-weight:bold;"></span>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <span style="font-size:larger;">Customer Order Number :</span>
                                     <br />
                                     <span  id="spanOrderNo" style="font-size:larger;font-weight:bold;"></span>
                                 </div>
 
-                                <div class="col-lg-3">
-                                    <span style="font-size:larger;">Reference :</span>
+                                <div class="col-lg-4">
+                                    <span style="font-size:larger;">Customer Order Name :</span>
                                     <br />
                                     <span id="spanOrderCust" style="font-size:larger;font-weight:bold;"></span>
                                 </div>
-
-                                <div class="col-lg-2">
-                                    <span style="font-size:larger;">Created Date :</span>
-                                    <br />
-                                    <span id="spanCreatedDate" style="font-size:larger;font-weight:bold;"></span>
-                                </div>
-
-                                <div class="col-lg-2">
-                                    <span style="font-size:larger;">Created By :</span>
-                                    <br />
-                                    <span id="spanCreatedBy" style="font-size:larger;font-weight:bold;"></span>
-                                </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-lg-2">
-                                    <span style="font-size:larger;">Note :</span>
+                            <div class="row mb-4">
+                                <div class="col-lg-4">
+                                    <span style="font-size:larger;">Customer Note :</span>
                                     <br />
                                     <span id="spanNote" style="font-size:small;"></span>
                                 </div>
 
-                                <div class="col-lg-3">
-                                    <span style="font-size:larger;">Status Note :</span>
-                                    <br />
-                                    <span id="spanStatusNote" style="font-size:small;font-weight:bold;"></span>
-                                </div>
-                                <div class="col-lg-3">
+                                <div class="col-lg-4">
                                     <span style="font-size:larger;">Status Order :</span>
                                     <br />
                                     <span id="spanStatusOrder" style="font-size:larger;font-weight:bold;"></span>
                                 </div>
 
-                                <div class="col-lg-2">
+                                <div class="col-lg-4">
                                     <span style="font-size:larger;">Delivery / Pick Up :</span>
                                     <br />
                                     <span id="spanDelivery" style="font-size:larger;font-weight:bold;"></span>
                                 </div>
-
-                                <div class="col-lg-2">
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-lg-4">
                                     <span style="font-size:larger;">Production :</span>
                                     <br />
-                                    <span id="spanProduction" style="font-size:larger;font-weight:bold;"></span>
+                                    <span id="spanProduction" style="font-size:larger;font-weight:bold;">-</span>
                                 </div>
+
+                                <div class="col-lg-4">
+                                    <span style="font-size:larger;">Status Note :</span>
+                                    <br />
+                                    <span id="spanStatusNote" style="font-size:small;font-weight:bold;"></span>
+                                </div>
+
+
                             </div>
                         </div>
                     </div>
                 </div>
-            </div><!-- /card information header 1 -->
 
-            <!-- card information header 2-->
-            <div class="row mb-3">
-                <div class="col-lg-6" id="divDate">
+                <div class="col-lg-5">
                     <div class="card">
                         <div class="card-body border-bottom py-3">
+                            <div class="row mb-4">
+                                <div class="col-lg-6">
+                                    <span style="font-size:larger;">Created By :</span>
+                                    <br />
+                                    <span id="spanCreatedBy" style="font-size:larger;font-weight:bold;"></span>
+                                </div>
+                                <div class="col-lg-6">
+                                    <span style="font-size:larger;">Created Date :</span>
+                                    <br />
+                                    <span id="spanCreatedDate" style="font-size:larger;font-weight:bold;"></span>
+                                </div>
+                            </div>
                             <div class="row mb-4">
                                 <div class="col-lg-4">
                                     <span style="font-size:larger;">Submitted Date :</span>
@@ -245,13 +253,49 @@
                                     <span id="spanCanceledDate" style="font-size:larger;font-weight:bold;"></span>
                                 </div>
                             </div>
+                            <div class="row mb-4">
+                                 <div class="col-lg-6">
+                                    <span style="font-size:larger;">Job Number :</span>
+                                    <br />
+                                    <div  id="spanJoNumber" style="font-size: larger;" ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /card information header 1 -->
+
+            <!-- card information header 2-->
+            <div class="row mb-3">
+                <div class="col-lg-6" id="divDate">
+                    <div class="card">
+                        <div class="card-body border-bottom pb-1">
+                            <div class="row mb-4">
+                                <div class="col-lg-4">
+                                    <span style="font-size:larger;">Shipment # :</span>
+                                    <br />
+                                    <div id="spanShipment" style="font-size:larger;font-weight:bold;">-</div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <span style="font-size:larger;">ETA to Port :</span>
+                                    <br />
+                                    <div id="spanEtaPort" style="font-size:larger;font-weight:bold;">-</div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <span style="font-size:larger;">ETA to Customer :</span>
+                                    <br />
+                                    <div id="spanEtaCustomer" style="font-size:larger;font-weight:bold;">-</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-lg-6" id="divPrice">
                     <div class="card">
-                        <div class="card-body border-bottom py-3" id="cardPrice">
+                        <div class="card-body border-bottom pb-1" id="cardPrice">
                             <div class="row mb-4">
                                 <div class="col-lg-4">
                                     <span style="font-size:larger;">Total excl. GST :</span>
@@ -285,6 +329,9 @@
                             <div class="card-actions">
                                 <a href="javascript:void(0);" id="btnAddItem" class="btn btn-primary ">
                                     <i class="ti ti-clipboard-plus fs-2 me-2 opacity-50"></i> Add Item
+                                </a>
+                                <a href="javascript:void(0);" id="btnAddService" class="btn btn-primary ">
+                                    <i class="ti ti-cube-plus fs-2 me-2 opacity-50"></i> Add Service
                                 </a>
                             </div>
                         </div>
@@ -401,6 +448,72 @@
         </div>
     </div>
 
+    <!-- modalAddService -->
+    <div class="modal fade" id="modalAddService" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalAddServiceLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="modalAddServiceLabel">Add new service</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-12 col-md-12 mb-3">
+                            <label for="category" class="form-label text-uppercase required">category</label>
+                            <select name="category" id="category" class="form-select"></select>
+                            <input type="text" name="id" id="id" class="form-control" hidden readonly>
+                        </div>
+                        <div class="col-12 col-lg-12 col-md-12 mb-3" id="divType">
+                            <label for="type" class="form-label text-uppercase required" id="lblType">category type</label>
+                            <select name="type" id="type" class="form-select"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSubmitService">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <!-- modalSendMailQuote -->
+    <div class="modal fade" id="modalSendMailQuote" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalSendMailQuoteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title " id="modalSendMailQuoteLabel">Send Mail Quote</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-12 col-md-12 mb-3">
+                            <label for="from" class="form-label text-uppercase required">from</label>
+                            <input type="text" name="from" id="from" class="form-control" readonly>
+                            <input type="text" name="id" id="id" class="form-control"  hidden>
+                        </div>
+                        <div class="col-12 col-lg-12 col-md-12 mb-3">
+                            <label for="mailto" class="form-label text-uppercase required">to</label>
+                            <input type="text" name="mailto" id="mailto" class="form-control" >
+                            <small class="form-hint">This is taken from customers primary contact email address if available.</small>
+                        </div>
+                        <div class="col-12 col-lg-12 col-md-12 mb-3">
+                            <label for="cc" class="form-label text-uppercase required">cc</label>
+                            <input type="text" name="cc" id="cc" class="form-control" >
+                            <small class="form-hint">Will be cc'ed to <b>Customer Service</b> and <b>Accounts</b> by default.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSendMailQuote">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- modalEditPricingItem -->
     <div class="modal fade" id="modalEditPricingItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalEditPricingItemLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -488,6 +601,7 @@
         let USERID = '<%= Session("userId") %>';
         let USERNAME = '<%= Session("UserName") %>';
         let LOGINID = '<%= Session("LoginId") %>';
+        let APPLICATIONID = '<%= Session("ApplicationId") %>';
         let ROLENAME = '<%= Session("RoleName") %>';  
         let PRICEACCESS = '<%= Session("PriceAccess") %>';
         let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';

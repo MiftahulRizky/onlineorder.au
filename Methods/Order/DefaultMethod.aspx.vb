@@ -222,7 +222,7 @@ Partial Class Methods_Order_DefaultMethod
                 '#-------------------------------------------------|| Global Search ||-------------------------------------------------#
                 If Not String.IsNullOrEmpty(params.search.value) Then
                     Dim searchValue As String = "%" & params.search.value.Trim() & "%"
-                    whereClause.AppendLine(" AND (OrderId LIKE @SearchValue OR OrderNumber LIKE @SearchValue OR OrderName LIKE @SearchValue )")
+                    whereClause.AppendLine(" AND (OrderId LIKE @SearchValue OR CustomerName LIKE @SearchValue OR OrderNumber LIKE @SearchValue OR OrderName LIKE @SearchValue )")
                     cmd.Parameters.AddWithValue("@SearchValue", searchValue)
                 End If
 

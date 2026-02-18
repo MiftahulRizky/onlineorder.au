@@ -62,7 +62,7 @@ document
     if (e.target.matches("#btn-edit")) {
       document
         .querySelectorAll(
-          "#modalSubmit .form-control, #modalSubmit .form-select"
+          "#modalSubmit .form-control, #modalSubmit .form-select",
         )
         .forEach((el) => {
           el.classList.remove("is-invalid");
@@ -447,7 +447,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
     ];
 
     formObject = Object.fromEntries(
-      Object.entries(formObject).filter(([key]) => !excludeKeys.includes(key))
+      Object.entries(formObject).filter(([key]) => !excludeKeys.includes(key)),
     );
 
     // gabungkan
@@ -483,7 +483,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
       throw new Error(
         roleName === "Administrator"
           ? `${response.status}\n${errorText}`
-          : "Something went wrong, please try again!"
+          : "Something went wrong, please try again!",
       );
     }
 
@@ -499,8 +499,8 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
         field.classList.add("is-invalid");
       }
     } else {
-      await isSuccess(dataResult.success);
       handlerHideBSModal("modalSubmit");
+      await isSuccess(dataResult.success);
       tableData.ajax.reload();
     }
   } catch (err) {

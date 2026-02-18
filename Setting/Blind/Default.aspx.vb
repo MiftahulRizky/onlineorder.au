@@ -18,7 +18,7 @@
             txtSearch.Text = Session("blindSearch")
             ddlDesign.SelectedValue = Session("blindDesign")
 
-            Call BindData(ddlDesign.SelectedValue, txtSearch.Text)
+            Call BindData(ddlDesign.SelectedValue, ddlCompany.SelectedValue, txtSearch.Text)
         End If
     End Sub
 
@@ -29,13 +29,22 @@
     End Sub
 
     Protected Sub btnSearch_Click(sender As Object, e As EventArgs)
-        Call BindData(ddlDesign.SelectedValue, txtSearch.Text)
+        Call BindData(ddlDesign.SelectedValue, ddlCompany.SelectedValue, txtSearch.Text)
     End Sub
 
     Protected Sub ddlDesign_SelectedIndexChanged(sender As Object, e As EventArgs)
         Call MessageError(False, String.Empty)
         Try
-            Call BindData(ddlDesign.SelectedValue, txtSearch.Text)
+            Call BindData(ddlDesign.SelectedValue, ddlCompany.SelectedValue, txtSearch.Text)
+        Catch ex As Exception
+            Call MessageError(True, ex.ToString())
+        End Try
+    End Sub
+
+    Protected Sub ddlCompany_SelectedIndexChanged(sender As Object, e As EventArgs)
+        Call MessageError(False, String.Empty)
+        Try
+            Call BindData(ddlDesign.SelectedValue, ddlCompany.SelectedValue, txtSearch.Text)
         Catch ex As Exception
             Call MessageError(True, ex.ToString())
         End Try
@@ -45,7 +54,7 @@
         Call MessageError(False, String.Empty)
         Try
             gvList.PageIndex = e.NewPageIndex
-            Call BindData(ddlDesign.SelectedValue, txtSearch.Text)
+            Call BindData(ddlDesign.SelectedValue, ddlCompany.SelectedValue, txtSearch.Text)
         Catch ex As Exception
             Call MessageError(True, ex.ToString())
         End Try
@@ -73,10 +82,8 @@
 
             sdsPage.Delete()
 
-            Dim userId As String = UCase(Session("UserId")).ToString()
-            publicCfg.InsertActivity(userId, Page.Title, "DELETE BLIND. ID : " & lblId.Text)
 
-            Call BindData(ddlDesign.SelectedValue, txtSearch.Text)
+            Call BindData(ddlDesign.SelectedValue, ddlCompany.SelectedValue, txtSearch.Text)
         Catch ex As Exception
             Call MessageError(True, ex.ToString())
         End Try
@@ -97,25 +104,26 @@
 
             sdsPage.Update()
 
-            Dim userId As String = UCase(Session("UserId")).ToString()
-            publicCfg.InsertActivity(userId, Page.Title, "ACTIVE BLIND. ID : " & lblId.Text)
 
-            Call BindData(ddlDesign.SelectedValue, txtSearch.Text)
+            Call BindData(ddlDesign.SelectedValue, ddlCompany.SelectedValue, txtSearch.Text)
         Catch ex As Exception
             Call MessageError(True, ex.ToString())
         End Try
     End Sub
 
-    Private Sub BindData(DesignText As String, SearchText As String)
+    Private Sub BindData(DesignText As String, CompanyText As String, SearchText As String)
         Session("blindSearch") = "" : Session("blindDetail") = "" : Session("blindDesign") = ""
         Try
             Dim search As String = String.Empty
-            Dim design As String = " WHERE DesignId = '" + DesignText + "'"
+            Dim design As String = String.Format(" WHERE DesignId = '{0}' ", DesignText)
             If DesignText = "" Then
-                design = " WHERE DesignId IS NOT NULL"
+                design = " WHERE DesignId IS NOT NULL "
+            End If
+            If Not CompanyText = "" Then
+                search = String.Format(" AND Blinds.Company='{0}'", CompanyText)
             End If
             If Not SearchText = "" Then
-                search = " AND Blinds.Name LIKE '%" + SearchText + "%'"
+                search = String.Format(" AND Blinds.Name LIKE '%{0}%'", SearchText)
             End If
 
             gvList.DataSource = publicCfg.GetListData(String.Format("SELECT Blinds.*, Designs.Name AS DesignName FROM Blinds LEFT JOIN Designs ON Blinds.DesignId = Designs.Id {0} {1} ORDER BY Designs.Name, Blinds.Name ASC", design, search))

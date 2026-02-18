@@ -995,6 +995,15 @@ Public Class PublicConfig
                 '#---------------------Create Description---------------------#
                 Dim description As String = kitName & " " & size
 
+                If designName = "Additional" Then
+                    description = kitName
+                    If blindName = "Long Length Surcharge" Then
+                        Dim CustomerId As String = GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id = '{0}'", HeaderId))
+                        Dim States As String = GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId = '{0}'", CustomerId))
+                        description = String.Format("{0} {1}", KitName, States)
+                    End If
+                End If
+
                 If designName = "Roller Blinds" Then
                     description = "Roller #" & fabricType & " " & size
                 End If
@@ -1114,6 +1123,7 @@ Public Class PublicConfig
             Dim drop As String = thisData.Tables(0).Rows(0).Item("Drop").ToString()
             Dim sqm As String = thisData.Tables(0).Rows(0).Item("SquareMetre").ToString()
             Dim lnm As String = thisData.Tables(0).Rows(0).Item("LinearMetre").ToString()
+            Dim delivery As String = thisData.Tables(0).Rows(0).Item("OrderDelivery").ToString()
 
             Dim surchargeData As DataSet = GetListData("SELECT * FROM Surcharges WHERE DesignId='" + UCase(designId).ToString() + "' AND BlindId='" + blindId + "' AND BlindNo = '" + blindNo + "' AND Active=1 ORDER BY Id ASC")
             If surchargeData.Tables(0).Rows.Count > 0 Then
@@ -1147,19 +1157,38 @@ Public Class PublicConfig
                             queryCharge = String.Format("SELECT TOP 1 [Cost] FROM CassetteExtra WHERE [PriceGroupId] = '{0}' AND Width >= '{1}' AND [Cost] > 0 ORDER BY [Drop], Width, [Cost] ASC", UCase(priceGroupId).ToString(), width)
                         End If
 
-                        'thisCharge = GetItemData(queryCharge) 'Default Code Result
-                        Dim chargeResult As String = GetItemData(queryCharge)
-                        Dim chargeValue As Decimal = 0D
-                        If Decimal.TryParse(chargeResult, chargeValue) Then
-                            thisCharge = chargeValue
+                        If InStr(charge, "Long Length") > 0 Then
+                            If delivery = "Delivery" Then
+                                Dim LongLength As DataSet = GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId='{0}' AND Type='Charge' AND Description='Long Length'",headerId))
+                                If LongLength.Tables(0).Rows.Count > 0 Then Exit For
+                                
+                                thisCharge = 14.00
+                            Else
+                                If width >= 2000 AND width <= 3000 Then
+                                    
+                                    thisCharge = 11
+                                End If
+    
+                                If width > 3000 Then
+                                    thisCharge = 12
+                                End If
+                            End If
+
                         Else
-                            thisCharge = 0D ' Set default jika parsing gagal
+                            'thisCharge = GetItemData(queryCharge) 'Default Code Result
+                            Dim chargeResult As String = GetItemData(queryCharge)
+                            Dim chargeValue As Decimal = 0D
+                            If Decimal.TryParse(chargeResult, chargeValue) Then
+                                thisCharge = chargeValue
+                            Else
+                                thisCharge = 0D ' Set default jika parsing gagal
+                            End If
                         End If
+
 
                         Dim realCharge As Decimal = thisCharge
                         
                         Dim checkDiscount As DataSet = GetListData("SELECT * FROM CustomDiscounts WHERE DesignId='" + UCase(designId).ToString() + "' AND BlindId='" + blindId + "' AND BlindNo = '" + blindNo + "' AND Type='" + type + "' AND Active=1 ORDER BY Id ASC")
-
                         Dim customDiscount As Decimal = 0.00
                         If checkDiscount.Tables(0).Rows.Count > 0 Then
                             Dim FormulaCustomDiscount As String = checkDiscount.Tables(0).Rows(0).Item("Formula").ToString()
@@ -1193,7 +1222,7 @@ Public Class PublicConfig
         End If
     End Sub
 
-    ' Private Sub PriceDetail(Header As String, Item As String, Type As String, Qty As Integer, Desc As String, RealCost As Decimal, Cost As Decimal, Discount As Decimal, CustomDiscount As Decimal)
+
     Private Sub PriceDetail(ListParam As List(Of Object))
 
         Dim Header As String = CStr(ListParam(0))
@@ -1206,6 +1235,8 @@ Public Class PublicConfig
         Dim Cost As Decimal = CDec(ListParam(7))
         Dim Discount As Decimal = CDec(ListParam(8))
         Dim CustomDiscount As Decimal = CDec(ListParam(9))
+
+        Dim DesignName As String = GetItemData(String.Format("SELECT DesignName FROM view_details WHERE Id='{0}'", Item))
 
  
         Dim Poa As Decimal = 0
@@ -1228,6 +1259,11 @@ Public Class PublicConfig
             FindRealFinalCost = FindRealCost * Qty
         End If
 
+        ' If Type = "Charge" Then
+        '     Item = GetItemData(String.Format("SELECT TOP 1 ItemId FROM OrderDetailsPrice WHERE HeaderId='{0}' AND Type='Charge' AND Description='Long Length' ORDER BY ItemId ASC", Header))
+        '     ResetLongLength(Header, Item)
+        ' End IF
+
         Using thisConn As SqlConnection = New SqlConnection(myConn)
             Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetailsPrice VALUES(NEWID(), @HeaderId, @ItemId, @Type, @Qty, @Description, @RealCost, @Cost, @Discount, @Poa, @RealFinalCost, @FinalCost)")
                 ' myCmd.Parameters.AddWithValue("@Ordered", UpdateOrdered)
@@ -1249,6 +1285,20 @@ Public Class PublicConfig
             End Using
         End Using
     End Sub
+
+    ' Private Sub ResetLongLength(HeaderId As String, ItemId As String)
+    '     Using thisConn As SqlConnection = New SqlConnection(myConn)
+    '         Using myCmd As SqlCommand = New SqlCommand("DELETE OrderDetailsPrice WHERE HeaderId=@HeaderId AND ItemId <> @ItemId AND Type='Charge' AND Description='Long Length'")
+    '             ' myCmd.Parameters.AddWithValue("@Ordered", UpdateOrdered)
+    '             myCmd.Parameters.AddWithValue("@HeaderId", HeaderId)
+    '             myCmd.Parameters.AddWithValue("@ItemId", ItemId)
+    '             myCmd.Connection = thisConn
+    '             thisConn.Open()
+    '             myCmd.ExecuteNonQuery()
+    '             thisConn.Close()
+    '         End Using
+    '     End Using
+    ' End Sub
 
 
     '#Create Jobs Id

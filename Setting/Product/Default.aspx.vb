@@ -286,7 +286,7 @@ Partial Class Setting_Product_Default
         Try
             If Not DesignId = "" Then
                 ddlBlindId.Items.Clear()
-                ddlBlindId.DataSource = settingCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Blinds WHERE DesignId='" + UCase(DesignId).ToString() + "' ORDER BY Name ASC")
+                ddlBlindId.DataSource = settingCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Blinds WHERE DesignId='" + UCase(DesignId).ToString() + "' AND Company='LOOP' ORDER BY Name ASC")
                 ddlBlindId.DataTextField = "NameText"
                 ddlBlindId.DataValueField = "Id"
                 ddlBlindId.DataBind()

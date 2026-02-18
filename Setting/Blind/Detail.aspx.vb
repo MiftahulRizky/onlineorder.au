@@ -56,9 +56,6 @@ Partial Class Setting_Blind_Detail
             If msgError.InnerText = "" Then
                 sdsPage.Update()
 
-                Dim vUserId As String = UCase(Session("UserId")).ToString()
-                publicCfg.InsertActivity(vUserId, Page.Title, "UPDATE BLIND TYPE. NAME : " & txtName.Text)
-
                 Response.Redirect("~/setting/blind", False)
             End If
         Catch ex As Exception

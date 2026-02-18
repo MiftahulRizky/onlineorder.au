@@ -83,6 +83,7 @@ Partial Class Methods_Order_DetailMethod
         Public Property Id As String 
         Public Property HeaderId As String 
         Public Property DesignId As String 
+        Public Property DesignName As String 
         Public Property Qty As String 
         Public Property Location As String 
         Public Property KitName As String 
@@ -159,6 +160,26 @@ Partial Class Methods_Order_DetailMethod
         Public Property username As String
     End Class
 
+    Public Class ParamSubmitService
+        Public Property id  As String
+        Public Property category As String
+        Public Property type As String
+
+        Public Property headerid As String
+        Public Property loginid As String
+    End Class
+
+    Public Class ParamSubmitSendMailQuote
+        Public Property id  As String
+        Public Property from As String
+        Public Property mailto As String
+        Public Property cc As String
+
+        Public Property username As String
+        Public Property headerid As String
+        Public Property loginid As String
+    End Class
+
     
     Public Class ParamOverridePricing
         Public Property id  As String
@@ -223,9 +244,65 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function GetItemData(ByVal query As String) As Object
+        Try
+            Dim Item As String = publicCfg.GetItemData(query)
+            Return Item
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message ' biar kelihatan errornya
+        End Try
+    End Function
+
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindDesignType(ByVal customerid As String, ByVal ordertype As String) As Object
         Try
             Dim datas As DataSet = publicCfg.GetListData("SELECT Designs.Id, Designs.Name FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '" + customerid + "' AND Designs.Type <> 'Additional' AND Designs.Type = '" + ordertype + "' AND Designs.Active = 1 ORDER BY Designs.Name ASC")
+            Dim list As New List(Of Dictionary(Of String, String))()
+            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
+                For Each row As DataRow In datas.Tables(0).Rows
+                    Dim result As New Dictionary(Of String, String) From {
+                        {"value", row("Id").ToString()},
+                        {"text", row("Name").ToString()}
+                    }
+                    list.Add(result)
+                Next
+            End If
+            Return list
+        Catch ex As Exception
+            ' Return sebagai objek error agar bisa ditangani di sisi client
+            Return New With {.error = ex.Message}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindService() As Object
+        Try
+            Dim datas As DataSet = publicCfg.GetListData("SELECT Id, Name FROM Blinds WHERE DesignId ='6C0B3347-9730-45CA-905C-5EF682CD06EA' AND Company='SP' AND Active=1 ORDER BY Name ASC")
+            Dim list As New List(Of Dictionary(Of String, String))()
+            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
+                For Each row As DataRow In datas.Tables(0).Rows
+                    Dim result As New Dictionary(Of String, String) From {
+                        {"value", row("Id").ToString()},
+                        {"text", row("Name").ToString()}
+                    }
+                    list.Add(result)
+                Next
+            End If
+            Return list
+        Catch ex As Exception
+            ' Return sebagai objek error agar bisa ditangani di sisi client
+            Return New With {.error = ex.Message}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindHardwareKit(ByVal blindid As String) As Object
+        Try
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Id, Name FROM HardwareKits WHERE DesignId ='6C0B3347-9730-45CA-905C-5EF682CD06EA' AND BlindId='{0}' AND Active=1 ORDER BY Name ASC", blindid))
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -271,6 +348,33 @@ Partial Class Methods_Order_DetailMethod
         End Try
     End Function
 
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindOrderDetailsByID(ByVal itemid As String) As Object
+        Try
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE Id = '{0}'", itemid))
+
+            Dim data As DataSet = DirectCast(datas, DataSet)
+
+            Dim resultList As New List(Of Dictionary(Of String, String))()
+
+            If data IsNot Nothing AndAlso data.Tables.Count > 0 Then
+                For Each row As DataRow In data.Tables(0).Rows
+                    Dim dict As New Dictionary(Of String, String)()
+                    For Each col As DataColumn In data.Tables(0).Columns
+                        dict(col.ColumnName) = row(col).ToString()
+                    Next
+                    resultList.Add(dict)
+                Next
+            End If
+
+            Return resultList
+        Catch ex As Exception
+            ' Tangani error agar bisa dikenali di JavaScript
+            Return New With {.error = True, .message = ex.Message}
+        End Try
+    End Function
+
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
@@ -280,11 +384,11 @@ Partial Class Methods_Order_DetailMethod
         Dim finaltotal As Decimal = 0
         Dim result As New Dictionary(Of String, String)
         
-        Dim detaildata As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='"+headerid+"' AND Active='1'")
+        ' Dim detaildata As DataSet = publicCfg.GetListData("SELECT id FROM OrderDetails WHERE HeaderId='"+headerid+"' AND Active='1'")
 
 
-        If detaildata.Tables(0).Rows.Count > 0 And pricesaccess = "True" Then
-            sumPrice = publicCfg.GetItemData_Decimal("SELECT SUM(TotalMatrix + TotalCharge) AS SumPrice FROM OrderDetails WHERE HeaderId = '" + headerid + "' AND Active=1")
+        If pricesaccess = "True" Then
+            sumPrice = publicCfg.GetItemData("SELECT SUM(TotalMatrix + TotalCharge) AS SumPrice FROM OrderDetails WHERE HeaderId = '" + headerid + "' AND Active=1")
 
             If sumPrice > 0 Then
                 gst = sumPrice * 10 / 100
@@ -305,12 +409,11 @@ Partial Class Methods_Order_DetailMethod
     Public Shared Function GetCreatedBy(ByVal id As String) As Object
         Dim result As New Dictionary(Of String, String)
         
-        Dim detaildata As DataSet = publicCfg.GetListData("SELECT * FROM CustomerLogins WHERE Id='" + id + "'")
+        Dim CreatedBy As String = publicCfg.GetItemData("SELECT FullName FROM CustomerLogins WHERE Id='" + id + "'")
 
-        If detaildata.Tables(0).Rows.Count > 0 Then
-                Dim nameUser As String  = detaildata.Tables(0).Rows(0).Item("FullName").ToString()
+        If Not String.IsNullOrEmpty(CreatedBy) Then
                 result = New Dictionary(Of String, String) From {
-                    {"createdby", nameUser}
+                    {"createdby", CreatedBy}
                 }
         End If
 
@@ -360,7 +463,7 @@ Partial Class Methods_Order_DetailMethod
                 ' --- Tambahkan Global Search DataTables (jika ada) ---
                 If Not String.IsNullOrEmpty(params.search.value) Then
                     Dim searchValue As String = "%" & params.search.value.Trim() & "%"
-                    whereClause.AppendLine(" AND ( Id LIKE @SearchValue OR Location LIKE @SearchValue OR KitName LIKE @SearchValue OR FabricType LIKE @SearchValue OR Width LIKE @SearchValue )")
+                    whereClause.AppendLine(" AND ( Id LIKE @SearchValue )")
                     cmd.Parameters.AddWithValue("@SearchValue", searchValue)
                 End If
 
@@ -470,6 +573,15 @@ Partial Class Methods_Order_DetailMethod
                         Dim Size As String = String.Format("({0} x {1})", Width, Drop)
                         Dim Product As String = String.Format("{0} {1}", KitName, Size)
                     
+                        If DesignName = "Additional" Then
+                            Product = String.Format("{0}", KitName)
+                            If BlindName = "Long Length Surcharge" Then
+                                Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id = '{0}'", HeaderId))
+                                Dim States As String = publicCfg.GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId = '{0}'", CustomerId))
+                                Product = String.Format("{0} {1}", KitName, States)
+                            End IF
+                        End If
+
                         If DesignName = "Aluminium Blinds" Or DesignName = "Venetian Blinds" Then
                             Product = String.Format("{0} {1}", KitName, Size)
                         End If
@@ -737,6 +849,7 @@ Partial Class Methods_Order_DetailMethod
                             .CustomerContactId = CustomerContactId,
                             .StatusHeader = StatusHeader,
                             .DesignId = DesignId,
+                            .DesignName = DesignName,
                             .Qty = Qty,
                             .Location = Location,
                             .Product = Product,
@@ -1215,6 +1328,195 @@ Partial Class Methods_Order_DetailMethod
             }
         End Try
     End Function
+    
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function SubmitService(data As ParamSubmitService) As Object
+        Try
+            Dim msg As String
+
+            If String.IsNullOrEmpty(data.category) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "category is required !", .field = "#modalAddService #category"}}
+            End If
+
+            Dim blindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.category))
+
+            If blindName = "Long Length Surcharge" And String.IsNullOrEmpty(data.type) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "type is required !", .field = "#modalAddService #type"}}
+            End If
+
+            Dim kitName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM HardwareKits WHERE Id = '{0}'", data.type))
+
+            Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
+            Dim soeKitId As String = publicCfg.GetItemData(String.Format("SELECT SoeId FROM HardwareKits WHERE Id='{0}'", data.type))
+
+            Dim priceGroupName As String = String.Format("{0} - {1}", blindName, kitName) 
+            If blindName = "Long Length Surcharge" Then
+                Dim Delivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM OrderHeaders WHERE Id='{0}'", data.headerid))
+                If InStr(kitName, "Delivery") > 0 Then
+                    If Delivery = "Pick Up" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Please check delivery type !", .field = "#modalAddService #id"}}
+                    End If
+                    priceGroupName = "Long Length Delivery"
+                Else
+                    Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id='{0}'", data.headerid))
+                    Dim CustomerStates As String = publicCfg.GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId='{0}' AND [Primary]=1", CustomerId))
+                    If String.IsNullOrEmpty(CustomerStates) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check customer states !", .field = "#modalAddService #category"}}
+                    End If
+                    If CustomerStates = "NSW" Then
+                        priceGroupName = String.Format("{0} NSW", kitName)
+                    End If
+                    If CustomerStates = "VIC" Or CustomerStates = "QLD" Then
+                        priceGroupName = String.Format("{0} NSW", kitName)
+                    End If
+                End If
+            End If
+
+            Dim priceGroupId As String = publicCfg.GetPriceGroupId("6C0B3347-9730-45CA-905C-5EF682CD06EA", priceGroupName)
+
+
+            ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = priceGroupName, .field = "#modalAddService #category"}}
+
+            
+            '#Insert
+            If String.IsNullOrEmpty(data.id) Then
+
+                Dim itemId As String = publicCfg.CreateOrderItemId()
+
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, PriceGroupId, BlindNo, Qty, Width, [Drop], Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @PriceGroupId, 'Blind 1', 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)", thisConn)
+                        myCmd.Parameters.AddWithValue("@Id", itemId)
+                        myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
+                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.type).ToString())
+                        myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+
+                publicCfg.ResetPriceDetail(itemId)
+                publicCfg.HitungHarga(data.headerid, itemId)
+                publicCfg.HitungSurcharge(data.headerid, itemId)
+
+                Dim dataLog As Object() = {data.headerid, itemId, "Blinds", data.loginid, "Add Item Order"}
+                orderCfg.Log_Orders(dataLog)
+
+                msg = "Service has been added successfully."
+            End If
+
+            '#Update
+            If Not String.IsNullOrEmpty(data.id) Then
+                Dim itemId As String = data.id
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId=@KitId, SoeKitId=@SoeKitId, PriceGroupId=@PriceGroupId WHERE Id=@Id", thisConn)
+                        myCmd.Parameters.AddWithValue("@Id", itemId)
+                        ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
+                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.type).ToString())
+                        myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+
+                publicCfg.ResetPriceDetail(itemId)
+                publicCfg.HitungHarga(data.headerid, itemId)
+                ' publicCfg.HitungSurcharge(data.headerid, itemId)
+
+                Dim dataLog As Object() = {data.headerid, itemId, "Blinds", data.loginid, "Update Item Order"}
+                orderCfg.Log_Orders(dataLog)
+
+                msg = "Service has been updated successfully."
+            End If
+
+            Return New SuccessResponse With {
+                .Success = New SuccessDetail With { .message = msg}
+            }
+        Catch ex As Exception
+            Return New ErrorResponse With {
+                .error = New ErrorDetail With {
+                    .message = ex.Message,
+                    .field = "#modalAddService #id"
+                }
+            }
+        End Try
+    End Function
+    
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function SubmitSendMailQuote(data As ParamSubmitSendMailQuote) As Object
+        Try
+            Dim msg As String = "Mail has been sent successfully."
+
+            Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE OrderType='Blinds' AND Id='" & data.headerid & "'")
+            If HeaderData.Tables(0).Rows.Count < 1 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "order is missing !"}}
+            End If
+
+            If String.IsNullOrEmpty(data.id) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "this order is missing !", .field = "#modalSendMailQuote #id"}}
+            End If
+
+            If String.IsNullOrEmpty(data.from) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "pleasze check mail from !", .field = "#modalSendMailQuote #from"}}
+            End If
+
+            If String.IsNullOrEmpty(data.mailto) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "pleasze check mail to !", .field = "#modalSendMailQuote #mailto"}}
+            End If
+            If Not String.IsNullOrEmpty(data.mailto) Then
+                If Not Regex.IsMatch(data.mailto, "^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$") Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check mail to format !",.field = "#modalSendMailQuote #mailto"}}
+                End If
+            End If
+
+           
+            If Not String.IsNullOrEmpty(data.cc) Then
+                If Not Regex.IsMatch(data.cc, "^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$") Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check mail to format !", .field = "#modalSendMailQuote #cc"}}
+                End If
+            End If
+
+            Dim OrderName As String = HeaderData.Tables(0).Rows(0).Item("OrderName").ToString()
+            Dim OrderNumber As String = HeaderData.Tables(0).Rows(0).Item("OrderNumber").ToString()
+            Dim CustomerId As String = HeaderData.Tables(0).Rows(0).Item("CustomerId").ToString()
+            Dim CustomerName As String = HeaderData.Tables(0).Rows(0).Item("CustomerName").ToString()
+            Dim FileName As String = ("-QUOTE-ORDER-" & OrderNumber & "-" & CustomerId & ".pdf").Replace(" ", "")
+
+            Dim dirPath As String = HttpContext.Current.Server.MapPath("~/File/Order/Quote/Origin/")
+            If Not Directory.Exists(dirPath) Then
+                Directory.CreateDirectory(dirPath)
+            End If
+            Dim fullPath As String = Path.Combine(dirPath, FileName)
+            printCfg.CreatePDFQuote(data.headerid, data.username, dirPath, FileName, "Origin")
+
+            Dim Res As String = MailOriginQuote(data.headerid, dirPath, data.id, data.mailto)
+            If Not Res = "200" Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res, .field = "#modalSendMailQuote #id"}}
+            End If
+
+            ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = FileName, .field = "#modalSendMailQuote #cc"}}
+            
+
+
+            Return New SuccessResponse With {
+                .Success = New SuccessDetail With { .message = msg}
+            }
+        Catch ex As Exception
+            Return New ErrorResponse With {
+                .error = New ErrorDetail With {
+                    .message = ex.Message,
+                    .field = "#modalSendMailQuote #id"
+                }
+            }
+        End Try
+    End Function
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
@@ -1591,6 +1893,7 @@ Partial Class Methods_Order_DetailMethod
             End If
 
             Dim DesignId As String = detailData.Tables(0).Rows(0).Item("DesignId").ToString()
+            Dim DesignName As String = detailData.Tables(0).Rows(0).Item("DesignName").ToString()
             Dim BracketType As String = detailData.Tables(0).Rows(0).Item("BracketType").ToString()
 
             Dim NewItemId As string = publicCfg.CreateOrderItemId()
@@ -1612,16 +1915,18 @@ Partial Class Methods_Order_DetailMethod
                 End Using
             End Using
 
-            Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("INSERT INTO OrderDetailsPrice SELECT	NEWID(), HeaderId, @ItemIdNew, Type, Qty, Description, RealCost, Cost, Discount, Poa, RealFinalCost,FinalCost FROM OrderDetailsPrice WHERE ItemId=@ItemId", thisConn)
-                    myCmd.Parameters.AddWithValue("@ItemId", id)
-                    myCmd.Parameters.AddWithValue("@ItemIdNew", NewItemId)
-                    myCmd.Connection = thisConn
-                    thisConn.Open()
-                    myCmd.ExecuteNonQuery()
-                    thisConn.Close()
+            If Not DesignName = "Roller Blinds" Then
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetailsPrice SELECT	NEWID(), HeaderId, @ItemIdNew, Type, Qty, Description, RealCost, Cost, Discount, Poa, RealFinalCost,FinalCost FROM OrderDetailsPrice WHERE ItemId=@ItemId", thisConn)
+                        myCmd.Parameters.AddWithValue("@ItemId", id)
+                        myCmd.Parameters.AddWithValue("@ItemIdNew", NewItemId)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
                 End Using
-            End Using
+            End If
 
             Return New SuccessResponse With {
                 .Success = New SuccessDetail With { 
@@ -1906,7 +2211,7 @@ Partial Class Methods_Order_DetailMethod
             Dim RoleName As String = HttpContext.Current.Session("RoleName").ToString()
             Dim CustomerContactId As String = HttpContext.Current.Session("CustomerContactId").ToString()
 
-            Dim detailData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + headerid + "' AND Active=1 ORDER BY Id ASC")
+            Dim detailData As DataSet = publicCfg.GetListData("SELECT Id, UniqueId, DesignName, BracketType, FabricGroups FROM view_details WHERE HeaderId='" + headerid + "' AND Active=1 ORDER BY Id ASC")
             If detailData.Tables(0).Rows.Count < 1  Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Order Detail not found."}}
             End If
@@ -13452,6 +13757,112 @@ Partial Class Methods_Order_DetailMethod
                     End Using
                 End Using
             End Using
+
+            Return "200"
+        Catch ex As Exception
+            Dim errorMessage As String = "Failure sending mail. " & ex.Message
+            If ex.InnerException IsNot Nothing Then
+                errorMessage &= " Inner Exception: " & ex.InnerException.Message
+            End If
+            Return errorMessage
+        End Try
+    End Function
+
+    Private Shared Function MailOriginQuote(headerid As String, directory As String, mailingid As String, customermail As String) As String
+        Try
+            Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType = 'Blinds' ", headerid))
+            If OrderData.Tables(0).Rows.Count = 0 Then Return "invalid orders"
+
+            Dim OrderId As String = OrderData.Tables(0).Rows(0).Item("OrderId").ToString()
+            Dim CustomerId As String = OrderData.Tables(0).Rows(0).Item("CustomerId").ToString()
+            Dim OrderNumber As String = OrderData.Tables(0).Rows(0).Item("OrderNumber").ToString()
+            Dim OrderName As String = OrderData.Tables(0).Rows(0).Item("OrderName").ToString()
+            Dim Delivery As String = OrderData.Tables(0).Rows(0).Item("Delivery").ToString()
+
+            Dim mailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM Mailings WHERE Id = '{0}' AND Active = '1' ", mailingid))
+            Dim mailDevelopment As DataSet = publicCfg.GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
+
+            If mailData.Tables(0).Rows.Count = 0 Then Return "invalid mailings"
+            Dim CustomerName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Customers WHERE Id = '{0}'", CustomerId))
+
+            Dim mailServer As String = mailData.Tables(0).Rows(0)("Server").ToString()
+            Dim mailHost As String = mailData.Tables(0).Rows(0)("Host").ToString()
+            Dim mailPort As Integer = CInt(mailData.Tables(0).Rows(0)("Port"))
+            Dim mailAccount As String = mailData.Tables(0).Rows(0)("Account").ToString()
+            Dim mailPassword As String = mailData.Tables(0).Rows(0)("Password").ToString()
+            Dim mailAlias As String = mailData.Tables(0).Rows(0)("Alias").ToString()
+            Dim mailTo As String = mailData.Tables(0).Rows(0)("To").ToString()
+            Dim mailCc As String = mailData.Tables(0).Rows(0)("Cc").ToString()
+            Dim mailBcc As String = mailData.Tables(0).Rows(0)("Bcc").ToString()
+            Dim mailNetworkCredentials As Boolean = CBool(mailData.Tables(0).Rows(0)("NetworkCredentials"))
+            Dim mailDefaultCredentials As Boolean = CBool(mailData.Tables(0).Rows(0)("DefaultCredentials"))
+            Dim mailEnableSSL As Boolean = CBool(mailData.Tables(0).Rows(0)("EnableSSL"))
+
+            Dim mailBody As String = "<span style='font-family: Lucida Sans Unicode, sans-serif; font-size: 14px;'>Hi <b>" & CustomerName & ",</b></span>"
+            mailBody &= "<br /><br />Please see the files we have attached.<br /><br />"
+            mailBody &= "<span style='font-weight: bold;'>Kind Regards,<br /><br />Customer Service<br />Sunlight Products</span>"
+
+             Using myMail As New MailMessage()
+
+                Dim fileName As String = Trim("-QUOTE-ORDER-" & OrderNumber.Replace(" ", "") & "-" & CustomerId & ".pdf")
+                myMail.Subject = "Quote Order - " & OrderId
+                myMail.From = New MailAddress(mailServer, mailAlias)
+                myMail.Body = mailBody
+                myMail.IsBodyHtml = True
+
+                If mailDevelopment.Tables.Count > 0 Then
+                    Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                    Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+
+                    If activeDev = "True" Or activeDev = "1" Then
+                        myMail.To.Add(mdev)
+                    Else
+                        myMail.To.Add(customermail)
+                        If Not String.IsNullOrEmpty(mailTo) Then myMail.To.Add(mailTo)
+                        If Not String.IsNullOrEmpty(mailCc) Then myMail.CC.Add(mailCc)
+                        If Not String.IsNullOrEmpty(mailBcc) Then
+                            Dim BccList() As String = mailBcc.Split(";")
+                            Dim ThisMail As String = ""
+                            For Each ThisMail In BccList
+                                myMail.Bcc.Add(ThisMail)
+                            Next
+                        End If
+                    End If
+                Else
+                    myMail.To.Add(customermail)
+                    If Not String.IsNullOrEmpty(mailTo) Then myMail.To.Add(mailTo)
+                    If Not String.IsNullOrEmpty(mailCc) Then myMail.CC.Add(mailCc)
+                    If Not String.IsNullOrEmpty(mailBcc) Then
+                        Dim BccList() As String = mailBcc.Split(";")
+                        Dim ThisMail As String = ""
+                        For Each ThisMail In BccList
+                            myMail.Bcc.Add(ThisMail)
+                        Next
+                    End If
+                End If
+
+                Dim fullPath = Path.Combine(directory, fileName)
+                Using fs As New FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read)
+                Dim attach As New Attachment(fs, fileName)
+                myMail.Attachments.Add(attach)
+                    Using smtpClient As New SmtpClient(mailHost, mailPort)
+                        smtpClient.EnableSsl = mailEnableSSL
+                        smtpClient.UseDefaultCredentials = mailDefaultCredentials
+                        smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network
+
+                        If mailNetworkCredentials Then
+                            smtpClient.Credentials = New NetworkCredential(mailAccount, mailPassword)
+                        ElseIf mailDefaultCredentials Then
+                            smtpClient.UseDefaultCredentials = True
+                        Else
+                            smtpClient.Credentials = CredentialCache.DefaultNetworkCredentials
+                        End If
+
+                        smtpClient.Send(myMail)
+                    End Using
+                End Using
+            End Using
+
 
             Return "200"
         Catch ex As Exception

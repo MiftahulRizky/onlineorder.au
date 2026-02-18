@@ -52,9 +52,6 @@
             If msgError.InnerText = "" Then
                 sdsPage.Insert()
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
-                publicCfg.InsertActivity(userId, Page.Title, "INSERT NEW BLIND TYPE. NAME : " & txtName.Text)
-
                 Response.Redirect("~/setting/blind", False)
             End If
         Catch ex As Exception
