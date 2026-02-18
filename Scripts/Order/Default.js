@@ -409,11 +409,11 @@ const bindOrders = async (status, ordertype, active, storetype, params) => {
         render: function (data, type, row) {
           let findDelivery = "";
           if (row.Delivery === "Pick Up") {
-            findDelivery = `<span class='badge bg-pink-lt'><i class='bi bi-truck-front'></i> ${row.Delivery}</span>`;
+            findDelivery = `<div class='badge bg-pink-lt d-flex align-item-center'><i class='ti ti-truck-delivery fs-3'></i> ${row.Delivery}</div>`;
           } else if (row.Delivery === "Delivery") {
-            findDelivery = `<span class='badge bg-cyan-lt'><i class='bi bi-box-seam'></i> ${row.Delivery}</span>`;
+            findDelivery = `<div class='badge bg-cyan-lt d-flex align-item-center'><i class='ti ti-package fs-3'></i> ${row.Delivery}</div>`;
           } else if (row.Delivery.includes("INT")) {
-            findDelivery = `<span class='badge bg-orange-lt'><i class='bi bi-buildings'></i> ${row.Delivery}</span>`;
+            findDelivery = `<div class='badge bg-orange-lt d-flex align-item-center'><i class='ti ti-building-skyscraper fs-3'></i> ${row.Delivery}</div>`;
           }
           return `<div class="text-center">${findDelivery}</div>`;
         },
@@ -425,32 +425,34 @@ const bindOrders = async (status, ordertype, active, storetype, params) => {
         render: function (data, type, row) {
           let icon = "";
           let addStat = "";
-          if (row.OrderType == "Panorama") addStat = row.StatusAdditional;
+          if (row.OrderType == "Panorama") {
+            addStat = `<br> <span class="text-secondary">${row.StatusAdditional}</span>`;
+          }
           switch (row.Status) {
             case "Draft":
             case "Unsubmitted":
-              icon = `<i class="bi opacity-50 bi-stopwatch"></i>`;
+              icon = `<i class="ti ti-stopwatch opacity-50 fs-2 me-1"></i>`;
               break;
             case "Pending Price Approval":
-              icon = `<i class="bi opacity-50 bi-stopwatch"></i>`;
+              icon = `<i class="ti ti-stopwatch opacity-50 fs-2 me-1"></i>`;
               break;
             case "New Order":
-              icon = `<i class="bi opacity-50 bi-clipboard-check"></i>`;
+              icon = `<i class="ti ti-file-check opacity-50 fs-2 me-1"></i>`;
               break;
             case "In Production":
-              icon = `<i class="bi opacity-50 bi-hourglass-split"></i>`;
+              icon = `<i class="ti ti-hourglass-high opacity-50 fs-2 me-1"></i>`;
               break;
             case "On Hold":
-              icon = `<i class="bi opacity-50 bi-pause-circle"></i>`;
+              icon = `<i class="ti ti-clock-pause opacity-50 fs-2 me-1"></i>`;
               break;
             case "Canceled":
-              icon = `<i class="bi opacity-50 bi-x-circle"></i>`;
+              icon = `<i class="ti ti-square-rounded-x opacity-50 fs-2 me-1"></i>`;
               break;
             case "Completed":
-              icon = `<i class="bi opacity-50 bi-check-circle"></i>`;
+              icon = `<i class="ti ti-square-rounded-check opacity-50 fs-2 me-1"></i>`;
               break;
           }
-          return `${icon} ${row.Status} <br> <span class="text-secondary">${addStat}</span>`;
+          return `<span class="d-flex align-items-center">${icon} ${row.Status}</span> ${addStat}`;
         },
       },
       { width: "5%", data: "CreatedDate", orderable: false },
@@ -1301,7 +1303,7 @@ const dropdownActionButton = (data, type, row, params) => {
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`;
   act += `<li>
             <a class="dropdown-item" href="javascript:void(0)" id="btnDetailOrder" data-id="${row.Id}" data-type="${row.OrderType}">
-             <i class="ti ti-alert-square-rounded me-1 fs-2 opacity-50"></i>Detail
+             <i class="ti ti-info-square-rounded me-1 fs-2 opacity-50"></i>Detail
             </a>
           </li>
           <li class="${displayDelete}">

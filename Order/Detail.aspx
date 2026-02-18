@@ -82,7 +82,7 @@
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
                         <a href="javascript:void(0)" id="btnQuoteDetail" class="dropdown-item">
-                            <i class="ti ti-alert-square-rounded fs-2 me-2 opacity-50"></i> Detail
+                            <i class="ti ti-info-square-rounded fs-2 me-2 opacity-50"></i> Detail
                         </a>
                         <a href="javascript:void(0)" id="btnDownloadQuote" class="dropdown-item">
                             <i class="ti ti-file-download fs-2 me-2 opacity-50"></i> Download
