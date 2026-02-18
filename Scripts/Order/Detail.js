@@ -2807,7 +2807,7 @@ const dropdownActionButton = (row, createdby) => {
         </button>
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
           <li ${hideDetail}>
-            <a class="dropdown-item" href="javascript:void(0);" id="btnDetailItem" data-id="${row.Id}"" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}">
+            <a class="dropdown-item" href="javascript:void(0);" id="btnDetailItem" data-id="${row.Id}"" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}" data-designname="${row.DesignName}">
               <i class="ti ti-alert-square-rounded me-1 opacity-50 fs-2"></i>Detail
             </a>
           </li>
@@ -2817,7 +2817,7 @@ const dropdownActionButton = (row, createdby) => {
             </a>
           </li>
           <li ${hideCopy}>
-            <a class="dropdown-item" href="javascript:void(0);" id="btnCopyItem" data-id="${row.Id}" data-product="${row.Product}">
+            <a class="dropdown-item" href="javascript:void(0);" id="btnCopyItem" data-id="${row.Id}" data-product="${row.Product}" >
               <i class="ti ti-copy-plus me-1 opacity-50 fs-2"></i>Copy
             </a>
           </li>
