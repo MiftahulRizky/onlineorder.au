@@ -59,12 +59,13 @@ Partial Class Setting_Customer_Edit
                 End If
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As SqlCommand = New SqlCommand("UPDATE Customers SET Account=@Account, MasterId=@MasterId, ExactId=@ExactId, Name=@Name, Type='Shutters', [Group]=NULL, Pricing=@PriceGroup, SalesPerson='Office', OnStop=@OnStop, CashSale=@CashSale, Newsletter=@Newsletter, MinimumOrderSurcharge=@MinimumOrderSurcharge, Delivery=@Delivery, Active=@Active WHERE Id=@Id")
+                    Using myCmd As SqlCommand = New SqlCommand("UPDATE Customers SET Account=@Account, MasterId=@MasterId, ExactId=@ExactId, Name=@Name, Type=@Type, [Group]=NULL, Pricing=@PriceGroup, SalesPerson='Office', OnStop=@OnStop, CashSale=@CashSale, Newsletter=@Newsletter, MinimumOrderSurcharge=@MinimumOrderSurcharge, Delivery=@Delivery, Active=@Active WHERE Id=@Id")
                         myCmd.Parameters.AddWithValue("@Id", txtId.Text.Trim())
                         myCmd.Parameters.AddWithValue("@Account", ddlAccount.SelectedValue)
                         myCmd.Parameters.AddWithValue("@MasterId", ddlMaster.SelectedValue)
                         myCmd.Parameters.AddWithValue("@ExactId", txtExactId.Text.Trim())
                         myCmd.Parameters.AddWithValue("@Name", txtName.Text.Trim())
+                        myCmd.Parameters.AddWithValue("@Type", ddlCustomerType.SelectedValue)
                         myCmd.Parameters.AddWithValue("@PriceGroup", ddlPriceGroup.SelectedValue)
                         myCmd.Parameters.AddWithValue("@OnStop", ddlOnStop.SelectedValue)
                         myCmd.Parameters.AddWithValue("@CashSale", ddlCashSale.SelectedValue)
@@ -129,6 +130,7 @@ Partial Class Setting_Customer_Edit
             ddlMaster.SelectedValue = myData.Tables(0).Rows(0).Item("MasterId").ToString()
             txtExactId.Text = myData.Tables(0).Rows(0).Item("ExactId").ToString()
             txtName.Text = myData.Tables(0).Rows(0).Item("Name").ToString()
+            ddlCustomerType.SelectedValue = myData.Tables(0).Rows(0).Item("Type").ToString()
             ddlPriceGroup.SelectedValue = myData.Tables(0).Rows(0).Item("Pricing").ToString()
             ddlOnStop.SelectedValue = Convert.ToInt32(myData.Tables(0).Rows(0).Item("OnStop"))
             ddlCashSale.SelectedValue = Convert.ToInt32(myData.Tables(0).Rows(0).Item("CashSale"))

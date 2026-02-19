@@ -224,6 +224,26 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Edit Customer" %>
                     </asp:DropDownList>
                   </div>
                 </div>
+                <div class="datagrid-item">
+                  <div class="datagrid-title datagridTitle">CUSTOMER TYPE</div>
+                  <div class="datagrid-content datagridContent">
+                    <asp:DropDownList
+                      runat="server"
+                      ID="ddlCustomerType"
+                      CssClass="form-select"
+                    >
+                      <asp:ListItem Value="" Text=""></asp:ListItem>
+                      <asp:ListItem
+                        Value="Shutters"
+                        Text="SHUTTERS"
+                      ></asp:ListItem>
+                      <asp:ListItem
+                        Value="Blinds & Shutters"
+                        Text="BLINDS & SHUTTERS"
+                      ></asp:ListItem>
+                    </asp:DropDownList>
+                  </div>
+                </div>
               </div>
 
               <div class="datagrid mb-5">
