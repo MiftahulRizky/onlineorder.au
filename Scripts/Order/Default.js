@@ -431,28 +431,29 @@ const bindOrders = async (status, ordertype, active, storetype, params) => {
           switch (row.Status) {
             case "Draft":
             case "Unsubmitted":
-              icon = `<i class="ti ti-stopwatch opacity-50 fs-2 me-1"></i>`;
+              icon = `<i class="ti ti-clock opacity-50 fs-3 me-1"></i>`;
               break;
             case "Pending Price Approval":
-              icon = `<i class="ti ti-stopwatch opacity-50 fs-2 me-1"></i>`;
+              icon = `<i class="ti ti-clock opacity-50 fs-3 me-1"></i>`;
               break;
             case "New Order":
-              icon = `<i class="ti ti-file-check opacity-50 fs-2 me-1"></i>`;
+              icon = `<i class="ti ti-clipboard-check opacity-50 fs-3 me-1"></i>`;
               break;
             case "In Production":
-              icon = `<i class="ti ti-hourglass-high opacity-50 fs-2 me-1"></i>`;
+              icon = `<i class="ti ti-hourglass-high opacity-50 fs-3 me-1"></i>`;
               break;
             case "On Hold":
-              icon = `<i class="ti ti-clock-pause opacity-50 fs-2 me-1"></i>`;
+              icon = `<i class="ti ti-clock-pause opacity-50 fs-3 me-1"></i>`;
               break;
             case "Canceled":
-              icon = `<i class="ti ti-square-rounded-x opacity-50 fs-2 me-1"></i>`;
+              icon = `<i class="ti ti-square-rounded-x opacity-50 fs-3 me-1"></i>`;
               break;
             case "Completed":
-              icon = `<i class="ti ti-square-rounded-check opacity-50 fs-2 me-1"></i>`;
+              icon = `<i class="ti ti-square-rounded-check opacity-50 fs-3 me-1"></i>`;
               break;
           }
           return `<span class="d-flex align-items-center">${icon} ${row.Status}</span> ${addStat}`;
+          // return `${row.Status} ${addStat}`;
         },
       },
       { width: "5%", data: "CreatedDate", orderable: false },
