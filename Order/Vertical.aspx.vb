@@ -817,6 +817,10 @@ Partial Class Order_Vertical
                     divInsertInTrack.Visible = True
                     divSloper.Visible = True
 
+                    if tubeType = "Louvolite" Then
+                        divInsertInTrack.Visible = False
+                    End If
+
                     If controlType = "Chain" Then
                         divChainColour.Visible = True
                         divChainLength.Visible = True
@@ -1025,16 +1029,13 @@ Partial Class Order_Vertical
                 Dim tubeType As String = publicCfg.GetTubeType(Data)
 
                 If tubeType = "28mm Tiltrack" Then
-                    ' ddlTrackColour.Items.Add(New ListItem("BIRCH WHITE", "Birch White"))
                     ddlTrackColour.Items.Add(New ListItem("PRIMROSE", "Primrose"))
-                    ' ddlTrackColour.Items.Add(New ListItem("WHITE", "White"))
                 End If
 
                 If tubeType = "Fairline" Then
                     ddlTrackColour.Items.Add(New ListItem("BEIGE", "Beige"))
                     ddlTrackColour.Items.Add(New ListItem("BIRCH WHITE", "Birch White"))
                     ddlTrackColour.Items.Add(New ListItem("BLACK", "Black"))
-                    ddlTrackColour.Items.Add(New ListItem("WHITE", "White"))
                     ddlTrackColour.Items.Add(New ListItem("SILVER", "Silver"))
                 End If
 
