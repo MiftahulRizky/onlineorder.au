@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  if (ROLENAME == "Administrator" || ROLENAME == "Customer Service") {
+  if (ROLENAME == "Administrator" || ROLENAME == "Customer") {
     console.log("Default.js loaded successfully");
     console.log("ROLENAME: " + ROLENAME);
     console.log("CUSTOMERID: " + CUSTOMERID);
@@ -1336,8 +1336,7 @@ const dropdownActionButton = (data, type, row, params) => {
               </a>
             </li>`;
   }
-
-  act += `<div class="dropdown-divider"></div>
+  act += `<div class="dropdown-divider d-none"></div>
           <li>
             <a class="dropdown-item" href="javascript:void(0)" id="btnLogs" data-id="${row.Id}" data-type="${row.OrderType}">
               <i class="ti ti-logout me-1 fs-2 opacity-50"></i>Logs
@@ -1414,8 +1413,8 @@ const visibleColumnServerside = () => {
   }
 
   if (ROLENAME == "Customer" || ROLENAME == "Representative" || SESSION_SP) {
-    tableData.columns(6).visible(false); // ORDER TYPE
-    ordertype.forEach((item) => item.setAttribute("hidden", true));
+    // tableData.columns(6).visible(false); // ORDER TYPE
+    // ordertype.forEach((item) => item.setAttribute("hidden", true));
   }
 
   const aDailyMail = document.querySelector("#aDailyMail");

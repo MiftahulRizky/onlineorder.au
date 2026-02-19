@@ -155,7 +155,7 @@ Partial Class Methods_Order_DefaultMethod
                     statusMerged = "AND (@Status = 'all' OR Status IN ('Draft', 'Unsubmitted'))"
                 End If
 
-                Dim whereRole As String = String.Empty
+                Dim whereRole As String = String.Format(" AND CustomerId = '{0}'", params.customerid)
                 IF params.customercompany = "SP" Then
                     whereRole = ""
                     If params.rolename = "PPIC & DE" Then
@@ -164,9 +164,9 @@ Partial Class Methods_Order_DefaultMethod
                     End If
 
                     If params.rolename = "Customer" Then
-                        whereRole = " AND CustomerId = '" + params.customerid + "'"
+                        whereRole = String.Format(" AND CustomerId = '{0}'", params.customerid)
                         If params.levelname = "Member" Then
-                            whereRole = " AND CreatedBy = '" + params.loginid + "'"
+                            whereRole = String.Format(" AND CreatedBy = '{0}'", params.loginid)
                         End If
                     End If
                 ElseIf params.customercompany = "LOOP" Then
@@ -174,11 +174,11 @@ Partial Class Methods_Order_DefaultMethod
                         Case "Administrator", "Customer Service", "Data Entry", "PPIC & DE", "Account"
                             whereRole = ""
                         Case "Representative"
-                            whereRole = " AND CustomerId = '" + params.customerid + "' AND CreatedBy = '" + params.loginid + "'"
+                            whereRole = String.Format(" AND CustomerId = '{0}' AND CreatedBy = '{1}'", params.customerid, params.loginid)
                         Case "Customer"
-                            whereRole = " AND CustomerId = '" + params.customerid + "'"
+                            whereRole = String.Format(" AND CustomerId = '{0}'", params.customerid)
                             If params.customeraccount = "Master" Then
-                                whereRole = " AND CustomerId = '" + params.customerid + "' AND CustomerMasterId = '" + params.customerid + "'"
+                                whereRole = String.Format(" AND CustomerId = '{0}' AND CustomerMasterId = '{1}'", params.customerid)
                             End If
                     End Select
                 ElseIf params.customercompany = "ALL" Then
@@ -194,7 +194,7 @@ Partial Class Methods_Order_DefaultMethod
 
                 '#---------------------------------------------------------|| Count Records ||---------------------------------------------------------#
                
-                Dim countSql As String = "SELECT COUNT( Id ) FROM view_order_headers WHERE Active = @Active " + whereRole + whereOrderType + statusMerged + " AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                Dim countSql As String = String.Format("SELECT COUNT( Id ) FROM view_order_headers WHERE Active = @Active {0} {1} {2} AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)", whereRole, whereOrderType, statusMerged)
                 Using countCmd As New SqlCommand(countSql, conn)
                     countCmd.Parameters.AddWithValue("@Status", params.status)
                     countCmd.Parameters.AddWithValue("@OrderType", params.ordertype)
@@ -206,7 +206,7 @@ Partial Class Methods_Order_DefaultMethod
                 '#---------------------------------------------------------|| Mian Query ||---------------------------------------------------------#
                 Dim sqlBuilder As New System.Text.StringBuilder()
                
-                Dim whereQueries As String = "WHERE Active = @Active " + whereRole + whereOrderType + statusMerged + " AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)"
+                Dim whereQueries As String = String.Format("WHERE Active = @Active {0} {1} {2} AND (@CustomerAccount = 'ALL' OR CustomerAccount = @CustomerAccount)", whereRole, whereOrderType, statusMerged)
                 sqlBuilder.AppendLine("SELECT Id, OrderId, JoNumberId, CustomerId, OrderNumber, OrderName, Delivery, OrderType, Status, StatusAdditional, CreatedDate, SubmittedDate,CanceledDate, CompletedDate, Active, CustomerName")
                 sqlBuilder.AppendLine("FROM view_order_headers")
                 sqlBuilder.AppendLine(whereQueries)
@@ -221,14 +221,14 @@ Partial Class Methods_Order_DefaultMethod
 
                 '#-------------------------------------------------|| Global Search ||-------------------------------------------------#
                 If Not String.IsNullOrEmpty(params.search.value) Then
-                    Dim searchValue As String = "%" & params.search.value.Trim() & "%"
+                    Dim searchValue As String = String.Format("%{0}%", params.search.value.Trim())
                     whereClause.AppendLine(" AND (OrderId LIKE @SearchValue OR CustomerName LIKE @SearchValue OR OrderNumber LIKE @SearchValue OR OrderName LIKE @SearchValue )")
                     cmd.Parameters.AddWithValue("@SearchValue", searchValue)
                 End If
 
                 sqlBuilder.Append(whereClause.ToString())
                 
-                Dim filteredCountSql As String = "SELECT COUNT(T.Id) FROM (" & sqlBuilder.ToString() & ") AS T"
+                Dim filteredCountSql As String = String.Format("SELECT COUNT(T.Id) FROM ({0}) AS T", sqlBuilder.ToString())
                 Using filteredCountCmd As New SqlCommand(filteredCountSql, conn)
                     For Each p As SqlParameter In cmd.Parameters
                         filteredCountCmd.Parameters.Add(New SqlParameter(p.ParameterName, p.Value))
@@ -239,7 +239,7 @@ Partial Class Methods_Order_DefaultMethod
 
                 '#-------------------------------------------------|| Order By ||-------------------------------------------------#
                 Dim orderByClause As New System.Text.StringBuilder()
-                Dim customOrderBy As String = String.Empty
+                Dim customOrderBy As String = " ORDER BY CreatedDate DESC"
                 IF params.customercompany = "SP" Then
                     customOrderBy = " ORDER BY CreatedDate DESC"
                 ElseIf params.customercompany = "LOOP" Then
