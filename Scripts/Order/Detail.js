@@ -1187,15 +1187,15 @@ const handlerHeaderInfo = async (item) => {
       // Render
       spanTotal.innerHTML = SumPrice
         ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${formatCurrency(SumPrice)}</span>`
-        : `<span style="font-size:larger;">0</span>`;
+        : `<span style="font-size:larger;">-</span>`;
 
       spanGST.innerHTML = Gst
         ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${formatCurrency(Gst)}</span>`
-        : `<span style="font-size:larger;">0</span>`;
+        : `<span style="font-size:larger;">-</span>`;
 
       spanFinalTotal.innerHTML = FinalTotal
         ? `<span class="badge badge-outline text-green" style="font-size:larger;">$${formatCurrency(FinalTotal)}</span>`
-        : `<span style="font-size:larger;">0</span>`;
+        : `<span style="font-size:larger;">-</span>`;
     } catch (error) {
       const msg =
         ROLENAME === "Administrator"

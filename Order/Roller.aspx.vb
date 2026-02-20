@@ -1,5 +1,8 @@
 ﻿Imports System.Data
-
+Imports System.Web.Services
+Imports System.Web.Script.Services
+Imports System.Web.Script.Serialization
+Imports Newtonsoft.Json
 Partial Class Order_Roller
     Inherits Page
 
@@ -115,6 +118,17 @@ Partial Class Order_Roller
             End If
         End If
     End Sub
+
+     <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Function GetItemData(ByVal query As String) As Object
+        Try
+            Dim Item As String = publicCfg.GetItemData(query)
+            Return Item
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message ' biar kelihatan errornya
+        End Try
+    End Function
 
     Protected Sub btnReset_Click(sender As Object, e As EventArgs)
         Response.Redirect("~/order/roller", False)
