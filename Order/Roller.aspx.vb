@@ -1246,9 +1246,16 @@ Partial Class Order_Roller
                     divBracketCover.Visible = True
                     divAdditional.Visible = True
                     divBracketExt.Visible = True
+
                     If bracketType = "Double" Then
                         divBracketExt.Visible = False
                     End If
+
+                    If InStr(TubeType, "LOV") > 0 AND InStr(bracketType, "Link") > 0 Then
+                        divBracketCover.Visible = False
+                    End if
+
+
 
                     divChainColour.Visible = True : divChainLength.Visible = True
                     divMotorStyle.Visible = True : divMotorStyleInfo.Visible = False

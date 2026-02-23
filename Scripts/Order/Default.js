@@ -1337,7 +1337,7 @@ const dropdownActionButton = (data, type, row, params) => {
               </a>
             </li>`;
   }
-  act += `<div class="dropdown-divider d-none"></div>
+  act += `<div class="dropdown-divider"></div>
           <li>
             <a class="dropdown-item" href="javascript:void(0)" id="btnLogs" data-id="${row.Id}" data-type="${row.OrderType}">
               <i class="ti ti-logout me-1 fs-2 opacity-50"></i>Logs
