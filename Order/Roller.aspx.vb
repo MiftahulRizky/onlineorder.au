@@ -1251,9 +1251,6 @@ Partial Class Order_Roller
                         divBracketExt.Visible = False
                     End If
 
-                    If InStr(TubeType, "LOV") > 0 AND InStr(bracketType, "Link") > 0 Then
-                        divBracketCover.Visible = False
-                    End if
 
 
 
