@@ -200,7 +200,10 @@ Debug="true" %>
                                     <div class="mb-3 row" id="divMotorBattery">
                                         <label for="externalbattery" class="col-lg-3 text-uppercase fw-bold">external battery</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="externalbattery" id="externalbattery" class="form-select"></select>
+                                            <select type="text" name="externalbattery" id="externalbattery" class="form-select">
+                                                <option value=""></option>
+                                                <option value="Yes">YES</option>
+                                            </select>
                                         </div>  
                                     </div>
 
@@ -214,7 +217,11 @@ Debug="true" %>
                                     <div class="mb-3 row" id="divCableExitPoint">
                                         <label for="cableexitpoint" class="col-lg-3 text-uppercase fw-bold">cable exit point</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="cableexitpoint" id="cableexitpoint" class="form-select"></select>
+                                            <select type="text" name="cableexitpoint" id="cableexitpoint" class="form-select">
+                                                <option value=""></option>
+                                                <option value="Side">SIDE</option>
+                                                <option value="Top">TOP</option>
+                                            </select>
                                         </div>  
                                     </div>
 

@@ -182,4 +182,70 @@ Partial Class Methods_Order_RollerBlindMethod
         End Try
     End Function
 
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindRailType(ByVal brackettype As String) As Object
+        Try
+            Dim FindBracket As String = brackettype
+
+            If brackettype = "Headbox & Side Channels" Then
+                FindBracket = "Headbox &amp; Side Channels"
+            End If
+            
+            If brackettype = "With Tube & Bottom Included" Then
+                FindBracket = "With Tube &amp; Bottom Included"
+            End If
+
+            Dim MyQuery As String = String.Format("SELECT UPPER(Type) AS TypeText, Type AS TypeValue FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Active ='1' GROUP BY Type ORDER BY Type ASC", FindBracket)
+            Dim datas As DataSet = publicCfg.GetListData(MyQuery)
+            Dim list As New List(Of Dictionary(Of String, String))()
+            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
+                For Each row As DataRow In datas.Tables(0).Rows
+                    Dim result As New Dictionary(Of String, String) From {
+                        {"value", row("TypeValue").ToString()},
+                        {"text", row("TypeText").ToString()}
+                    }
+                    list.Add(result)
+                Next
+            End If
+            Return list
+        Catch ex As Exception
+            ' Return sebagai objek error agar bisa ditangani di sisi client
+            Return New With {.error = ex.Message}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindRailColour(ByVal brackettype As String, ByVal railtype As String) As Object
+        Try
+            Dim FindBracket As String = brackettype
+
+            If brackettype = "Headbox & Side Channels" Then
+                FindBracket = "Headbox &amp; Side Channels"
+            End If
+            
+            If brackettype = "With Tube & Bottom Included" Then
+                FindBracket = "With Tube &amp; Bottom Included"
+            End If
+
+            Dim MyQuery As String = String.Format("SELECT Id, UPPER(Colour) AS Colour, VALUE Product FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Type='{1}' AND Active ='1' ORDER BY Name ASC", FindBracket, railtype)
+            Dim datas As DataSet = publicCfg.GetListData(MyQuery)
+            Dim list As New List(Of Dictionary(Of String, String))()
+            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
+                For Each row As DataRow In datas.Tables(0).Rows
+                    Dim result As New Dictionary(Of String, String) From {
+                        {"value", row("Id").ToString()},
+                        {"text", row("Colour").ToString()}
+                    }
+                    list.Add(result)
+                Next
+            End If
+            Return list
+        Catch ex As Exception
+            ' Return sebagai objek error agar bisa ditangani di sisi client
+            Return New With {.error = ex.Message}
+        End Try
+    End Function
+
 End Class

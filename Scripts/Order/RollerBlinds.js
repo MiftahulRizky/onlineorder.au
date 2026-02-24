@@ -108,6 +108,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       if (!e.target.value) return;
       const blindid = document.getElementById("blindtype");
       const blindname = blindid.options[blindid.selectedIndex].dataset.name;
+      const brackettype = document.getElementById("brackettype").value;
+      const tubetype = document.getElementById("tubetype").value;
 
       await bindFabrics(DESIGNID);
       if (blindname == "Motorised") {
@@ -116,11 +118,14 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
           controltype.options[controltype.selectedIndex].dataset.name;
 
         await Promise.all([
-          bindMotorStyle(DESIGNID, controlname),
-          bindMotorRemote(DESIGNID, controlname),
+          bindMotorStyle(controlname),
+          bindMotorRemote(controlname),
         ]);
       }
-      bindChains(DESIGNID);
+      await Promise.all([
+        bindChains(DESIGNID),
+        bindTrims(blindname, brackettype, tubetype),
+      ]);
 
       divFormDetail.removeAttribute("hidden");
     }
@@ -129,6 +134,50 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     if (e.target.id === "fabrictype") {
       const fabrictype = e.target.value;
       await bindFabricColours(DESIGNID, fabrictype);
+    }
+
+    // ---------------------------------||motorstyle||---------------------------------
+    if (e.target.id === "motorstyle") {
+      const controltype = document.getElementById("controltype");
+      const controlname =
+        controltype.options[controltype.selectedIndex].dataset.name;
+      const motorstyle = e.target.value;
+
+      bindMotorCharger(controlname, motorstyle);
+    }
+
+    // ---------------------------------||trim||---------------------------------
+    if (e.target.id === "trim") {
+      const divBottomRail = document.getElementById("divBottomRail");
+
+      divBottomRail.setAttribute("hidden", true);
+
+      if (!e.target.value) return;
+      const blindtype = document.getElementById("blindtype");
+      const blindname = blindtype.options[blindtype.selectedIndex].dataset.name;
+      const brackettype = document.getElementById("brackettype").value;
+      const trim = e.target.value;
+      bindRailType(brackettype);
+
+      if (blindname == "Skin Only" && trim == "1F") {
+        divBottomRail.removeAttribute("hidden");
+      }
+      if (
+        (blindname == "Roller Blind" ||
+          blindname == "Motorised" ||
+          blindname == "Cassette") &&
+        trim == "1F"
+      ) {
+        divBottomRail.removeAttribute("hidden");
+      }
+    }
+
+    // ---------------------------------||railtype||---------------------------------
+    if (e.target.id === "railtype") {
+      const brackettype = document.getElementById("brackettype").value;
+      const railtype = e.target.value;
+
+      bindRailColour(brackettype, railtype);
     }
   });
   el.addEventListener("input", (e) => {
@@ -739,14 +788,14 @@ const bindChains = () => {
   sel.innerHTML = ""; //reset
 
   let data = [];
-  data = [
+  data.push(
     { value: "Beige", text: "Beige" },
     { value: "Birch White", text: "Birch White" },
     { value: "Black", text: "Black" },
     { value: "Grey", text: "Grey" },
     { value: "Stainless Steel", text: "Stainless Steel" },
     { value: "White", text: "White" },
-  ];
+  );
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
@@ -764,24 +813,24 @@ const bindChains = () => {
   });
 };
 
-const bindMotorStyle = (designid, controltype) => {
+const bindMotorStyle = (controltype) => {
   const sel = document.getElementById("motorstyle");
   sel.innerHTML = ""; //reset
 
-  if (!designid || !controltype) return;
+  if (!controltype) return;
 
   let data = [];
   if (controltype == "Somfy RTS") {
-    data = [
+    data.push(
       { value: "Altus 40 RTS", text: "Altus 40 RTS" },
       { value: "Altus 50 RTS", text: "Altus 50 RTS" },
       { value: "Sonesse 40 RTS", text: "Sonesse 40 RTS" },
       { value: "Son 40 RTS ZB", text: "Son 40 RTS ZB" },
-    ];
+    );
   }
 
   if (controltype == "Somfy WF") {
-    data = [
+    data.push(
       { value: "Altus 28 WF", text: "Altus 28 WF" },
       { value: "Altus 28 EXB", text: "Altus 28 EXB" },
       { value: "Son 28 WF ZB", text: "Son 28 WF ZB" },
@@ -789,33 +838,33 @@ const bindMotorStyle = (designid, controltype) => {
       { value: "Sonesse 30 WF", text: "Sonesse 30 WF" },
       { value: "Sonesse 40 WF", text: "Sonesse 40 WF" },
       { value: "Son 40 WF ZB", text: "Son 40 WF ZB" },
-    ];
+    );
   }
 
   if (controltype == "Somfy WS") {
-    data = [
+    data.push(
       { value: "Mecure LS 40", text: "Mecure LS 40" },
       { value: "Sonesse 40 WT", text: "Sonesse 40 WT" },
-    ];
+    );
   }
 
   if (controltype == "Alpha RTS") {
-    data = [{ value: "WSER 40 Universal", text: "WSER 40 Universal" }];
+    data.push({ value: "WSER 40 Universal", text: "WSER 40 Universal" });
   }
 
   if (controltype == "Alpha WF") {
-    data = [
+    data.push(
       { value: "Alpha 1NM Sml", text: "Alpha 1NM Sml" },
       { value: "Alpha 2NM Std", text: "Alpha 2NM Std" },
       { value: "Alpha 3NM HD", text: "Alpha 3NM HD" },
-    ];
+    );
   }
 
   if (controltype == "Alpha WS") {
-    data = [
+    data.push(
       { value: "WSEC 40 Universal", text: "WSEC 40 Universal" },
       { value: "WSS40 Allen Key", text: "WSS40 Allen Key" },
-    ];
+    );
   }
 
   if (data.length > 1) {
@@ -834,33 +883,62 @@ const bindMotorStyle = (designid, controltype) => {
   });
 };
 
-const bindMotorRemote = (designid, controltype) => {
+const bindMotorRemote = (controltype) => {
   const sel = document.getElementById("motorremote");
   sel.innerHTML = ""; //reset
 
-  if (!designid || !controltype) return;
+  if (!controltype) return;
 
   let data = [];
   if (controltype == "Somfy RTS" || controltype == "Somfy WF") {
-    data = [
+    data.push(
       { value: "1 Situo (1 ch)", text: "1 Situo (1 ch)" },
       { value: "4 Situo (5ch)", text: "4 Situo (5ch)" },
       { value: "Telis (16 ch)", text: "Telis (16 ch)" },
-    ];
+    );
     if (controltype == "Somfy RTS") {
-      data += [
+      data.push(
         { value: "Sm O (w+frame)", text: "Sm O (w+frame)" },
         { value: "Sm O 2ch (w+frame)", text: "Sm O 2ch (w+frame)" },
         { value: "Sm O 4ch (w+frame)", text: "Sm O 4ch (w+frame)" },
-      ];
+      );
     }
-    data += [
+    data.push(
       { value: "Ysia ZB (1 ch)", text: "Ysia ZB (1 ch)" },
       { value: "Ysia ZB (5 ch)", text: "Ysia ZB (5 ch)" },
       { value: "Connexoon", text: "Connexoon" },
       { value: "Tahoma Wifi Box", text: "Tahoma Wifi Box" },
       { value: "E-Adaptor Tahoma", text: "E-Adaptor Tahoma" },
-    ];
+    );
+  }
+
+  if (controltype == "Somfy WS") {
+    data.push(
+      { value: "Sm Uno (+frame)", text: "Sm Uno (+frame)" },
+      { value: "Sm Duo (+frame)", text: "Sm Duo (+frame)" },
+      { value: "Triple Toggle Switch", text: "Triple Toggle Switch" },
+    );
+  }
+
+  if (controltype == "Alpha RTS" || controltype == "Alpha WF") {
+    data.push(
+      { value: "Pioneer 1 Channel", text: "Pioneer 1 Channel" },
+      { value: "Pioneer 4 Channels", text: "Pioneer 4 Channels" },
+      { value: "Pioneer 16 Channels", text: "Pioneer 16 Channels" },
+      { value: "Navigator 1 Channel", text: "Navigator 1 Channel" },
+      { value: "Navigator 5 Channels", text: "Navigator 5 Channels" },
+      { value: "Navigator 16 Channels", text: "Navigator 16 Channels" },
+      { value: "1 Ch Wall", text: "1 Ch Wall" },
+      { value: "8 Ch Wall", text: "8 Ch Wall" },
+      { value: "Neo Link Box", text: "Neo Link Box" },
+    );
+  }
+
+  if (controltype == "Alpha WS") {
+    data.push(
+      { value: "Mt Paddle (4c)", text: "Mt Paddle (4c)" },
+      { value: "Neo Link Box", text: "Neo Link Box" },
+    );
   }
 
   if (data.length > 1) {
@@ -877,6 +955,270 @@ const bindMotorRemote = (designid, controltype) => {
     option.setAttribute("data-name", item.text);
     sel.add(option);
   });
+};
+
+const bindMotorCharger = (controltype, motorstyle) => {
+  const sel = document.getElementById("charger");
+  sel.innerHTML = ""; //reset
+
+  if (!controltype || !motorstyle) return;
+
+  let data = [];
+  if (controltype == "Somfy WF") {
+    if (motorstyle.includes("ZB")) {
+      data.push({ value: "USB-C", text: "USB-C" });
+    } else {
+      data.push({ value: "Yes", text: "Yes" });
+    }
+  }
+
+  if (controltype == "Alpha WF") {
+    if (motorstyle == "Alpha 1NM Sml") {
+      data.push({ value: "Alpha", text: "Alpha" });
+    }
+    if (motorstyle == "Alpha 2NM Std") {
+      data.push({ value: "Alpha 2NM (C)", text: "Alpha 2NM (C)" });
+    }
+    if (motorstyle == "Alpha 3NM HD") {
+      data.push({ value: "Alpha 3NM (old)", text: "Alpha 3NM (old)" });
+    }
+  }
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindTrims = (blindname, brackettype, tubetype) => {
+  const sel = document.getElementById("trim");
+  sel.innerHTML = ""; //reset
+
+  if (!blindname || !tubetype) return;
+
+  let data = [];
+  if (blindname == "Roller Blind" || blindname == "Motorised" || "Cassette") {
+    data.push(
+      { value: "1P", text: "1P" },
+      { value: "1F", text: "1F" },
+      { value: "5F", text: "5F" },
+      { value: "6F", text: "6F" },
+      { value: "7F", text: "7F" },
+      { value: "9F", text: "9F" },
+      { value: "10F", text: "10F" },
+      { value: "12F", text: "12F" },
+      { value: "15F", text: "15F" },
+      { value: "17F", text: "17F" },
+      { value: "18F", text: "18F" },
+      { value: "19F", text: "19F" },
+      { value: "20F", text: "20F" },
+      { value: "22F", text: "22F" },
+      { value: "23F", text: "23F" },
+      { value: "24F", text: "24F" },
+      { value: "25F", text: "25F" },
+      { value: "26F", text: "26F" },
+    );
+  }
+
+  if (blindname == "Skin Only") {
+    if (brackettype == "Excluded" || brackettype == "With Tube Included") {
+      data.push(
+        { value: "1P", text: "1P" },
+        { value: "Spline", text: "Spline" },
+      );
+    }
+    if (brackettype == "Excluded") {
+      data.push(
+        { value: "Pocket", text: "Pocket" },
+        { value: "1RS", text: "1RS" },
+        { value: "1OS", text: "1OS" },
+        { value: "Added Trim", text: "Added Trim" },
+      );
+    }
+    if (
+      brackettype == "With Tube & Bottom Included" ||
+      brackettype == "With Bottom Included"
+    ) {
+      data.push(
+        { value: "1P", text: "1P" },
+        { value: "1F", text: "1F" },
+        { value: "5F", text: "5F" },
+        { value: "7F", text: "7F" },
+        { value: "9F", text: "9F" },
+        { value: "10F", text: "10F" },
+        { value: "12F", text: "12F" },
+        { value: "15F", text: "15F" },
+        { value: "17F", text: "17F" },
+        { value: "18F", text: "18F" },
+        { value: "19F", text: "19F" },
+        { value: "20F", text: "20F" },
+        { value: "20F", text: "20F" },
+        { value: "22F", text: "22F" },
+        { value: "23F", text: "23F" },
+        { value: "24F", text: "24F" },
+        { value: "25F", text: "25F" },
+        { value: "26F", text: "26F" },
+      );
+    }
+  }
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindRailType = async (brackettype) => {
+  const select = document.getElementById("railtype");
+  select.innerHTML = "";
+
+  if (!brackettype) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindRailType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        brackettype,
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindRailType");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+        // bindControls(DESIGNID, select.value);
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const bindRailColour = async (brackettype, railtype) => {
+  const select = document.getElementById("railcolour");
+  select.innerHTML = "";
+
+  if (!brackettype || !railtype) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindRailColour`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        brackettype,
+        railtype,
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindRailColour");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+        // bindControls(DESIGNID, select.value);
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
 };
 // ------------------------------------------------------|| Other Functions ||--------------------------------------
 const getItemData = async (query) => {

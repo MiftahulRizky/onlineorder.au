@@ -11,7 +11,7 @@ Partial Class Shipment_Add
     Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
-        If Not Session("RoleName") = "Administrator" And Not Session("RoleName") = "Customer Service" Then
+        If Not Session("RoleName") = "Administrator" And Not Session("RoleName") = "Customer Service" And Not Session("RoleName") = "PPIC & DE" Then
             Response.Redirect("~/", False)
         End If
 
