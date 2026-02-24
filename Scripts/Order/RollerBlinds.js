@@ -133,6 +133,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const divMotorCharger = document.getElementById("divMotorCharger");
       const divCableExitPoint = document.getElementById("divCableExitPoint");
       const divConnector = document.getElementById("divConnector");
+      const divBottomRail = document.getElementById("divBottomRail");
       const divChildSafe = document.getElementById("divChildSafe");
       const divAccessory = document.getElementById("divAccessory");
       const divExtras = document.getElementById("divExtras");
@@ -144,6 +145,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       divMotorCharger.setAttribute("hidden", true);
       divCableExitPoint.setAttribute("hidden", true);
       divConnector.setAttribute("hidden", true);
+      divBottomRail.setAttribute("hidden", true);
       divChildSafe.setAttribute("hidden", true);
       divAccessory.setAttribute("hidden", true);
       divExtras.setAttribute("hidden", true);
@@ -180,8 +182,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
           divExtras.removeAttribute("hidden");
         }
         if (tubetype == "JAI Geared") {
-          divChildSafe.removeAttribute("hidden");
           divAccessory.removeAttribute("hidden");
+          divExtras.removeAttribute("hidden");
         }
       }
     }
