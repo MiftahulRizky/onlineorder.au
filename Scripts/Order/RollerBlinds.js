@@ -272,6 +272,9 @@ const handlerElementVisibility = () => {
     const divCableExitPoint = document.getElementById("divCableExitPoint");
     const divConnector = document.getElementById("divConnector");
     const divBottomRail = document.getElementById("divBottomRail");
+    const divTubeSize = document.getElementById("divTubeSize");
+    const divAccessory = document.getElementById("divAccessory");
+    const divExtras = document.getElementById("divExtras");
     const divMarkUp = document.getElementById("divMarkUp");
 
     const btnSubmit = document.querySelector("#btnSubmit");
@@ -293,6 +296,9 @@ const handlerElementVisibility = () => {
     divCableExitPoint.setAttribute("hidden", true);
     divConnector.setAttribute("hidden", true);
     divBottomRail.setAttribute("hidden", true);
+    divTubeSize.setAttribute("hidden", true);
+    divAccessory.setAttribute("hidden", true);
+    divExtras.setAttribute("hidden", true);
     btnSubmit.setAttribute("hidden", true);
 
     if (MARKUPACCESS === "True") divMarkUp.removeAttribute("hidden");

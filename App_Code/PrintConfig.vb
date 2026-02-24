@@ -1497,6 +1497,7 @@ Public Class PrintConfig
                 result += thStart & "Bottom" & thEnd
                 result += thStart & "Tube" & thEnd
                 result += thStart & "Accessory" & thEnd
+                result += thStart & "Extras" & thEnd
                 result += thStart & "Bracket Covers" & thEnd
                 result += trEnd
 
@@ -1592,6 +1593,7 @@ Public Class PrintConfig
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomName").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("TubeSize").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Accessory").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("AdditionalMotor").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BracketCover").ToString() & tdEnd
                     result += trEnd
                     If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
