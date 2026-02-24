@@ -127,8 +127,26 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     // ---------------------------------||colourtype||---------------------------------
     if (e.target.id === "colourtype") {
       const divFormDetail = document.getElementById("divFormDetail");
+      const divMotorStyle = document.getElementById("divMotorStyle");
+      const divMotorRemote = document.getElementById("divMotorRemote");
+      const divMotorBattery = document.getElementById("divMotorBattery");
+      const divMotorCharger = document.getElementById("divMotorCharger");
+      const divCableExitPoint = document.getElementById("divCableExitPoint");
+      const divConnector = document.getElementById("divConnector");
+      const divChildSafe = document.getElementById("divChildSafe");
+      const divAccessory = document.getElementById("divAccessory");
+      const divExtras = document.getElementById("divExtras");
 
       divFormDetail.setAttribute("hidden", true);
+      divMotorStyle.setAttribute("hidden", true);
+      divMotorRemote.setAttribute("hidden", true);
+      divMotorBattery.setAttribute("hidden", true);
+      divMotorCharger.setAttribute("hidden", true);
+      divCableExitPoint.setAttribute("hidden", true);
+      divConnector.setAttribute("hidden", true);
+      divChildSafe.setAttribute("hidden", true);
+      divAccessory.setAttribute("hidden", true);
+      divExtras.setAttribute("hidden", true);
 
       if (!e.target.value) return;
       const blindtype = document.getElementById("blindtype");
@@ -153,6 +171,19 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       ]);
 
       divFormDetail.removeAttribute("hidden");
+      if (blindname === "Cassette") {
+        if (tubetype === "Motorised") {
+          divMotorStyle.removeAttribute("hidden");
+          divMotorRemote.removeAttribute("hidden");
+          divMotorCharger.removeAttribute("hidden");
+          divAccessory.removeAttribute("hidden");
+          divExtras.removeAttribute("hidden");
+        }
+        if (tubetype == "JAI Geared") {
+          divChildSafe.removeAttribute("hidden");
+          divAccessory.removeAttribute("hidden");
+        }
+      }
     }
 
     // ---------------------------------||fabrictype||---------------------------------
@@ -273,6 +304,7 @@ const handlerElementVisibility = () => {
     const divConnector = document.getElementById("divConnector");
     const divBottomRail = document.getElementById("divBottomRail");
     const divTubeSize = document.getElementById("divTubeSize");
+    const divChildSafe = document.getElementById("divChildSafe");
     const divAccessory = document.getElementById("divAccessory");
     const divExtras = document.getElementById("divExtras");
     const divMarkUp = document.getElementById("divMarkUp");
@@ -297,6 +329,7 @@ const handlerElementVisibility = () => {
     divConnector.setAttribute("hidden", true);
     divBottomRail.setAttribute("hidden", true);
     divTubeSize.setAttribute("hidden", true);
+    divChildSafe.setAttribute("hidden", true);
     divAccessory.setAttribute("hidden", true);
     divExtras.setAttribute("hidden", true);
     btnSubmit.setAttribute("hidden", true);

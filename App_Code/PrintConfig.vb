@@ -779,6 +779,23 @@ Public Class PrintConfig
                 result += trEnd
 
                 For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    Dim BlindName As String = thisData.Tables(0).Rows(i).Item("BlindName").ToString()
+
+                    Dim PelmetType As String = thisData.Tables(0).Rows(i).Item("PelmetType").ToString()
+                    Dim PelmetWidth As String = thisData.Tables(0).Rows(i).Item("PelmetWidth").ToString()
+                    Dim PelmetSize As String = thisData.Tables(0).Rows(i).Item("PelmetSize").ToString()
+                    Dim PelmetReturnSize As String = thisData.Tables(0).Rows(i).Item("PelmetReturnSize").ToString()
+                    Dim PelmetReturnSize2 As String = thisData.Tables(0).Rows(i).Item("PelmetReturnSize2").ToString()
+
+                    If InStr(BlindName, "Alum") > 0 Then
+                        PelmetType = ""
+                        PelmetWidth = ""
+                        PelmetSize = ""
+                        PelmetReturnSize = ""
+                        PelmetReturnSize2 = ""
+                    End IF
+
+                    
                     Dim LHSWidth_Top As String = thisData.Tables(0).Rows(i).Item("LHSWidth_Top").ToString()
                     Dim LHSHeight_Top As String = thisData.Tables(0).Rows(i).Item("LHSHeight_Top").ToString()
                     Dim RHSWidth_Top As String = thisData.Tables(0).Rows(i).Item("RHSWidth_Top").ToString()
@@ -809,11 +826,11 @@ Public Class PrintConfig
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ControlLength").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("PelmetType").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("PelmetWidth").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("PelmetSize").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("PelmetReturnSize").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("PelmetReturnSize2").ToString() & tdEnd
+                    result += tdStart & PelmetType & tdEnd
+                    result += tdStart & PelmetWidth & tdEnd
+                    result += tdStart & PelmetSize & tdEnd
+                    result += tdStart & PelmetReturnSize & tdEnd
+                    result += tdStart & PelmetReturnSize2 & tdEnd
                     result += tdStart & LHSWidth_Top & tdEnd
                     result += tdStart & LHSHeight_Top & tdEnd
                     result += tdStart & RHSWidth_Top & tdEnd
