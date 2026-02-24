@@ -183,7 +183,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         }
         if (tubetype == "JAI Geared") {
           divAccessory.removeAttribute("hidden");
-          divExtras.removeAttribute("hidden");
+          divChildSafe.removeAttribute("hidden");
         }
       }
     }

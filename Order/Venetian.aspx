@@ -455,6 +455,8 @@
         <asp:Label runat="server" ID="lblPriceGroupId"></asp:Label>
 
         <asp:Label runat="server" ID="lblExactId"></asp:Label>
+        <asp:Label runat="server" ID="lblBottomHoldDown"></asp:Label>
+
 
         <asp:Label runat="server" ID="lblCutOut_LeftTop"></asp:Label>
         <asp:Label runat="server" ID="lblCutOut_LeftBottom"></asp:Label>

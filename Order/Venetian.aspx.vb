@@ -777,6 +777,10 @@ Partial Class Order_Venetian
                     divBracket.Visible = True
                 End If
 
+                If blindName = "50mm Aluminium" Then
+                    divBotomHoldDown.Visible = True
+                End If
+
                 If blindName = "50mm Timberstyle" Or blindName = "63mm Timberstyle" Then
                     divStyle.Visible = True
                 End If
@@ -902,6 +906,10 @@ Partial Class Order_Venetian
         ddlHoldDown.Items.Clear()
         Try
             If InStr(blindName, "Timber") > 0 Then
+                ddlHoldDown.Items.Add(New ListItem("SILVER", "Silver"))
+                ddlHoldDown.Items.Add(New ListItem("GOLD", "Gold"))
+            Else If blindName = "50mm Aluminium" Then
+                ddlHoldDown.Items.Add(New ListItem("N/A", "N/A"))
                 ddlHoldDown.Items.Add(New ListItem("SILVER", "Silver"))
                 ddlHoldDown.Items.Add(New ListItem("GOLD", "Gold"))
             Else
