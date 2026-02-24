@@ -677,15 +677,34 @@ Partial Class Order_Roller
 
                     Dim chainLength As String = txtChainLength.Text
                     If txtChainLength.Text = "" Or txtChainLength.Text = "0" Then
-                        chainLength = "500"
-                        If txtDrop.Text > 700 Then : chainLength = "600" : End If
-                        If txtDrop.Text > 800 Then : chainLength = "800" : End If
-                        If txtDrop.Text > 1100 Then : chainLength = "1000" : End If
-                        If txtDrop.Text > 1300 Then : chainLength = "1250" : End If
-                        If txtDrop.Text > 1600 Then : chainLength = "1500" : End If
-                        If txtDrop.Text > 2000 Then : chainLength = "1800" : End If
-                        If txtDrop.Text > 2400 Then : chainLength = "2000" : End If
-                        If txtDrop.Text > 2700 Then : chainLength = "2200" : End If
+                        ' chainLength = "500"
+                        ' If txtDrop.Text > 700 Then : chainLength = "600" : End If
+                        ' If txtDrop.Text > 800 Then : chainLength = "800" : End If
+                        ' If txtDrop.Text > 1100 Then : chainLength = "1000" : End If
+                        ' If txtDrop.Text > 1300 Then : chainLength = "1250" : End If
+                        ' If txtDrop.Text > 1600 Then : chainLength = "1500" : End If
+                        ' If txtDrop.Text > 2000 Then : chainLength = "1800" : End If
+                        ' If txtDrop.Text > 2400 Then : chainLength = "2000" : End If
+                        ' If txtDrop.Text > 2700 Then : chainLength = "2200" : End If
+                        If txtDrop.Text >= 3000 Then
+                            chainLength = "2200"
+                        ElseIf txtDrop.Text >= 2700 Then
+                            chainLength = "2000"
+                        ElseIf txtDrop.Text >= 2400 Then
+                            chainLength = "1800"
+                        ElseIf txtDrop.Text >= 2000 Then
+                            chainLength = "1500"
+                        ElseIf txtDrop.Text >= 1600 Then
+                            chainLength = "1250"
+                        ElseIf txtDrop.Text >= 1300 Then
+                            chainLength = "1000"
+                        ElseIf txtDrop.Text >= 1100 Then
+                            chainLength = "800"
+                        ElseIf txtDrop.Text >= 800 Then
+                            chainLength = "600"
+                        Else
+                            chainLength = "500"
+                        End If
                     End If
 
                     If Not txtChainLength.text = "" Then
