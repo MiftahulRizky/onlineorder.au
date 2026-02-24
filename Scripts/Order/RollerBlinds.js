@@ -186,6 +186,14 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
           divChildSafe.removeAttribute("hidden");
         }
       }
+
+      if (blindname === "Motorised") {
+        divMotorStyle.removeAttribute("hidden");
+        divMotorRemote.removeAttribute("hidden");
+        divMotorCharger.removeAttribute("hidden");
+        divAccessory.removeAttribute("hidden");
+        divExtras.removeAttribute("hidden");
+      }
     }
 
     // ---------------------------------||fabrictype||---------------------------------

@@ -513,8 +513,10 @@ Partial Class Order_Venetian
 
             If msgError.InnerText = "" Then
                 If txtMarkUp.Text = "" Then : txtMarkUp.Text = "0" : End If
-                If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
-                    txtControlLength.Text = txtWidth.Text - 50
+                If Not blindName = "25mm Aluminium" AND Not blindName = "50mm Aluminium" Then
+                    If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
+                        txtControlLength.Text = txtWidth.Text - 50
+                    End If
                 End If
 
                 If blindName = "25mm Aluminium" Then
@@ -522,11 +524,12 @@ Partial Class Order_Venetian
                     lblBottomHoldDown.Text = "Yes"
 
                     If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
-                        Dim CordLength As String = txtDrop.Text * 2 / 3
+                        Dim CordLength As String = txtDrop.Text * (2 / 3)
                         If CordLength < 450 Then : CordLength = 450 : End If
                         txtControlLength.Text = CInt(CordLength)
                     End If
                 End If
+
 
                 If blindName = "50mm Aluminium" Then
                     lblBottomHoldDown.Text = ddlHoldDown.SelectedValue
@@ -541,6 +544,7 @@ Partial Class Order_Venetian
                         End If
                     End If
                 End If
+
 
                 lblKitId.Text = UCase(ddlColour.SelectedValue).ToString()
                 lblSoeKitId.Text = publicCfg.GetSoeKitId(ddlColour.SelectedValue)
