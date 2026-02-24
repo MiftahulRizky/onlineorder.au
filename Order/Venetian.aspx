@@ -512,7 +512,7 @@
                 <asp:ControlParameter ControlID="txtWidth" Name="Width" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtDrop" Name="Drop" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblControlPosition" Name="ControlPosition" PropertyName="Text" />
-                <asp:ControlParameter ControlID="txtControlLength" Name="ControlLength" PropertyName="Text" />
+                <asp:ControlParameter ControlID="ddlBracket" Name="BracketOption" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtControlLength" Name="ControlLength" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlHoldDown" Name="BottomHoldDown" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="lblCutOut_LeftTop" Name="CutOut_LeftTop" PropertyName="Text" />

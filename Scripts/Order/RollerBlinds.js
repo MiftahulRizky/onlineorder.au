@@ -24,23 +24,31 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const divTubeType = document.getElementById("divTubeType");
       const divControlType = document.getElementById("divControlType");
       const divColourType = document.getElementById("divColourType");
+      const lblColourType = document.getElementById("lblColourType");
       const divFormDetail = document.getElementById("divFormDetail");
+      const lblControlPosition = document.getElementById("lblControlPosition");
 
       lblBracketType.innerHTML = "bracket type";
       divBracketType.setAttribute("hidden", true);
       divTubeType.setAttribute("hidden", true);
       divControlType.setAttribute("hidden", true);
       divColourType.setAttribute("hidden", true);
+      lblColourType.innerHTML = "control colour";
       divFormDetail.setAttribute("hidden", true);
+      lblControlPosition.innerHTML = "control position";
 
       if (!e.target.value) return;
 
       const blindid = e.target.value;
       const blindname = e.target.selectedOptions[0].dataset.name;
       await bindBrackets(DESIGNID, blindid);
+
       if (blindname === "Cassette") {
         lblBracketType.innerHTML = "cassette type";
+        lblColourType.innerHTML = "cassette colour";
+        lblControlPosition.innerHTML = "control side";
       }
+
       divBracketType.removeAttribute("hidden");
     }
 
