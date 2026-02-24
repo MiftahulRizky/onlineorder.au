@@ -640,7 +640,7 @@ Partial Class Order_Venetian
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "btnSubmit_Click", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "btnSubmit_Click", ex.ToString())
             End If
         End Try
     End Sub
@@ -727,7 +727,7 @@ Partial Class Order_Venetian
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindItemOrder", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindItemOrder", ex.ToString())
             End If
         End Try
     End Sub
@@ -804,7 +804,7 @@ Partial Class Order_Venetian
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindComponentForm", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindComponentForm", ex.ToString())
             End If
         End Try
     End Sub
@@ -824,7 +824,7 @@ Partial Class Order_Venetian
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindDataBlind", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindDataBlind", ex.ToString())
             End If
         End Try
     End Sub
@@ -846,7 +846,7 @@ Partial Class Order_Venetian
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindDataStyle", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindDataStyle", ex.ToString())
             End If
         End Try
     End Sub
@@ -868,7 +868,7 @@ Partial Class Order_Venetian
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindDataColour", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindDataColour", ex.ToString())
             End If
         End Try
     End Sub
@@ -893,7 +893,7 @@ Partial Class Order_Venetian
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindHoldDown", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindHoldDown", ex.ToString())
             End If
         End Try
     End Sub
@@ -918,7 +918,7 @@ Partial Class Order_Venetian
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
-                publicCfg.MailError(Session("UserId"), Page.Title, "BindDataBracket", ex.ToString())
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindDataBracket", ex.ToString())
             End If
         End Try
     End Sub
