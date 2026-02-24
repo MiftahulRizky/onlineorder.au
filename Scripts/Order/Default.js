@@ -258,7 +258,7 @@ const submitChangeStatus = async () => {
     "description",
   ];
 
-  const paramsChangeStatus = { username: USERNAME };
+  const paramsChangeStatus = { username: USERNAME, loginid: LOGINID };
   for (const field of fields) {
     const el = document.querySelector(`#modalChangeStatus #${field}`);
     paramsChangeStatus[field] = el ? el.value : "";

@@ -97,6 +97,7 @@ Partial Class Methods_Order_DefaultMethod
         Public Property description As String
 
         Public Property username As String
+        Public Property loginid As String
     End Class
 
 
@@ -526,6 +527,9 @@ Partial Class Methods_Order_DefaultMethod
                         thisConn.Close()
                     End Using
                 End Using
+
+                Dim dataLog As Object() = {data.id, "", "Blinds", data.loginid, "Update Status Order"}
+                orderCfg.Log_Orders(dataLog)
 
                 msg = "Status has been updated successfully."
              End If
