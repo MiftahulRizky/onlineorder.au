@@ -381,7 +381,7 @@ Debug="true" %>
 
                             </div>
                             <div class="card-footer text-center">
-                                <button type="button" class="btn btn-danger">
+                                <button type="button" class="btn btn-danger" id="btnCancel">
                                     Cancel
                                 </button>
                                 <button type="submit" class="btn btn-primary" id="btnSubmit">Submit</button>

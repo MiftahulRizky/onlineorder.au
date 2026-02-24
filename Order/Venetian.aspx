@@ -98,6 +98,7 @@
                                         <asp:DropDownList runat="server" ID="ddlMounting" CssClass="form-select">
                                             <asp:ListItem Value="" Text=""></asp:ListItem>
                                             <asp:ListItem Value="Face Fit" Text="FACE FIT"></asp:ListItem>
+                                            <asp:ListItem Value="Make Size" Text="MAKE SIZE"></asp:ListItem>
                                             <asp:ListItem Value="Reveal Fit" Text="REVEAL FIT"></asp:ListItem>
                                         </asp:DropDownList>
                                     </div>
