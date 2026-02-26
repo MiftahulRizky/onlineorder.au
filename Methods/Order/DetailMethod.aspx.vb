@@ -142,6 +142,7 @@ Partial Class Methods_Order_DetailMethod
         Public Property Qty As String 
         Public Property Description As String 
         Public Property Cost As String 
+        Public Property DiscountInPercent As String 
         Public Property Discount As String 
         Public Property Poa As String 
         Public Property FinalCost As String 
@@ -2163,6 +2164,23 @@ Partial Class Methods_Order_DetailMethod
                         Dim RealFinalCost As String = "<br><span class='text-decoration-line-through text-secondary'>" & reader("FormatRealFinalCost").ToString() & "</span>"
                         Dim FinalCost As String = reader("FormatFinalCost").ToString() & If(Discount = 0 AND Poa = 0, "", RealFinalCost)
 
+                        Dim discountValue As Decimal = 0
+                        Dim costValue As Decimal = 0
+
+                        If Not IsDBNull(reader("Discount")) Then
+                            discountValue = Convert.ToDecimal(reader("Discount"))
+                        End If
+
+                        If Not IsDBNull(reader("RealCost")) Then
+                            costValue = Convert.ToDecimal(reader("RealCost"))
+                        End If
+
+                        Dim DiscountInPercent As String = "0 %"
+                        If costValue <> 0 Then
+                            Dim percent As Decimal = (discountValue / costValue) * 100
+                            DiscountInPercent = percent.ToString("0.##") & "%"
+                        End If
+
 
 
                         Dim row As New OrdersMatrixReturnRowPricing With {
@@ -2173,6 +2191,7 @@ Partial Class Methods_Order_DetailMethod
                             .Qty = Qty,
                             .Description = Description,
                             .Cost = If(Type = "Discount", "", Cost),
+                            .DiscountInPercent = DiscountInPercent,
                             .Discount = If(Discount = 0, "", "-" & reader("FormatDiscount").ToString()),
                             .Poa = If(Poa = 0, "", reader("FormatPoa").ToString()),
                             .FinalCost = If(Type = "Discount", "", FinalCost)

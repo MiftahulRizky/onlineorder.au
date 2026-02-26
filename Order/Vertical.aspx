@@ -258,11 +258,7 @@
                                 <div class="mb-6 row" runat="server" id="divBracketColour">
                                     <label class="col-lg-3 col-form-label">BRACKET COLOUR</label>
                                     <div class="col-lg-2 col-md-12 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlBracketColour" CssClass="form-select">
-                                            <asp:ListItem Value="" Text=""></asp:ListItem>
-                                            <asp:ListItem Value="Silver" Text="SILVER"></asp:ListItem>
-                                            <asp:ListItem Value="White" Text="WHITE"></asp:ListItem>
-                                        </asp:DropDownList>
+                                        <asp:DropDownList runat="server" ID="ddlBracketColour" CssClass="form-select"></asp:DropDownList>
                                     </div>
                                 </div>
 

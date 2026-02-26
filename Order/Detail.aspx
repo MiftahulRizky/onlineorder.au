@@ -88,7 +88,6 @@
                             <i class="ti ti-file-download fs-2 me-2 opacity-50"></i> Download
                         </a>
                     </div>
-
                     <!-- button administrator -->
                     <!-- <button class="btn  btn-dark dropdown-toggle" data-bs-toggle="dropdown" id="btnAdministrator">Admin</button>
                     <div class="dropdown-menu dropdown-menu-end">
@@ -586,6 +585,7 @@
     </div>
 
     <br>
+    
     
 
     <script type="text/javascript">

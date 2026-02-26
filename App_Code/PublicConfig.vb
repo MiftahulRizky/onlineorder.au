@@ -828,13 +828,14 @@ Public Class PublicConfig
         Dim PriceGroupId As String = CStr(ListParam(1))
         Dim Matrix As Decimal = CDec(ListParam(2))
         Dim DesignId As String = CStr(ListParam(3))
+        Dim BlindId As String = CStr(ListParam(4))
 
         Dim result As Decimal = 0.00
         ' Dim thisData As DataSet = GetListData("SELECT Discount FROM Discounts WHERE StoreId = '" + StoreId + "' AND PriceGroupId = '" + PriceGroupId + "' AND Active=1")
-        Dim BlindId As String = GetItemData(String.Format("SELECT BlindId FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND Active='1'", CustomerId, DesignId))
+        Dim ThisBlind As String = GetItemData(String.Format("SELECT BlindId FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND BlindId='{2}' AND Active='1'", CustomerId, DesignId, BlindId))
         Dim thisData As DataSet = GetListData(String.Format("SELECT * FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND Active='1'", CustomerId, DesignId))
-        If Not String.IsNullOrEmpty(BlindId) Then
-            thisData = GetListData(String.Format("SELECT * FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND BlindId='{2}' AND Active='1'", CustomerId, DesignId, BlindId))
+        If Not String.IsNullOrEmpty(ThisBlind) Then
+            thisData = GetListData(String.Format("SELECT * FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND BlindId='{2}' AND Active='1'", CustomerId, DesignId, ThisBlind))
         End If
 
         If Not thisData.Tables(0).Rows.Count = 0 Then
@@ -927,6 +928,7 @@ Public Class PublicConfig
         Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE Id='" + ItemId + "' AND Active=1 ORDER BY Id ASC")
         If Not thisData.Tables(0).Rows.Count = 0 Then
             Dim designId As String = thisData.Tables(0).Rows(0).Item("DesignId").ToString()
+            Dim blindId As String = thisData.Tables(0).Rows(0).Item("BlindId").ToString()
             Dim kitName As String = thisData.Tables(0).Rows(0).Item("KitName").ToString()
             Dim designName As String = thisData.Tables(0).Rows(0).Item("DesignName").ToString()
             Dim blindName As String = thisData.Tables(0).Rows(0).Item("BlindName").ToString()
@@ -980,7 +982,8 @@ Public Class PublicConfig
                     storeId,
                     priceGroupId,
                     getMatrix,
-                    designId
+                    designId,
+                    blindId
                 }
                 Dim thisDiscount As Decimal = HitungDiscount(ListParamDiscount) 'HitungDiscount(storeId, priceGroupId, getMatrix)
                 thisMatrix = getMatrix - thisDiscount
@@ -1062,7 +1065,8 @@ Public Class PublicConfig
                     storeId,
                     priceGroupIdB,
                     getMatrixB,
-                    designId
+                    designId,
+                    blindId
                 }
                 Dim thisDiscountB As Decimal = HitungDiscount(ListParamDiscountB) 'HitungDiscount(storeId, priceGroupIdB, getMatrixB)
                 thisMatrixB = getMatrixB - thisDiscountB

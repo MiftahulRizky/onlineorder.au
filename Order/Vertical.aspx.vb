@@ -61,6 +61,7 @@ Partial Class Order_Vertical
                 Call BindFabricColour(ddlFabricType.SelectedValue, ddlFabricLength.SelectedValue)
 
                 Call BindTrackColour(ddlControlType.SelectedValue)
+                Call BindBracketColour(ddlControlType.SelectedValue)
                 Call BindControlPosition(ddlControlType.SelectedValue)
 
                 Call BindHanger(ddlBlindType.SelectedValue)
@@ -109,6 +110,7 @@ Partial Class Order_Vertical
         Call BindControlType(ddlBlindType.SelectedValue, ddlTubeType.SelectedValue)
 
         Call BindTrackColour(ddlControlType.SelectedValue)
+        Call BindBracketColour(ddlControlType.SelectedValue)
         Call BindControlPosition(ddlControlType.SelectedValue)
 
         Call BindHanger(ddlBlindType.SelectedValue)
@@ -122,6 +124,7 @@ Partial Class Order_Vertical
         Call BindControlType(ddlBlindType.SelectedValue, ddlTubeType.SelectedValue)
 
         Call BindTrackColour(ddlControlType.SelectedValue)
+        Call BindBracketColour(ddlControlType.SelectedValue)
         Call BindControlPosition(ddlControlType.SelectedValue)
 
         Call BindHanger(ddlBlindType.SelectedValue)
@@ -133,6 +136,7 @@ Partial Class Order_Vertical
         Call BackColor()
 
         Call BindTrackColour(ddlControlType.SelectedValue)
+        Call BindBracketColour(ddlControlType.SelectedValue)
 
         Call BindControlPosition(ddlControlType.SelectedValue)
         Call BindControlPosition(ddlControlType.SelectedValue)
@@ -687,6 +691,7 @@ Partial Class Order_Vertical
             Call BindFabricColour(fabricType, fabricLength)
 
             Call BindTrackColour(kitId)
+            Call BindBracketColour(kitId)
             Call BindControlPosition(kitId)
             Call BindWandLength(String.Empty)
             
@@ -808,7 +813,7 @@ Partial Class Order_Vertical
                     divFabricType.Visible = True : divFabricLength.Visible = True : divFabricColour.Visible = True
                     divStackPosition.Visible = True : divControlPosition.Visible = True
 
-                    If Session("itemAction") = "AddItem" Then
+                    If Session("itemAction") = "AddItem" AND Not ddlTubeType.SelectedValue = "Louvolite" Then
                         ddlBracketColour.SelectedValue = "Silver"
                     End If
 
@@ -974,7 +979,7 @@ Partial Class Order_Vertical
         ddlFabricType.Items.Clear()
         Try
             ddlFabricType.Items.Add(New ListItem("", ""))
-            ddlFabricType.DataSource = publicCfg.GetListData("SELECT UPPER(Type) AS TypeText, Type AS TypeValue FROM Fabrics WHERE DesignId='" + designId + "' AND Active ='1' GROUP BY Type ORDER BY Type ASC")
+            ddlFabricType.DataSource = publicCfg.GetListData(String.Format("SELECT UPPER(Type) AS TypeText, Type AS TypeValue FROM Fabrics WHERE DesignId='{0}' AND Active ='1' GROUP BY Type ORDER BY Type ASC", designId))
             ddlFabricType.DataTextField = "TypeText"
             ddlFabricType.DataValueField = "TypeValue"
             ddlFabricType.DataBind()
@@ -992,8 +997,12 @@ Partial Class Order_Vertical
     Private Sub BindFabricLength(Type As String)
         ddlFabricLength.Items.Clear()
         Try
+            Dim Width As String = ""
+            If ddlTubeType.SelectedValue = "Louvolite" Then
+                Width = "AND Width IN ('89', '127')"
+            End If
             If Not Type = "" Then
-                ddlFabricLength.DataSource = publicCfg.GetListData("SELECT Width FROM Fabrics WHERE DesignId='" + designId + "' AND Type='" + Type + "' AND Active='1' GROUP BY Width ORDER BY Width ASC")
+                ddlFabricLength.DataSource = publicCfg.GetListData(String.Format("SELECT Width FROM Fabrics WHERE DesignId='{0}'  AND Type='{1}' {2} AND Active='1' GROUP BY Width ORDER BY Width ASC",designId, Type, Width))
                 ddlFabricLength.DataTextField = "Width"
                 ddlFabricLength.DataValueField = "Width"
                 ddlFabricLength.DataBind()
@@ -1047,11 +1056,9 @@ Partial Class Order_Vertical
                 End If
 
                 If tubeType = "Louvolite" Then
-                    ddlTrackColour.Items.Add(New ListItem("BEIGE", "Beige"))
-                    ddlTrackColour.Items.Add(New ListItem("BIRCH WHITE", "Birch White"))
                     ddlTrackColour.Items.Add(New ListItem("BLACK", "Black"))
                     ddlTrackColour.Items.Add(New ListItem("WHITE", "White"))
-                    ddlTrackColour.Items.Add(New ListItem("SILVER", "Silver"))
+                    ddlTrackColour.Items.Add(New ListItem("GREY", "Grey"))
                 End If
 
             End If
@@ -1062,6 +1069,34 @@ Partial Class Order_Vertical
             Call MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then
                 publicCfg.MailError(Session("UserId"), Page.Title, "BindTrackColour", ex.ToString())
+            End If
+        End Try
+    End Sub
+
+    Private Sub BindBracketColour(Data As String)
+        ddlBracketColour.Items.Clear()
+        Try
+            If Not Data = "" Then
+                Dim tubeType As String = publicCfg.GetTubeType(Data)
+
+                If tubeType = "Louvolite" Then
+                    ddlBracketColour.Items.Add(New ListItem("BLACK", "Black"))
+                    ddlBracketColour.Items.Add(New ListItem("WHITE", "White"))
+                    ddlBracketColour.Items.Add(New ListItem("GREY", "Grey"))
+                Else
+                    ddlBracketColour.Items.Add(New ListItem("BLACK", "Black"))
+                    ddlBracketColour.Items.Add(New ListItem("WHITE", "White"))
+                    ddlBracketColour.Items.Add(New ListItem("SILVER", "Silver"))
+                End If
+
+            End If
+            If ddlBracketColour.Items.Count > 1 Then
+                ddlBracketColour.Items.Insert(0, New ListItem("", ""))
+            End If
+        Catch ex As Exception
+            Call MessageError(True, ex.ToString())
+            If Not Session("RoleName") = "Administrator" Then
+                publicCfg.MailError(Session("UserId"), Page.Title, "BindBracketColour", ex.ToString())
             End If
         End Try
     End Sub

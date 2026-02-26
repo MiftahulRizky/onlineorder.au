@@ -2282,7 +2282,27 @@ const handlerPricingItem = (id) => {
     { width: "100%", orderable: false, data: "Description" },
     { width: "15%", orderable: false, data: "Cost" },
     { width: "15%", orderable: false, data: "Poa" },
-    { width: "15%", orderable: false, data: "Discount" },
+    {
+      width: "15%",
+      orderable: false,
+      data: null,
+      render: (row) => {
+        let DisInPercent = row.Discount;
+        if (
+          ["Administrator", "PPIC & DE", "Customer Service"].includes(
+            ROLENAME,
+          ) &&
+          row.Discount
+        ) {
+          DisInPercent = `
+          <button type="button" class="border-0 bg-transparent" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="Discount in ${row.DiscountInPercent}">
+             ${row.Discount}
+          </button>
+        `;
+        }
+        return DisInPercent;
+      },
+    },
     { width: "15%", orderable: false, data: "FinalCost" },
   ];
 
@@ -2330,6 +2350,11 @@ const handlerPricingItem = (id) => {
         var msg = xhr.status + "\n" + xhr.responseText + "\n" + thrownError;
         isError(msg);
       },
+    },
+    drawCallback: function () {
+      document.querySelectorAll('[data-bs-toggle="popover"]').forEach((el) => {
+        new bootstrap.Popover(el);
+      });
     },
     columns: columnDefs,
   });
