@@ -19,50 +19,49 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     // ---------------------------------||blindtype||---------------------------------
     if (e.target.id === "blindtype") {
-      const lblBracketType = document.getElementById("lblBracketType");
-      const divBracketType = document.getElementById("divBracketType");
-      const divTubeType = document.getElementById("divTubeType");
-      const divControlType = document.getElementById("divControlType");
-      const divColourType = document.getElementById("divColourType");
-      const lblColourType = document.getElementById("lblColourType");
-      const divFormDetail = document.getElementById("divFormDetail");
-      const lblControlPosition = document.getElementById("lblControlPosition");
+      // const lblBracketType = document.getElementById("lblBracketType");
+      // const divBracketType = document.getElementById("divBracketType");
+      // const divTubeType = document.getElementById("divTubeType");
+      // const divControlType = document.getElementById("divControlType");
+      // const divColourType = document.getElementById("divColourType");
+      // const lblColourType = document.getElementById("lblColourType");
+      // const divFormDetail = document.getElementById("divFormDetail");
 
-      lblBracketType.innerHTML = "bracket type";
-      divBracketType.setAttribute("hidden", true);
-      divTubeType.setAttribute("hidden", true);
-      divControlType.setAttribute("hidden", true);
-      divColourType.setAttribute("hidden", true);
-      lblColourType.innerHTML = "control colour";
-      divFormDetail.setAttribute("hidden", true);
-      lblControlPosition.innerHTML = "control position";
+      // lblBracketType.innerHTML = "bracket type";
+      // divBracketType.setAttribute("hidden", true);
+      // divTubeType.setAttribute("hidden", true);
+      // divControlType.setAttribute("hidden", true);
+      // divColourType.setAttribute("hidden", true);
+      // lblColourType.innerHTML = "control colour";
+      // divFormDetail.setAttribute("hidden", true);
+      // lblControlPosition.innerHTML = "control position";
 
       if (!e.target.value) return;
 
       const blindid = e.target.value;
       const blindname = e.target.selectedOptions[0].dataset.name;
+      await Promise.all([handlerElementVisibility(blindname)]);
       await bindBrackets(DESIGNID, blindid);
 
-      if (blindname === "Cassette") {
-        lblBracketType.innerHTML = "cassette type";
-        lblColourType.innerHTML = "cassette colour";
-        lblControlPosition.innerHTML = "control side";
-      }
+      // if (blindname === "Cassette") {
+      //   lblBracketType.innerHTML = "cassette type";
+      //   lblColourType.innerHTML = "cassette colour";
+      // }
 
-      divBracketType.removeAttribute("hidden");
+      // divBracketType.removeAttribute("hidden");
     }
 
     // ---------------------------------||brackettype||---------------------------------
     if (e.target.id === "brackettype") {
-      const divTubeType = document.getElementById("divTubeType");
-      const divControlType = document.getElementById("divControlType");
-      const divColourType = document.getElementById("divColourType");
-      const divFormDetail = document.getElementById("divFormDetail");
+      // const divTubeType = document.getElementById("divTubeType");
+      // const divControlType = document.getElementById("divControlType");
+      // const divColourType = document.getElementById("divColourType");
+      // const divFormDetail = document.getElementById("divFormDetail");
 
-      divTubeType.setAttribute("hidden", true);
-      divControlType.setAttribute("hidden", true);
-      divColourType.setAttribute("hidden", true);
-      divFormDetail.setAttribute("hidden", true);
+      // divTubeType.setAttribute("hidden", true);
+      // divControlType.setAttribute("hidden", true);
+      // divColourType.setAttribute("hidden", true);
+      // divFormDetail.setAttribute("hidden", true);
 
       if (!e.target.value) return;
 
@@ -70,22 +69,24 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindid = blindtype.value;
       const blindname = blindtype.selectedOptions[0].dataset.name;
       const brackettype = e.target.value;
+      await Promise.all([handlerElementVisibility(blindname, brackettype)]);
       await bindTubes(DESIGNID, blindid, brackettype);
-
-      if (blindname !== "Skin Only") {
-        divTubeType.removeAttribute("hidden");
-      }
+      // if (blindname !== "Skin Only") {
+      //   divTubeType.removeAttribute("hidden");
+      // }
     }
 
     // ---------------------------------||tubetype||---------------------------------
     if (e.target.id === "tubetype") {
-      const divControlType = document.getElementById("divControlType");
-      const divColourType = document.getElementById("divColourType");
-      const divFormDetail = document.getElementById("divFormDetail");
+      // const divControlType = document.getElementById("divControlType");
+      // const btnInfoControlType = document.getElementById("btnInfoControlType");
+      // const divColourType = document.getElementById("divColourType");
+      // const divFormDetail = document.getElementById("divFormDetail");
 
-      divControlType.setAttribute("hidden", true);
-      divColourType.setAttribute("hidden", true);
-      divFormDetail.setAttribute("hidden", true);
+      // divControlType.setAttribute("hidden", true);
+      // btnInfoControlType.setAttribute("hidden", true);
+      // divColourType.setAttribute("hidden", true);
+      // divFormDetail.setAttribute("hidden", true);
 
       if (!e.target.value) return;
 
@@ -94,20 +95,27 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindname = blindtype.selectedOptions[0].dataset.name;
       const brackettype = document.getElementById("brackettype").value;
       const tubetype = e.target.value;
+      await Promise.all([
+        handlerElementVisibility(blindname, brackettype, tubetype),
+      ]);
       await bindControls(DESIGNID, blindid, brackettype, tubetype);
 
-      if (blindname !== "Skin Only") {
-        divControlType.removeAttribute("hidden");
-      }
+      // if (blindname == "Motorised") {
+      //   btnInfoControlType.removeAttribute("hidden");
+      // }
+
+      // if (blindname !== "Skin Only") {
+      //   divControlType.removeAttribute("hidden");
+      // }
     }
 
     // ---------------------------------||controltype||---------------------------------
     if (e.target.id === "controltype") {
-      const divColourType = document.getElementById("divColourType");
-      const divFormDetail = document.getElementById("divFormDetail");
+      // const divColourType = document.getElementById("divColourType");
+      // const divFormDetail = document.getElementById("divFormDetail");
 
-      divColourType.setAttribute("hidden", true);
-      divFormDetail.setAttribute("hidden", true);
+      // divColourType.setAttribute("hidden", true);
+      // divFormDetail.setAttribute("hidden", true);
 
       if (!e.target.value) return;
 
@@ -117,38 +125,55 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const brackettype = document.getElementById("brackettype").value;
       const tubetype = document.getElementById("tubetype").value;
       const controltype = e.target.value;
+      await Promise.all([
+        handlerElementVisibility(blindname, brackettype, tubetype, controltype),
+      ]);
       await bindColours(DESIGNID, blindid, brackettype, tubetype, controltype);
 
-      if (blindname !== "Skin Only") {
-        divColourType.removeAttribute("hidden");
-      }
+      // if (blindname !== "Skin Only") {
+      //   divColourType.removeAttribute("hidden");
+      // }
     }
 
     // ---------------------------------||colourtype||---------------------------------
     if (e.target.id === "colourtype") {
-      const divFormDetail = document.getElementById("divFormDetail");
-      const divMotorStyle = document.getElementById("divMotorStyle");
-      const divMotorRemote = document.getElementById("divMotorRemote");
-      const divMotorBattery = document.getElementById("divMotorBattery");
-      const divMotorCharger = document.getElementById("divMotorCharger");
-      const divCableExitPoint = document.getElementById("divCableExitPoint");
-      const divConnector = document.getElementById("divConnector");
-      const divBottomRail = document.getElementById("divBottomRail");
-      const divChildSafe = document.getElementById("divChildSafe");
-      const divAccessory = document.getElementById("divAccessory");
-      const divExtras = document.getElementById("divExtras");
+      // const divFormDetail = document.getElementById("divFormDetail");
+      // const divMotorStyle = document.getElementById("divMotorStyle");
+      // const divMotorRemote = document.getElementById("divMotorRemote");
+      // const divMotorBattery = document.getElementById("divMotorBattery");
+      // const divMotorCharger = document.getElementById("divMotorCharger");
+      // const divCableExitPoint = document.getElementById("divCableExitPoint");
+      // const divConnector = document.getElementById("divConnector");
+      // const lblControlPosition = document.getElementById("lblControlPosition");
+      // const divRoll = document.getElementById("divRoll");
+      // const divControlPosition = document.getElementById("divRoll");
+      // const divChain = document.getElementById("divChain");
+      // const divBottomRail = document.getElementById("divBottomRail");
+      // const divTubeSize = document.getElementById("divTubeSize");
+      // const divChildSafe = document.getElementById("divChildSafe");
+      // const divAccessory = document.getElementById("divAccessory");
+      // const divExtras = document.getElementById("divExtras");
+      // const divBracketCover = document.getElementById("divBracketCover");
+      // const divBracketExt = document.getElementById("divBracketExt");
 
-      divFormDetail.setAttribute("hidden", true);
-      divMotorStyle.setAttribute("hidden", true);
-      divMotorRemote.setAttribute("hidden", true);
-      divMotorBattery.setAttribute("hidden", true);
-      divMotorCharger.setAttribute("hidden", true);
-      divCableExitPoint.setAttribute("hidden", true);
-      divConnector.setAttribute("hidden", true);
-      divBottomRail.setAttribute("hidden", true);
-      divChildSafe.setAttribute("hidden", true);
-      divAccessory.setAttribute("hidden", true);
-      divExtras.setAttribute("hidden", true);
+      // divFormDetail.setAttribute("hidden", true);
+      // divMotorStyle.setAttribute("hidden", true);
+      // divMotorRemote.setAttribute("hidden", true);
+      // divMotorBattery.setAttribute("hidden", true);
+      // divMotorCharger.setAttribute("hidden", true);
+      // divCableExitPoint.setAttribute("hidden", true);
+      // divConnector.setAttribute("hidden", true);
+      // lblControlPosition.innerHTML = "control position";
+      // divRoll.setAttribute("hidden", true);
+      // divControlPosition.setAttribute("hidden", true);
+      // divChain.setAttribute("hidden", true);
+      // divBottomRail.setAttribute("hidden", true);
+      // divTubeSize.setAttribute("hidden", true);
+      // divChildSafe.setAttribute("hidden", true);
+      // divAccessory.setAttribute("hidden", true);
+      // divExtras.setAttribute("hidden", true);
+      // divBracketCover.setAttribute("hidden", true);
+      // divBracketExt.setAttribute("hidden", true);
 
       if (!e.target.value) return;
       const blindtype = document.getElementById("blindtype");
@@ -156,9 +181,13 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const brackettype = document.getElementById("brackettype").value;
       const tubetype = document.getElementById("tubetype").value;
       const controltype = document.getElementById("controltype").value;
+      const colourtype = e.target.value;
 
       await bindFabrics(DESIGNID);
-      if (blindname == "Motorised") {
+      if (
+        blindname == "Motorised" ||
+        (blindname == "Cassette" && tubetype == "Motorised")
+      ) {
         await Promise.all([
           bindMotorStyle(controltype),
           bindMotorRemote(controltype),
@@ -170,30 +199,55 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindTubeSize(blindname, tubetype),
         bindChildSafe(),
         bindAccessory(),
+        handlerElementVisibility(
+          blindname,
+          brackettype,
+          tubetype,
+          controltype,
+          colourtype,
+        ),
       ]);
 
-      divFormDetail.removeAttribute("hidden");
-      if (blindname === "Cassette") {
-        if (tubetype === "Motorised") {
-          divMotorStyle.removeAttribute("hidden");
-          divMotorRemote.removeAttribute("hidden");
-          divMotorCharger.removeAttribute("hidden");
-          divAccessory.removeAttribute("hidden");
-          divExtras.removeAttribute("hidden");
-        }
-        if (tubetype == "JAI Geared") {
-          divAccessory.removeAttribute("hidden");
-          divChildSafe.removeAttribute("hidden");
-        }
-      }
+      // divFormDetail.removeAttribute("hidden");
+      // if (blindname === "Cassette") {
+      //   if (tubetype === "Motorised") {
+      //     divMotorStyle.removeAttribute("hidden");
+      //     divMotorRemote.removeAttribute("hidden");
+      //     divMotorCharger.removeAttribute("hidden");
+      //     divAccessory.removeAttribute("hidden");
+      //     divExtras.removeAttribute("hidden");
+      //   }
+      //   if (tubetype == "JAI Geared") {
+      //     divAccessory.removeAttribute("hidden");
+      //     divChildSafe.removeAttribute("hidden");
+      //     divChain.removeAttribute("hidden");
+      //   }
+      //   lblControlPosition.innerHTML = "control side";
+      //   divBracketCover.removeAttribute("hidden");
+      //   divBracketExt.removeAttribute("hidden");
+      // }
 
-      if (blindname === "Motorised") {
-        divMotorStyle.removeAttribute("hidden");
-        divMotorRemote.removeAttribute("hidden");
-        divMotorCharger.removeAttribute("hidden");
-        divAccessory.removeAttribute("hidden");
-        divExtras.removeAttribute("hidden");
-      }
+      // if (blindname === "Motorised") {
+      //   divMotorStyle.removeAttribute("hidden");
+      //   divMotorRemote.removeAttribute("hidden");
+      //   divMotorCharger.removeAttribute("hidden");
+      //   lblControlPosition.innerHTML = "motor side";
+      //   divAccessory.removeAttribute("hidden");
+      //   divExtras.removeAttribute("hidden");
+      //   divBracketCover.removeAttribute("hidden");
+      //   divBracketExt.removeAttribute("hidden");
+      // }
+
+      // if (blindname === "Roller Blind") {
+      //   divChain.removeAttribute("hidden");
+      //   divTubeSize.removeAttribute("hidden");
+      //   divChildSafe.removeAttribute("hidden");
+      //   divBracketCover.removeAttribute("hidden");
+      //   divBracketExt.removeAttribute("hidden");
+      // }
+
+      // if (blindname === "Skin Only") {
+      // }
     }
 
     // ---------------------------------||fabrictype||---------------------------------
@@ -204,15 +258,23 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     // ---------------------------------||motorstyle||---------------------------------
     if (e.target.id === "motorstyle") {
+      const divMotorBattery = document.getElementById("divMotorBattery");
       const blindtype = document.getElementById("blindtype");
       const blindname = blindtype.options[blindtype.selectedIndex].dataset.name;
       const controltype = document.getElementById("controltype").value;
       const motorstyle = e.target.value;
 
+      divMotorBattery.setAttribute("hidden", true);
+
       await Promise.all([
+        bindExternalBattery(),
         bindMotorCharger(controltype, motorstyle),
         bindExtras(blindname, controltype, motorstyle),
       ]);
+
+      if (motorstyle.includes("EXB")) {
+        divMotorBattery.removeAttribute("hidden");
+      }
     }
 
     // ---------------------------------||trim||---------------------------------
@@ -294,12 +356,20 @@ const pageLoaded = async () => {
 };
 
 // ------------------------------------------------------|| Handler Functions ||--------------------------------------
-const handlerElementVisibility = () => {
+const handlerElementVisibility = (
+  blindname,
+  brackettype,
+  tubetype,
+  controltype,
+  colourtype,
+) => {
   try {
+    const lblBracketType = document.getElementById("lblBracketType");
     const divBracketType = document.getElementById("divBracketType");
     const divTubeType = document.getElementById("divTubeType");
     const divControlType = document.getElementById("divControlType");
     const btnInfoControlType = document.getElementById("btnInfoControlType");
+    const lblColourType = document.getElementById("lblColourType");
     const divColourType = document.getElementById("divColourType");
 
     const divFormDetail = document.getElementById("divFormDetail");
@@ -312,19 +382,25 @@ const handlerElementVisibility = () => {
     const divMotorCharger = document.getElementById("divMotorCharger");
     const divCableExitPoint = document.getElementById("divCableExitPoint");
     const divConnector = document.getElementById("divConnector");
+    const lblControlPosition = document.getElementById("lblControlPosition");
+    const divChain = document.getElementById("divChain");
     const divBottomRail = document.getElementById("divBottomRail");
     const divTubeSize = document.getElementById("divTubeSize");
     const divChildSafe = document.getElementById("divChildSafe");
     const divAccessory = document.getElementById("divAccessory");
     const divExtras = document.getElementById("divExtras");
+    const divBracketCover = document.getElementById("divBracketCover");
+    const divBracketExt = document.getElementById("divBracketExt");
     const divMarkUp = document.getElementById("divMarkUp");
 
     const btnSubmit = document.querySelector("#btnSubmit");
 
+    lblBracketType.innerHTML = "bracket type";
     divBracketType.setAttribute("hidden", true);
     divTubeType.setAttribute("hidden", true);
     divControlType.setAttribute("hidden", true);
     btnInfoControlType.setAttribute("hidden", true);
+    lblColourType.innerHTML = "control colour";
     divColourType.setAttribute("hidden", true);
 
     divFormDetail.setAttribute("hidden", true);
@@ -337,12 +413,110 @@ const handlerElementVisibility = () => {
     divMotorCharger.setAttribute("hidden", true);
     divCableExitPoint.setAttribute("hidden", true);
     divConnector.setAttribute("hidden", true);
+    lblControlPosition.innerHTML = "control position";
+    divChain.setAttribute("hidden", true);
     divBottomRail.setAttribute("hidden", true);
     divTubeSize.setAttribute("hidden", true);
     divChildSafe.setAttribute("hidden", true);
     divAccessory.setAttribute("hidden", true);
     divExtras.setAttribute("hidden", true);
+    divBracketCover.setAttribute("hidden", true);
+    divBracketExt.setAttribute("hidden", true);
     btnSubmit.setAttribute("hidden", true);
+
+    // -------------------------------|| on change blindtype ||---------------------------------
+    if (!blindname) return;
+    if (blindname === "Cassette") {
+      lblBracketType.innerHTML = "cassette type";
+      lblColourType.innerHTML = "cassette colour";
+    }
+
+    divBracketType.removeAttribute("hidden");
+
+    // ---------------------------------|| on change brackettype ||---------------------------------
+    if (!brackettype) return;
+    if (blindname !== "Skin Only") {
+      divTubeType.removeAttribute("hidden");
+    }
+
+    // ---------------------------------|| on change tubetype ||---------------------------------
+    if (!tubetype) return;
+    if (
+      blindname == "Motorised" ||
+      (blindname == "Cassette" && tubetype == "Motorised")
+    ) {
+      btnInfoControlType.removeAttribute("hidden");
+    }
+
+    if (blindname !== "Skin Only") {
+      divControlType.removeAttribute("hidden");
+    }
+
+    // ---------------------------------|| on change controltype ||---------------------------------
+    if (!controltype) return;
+    if (["Cassette", "Motorised", "Roller Blind"].includes(blindname)) {
+      divColourType.removeAttribute("hidden");
+    }
+
+    // ---------------------------------|| on change colourtype ||---------------------------------
+    if (!colourtype) return;
+    divFormDetail.removeAttribute("hidden");
+    if (blindname === "Cassette") {
+      if (tubetype === "Motorised") {
+        divMotorStyle.removeAttribute("hidden");
+        divMotorRemote.removeAttribute("hidden");
+        if (["Alpha WF", "Somfy WF"].includes(controltype)) {
+          divMotorCharger.removeAttribute("hidden");
+        }
+        if (!["Alpha WF", "Somfy WF"].includes(controltype)) {
+          divConnector.removeAttribute("hidden");
+        }
+        if (
+          ["Alpha RTS", "Alpha WS", "Somfy RTS", "Somfy WS"].includes(
+            controltype,
+          )
+        ) {
+          divCableExitPoint.removeAttribute("hidden");
+        }
+        divAccessory.removeAttribute("hidden");
+        divExtras.removeAttribute("hidden");
+      }
+      if (tubetype == "JAI Geared") {
+        divAccessory.removeAttribute("hidden");
+        divChildSafe.removeAttribute("hidden");
+        divChain.removeAttribute("hidden");
+      }
+      lblControlPosition.innerHTML = "control side";
+      divBracketCover.removeAttribute("hidden");
+      divBracketExt.removeAttribute("hidden");
+    }
+
+    if (blindname === "Motorised") {
+      divMotorStyle.removeAttribute("hidden");
+      divMotorRemote.removeAttribute("hidden");
+      if (["Alpha WF", "Somfy WF"].includes(controltype)) {
+        divMotorCharger.removeAttribute("hidden");
+      }
+      if (!["Alpha WF", "Somfy WF"].includes(controltype)) {
+        divConnector.removeAttribute("hidden");
+      }
+      lblControlPosition.innerHTML = "motor side";
+      divAccessory.removeAttribute("hidden");
+      divExtras.removeAttribute("hidden");
+      divBracketCover.removeAttribute("hidden");
+      divBracketExt.removeAttribute("hidden");
+    }
+
+    if (blindname === "Roller Blind") {
+      divChain.removeAttribute("hidden");
+      divTubeSize.removeAttribute("hidden");
+      divChildSafe.removeAttribute("hidden");
+      divBracketCover.removeAttribute("hidden");
+      divBracketExt.removeAttribute("hidden");
+    }
+
+    if (blindname === "Skin Only") {
+    }
 
     if (MARKUPACCESS === "True") divMarkUp.removeAttribute("hidden");
 
@@ -353,7 +527,11 @@ const handlerElementVisibility = () => {
       if (ROLENAME !== "Administrator") btnSubmit.setAttribute("hidden", true);
     }
   } catch (error) {
-    console.error(error.message);
+    const msg =
+      ROLENAME === "Administrator"
+        ? error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
   }
 };
 // ------------------------------------------------------|| Binding Functions ||--------------------------------------
@@ -660,10 +838,16 @@ const bindControls = async (designid, blindid, brackettype, tubetype) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
-        const divColourType = document.getElementById("divColourType");
         const blindname =
           document.getElementById("blindtype").selectedOptions[0].dataset.name;
-
+        await Promise.all([
+          handlerElementVisibility(
+            blindname,
+            brackettype,
+            tubetype,
+            select.value,
+          ),
+        ]);
         await bindColours(
           designid,
           blindid,
@@ -671,10 +855,6 @@ const bindControls = async (designid, blindid, brackettype, tubetype) => {
           tubetype,
           select.value,
         );
-
-        if (blindname !== "Skin Only") {
-          divColourType.removeAttribute("hidden");
-        }
       }
     }
   } catch (err) {
@@ -751,11 +931,22 @@ const bindColours = async (
 
       if (data.length === 1) {
         select.selectedIndex = 0;
-        const divFormDetail = document.getElementById("divFormDetail");
-        const blindname = await getItemData(
-          `SELECT Name FROM Blinds WHERE Id = '${blindid}' AND Active = 1`,
-        );
+        // const divFormDetail = document.getElementById("divFormDetail");
+        // const divRoll = document.getElementById("divRoll");
+        // const divControlPosition =
+        //   document.getElementById("divControlPosition");
+        // const divBottomRail = document.getElementById("divBottomRail");
+        // const divTubeSize = document.getElementById("divTubeSize");
+        // const divAdditional = document.getElementById("divAdditional");
 
+        // divRoll.setAttribute("hidden", true);
+        // divControlPosition.setAttribute("hidden", true);
+        // divBottomRail.setAttribute("hidden", true);
+        // divTubeSize.setAttribute("hidden", true);
+        // divAdditional.setAttribute("hidden", true);
+
+        const blindname =
+          document.getElementById("blindtype").selectedOptions[0].dataset.name;
         if (!blindname) {
           throw new Error("Blind name not found : bindColours");
         }
@@ -775,7 +966,25 @@ const bindColours = async (
           bindAccessory(),
         ]);
 
-        divFormDetail.removeAttribute("hidden");
+        // divFormDetail.removeAttribute("hidden");
+
+        // if (["Cassette", "Motorised", "Roller Blind"].includes(ITEMACTION)) {
+        //   divRoll.removeAttribute("hidden");
+        //   divControlPosition.removeAttribute("hidden");
+        //   divTubeSize.removeAttribute("hidden");
+        //   divAdditional.removeAttribute("hidden");
+        // }
+
+        // if (blindname == "Skin Only") {
+        //   const railcolour = document.getElementById("railcolour");
+        //   railcolour.innerHTML = ""; //reset
+        //   if (
+        //     brackettype == "With Tube Included" ||
+        //     brackettype == "With Tube & Bottom Included"
+        //   ) {
+        //     divTubeSize.removeAttribute("hidden");
+        //   }
+        // }
       }
     }
   } catch (err) {
@@ -1004,7 +1213,7 @@ const bindMotorStyle = (controltype) => {
     );
   }
 
-  if (data.length > 1) {
+  if (data.length > 0) {
     const defaultOption = document.createElement("option");
     defaultOption.text = "";
     defaultOption.value = "";
@@ -1094,6 +1303,30 @@ const bindMotorRemote = (controltype) => {
   });
 };
 
+const bindExternalBattery = () => {
+  const sel = document.getElementById("externalbattery");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+
+  data.push({ value: "Yes", text: "Yes" });
+
+  if (data.length > 0) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
 const bindMotorCharger = (controltype, motorstyle) => {
   const sel = document.getElementById("charger");
   sel.innerHTML = ""; //reset
@@ -1121,7 +1354,7 @@ const bindMotorCharger = (controltype, motorstyle) => {
     }
   }
 
-  if (data.length > 1) {
+  if (data.length > 0) {
     const defaultOption = document.createElement("option");
     defaultOption.text = "";
     defaultOption.value = "";
@@ -1144,7 +1377,7 @@ const bindTrims = (blindname, brackettype, tubetype) => {
   if (!blindname || !brackettype || !tubetype) return;
 
   let data = [];
-  if (blindname == "Roller Blind" || blindname == "Motorised" || "Cassette") {
+  if (blindname != "Skin Only") {
     data.push(
       { value: "1P", text: "1P" },
       { value: "1F", text: "1F" },
@@ -1174,6 +1407,7 @@ const bindTrims = (blindname, brackettype, tubetype) => {
         { value: "Spline", text: "Spline" },
       );
     }
+
     if (brackettype == "Excluded") {
       data.push(
         { value: "Pocket", text: "Pocket" },
@@ -1182,6 +1416,7 @@ const bindTrims = (blindname, brackettype, tubetype) => {
         { value: "Added Trim", text: "Added Trim" },
       );
     }
+
     if (
       brackettype == "With Tube & Bottom Included" ||
       brackettype == "With Bottom Included"
@@ -1274,7 +1509,7 @@ const bindRailType = async (brackettype) => {
         option.text = item.text.toUpperCase();
         option.setAttribute("data-name", item.text);
         select.add(option);
-        select.classList.add("fw-bold");
+        // select.classList.add("fw-bold");
       });
 
       if (data.length === 1) {
@@ -1341,7 +1576,7 @@ const bindRailColour = async (brackettype, railtype) => {
         option.text = item.text.toUpperCase();
         option.setAttribute("data-name", item.text);
         select.add(option);
-        select.classList.add("fw-bold");
+        // select.classList.add("fw-bold");
       });
 
       if (data.length === 1) {
@@ -1500,7 +1735,7 @@ const bindExtras = (blindname, controltype, motorstyle) => {
   let data = [];
 
   if (controltype.includes("Somfy")) {
-    if (controltype == "Somfy WF" && motorstyle.includes("ZB")) {
+    if (controltype === "Somfy WF" && !motorstyle.includes("ZB")) {
       data.push(
         { value: "WF Li Solar Panel Kit", text: "WF Li Solar Panel Kit" },
         { value: "Adaptor Mg V2 Li", text: "Adaptor Mg V2 Li" },
@@ -1508,7 +1743,7 @@ const bindExtras = (blindname, controltype, motorstyle) => {
       );
     }
 
-    if (blindname == "Cassette") {
+    if (blindname === "Cassette") {
       data.push({
         value: "Cable Ex 20cm Cassette",
         text: "Cable Ex 20cm Cassette",
@@ -1516,7 +1751,7 @@ const bindExtras = (blindname, controltype, motorstyle) => {
     }
 
     if (motorstyle.includes("ZB")) {
-      if (controltype == "Somfy WF") {
+      if (controltype === "Somfy WF") {
         data.push({
           value: "WF Li ZB Solar Panel Kit",
           text: "WF Li ZB Solar Panel Kit",
@@ -1534,16 +1769,16 @@ const bindExtras = (blindname, controltype, motorstyle) => {
         },
       );
     }
-
-    if (controltype.includes("Alpha")) {
-      data.push({
-        value: "Lead Ex 3M ALDC Charger",
-        text: "Lead Ex 3M ALDC Charger",
-      });
-    }
   }
 
-  if (data.length > 1) {
+  if (controltype.includes("Alpha")) {
+    data.push({
+      value: "Lead Ex 3M ALDC Charger",
+      text: "Lead Ex 3M ALDC Charger",
+    });
+  }
+
+  if (data.length > 0) {
     const defaultOption = document.createElement("option");
     defaultOption.text = "";
     defaultOption.value = "";

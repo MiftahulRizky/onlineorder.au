@@ -201,7 +201,7 @@ Debug="true" %>
                                         <label for="externalbattery" class="col-lg-3 text-uppercase fw-bold">external battery</label>
                                         <div class="col-lg-4">
                                             <select type="text" name="externalbattery" id="externalbattery" class="form-select">
-                                                <option value=""></option>
+                                                <!-- <option value=""></option> -->
                                                 <option value="Yes">YES</option>
                                             </select>
                                         </div>  
@@ -311,7 +311,7 @@ Debug="true" %>
                                         </div>  
                                     </div>
 
-                                    <div class="mb-1 mt-6 row" runat="server" id="divAdditional">
+                                    <div class="mb-1 mt-6 row" id="divAdditional">
                                         <p class="text-danger fw-bold text-uppercase text-underline">
                                             additional
                                         </p>
@@ -381,10 +381,10 @@ Debug="true" %>
 
                             </div>
                             <div class="card-footer text-center">
+                                <button type="submit" class="btn btn-primary" id="btnSubmit">Submit</button>
                                 <button type="button" class="btn btn-danger" id="btnCancel">
                                     Cancel
                                 </button>
-                                <button type="submit" class="btn btn-primary" id="btnSubmit">Submit</button>
                             </div>
                         </form>
                     </div>

@@ -524,6 +524,9 @@ Partial Class Order_Vertical
                 End If
 
                 Dim priceGroupId As String = publicCfg.GetPriceGroupId(designId, priceGroupName)
+                If String.IsNullOrEmpty(priceGroupId) Then
+                    throw New Exception("PRICE GROUP NOT FOUND !")
+                End If
                 lblPriceGroupId.Text = UCase(priceGroupId).ToString()
 
                 If controlType = "Chain" Then
@@ -857,6 +860,10 @@ Partial Class Order_Vertical
 
                     If Session("itemAction") = "AddItem" Then
                         ddlBracketColour.SelectedValue = "Silver"
+                    End If
+
+                    if tubeType = "Louvolite" Then
+                        divInsertInTrack.Visible = False
                     End If
 
                     lblSize.Text = "WIDTH"

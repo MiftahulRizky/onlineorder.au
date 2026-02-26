@@ -967,6 +967,7 @@ Public Class PublicConfig
                 '#---------------------Custom Matrix---------------------#
                 If designName = "Vertical Blinds" AndAlso blindName = "Slat Only" Then
                     Dim getMatrixSlat As Decimal = getMatrix * Convert.ToDecimal(SlatQty)
+                    getMatrix = getMatrixSlat
                     If getMatrixSlat < 10 Then : getMatrix = 0.00 : End If
                 End If
 
