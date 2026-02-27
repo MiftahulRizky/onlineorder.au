@@ -180,7 +180,7 @@ document.querySelector("#btnSubmit").addEventListener("click", (e) => {
     el.classList.remove("is-invalid");
   });
 
-  handlerSubmit(e.target.form, e.target);
+  handlerSubmit(e.target.form, e.target.id);
 });
 
 // button cancel
@@ -320,7 +320,7 @@ const handlerElementVisibility = (
           brackettype,
         )
       ) {
-        divTubeType.removeAttribute("hidden");
+        divTubeSize.removeAttribute("hidden");
       }
     }
 
@@ -371,10 +371,12 @@ const handlerElementVisibility = (
         divExtras.removeAttribute("hidden");
       }
       if (tubetype == "JAI Geared") {
-        divAccessory.removeAttribute("hidden");
-        divChildSafe.removeAttribute("hidden");
         divChain.removeAttribute("hidden");
+        divChildSafe.removeAttribute("hidden");
+        divAccessory.removeAttribute("hidden");
       }
+      divRoll.removeAttribute("hidden");
+      divControlPosition.removeAttribute("hidden");
       lblControlPosition.innerHTML = "control side";
       divBracketCover.removeAttribute("hidden");
       divBracketExt.removeAttribute("hidden");
@@ -430,6 +432,7 @@ const handlerElementVisibility = (
 
 const handlerSubmit = async (formEl, button) => {
   try {
+    document.getElementById(button).innerHTML = "Processing...";
     const formData = new FormData(formEl);
 
     let formObject = Object.fromEntries(formData.entries());
@@ -449,8 +452,11 @@ const handlerSubmit = async (formEl, button) => {
     );
 
     const additionalData = {
+      headerid: HEADERID,
+      itemaction: ITEMACTION,
+      itemid: ITEMID,
+      designid: DESIGNID,
       loginid: LOGINID,
-      actions: ACTION,
     };
 
     const finalData = {
@@ -459,9 +465,44 @@ const handlerSubmit = async (formEl, button) => {
     };
 
     // debug konsisten
-    return console.table(finalData);
+    // return console.table(finalData);
+
+    const response = await fetch(URIMETHOD + "/Submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: finalData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isError(dataResult.error.message.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success);
+      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
   } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
   } finally {
+    document.getElementById(button).innerHTML = "Submit";
   }
 };
 // ------------------------------------------------------|| Binding Functions ||--------------------------------------

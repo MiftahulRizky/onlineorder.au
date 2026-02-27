@@ -779,9 +779,6 @@ Partial Class Order_Venetian
 
                 If InStr(blindName, "Aluminium") > 0 Then
                     divBracket.Visible = True
-                End If
-
-                If blindName = "50mm Aluminium" Then
                     divBotomHoldDown.Visible = True
                 End If
 

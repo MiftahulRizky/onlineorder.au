@@ -11,6 +11,64 @@ Partial Class Methods_Order_RollerBlindMethod
     Shared publicCfg As New PublicConfig()
     Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
+    Public Class ParamSubmit
+        '#Submit OrderHeader
+        Public Property blindtype As String
+        Public Property brackettype As String
+        Public Property tubetype As String
+        Public Property controltype As String
+        Public Property colourtype As String
+        Public Property qty As String
+        Public Property room As String
+        Public Property mounting As String
+        Public Property width As String
+        Public Property drop As String
+        Public Property fabrictype As String
+        Public Property fabriccolour As String
+        Public Property motorstyle As String
+        Public Property motorremote As String
+        Public Property externalbattery As String
+        Public Property charger As String
+        Public Property cableexitpoint As String
+        Public Property connector As String
+        Public Property roll As String
+        Public Property controlposition As String
+        Public Property chaincolour As String
+        Public Property chainlength As String
+        Public Property trim As String
+        Public Property railtype As String
+        Public Property railcolour As String
+        Public Property tubesize As String
+        Public Property childsafe As String
+        Public Property accessory As String
+        Public Property extras As String
+        Public Property bracketcovers As String
+        Public Property bracketext As String
+        Public Property notes As String
+        Public Property markup As String
+        
+
+        '#aditional param
+        Public Property headerid As String
+        Public Property itemaction As String
+        Public Property itemid As String
+        Public Property designid As String
+        Public Property loginid As String
+    End Class
+
+    '#--- Kelas Output WebMethod ---#
+    Public Class ErrorDetail
+        Public Property message As String
+        Public Property field As String
+    End Class
+
+    Public Class ErrorResponse
+        Public Property [error] As ErrorDetail
+    End Class
+
+    Public Class SuccessResponse
+        Public Property success As String
+    End Class
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
@@ -245,6 +303,145 @@ Partial Class Methods_Order_RollerBlindMethod
         Catch ex As Exception
             ' Return sebagai objek error agar bisa ditangani di sisi client
             Return New With {.error = ex.Message}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function Submit(ByVal data As ParamSubmit) As Object
+        Try
+            Dim qty As Integer
+            If String.IsNullOrEmpty(data.qty) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "qty type is required !", .field = "qty"}}
+            End If
+            If Not Integer.TryParse(data.qty, qty) OrElse qty <= 0 Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "please check your qty !", .field = "qty"}}
+            End If
+
+            If Not String.IsNullOrEmpty(data.room) Then
+                If InStr(data.room, "&") > 0 Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "character [&] is not allowed !", .field = "room"}}
+                End If
+            End If
+
+            If String.IsNullOrEmpty(data.mounting) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting type is required !", .field = "mounting"}}
+            End If
+
+            Dim width As Integer
+            If String.IsNullOrEmpty(data.width) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width is required !",.field = "width"}}
+            End If
+            If Not Integer.TryParse(data.width, width) OrElse width <= 0 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be a positive integer !",.field = "width"}}
+            End If
+            If width < 150 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 150 !",.field = "width"}}
+            End If
+            If width > 6000 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 6000 !",.field = "width"}}
+            End If
+
+            Dim drop As Integer
+            If String.IsNullOrEmpty(data.drop) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop is required !",.field = "drop"}}
+            End If
+            If Not Integer.TryParse(data.drop, drop) OrElse drop <= 0 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be a positive integer !",.field = "drop"}}
+            End If
+            If drop < 150 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be greater than or equal to 150 !",.field = "drop"}}
+            End If
+            If drop > 3200 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3200 !",.field = "drop"}}
+            End If
+
+            If String.IsNullOrEmpty(data.fabrictype) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
+            End If
+            If String.IsNullOrEmpty(data.fabriccolour) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
+            End If
+
+            Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.blindtype))
+            If (BlindName = "Cassette" AND data.tubetype = "Motorised") OR BlindName = "Motorised" Then
+                If String.IsNullOrEmpty(data.motorstyle) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor style is required !",.field = "motorstyle"}}
+                End If
+                If String.IsNullOrEmpty(data.motorremote) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor remote is required !",.field = "motorremote"}}
+                End If
+                If String.IsNullOrEmpty(data.charger) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "charger is required !",.field = "charger"}}
+                End If
+            End If
+
+            If String.IsNullOrEmpty(data.roll) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "roll direction is required !",.field = "roll"}}
+            End If
+
+            If String.IsNullOrEmpty(data.controlposition) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+            End If
+
+            If (BlindName = "Cassette" AND data.tubetype = "JAI Geared") OR BlindName = "Roller Blind" Then
+                If String.IsNullOrEmpty(data.chaincolour) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                End If
+                ' If String.IsNullOrEmpty(data.chainlength) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length is required !",.field = "chainlength"}}
+                ' End If
+            End If
+
+            If String.IsNullOrEmpty(data.trim) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "trim is required !",.field = "trim"}}
+            End If
+
+            If Not String.IsNullOrEmpty(data.trim) AND data.trim = "1F" Then
+                If String.IsNullOrEmpty(data.railtype) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail type is required !",.field = "railtype"}}
+                End If
+                If String.IsNullOrEmpty(data.railcolour) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail colour is required !",.field = "railcolour"}}
+                End If
+            End If
+
+            If (BlindName = "Skin Only" AND InStr(data.brackettype, "Tube") > 0 ) OR BlindName = "Roller Blind" Then
+                If String.IsNullOrEmpty(data.tubesize) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "tube size is required !",.field = "tubesize"}}
+                End If
+            End If
+
+            If Not String.IsNullOrEmpty(data.notes) Then
+                If InStr(data.notes, "&") > 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must not contain [&] character !",.field = "notes"}}
+                End If
+
+                If data.notes.Trim().Length > 1000 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must be less than 1000 characters !",.field = "notes"}}
+                End If
+            End If
+
+            Dim markup As Integer
+            If Not String.IsNullOrEmpty(data.markup) Then
+                If Not Integer.TryParse(data.markup, markup) OrElse markup < 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check your markup !",.field = "markup"}}
+                End If
+            End If
+            
+
+            Dim msg As String = "200"
+            If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
+                msg = "Item added successfully !"
+            End If
+
+            If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
+                msg = "Item added successfully !"
+            End If
+
+            Return New SuccessResponse With {.success = msg}
+        Catch ex As Exception
+            Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
         End Try
     End Function
 
