@@ -14,11 +14,11 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const ordertype = e.target.value;
       // await visibleElementFormOnChange(ordertype);
       // alert(ordertype);
-      await visibleElementForm(ordertype);
       await handlerSelCustomer(ordertype, "#customer");
       if (["Panorama", "Evolve"].includes(ordertype)) {
         await Promise.all([handlerSelUser("#createdby")]);
       }
+      await visibleElementForm(ordertype);
     }
 
     if (e.target.id == "customer") {
@@ -719,13 +719,25 @@ const visibleElementForm = async (ordertype, customer) => {
     divShipmentId.setAttribute("hidden", true);
     divShipping.setAttribute("hidden", true);
 
+    //----------------------------|| change ordertype ||----------------------------
     if (!ordertype) return; //throw new Error(ordertype);
     formDetail.removeAttribute("hidden");
 
-    if (ordertype === "Blinds") {
-      const cus = document.getElementById("customer");
-      const customerDelivery =
-        cus?.options?.[cus.selectedIndex]?.dataset?.delivery;
+    if (["Blinds"].includes(ordertype)) {
+      if (
+        [
+          "Administrator",
+          "Customer Service",
+          "Data Entry",
+          "PPIC & DE",
+        ].includes(ROLENAME) &&
+        ACTION == "add"
+      ) {
+        divCustomer.removeAttribute("hidden");
+      }
+      const customerDelivery = await getItemData(
+        `SELECT Delivery FROM Customers WHERE Id = '${customerEl.value}'`,
+      );
       if (!customerDelivery) {
         divDelivery.removeAttribute("hidden");
       }
@@ -749,6 +761,7 @@ const visibleElementForm = async (ordertype, customer) => {
       }
     }
 
+    //----------------------------|| change customer ||----------------------------
     if (!customer) return;
     const customerDelivery = await getItemData(
       `SELECT Delivery FROM Customers WHERE Id = '${customer}'`,
@@ -764,6 +777,7 @@ const visibleElementForm = async (ordertype, customer) => {
     //   return;
     // }
 
+    //----------------------------|| action edit ||----------------------------
     if (ACTION !== "edit") return;
 
     divOrderType.setAttribute("hidden", true);
