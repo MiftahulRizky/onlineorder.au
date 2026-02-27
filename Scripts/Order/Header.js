@@ -11,19 +11,21 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     e.target.classList.remove("is-invalid");
 
     if (e.target.id == "ordertype") {
-      const ortype = e.target.value;
-      await visibleElementFormOnChange(ortype);
+      const ordertype = e.target.value;
+      // await visibleElementFormOnChange(ordertype);
+      // alert(ordertype);
+      await visibleElementForm(ordertype);
+      await handlerSelCustomer(ordertype, "#customer");
+      if (["Panorama", "Evolve"].includes(ordertype)) {
+        await Promise.all([handlerSelUser("#createdby")]);
+      }
     }
 
     if (e.target.id == "customer") {
-      const selectedOption = e.target.options[e.target.selectedIndex];
-      const delivery = selectedOption?.dataset?.delivery;
+      const ordertype = document.getElementById("ordertype").value;
+      const customer = e.target.value;
 
-      const divDelivery = document.querySelector("#divDelivery");
-      divDelivery.setAttribute("hidden", true);
-      if (!delivery) {
-        divDelivery.removeAttribute("hidden");
-      }
+      await Promise.all([visibleElementForm(ordertype, customer)]);
     }
   });
 });
@@ -38,6 +40,13 @@ document.querySelector("#btnInfoOrderNumber").addEventListener("click", (e) => {
 document.querySelector("#btnInfoOrderName").addEventListener("click", (e) => {
   let msg = "Please do not use the following characters:";
   msg += '<br/> [ / ], [  ], [ & ], [ # ], [ ` ], [ , ], AND [ " ]';
+  isInfo(msg);
+});
+
+document.querySelector("#btnInfoDelivery").addEventListener("click", (e) => {
+  let msg = "This applies to blinds only!";
+  msg +=
+    "<br/> This only applies if the customer does not have default delivery/pickup settings.";
   isInfo(msg);
 });
 
@@ -362,10 +371,7 @@ const handlerSelUser = async (params) => {
     });
 
     if (!response.ok) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? `${response.status}\n${response.statusText}`
-          : "Please contact our IT team at support@onlineorder.au";
+      const msg = `${response.status}\n${response.statusText}`;
       throw new Error(msg);
     }
 
@@ -373,11 +379,7 @@ const handlerSelUser = async (params) => {
     const data = result.d;
 
     if (!data || data.length === 0) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? "No data returned from server : handlerSelUser"
-          : "Please contact our IT team at support@onlineorder.au";
-      throw new Error(msg);
+      throw new Error("No data returned from server : handlerSelUser");
     }
 
     if (Array.isArray(data)) {
@@ -424,10 +426,7 @@ const handlerSelShipment = async (params) => {
     });
 
     if (!response.ok) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? `${response.status}\n${response.statusText}`
-          : "Please contact our IT team at support@onlineorder.au";
+      const msg = `${response.status}\n${response.statusText}`;
       throw new Error(msg);
     }
 
@@ -435,11 +434,7 @@ const handlerSelShipment = async (params) => {
     const data = result.d;
 
     if (!data || data.length === 0) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? "No data returned from server : handlerSelShipment"
-          : "Please contact our IT team at support@onlineorder.au";
-      throw new Error(msg);
+      throw new Error("No data returned from server : handlerSelShipment");
     }
 
     if (Array.isArray(data)) {
@@ -483,10 +478,7 @@ const handlerShipping = async (customerid) => {
     });
 
     if (!res.ok) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? `${res.status} - ${res.statusText}`
-          : "Please contact our IT team at support@onlineorder.au";
+      const msg = `${res.status} - ${res.statusText}`;
       throw new Error(msg);
     }
 
@@ -543,10 +535,7 @@ const handlerEdit = async (id, ordertype) => {
     });
 
     if (!res.ok) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? `${res.status} - ${res.statusText}`
-          : "Please contact our IT team at support@onlineorder.au";
+      const msg = `${res.status} - ${res.statusText}`;
       throw new Error(msg);
     }
 
@@ -554,11 +543,7 @@ const handlerEdit = async (id, ordertype) => {
     const data = response.d;
 
     if (!data || data.length === 0) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? "No data returned from server : handlerEdit"
-          : "Please contact our IT team at support@onlineorder.au";
-      throw new Error(msg);
+      throw new Error("No data returned from server : handlerEdit");
     }
 
     for (const item of data) {
@@ -578,7 +563,7 @@ const handlerEdit = async (id, ordertype) => {
       await handlerSelUser("#createdby");
       await handlerSelShipment("#shipmentid");
       await handlerShipping(item.CustomerId);
-      await visibleElementForm(item);
+      await visibleElementForm(item.OrderType, item.CustomerId);
       await handlerSetElementValues(item);
       await loaderFadeOut();
     }
@@ -698,169 +683,161 @@ const checkSessionCreateHeader = async () => {
   }
 };
 
-const visibleElementForm = (item) => {
-  const ordertype = document.getElementById("ordertype");
-  const formDetail = document.getElementById("formDetail");
-  const divOrderType = document.getElementById("divOrderType");
-  const divCustomer = document.getElementById("divCustomer");
-  const divCreatedBy = document.getElementById("divCreatedBy");
-  const divCreatedDate = document.getElementById("divCreatedDate");
-  const divOrderId = document.getElementById("divOrderId");
-  const divDelivery = document.getElementById("divDelivery");
-  const divJobId = document.getElementById("divJobId");
-  const divJobDate = document.getElementById("divJobDate");
-  const divShipmentId = document.getElementById("divShipmentId");
-  const divShipping = document.getElementById("divShipping");
+const visibleElementForm = async (ordertype, customer) => {
+  try {
+    const ordertypeEl = document.getElementById("ordertype");
+    const formDetail = document.getElementById("formDetail");
+    const divOrderType = document.getElementById("divOrderType");
+    const divCustomer = document.getElementById("divCustomer");
+    const divCreatedBy = document.getElementById("divCreatedBy");
+    const divCreatedDate = document.getElementById("divCreatedDate");
+    const divOrderId = document.getElementById("divOrderId");
+    const divDelivery = document.getElementById("divDelivery");
+    const divJobId = document.getElementById("divJobId");
+    const divJobDate = document.getElementById("divJobDate");
+    const divShipmentId = document.getElementById("divShipmentId");
+    const divShipping = document.getElementById("divShipping");
 
-  const customer = document.getElementById("customer");
-  const createdby = document.getElementById("createdby");
-  const createddate = document.getElementById("createddate");
-  createddate.value = new Date().toLocaleDateString("en-CA");
-  const orderid = document.getElementById("orderid");
-  const jobid = document.getElementById("jobid");
-  const jobdate = document.getElementById("jobdate");
+    const customerEl = document.getElementById("customer");
+    const createdbyEL = document.getElementById("createdby");
+    const createddateEl = document.getElementById("createddate");
+    createddateEl.value = new Date().toLocaleDateString("en-CA");
+    const orderidEl = document.getElementById("orderid");
+    const jobidEl = document.getElementById("jobid");
+    const jobdateEl = document.getElementById("jobdate");
 
-  formDetail.setAttribute("hidden", true);
-  divCustomer.setAttribute("hidden", true);
-  divCreatedBy.setAttribute("hidden", true);
-  divCreatedDate.setAttribute("hidden", true);
-  divOrderId.setAttribute("hidden", true);
-  divDelivery.setAttribute("hidden", true);
-  divJobId.setAttribute("hidden", true);
-  divJobDate.setAttribute("hidden", true);
-  divShipmentId.setAttribute("hidden", true);
-  divShipping.setAttribute("hidden", true);
+    formDetail.setAttribute("hidden", true);
+    divCustomer.setAttribute("hidden", true);
+    divCreatedBy.setAttribute("hidden", true);
+    divCreatedDate.setAttribute("hidden", true);
+    divOrderId.setAttribute("hidden", true);
+    divDelivery.setAttribute("hidden", true);
+    divJobId.setAttribute("hidden", true);
+    divJobDate.setAttribute("hidden", true);
+    divShipmentId.setAttribute("hidden", true);
+    divShipping.setAttribute("hidden", true);
 
-  // if (CUSTOMERID == "LS-A224") {
-  //   divOrderType.setAttribute("hidden", true);
-  //   visibleElementFormOnChange(ordertype.value);
-  //   return;
-  // }
+    if (!ordertype) return; //throw new Error(ordertype);
+    formDetail.removeAttribute("hidden");
 
-  if (!item) return;
+    if (ordertype === "Blinds") {
+      const cus = document.getElementById("customer");
+      const customerDelivery =
+        cus?.options?.[cus.selectedIndex]?.dataset?.delivery;
+      if (!customerDelivery) {
+        divDelivery.removeAttribute("hidden");
+      }
+    }
 
-  divOrderType.setAttribute("hidden", true); // edit
-  formDetail.removeAttribute("hidden");
-  divOrderId.removeAttribute("hidden");
+    if (["Panorama", "Evolve"].includes(ordertype)) {
+      if (
+        [
+          "Administrator",
+          "Customer Service",
+          "Data Entry",
+          "PPIC & DE",
+        ].includes(ROLENAME)
+      ) {
+        divCustomer.removeAttribute("hidden");
+      }
 
-  orderid.setAttribute("readonly", true);
-  orderid.classList.add("bg-body-secondary");
-  orderid.classList.add("text-secondary");
+      if (ROLENAME == "Administrator") {
+        divCreatedBy.removeAttribute("hidden");
+        divCreatedDate.removeAttribute("hidden");
+      }
+    }
 
-  if (item.OrderType == "Blinds") {
-    const customer = document.getElementById("customer");
-    const customerDelivery =
-      customer?.options?.[customer.selectedIndex]?.dataset?.delivery;
+    if (!customer) return;
+    const customerDelivery = await getItemData(
+      `SELECT Delivery FROM Customers WHERE Id = '${customer}'`,
+    );
+
     if (customerDelivery) {
-      divDelivery.removeAttribute("hidden");
-    }
-  }
-
-  if (item.OrderType == "Panorama" || item.OrderType == "Evolve") {
-    // divShipmentId.removeAttribute("hidden");
-
-    customer.setAttribute("readonly", true);
-    createdby.setAttribute("readonly", true);
-    createddate.setAttribute("readonly", true);
-
-    jobid.setAttribute("readonly", true);
-    jobdate.setAttribute("readonly", true);
-
-    if (ROLENAME == "Administrator") {
-      divCustomer.removeAttribute("hidden");
-      divCreatedBy.removeAttribute("hidden");
-      divCreatedDate.removeAttribute("hidden");
-      divShipping.removeAttribute("hidden");
       divDelivery.setAttribute("hidden", true);
-
-      if (item.Status == "In Production") {
-        divJobId.removeAttribute("hidden");
-        divJobDate.removeAttribute("hidden");
-      }
-
-      customer.removeAttribute("readonly");
-      createdby.removeAttribute("readonly");
-      createddate.removeAttribute("readonly");
-
-      if (LEVELNAME == "Leader" || "Super Admin") {
-        orderid.removeAttribute("readonly");
-        jobid.removeAttribute("readonly");
-        jobdate.removeAttribute("readonly");
-      }
     }
 
-    if (
-      ROLENAME == "Customer Service" ||
-      ROLENAME == "Data Entry" ||
-      ROLENAME == "PPIC & DE"
-    ) {
-      divCustomer.removeAttribute("hidden");
-      divCreatedBy.removeAttribute("hidden");
-      divCreatedDate.removeAttribute("hidden");
-      divShipping.removeAttribute("hidden");
+    // if (CUSTOMERID == "LS-A224") {
+    //   divOrderType.setAttribute("hidden", true);
+    //   visibleElementFormOnChange(ordertype.value);
+    //   return;
+    // }
+
+    if (ACTION !== "edit") return;
+
+    divOrderType.setAttribute("hidden", true);
+    formDetail.removeAttribute("hidden");
+    divOrderId.removeAttribute("hidden");
+
+    orderidEl.setAttribute("readonly", true);
+    orderidEl.classList.add("bg-body-secondary");
+    orderidEl.classList.add("text-secondary");
+
+    if (ordertype == "Panorama" || ordertype == "Evolve") {
+      // divShipmentId.removeAttribute("hidden");
+
+      customerEl.setAttribute("readonly", true);
+      createdbyEL.setAttribute("readonly", true);
+      createddateEl.setAttribute("readonly", true);
+
+      orderidEl.setAttribute("readonly", true);
+      jobdateEl.setAttribute("readonly", true);
+
+      if (ROLENAME == "Administrator") {
+        divCustomer.removeAttribute("hidden");
+        divCreatedBy.removeAttribute("hidden");
+        divCreatedDate.removeAttribute("hidden");
+        divShipping.removeAttribute("hidden");
+        divDelivery.setAttribute("hidden", true);
+
+        const status = await getItemData(
+          `SELECT Status FROM view_order_headers WHERE Id = '${ID}' AND OrderType = '${ordertype}'`,
+        );
+        if (status == "In Production") {
+          divJobId.removeAttribute("hidden");
+          divJobDate.removeAttribute("hidden");
+        }
+
+        customerEl.removeAttribute("readonly");
+        createdbyEL.removeAttribute("readonly");
+        createddateEl.removeAttribute("readonly");
+
+        if (LEVELNAME == "Leader" || "Super Admin") {
+          orderidEl.removeAttribute("readonly");
+          jobidEl.removeAttribute("readonly");
+          jobdateEl.removeAttribute("readonly");
+        }
+      }
+
+      if (
+        ROLENAME == "Customer Service" ||
+        ROLENAME == "Data Entry" ||
+        ROLENAME == "PPIC & DE"
+      ) {
+        divCustomer.removeAttribute("hidden");
+        divCreatedBy.removeAttribute("hidden");
+        divCreatedDate.removeAttribute("hidden");
+        divShipping.removeAttribute("hidden");
+      }
+    }
+  } catch (error) {
+    if (ROLENAME === "Administrator") {
+      isError(error.message);
     }
   }
 };
 
-const visibleElementFormOnChange = async (ordertype) => {
-  const formDetail = document.getElementById("formDetail");
-  const divCustomer = document.getElementById("divCustomer");
-  const divCreatedBy = document.getElementById("divCreatedBy");
-  const divCreatedDate = document.getElementById("divCreatedDate");
-  const divOrderId = document.getElementById("divOrderId");
-  const divDelivery = document.getElementById("divDelivery");
-  const divJobId = document.getElementById("divJobId");
-  const divJobDate = document.getElementById("divJobDate");
-  const divShipmentId = document.getElementById("divShipmentId");
-  const divShipping = document.getElementById("divShipping");
+const getItemData = async (query) => {
+  try {
+    const response = await fetch(`${URIMETHOD}/GetItemData`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: query }), // ✅ FIX
+    });
 
-  formDetail.setAttribute("hidden", true);
-  divCustomer.setAttribute("hidden", true);
-  divCreatedBy.setAttribute("hidden", true);
-  divCreatedDate.setAttribute("hidden", true);
-  divOrderId.setAttribute("hidden", true);
-  divDelivery.setAttribute("hidden", true);
-  divJobId.setAttribute("hidden", true);
-  divJobDate.setAttribute("hidden", true);
-  divShipmentId.setAttribute("hidden", true);
-  divShipping.setAttribute("hidden", true);
-
-  const value = ordertype;
-  if (!value) return;
-
-  await handlerSelCustomer(value, "#customer");
-  formDetail.removeAttribute("hidden");
-  console.log(value);
-  if (value == "Blinds") {
-    if (
-      ROLENAME == "Administrator" ||
-      ROLENAME == "Customer Service" ||
-      ROLENAME == "PPIC & DE"
-    ) {
-      divCustomer.removeAttribute("hidden");
-    }
-
-    const customer = document.getElementById("customer");
-    const customerDelivery =
-      customer?.options?.[customer.selectedIndex]?.dataset?.delivery;
-    if (!customerDelivery) {
-      divDelivery.removeAttribute("hidden");
-    }
-  } else if (value == "Panorama" || value == "Evolve") {
-    handlerSelUser("#createdby");
-    if (
-      ROLENAME == "Administrator" ||
-      ROLENAME == "Customer Service" ||
-      ROLENAME == "Data Entry" ||
-      ROLENAME == "PPIC & DE"
-    ) {
-      divCustomer.removeAttribute("hidden");
-    }
-
-    if (ROLENAME == "Administrator") {
-      divCreatedBy.removeAttribute("hidden");
-      divCreatedDate.removeAttribute("hidden");
-    }
-    divDelivery.setAttribute("hidden", true);
+    const json = await response.json();
+    return json.d;
+  } catch (err) {
+    console.error(err);
+    isError(err);
   }
 };

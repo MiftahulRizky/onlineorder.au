@@ -840,7 +840,7 @@ Public Class PublicConfig
 
         If Not thisData.Tables(0).Rows.Count = 0 Then
             Dim discount As Integer = thisData.Tables(0).Rows(0).Item("Discount").ToString()
-            result = Matrix * discount / 100
+            result = Matrix * (discount / 100)
         End If
         Return result
     End Function

@@ -71,7 +71,7 @@
                                 <div class="row mb-5" id="">
                                     <label for="ordername" class="col-lg-4 form-label text-uppercase required" id="lblOrderName">order name</label>
                                     <div class="col-lg-8">
-                                            <div class="input-group">
+                                        <div class="input-group">
                                             <input type="text" class="form-control " id="ordername" name="ordername" placeholder="Order Name ...">
                                             <button class="btn" type="button" id="btnInfoOrderName">?</button>
                                         </div>
@@ -81,13 +81,16 @@
                                 <div class="row mb-3" id="divDelivery">
                                     <label for="delivery" class="col-lg-4 form-label text-uppercase required">delivery / pick up</label>
                                     <div class="col-lg-4">
-                                        <select name="delivery" id="delivery" class="form-select ">
-                                            <option value=""></option>
-                                            <option value="Delivery">DELIVERY</option>
-                                            <option value="Pick Up">PICK UP</option>
-                                            <option value="INT-FIS">INT-FIS</option>
-                                            <option value="INT-PU">INT-PU</option>
-                                        </select>
+                                        <div class="input-group">
+                                            <select name="delivery" id="delivery" class="form-select ">
+                                                <option value=""></option>
+                                                <option value="Delivery">DELIVERY</option>
+                                                <option value="Pick Up">PICK UP</option>
+                                                <option value="INT-FIS">INT-FIS</option>
+                                                <option value="INT-PU">INT-PU</option>
+                                            </select>
+                                            <button class="btn" type="button" id="btnInfoDelivery">?</button>
+                                        </div>
                                     </div>
                                 </div>
 

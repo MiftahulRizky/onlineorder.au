@@ -19,50 +19,16 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     // ---------------------------------||blindtype||---------------------------------
     if (e.target.id === "blindtype") {
-      // const lblBracketType = document.getElementById("lblBracketType");
-      // const divBracketType = document.getElementById("divBracketType");
-      // const divTubeType = document.getElementById("divTubeType");
-      // const divControlType = document.getElementById("divControlType");
-      // const divColourType = document.getElementById("divColourType");
-      // const lblColourType = document.getElementById("lblColourType");
-      // const divFormDetail = document.getElementById("divFormDetail");
-
-      // lblBracketType.innerHTML = "bracket type";
-      // divBracketType.setAttribute("hidden", true);
-      // divTubeType.setAttribute("hidden", true);
-      // divControlType.setAttribute("hidden", true);
-      // divColourType.setAttribute("hidden", true);
-      // lblColourType.innerHTML = "control colour";
-      // divFormDetail.setAttribute("hidden", true);
-      // lblControlPosition.innerHTML = "control position";
-
       if (!e.target.value) return;
 
       const blindid = e.target.value;
       const blindname = e.target.selectedOptions[0].dataset.name;
       await Promise.all([handlerElementVisibility(blindname)]);
       await bindBrackets(DESIGNID, blindid);
-
-      // if (blindname === "Cassette") {
-      //   lblBracketType.innerHTML = "cassette type";
-      //   lblColourType.innerHTML = "cassette colour";
-      // }
-
-      // divBracketType.removeAttribute("hidden");
     }
 
     // ---------------------------------||brackettype||---------------------------------
     if (e.target.id === "brackettype") {
-      // const divTubeType = document.getElementById("divTubeType");
-      // const divControlType = document.getElementById("divControlType");
-      // const divColourType = document.getElementById("divColourType");
-      // const divFormDetail = document.getElementById("divFormDetail");
-
-      // divTubeType.setAttribute("hidden", true);
-      // divControlType.setAttribute("hidden", true);
-      // divColourType.setAttribute("hidden", true);
-      // divFormDetail.setAttribute("hidden", true);
-
       if (!e.target.value) return;
 
       const blindtype = document.getElementById("blindtype");
@@ -71,23 +37,10 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const brackettype = e.target.value;
       await Promise.all([handlerElementVisibility(blindname, brackettype)]);
       await bindTubes(DESIGNID, blindid, brackettype);
-      // if (blindname !== "Skin Only") {
-      //   divTubeType.removeAttribute("hidden");
-      // }
     }
 
     // ---------------------------------||tubetype||---------------------------------
     if (e.target.id === "tubetype") {
-      // const divControlType = document.getElementById("divControlType");
-      // const btnInfoControlType = document.getElementById("btnInfoControlType");
-      // const divColourType = document.getElementById("divColourType");
-      // const divFormDetail = document.getElementById("divFormDetail");
-
-      // divControlType.setAttribute("hidden", true);
-      // btnInfoControlType.setAttribute("hidden", true);
-      // divColourType.setAttribute("hidden", true);
-      // divFormDetail.setAttribute("hidden", true);
-
       if (!e.target.value) return;
 
       const blindtype = document.getElementById("blindtype");
@@ -99,24 +52,10 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         handlerElementVisibility(blindname, brackettype, tubetype),
       ]);
       await bindControls(DESIGNID, blindid, brackettype, tubetype);
-
-      // if (blindname == "Motorised") {
-      //   btnInfoControlType.removeAttribute("hidden");
-      // }
-
-      // if (blindname !== "Skin Only") {
-      //   divControlType.removeAttribute("hidden");
-      // }
     }
 
     // ---------------------------------||controltype||---------------------------------
     if (e.target.id === "controltype") {
-      // const divColourType = document.getElementById("divColourType");
-      // const divFormDetail = document.getElementById("divFormDetail");
-
-      // divColourType.setAttribute("hidden", true);
-      // divFormDetail.setAttribute("hidden", true);
-
       if (!e.target.value) return;
 
       const blindtype = document.getElementById("blindtype");
@@ -129,52 +68,10 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         handlerElementVisibility(blindname, brackettype, tubetype, controltype),
       ]);
       await bindColours(DESIGNID, blindid, brackettype, tubetype, controltype);
-
-      // if (blindname !== "Skin Only") {
-      //   divColourType.removeAttribute("hidden");
-      // }
     }
 
     // ---------------------------------||colourtype||---------------------------------
     if (e.target.id === "colourtype") {
-      // const divFormDetail = document.getElementById("divFormDetail");
-      // const divMotorStyle = document.getElementById("divMotorStyle");
-      // const divMotorRemote = document.getElementById("divMotorRemote");
-      // const divMotorBattery = document.getElementById("divMotorBattery");
-      // const divMotorCharger = document.getElementById("divMotorCharger");
-      // const divCableExitPoint = document.getElementById("divCableExitPoint");
-      // const divConnector = document.getElementById("divConnector");
-      // const lblControlPosition = document.getElementById("lblControlPosition");
-      // const divRoll = document.getElementById("divRoll");
-      // const divControlPosition = document.getElementById("divRoll");
-      // const divChain = document.getElementById("divChain");
-      // const divBottomRail = document.getElementById("divBottomRail");
-      // const divTubeSize = document.getElementById("divTubeSize");
-      // const divChildSafe = document.getElementById("divChildSafe");
-      // const divAccessory = document.getElementById("divAccessory");
-      // const divExtras = document.getElementById("divExtras");
-      // const divBracketCover = document.getElementById("divBracketCover");
-      // const divBracketExt = document.getElementById("divBracketExt");
-
-      // divFormDetail.setAttribute("hidden", true);
-      // divMotorStyle.setAttribute("hidden", true);
-      // divMotorRemote.setAttribute("hidden", true);
-      // divMotorBattery.setAttribute("hidden", true);
-      // divMotorCharger.setAttribute("hidden", true);
-      // divCableExitPoint.setAttribute("hidden", true);
-      // divConnector.setAttribute("hidden", true);
-      // lblControlPosition.innerHTML = "control position";
-      // divRoll.setAttribute("hidden", true);
-      // divControlPosition.setAttribute("hidden", true);
-      // divChain.setAttribute("hidden", true);
-      // divBottomRail.setAttribute("hidden", true);
-      // divTubeSize.setAttribute("hidden", true);
-      // divChildSafe.setAttribute("hidden", true);
-      // divAccessory.setAttribute("hidden", true);
-      // divExtras.setAttribute("hidden", true);
-      // divBracketCover.setAttribute("hidden", true);
-      // divBracketExt.setAttribute("hidden", true);
-
       if (!e.target.value) return;
       const blindtype = document.getElementById("blindtype");
       const blindname = blindtype.options[blindtype.selectedIndex].dataset.name;
@@ -207,47 +104,6 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
           colourtype,
         ),
       ]);
-
-      // divFormDetail.removeAttribute("hidden");
-      // if (blindname === "Cassette") {
-      //   if (tubetype === "Motorised") {
-      //     divMotorStyle.removeAttribute("hidden");
-      //     divMotorRemote.removeAttribute("hidden");
-      //     divMotorCharger.removeAttribute("hidden");
-      //     divAccessory.removeAttribute("hidden");
-      //     divExtras.removeAttribute("hidden");
-      //   }
-      //   if (tubetype == "JAI Geared") {
-      //     divAccessory.removeAttribute("hidden");
-      //     divChildSafe.removeAttribute("hidden");
-      //     divChain.removeAttribute("hidden");
-      //   }
-      //   lblControlPosition.innerHTML = "control side";
-      //   divBracketCover.removeAttribute("hidden");
-      //   divBracketExt.removeAttribute("hidden");
-      // }
-
-      // if (blindname === "Motorised") {
-      //   divMotorStyle.removeAttribute("hidden");
-      //   divMotorRemote.removeAttribute("hidden");
-      //   divMotorCharger.removeAttribute("hidden");
-      //   lblControlPosition.innerHTML = "motor side";
-      //   divAccessory.removeAttribute("hidden");
-      //   divExtras.removeAttribute("hidden");
-      //   divBracketCover.removeAttribute("hidden");
-      //   divBracketExt.removeAttribute("hidden");
-      // }
-
-      // if (blindname === "Roller Blind") {
-      //   divChain.removeAttribute("hidden");
-      //   divTubeSize.removeAttribute("hidden");
-      //   divChildSafe.removeAttribute("hidden");
-      //   divBracketCover.removeAttribute("hidden");
-      //   divBracketExt.removeAttribute("hidden");
-      // }
-
-      // if (blindname === "Skin Only") {
-      // }
     }
 
     // ---------------------------------||fabrictype||---------------------------------
@@ -316,6 +172,17 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   });
 });
 
+// button submit
+document.querySelector("#btnSubmit").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+
+  handlerSubmit(e.target.form, e.target);
+});
+
 // button cancel
 document.querySelector("#btnCancel").addEventListener("click", (e) => {
   window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
@@ -382,6 +249,8 @@ const handlerElementVisibility = (
     const divMotorCharger = document.getElementById("divMotorCharger");
     const divCableExitPoint = document.getElementById("divCableExitPoint");
     const divConnector = document.getElementById("divConnector");
+    const divRoll = document.getElementById("divRoll");
+    const divControlPosition = document.getElementById("divControlPosition");
     const lblControlPosition = document.getElementById("lblControlPosition");
     const divChain = document.getElementById("divChain");
     const divBottomRail = document.getElementById("divBottomRail");
@@ -402,7 +271,7 @@ const handlerElementVisibility = (
     btnInfoControlType.setAttribute("hidden", true);
     lblColourType.innerHTML = "control colour";
     divColourType.setAttribute("hidden", true);
-
+    divControlPosition.setAttribute("hidden", true);
     divFormDetail.setAttribute("hidden", true);
     divAttention.setAttribute("hidden", true);
     divMotorStyle.setAttribute("hidden", true);
@@ -413,6 +282,8 @@ const handlerElementVisibility = (
     divMotorCharger.setAttribute("hidden", true);
     divCableExitPoint.setAttribute("hidden", true);
     divConnector.setAttribute("hidden", true);
+    divRoll.setAttribute("hidden", true);
+
     lblControlPosition.innerHTML = "control position";
     divChain.setAttribute("hidden", true);
     divBottomRail.setAttribute("hidden", true);
@@ -431,12 +302,26 @@ const handlerElementVisibility = (
       lblColourType.innerHTML = "cassette colour";
     }
 
+    if (["Motorised", "Roller Blind"].includes(blindname)) {
+      lblColourType.innerHTML = "colour type";
+    }
+
     divBracketType.removeAttribute("hidden");
 
     // ---------------------------------|| on change brackettype ||---------------------------------
     if (!brackettype) return;
-    if (blindname !== "Skin Only") {
+    if (["Cassette", "Motorised", "Roller Blind"].includes(blindname)) {
       divTubeType.removeAttribute("hidden");
+    }
+
+    if (blindname === "Skin Only") {
+      if (
+        ["With Tube & Bottom Included", "With Tube Included"].includes(
+          brackettype,
+        )
+      ) {
+        divTubeType.removeAttribute("hidden");
+      }
     }
 
     // ---------------------------------|| on change tubetype ||---------------------------------
@@ -448,14 +333,18 @@ const handlerElementVisibility = (
       btnInfoControlType.removeAttribute("hidden");
     }
 
-    if (blindname !== "Skin Only") {
-      divControlType.removeAttribute("hidden");
+    if (["Cassette", "Motorised", "Roller Blind"].includes(blindname)) {
+      if (tubetype !== "Spring Operated") {
+        divControlType.removeAttribute("hidden");
+      }
     }
 
     // ---------------------------------|| on change controltype ||---------------------------------
     if (!controltype) return;
     if (["Cassette", "Motorised", "Roller Blind"].includes(blindname)) {
-      divColourType.removeAttribute("hidden");
+      if (tubetype !== "Spring Operated") {
+        divColourType.removeAttribute("hidden");
+      }
     }
 
     // ---------------------------------|| on change colourtype ||---------------------------------
@@ -500,6 +389,8 @@ const handlerElementVisibility = (
       if (!["Alpha WF", "Somfy WF"].includes(controltype)) {
         divConnector.removeAttribute("hidden");
       }
+      divRoll.removeAttribute("hidden");
+      divControlPosition.removeAttribute("hidden");
       lblControlPosition.innerHTML = "motor side";
       divAccessory.removeAttribute("hidden");
       divExtras.removeAttribute("hidden");
@@ -508,14 +399,16 @@ const handlerElementVisibility = (
     }
 
     if (blindname === "Roller Blind") {
-      divChain.removeAttribute("hidden");
+      if (tubetype !== "Spring Operated") {
+        divRoll.removeAttribute("hidden");
+        divControlPosition.removeAttribute("hidden");
+        divChain.removeAttribute("hidden");
+        divBracketCover.removeAttribute("hidden");
+        divBracketExt.removeAttribute("hidden");
+      }
       divTubeSize.removeAttribute("hidden");
       divChildSafe.removeAttribute("hidden");
-      divBracketCover.removeAttribute("hidden");
-      divBracketExt.removeAttribute("hidden");
-    }
-
-    if (blindname === "Skin Only") {
+      divAccessory.removeAttribute("hidden");
     }
 
     if (MARKUPACCESS === "True") divMarkUp.removeAttribute("hidden");
@@ -532,6 +425,43 @@ const handlerElementVisibility = (
         ? error.message
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
+  }
+};
+
+const handlerSubmit = async (formEl, button) => {
+  try {
+    const formData = new FormData(formEl);
+
+    let formObject = Object.fromEntries(formData.entries());
+    const excludeKeys = [
+      "__EVENTTARGET",
+      "__EVENTARGUMENT",
+      "__VIEWSTATE",
+      "__VIEWSTATEGENERATOR",
+      "__SCROLLPOSITIONX",
+      "__SCROLLPOSITIONY",
+      "__EVENTVALIDATION",
+      "ctl00$txtSearchMaster",
+    ];
+
+    formObject = Object.fromEntries(
+      Object.entries(formObject).filter(([key]) => !excludeKeys.includes(key)),
+    );
+
+    const additionalData = {
+      loginid: LOGINID,
+      actions: ACTION,
+    };
+
+    const finalData = {
+      ...formObject,
+      ...additionalData,
+    };
+
+    // debug konsisten
+    return console.table(finalData);
+  } catch (error) {
+  } finally {
   }
 };
 // ------------------------------------------------------|| Binding Functions ||--------------------------------------
@@ -766,15 +696,12 @@ const bindTubes = async (designid, blindid, brackettype) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
-        const divControlType = document.getElementById("divControlType");
         const blindname =
           document.getElementById("blindtype").selectedOptions[0].dataset.name;
-
+        await Promise.all([
+          handlerElementVisibility(blindname, brackettype, select.value),
+        ]);
         await bindControls(designid, blindid, brackettype, select.value);
-
-        if (blindname !== "Skin Only") {
-          divControlType.removeAttribute("hidden");
-        }
       }
     }
   } catch (err) {
@@ -931,19 +858,6 @@ const bindColours = async (
 
       if (data.length === 1) {
         select.selectedIndex = 0;
-        // const divFormDetail = document.getElementById("divFormDetail");
-        // const divRoll = document.getElementById("divRoll");
-        // const divControlPosition =
-        //   document.getElementById("divControlPosition");
-        // const divBottomRail = document.getElementById("divBottomRail");
-        // const divTubeSize = document.getElementById("divTubeSize");
-        // const divAdditional = document.getElementById("divAdditional");
-
-        // divRoll.setAttribute("hidden", true);
-        // divControlPosition.setAttribute("hidden", true);
-        // divBottomRail.setAttribute("hidden", true);
-        // divTubeSize.setAttribute("hidden", true);
-        // divAdditional.setAttribute("hidden", true);
 
         const blindname =
           document.getElementById("blindtype").selectedOptions[0].dataset.name;
@@ -964,27 +878,14 @@ const bindColours = async (
           bindTubeSize(blindname, tubetype),
           bindChildSafe(),
           bindAccessory(),
+          handlerElementVisibility(
+            blindname,
+            brackettype,
+            tubetype,
+            controltype,
+            select.value,
+          ),
         ]);
-
-        // divFormDetail.removeAttribute("hidden");
-
-        // if (["Cassette", "Motorised", "Roller Blind"].includes(ITEMACTION)) {
-        //   divRoll.removeAttribute("hidden");
-        //   divControlPosition.removeAttribute("hidden");
-        //   divTubeSize.removeAttribute("hidden");
-        //   divAdditional.removeAttribute("hidden");
-        // }
-
-        // if (blindname == "Skin Only") {
-        //   const railcolour = document.getElementById("railcolour");
-        //   railcolour.innerHTML = ""; //reset
-        //   if (
-        //     brackettype == "With Tube Included" ||
-        //     brackettype == "With Tube & Bottom Included"
-        //   ) {
-        //     divTubeSize.removeAttribute("hidden");
-        //   }
-        // }
       }
     }
   } catch (err) {

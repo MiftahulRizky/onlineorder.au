@@ -66,6 +66,17 @@ Partial Class Methods_Order_CreateMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function GetItemData(ByVal query As String) As Object
+        Try
+            Dim Item As String = publicCfg.GetItemData(query)
+            Return Item
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message ' biar kelihatan errornya
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Find(ByVal id As String, ByVal ordertype As String) As Object
         Try
             Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE Id = '" + UCase(id).ToString() + "' AND OrderType = '" + ordertype + "'")
@@ -175,7 +186,7 @@ Partial Class Methods_Order_CreateMethod
             End If
 
             Dim FinalDelivery As String = data.delivery
-            If Not CustomerDelivery = "" Then
+            If Not CustomerDelivery = "" AND Not String.IsNullOrEmpty(data.id) Then 
                 FinalDelivery = CustomerDelivery
             End If
 
