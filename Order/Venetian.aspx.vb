@@ -520,7 +520,7 @@ Partial Class Order_Venetian
                 End If
 
                 If blindName = "25mm Aluminium" Then
-                    ddlHoldDown.SelectedValue = ""
+                    ddlHoldDown.SelectedValue = ddlHoldDown.SelectedValue
                     lblBottomHoldDown.Text = "Yes"
 
                     If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
