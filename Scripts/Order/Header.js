@@ -676,8 +676,10 @@ const checkSessionCreateHeader = async () => {
   if (ACTION === "add") {
     visibleElementForm();
     await loaderFadeOut();
+    document.getElementById("titleCard").textContent = "Create New Order";
   } else if (ACTION === "edit" && ID && ORDERTYPE) {
     handlerEdit(ID, ORDERTYPE);
+    document.getElementById("titleCard").textContent = "Edit Order";
   } else {
     window.location.href = "/order";
   }

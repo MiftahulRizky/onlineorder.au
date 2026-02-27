@@ -20,7 +20,7 @@
                     <form action="javascript:void(0)" method="post" id="form-submit">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Create New Order</h3>
+                            <h3 class="card-title" id="titleCard">Create New Order</h3>
                         </div>
                         <div class="card-body">
                             <div class="row mb-3" id="divOrderType">
