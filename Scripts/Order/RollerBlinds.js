@@ -215,6 +215,7 @@ const pageLoaded = async () => {
 
   if (ITEMACTION === "AddItem") {
     await bindBlinds(DESIGNID);
+    document.getElementById("lblBlindNo").innerHTML = "Blind 1";
     handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
@@ -457,6 +458,8 @@ const handlerSubmit = async (formEl, button) => {
       itemid: ITEMID,
       designid: DESIGNID,
       loginid: LOGINID,
+      blindno: document.getElementById("lblBlindNo").innerHTML,
+      uniqueid: document.getElementById("lblUniqueId").innerHTML,
     };
 
     const finalData = {

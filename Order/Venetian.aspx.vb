@@ -781,9 +781,10 @@ Partial Class Order_Venetian
                     divBracket.Visible = True
                     divBotomHoldDown.Visible = True
                 End If
-
+                
                 If blindName = "50mm Timberstyle" Or blindName = "63mm Timberstyle" Then
                     divStyle.Visible = True
+                    divBotomHoldDown.Visible = True
                 End If
 
                 If InStr(blindName, "Mockwood") > 0 Or InStr(blindName, "Wooden") > 0 Then

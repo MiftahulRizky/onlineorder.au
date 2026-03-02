@@ -46,10 +46,12 @@ Debug="true" %>
 
                 <div class="col-7 col-lg-7 col-md-12">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title" id="cardTitle"></h3>
-                        </div>
                         <form action="javascript:void(0)" method="post" id="formSubmit">
+                            <div class="card-header d-flex justify-content-between">
+                                <h3 class="card-title" id="cardTitle"></h3>
+                                <label class="card-title" id="lblBlindNo"><label/>
+                                <label class="card-title" id="lblUniqueId"><label/>
+                            </div>
                             <div class="card-body">
                                 
                                 <div class="mb-3 row">
