@@ -5,6 +5,7 @@ Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Guid
 Imports System.Collections.Generic
+Imports System.Linq
 Partial Class Methods_Order_RollerBlindMethod
     Inherits System.Web.UI.Page
     
@@ -376,35 +377,75 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
             End If
 
-            If String.IsNullOrEmpty(data.roll) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "roll direction is required !",.field = "roll"}}
-            End If
-
-            If String.IsNullOrEmpty(data.controlposition) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
-            End If
-
-            If (BlindName = "Cassette" AND data.tubetype = "JAI Geared") OR BlindName = "Roller Blind" Then
-                If String.IsNullOrEmpty(data.chaincolour) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+            If Not (data.tubetype = "Spring Operated" OR data.tubetype = "N/A") Then
+                If Not BlindName = "Skin Only" Then
+                    If String.IsNullOrEmpty(data.roll) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "roll direction is required !",.field = "roll"}}
+                    End If
                 End If
-                ' If String.IsNullOrEmpty(data.chainlength) Then
-                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length is required !",.field = "chainlength"}}
-                ' End If
+
+                If InArray(data.brackettype, "Single", "Double", "Linked 2 Blinds (Ind)", "Headbox Only", "Headbox & Side Channels") Then
+                    If String.IsNullOrEmpty(data.controlposition) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position / side is required !",.field = "controlposition"}}
+                    End If
+                End If
+            End IF
+
+            If data.controltype = "Chain" Then
+                If InArray(data.brackettype, "Single", "Double", "Linked 2 Blinds (Ind)") Then
+                End If
+
+                If data.brackettype = "Linked 2 Blinds (Dep)" Then
+                End If
+                
+                If data.brackettype = "Linked 3 Blinds (Dep)" Then
+                End If
+
+                If data.brackettype = "Linked 3 Blinds (Ind)" Then
+                End If
+
+                If data.brackettype = "Double and Link System Dep" Then
+                End If
+
+                If data.brackettype = "Double and Link System Ind" Then
+                End If
             End If
 
-            If String.IsNullOrEmpty(data.trim) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "trim is required !",.field = "trim"}}
+            If InArray(data.brackettype, "With Tube & Bottom Included", "With Bottom Included") Then
+                If String.IsNullOrEmpty(data.trim) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "trim is required !",.field = "trim"}}
+                End If
+
+                If Not String.IsNullOrEmpty(data.trim) AND data.trim = "1F" Then
+                    If String.IsNullOrEmpty(data.railtype) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail type is required !",.field = "railtype"}}
+                    End If
+                    If String.IsNullOrEmpty(data.railcolour) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail colour is required !",.field = "railcolour"}}
+                    End If
+                End If
             End If
 
-            If Not String.IsNullOrEmpty(data.trim) AND data.trim = "1F" Then
-                If String.IsNullOrEmpty(data.railtype) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail type is required !",.field = "railtype"}}
+            If Not data.tubetype = "N/A" Then
+                If Not BlindName = "Skin Only" Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "trim is required !",.field = "trim"}}
                 End If
-                If String.IsNullOrEmpty(data.railcolour) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail colour is required !",.field = "railcolour"}}
+                
+                If data.trim = "1F" AND data.tubetype = "Spring Operated" Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "trim 1f is not allowed for spring operated !",.field = "trim"}}
+                End If
+
+                If Not String.IsNullOrEmpty(data.trim) AND data.trim = "1F" Then
+                    If String.IsNullOrEmpty(data.railtype) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail type is required !",.field = "railtype"}}
+                    End If
+                    If String.IsNullOrEmpty(data.railcolour) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail colour is required !",.field = "railcolour"}}
+                    End If
                 End If
             End If
+            
+
 
             If (BlindName = "Skin Only" AND InStr(data.brackettype, "Tube") > 0 ) OR BlindName = "Roller Blind" Then
                 If String.IsNullOrEmpty(data.tubesize) Then
@@ -443,6 +484,10 @@ Partial Class Methods_Order_RollerBlindMethod
         Catch ex As Exception
             Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
         End Try
+    End Function
+
+    Private Shared Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
     End Function
 
 End Class

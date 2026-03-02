@@ -214,8 +214,17 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
         field.classList.add("is-invalid");
       }
     } else {
-      await isSuccess(dataResult.success.message);
-      window.location.href = dataResult.success.url;
+      Swal.fire({
+        title: "Success",
+        html: dataResult.success.message,
+        icon: "success",
+        confirmButtonText: "Next",
+        customClass: {
+          popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+        },
+      }).then(() => {
+        window.location.href = dataResult.success.url;
+      });
     }
   } catch (err) {
     await isError(err.message);

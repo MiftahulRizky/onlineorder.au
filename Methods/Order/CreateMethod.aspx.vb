@@ -249,7 +249,7 @@ Partial Class Methods_Order_CreateMethod
                     Dim dataLog As Object() = {headerId, "", data.ordertype, HttpContext.Current.Session("LoginId").ToString(), "Create Order"}
                     orderCfg.Log_Orders(dataLog)
                 End If
-                msg = "Data has been saved successfully. <br /> Click oke to continue."
+                msg = "A new record has been created. <br />Click Next to continue."
             End If
 
             '#update
