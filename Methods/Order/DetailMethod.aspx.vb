@@ -13337,12 +13337,12 @@ Partial Class Methods_Order_DetailMethod
             '#
             result+= trDetStart
                 result+= tdTitleStart & "Carries Qty" & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CarrierQty6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("SlatQty1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("SlatQty2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("SlatQty3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("SlatQty4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("SlatQty5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("SlatQty6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#
