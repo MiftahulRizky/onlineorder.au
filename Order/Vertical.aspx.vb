@@ -641,7 +641,7 @@ Partial Class Order_Vertical
                     End If
                 End If
 
-                If ddlTubeType.SelectedValue = "Vertical" Then
+                If ddlTubeType.SelectedValue = "Louvolite" Then
                     ddlInsertInTrack.SelectedValue = ""
                 End If
 
