@@ -70,8 +70,17 @@ Partial Class Setting_Product_Mounting
 
                     Dim blindArray() As String = myData.Tables(0).Rows(0).Item("BlindId").ToString().Split(",")
                     For Each i In blindArray
-                        If Not (i.Equals(String.Empty)) Then
-                            lbBlindType.Items.FindByValue(i).Selected = True
+                        ' If Not (i.Equals(String.Empty)) Then
+                        '     lbBlindType.Items.FindByValue(i).Selected = True
+                        ' End If
+                        If Not String.IsNullOrEmpty(i) Then
+        
+                            Dim item = lbBlindType.Items.FindByValue(i.Trim())
+
+                            If item IsNot Nothing Then
+                                item.Selected = True
+                            End If
+
                         End If
                     Next
 
