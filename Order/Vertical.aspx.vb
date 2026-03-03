@@ -641,6 +641,10 @@ Partial Class Order_Vertical
                     End If
                 End If
 
+                If ddlTubeType.SelectedValue = "Vertical" Then
+                    ddlInsertInTrack.SelectedValue = ""
+                End If
+
                 ' Call MessageError(True, txtSlatQty.Text)
                 ' Exit Sub
 
