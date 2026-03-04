@@ -177,18 +177,21 @@ Partial Class Methods_Order_CreateMethod
                 End If
             End If
 
+            Dim FinalDelivery As String = data.delivery
             Dim CustomerDelivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM Customers WHERE Id = '{0}'", data.customer))
             If data.ordertype = "Blinds" Then
 
                 If CustomerDelivery = "" And String.IsNullOrEmpty(data.delivery) Then
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "delivery is required !", .field = "delivery"}}
+                Else
+                    FinalDelivery = CustomerDelivery
+                End If
+                If Not CustomerDelivery = "" AND Not String.IsNullOrEmpty(data.id) Then 
+                    FinalDelivery = CustomerDelivery
                 End If
             End If
 
-            Dim FinalDelivery As String = data.delivery
-            If Not CustomerDelivery = "" AND Not String.IsNullOrEmpty(data.id) Then 
-                FinalDelivery = CustomerDelivery
-            End If
+            ' Return New ErrorResponse With { .error = New ErrorDetail With { .message = FinalDelivery, .field = "delivery"}}
 
             Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString    
 
