@@ -573,10 +573,10 @@ Partial Class Setting_Customer_Detail
             gvListContact.DataBind()
 
             btnAddContact.Visible = False : aResetContact.Visible = False
-            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Data Entry" Then
                 btnAddContact.Visible = True
             End If
-            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+            If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Data Entry" Then
                 aResetContact.Visible = True
             End If
         Catch ex As Exception
@@ -589,7 +589,7 @@ Partial Class Setting_Customer_Detail
     End Sub
 
     Protected Function VisibleActionContact() As Boolean
-        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" Then
+        If Session("RoleName") = "Administrator" Or Session("RoleName") = "Customer Service" Or Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Data Entry" Then
             Return True
         End If
         Return False

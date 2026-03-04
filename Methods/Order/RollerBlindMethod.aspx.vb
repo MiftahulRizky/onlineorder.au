@@ -1583,7 +1583,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     '#SdsTubeSize
                     Dim ListTube As New List(Of Object) From {
                         UniqueId,
-                        drop
+                        data.tubesize
                     }
                     Dim ResTube As String = SdsTubeSize(ListTube)
                     IF Not ResTube = "200" Then
@@ -1602,7 +1602,63 @@ Partial Class Methods_Order_RollerBlindMethod
 
                 End If
 
+                If data.brackettype = "Double and Link System Dep" Then
+                    '#SdsDrop
+                    Dim ListDrop As New List(Of Object) From {
+                        UniqueId,
+                        drop
+                    }
+                    Dim ResDrop As String = SdsDrop(ListDrop)
+                    IF Not ResDrop = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDrop, .field = ""}}
+                    End If
+
+                    If InArray(data.blindno, "Blind 1", "Blind 2") Then
+                        '#SdsDB2IndFirst
+                        Dim ListDB2IndFirst As New List(Of Object) From {
+                            UniqueId,
+                            data.fabriccolour,
+                            PriceGroupId,
+                            data.roll
+                        }
+                        Dim ResDB2IndFirst As String = SdsDB2First(ListDB2IndFirst)
+                        IF Not ResDB2IndFirst = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDB2IndFirst, .field = ""}}
+                        End If
+                    End If
+
+                    If InArray(data.blindno, "Blind 3", "Blind 4") Then
+                        '#SdsDB2DepSecond
+                        Dim ListDB2DepSecond As New List(Of Object) From {
+                            UniqueId,
+                            data.fabriccolour,
+                            PriceGroupId,
+                            data.roll
+                        }
+                        Dim ResDB2DepSecond As String = SdsDB2Second(ListDB2DepSecond)
+                        IF Not ResDB2DepSecond = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDB2DepSecond, .field = ""}}
+                        End If
+                    End If
+
+                End If
+
+                publicCfg.ResetPriceDetail(ItemId)
+                publicCfg.HitungHarga(data.headerid, ItemId)
+                publicCfg.HitungSurcharge(data.headerid, ItemId)
+
+                Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Add Item Order"}
+                orderCfg.Log_Orders(dataLog)
+
                 msg = "Item updated successfully !"
+
+                If InStr(data.brackettype, "Linked") > 0 AND data.controltype = "Somfy WF" Then
+                    msg += "<br/><br/><b>Warning :</b>Check SP the availability for linking blind for WF motorised !"
+                End If
+                If InStr(data.brackettype, "Linked") > 0 AND data.controltype = "Alpha WF" AndAlso data.motorstyle = "Alpha 2NM Std" Then
+                    msg += "<br/><br/><b>Warning :</b> Check SP the availability for linking blind for WF motorised !"
+                End If
+
             End If
 
             Return New SuccessResponse With {.success = msg}
@@ -1724,6 +1780,28 @@ Partial Class Methods_Order_RollerBlindMethod
             Return "200"
         Catch ex As Exception
             Return "SdsDrop: " & ex.Message
+        End Try
+    End function
+
+    Private Shared Function SdsTubeSize(ListParam As List(Of Object)) As String
+        Try
+            Dim UniqueId As String = CStr(ListParam(0))
+            Dim TubeSize As String = CStr(ListParam(1))
+
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetails SET TubeSize=@TubeSize WHERE UniqueId=@UniqueId AND Active=1", thisConn)
+                    myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
+                    myCmd.Parameters.AddWithValue("@TubeSize", TubeSize)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return "200"
+        Catch ex As Exception
+            Return "SdsTubeSize: " & ex.Message
         End Try
     End function
 
