@@ -1072,7 +1072,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
-                        myCmd.Parameters.AddWithValue("@Id", itemId)
+                        myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@HeaderId", UniqueId)
                         myCmd.Parameters.AddWithValue("@BlindNo", data.blindno)
@@ -1315,23 +1315,294 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
 
                     If data.blindno = "Blind 2" Then
-                        '#SdsDB2DepFirst
-                        Dim ListDB2Dep As New List(Of Object) From {
+                        '#SdsDB2First
+                        Dim ListDB2DepFirst As New List(Of Object) From {
                             UniqueId,
-                            drop
+                            data.fabriccolour,
+                            PriceGroupId,
+                            data.roll
                         }
-                        Dim ResDB2Dep As String = SdsDB2DepFirst(ListDB2Dep)
-                        IF Not ResDB2Dep = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDB2Dep, .field = ""}}
+                        Dim ResDB2DepFirst As String = SdsDB2First(ListDB2DepFirst)
+                        IF Not ResDB2DepFirst = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDB2DepFirst, .field = ""}}
                         End If
                     End If
+
+                    If data.blindno = "Blind 4" Then
+                        '#SdsDB2Second
+                        Dim ListDB2DepSecond As New List(Of Object) From {
+                            UniqueId,
+                            data.fabriccolour,
+                            PriceGroupId,
+                            data.roll
+                        }
+                        Dim ResDB2DepSecond As String = SdsDB2Second(ListDB2DepSecond)
+                        IF Not ResDB2DepSecond = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDB2DepSecond, .field = ""}}
+                        End If
+                    End If
+                    
+                    '#SdsNext
+                    Dim ListNext As New List(Of Object) From {
+                        UniqueId,
+                        data.tubesize,
+                        data.mounting,
+                        data.room,
+                        data.childsafe,
+                        data.accessory,
+                        data.bracketcovers,
+                        data.bracketext,
+                        data.motorstyle,
+                        markup
+                    }
+                    Dim ResNext As String = SdsNext(ListNext)
+                    IF Not ResNext = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResNext, .field = ""}}
+                    End If
+
+                End If
+
+                If data.brackettype = "Double and Link System Ind" Then
+
+                    If data.blindno = "Blind 2" Then
+                        '#SdsDB2IndFirst
+                        Dim ListDB2IndFirst As New List(Of Object) From {
+                            UniqueId,
+                            data.fabriccolour,
+                            PriceGroupId,
+                            data.roll
+                        }
+                        Dim ResDB2IndFirst As String = SdsDB2First(ListDB2IndFirst)
+                        IF Not ResDB2IndFirst = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDB2IndFirst, .field = ""}}
+                        End If
+                    End If
+
+                    If data.blindno = "Blind 4" Then
+                        '#SdsDB2DepSecond
+                        Dim ListDB2DepSecond As New List(Of Object) From {
+                            UniqueId,
+                            data.fabriccolour,
+                            PriceGroupId,
+                            data.roll
+                        }
+                        Dim ResDB2DepSecond As String = SdsDB2Second(ListDB2DepSecond)
+                        IF Not ResDB2DepSecond = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDB2DepSecond, .field = ""}}
+                        End If
+                    End If
+                    
+                    '#SdsNext
+                    Dim ListNext As New List(Of Object) From {
+                        UniqueId,
+                        data.tubesize,
+                        data.mounting,
+                        data.room,
+                        data.childsafe,
+                        data.accessory,
+                        data.bracketcovers,
+                        data.bracketext,
+                        data.motorstyle,
+                        markup
+                    }
+                    Dim ResNext As String = SdsNext(ListNext)
+                    IF Not ResNext = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResNext, .field = ""}}
+                    End If
+
+                End If
+
+                publicCfg.ResetPriceDetail(ItemId)
+                publicCfg.HitungHarga(data.headerid, ItemId)
+                publicCfg.HitungSurcharge(data.headerid, ItemId)
+
+                Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Add Item Order"}
+                orderCfg.Log_Orders(dataLog)
+
+                If data.blindno = "Blind 2" AND InArray(data.brackettype, "Linked 3 Blinds (Dep)", "Linked 3 Blinds (Ind)", "Double and Link System Dep", "Double and Link System Ind") Then
+                    Dim BlindNoSelected As String = "first blind"
+                    If data.blindno = "Blind 2" Then
+                        BlindNoSelected = "second blind"
+                    End If
+
+                    msg += String.Format("<br/><br/> This is the <b>{0}</b>.", BlindNoSelected)
+                    msg += String.Format("<br/> from <b>{0}</b> - <b>{1}</b>", BlindName, data.brackettype)
+                    msg += String.Format("<br /><br />Please click the <b>Next Item</b> button that is written in green color of the <b>ITEM ID {1}</b>.", ItemId)
                 End If
 
                 msg = "Item added successfully !"
             End If
 
             If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
-                msg = "Item added successfully !"
+                Dim ItemId As String = data.itemid
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                        myCmd.Parameters.AddWithValue("@Id", ItemId)
+                        myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
+                        myCmd.Parameters.AddWithValue("@HeaderId", UniqueId)
+                        myCmd.Parameters.AddWithValue("@BlindNo", data.blindno)
+                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
+                        myCmd.Parameters.AddWithValue("@SoeKitId", SoeId)
+                        myCmd.Parameters.AddWithValue("@ExactId", ExactId)
+                        myCmd.Parameters.AddWithValue("@FabricId", UCase(data.fabriccolour).ToString())
+                        myCmd.Parameters.AddWithValue("@ChainId", ChainId)
+                        myCmd.Parameters.AddWithValue("@ChainId", BottomRailId)
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(PriceGroupId).ToString())
+                        myCmd.Parameters.AddWithValue("@CassetteExtraId", CassetteExtraId)
+                        myCmd.Parameters.AddWithValue("@Qty", qty)
+                        myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
+                        myCmd.Parameters.AddWithValue("@Width", width)
+                        myCmd.Parameters.AddWithValue("@Drop", drop)
+                        myCmd.Parameters.AddWithValue("@RollDirection", data.roll)
+                        myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
+                        myCmd.Parameters.AddWithValue("@ChainLength", CLength)
+                        myCmd.Parameters.AddWithValue("@Accessory", data.accessory)
+                        myCmd.Parameters.AddWithValue("@TubeSize", data.tubesize)
+                        myCmd.Parameters.AddWithValue("@Trim", data.trim)
+                        myCmd.Parameters.AddWithValue("@BracketCover", data.bracketcovers)
+                        myCmd.Parameters.AddWithValue("@BracketExtension", data.bracketext)
+                        myCmd.Parameters.AddWithValue("@ChildSafe", data.childsafe)
+                        myCmd.Parameters.AddWithValue("@MotorStyle", data.motorstyle)
+                        myCmd.Parameters.AddWithValue("@MotorRemote", data.motorremote)
+                        myCmd.Parameters.AddWithValue("@MotorBattery", data.externalbattery)
+                        myCmd.Parameters.AddWithValue("@MotorCharger", data.charger)
+                        myCmd.Parameters.AddWithValue("@Connector", data.connector)
+                        myCmd.Parameters.AddWithValue("@AdditionalMotor", data.extras)
+                        myCmd.Parameters.AddWithValue("@CableExitPoint", data.cableexitpoint)
+                        myCmd.Parameters.AddWithValue("@Notes", data.notes)
+                        myCmd.Parameters.AddWithValue("@MarkUp", markup)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+
+                If data.brackettype = "Double" Then
+                    '#SdsNext
+                    Dim ListNext As New List(Of Object) From {
+                        UniqueId,
+                        data.tubesize,
+                        data.mounting,
+                        data.room,
+                        data.childsafe,
+                        data.accessory,
+                        data.bracketcovers,
+                        data.bracketext,
+                        data.motorstyle,
+                        markup
+                    }
+                    Dim ResNext As String = SdsNext(ListNext)
+                    IF Not ResNext = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResNext, .field = ""}}
+                    End If
+
+                    '#SdsSize
+                    Dim ListSize As New List(Of Object) From {
+                        UniqueId,
+                        width,
+                        drop
+                    }
+                    Dim ResSize As String = SdsSize(ListSize)
+                    IF Not ResSize = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResSize, .field = ""}}
+                    End If
+                End If
+
+                If InArray(data.brackettype, "Linked 2 Blinds (Dep)", "Linked 3 Blinds (Dep)") Then
+                    '#SdsDrop
+                    Dim ListDrop As New List(Of Object) From {
+                        UniqueId,
+                        drop
+                    }
+                    Dim ResDrop As String = SdsDrop(ListDrop)
+                    IF Not ResDrop = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDrop, .field = ""}}
+                    End If
+
+                    '#SdsRollDep
+                    Dim ListRollDep As New List(Of Object) From {
+                        UniqueId,
+                        drop
+                    }
+                    Dim ResRollDep As String = SdsRollDep(ListRollDep)
+                    IF Not ResRollDep = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResRollDep, .field = ""}}
+                    End If
+
+                    '#SdsFabric
+                    Dim ListFabric As New List(Of Object) From {
+                        UniqueId,
+                        drop
+                    }
+                    Dim ResFabric As String = SdsFabric(ListFabric)
+                    IF Not ResFabric = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResFabric, .field = ""}}
+                    End If
+
+                    '#SdsNext
+                    Dim ListNext As New List(Of Object) From {
+                        UniqueId,
+                        data.tubesize,
+                        data.mounting,
+                        data.room,
+                        data.childsafe,
+                        data.accessory,
+                        data.bracketcovers,
+                        data.bracketext,
+                        data.motorstyle,
+                        markup
+                    }
+                    Dim ResNext As String = SdsNext(ListNext)
+                    IF Not ResNext = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResNext, .field = ""}}
+                    End If
+
+                End If
+
+                If InArray(data.brackettype, "Linked 2 Blinds (Ind)", "Linked 3 Blinds (Ind)") Then
+                    '#SdsNext
+                    Dim ListNext As New List(Of Object) From {
+                        UniqueId,
+                        data.tubesize,
+                        data.mounting,
+                        data.room,
+                        data.childsafe,
+                        data.accessory,
+                        data.bracketcovers,
+                        data.bracketext,
+                        data.motorstyle,
+                        markup
+                    }
+                    Dim ResNext As String = SdsNext(ListNext)
+                    IF Not ResNext = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResNext, .field = ""}}
+                    End If
+
+                    '#SdsTubeSize
+                    Dim ListTube As New List(Of Object) From {
+                        UniqueId,
+                        drop
+                    }
+                    Dim ResTube As String = SdsTubeSize(ListTube)
+                    IF Not ResTube = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResTube, .field = ""}}
+                    End If
+
+                    '#SdsFabric
+                    Dim ListFabric As New List(Of Object) From {
+                        UniqueId,
+                        drop
+                    }
+                    Dim ResFabric As String = SdsFabric(ListFabric)
+                    IF Not ResFabric = "200" Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResFabric, .field = ""}}
+                    End If
+
+                End If
+
+                msg = "Item updated successfully !"
             End If
 
             Return New SuccessResponse With {.success = msg}
@@ -1502,17 +1773,19 @@ Partial Class Methods_Order_RollerBlindMethod
         End Try
     End function
 
-    Private Shared Function SdsDB2DepFirst(ListParam As List(Of Object)) As String
+    Private Shared Function SdsDB2First(ListParam As List(Of Object)) As String
         Try
             Dim UniqueId As String = CStr(ListParam(0))
             Dim FabricId As String = CStr(ListParam(1))
             Dim PriceGroupId As String = CStr(ListParam(2))
+            Dim RollDirection As String = CStr(ListParam(3))
 
             Using thisConn As New SqlConnection(myConn)
                 Using myCmd As New SqlCommand("UPDATE OrderDetails SET FabricId=@FabricId, PriceGroupId=@PriceGroupId, RollDirection=@RollDirection WHERE BlindNo IN ('Blind 1', 'Blind 2') AND UniqueId=@UniqueId AND Active=1", thisConn)
                     myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
                     myCmd.Parameters.AddWithValue("@FabricId", FabricId)
                     myCmd.Parameters.AddWithValue("@PriceGroupId", PriceGroupId)
+                    myCmd.Parameters.AddWithValue("@RollDirection", RollDirection)
                     myCmd.Connection = thisConn
                     thisConn.Open()
                     myCmd.ExecuteNonQuery()
@@ -1525,5 +1798,83 @@ Partial Class Methods_Order_RollerBlindMethod
             Return "SdsFabric: " & ex.Message
         End Try
     End function
+
+    Private Shared Function SdsDB2Second(ListParam As List(Of Object)) As String
+        Try
+            Dim UniqueId As String = CStr(ListParam(0))
+            Dim FabricId As String = CStr(ListParam(1))
+            Dim PriceGroupId As String = CStr(ListParam(2))
+            Dim RollDirection As String = CStr(ListParam(3))
+
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetails SET FabricId=@FabricId, PriceGroupId=@PriceGroupId, RollDirection=@RollDirection WHERE BlindNo IN ('Blind 3', 'Blind 4') AND UniqueId=@UniqueId AND Active=1", thisConn)
+                    myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
+                    myCmd.Parameters.AddWithValue("@FabricId", FabricId)
+                    myCmd.Parameters.AddWithValue("@PriceGroupId", PriceGroupId)
+                    myCmd.Parameters.AddWithValue("@RollDirection", RollDirection)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return "200"
+        Catch ex As Exception
+            Return "SdsFabric: " & ex.Message
+        End Try
+    End function
+
+    ' Private Shared Function SdsDB2IndFirst(ListParam As List(Of Object)) As String
+    '     Try
+    '         Dim UniqueId As String = CStr(ListParam(0))
+    '         Dim FabricId As String = CStr(ListParam(1))
+    '         Dim PriceGroupId As String = CStr(ListParam(2))
+    '         Dim RollDirection As String = CStr(ListParam(3))
+
+    '         Using thisConn As New SqlConnection(myConn)
+    '             Using myCmd As New SqlCommand("UPDATE OrderDetails SET FabricId=@FabricId, PriceGroupId=@PriceGroupId, RollDirection=@RollDirection WHERE BlindNo IN ('Blind 1', 'Blind 2') AND UniqueId=@UniqueId AND Active=1", thisConn)
+    '                 myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
+    '                 myCmd.Parameters.AddWithValue("@FabricId", FabricId)
+    '                 myCmd.Parameters.AddWithValue("@PriceGroupId", PriceGroupId)
+    '                 myCmd.Parameters.AddWithValue("@RollDirection", RollDirection)
+    '                 myCmd.Connection = thisConn
+    '                 thisConn.Open()
+    '                 myCmd.ExecuteNonQuery()
+    '                 thisConn.Close()
+    '             End Using
+    '         End Using
+
+    '         Return "200"
+    '     Catch ex As Exception
+    '         Return "SdsFabric: " & ex.Message
+    '     End Try
+    ' End function
+
+    ' Private Shared Function SdsDB2DepSecond(ListParam As List(Of Object)) As String
+    '     Try
+    '         Dim UniqueId As String = CStr(ListParam(0))
+    '         Dim FabricId As String = CStr(ListParam(1))
+    '         Dim PriceGroupId As String = CStr(ListParam(2))
+    '         Dim RollDirection As String = CStr(ListParam(3))
+
+    '         Using thisConn As New SqlConnection(myConn)
+    '             Using myCmd As New SqlCommand("UPDATE OrderDetails SET FabricId=@FabricId, PriceGroupId=@PriceGroupId, RollDirection=@RollDirection WHERE BlindNo IN ('Blind 3', 'Blind 4') AND UniqueId=@UniqueId AND Active=1", thisConn)
+    '                 myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
+    '                 myCmd.Parameters.AddWithValue("@FabricId", FabricId)
+    '                 myCmd.Parameters.AddWithValue("@PriceGroupId", PriceGroupId)
+    '                 myCmd.Parameters.AddWithValue("@RollDirection", RollDirection)
+    '                 myCmd.Connection = thisConn
+    '                 thisConn.Open()
+    '                 myCmd.ExecuteNonQuery()
+    '                 thisConn.Close()
+    '             End Using
+    '         End Using
+
+    '         Return "200"
+    '     Catch ex As Exception
+    '         Return "SdsFabric: " & ex.Message
+    '     End Try
+    ' End function
 
 End Class

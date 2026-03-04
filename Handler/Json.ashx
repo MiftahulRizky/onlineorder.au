@@ -99,8 +99,8 @@ Public Class Json : Implements IHttpHandler
                         Dim DesignId As String = "0CB7C37F-D478-49BA-94CB-DCDE83FB84C8"
 
 
+                        ' {"Notes", DBNull.Value},
                         Dim defaultValues As New Dictionary(Of String, Object) From {
-                            {"Notes", DBNull.Value},
                             {"Cost", 0},
                             {"CostOverride", 0},
                             {"Discount", 0},
