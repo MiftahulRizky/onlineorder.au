@@ -54,8 +54,8 @@ $("#controltype").on("change", function (e) {
   const controlname = $(this).find("option:selected").data("name");
   const fabrictype = $(this).find("option:selected").data("type");
   bindMounting(blindname);
-  bindFabricType(designId, blindname, controlname);
-  bindFabricColour(designId, fabrictype);
+  bindFabricType(DESIGNID, blindname, controlname);
+  bindFabricColour(DESIGNID, fabrictype);
   bindControlPosition(blindname);
   //for chained
   bindMaterialChain(blindname);
@@ -383,8 +383,8 @@ function bindControlType(designid, blindid) {
 
             const fabrictype = $(this).find("option:selected").data("type");
             bindMounting(blindName);
-            bindFabricType(designId, blindName, controlname);
-            bindFabricColour(designId, fabrictype);
+            bindFabricType(designid, blindName, controlname);
+            bindFabricColour(designid, fabrictype);
             bindControlPosition(blindName);
             //for chained
             bindMaterialChain(blindName);

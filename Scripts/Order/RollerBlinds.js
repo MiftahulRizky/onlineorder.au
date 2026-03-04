@@ -433,6 +433,7 @@ const handlerElementVisibility = (
 
 const handlerSubmit = async (formEl, button) => {
   try {
+    // return alert(button);
     document.getElementById(button).innerHTML = "Processing...";
     const formData = new FormData(formEl);
 
@@ -458,8 +459,8 @@ const handlerSubmit = async (formEl, button) => {
       itemid: ITEMID,
       designid: DESIGNID,
       loginid: LOGINID,
-      blindno: document.getElementById("lblBlindNo").innerHTML,
-      uniqueid: document.getElementById("lblUniqueId").innerHTML,
+      blindno: document.getElementById("lblBlindNo")?.innerHTML,
+      uniqueid: document.getElementById("lblUniqueId")?.innerHTML,
     };
 
     const finalData = {
@@ -468,7 +469,7 @@ const handlerSubmit = async (formEl, button) => {
     };
 
     // debug konsisten
-    // return console.table(finalData);
+    console.table(finalData);
 
     const response = await fetch(URIMETHOD + "/Submit", {
       method: "POST",
@@ -943,6 +944,7 @@ const bindColours = async (
 
 const bindFabrics = async (designid) => {
   const select = document.getElementById("fabrictype");
+  document.getElementById("fabriccolour").innerHTML = "";
   select.innerHTML = "";
 
   if (!designid) return;

@@ -179,13 +179,14 @@ Partial Class Methods_Order_RollerBlindMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindColourType(ByVal designid As String, ByVal blindid As String, ByVal brackettype As String, ByVal tubetype As String, ByVal controltype As String) As Object
         Try
-            Dim MyQuery As String = String.Format("SELECT ColourType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND BracketType='{2}' AND TubeType='{3}' AND Active=1 GROUP BY ColourType ORDER BY ColourType ASC", designid, UCase(blindid).ToString(), brackettype, tubetype, controltype)
+            ' Dim MyQuery As String = String.Format("SELECT Id, ColourType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND BracketType='{2}' AND TubeType='{3}' AND Active=1 GROUP BY ColourType ORDER BY ColourType ASC", designid, UCase(blindid).ToString(), brackettype, tubetype, controltype)
+            Dim MyQuery As String = String.Format("SELECT *, UPPER(ColourType) AS ColourText FROM HardwareKits WHERE BlindId = '{1}' AND BracketType = '{2}' AND TubeType = '{3}' AND ControlType='{4}' AND Active=1 ORDER BY Name ASC", designid, UCase(blindid).ToString(), brackettype, tubetype, controltype)
             Dim datas As DataSet = publicCfg.GetListData(MyQuery)
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
                     Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("ColourType").ToString()},
+                        {"value", row("Id").ToString()},
                         {"text", row("ColourType").ToString()}
                     }
                     list.Add(result)
@@ -911,7 +912,7 @@ Partial Class Methods_Order_RollerBlindMethod
             End If
 
             If Not data.tubetype = "N/A" Then
-                If Not BlindName = "Skin Only" Then
+                If Not BlindName = "Skin Only" AND String.IsNullOrEmpty(data.trim) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "trim is required !",.field = "trim"}}
                 End If
                 
@@ -960,7 +961,9 @@ Partial Class Methods_Order_RollerBlindMethod
                 data.markup = "0"
             End If
 
-            Dim SoeId As String = publicCfg.GetItemData(String.Format("SELECT SoeId FROM HardwareKits WHERE Id = '{0}'", UCase(data.colourtype).ToString()))
+            
+            
+            Dim SoeId As String = publicCfg.GetSoeKitId(data.colourtype)
             Dim DesignName As String = publicCfg.GetDesignName(data.designid)
             Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
             Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
@@ -978,13 +981,17 @@ Partial Class Methods_Order_RollerBlindMethod
                 If data.brackettype = "Headbox Only" Then
                     CassetteExtraName = data.brackettype
                 End If
-                PriceGroupId = publicCfg.GetPriceGroupId(data.designid, CassetteExtraName)
-                CassetteExtraId = UCase(PriceGroupId).ToString()
+                ' PriceGroupId = publicCfg.GetPriceGroupId(data.designid, CassetteExtraName)
+                CassetteExtraId = publicCfg.GetPriceGroupId(data.designid, CassetteExtraName)
             End If
 
             If PriceGroupId = "" Or PriceGroupId = "" Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "price group not found !",.field = "pricegroupid"}}
             End If
+
+            
+
+
 
             Dim ChainId As String = ""
             Dim CLength As String = data.chainlength
@@ -1027,7 +1034,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
 
                 Dim ChainName As String = String.Format("{0} Chain + Joiner {1}", CLength, data.chaincolour)
-                ChainId = publicCfg.GetPriceGroupId(data.designid, ChainName)
+                ChainId = publicCfg.GetItemData(String.Format("SELECT Id FROM Chains WHERE Name = '{0}'", ChainName))
 
                 data.motorstyle = ""
                 data.externalbattery = ""
@@ -1060,6 +1067,8 @@ Partial Class Methods_Order_RollerBlindMethod
                 data.accessory = ""
             End If
             
+            ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = data.motorremote, .field = ""}}
+
 
             Dim msg As String = "200"
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
@@ -1070,20 +1079,22 @@ Partial Class Methods_Order_RollerBlindMethod
                     UniqueId = GenerateUniqueId()
                 End If
 
+
+
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
-                        myCmd.Parameters.AddWithValue("@HeaderId", UniqueId)
+                        myCmd.Parameters.AddWithValue("@UniqueId", If( String.IsNullOrEmpty(UniqueId), DBNull.Value, UniqueId))
                         myCmd.Parameters.AddWithValue("@BlindNo", data.blindno)
-                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
-                        myCmd.Parameters.AddWithValue("@SoeKitId", SoeId)
-                        myCmd.Parameters.AddWithValue("@ExactId", ExactId)
-                        myCmd.Parameters.AddWithValue("@FabricId", UCase(data.fabriccolour).ToString())
-                        myCmd.Parameters.AddWithValue("@ChainId", ChainId)
-                        myCmd.Parameters.AddWithValue("@ChainId", BottomRailId)
-                        myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(PriceGroupId).ToString())
-                        myCmd.Parameters.AddWithValue("@CassetteExtraId", CassetteExtraId)
+                        myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.colourtype), DBNull.Value, UCase(data.colourtype).ToString()))
+                        myCmd.Parameters.AddWithValue("@SoeKitId", If(String.IsNullOrEmpty(SoeId), DBNull.Value, SoeId))
+                        myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
+                        myCmd.Parameters.AddWithValue("@FabricId", If(String.IsNullOrEmpty(data.fabriccolour), DBNull.Value, UCase(data.fabriccolour).ToString()))
+                        myCmd.Parameters.AddWithValue("@ChainId", If(String.IsNullOrEmpty(ChainId), DBNull.Value, ChainId))
+                        myCmd.Parameters.AddWithValue("@BottomRailId", If(String.IsNullOrEmpty(BottomRailId), DBNull.Value, BottomRailId))
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(PriceGroupId), DBNull.Value, PriceGroupId))
+                        myCmd.Parameters.AddWithValue("@CassetteExtraId", If(String.IsNullOrEmpty(CassetteExtraId), DBNull.Value, CassetteExtraId))
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
