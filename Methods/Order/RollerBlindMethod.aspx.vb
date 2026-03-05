@@ -313,6 +313,33 @@ Partial Class Methods_Order_RollerBlindMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindItemOrder(ByVal itemid As String) As Object
+        Try
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE Id = '{0}'", itemid))
+
+            Dim data As DataSet = DirectCast(datas, DataSet)
+
+            Dim resultList As New List(Of Dictionary(Of String, String))()
+
+            If data IsNot Nothing AndAlso data.Tables.Count > 0 Then
+                For Each row As DataRow In data.Tables(0).Rows
+                    Dim dict As New Dictionary(Of String, String)()
+                    For Each col As DataColumn In data.Tables(0).Columns
+                        dict(col.ColumnName) = row(col).ToString()
+                    Next
+                    resultList.Add(dict)
+                Next
+            End If
+
+            Return resultList
+        Catch ex As Exception
+            ' Tangani error agar bisa dikenali di JavaScript
+            Return New With {.error = True, .message = ex.Message}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Submit(ByVal data As ParamSubmit) As Object
         Try
             Dim qty As Integer
@@ -330,7 +357,7 @@ Partial Class Methods_Order_RollerBlindMethod
             End If
 
             If String.IsNullOrEmpty(data.mounting) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting type is required !", .field = "mounting"}}
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
             End If
 
             Dim width As Integer
@@ -395,7 +422,6 @@ Partial Class Methods_Order_RollerBlindMethod
                 ' End If
             End IF
 
-            Dim uniqueid As String = data.uniqueid
             If data.controltype = "Chain" Then
                 If InArray(data.brackettype, "Single", "Double", "Linked 2 Blinds (Ind)") Then
                     If String.IsNullOrEmpty(data.controlposition) Then
@@ -425,7 +451,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         End If
 
                         If InArray(data.itemaction ="EditItem", "ViewItem") Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", uniqueid))
+                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             IF Not controlposition = "" Then
                                 If Not String.IsNullOrEmpty(data.controlposition) Then
                                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
@@ -455,7 +481,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
 
                     If data.blindno = "Blind 2" Then
-                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", uniqueid))
+                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
 
                         If Not controlposition = "" Then
                             If Not String.IsNullOrEmpty(data.controlposition) Then
@@ -499,7 +525,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     If data.blindno = "Blind 2" Then
                         If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", uniqueid))
+                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             If Not controlposition = "" Then
                                 If Not String.IsNullOrEmpty(data.controlposition) Then
                                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
@@ -529,8 +555,8 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
 
                     If data.blindno = "Blind 3" Then
-                        Dim controlB1 As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId='{0}' AND Active = 1", uniqueid))
-                        Dim controlB2 As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", uniqueid))
+                        Dim controlB1 As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
+                        Dim controlB2 As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
 
                         If (Not controlB1 = "" And Not controlB2 = "") OR controlB1 = "" And Not controlB2 = "" Then
                             If Not String.IsNullOrEmpty(data.controlposition) Then
@@ -597,8 +623,8 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     If data.blindno = "Blind 3" Then
                         If InArray(data.itemaction, "NextItem", "EditItem") Then
-                            Dim controlB2 As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId='{0}' AND Active = 1", uniqueid))
-                            Dim chainB2 As String = publicCfg.GetItemData(String.Format("SELECT ChainId FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", uniqueid))
+                            Dim controlB2 As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
+                            Dim chainB2 As String = publicCfg.GetItemData(String.Format("SELECT ChainId FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
 
                             If Not controlB2 = "" AND Not chainB2 = "" Then
                                 If Not String.IsNullOrEmpty(data.controlposition) Then
@@ -647,7 +673,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         End If
 
                         If data.itemaction = "EditItem" Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", uniqueid))
+                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             IF Not controlposition = "" Then
                                 If Not String.IsNullOrEmpty(data.controlposition) Then
                                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
@@ -679,7 +705,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
 
                     If data.blindno = "Blind 2" Then
-                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", uniqueid))
+                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                         If Not controlposition = "" Then
                             If Not String.IsNullOrEmpty(data.controlposition) Then
                                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
@@ -720,7 +746,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         End If
 
                         IF data.itemaction = "EditItem" Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId='{0}' AND Active = 1", uniqueid))
+                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             If Not controlposition = "" Then
                                 If Not String.IsNullOrEmpty(data.controlposition) Then
                                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
@@ -752,7 +778,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If 
 
                     If data.blindno = "Blind 4" Then
-                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId='{0}' AND Active = 1", uniqueid))
+                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                         If Not controlposition = "" Then
                             If Not String.IsNullOrEmpty(data.controlposition) Then
                                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
@@ -800,7 +826,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         End If
 
                         If data.itemaction = "EditItem" Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", uniqueid))
+                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             Dim controlpositionVar As String = data.controlposition
                             If String.IsNullOrEmpty(data.controlposition) Then
                                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
@@ -824,7 +850,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     If data.blindno = "Blind 2" Then
                         If InArray(data.itemaction, "EditItem", "NextItem") Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", uniqueid))
+                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             Dim controlpositionVar As String = data.controlposition
                             If String.IsNullOrEmpty(data.controlposition) Then
                                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
@@ -848,7 +874,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     If data.blindno = "Blind 3" Then
                         If InArray(data.itemaction, "EditItem", "NextItem") Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", uniqueid))
+                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             Dim controlpositionVar As String = data.controlposition
                             If String.IsNullOrEmpty(data.controlposition) Then
                                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
@@ -872,7 +898,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     If data.blindno = "Blind 4" Then
                         If InArray(data.itemaction, "EditItem", "NextItem") Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", uniqueid))
+                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             Dim controlpositionVar As String = data.controlposition
                             If String.IsNullOrEmpty(data.controlposition) Then
                                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
@@ -985,8 +1011,8 @@ Partial Class Methods_Order_RollerBlindMethod
                 CassetteExtraId = publicCfg.GetPriceGroupId(data.designid, CassetteExtraName)
             End If
 
-            If PriceGroupId = "" Or PriceGroupId = "" Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "price group not found !",.field = "pricegroupid"}}
+            If PriceGroupId = "" Then
+                Throw New Exception("Something went wrong !")
             End If
 
             
@@ -1033,7 +1059,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.chainlength > 2200 Then : CLength = "2500" : End If
                 End If
 
-                Dim ChainName As String = String.Format("{0} Chain + Joiner {1}", CLength, data.chaincolour)
+                Dim ChainName As String = String.Format("{0} Chain + Joiner ({1})", CLength, data.chaincolour)
                 ChainId = publicCfg.GetItemData(String.Format("SELECT Id FROM Chains WHERE Name = '{0}'", ChainName))
 
                 data.motorstyle = ""
@@ -1063,29 +1089,30 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
             End If
 
-            If data.trim = "1F" Then
-                data.accessory = ""
-            End If
+            ' If data.trim = "1F" Then
+            '     data.accessory = ""
+            ' End If
             
-            ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = data.motorremote, .field = ""}}
-
-
+            ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = data.uniqueid, .field = ""}}
+            
+            
             Dim msg As String = "200"
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
-                UniqueId = ""
+                data.uniqueid = ""
 
                 If data.brackettype = "Double" Or InStr(data.brackettype, "Linked") > 0 Or InStr(data.brackettype, "Link") > 0 Then
-                    UniqueId = GenerateUniqueId()
+                    data.uniqueid = GenerateUniqueId()
                 End If
 
+                ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = data.uniqueid, .field = ""}}
 
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
-                        myCmd.Parameters.AddWithValue("@UniqueId", If( String.IsNullOrEmpty(UniqueId), DBNull.Value, UniqueId))
+                        myCmd.Parameters.AddWithValue("@UniqueId", If( String.IsNullOrEmpty(data.uniqueid), DBNull.Value, data.uniqueid))
                         myCmd.Parameters.AddWithValue("@BlindNo", data.blindno)
                         myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.colourtype), DBNull.Value, UCase(data.colourtype).ToString()))
                         myCmd.Parameters.AddWithValue("@SoeKitId", If(String.IsNullOrEmpty(SoeId), DBNull.Value, SoeId))
@@ -1142,7 +1169,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     msg += String.Format("<br/><br/> This is the <b>{0}</b>.", BlindNoSelected)
                     msg += String.Format("<br/> from <b>{0}</b> - <b>{1}</b>", BlindName, data.brackettype)
-                    msg += String.Format("<br /><br />Please click the <b>Next Item</b> button that is written in green color of the <b>ITEM ID {1}</b>.", ItemId)
+                    msg += String.Format("<br /><br />Please click the <b>Next Item</b> button that is written in green color of the <b>ITEM ID {0}</b>.", ItemId)
                 End If
 
                 If InStr(data.brackettype, "Linked") > 0 AND data.controltype = "Somfy WF" Then
@@ -1151,6 +1178,9 @@ Partial Class Methods_Order_RollerBlindMethod
                 If InStr(data.brackettype, "Linked") > 0 AND data.controltype = "Alpha WF" AndAlso data.motorstyle = "Alpha 2NM Std" Then
                     msg += "<br/><br/><b>Warning :</b> Check SP the availability for linking blind for WF motorised !"
                 End If
+
+                ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = msg, .field = ""}}
+
                 
             End If
 
@@ -1161,16 +1191,16 @@ Partial Class Methods_Order_RollerBlindMethod
                     Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
-                        myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
+                        myCmd.Parameters.AddWithValue("@UniqueId", data.uniqueid)
                         myCmd.Parameters.AddWithValue("@BlindNo", data.blindno)
-                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
-                        myCmd.Parameters.AddWithValue("@SoeKitId", SoeId)
-                        myCmd.Parameters.AddWithValue("@ExactId", ExactId)
-                        myCmd.Parameters.AddWithValue("@FabricId", UCase(data.fabriccolour).ToString())
-                        myCmd.Parameters.AddWithValue("@ChainId", ChainId)
-                        myCmd.Parameters.AddWithValue("@ChainId", BottomRailId)
-                        myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(PriceGroupId).ToString())
-                        myCmd.Parameters.AddWithValue("@CassetteExtraId", CassetteExtraId)
+                        myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.colourtype), DBNull.Value, UCase(data.colourtype).ToString()))
+                        myCmd.Parameters.AddWithValue("@SoeKitId", If(String.IsNullOrEmpty(SoeId), DBNull.Value, SoeId))
+                        myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
+                        myCmd.Parameters.AddWithValue("@FabricId", If(String.IsNullOrEmpty(data.fabriccolour), DBNull.Value, UCase(data.fabriccolour).ToString()))
+                        myCmd.Parameters.AddWithValue("@ChainId", If(String.IsNullOrEmpty(ChainId), DBNull.Value, ChainId))
+                        myCmd.Parameters.AddWithValue("@BottomRailId", If(String.IsNullOrEmpty(BottomRailId), DBNull.Value, BottomRailId))
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(PriceGroupId), DBNull.Value, PriceGroupId))
+                        myCmd.Parameters.AddWithValue("@CassetteExtraId", If(String.IsNullOrEmpty(CassetteExtraId), DBNull.Value, CassetteExtraId))
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
@@ -1204,7 +1234,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 If data.brackettype = "Double" Then
                     '#SdsNext
                     Dim ListNext As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         data.tubesize,
                         data.mounting,
                         data.room,
@@ -1222,7 +1252,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     '#SdsSize
                     Dim ListSize As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         width,
                         drop
                     }
@@ -1235,7 +1265,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 If InArray(data.brackettype, "Linked 2 Blinds (Dep)", "Linked 3 Blinds (Dep)") Then
                     '#SdsDrop
                     Dim ListDrop As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         drop
                     }
                     Dim ResDrop As String = SdsDrop(ListDrop)
@@ -1245,7 +1275,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     '#SdsRollDep
                     Dim ListRollDep As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         drop
                     }
                     Dim ResRollDep As String = SdsRollDep(ListRollDep)
@@ -1255,7 +1285,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     '#SdsFabric
                     Dim ListFabric As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         drop
                     }
                     Dim ResFabric As String = SdsFabric(ListFabric)
@@ -1265,7 +1295,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     '#SdsNext
                     Dim ListNext As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         data.tubesize,
                         data.mounting,
                         data.room,
@@ -1286,7 +1316,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 If InArray(data.brackettype, "Linked 2 Blinds (Ind)", "Linked 3 Blinds (Ind)") Then
                     '#SdsNext
                     Dim ListNext As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         data.tubesize,
                         data.mounting,
                         data.room,
@@ -1304,7 +1334,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     '#SdsFabric
                     Dim ListFabric As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         drop
                     }
                     Dim ResFabric As String = SdsFabric(ListFabric)
@@ -1317,7 +1347,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 If data.brackettype = "Double and Link System Dep" Then
                     '#SdsDrop
                     Dim ListDrop As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         drop
                     }
                     Dim ResDrop As String = SdsDrop(ListDrop)
@@ -1328,7 +1358,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.blindno = "Blind 2" Then
                         '#SdsDB2First
                         Dim ListDB2DepFirst As New List(Of Object) From {
-                            UniqueId,
+                            data.uniqueid,
                             data.fabriccolour,
                             PriceGroupId,
                             data.roll
@@ -1342,7 +1372,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.blindno = "Blind 4" Then
                         '#SdsDB2Second
                         Dim ListDB2DepSecond As New List(Of Object) From {
-                            UniqueId,
+                            data.uniqueid,
                             data.fabriccolour,
                             PriceGroupId,
                             data.roll
@@ -1355,7 +1385,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     
                     '#SdsNext
                     Dim ListNext As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         data.tubesize,
                         data.mounting,
                         data.room,
@@ -1378,7 +1408,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.blindno = "Blind 2" Then
                         '#SdsDB2IndFirst
                         Dim ListDB2IndFirst As New List(Of Object) From {
-                            UniqueId,
+                            data.uniqueid,
                             data.fabriccolour,
                             PriceGroupId,
                             data.roll
@@ -1392,7 +1422,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.blindno = "Blind 4" Then
                         '#SdsDB2DepSecond
                         Dim ListDB2DepSecond As New List(Of Object) From {
-                            UniqueId,
+                            data.uniqueid,
                             data.fabriccolour,
                             PriceGroupId,
                             data.roll
@@ -1405,7 +1435,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     
                     '#SdsNext
                     Dim ListNext As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         data.tubesize,
                         data.mounting,
                         data.room,
@@ -1438,28 +1468,29 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     msg += String.Format("<br/><br/> This is the <b>{0}</b>.", BlindNoSelected)
                     msg += String.Format("<br/> from <b>{0}</b> - <b>{1}</b>", BlindName, data.brackettype)
-                    msg += String.Format("<br /><br />Please click the <b>Next Item</b> button that is written in green color of the <b>ITEM ID {1}</b>.", ItemId)
+                    msg += String.Format("<br /><br />Please click the <b>Next Item</b> button that is written in green color of the <b>ITEM ID {0}</b>.", ItemId)
                 End If
 
                 msg = "Item added successfully !"
             End If
 
             If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
+                
                 Dim ItemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, UniqueId=@UniqueId, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, BottomRailId=@BottomRailId, PriceGroupId=@PriceGroupId, CassetteExtraId=@CassetteExtraId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, RollDirection=@RollDirection, ControlPosition=@ControlPosition, ChainLength=@ChainLength, Accessory=@Accessory, TubeSize=@TubeSize, Trim=@Trim, BracketCover=@BracketCover, BracketExtension=@BracketExtension, ChildSafe=@ChildSafe, MotorStyle=@MotorStyle, MotorRemote=@MotorRemote, MotorBattery=@MotorBattery, MotorCharger=@MotorCharger, Connector=@Connector, AdditionalMotor=@AdditionalMotor, CableExitPoint=@CableExitPoint, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
-                        myCmd.Parameters.AddWithValue("@HeaderId", UniqueId)
+                        myCmd.Parameters.AddWithValue("@UniqueId", If(String.IsNullOrEmpty(data.uniqueid), DBNull.Value, data.uniqueid))
                         myCmd.Parameters.AddWithValue("@BlindNo", data.blindno)
-                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
+                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
                         myCmd.Parameters.AddWithValue("@SoeKitId", SoeId)
-                        myCmd.Parameters.AddWithValue("@ExactId", ExactId)
+                        myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
                         myCmd.Parameters.AddWithValue("@FabricId", UCase(data.fabriccolour).ToString())
-                        myCmd.Parameters.AddWithValue("@ChainId", ChainId)
-                        myCmd.Parameters.AddWithValue("@ChainId", BottomRailId)
+                        myCmd.Parameters.AddWithValue("@ChainId", If(String.IsNullOrEmpty(ChainId), DBNull.Value, ChainId))
+                        myCmd.Parameters.AddWithValue("@BottomRailId", If(String.IsNullOrEmpty(BottomRailId), DBNull.Value, BottomRailId))
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(PriceGroupId).ToString())
-                        myCmd.Parameters.AddWithValue("@CassetteExtraId", CassetteExtraId)
+                        myCmd.Parameters.AddWithValue("@CassetteExtraId", If(String.IsNullOrEmpty(CassetteExtraId), DBNull.Value, CassetteExtraId))
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
@@ -1493,7 +1524,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 If data.brackettype = "Double" Then
                     '#SdsNext
                     Dim ListNext As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         data.tubesize,
                         data.mounting,
                         data.room,
@@ -1511,7 +1542,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     '#SdsSize
                     Dim ListSize As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         width,
                         drop
                     }
@@ -1524,7 +1555,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 If InArray(data.brackettype, "Linked 2 Blinds (Dep)", "Linked 3 Blinds (Dep)") Then
                     '#SdsDrop
                     Dim ListDrop As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         drop
                     }
                     Dim ResDrop As String = SdsDrop(ListDrop)
@@ -1534,7 +1565,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     '#SdsRollDep
                     Dim ListRollDep As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         drop
                     }
                     Dim ResRollDep As String = SdsRollDep(ListRollDep)
@@ -1544,7 +1575,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     '#SdsFabric
                     Dim ListFabric As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         drop
                     }
                     Dim ResFabric As String = SdsFabric(ListFabric)
@@ -1554,7 +1585,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     '#SdsNext
                     Dim ListNext As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         data.tubesize,
                         data.mounting,
                         data.room,
@@ -1575,7 +1606,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 If InArray(data.brackettype, "Linked 2 Blinds (Ind)", "Linked 3 Blinds (Ind)") Then
                     '#SdsNext
                     Dim ListNext As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         data.tubesize,
                         data.mounting,
                         data.room,
@@ -1593,7 +1624,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     '#SdsTubeSize
                     Dim ListTube As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         data.tubesize
                     }
                     Dim ResTube As String = SdsTubeSize(ListTube)
@@ -1603,7 +1634,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     '#SdsFabric
                     Dim ListFabric As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         drop
                     }
                     Dim ResFabric As String = SdsFabric(ListFabric)
@@ -1616,7 +1647,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 If data.brackettype = "Double and Link System Dep" Then
                     '#SdsDrop
                     Dim ListDrop As New List(Of Object) From {
-                        UniqueId,
+                        data.uniqueid,
                         drop
                     }
                     Dim ResDrop As String = SdsDrop(ListDrop)
@@ -1627,7 +1658,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     If InArray(data.blindno, "Blind 1", "Blind 2") Then
                         '#SdsDB2IndFirst
                         Dim ListDB2IndFirst As New List(Of Object) From {
-                            UniqueId,
+                            data.uniqueid,
                             data.fabriccolour,
                             PriceGroupId,
                             data.roll
@@ -1641,7 +1672,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     If InArray(data.blindno, "Blind 3", "Blind 4") Then
                         '#SdsDB2DepSecond
                         Dim ListDB2DepSecond As New List(Of Object) From {
-                            UniqueId,
+                            data.uniqueid,
                             data.fabriccolour,
                             PriceGroupId,
                             data.roll
@@ -1658,7 +1689,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 publicCfg.HitungHarga(data.headerid, ItemId)
                 publicCfg.HitungSurcharge(data.headerid, ItemId)
 
-                Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Add Item Order"}
+                Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Update Item Order"}
                 orderCfg.Log_Orders(dataLog)
 
                 msg = "Item updated successfully !"

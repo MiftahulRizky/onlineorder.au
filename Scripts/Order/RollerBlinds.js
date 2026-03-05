@@ -120,7 +120,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const controltype = document.getElementById("controltype").value;
       const motorstyle = e.target.value;
 
-      divMotorBattery.setAttribute("hidden", true);
+      divMotorBattery.classList.add("d-none");
 
       await Promise.all([
         bindExternalBattery(),
@@ -129,7 +129,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       ]);
 
       if (motorstyle.includes("EXB")) {
-        divMotorBattery.removeAttribute("hidden");
+        divMotorBattery.classList.remove("d-none");
       }
     }
 
@@ -137,7 +137,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     if (e.target.id === "trim") {
       const divBottomRail = document.getElementById("divBottomRail");
 
-      divBottomRail.setAttribute("hidden", true);
+      divBottomRail.classList.add("d-none");
 
       if (!e.target.value) return;
       const blindtype = document.getElementById("blindtype");
@@ -147,7 +147,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       bindRailType(brackettype);
 
       if (blindname == "Skin Only" && trim == "1F") {
-        divBottomRail.removeAttribute("hidden");
+        divBottomRail.classList.remove("d-none");
       }
       if (
         (blindname == "Roller Blind" ||
@@ -155,7 +155,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
           blindname == "Cassette") &&
         trim == "1F"
       ) {
-        divBottomRail.removeAttribute("hidden");
+        divBottomRail.classList.remove("d-none");
       }
     }
 
@@ -169,6 +169,13 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   });
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "notes") {
+      let maxLength = 1000;
+      let currentLength = e.target.value.length;
+      document.querySelector("#notescount").textContent =
+        `${currentLength}/${maxLength}`;
+    }
   });
 });
 
@@ -180,7 +187,8 @@ document.querySelector("#btnSubmit").addEventListener("click", (e) => {
     el.classList.remove("is-invalid");
   });
 
-  handlerSubmit(e.target.form, e.target.id);
+  // handlerSubmit(e.target.form, e.target.id);
+  handlerSubmit(e.target.id);
 });
 
 // button cancel
@@ -218,18 +226,22 @@ const pageLoaded = async () => {
     document.getElementById("lblBlindNo").innerHTML = "Blind 1";
     handlerElementVisibility();
     loaderFadeOut();
-  } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
+  } else if (
+    ["NextItem", "EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)
+  ) {
+    await bindItemOrders(ITEMID);
     loaderFadeOut();
   }
 };
 
 // ------------------------------------------------------|| Handler Functions ||--------------------------------------
-const handlerElementVisibility = (
+const handlerElementVisibility = async (
   blindname,
   brackettype,
   tubetype,
   controltype,
   colourtype,
+  item,
 ) => {
   try {
     const lblBracketType = document.getElementById("lblBracketType");
@@ -242,6 +254,7 @@ const handlerElementVisibility = (
 
     const divFormDetail = document.getElementById("divFormDetail");
     const divAttention = document.getElementById("divAttention");
+    const lblNextDesc = document.getElementById("lblNextDesc");
     const divMotorStyle = document.getElementById("divMotorStyle");
     const btnInfoMotorStyle = document.getElementById("btnInfoMotorStyle");
     const divMotorRemote = document.getElementById("divMotorRemote");
@@ -264,37 +277,37 @@ const handlerElementVisibility = (
     const divMarkUp = document.getElementById("divMarkUp");
 
     const btnSubmit = document.querySelector("#btnSubmit");
-
+    // return;
     lblBracketType.innerHTML = "bracket type";
-    divBracketType.setAttribute("hidden", true);
-    divTubeType.setAttribute("hidden", true);
-    divControlType.setAttribute("hidden", true);
-    btnInfoControlType.setAttribute("hidden", true);
+    divBracketType.classList.add("d-none");
+    divTubeType.classList.add("d-none");
+    divControlType.classList.add("d-none");
+    btnInfoControlType.classList.add("d-none");
     lblColourType.innerHTML = "control colour";
-    divColourType.setAttribute("hidden", true);
-    divControlPosition.setAttribute("hidden", true);
-    divFormDetail.setAttribute("hidden", true);
-    divAttention.setAttribute("hidden", true);
-    divMotorStyle.setAttribute("hidden", true);
-    btnInfoMotorStyle.setAttribute("hidden", true);
-    divMotorRemote.setAttribute("hidden", true);
-    btnInfoMotorRemote.setAttribute("hidden", true);
-    divMotorBattery.setAttribute("hidden", true);
-    divMotorCharger.setAttribute("hidden", true);
-    divCableExitPoint.setAttribute("hidden", true);
-    divConnector.setAttribute("hidden", true);
-    divRoll.setAttribute("hidden", true);
+    divColourType.classList.add("d-none");
+    divControlPosition.classList.add("d-none");
+    divFormDetail.classList.add("d-none");
+    divAttention.classList.add("d-none");
+    divMotorStyle.classList.add("d-none");
+    btnInfoMotorStyle.classList.add("d-none");
+    divMotorRemote.classList.add("d-none");
+    btnInfoMotorRemote.classList.add("d-none");
+    divMotorBattery.classList.add("d-none");
+    divMotorCharger.classList.add("d-none");
+    divCableExitPoint.classList.add("d-none");
+    divConnector.classList.add("d-none");
+    divRoll.classList.add("d-none");
 
     lblControlPosition.innerHTML = "control position";
-    divChain.setAttribute("hidden", true);
-    divBottomRail.setAttribute("hidden", true);
-    divTubeSize.setAttribute("hidden", true);
-    divChildSafe.setAttribute("hidden", true);
-    divAccessory.setAttribute("hidden", true);
-    divExtras.setAttribute("hidden", true);
-    divBracketCover.setAttribute("hidden", true);
-    divBracketExt.setAttribute("hidden", true);
-    btnSubmit.setAttribute("hidden", true);
+    divChain.classList.add("d-none");
+    divBottomRail.classList.add("d-none");
+    divTubeSize.classList.add("d-none");
+    divChildSafe.classList.add("d-none");
+    divAccessory.classList.add("d-none");
+    divExtras.classList.add("d-none");
+    divBracketCover.classList.add("d-none");
+    divBracketExt.classList.add("d-none");
+    btnSubmit.classList.add("d-none");
 
     // -------------------------------|| on change blindtype ||---------------------------------
     if (!blindname) return;
@@ -307,12 +320,12 @@ const handlerElementVisibility = (
       lblColourType.innerHTML = "colour type";
     }
 
-    divBracketType.removeAttribute("hidden");
+    divBracketType.classList.remove("d-none");
 
     // ---------------------------------|| on change brackettype ||---------------------------------
     if (!brackettype) return;
     if (["Cassette", "Motorised", "Roller Blind"].includes(blindname)) {
-      divTubeType.removeAttribute("hidden");
+      divTubeType.classList.remove("d-none");
     }
 
     if (blindname === "Skin Only") {
@@ -321,7 +334,7 @@ const handlerElementVisibility = (
           brackettype,
         )
       ) {
-        divTubeSize.removeAttribute("hidden");
+        divTubeSize.classList.remove("d-none");
       }
     }
 
@@ -331,12 +344,12 @@ const handlerElementVisibility = (
       blindname == "Motorised" ||
       (blindname == "Cassette" && tubetype == "Motorised")
     ) {
-      btnInfoControlType.removeAttribute("hidden");
+      btnInfoControlType.classList.remove("d-none");
     }
 
     if (["Cassette", "Motorised", "Roller Blind"].includes(blindname)) {
       if (tubetype !== "Spring Operated") {
-        divControlType.removeAttribute("hidden");
+        divControlType.classList.remove("d-none");
       }
     }
 
@@ -344,83 +357,151 @@ const handlerElementVisibility = (
     if (!controltype) return;
     if (["Cassette", "Motorised", "Roller Blind"].includes(blindname)) {
       if (tubetype !== "Spring Operated") {
-        divColourType.removeAttribute("hidden");
+        divColourType.classList.remove("d-none");
       }
     }
 
     // ---------------------------------|| on change colourtype ||---------------------------------
     if (!colourtype) return;
-    divFormDetail.removeAttribute("hidden");
+    divFormDetail.classList.remove("d-none");
     if (blindname === "Cassette") {
       if (tubetype === "Motorised") {
-        divMotorStyle.removeAttribute("hidden");
-        divMotorRemote.removeAttribute("hidden");
+        divMotorStyle.classList.remove("d-none");
+        divMotorRemote.classList.remove("d-none");
         if (["Alpha WF", "Somfy WF"].includes(controltype)) {
-          divMotorCharger.removeAttribute("hidden");
+          divMotorCharger.classList.remove("d-none");
         }
         if (!["Alpha WF", "Somfy WF"].includes(controltype)) {
-          divConnector.removeAttribute("hidden");
+          divConnector.classList.remove("d-none");
         }
         if (
           ["Alpha RTS", "Alpha WS", "Somfy RTS", "Somfy WS"].includes(
             controltype,
           )
         ) {
-          divCableExitPoint.removeAttribute("hidden");
+          divCableExitPoint.classList.remove("d-none");
         }
-        divAccessory.removeAttribute("hidden");
-        divExtras.removeAttribute("hidden");
+        divAccessory.classList.remove("d-none");
+        divExtras.classList.remove("d-none");
       }
       if (tubetype == "JAI Geared") {
-        divChain.removeAttribute("hidden");
-        divChildSafe.removeAttribute("hidden");
-        divAccessory.removeAttribute("hidden");
+        divChain.classList.remove("d-none");
+        divChildSafe.classList.remove("d-none");
+        divAccessory.classList.remove("d-none");
       }
-      divRoll.removeAttribute("hidden");
-      divControlPosition.removeAttribute("hidden");
+      divRoll.classList.remove("d-none");
+      divControlPosition.classList.remove("d-none");
       lblControlPosition.innerHTML = "control side";
-      divBracketCover.removeAttribute("hidden");
-      divBracketExt.removeAttribute("hidden");
+      divBracketCover.classList.remove("d-none");
+      divBracketExt.classList.remove("d-none");
     }
 
     if (blindname === "Motorised") {
-      divMotorStyle.removeAttribute("hidden");
-      divMotorRemote.removeAttribute("hidden");
+      divMotorStyle.classList.remove("d-none");
+      divMotorRemote.classList.remove("d-none");
       if (["Alpha WF", "Somfy WF"].includes(controltype)) {
-        divMotorCharger.removeAttribute("hidden");
+        divMotorCharger.classList.remove("d-none");
       }
       if (!["Alpha WF", "Somfy WF"].includes(controltype)) {
-        divConnector.removeAttribute("hidden");
+        divConnector.classList.remove("d-none");
       }
-      divRoll.removeAttribute("hidden");
-      divControlPosition.removeAttribute("hidden");
+      divRoll.classList.remove("d-none");
+      divControlPosition.classList.remove("d-none");
       lblControlPosition.innerHTML = "motor side";
-      divAccessory.removeAttribute("hidden");
-      divExtras.removeAttribute("hidden");
-      divBracketCover.removeAttribute("hidden");
-      divBracketExt.removeAttribute("hidden");
+      divAccessory.classList.remove("d-none");
+      divExtras.classList.remove("d-none");
+      divBracketCover.classList.remove("d-none");
+      divBracketExt.classList.remove("d-none");
     }
 
     if (blindname === "Roller Blind") {
       if (tubetype !== "Spring Operated") {
-        divRoll.removeAttribute("hidden");
-        divControlPosition.removeAttribute("hidden");
-        divChain.removeAttribute("hidden");
-        divBracketCover.removeAttribute("hidden");
-        divBracketExt.removeAttribute("hidden");
+        divRoll.classList.remove("d-none");
+        divControlPosition.classList.remove("d-none");
+        divChain.classList.remove("d-none");
+        divBracketCover.classList.remove("d-none");
+        divBracketExt.classList.remove("d-none");
       }
-      divTubeSize.removeAttribute("hidden");
-      divChildSafe.removeAttribute("hidden");
-      divAccessory.removeAttribute("hidden");
+      divTubeSize.classList.remove("d-none");
+      divChildSafe.classList.remove("d-none");
+      divAccessory.classList.remove("d-none");
     }
 
-    if (MARKUPACCESS === "True") divMarkUp.removeAttribute("hidden");
+    if (item) {
+      if (ITEMACTION === "EditItem") {
+        divAttention.classList.remove("d-none");
 
-    if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
-      btnSubmit.removeAttribute("hidden");
+        let blinds = "first blind";
+        if (item.BlindNo === "Blind 2") blinds = "second blind";
+        if (item.BlindNo === "Blind 3") blinds = "third blind";
+        if (item.BlindNo === "Blind 4") blinds = "fourth blind";
+      }
+
+      if (ITEMACTION === "NextItem") {
+        divAttention.classList.remove("d-none");
+
+        let blinds = "second blind";
+        if (item.BlindNo === "Blind 3") blinds = "third blind";
+        if (item.BlindNo === "Blind 4") blinds = "fourth blind";
+
+        let connectId = await getItemData(
+          `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='${item.UniqueId}'`,
+        );
+        let connectId2 = await getItemData(
+          `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='${item.UniqueId}'`,
+        );
+        let connectId3 = await getItemData(
+          `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='${item.UniqueId}'`,
+        );
+
+        let blindid = connectId;
+        if (connectId2) {
+          blindid = `${blindid} AND ITEM ID ${connectId2}`;
+        }
+        if (connectId3) {
+          blindid = `${blindid},ITEM ID ${connectId2} AND ITEM ID ${connectId3}`;
+        }
+
+        if (item.BlindNo === "Blind 3") {
+          connectId = await getItemData(
+            `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='${item.UniqueId}'`,
+          );
+          connectId2 = await getItemData(
+            `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='${item.UniqueId}'`,
+          );
+          connectId3 = await getItemData(
+            `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='${item.UniqueId}'`,
+          );
+          blindid = `${connectId} ADD ITEM ID ${connectId2} AND ITEM ID ${connectId3}`;
+        }
+
+        if (item.BlindNo === "Blind 4") {
+          connectId = await getItemData(
+            `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='${item.UniqueId}'`,
+          );
+          connectId2 = await getItemData(
+            `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='${item.UniqueId}'`,
+          );
+          connectId3 = await getItemData(
+            `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='${item.UniqueId}'`,
+          );
+          blindid = `${connectId} ADD ITEM ID ${connectId2} AND ITEM ID ${connectId3}`;
+        }
+
+        lblNextDesc.innerHTML = `This is the <b><u>${blinds}</b></u> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID ${connectId}</u></b>  blind will automatically be changed according to this data.`;
+      }
+
+      if (item.Trim === "1F") {
+        divBottomRail.classList.remove("d-none");
+      }
+    }
+    if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
+
+    if (["AddItem", "NextItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
+      btnSubmit.classList.remove("d-none");
     } else if (ITEMACTION === "ViewItem") {
-      btnSubmit.removeAttribute("hidden");
-      if (ROLENAME !== "Administrator") btnSubmit.setAttribute("hidden", true);
+      btnSubmit.classList.remove("d-none");
+      if (ROLENAME !== "Administrator") btnSubmit.classList.add("d-none");
     }
   } catch (error) {
     const msg =
@@ -431,29 +512,47 @@ const handlerElementVisibility = (
   }
 };
 
-const handlerSubmit = async (formEl, button) => {
+const handlerSubmit = async (button) => {
   try {
     // return alert(button);
     document.getElementById(button).innerHTML = "Processing...";
-    const formData = new FormData(formEl);
-
-    let formObject = Object.fromEntries(formData.entries());
-    const excludeKeys = [
-      "__EVENTTARGET",
-      "__EVENTARGUMENT",
-      "__VIEWSTATE",
-      "__VIEWSTATEGENERATOR",
-      "__SCROLLPOSITIONX",
-      "__SCROLLPOSITIONY",
-      "__EVENTVALIDATION",
-      "ctl00$txtSearchMaster",
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = [
+      "blindtype",
+      "brackettype",
+      "tubetype",
+      "controltype",
+      "colourtype",
+      "qty",
+      "room",
+      "mounting",
+      "width",
+      "drop",
+      "fabrictype",
+      "fabriccolour",
+      "motorstyle",
+      "motorremote",
+      "externalbattery",
+      "charger",
+      "cableexitpoint",
+      "connector",
+      "roll",
+      "controlposition",
+      "chaincolour",
+      "trim",
+      "railtype",
+      "railcolour",
+      "tubesize",
+      "childsafe",
+      "accessory",
+      "extras",
+      "bracketcovers",
+      "bracketext",
+      "notes",
+      "markup",
     ];
 
-    formObject = Object.fromEntries(
-      Object.entries(formObject).filter(([key]) => !excludeKeys.includes(key)),
-    );
-
-    const additionalData = {
+    const formData = {
       headerid: HEADERID,
       itemaction: ITEMACTION,
       itemid: ITEMID,
@@ -463,20 +562,18 @@ const handlerSubmit = async (formEl, button) => {
       uniqueid: document.getElementById("lblUniqueId")?.innerHTML,
     };
 
-    const finalData = {
-      ...formObject,
-      ...additionalData,
-    };
+    fields.forEach((field) => {
+      formData[field] = document.getElementById(field).value;
+    });
 
-    // debug konsisten
-    console.table(finalData);
+    // return console.table(formData);
 
     const response = await fetch(URIMETHOD + "/Submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ data: finalData }),
+      body: JSON.stringify({ data: formData }),
     });
 
     if (!response.ok) {
@@ -488,7 +585,7 @@ const handlerSubmit = async (formEl, button) => {
     const dataResult = result.d || result;
 
     if (dataResult.error) {
-      await isError(dataResult.error.message.toUpperCase());
+      await isWarning(dataResult.error.message?.toUpperCase());
       const field = document.getElementById(dataResult.error.field);
       if (field) {
         // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
@@ -509,11 +606,112 @@ const handlerSubmit = async (formEl, button) => {
     document.getElementById(button).innerHTML = "Submit";
   }
 };
+
+const handlerSetElementValues = (itemData) => {
+  const mapping = {
+    lblBlindNo: "BlindNo",
+    lblUniqueId: "UniqueId",
+    blindtype: "BlindId",
+    brackettype: "BracketType",
+    tubetype: "TubeType",
+    controltype: "ControlType",
+    colourtype: "KitId",
+    qty: "Qty",
+    room: "Location",
+    mounting: "Mounting",
+    width: "Width",
+    drop: "Drop",
+    fabrictype: "FabricType",
+    fabriccolour: "FabricId",
+    motorstyle: "MotorStyle",
+    motorremote: "MotorRemote",
+    externalbattery: "MotorBattery",
+    cableexitpoint: "CableExitPoint",
+    connector: "Connector",
+    roll: "RollDirection",
+    controlposition: "ControlPosition",
+    chaincolour: "ChainColour",
+    chainlength: "ChainLength",
+    trim: "Trim",
+    railtype: "BottomType",
+    railcolour: "BottomRailId",
+    tubesize: "TubeSize",
+    childsafe: "ChildSafe",
+    accessory: "Accessory",
+    extras: "AdditionalMotor",
+    bracketcovers: "BracketCover",
+    bracketext: "BracketExtension",
+    notes: "Notes",
+    markup: "MarkUp",
+  };
+
+  // Set nilai ke input sesuai mapping
+  Object.entries(mapping).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) {
+      console.warn(`Elemen '${id}' tidak ditemukan.`);
+      return;
+    }
+
+    let value = itemData[key];
+    if (id === "markup" && value === 0) value = "";
+
+    el.value = value ?? ""; // fallback ke string kosong
+
+    if (["lblBlindNo", "lblUniqueId"].includes(id)) {
+      el.innerHTML = value;
+
+      if (id === "lblBlindNo" && ITEMACTION === "NextItem") {
+        if (
+          value === "Blind 1" &&
+          ["Double", "Linked 2 Blinds (Dep)", "Linked 2 Blinds (Ind)"].includes(
+            itemData["BracketType"],
+          )
+        ) {
+          el.innerHTML = "Blind 2";
+        }
+
+        if (
+          ["Linked 3 Blinds (Dep)", "Linked 3 Blinds (Ind)"].includes(
+            itemData["BracketType"],
+          )
+        ) {
+          if (value === "Blind 1") {
+            el.innerHTML = "Blind 2";
+          }
+          if (value === "Blind 2") {
+            el.innerHTML = "Blind 3";
+          }
+        }
+
+        if (
+          ["Double and Link System Dep", "Double and Link System Ind"].includes(
+            itemData["BracketType"],
+          )
+        ) {
+          if (value === "Blind 1") {
+            el.innerHTML = "Blind 2";
+          }
+          if (value === "Blind 2") {
+            el.innerHTML = "Blind 3";
+          }
+          if (value === "Blind 3") {
+            el.innerHTML = "Blind 4";
+          }
+        }
+      }
+    }
+
+    // jika nilainya "0" → kosong
+    if (el.value === "0") el.value = "";
+  });
+};
 // ------------------------------------------------------|| Binding Functions ||--------------------------------------
 const bindFormAction = (itemaction) => {
   const cardTitle = document.getElementById("cardTitle");
   const actionMap = {
     AddItem: "ADD ITEM",
+    NextItem: "NEXT ITEM",
     EditItem: "EDIT ITEM",
     ViewItem: "VIEW ITEM",
     CopyItem: "COPY ITEM",
@@ -547,11 +745,15 @@ const bindHeaders = async (headerid) => {
     );
 
     const lblOrder = document.getElementById("lblOrder");
+    const lblItemId = document.getElementById("lblItemId");
     const lblOrderNumber = document.getElementById("lblOrderNumber");
     const lblOrderName = document.getElementById("lblOrderName");
 
     lblOrder.innerHTML = OrderId;
     lblOrder.classList.add("fw-bold");
+
+    lblItemId.innerHTML = ITEMID;
+    lblItemId.classList.add("fw-bold");
 
     lblOrderNumber.innerHTML = OrderNumber;
     lblOrderNumber.classList.add("fw-bold");
@@ -911,7 +1113,7 @@ const bindColours = async (
         }
 
         await bindFabrics(designid);
-        if (blindname == "motorised") {
+        if (blindname == "Motorised") {
           await Promise.all([
             bindMotorStyle(controltype),
             bindMotorRemote(controltype),
@@ -1409,6 +1611,7 @@ const bindTrims = (blindname, brackettype, tubetype) => {
 
 const bindRailType = async (brackettype) => {
   const select = document.getElementById("railtype");
+  document.getElementById("railcolour").innerHTML = "";
   select.innerHTML = "";
 
   if (!brackettype) return;
@@ -1739,6 +1942,90 @@ const bindExtras = (blindname, controltype, motorstyle) => {
     option.setAttribute("data-name", item.text);
     sel.add(option);
   });
+};
+
+const bindItemOrders = async (itemid) => {
+  try {
+    if (!itemid) return;
+
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid }),
+    });
+
+    if (!res.ok) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d;
+
+    if (!data || data.length === 0) {
+      throw isError("No data returned from server : bindItemOrders");
+    }
+
+    for (const item of data) {
+      await bindBlinds(item.DesignId);
+      await bindBrackets(item.DesignId, item.BlindId);
+      await bindTubes(item.DesignId, item.BlindId, item.BracketType);
+      await bindControls(
+        item.DesignId,
+        item.BlindId,
+        item.BracketType,
+        item.TubeType,
+      );
+      await bindColours(
+        item.DesignId,
+        item.BlindId,
+        item.BracketType,
+        item.TubeType,
+        item.ControlType,
+      );
+      await bindFabrics(item.DesignId);
+      await bindFabricColours(item.DesignId, item.FabricType);
+      if (item.BlindName == "Motorised") {
+        await Promise.all([
+          bindMotorStyle(item.ControlType),
+          bindMotorRemote(item.ControlType),
+          bindExternalBattery(),
+          bindMotorCharger(item.ControlType, item.MotorStyle),
+          bindExtras(item.BlindName, item.ControlType, item.MotorStyle),
+        ]);
+      }
+      await Promise.all([
+        bindChains(item.DesignId),
+        bindTrims(item.BlindName, item.BracketType, item.TubeType),
+      ]);
+      await bindRailType(item.BracketType);
+      await bindRailColour(item.BracketType, item.BottomType);
+      await Promise.all([
+        bindTubeSize(item.BlindName, item.TubeType),
+        bindChildSafe(),
+        bindAccessory(),
+        handlerSetElementValues(item),
+        handlerElementVisibility(
+          item.BlindName,
+          item.BracketType,
+          item.TubeType,
+          item.ControlType,
+          item.ColourType,
+          item,
+        ),
+      ]);
+    }
+
+    return true; // ✅ success
+  } catch (error) {
+    console.error("bindItemOrder error:", error);
+    throw error;
+  }
 };
 // ------------------------------------------------------|| Other Functions ||--------------------------------------
 const getItemData = async (query) => {

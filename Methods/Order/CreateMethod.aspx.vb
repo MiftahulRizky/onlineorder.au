@@ -183,8 +183,10 @@ Partial Class Methods_Order_CreateMethod
 
                 If CustomerDelivery = "" And String.IsNullOrEmpty(data.delivery) Then
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "delivery is required !", .field = "delivery"}}
-                Else
-                    FinalDelivery = CustomerDelivery
+                End If
+
+                If CustomerDelivery = "" And Not String.IsNullOrEmpty(data.delivery)  Then
+                    FinalDelivery = data.delivery
                 End If
                 If Not CustomerDelivery = "" AND Not String.IsNullOrEmpty(data.id) Then 
                     FinalDelivery = CustomerDelivery

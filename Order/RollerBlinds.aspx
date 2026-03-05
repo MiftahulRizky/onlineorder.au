@@ -27,6 +27,7 @@ Debug="true" %>
                                 <div class="col-4 col-lg-4 col-md-4">
                                     <label class="form-label text-secondary text-uppercase">Order #</label>
                                     <label class="form-label" id="lblOrder">-</label>
+                                    <label class="form-label" id="lblItemId">-</label>
                                 </div>
                                 <div class="col-4 col-lg-4 col-md-4">
                                     <label class="form-label text-secondary text-uppercase">Order Number</label>
@@ -49,8 +50,8 @@ Debug="true" %>
                         <form action="javascript:void(0)" method="post" id="formSubmit">
                             <div class="card-header d-flex justify-content-between">
                                 <h3 class="card-title" id="cardTitle"></h3>
-                                <label class="card-title" id="lblBlindNo"><label/>
-                                <label class="card-title" id="lblUniqueId"><label/>
+                                <label class="card-title" id="lblBlindNo"></label>
+                                <label class="card-title" id="lblUniqueId"></label>
                             </div>
                             <div class="card-body">
                                 
@@ -107,7 +108,7 @@ Debug="true" %>
                                                     <div>
                                                         <h4 class="alert-title">ATTENTION !</h4>
                                                         <div class="text-secondary">
-                                                            <label class="form-label"id="lblNextDesc">Lorem ipsum dolor sit amet.</label>
+                                                            <span id="lblNextDesc">Lorem ipsum dolor sit amet.</span>
                                                         </div>
                                                     </div>
                                                 </div>
