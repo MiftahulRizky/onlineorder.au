@@ -2,6 +2,7 @@
   if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
     console.log("RollerBlinds.js loaded successfully");
     console.log("ROLENAME: " + ROLENAME);
+    console.log("LEVELNAME: " + LEVELNAME);
     console.log("ITEMACTION: " + ITEMACTION);
     console.log("ITEMID: " + ITEMID);
     console.log("HEADERID: " + HEADERID);
@@ -191,6 +192,88 @@ document.querySelector("#btnSubmit").addEventListener("click", (e) => {
   handlerSubmit(e.target.id);
 });
 
+const btnInfo = document.querySelectorAll(".btn-information");
+if (btnInfo) {
+  btnInfo.forEach((el) => {
+    el.addEventListener("click", (e) => {
+      try {
+        let text = "";
+
+        if (e.target.id === "btnInfoControlType") {
+          const blind = document.querySelector("#blindtype");
+          const blindName = blind.options[blind.selectedIndex].dataset.name;
+
+          if (blindName == "Motorised") {
+            text =
+              " <span class='text-right'> RTS - Wired Motors <br/> WS – Battery RTS Motors <br/> WS – Switch Motors <span/>";
+            isInfo(text);
+          }
+        }
+
+        if (e.target.id === "btnInfoQty") {
+          text =
+            "Please pay attention to the quantity you want to order, because the quantity you enter will be processed automatically.";
+        }
+
+        if (text) {
+          isInfo(text);
+        }
+      } catch (error) {
+        var msg = error.message;
+        if (ROLENAME != "Administrator") {
+          msg = "Please contact our IT team at support@onlineorder.au";
+        }
+      }
+    });
+  });
+}
+
+// const btnInfoControlType = document.querySelector("#btnInfoControlType");
+// if (btnInfoControlType) {
+//   btnInfoControlType.addEventListener("click", async (e) => {
+//     btnInfoControlType.innerHTML = "Loading...";
+//     try {
+//       let text = "Not Available";
+//       const blind = document.querySelector("#blindtype");
+//       const blindName = blind.options[blind.selectedIndex].dataset.name;
+
+//       if (blindName == "Motorised") {
+//         text =
+//           " <span class='text-right'> RTS - Wired Motors <br/> WS – Battery RTS Motors <br/> WS – Switch Motors <span/>";
+//         isInfo(text);
+//       }
+//     } catch (error) {
+//       var msg = error.message;
+//       if (ROLENAME != "Administrator") {
+//         msg = "Please contact our IT team at support@onlineorder.au";
+//       }
+//       isError(msg);
+//     } finally {
+//       btnInfoControlType.innerHTML = `<i class="ti ti-info-square-rounded fs-2"></i>`;
+//     }
+//   });
+// }
+
+// const btnInfoQty = document.querySelector("#btnInfoQty");
+// if (btnInfoQty) {
+//   btnInfoQty.addEventListener("click", async (e) => {
+//     btnInfoQty.innerHTML = "Loading...";
+//     try {
+//       let text =
+//         "Please pay attention to the quantity you want to order, because the quantity you enter will be processed automatically.";
+//       isInfo(text);
+//     } catch (error) {
+//       var msg = error.message;
+//       if (ROLENAME != "Administrator") {
+//         msg = "Please contact our IT team at support@onlineorder.au";
+//       }
+//       isError(msg);
+//     } finally {
+//       btnInfoQty.innerHTML = `<i class="ti ti-info-square-rounded fs-2"></i>`;
+//     }
+//   });
+// }
+
 // button cancel
 document.querySelector("#btnCancel").addEventListener("click", (e) => {
   window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
@@ -244,6 +327,9 @@ const handlerElementVisibility = async (
   item,
 ) => {
   try {
+    const lblItemId = document.getElementById("lblItemId");
+    const lblBlindNo = document.getElementById("lblBlindNo");
+    const lblUniqueId = document.getElementById("lblUniqueId");
     const lblBracketType = document.getElementById("lblBracketType");
     const divBracketType = document.getElementById("divBracketType");
     const divTubeType = document.getElementById("divTubeType");
@@ -269,6 +355,7 @@ const handlerElementVisibility = async (
     const divChain = document.getElementById("divChain");
     const divBottomRail = document.getElementById("divBottomRail");
     const divTubeSize = document.getElementById("divTubeSize");
+    const divAdditional = document.getElementById("divAdditional");
     const divChildSafe = document.getElementById("divChildSafe");
     const divAccessory = document.getElementById("divAccessory");
     const divExtras = document.getElementById("divExtras");
@@ -277,7 +364,10 @@ const handlerElementVisibility = async (
     const divMarkUp = document.getElementById("divMarkUp");
 
     const btnSubmit = document.querySelector("#btnSubmit");
-    // return;
+    return;
+    lblItemId.classList.add("d-none");
+    lblBlindNo.classList.add("d-none");
+    lblUniqueId.classList.add("d-none");
     lblBracketType.innerHTML = "bracket type";
     divBracketType.classList.add("d-none");
     divTubeType.classList.add("d-none");
@@ -302,12 +392,19 @@ const handlerElementVisibility = async (
     divChain.classList.add("d-none");
     divBottomRail.classList.add("d-none");
     divTubeSize.classList.add("d-none");
+    divAdditional.classList.add("d-none");
     divChildSafe.classList.add("d-none");
     divAccessory.classList.add("d-none");
     divExtras.classList.add("d-none");
     divBracketCover.classList.add("d-none");
     divBracketExt.classList.add("d-none");
     btnSubmit.classList.add("d-none");
+
+    if (ROLENAME === "Administrator" && LEVELNAME === "Super Admin") {
+      // lblItemId.classList.remove("d-none");
+      // lblBlindNo.classList.remove("d-none");
+      // lblUniqueId.classList.remove("d-none");
+    }
 
     // -------------------------------|| on change blindtype ||---------------------------------
     if (!blindname) return;
@@ -318,6 +415,10 @@ const handlerElementVisibility = async (
 
     if (["Motorised", "Roller Blind"].includes(blindname)) {
       lblColourType.innerHTML = "colour type";
+    }
+
+    if (["Cassette", "Motorised", "Roller Blind"].includes(blindname)) {
+      divAdditional.classList.remove("d-none");
     }
 
     divBracketType.classList.remove("d-none");
@@ -429,12 +530,171 @@ const handlerElementVisibility = async (
 
     if (item) {
       if (ITEMACTION === "EditItem") {
-        divAttention.classList.remove("d-none");
-
         let blinds = "first blind";
         if (item.BlindNo === "Blind 2") blinds = "second blind";
         if (item.BlindNo === "Blind 3") blinds = "third blind";
         if (item.BlindNo === "Blind 4") blinds = "fourth blind";
+
+        let totalBlind = await getItemData(
+          `SELECT COUNT(*) FROM OrderDetails WHERE UniqueId = '${item.UniqueId}' AND Active = 1`,
+        );
+
+        // ------------------------------------|| Double, Linked 2 Blinds (Dep), Linked 2 Blinds (Ind) ||------------------------------------
+        if (
+          ["Double", "Linked 2 Blinds (Dep)", "Linked 2 Blinds (Ind)"].includes(
+            item.BracketType,
+          )
+        ) {
+          if (totalBlind > 1) {
+            divAttention.classList.remove("d-none");
+            let connectId = await getItemData(
+              `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='${item.UniqueId}'`,
+            );
+            if (item.BlindNo === "Blind 2") {
+              connectId = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='${item.UniqueId}'`,
+              );
+            }
+
+            lblNextDesc.innerHTML = `This is the <b><u>${blinds}</u></b> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID ${connectId}</u></b>  blind will automatically be changed according to this data.`;
+          }
+        }
+
+        // ------------------------------------|| Linked 3 Blinds (Dep), Linked 3 Blinds (Ind) ||------------------------------------
+        if (
+          ["Linked 3 Blinds (Dep)", "Linked 3 Blinds (Ind)"].includes(
+            item.BracketType,
+          )
+        ) {
+          if (totalBlind > 1) {
+            divAttention.classList.remove("d-none");
+            let connectId = await getItemData(
+              `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='${item.UniqueId}'`,
+            );
+            let connectId2 = await getItemData(
+              `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='${item.UniqueId}'`,
+            );
+
+            let blindid = connectId;
+            if (connectId2) {
+              blindid = `${blindid} AND ITEM ID ${connectId2}`;
+            }
+
+            if (item.BlindNo === "Blind 2") {
+              connectId = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='${item.UniqueId}'`,
+              );
+              connectId2 = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='${item.UniqueId}'`,
+              );
+
+              blindid = connectId;
+              if (connectId2) {
+                blindid = `${blindid} AND ITEM ID ${connectId2}`;
+              }
+            }
+
+            if (item.BlindNo === "Blind 3") {
+              connectId = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='${item.UniqueId}'`,
+              );
+              connectId2 = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='${item.UniqueId}'`,
+              );
+
+              blindid = `${connectId} AND ITEM ID ${connectId2}`;
+            }
+
+            lblNextDesc.innerHTML = `This is the <b><u>${blinds}</u></b> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, bracket cover and bracket extension,  then the data on the <b><u>ITEM ID ${blindid}</u></b>  blind will automatically be changed according to this data.`;
+          }
+        }
+
+        // ------------------------------------|| Double and Link System Dep, Double and Link System Ind ||------------------------------------
+        if (
+          ["Linked 3 Blinds (Dep)", "Linked 3 Blinds (Ind)"].includes(
+            item.BracketType,
+          )
+        ) {
+          if (totalBlind > 1) {
+            divAttention.classList.remove("d-none");
+            let connectId = await getItemData(
+              `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='${item.UniqueId}'`,
+            );
+            let connectId2 = await getItemData(
+              `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='${item.UniqueId}'`,
+            );
+            let connectId3 = await getItemData(
+              `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='${item.UniqueId}'`,
+            );
+
+            let blindid = connectId;
+            if (connectId2) {
+              blindid = `${blindid} AND ITEM ID ${connectId2}`;
+            }
+            if (connectId3) {
+              blindid = `${blindid}, ITEM ID ${connectId2} AND ITEM ID ${connectId3}`;
+            }
+
+            if (item.BlindNo === "Blind 2") {
+              connectId = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='${item.UniqueId}'`,
+              );
+              connectId2 = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='${item.UniqueId}'`,
+              );
+              connectId3 = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='${item.UniqueId}'`,
+              );
+
+              blindid = connectId;
+              if (connectId2) {
+                blindid = `${blindid} AND ITEM ID ${connectId2}`;
+              }
+              if (connectId3) {
+                blindid = `${blindid}, ITEM ID ${connectId2} AND ITEM ID ${connectId3}`;
+              }
+            }
+
+            if (item.BlindNo === "Blind 3") {
+              connectId = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='${item.UniqueId}'`,
+              );
+              connectId2 = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='${item.UniqueId}'`,
+              );
+              connectId3 = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='${item.UniqueId}'`,
+              );
+
+              blindid = connectId;
+              if (connectId2) {
+                blindid = `${blindid} AND ITEM ID ${connectId2}`;
+              }
+              if (connectId3) {
+                blindid = `${blindid}, ITEM ID ${connectId2} AND ITEM ID ${connectId3}`;
+              }
+            }
+
+            if (item.BlindNo === "Blind 4") {
+              connectId = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='${item.UniqueId}'`,
+              );
+              connectId2 = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='${item.UniqueId}'`,
+              );
+              connectId3 = await getItemData(
+                `SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='${item.UniqueId}'`,
+              );
+
+              blindid = connectId;
+              if (connectId3) {
+                blindid = `${blindid}, ITEM ID ${connectId2} AND ITEM ID ${connectId3}`;
+              }
+            }
+
+            lblNextDesc.innerHTML = `This is the <b><u>${blinds}</u></b> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, bracket cover and bracket extension,  then the data on the <b><u>ITEM ID ${blindid}</u></b>  blind will automatically be changed according to this data.`;
+          }
+        }
       }
 
       if (ITEMACTION === "NextItem") {
@@ -626,6 +886,7 @@ const handlerSetElementValues = (itemData) => {
     motorstyle: "MotorStyle",
     motorremote: "MotorRemote",
     externalbattery: "MotorBattery",
+    charger: "MotorCharger",
     cableexitpoint: "CableExitPoint",
     connector: "Connector",
     roll: "RollDirection",
@@ -1106,8 +1367,9 @@ const bindColours = async (
       if (data.length === 1) {
         select.selectedIndex = 0;
 
-        const blindname =
-          document.getElementById("blindtype").selectedOptions[0].dataset.name;
+        const blindname = await getItemData(
+          ` SELECT Name FROM Blinds WHERE Id = '${blindid}' AND Active=1 `,
+        );
         if (!blindname) {
           throw new Error("Blind name not found : bindColours");
         }

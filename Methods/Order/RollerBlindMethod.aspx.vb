@@ -403,9 +403,6 @@ Partial Class Methods_Order_RollerBlindMethod
                 If String.IsNullOrEmpty(data.motorremote) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor remote is required !",.field = "motorremote"}}
                 End If
-                If String.IsNullOrEmpty(data.charger) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "charger is required !",.field = "charger"}}
-                End If
             End If
 
             If Not (data.tubetype = "Spring Operated" OR data.tubetype = "N/A") Then
@@ -450,7 +447,7 @@ Partial Class Methods_Order_RollerBlindMethod
                             End If
                         End If
 
-                        If InArray(data.itemaction ="EditItem", "ViewItem") Then
+                        If InArray(data.itemaction, "EditItem", "ViewItem") Then
                             Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             IF Not controlposition = "" Then
                                 If Not String.IsNullOrEmpty(data.controlposition) Then
@@ -481,7 +478,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
 
                     If data.blindno = "Blind 2" Then
-                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
+                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
 
                         If Not controlposition = "" Then
                             If Not String.IsNullOrEmpty(data.controlposition) Then
@@ -525,7 +522,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     If data.blindno = "Blind 2" Then
                         If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
+                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             If Not controlposition = "" Then
                                 If Not String.IsNullOrEmpty(data.controlposition) Then
                                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
@@ -623,7 +620,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     If data.blindno = "Blind 3" Then
                         If InArray(data.itemaction, "NextItem", "EditItem") Then
-                            Dim controlB2 As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
+                            Dim controlB2 As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             Dim chainB2 As String = publicCfg.GetItemData(String.Format("SELECT ChainId FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
 
                             If Not controlB2 = "" AND Not chainB2 = "" Then
@@ -705,7 +702,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
 
                     If data.blindno = "Blind 2" Then
-                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
+                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                         If Not controlposition = "" Then
                             If Not String.IsNullOrEmpty(data.controlposition) Then
                                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
@@ -778,7 +775,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If 
 
                     If data.blindno = "Blind 4" Then
-                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
+                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                         If Not controlposition = "" Then
                             If Not String.IsNullOrEmpty(data.controlposition) Then
                                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
@@ -850,7 +847,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     If data.blindno = "Blind 2" Then
                         If InArray(data.itemaction, "EditItem", "NextItem") Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
+                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             Dim controlpositionVar As String = data.controlposition
                             If String.IsNullOrEmpty(data.controlposition) Then
                                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
@@ -874,7 +871,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     If data.blindno = "Blind 3" Then
                         If InArray(data.itemaction, "EditItem", "NextItem") Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
+                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             Dim controlpositionVar As String = data.controlposition
                             If String.IsNullOrEmpty(data.controlposition) Then
                                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
@@ -898,7 +895,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     If data.blindno = "Blind 4" Then
                         If InArray(data.itemaction, "EditItem", "NextItem") Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
+                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             Dim controlpositionVar As String = data.controlposition
                             If String.IsNullOrEmpty(data.controlposition) Then
                                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
@@ -1129,7 +1126,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@RollDirection", data.roll)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
-                        myCmd.Parameters.AddWithValue("@ChainLength", CLength)
+                        myCmd.Parameters.AddWithValue("@ChainLength", If(String.IsNullOrEmpty(CLength), DBNull.Value, CLength))
                         myCmd.Parameters.AddWithValue("@Accessory", data.accessory)
                         myCmd.Parameters.AddWithValue("@TubeSize", data.tubesize)
                         myCmd.Parameters.AddWithValue("@Trim", data.trim)
@@ -1276,7 +1273,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     '#SdsRollDep
                     Dim ListRollDep As New List(Of Object) From {
                         data.uniqueid,
-                        drop
+                        data.roll
                     }
                     Dim ResRollDep As String = SdsRollDep(ListRollDep)
                     IF Not ResRollDep = "200" Then
@@ -1286,7 +1283,8 @@ Partial Class Methods_Order_RollerBlindMethod
                     '#SdsFabric
                     Dim ListFabric As New List(Of Object) From {
                         data.uniqueid,
-                        drop
+                        data.fabriccolour,
+                        PriceGroupId
                     }
                     Dim ResFabric As String = SdsFabric(ListFabric)
                     IF Not ResFabric = "200" Then
@@ -1335,7 +1333,8 @@ Partial Class Methods_Order_RollerBlindMethod
                     '#SdsFabric
                     Dim ListFabric As New List(Of Object) From {
                         data.uniqueid,
-                        drop
+                        data.fabriccolour,
+                        PriceGroupId
                     }
                     Dim ResFabric As String = SdsFabric(ListFabric)
                     IF Not ResFabric = "200" Then
@@ -1475,6 +1474,7 @@ Partial Class Methods_Order_RollerBlindMethod
             End If
 
             If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
+
                 
                 Dim ItemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)
@@ -1498,7 +1498,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@RollDirection", data.roll)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
-                        myCmd.Parameters.AddWithValue("@ChainLength", CLength)
+                        myCmd.Parameters.AddWithValue("@ChainLength", If(String.IsNullOrEmpty(CLength), DBNull.Value, CLength))
                         myCmd.Parameters.AddWithValue("@Accessory", data.accessory)
                         myCmd.Parameters.AddWithValue("@TubeSize", data.tubesize)
                         myCmd.Parameters.AddWithValue("@Trim", data.trim)
@@ -1566,7 +1566,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     '#SdsRollDep
                     Dim ListRollDep As New List(Of Object) From {
                         data.uniqueid,
-                        drop
+                        data.roll
                     }
                     Dim ResRollDep As String = SdsRollDep(ListRollDep)
                     IF Not ResRollDep = "200" Then
@@ -1576,7 +1576,8 @@ Partial Class Methods_Order_RollerBlindMethod
                     '#SdsFabric
                     Dim ListFabric As New List(Of Object) From {
                         data.uniqueid,
-                        drop
+                        data.fabriccolour,
+                        PriceGroupId
                     }
                     Dim ResFabric As String = SdsFabric(ListFabric)
                     IF Not ResFabric = "200" Then
@@ -1635,7 +1636,8 @@ Partial Class Methods_Order_RollerBlindMethod
                     '#SdsFabric
                     Dim ListFabric As New List(Of Object) From {
                         data.uniqueid,
-                        drop
+                        data.fabriccolour,
+                        PriceGroupId
                     }
                     Dim ResFabric As String = SdsFabric(ListFabric)
                     IF Not ResFabric = "200" Then

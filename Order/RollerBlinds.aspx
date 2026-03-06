@@ -81,7 +81,7 @@ Debug="true" %>
                                     <div class="col-lg-4">
                                         <div class="input-group">
                                             <select type="text" name="controltype" id="controltype" class="form-select"></select>
-                                            <button class="btn btn-primary" type="button" id="btnInfoControlType">
+                                            <button class="btn btn-primary btn-information" type="button" id="btnInfoControlType">
                                                 <i class="ti ti-info-square-rounded fs-2"></i>
                                             </button>
                                         </div>
@@ -121,7 +121,7 @@ Debug="true" %>
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <input type="number" min="1" value="1" name="qty" id="qty" class="form-control">
-                                                <button class="btn btn-primary" type="button" id="btnInfoQty">
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoQty">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -181,7 +181,7 @@ Debug="true" %>
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <select type="text" name="motorstyle" id="motorstyle" class="form-select"></select>
-                                                <button class="btn btn-primary" type="button" id="btnInfoMotorStyle">
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoMotorStyle">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -193,7 +193,7 @@ Debug="true" %>
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <select type="text" name="motorremote" id="motorremote" class="form-select"></select>
-                                                <button class="btn btn-primary" type="button" id="btnInfoMotorRemote">
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoMotorRemote">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -281,7 +281,7 @@ Debug="true" %>
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <select type="text" name="trim" id="trim" class="form-select"></select>
-                                                <button class="btn btn-primary" type="button" id="btnInfoTrim">
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoTrim">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -307,7 +307,7 @@ Debug="true" %>
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <select type="text" name="tubesize" id="tubesize" class="form-select"></select>
-                                                <button class="btn btn-primary" type="button" id="btnInfoTubeSize">
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoTubeSize">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -421,6 +421,7 @@ Debug="true" %>
         let CUSTOMERID = '<%= Session("CustomerId") %>';
         let LOGINID = '<%= Session("LoginId") %>';
         let ROLENAME = '<%= Session("RoleName") %>';
+        let LEVELNAME = '<%= Session("LevelName") %>';
         let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
         let URIMETHOD = "/Methods/Order/RollerBlindMethod.aspx";
     </script>

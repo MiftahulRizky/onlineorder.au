@@ -1313,7 +1313,7 @@ Partial Class Order_Roller
                                 If blindNo = "Blind 2" Then
                                     connectId = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + lblUniqueId.Text + "'")
                                 End If
-                                lblNextDesc.Text = "This is the " & blinds & " for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <=b><u>ITEM ID " & connectId & "</u></=b>  blind will automatically be changed according to this data."
+                                lblNextDesc.Text = "This is the " & blinds & " for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID " & connectId & "</u></b>  blind will automatically be changed according to this data."
                             End If
                         End If
 

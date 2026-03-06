@@ -161,8 +161,8 @@ Public Class PrintConfig
         result += "<table style='width:100%;margin-bottom:10px;margin-top:25px;font-size:smaller;'>"
         result += trStart
         result += "<td style='vertical-align:top;width:40%;font-size:small;'>"
-        ' result += "<img width='100%' src='"& Path &"' alt='Your Logo'/>"
-        result += String.Format("<img width='100%' src='{0}' alt='Your Logo'/>", Path)
+        result += "<img width='100%' src='"& Path &"' alt='Your Logo'/>"
+        ' result += String.Format("<img width='100%' src='{0}' alt='Your Logo'/>", Path)
         result += "<br />"
         result += "<p style='font-size:small;'>"
         result += "<b>Sunlight Products Pty Ltd</b>"
@@ -1725,6 +1725,7 @@ Public Class PrintConfig
             result += thStart & "Trim" & thEnd
             result += thStart & "Bottom" & thEnd
             result += thStart & "Accessory" & thEnd
+            result += thStart & "Extras" & thEnd
             result += thStart & "Bracket Covers" & thEnd
             result += trEnd
 
@@ -1749,6 +1750,7 @@ Public Class PrintConfig
                 result += tdStart & thisData.Tables(0).Rows(i).Item("Trim").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("BottomName").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("Accessory").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("AdditionalMotor").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("BracketCover").ToString() & tdEnd
                 result += trEnd
 
