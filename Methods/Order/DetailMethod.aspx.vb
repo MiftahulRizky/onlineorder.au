@@ -987,16 +987,21 @@ Partial Class Methods_Order_DetailMethod
                 ' Ambil domain host saat ini
                 Dim currentDomain As String = HttpContext.Current.Request.Url.Host.ToLower()
 
+                Dim ResPDF As String = ThisCreatePDFOrder(headerid, fileDirectory, fileName)
+                If Not ResPDF = "200" Then
+                    Throw New Exception(ResPDF)
+                End If
+
                 ' Hanya kirim email jika domain sesuai
-                printCfg.CreatePDFOrder(headerid, fileDirectory, fileName)
-                If currentDomain.Contains("onlineorder.au") Then
+                ' printCfg.CreatePDFOrder(headerid, fileDirectory, fileName)
+                ' If currentDomain.Contains("onlineorder.au") Then
                     ' publicCfg.MailOrder(headerid, fileDirectory)
                 ' Else
                     Dim Res As String = MailSubmitOrder(headerid, fileDirectory)
                     IF Not Res = "200" Then
-                        Return New ErrorResponse With { .[error] = New ErrorDetail With { .message = Res}}
+                        Throw New Exception(Res)
                     End If
-                End If
+                ' End If
             End If
             '# --------------------------|| Generate PDF Core ||-------------------------------
 
@@ -15469,11 +15474,11 @@ Partial Class Methods_Order_DetailMethod
             mailBody += "<br />"
             mailBody += "This is an automated message confirming the receipt of your order. Your order has been successfully registered and has been forwarded directly to our production system for processing. Please note that due to this streamlined process, we regret to inform you that we are unable to accept cancellations or modifications for this order. For any inquiries or assistance, kindly contact our office.<br /><b>Please do not reply to this email as it is unattended. We appreciate your understanding and trust in our products & services</b>."
             mailBody += "<br /><br />"
-            mailBody += "Store Order No : " & OrderNumber
+            mailBody += "Customer Name : " & CustomerName
             mailBody += "<br />"
-            mailBody += "Store Customer : " & OrderName
+            mailBody += "Order Number : " & OrderNumber
             mailBody += "<br />"
-            mailBody += "Delivery / Pick Up : " & Delivery
+            mailBody += "Order Name : " & OrderName
             mailBody += "<br /><br />"
             mailBody += "Detail order as attached PDF."
 
