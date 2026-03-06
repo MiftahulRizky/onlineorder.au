@@ -4079,7 +4079,7 @@ Partial Class Methods_Order_DetailMethod
         Dim verishades As String = "<b>Veri Shades: " & totalVerishades & "</b>"
         Dim verticalblinds As String = "<b>Vertical Blinds: " & totalVertical & "</b>"
 
-        result = aluminiumblinds & separted & celloraBlinds & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
+        result = celloraBlinds & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
         Return result
     End Function
 
