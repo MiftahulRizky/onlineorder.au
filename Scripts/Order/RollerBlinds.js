@@ -198,21 +198,42 @@ if (btnInfo) {
     el.addEventListener("click", (e) => {
       try {
         let text = "";
+        let id = e.currentTarget.id;
 
-        if (e.target.id === "btnInfoControlType") {
-          const blind = document.querySelector("#blindtype");
-          const blindName = blind.options[blind.selectedIndex].dataset.name;
+        switch (id) {
+          case "btnInfoControlType":
+            const blind = document.querySelector("#blindtype");
+            const blindName = blind.options[blind.selectedIndex].dataset.name;
+            const tubetype = document.querySelector("#tubetype").value;
 
-          if (blindName == "Motorised") {
+            if (
+              blindName == "Motorised" ||
+              (blindName == "Cassette" && tubetype == "Motorised")
+            ) {
+              text =
+                " RTS - Wired Motors <br/> WS – Battery RTS Motors <br/> WS – Switch Motors";
+            }
+            break;
+          case "btnInfoQty":
             text =
-              " <span class='text-right'> RTS - Wired Motors <br/> WS – Battery RTS Motors <br/> WS – Switch Motors <span/>";
-            isInfo(text);
-          }
-        }
-
-        if (e.target.id === "btnInfoQty") {
-          text =
-            "Please pay attention to the quantity you want to order, because the quantity you enter will be processed automatically.";
+              "Please pay attention to the quantity you want to order, because the quantity you enter will be processed automatically.";
+            break;
+          case "btnInfoMotorStyle":
+            text =
+              "If any another blind (Double or linked) <br /> If you change this MOTOR STYLE then the other motor style will follow this motor style.";
+            break;
+          case "btnInfoMotorRemote":
+            text =
+              "If any another blind (Double or linked) <br /> If you change this MOTOR REMOTE then the other motor remote will follow this motor remote.";
+            break;
+          case "btnInfoTrim":
+            text =
+              "If you want to use the BOTTOM RAIL.<br />Please select <b>1F</b>.";
+            break;
+          case "btnInfoTubeSize":
+            text =
+              "Our standard tube size <br /><br /> 1. If the width or drop are below 2400 then the tube size uses 40 <br /> 2. If the width or drop are more than 2400 then the tube size uses 45 <br /> 3. If the width or drop are more than 2600 then the tube size uses 45H";
+            break;
         }
 
         if (text) {
@@ -227,52 +248,6 @@ if (btnInfo) {
     });
   });
 }
-
-// const btnInfoControlType = document.querySelector("#btnInfoControlType");
-// if (btnInfoControlType) {
-//   btnInfoControlType.addEventListener("click", async (e) => {
-//     btnInfoControlType.innerHTML = "Loading...";
-//     try {
-//       let text = "Not Available";
-//       const blind = document.querySelector("#blindtype");
-//       const blindName = blind.options[blind.selectedIndex].dataset.name;
-
-//       if (blindName == "Motorised") {
-//         text =
-//           " <span class='text-right'> RTS - Wired Motors <br/> WS – Battery RTS Motors <br/> WS – Switch Motors <span/>";
-//         isInfo(text);
-//       }
-//     } catch (error) {
-//       var msg = error.message;
-//       if (ROLENAME != "Administrator") {
-//         msg = "Please contact our IT team at support@onlineorder.au";
-//       }
-//       isError(msg);
-//     } finally {
-//       btnInfoControlType.innerHTML = `<i class="ti ti-info-square-rounded fs-2"></i>`;
-//     }
-//   });
-// }
-
-// const btnInfoQty = document.querySelector("#btnInfoQty");
-// if (btnInfoQty) {
-//   btnInfoQty.addEventListener("click", async (e) => {
-//     btnInfoQty.innerHTML = "Loading...";
-//     try {
-//       let text =
-//         "Please pay attention to the quantity you want to order, because the quantity you enter will be processed automatically.";
-//       isInfo(text);
-//     } catch (error) {
-//       var msg = error.message;
-//       if (ROLENAME != "Administrator") {
-//         msg = "Please contact our IT team at support@onlineorder.au";
-//       }
-//       isError(msg);
-//     } finally {
-//       btnInfoQty.innerHTML = `<i class="ti ti-info-square-rounded fs-2"></i>`;
-//     }
-//   });
-// }
 
 // button cancel
 document.querySelector("#btnCancel").addEventListener("click", (e) => {
@@ -364,7 +339,7 @@ const handlerElementVisibility = async (
     const divMarkUp = document.getElementById("divMarkUp");
 
     const btnSubmit = document.querySelector("#btnSubmit");
-    return;
+    // return;
     lblItemId.classList.add("d-none");
     lblBlindNo.classList.add("d-none");
     lblUniqueId.classList.add("d-none");
