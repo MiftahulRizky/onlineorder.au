@@ -1205,7 +1205,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@RollDirection", data.roll)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
-                        myCmd.Parameters.AddWithValue("@ChainLength", CLength)
+                        myCmd.Parameters.AddWithValue("@ChainLength", If(String.IsNullOrEmpty(CLength), DBNull.Value, CLength))
                         myCmd.Parameters.AddWithValue("@Accessory", data.accessory)
                         myCmd.Parameters.AddWithValue("@TubeSize", data.tubesize)
                         myCmd.Parameters.AddWithValue("@Trim", data.trim)
