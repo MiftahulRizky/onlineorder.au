@@ -893,9 +893,9 @@ Partial Class Order_Vertical
                     divInsertInTrack.Visible = True
                     divDrop.Visible = False
 
-                    If Session("itemAction") = "AddItem" Then
-                        ddlBracketColour.SelectedValue = "Silver"
-                    End If
+                    ' If Session("itemAction") = "AddItem"   Then
+                    '     ddlBracketColour.SelectedValue = "Silver"
+                    ' End If
 
                     if tubeType = "Louvolite" Then
                         divInsertInTrack.Visible = False

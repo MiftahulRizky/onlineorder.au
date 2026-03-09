@@ -423,7 +423,7 @@
         function showInfo(Type) {
             var spanInfo;
             if (Type == 'Pelmet Return') {
-                spanInfo = 'If you leave this blank, it will use the factory default, which is 67mm !';
+                spanInfo = 'If you leave this blank, it will use the factory default, which is 77mm !';
             } else if (Type == 'Pelmet Width') {
                 spanInfo = 'If you leave this blank, it will use the factory default.';
                 spanInfo += '<br /><br />';

@@ -13,6 +13,36 @@
 });
 
 // =======================================================|| EVENT LISTENERS ||=======================================================
+document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+  el.addEventListener("change", async (e) => {
+    e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "blindtype") {
+      const blindtype = e.target.value;
+      await Promise.all([handlerElementVisibility(blindtype)]);
+      await bindTubes(DESIGNID, blindtype);
+    }
+
+    if (e.target.id === "tubetype") {
+      const blindtype = document.getElementById("blindtype").value;
+      const tubetype = e.target.value;
+      await Promise.all([handlerElementVisibility(blindtype, tubetype)]);
+      await bindControls(DESIGNID, blindtype, tubetype);
+    }
+
+    if (e.target.id === "controltype") {
+      const blindtype = document.getElementById("blindtype").value;
+      const tubetype = document.getElementById("tubetype").value;
+      const controltype = e.target.value;
+      await Promise.all([
+        handlerElementVisibility(blindtype, tubetype, controltype),
+      ]);
+    }
+  });
+  el.addEventListener("input", (e) => {
+    e.target.classList.remove("is-invalid");
+  });
+});
 
 // ==========================================================|| FUNCTIONS ||==========================================================
 
@@ -137,16 +167,156 @@ const bindBlinds = async () => {
     isError(msg);
   }
 };
+
+const bindTubes = async (designid, blindid) => {
+  const select = document.getElementById("tubetype");
+  select.innerHTML = "";
+
+  if (!designid || !blindid) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindTubeType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ designid, blindid }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindTubes");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+        // const blindname =
+        //   document.getElementById("blindtype").selectedOptions[0].dataset.name;
+        // await Promise.all([
+        //   handlerElementVisibility(blindname, brackettype, select.value),
+        // ]);
+        // await bindControls(designid, blindid, brackettype, select.value);
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const bindControls = async (designid, blindid, tubetype) => {
+  const select = document.getElementById("controltype");
+  select.innerHTML = "";
+
+  if (!designid || !blindid || !tubetype) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindControlType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ designid, blindid, tubetype }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindControls");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+        const blindtype = document.getElementById("blindtype").value;
+        const tubetype = document.getElementById("tubetype").value;
+        const controltype = select.value;
+        await Promise.all([
+          handlerElementVisibility(blindtype, tubetype, controltype),
+        ]);
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
 // ----------------------------------------------------------- || Handler Funtions ||------------------------------------------------------------
-const handlerElementVisibility = () => {
+const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
   try {
     const lblItemId = document.getElementById("lblItemId");
     const divTubeType = document.getElementById("divTubeType");
     const divControlType = document.getElementById("divControlType");
 
     const divFormDetail = document.getElementById("divFormDetail");
+    const divWidth = document.getElementById("divWidth");
     const divSlatSize = document.getElementById("divSlatSize");
     const divSlatQty = document.getElementById("divSlatQty");
+    const divFabric = document.getElementById("divFabric");
     const divTrackColour = document.getElementById("divTrackColour");
     const divStackPosition = document.getElementById("divStackPosition");
     const divControlPosition = document.getElementById("divControlPosition");
@@ -165,8 +335,10 @@ const handlerElementVisibility = () => {
     divControlType.classList.add("d-none");
 
     divFormDetail.classList.add("d-none");
+    divWidth.classList.add("d-none");
     divSlatSize.classList.add("d-none");
     divSlatQty.classList.add("d-none");
+    divFabric.classList.add("d-none");
     divTrackColour.classList.add("d-none");
     divStackPosition.classList.add("d-none");
     divControlPosition.classList.add("d-none");
@@ -179,6 +351,38 @@ const handlerElementVisibility = () => {
     divSloper.classList.add("d-none");
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
+
+    if (!blindtype) return;
+    const blindname = await getItemData(
+      `SELECT Name FROM Blinds WHERE Id = '${blindtype}' AND Active = 1`,
+    );
+    divTubeType.classList.remove("d-none");
+
+    if (!tubetype) return;
+    if (["Complete", "Track Only"].includes(blindname)) {
+      divControlType.classList.remove("d-none");
+    }
+
+    if (!controltype) return;
+
+    divFormDetail.classList.remove("d-none");
+
+    if (blindname === "Complete") {
+      divWidth.classList.remove("d-none");
+      divFabric.classList.remove("d-none");
+      divTrackColour.classList.remove("d-none");
+      divStackPosition.classList.remove("d-none");
+      divControlPosition.classList.remove("d-none");
+      divChain.classList.remove("d-none");
+      divBrackets.classList.remove("d-none");
+      divHangerType.classList.remove("d-none");
+      divBottom.classList.remove("d-none");
+      divSloper.classList.remove("d-none");
+
+      if (tubetype === "Fairline") {
+        divInsertInTrack.classList.remove("d-none");
+      }
+    }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
 

@@ -107,7 +107,7 @@
 
                                     <div class="mb-3 row">
                                         <label for="width" class="col-lg-3 text-uppercase fw-bold">width x drop</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="col-lg-4 col-md-12 col-sm-12" id="divWidth">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="width" id="width" class="form-control " autocomplete="off" placeholder="Width ...." />
                                                 <span class="input-group-text ">mm</span>
@@ -141,7 +141,7 @@
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row">
+                                    <div class="mb-3 row" id="divFabric">
                                         <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">fabric type x slat x colour</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <select name="fabrictype" id="fabrictype" class="form-select "></select>
@@ -261,6 +261,7 @@
                                                 <option value=""></option>
                                                 <option value="1">YES</option>
                                             </select>
+                                             <small class="form-hint">* Blades will be Tilt Only - Track supplied First</small>
                                         </div>  
                                     </div>
 
@@ -326,7 +327,7 @@
         let ROLENAME = '<%= Session("RoleName") %>';
         let LEVELNAME = '<%= Session("LevelName") %>';
         let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
-        let URIMETHOD = "/Methods/Order/RollerBlindMethod.aspx";
+        let URIMETHOD = "/Methods/Order/VerticalBlindMethod.aspx";
     </script>
 
     <script type="text/javascript" src="/Scripts/Order/VerticalBlinds.js?<%= DateTime.Now.Ticks %>"></script>
