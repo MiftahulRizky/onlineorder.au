@@ -1078,7 +1078,7 @@ Partial Class Order_Vertical
                     ddlTrackColour.Items.Add(New ListItem("PRIMROSE", "Primrose"))
                 End If
 
-                If tubeType = "Fairline" Then
+                If tubeType = "Fairline" Or tubeType = "Javaline" Then
                     ddlTrackColour.Items.Add(New ListItem("BEIGE", "Beige"))
                     ddlTrackColour.Items.Add(New ListItem("BIRCH WHITE", "Birch White"))
                     ddlTrackColour.Items.Add(New ListItem("BLACK", "Black"))

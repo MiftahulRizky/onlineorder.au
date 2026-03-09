@@ -797,6 +797,10 @@ const visibleElementForm = async (ordertype, customer) => {
     orderidEl.classList.add("bg-body-secondary");
     orderidEl.classList.add("text-secondary");
 
+    if (ordertype == "Blinds") {
+      divDelivery.removeAttribute("hidden");
+    }
+
     if (ordertype == "Panorama" || ordertype == "Evolve") {
       // divShipmentId.removeAttribute("hidden");
 
