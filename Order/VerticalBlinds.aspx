@@ -106,7 +106,7 @@
                                     </div>
 
                                     <div class="mb-3 row">
-                                        <label for="width" class="col-lg-3 text-uppercase fw-bold">width x drop</label>
+                                        <label for="width" class="col-lg-3 text-uppercase fw-bold" id="lblWd">width x drop</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12" id="divWidth">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="width" id="width" class="form-control " autocomplete="off" placeholder="Width ...." />

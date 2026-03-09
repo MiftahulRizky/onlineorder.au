@@ -616,7 +616,13 @@ Partial Class Order_Venetian
                 If ddlPelmetType.SelectedValue = "With Return" Then
                     ' txtReturnLeft.Text = "67" : txtReturnRight.Text = "67"
                     If ddlMounting.SelectedValue = "Face Fit" Then
-                        txtReturnLeft.Text = "77" : txtReturnRight.Text = "77"
+                        txtReturnLeft.Text = "100" : txtReturnRight.Text = "100"
+                        If InStr(blindName, "Wooden") > 0 Then
+                            txtReturnLeft.Text = "70" : txtReturnRight.Text = "70"
+                        End If
+                        If InStr(blindName, "Mockwood") > 0 Then
+                            txtReturnLeft.Text = "77" : txtReturnRight.Text = "77"
+                        End If
                         If InStr(blindName, "Timber") > 0 Then
                             txtReturnLeft.Text = "67" : txtReturnRight.Text = "67"
                         End If

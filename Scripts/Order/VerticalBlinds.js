@@ -313,6 +313,7 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
     const divControlType = document.getElementById("divControlType");
 
     const divFormDetail = document.getElementById("divFormDetail");
+    const lblWd = document.getElementById("lblWd");
     const divWidth = document.getElementById("divWidth");
     const divSlatSize = document.getElementById("divSlatSize");
     const divSlatQty = document.getElementById("divSlatQty");
@@ -335,6 +336,7 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
     divControlType.classList.add("d-none");
 
     divFormDetail.classList.add("d-none");
+    lblWd.innerHTML = "width x drop";
     divWidth.classList.add("d-none");
     divSlatSize.classList.add("d-none");
     divSlatQty.classList.add("d-none");
@@ -382,6 +384,10 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
       if (tubetype === "Fairline") {
         divInsertInTrack.classList.remove("d-none");
       }
+    }
+
+    if (blindname === "Slat Only") {
+      lblWd.innerHTML = "drop exact";
     }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
