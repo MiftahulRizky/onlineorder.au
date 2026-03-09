@@ -513,37 +513,41 @@ Partial Class Order_Venetian
 
             If msgError.InnerText = "" Then
                 If txtMarkUp.Text = "" Then : txtMarkUp.Text = "0" : End If
-                If Not blindName = "25mm Aluminium" AND Not blindName = "50mm Aluminium" Then
-                    If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
-                        txtControlLength.Text = txtWidth.Text - 50
-                    End If
+                If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
+                    txtControlLength.Text = txtDrop.Text * (2 / 3)
                 End If
 
-                If blindName = "25mm Aluminium" Then
-                    ddlHoldDown.SelectedValue = ddlHoldDown.SelectedValue
-                    lblBottomHoldDown.Text = "Yes"
+                ' If Not blindName = "25mm Aluminium" AND Not blindName = "50mm Aluminium" Then
+                '     If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
+                '         txtControlLength.Text = txtWidth.Text - 50
+                '     End If
+                ' End If
 
-                    If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
-                        Dim CordLength As String = txtDrop.Text * (2 / 3)
-                        If CordLength < 450 Then : CordLength = 450 : End If
-                        txtControlLength.Text = CInt(CordLength)
-                    End If
-                End If
+                ' If blindName = "25mm Aluminium" Then
+                '     ddlHoldDown.SelectedValue = ddlHoldDown.SelectedValue
+                '     lblBottomHoldDown.Text = "Yes"
+
+                '     If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
+                '         Dim CordLength As String = txtDrop.Text * (2 / 3)
+                '         If CordLength < 450 Then : CordLength = 450 : End If
+                '         txtControlLength.Text = CInt(CordLength)
+                '     End If
+                ' End If
 
 
-                If blindName = "50mm Aluminium" Then
-                    lblBottomHoldDown.Text = ddlHoldDown.SelectedValue
-                    If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
-                        txtControlLength.Text = "900"
-                        If txtDrop.Text < 1000 Then
-                            Dim controlLength As Integer = txtDrop.Text - 50
-                            txtControlLength.Text = controlLength
-                            If controlLength < 400 Then
-                                txtControlLength.Text = "400"
-                            End If
-                        End If
-                    End If
-                End If
+                ' If blindName = "50mm Aluminium" Then
+                '     lblBottomHoldDown.Text = ddlHoldDown.SelectedValue
+                '     If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
+                '         txtControlLength.Text = "900"
+                '         If txtDrop.Text < 1000 Then
+                '             Dim controlLength As Integer = txtDrop.Text - 50
+                '             txtControlLength.Text = controlLength
+                '             If controlLength < 400 Then
+                '                 txtControlLength.Text = "400"
+                '             End If
+                '         End If
+                '     End If
+                ' End If
 
 
                 lblKitId.Text = UCase(ddlColour.SelectedValue).ToString()

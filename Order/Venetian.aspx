@@ -420,10 +420,27 @@
                 }
             });
         }
-        function showInfo(Type) {
+        async function  showInfo(Type) {
             var spanInfo;
             if (Type == 'Pelmet Return') {
-                spanInfo = 'If you leave this blank, it will use the factory default, which is 77mm !';
+                const blindtype = document.getElementById("<%=ddlBlindType.ClientID%>").value;
+                const blindname = await getItemData(`SELECT Name FROM Blinds WHERE Id = '${blindtype}'`);
+                let mm = "100mm"
+              switch (blindname) {
+                case "50mm Timberstyle":
+                case "63mm Timberstyle":
+                    mm  = "67mm";
+                    break;
+                case "50mm Wooden":
+                case "63mm Wooden":
+                    mm  = "70mm";
+                    break;
+                case "50mm Mockwood":
+                case "63mm Mockwood":
+                    mm  = "77mm";
+                    break;
+              }
+                spanInfo = `If you leave this blank, it will use the factory default, which is ${mm} !`;
             } else if (Type == 'Pelmet Width') {
                 spanInfo = 'If you leave this blank, it will use the factory default.';
                 spanInfo += '<br /><br />';
@@ -442,6 +459,22 @@
             document.getElementById("canvasInfoLabel").innerHTML = Type + ' Information';
             document.getElementById("spanInfo").innerHTML = spanInfo;
         }
+
+        const getItemData = async (query) => {
+            try {
+                const response = await fetch(`/Methods/Order/VerticalBlindMethod.aspx/GetItemData`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: query }), // ✅ FIX
+                });
+
+                const json = await response.json();
+                return json.d;
+            } catch (err) {
+                console.error(err);
+                isError(err);
+            }
+        };
     </script>
     
     <div runat="server" visible="false">

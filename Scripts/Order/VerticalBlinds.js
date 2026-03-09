@@ -388,6 +388,10 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
 
     if (blindname === "Slat Only") {
       lblWd.innerHTML = "drop exact";
+      divSlatQty.classList.remove("d-none");
+      divFabric.classList.remove("d-none");
+      divHangerType.classList.remove("d-none");
+      divBottom.classList.remove("d-none");
     }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
