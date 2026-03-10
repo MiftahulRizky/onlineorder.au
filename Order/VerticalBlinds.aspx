@@ -204,7 +204,7 @@
                                             <small class="form-hint">* Length</small>
                                         </div>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="chaincolour" id="chaincolour" class="form-select "></select>
+                                            <select name="wandcolour" id="wandcolour" class="form-select "></select>
                                             <small class="form-hint">* Colour</small>
                                         </div>
                                         <div class="col-lg-3 col-md-12 col-sm-12" id="divWandCustomLength">

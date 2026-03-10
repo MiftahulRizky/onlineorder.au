@@ -739,8 +739,7 @@ const visibleElementForm = async (ordertype, customer) => {
           "Customer Service",
           "Data Entry",
           "PPIC & DE",
-        ].includes(ROLENAME) &&
-        ACTION == "add"
+        ].includes(ROLENAME)
       ) {
         divCustomer.removeAttribute("hidden");
       }
