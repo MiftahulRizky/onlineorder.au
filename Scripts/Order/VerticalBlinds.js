@@ -44,6 +44,10 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   });
 });
 
+// button cancel
+document.querySelector("#btnCancel").addEventListener("click", (e) => {
+  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+});
 // ==========================================================|| FUNCTIONS ||==========================================================
 
 // ----------------------------------------------------------- || Binding Funtions ||------------------------------------------------------------
@@ -315,6 +319,7 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
     const divFormDetail = document.getElementById("divFormDetail");
     const lblWd = document.getElementById("lblWd");
     const divWidth = document.getElementById("divWidth");
+    const divDrop = document.getElementById("divDrop");
     const divSlatSize = document.getElementById("divSlatSize");
     const divSlatQty = document.getElementById("divSlatQty");
     const divFabric = document.getElementById("divFabric");
@@ -338,6 +343,7 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
     divFormDetail.classList.add("d-none");
     lblWd.innerHTML = "width x drop";
     divWidth.classList.add("d-none");
+    divDrop.classList.add("d-none");
     divSlatSize.classList.add("d-none");
     divSlatQty.classList.add("d-none");
     divFabric.classList.add("d-none");
@@ -371,6 +377,7 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
 
     if (blindname === "Complete") {
       divWidth.classList.remove("d-none");
+      divDrop.classList.remove("d-none");
       divFabric.classList.remove("d-none");
       divTrackColour.classList.remove("d-none");
       divStackPosition.classList.remove("d-none");
@@ -388,10 +395,28 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
 
     if (blindname === "Slat Only") {
       lblWd.innerHTML = "drop exact";
+      divDrop.classList.remove("d-none");
       divSlatQty.classList.remove("d-none");
       divFabric.classList.remove("d-none");
       divHangerType.classList.remove("d-none");
       divBottom.classList.remove("d-none");
+    }
+
+    if (blindname === "Track Only") {
+      lblWd.innerHTML = "width";
+      divSlatSize.classList.remove("d-none");
+      divSlatQty.classList.remove("d-none");
+      divTrackColour.classList.remove("d-none");
+      divStackPosition.classList.remove("d-none");
+      divControlPosition.classList.remove("d-none");
+      divChain.classList.remove("d-none");
+      divBrackets.classList.remove("d-none");
+      divHangerType.classList.remove("d-none");
+      divSloper.classList.remove("d-none");
+
+      if (tubetype === "Fairline") {
+        divInsertInTrack.classList.remove("d-none");
+      }
     }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
@@ -451,7 +476,7 @@ const getItemData = async (query) => {
     const response = await fetch(`${URIMETHOD}/GetItemData`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: query }), // ✅ FIX
+      body: JSON.stringify({ query: query }),
     });
 
     const json = await response.json();

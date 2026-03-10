@@ -114,7 +114,7 @@
                                             </div>
                                             <small class="form-hint">* Width</small>
                                         </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="col-lg-4 col-md-12 col-sm-12" id="divDrop">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off" placeholder="Drop ...." />
                                                 <span class="input-group-text ">mm</span>
