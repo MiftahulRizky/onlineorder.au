@@ -513,44 +513,25 @@ Partial Class Order_Venetian
 
             If msgError.InnerText = "" Then
                 If txtMarkUp.Text = "" Then : txtMarkUp.Text = "0" : End If
-                If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
+
+                
+                If InStr(blindName, "Aluminium") > 0 Or InStr(blindName, "Timber") > 0 Then
+                    If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
+                        txtControlLength.Text = CInt(txtDrop.Text * (2 / 3))
+                    End If
+
+                    If  InStr(blindName, "Aluminium") > 0 Then
+                        ddlHoldDown.SelectedValue = ddlHoldDown.SelectedValue
+                        If blindName = "25mm Aluminium" Then
+                            lblBottomHoldDown.Text = "Yes"
+                        End If
+                    End If
+                End If
+
+                If InStr(blindName, "Mockwood") > 0 Or InStr(blindName, "Wooden") > 0 Then
                     txtControlLength.Text = CInt(txtDrop.Text * (2 / 3))
                 End If
 
-                ' Call MessageError(True, txtControlLength.Text)
-                ' Exit Sub
-
-                ' If Not blindName = "25mm Aluminium" AND Not blindName = "50mm Aluminium" Then
-                '     If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
-                '         txtControlLength.Text = txtWidth.Text - 50
-                '     End If
-                ' End If
-
-                If blindName = "25mm Aluminium" Then
-                    ddlHoldDown.SelectedValue = ddlHoldDown.SelectedValue
-                    lblBottomHoldDown.Text = "Yes"
-
-                    ' If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
-                    '     Dim CordLength As String = txtDrop.Text * (2 / 3)
-                    '     If CordLength < 450 Then : CordLength = 450 : End If
-                    '     txtControlLength.Text = CInt(CordLength)
-                    ' End If
-                End If
-
-
-                If blindName = "50mm Aluminium" Then
-                    lblBottomHoldDown.Text = ddlHoldDown.SelectedValue
-                    ' If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
-                    '     txtControlLength.Text = "900"
-                    '     If txtDrop.Text < 1000 Then
-                    '         Dim controlLength As Integer = txtDrop.Text - 50
-                    '         txtControlLength.Text = controlLength
-                    '         If controlLength < 400 Then
-                    '             txtControlLength.Text = "400"
-                    '         End If
-                    '     End If
-                    ' End If
-                End If
 
 
                 lblKitId.Text = UCase(ddlColour.SelectedValue).ToString()
@@ -671,8 +652,11 @@ Partial Class Order_Venetian
                 If Session("itemAction") = "EditItem" Or Session("itemAction") = "ViewItem" Then
                     sdsPage.Update()
 
-                    Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Update Item Order"}
-                    orderCfg.Log_Orders(dataLog)
+                    Dim StatusOrder As String = publicCfg.GetItemData(String.Format("SELECT Status FROM OrderHeaders WHERE Id = '{0}'", lblHeaderId.Text))
+                    If Session("RoleName") <> "Administrator" AndAlso Session("LevelName") <> "Super Admin" AndAlso StatusOrder <> "Draft" Then
+                        Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Update Item Order"}
+                        orderCfg.Log_Orders(dataLog)
+                    End If
 
                     Call SetPricing(lblItemId.Text, lblHeaderId.Text)
                     Call myCancel()

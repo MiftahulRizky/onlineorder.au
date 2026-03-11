@@ -242,11 +242,11 @@ Partial Class Methods_Order_VerticalBlindMethod
                 End If
             End If
 
-            If Not blindName = "Slat Only" And String.IsNullOrEmpty(data.mounting) Then
+            If Not BlindName = "Slat Only" And String.IsNullOrEmpty(data.mounting) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
             End If
 
-            If blindName = "Complete" Or blindName = "Track Only" Then
+            If BlindName = "Complete" Or BlindName = "Track Only" Then
                 Dim width As Integer
                 If String.IsNullOrEmpty(data.width) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width is required !",.field = "width"}}
@@ -276,13 +276,13 @@ Partial Class Methods_Order_VerticalBlindMethod
                 End If
             End If
 
-            If blindName = "Slat Only" Then
+            If BlindName = "Slat Only" Then
                 If Not String.IsNullOrEmpty(data.slatqty) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "slat qty is required !",.field = "slatqty"}}
                 End If
             End If
 
-            If Not blindName = "Track Only" Then
+            If Not BlindName = "Track Only" Then
                 If String.IsNullOrEmpty(data.fabrictype) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
                 End If
@@ -294,7 +294,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                 End If
             End If
 
-            If blindName = "Complete" Or blindName = "Track Only" Then
+            If BlindName = "Complete" Or BlindName = "Track Only" Then
                 If String.IsNullOrEmpty(data.trackcolour) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "track colour is required !",.field = "trackcolour"}}
                 End If
@@ -306,7 +306,8 @@ Partial Class Methods_Order_VerticalBlindMethod
                 End If
             End If
 
-            If data.controltype = "Chain" Then
+            Dim ControlType As String = publicCfg.GetItemData(String.Format("SELECT ControlType FROM HardwareKits WHERE Id = '{0}'", data.controltype))
+            If ControlType = "Chain" Then
                 If String.IsNullOrEmpty(data.chaincolour) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
                 End If
@@ -318,7 +319,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                 End If
             End If
 
-            If data.controltype = "Wand" Then
+            If ControlType = "Wand" Then
                 If String.IsNullOrEmpty(data.wandlength) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "wand length is required !",.field = "wandlength"}}
                 End If
@@ -332,7 +333,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                 End If
             End If
 
-            If blindName = "Complete" Or blindName = "Track Only" Then
+            If BlindName = "Complete" Or BlindName = "Track Only" Then
                 If String.IsNullOrEmpty(data.bracket) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bracket is required !",.field = "bracket"}}
                 End If
@@ -345,7 +346,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "hanger type is required !",.field = "hangertype"}}
             End If
 
-            If Not blindName = "Track Only" Then
+            If Not BlindName = "Track Only" Then
                 If String.IsNullOrEmpty(data.bottom) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom is required !",.field = "bottom"}}
                 End If

@@ -17,7 +17,7 @@
     <div class="page-body">
         <div class="container-xl" id="pageContent">
             <div class="row mb-3">
-                <div class="col-lg-7 col-md-7 col-sm-7">
+                <div class="col-lg-8 col-md-8 col-sm-8">
                     <div class="card">
                         <div class="card-body">
                             <div class="row">

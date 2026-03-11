@@ -3098,6 +3098,13 @@ Partial Class Methods_Order_DetailMethod
                     If RHSWidth_Bottom = "0" Then : RHSWidth_Bottom = "" : End If
                     If RHSHeight_Bottom = "0" Then : RHSHeight_Bottom = "" : End If
 
+                    Dim CPosition As String = thisData.Tables(0).Rows(i).Item("ControlPosition").ToString()
+                    If CPosition.Contains("|") Then
+                        CPosition = CPosition.Replace("|", ", ")
+                    End If
+
+
+
                     result += trStart
                     result += tdStart & i + 1 & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
@@ -3108,7 +3115,7 @@ Partial Class Methods_Order_DetailMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
+                    result += tdStart & CPosition & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ControlLength").ToString() & tdEnd
                     result += tdStart & PelmetType & tdEnd
                     result += tdStart & PelmetWidth & tdEnd
