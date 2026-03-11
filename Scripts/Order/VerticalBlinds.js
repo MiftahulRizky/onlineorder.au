@@ -31,17 +31,22 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     }
 
     if (e.target.id === "controltype") {
-      const blindtype = document.getElementById("blindtype").value;
+      const blind = document.getElementById("blindtype");
+      const blindtype = blind.value;
+      const blindname = blind.selectedOptions[0].dataset.name;
       const tubetype = document.getElementById("tubetype").value;
       const controltype = e.target.value;
       await bindFabrics(DESIGNID);
       await Promise.all([
+        bindSlatSize(),
         bindTrackColour(tubetype),
         bindStackPosition(),
         bindChains(),
         bindWandLength(),
-        BindBracketType(),
-        BindBracketColour(tubetype),
+        bindBracketType(),
+        bindBracketColour(tubetype),
+        bindHanger(blindname),
+        bindBottom(),
         handlerElementVisibility(blindtype, tubetype, controltype),
       ]);
     }
@@ -56,10 +61,63 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const fabriclength = e.target.value;
       await bindFabricColour(DESIGNID, fabrictype, fabriclength);
     }
+
+    if (e.target.id === "wandlength") {
+      const divWandCustomLength = document.querySelector(
+        "#divWandCustomLength",
+      );
+      const wandlength = e.target.value;
+      divWandCustomLength.classList.add("d-none");
+      if (wandlength === "custom") {
+        divWandCustomLength.classList.remove("d-none");
+      }
+      await Promise.all([bindWandColour(wandlength)]);
+    }
   });
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
   });
+});
+
+document.querySelectorAll(".btn-information").forEach((el) => {
+  el.addEventListener("click", async (e) => {
+    const id = e.currentTarget.id;
+    let msg = "";
+
+    switch (id) {
+      case "btnInfoQty":
+        msg =
+          "Please pay attention to the quantity you want to order, because the quantity you enter will be processed automatically.";
+        break;
+      case "btnInfoWD":
+        msg =
+          "Very long tracks are not recommended. Butting shorter tracks will work more effectively.";
+        break;
+      case "btnInfoSlatQty":
+        msg = "If left blank, the system will calculate it.";
+        break;
+      case "btnInfoCustomLength":
+        msg =
+          "Custom wand length is available in white color only with maximum length 3000mm.";
+        break;
+    }
+
+    if (msg) {
+      isInfo(msg);
+    }
+  });
+});
+
+// button submit
+document.querySelector("#btnSubmit").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+
+  // handlerSubmit(e.target.form, e.target.id);
+  handlerSubmit(e.target.id);
 });
 
 // button cancel
@@ -530,9 +588,41 @@ const bindFabricColour = async (designid, fabrictype, fabriclength) => {
   }
 };
 
+const bindSlatSize = () => {
+  const sel = document.getElementById("slatsize");
+  sel.innerHTML = ""; //reset
+
+  if (!tubetype) return;
+
+  let data = [];
+  data.push(
+    { value: "127mm", text: "127mm" },
+    { value: "100mm", text: "100mm" },
+    { value: "89mm", text: "89mm" },
+    { value: "63mm", text: "63mm" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
 const bindTrackColour = (tubetype) => {
   const sel = document.getElementById("trackcolour");
   sel.innerHTML = ""; //reset
+
+  if (!tubetype) return;
 
   let data = [];
   if (tubetype === "28mm Tiltrack") {
@@ -664,6 +754,8 @@ const bindWandColour = (wandlength) => {
   const sel = document.getElementById("wandcolour");
   sel.innerHTML = ""; //reset
 
+  if (!wandlength) return;
+
   let data = [];
   if (wandlength === "custom") {
     data.push({ value: "White", text: "White" });
@@ -692,7 +784,7 @@ const bindWandColour = (wandlength) => {
   });
 };
 
-const BindBracketType = () => {
+const bindBracketType = () => {
   const sel = document.getElementById("bracket");
   sel.innerHTML = ""; //reset
 
@@ -723,7 +815,7 @@ const BindBracketType = () => {
   });
 };
 
-const BindBracketColour = (tubetype) => {
+const bindBracketColour = (tubetype) => {
   const sel = document.getElementById("bracketcolour");
   sel.innerHTML = ""; //reset
 
@@ -757,6 +849,73 @@ const BindBracketColour = (tubetype) => {
     sel.add(option);
   });
 };
+
+const bindHanger = (blindname) => {
+  const sel = document.getElementById("hangertype");
+  sel.innerHTML = ""; //reset
+
+  if (!blindname) return;
+
+  let data = [];
+  if (blindname === "Vertical Slat Only") {
+    data.push(
+      { value: "Standard", text: "Standard" },
+      { value: "Peghook", text: "Peghook" },
+      { value: "Tiltrack 28mm", text: "Tiltrack 28mm" },
+    );
+  } else {
+    data.push(
+      { value: "Standard", text: "Standard" },
+      { value: "Peghook", text: "Peghook" },
+    );
+  }
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindBottom = () => {
+  const sel = document.getElementById("bottom");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "Chained (Black)", text: "Chained (Black)" },
+    { value: "Chained (White)", text: "Chained (White)" },
+    { value: "Fully Sewn In", text: "Fully Sewn In" },
+    { value: "Plastic Chainless", text: "Plastic Chainless" },
+    { value: "Plastic Chainless (Black)", text: "Plastic Chainless (Black)" },
+    { value: "Plastic Chainless (White)", text: "Plastic Chainless (White)" },
+    { value: "Top Hanger Only", text: "Top Hanger Only" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
 // ----------------------------------------------------------- || Handler Funtions ||------------------------------------------------------------
 const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
   try {
@@ -765,9 +924,11 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
     const divControlType = document.getElementById("divControlType");
 
     const divFormDetail = document.getElementById("divFormDetail");
+    const divMounting = document.getElementById("divMounting");
     const lblWd = document.getElementById("lblWd");
     const divWidth = document.getElementById("divWidth");
     const divDrop = document.getElementById("divDrop");
+    const divInfoWD = document.getElementById("divInfoWD");
     const divSlatSize = document.getElementById("divSlatSize");
     const divSlatQty = document.getElementById("divSlatQty");
     const divFabric = document.getElementById("divFabric");
@@ -785,14 +946,16 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
     const divMarkUp = document.getElementById("divMarkUp");
 
     const btnSubmit = document.querySelector("#btnSubmit");
-
+    // return;
     divTubeType.classList.add("d-none");
     divControlType.classList.add("d-none");
 
     divFormDetail.classList.add("d-none");
+    divMounting.classList.add("d-none");
     lblWd.innerHTML = "width x drop";
     divWidth.classList.add("d-none");
     divDrop.classList.add("d-none");
+    divInfoWD.classList.add("d-none");
     divSlatSize.classList.add("d-none");
     divSlatQty.classList.add("d-none");
     divFabric.classList.add("d-none");
@@ -829,6 +992,7 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
     divFormDetail.classList.remove("d-none");
 
     if (blindname === "Complete") {
+      divMounting.classList.remove("d-none");
       divWidth.classList.remove("d-none");
       divDrop.classList.remove("d-none");
       divFabric.classList.remove("d-none");
@@ -862,6 +1026,9 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
 
     if (blindname === "Track Only") {
       lblWd.innerHTML = "width";
+      divMounting.classList.remove("d-none");
+      divWidth.classList.remove("d-none");
+      divInfoWD.classList.remove("d-none");
       divSlatSize.classList.remove("d-none");
       divSlatQty.classList.remove("d-none");
       divTrackColour.classList.remove("d-none");
@@ -891,6 +1058,96 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
       msg = "Please contact our IT team at support@onlineorder.au";
     }
     isError(msg);
+  }
+};
+
+const handlerSubmit = async (button) => {
+  try {
+    // return alert(button);
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = [
+      "blindtype",
+      "tubetype",
+      "controltype",
+      "qty",
+      "room",
+      "mounting",
+      "width",
+      "drop",
+      "slatsize",
+      "slatqty",
+      "fabrictype",
+      "fabriclength",
+      "fabriccolour",
+      "trackcolour",
+      "stackposition",
+      "controlposition",
+      "chaincolour",
+      "chainlength",
+      "wandlength",
+      "wandcolour",
+      "wandcustomlength",
+      "bracket",
+      "bracketcolour",
+      "hangertype",
+      "bottom",
+      "inserttrack",
+      "sloper",
+      "notes",
+      "markup",
+    ];
+
+    const formData = {
+      headerid: HEADERID,
+      itemaction: ITEMACTION,
+      itemid: ITEMID,
+      designid: DESIGNID,
+      loginid: LOGINID,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.getElementById(field).value;
+    });
+
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/Submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success);
+      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Submit";
   }
 };
 // ----------------------------------------------------------- || Other Funtions ||------------------------------------------------------------

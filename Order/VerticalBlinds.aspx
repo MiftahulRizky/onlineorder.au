@@ -121,6 +121,11 @@
                                             </div>
                                             <small class="form-hint">* Drop</small>
                                         </div>
+                                        <div class="col-lg-2 col-md-12 col-sm-12" id="divInfoWD">
+                                            <button class="btn btn-primary btn-information" type="button" id="btnInfoWD">
+                                                <i class="ti ti-info-square-rounded fs-2"></i>
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <div class="mb-3 row" id="divSlatSize">
@@ -255,9 +260,9 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divSloper">
-                                        <label for="slover" class="col-lg-3 text-uppercase fw-bold" >sloper</label>
+                                        <label for="sloper" class="col-lg-3 text-uppercase fw-bold" >sloper</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="slover" id="slover" class="form-select">
+                                            <select type="text" name="sloper" id="sloper" class="form-select">
                                                 <option value=""></option>
                                                 <option value="1">YES</option>
                                             </select>

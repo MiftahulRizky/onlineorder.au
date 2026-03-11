@@ -20,7 +20,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     // ---------------------------------||blindtype||---------------------------------
     if (e.target.id === "blindtype") {
-      if (!e.target.value) return;
+      // if (!e.target.value) return;
 
       const blindid = e.target.value;
       const blindname = e.target.selectedOptions[0].dataset.name;
@@ -30,7 +30,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     // ---------------------------------||brackettype||---------------------------------
     if (e.target.id === "brackettype") {
-      if (!e.target.value) return;
+      // if (!e.target.value) return;
 
       const blindtype = document.getElementById("blindtype");
       const blindid = blindtype.value;
@@ -42,7 +42,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     // ---------------------------------||tubetype||---------------------------------
     if (e.target.id === "tubetype") {
-      if (!e.target.value) return;
+      // if (!e.target.value) return;
 
       const blindtype = document.getElementById("blindtype");
       const blindid = blindtype.value;
@@ -57,7 +57,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     // ---------------------------------||controltype||---------------------------------
     if (e.target.id === "controltype") {
-      if (!e.target.value) return;
+      // if (!e.target.value) return;
 
       const blindtype = document.getElementById("blindtype");
       const blindid = blindtype.value;
@@ -73,7 +73,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     // ---------------------------------||colourtype||---------------------------------
     if (e.target.id === "colourtype") {
-      if (!e.target.value) return;
+      // if (!e.target.value) return;
       const blindtype = document.getElementById("blindtype");
       const blindname = blindtype.options[blindtype.selectedIndex].dataset.name;
       const brackettype = document.getElementById("brackettype").value;
@@ -137,8 +137,10 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     // ---------------------------------||trim||---------------------------------
     if (e.target.id === "trim") {
       const divBottomRail = document.getElementById("divBottomRail");
+      const divAccessory = document.getElementById("divAccessory");
 
       divBottomRail.classList.add("d-none");
+      divAccessory.classList.add("d-none");
 
       if (!e.target.value) return;
       const blindtype = document.getElementById("blindtype");
@@ -157,6 +159,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         trim == "1F"
       ) {
         divBottomRail.classList.remove("d-none");
+        divAccessory.classList.remove("d-none");
       }
     }
 
@@ -469,7 +472,9 @@ const handlerElementVisibility = async (
       divControlPosition.classList.remove("d-none");
       lblControlPosition.innerHTML = "control side";
       divBracketCover.classList.remove("d-none");
-      divBracketExt.classList.remove("d-none");
+      if (brackettype === "Double") {
+        divBracketExt.classList.add("d-none");
+      }
     }
 
     if (blindname === "Motorised") {
@@ -484,10 +489,11 @@ const handlerElementVisibility = async (
       divRoll.classList.remove("d-none");
       divControlPosition.classList.remove("d-none");
       lblControlPosition.innerHTML = "motor side";
-      divAccessory.classList.remove("d-none");
       divExtras.classList.remove("d-none");
       divBracketCover.classList.remove("d-none");
-      divBracketExt.classList.remove("d-none");
+      if (brackettype === "Double") {
+        divBracketExt.classList.add("d-none");
+      }
     }
 
     if (blindname === "Roller Blind") {
@@ -496,7 +502,9 @@ const handlerElementVisibility = async (
         divControlPosition.classList.remove("d-none");
         divChain.classList.remove("d-none");
         divBracketCover.classList.remove("d-none");
-        divBracketExt.classList.remove("d-none");
+        if (brackettype === "Double") {
+          divBracketExt.classList.add("d-none");
+        }
       }
       divTubeSize.classList.remove("d-none");
       divChildSafe.classList.remove("d-none");
