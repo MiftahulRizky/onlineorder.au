@@ -369,10 +369,22 @@ const bindControls = async (designid, blindid, tubetype) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
-        const blindtype = document.getElementById("blindtype").value;
+        const blind = document.getElementById("blindtype");
+        const blindtype = blind.value;
+        const blindname = blind.selectedOptions[0].dataset.name;
         const tubetype = document.getElementById("tubetype").value;
         const controltype = select.value;
+        await bindFabrics(designid);
         await Promise.all([
+          bindSlatSize(),
+          bindTrackColour(tubetype),
+          bindStackPosition(),
+          bindChains(),
+          bindWandLength(),
+          bindBracketType(),
+          bindBracketColour(tubetype),
+          bindHanger(blindname),
+          bindBottom(),
           handlerElementVisibility(blindtype, tubetype, controltype),
         ]);
       }
@@ -916,6 +928,62 @@ const bindBottom = () => {
     sel.add(option);
   });
 };
+
+const bindItemOrders = async (itemid) => {
+  try {
+    if (!itemid) return;
+
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid }),
+    });
+
+    if (!res.ok) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d;
+
+    if (!data || data.length === 0) {
+      throw isError("No data returned from server : bindItemOrders");
+    }
+
+    for (const item of data) {
+      await bindBlinds(item.DesignId);
+      await bindTubes(item.DesignId, item.BlindId);
+      await bindControls(item.DesignId, item.BlindId, item.TubeType);
+      await bindFabrics(item.DesignId);
+      await bindFabricLength(item.DesignId, item.FabricType);
+      await bindFabricColours(item.DesignId, item.FabricType, item.FabricWidth);
+      await Promise.all([
+        bindWandColour(item.WandLength),
+        bindSlatSize(),
+        bindTrackColour(item.TubeType),
+        bindStackPosition(),
+        bindChains(),
+        bindWandLength(),
+        bindBracketType(),
+        bindBracketColour(item.TubeType),
+        bindHanger(item.BlindName),
+        bindBottom(),
+        handlerElementVisibility(item.BlindId, item.TubeType, item.KitId),
+      ]);
+    }
+
+    return true; // ✅ success
+  } catch (error) {
+    console.error("bindItemOrder error:", error);
+    throw error;
+  }
+};
 // ----------------------------------------------------------- || Handler Funtions ||------------------------------------------------------------
 const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
   try {
@@ -1181,7 +1249,7 @@ const pageLoaded = async () => {
     handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    // await bindItemOrders(ITEMID);
+    await bindItemOrders(ITEMID);
     loaderFadeOut();
   }
 };

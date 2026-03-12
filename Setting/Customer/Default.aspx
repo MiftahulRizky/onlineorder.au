@@ -309,7 +309,7 @@
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
-                            <AlternatingRowStyle BackColor="White" />
+                            <AlternatingRowStyle BackColor="" />
                         </asp:GridView>
                     </div>
                 </div>

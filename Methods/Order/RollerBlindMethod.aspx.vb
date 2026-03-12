@@ -1056,7 +1056,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.chainlength > 2200 Then : CLength = "2500" : End If
                 End If
 
-                Dim ChainName As String = String.Format("{0} Chain + Joiner ({1})", CLength, data.chaincolour)
+                Dim ChainName As String = String.Format("{0} Chain + Joiner {1}", CLength, ChainColour)
                 ChainId = publicCfg.GetItemData(String.Format("SELECT Id FROM Chains WHERE Name = '{0}'", ChainName))
 
                 data.motorstyle = ""

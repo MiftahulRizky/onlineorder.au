@@ -529,7 +529,7 @@ Partial Class Order_Vertical
 
                 Dim priceGroupId As String = publicCfg.GetPriceGroupId(designId, priceGroupName)
                 If String.IsNullOrEmpty(priceGroupId) Then
-                    throw New Exception("PRICE GROUP NOT FOUND !")
+                    throw New Exception("SOMETHING WENT WRONG !")
                 End If
                 lblPriceGroupId.Text = UCase(priceGroupId).ToString()
 
