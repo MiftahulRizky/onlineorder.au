@@ -3482,8 +3482,8 @@ Partial Class Methods_Order_DetailMethod
                     End If
 
                     Dim slat As String = thisData.Tables(0).Rows(i).Item("SlatSize").ToString()
-                    slat += " - "
-                    slat += thisData.Tables(0).Rows(i).Item("SlatQty").ToString()
+                    ' slat += " - "
+                    ' slat += thisData.Tables(0).Rows(i).Item("SlatQty").ToString()
 
                     result += trStart
                     result += tdStart & i + 1 & tdEnd

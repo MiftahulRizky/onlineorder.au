@@ -306,7 +306,9 @@ Partial Class Methods_Order_VerticalBlindMethod
 
             If BlindName = "Slat Only" Then
                 If Not String.IsNullOrEmpty(data.slatqty) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "slat qty is required !",.field = "slatqty"}}
+                    If Not IsNumeric(data.slatqty) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "slat qty is required !",.field = "slatqty"}}
+                    End If
                 End If
             End If
 
@@ -502,6 +504,8 @@ Partial Class Methods_Order_VerticalBlindMethod
                 End If
             End If
 
+            data.slatqty = ""
+
             If BlindName = "Track Only" Then
                 data.fabriccolour = ""
                 drop = "0"
@@ -523,7 +527,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                 data.inserttrack = ""
             End If
 
-            '  Throw New Exception(data.slatqty)
+            'Throw New Exception(data.slatqty)
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()

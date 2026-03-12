@@ -1104,7 +1104,7 @@ const handlerElementVisibility = async (
       divWidth.classList.remove("d-none");
       divInfoWD.classList.remove("d-none");
       divSlatSize.classList.remove("d-none");
-      divSlatQty.classList.remove("d-none");
+      // divSlatQty.classList.remove("d-none");
       divTrackColour.classList.remove("d-none");
       divStackPosition.classList.remove("d-none");
       divControlPosition.classList.remove("d-none");
