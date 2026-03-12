@@ -618,7 +618,7 @@ Partial Class Order_Vertical
                         "CarrierQty"
                     }
                     If txtSlatQty.Text = "" Then 
-                         txtSlatQty.Text = GetCarrierSpacer(ListParamCarriers)
+                         txtSlatQty.Text = "1" 'GetCarrierSpacer(ListParamCarriers)
                     End If
                 End If
 

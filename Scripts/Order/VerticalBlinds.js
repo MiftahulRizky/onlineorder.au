@@ -59,7 +59,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     if (e.target.id === "fabriclength") {
       const fabrictype = document.querySelector("#fabrictype").value;
       const fabriclength = e.target.value;
-      await bindFabricColour(DESIGNID, fabrictype, fabriclength);
+      await bindFabricColours(DESIGNID, fabrictype, fabriclength);
     }
 
     if (e.target.id === "wandlength") {
@@ -533,7 +533,7 @@ const bindFabricLength = async (designid, fabrictype) => {
   }
 };
 
-const bindFabricColour = async (designid, fabrictype, fabriclength) => {
+const bindFabricColours = async (designid, fabrictype, fabriclength) => {
   const select = document.getElementById("fabriccolour");
   select.innerHTML = "";
 
@@ -964,17 +964,18 @@ const bindItemOrders = async (itemid) => {
       await bindFabricLength(item.DesignId, item.FabricType);
       await bindFabricColours(item.DesignId, item.FabricType, item.FabricWidth);
       await Promise.all([
-        bindWandColour(item.WandLength),
         bindSlatSize(),
         bindTrackColour(item.TubeType),
         bindStackPosition(),
         bindChains(),
         bindWandLength(),
+        bindWandColour(item.WandLength),
         bindBracketType(),
         bindBracketColour(item.TubeType),
         bindHanger(item.BlindName),
         bindBottom(),
-        handlerElementVisibility(item.BlindId, item.TubeType, item.KitId),
+        handlerSetElementValues(item),
+        handlerElementVisibility(item.BlindId, item.TubeType, item.KitId, item),
       ]);
     }
 
@@ -985,7 +986,12 @@ const bindItemOrders = async (itemid) => {
   }
 };
 // ----------------------------------------------------------- || Handler Funtions ||------------------------------------------------------------
-const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
+const handlerElementVisibility = async (
+  blindtype,
+  tubetype,
+  controltype,
+  item,
+) => {
   try {
     const lblItemId = document.getElementById("lblItemId");
     const divTubeType = document.getElementById("divTubeType");
@@ -1112,6 +1118,16 @@ const handlerElementVisibility = async (blindtype, tubetype, controltype) => {
       }
     }
 
+    if (item) {
+      const WandLengthKey = ["", "500", "750", "1100", "1250", "1500", "2000"];
+      const WandLengthVal = item.WandLength;
+      if (!WandLengthKey.includes(WandLengthVal)) {
+        divWandCustomLength.classList.remove("d-none");
+      } else {
+        divWandCustomLength.classList.add("d-none");
+      }
+    }
+
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
 
     if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
@@ -1217,6 +1233,73 @@ const handlerSubmit = async (button) => {
   } finally {
     document.getElementById(button).innerHTML = "Submit";
   }
+};
+
+const handlerSetElementValues = (itemData) => {
+  const mapping = {
+    blindtype: "BlindId",
+    tubetype: "TubeType",
+    controltype: "KitId",
+    qty: "Qty",
+    room: "Location",
+    mounting: "Mounting",
+    width: "Width",
+    drop: "Drop",
+    slatsize: "SlatSize",
+    slatqty: "SlatQty",
+    fabrictype: "FabricType",
+    fabriclength: "FabricWidth",
+    fabriccolour: "FabricId",
+    trackcolour: "TrackColour",
+    stackposition: "StackPosition",
+    controlposition: "ControlPosition",
+    chaincolour: "ChainColour",
+    chainlength: "ChainLength",
+    wandcolour: "WandColour",
+    wandlength: "WandLength",
+    wandlength: "WandLength",
+    wandcustomlength: "WandLength",
+    bracket: "BracketOption",
+    bracketcolour: "BracketColour",
+    hangertype: "HangerType",
+    bottom: "BottomHoldDown",
+    inserttrack: "InsertInTrack",
+    sloper: "Sloper",
+    notes: "Notes",
+    markup: "MarkUp",
+  };
+
+  // Set nilai ke input sesuai mapping
+  Object.entries(mapping).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) {
+      console.warn(`Elemen '${id}' tidak ditemukan.`);
+      return;
+    }
+
+    let value = itemData[key];
+    if (id === "markup" && value === 0) value = "";
+
+    el.value = value ?? ""; // fallback ke string kosong
+
+    const WandLengthKey = ["", "500", "750", "1100", "1250", "1500", "2000"];
+    const WandLengthVal = itemData["WandLength"];
+    if (!WandLengthKey.includes(WandLengthVal)) {
+      if (id === "wandlength") {
+        el.value = "custom";
+      }
+      if (id === "wandcustomlength") {
+        el.value = WandLengthVal;
+      }
+    } else {
+      if (id === "wandlength") {
+        el.value = WandLengthVal;
+      }
+    }
+
+    // jika nilainya "0" → kosong
+    if (el.value === "0") el.value = "";
+  });
 };
 // ----------------------------------------------------------- || Other Funtions ||------------------------------------------------------------
 const pageLoaded = async () => {

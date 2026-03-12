@@ -288,7 +288,8 @@ Partial Class Methods_Order_VerticalBlindMethod
                 If width > 6000 Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 6000 !",.field = "width"}}
                 End If
-    
+            End If
+            If BlindName = "Complete" Or BlindName = "Slat Only" Then    
                 If String.IsNullOrEmpty(data.drop) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop is required !",.field = "drop"}}
                 End If
@@ -475,13 +476,13 @@ Partial Class Methods_Order_VerticalBlindMethod
             End If
 
             If BlindName = "Slat Only" Then
-                data.width = "0"
+                width = "0"
                 data.slatsize = ""
                 data.mounting = ""
                 ChainId = "" : CLength = "" : data.chainlength = ""
                 data.trackcolour = ""
                 data.controlposition = ""
-                data.wandcolour =""
+                data.wandlength = "" : data.wandcolour =""
                 data.stackposition = ""
                 data.bracket = ""
                 data.inserttrack = "" : data.sloper = ""
@@ -491,27 +492,29 @@ Partial Class Methods_Order_VerticalBlindMethod
                     data.tubetype,
                     DesignName,
                     BlindName,
-                    data.width,
+                    width,
                     "CarrierQty"
                 }
-                If data.slatqty = "" Then 
-                    data.slatqty = GetCarrierSpacer(ListParamCarriers)
+                
+
+                If String.IsNullOrEmpty(data.slatqty) Then 
+                    data.slatqty = "1" 'GetCarrierSpacer(ListParamCarriers)
                 End If
             End If
 
             If BlindName = "Track Only" Then
                 data.fabriccolour = ""
-                data.drop = "0"
+                drop = "0"
 
                 Dim ListParamCarriers As New List(Of Object) From {
                     data.slatsize,
                     data.tubetype,
                     DesignName,
                     BlindName,
-                    data.width,
+                    width,
                     "CarrierQty"
                 }
-                If data.slatqty = "" Then 
+                If String.IsNullOrEmpty(data.slatqty) Then 
                     data.slatqty = GetCarrierSpacer(ListParamCarriers)
                 End If
             End If
@@ -520,13 +523,11 @@ Partial Class Methods_Order_VerticalBlindMethod
                 data.inserttrack = ""
             End If
 
+            '  Throw New Exception(data.slatqty)
+
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
                 Dim MyQuery As String = "INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, Mounting, SlatSize, SlatQty, Width, [Drop], StackPosition, ControlPosition, TrackColour, ChainLength, WandColour, WandLength, BracketOption, BracketColour, HangerType, BottomHoldDown, InsertInTrack, Sloper, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @SlatSize, @SlatQty, @Width, @Drop, @StackPosition, @ControlPosition, @TrackColour, @ChainLength, @WandColour, @WandLength, @BracketOption, @BracketColour, @HangerType, @BottomHoldDown, @InsertInTrack, @Sloper, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)"
-
-                ' If blindName = "Complete" Then
-                '     MyQuery = "INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, Mounting, SlatSize, SlatQty, Width, [Drop], StackPosition, ControlPosition, TrackColour, ChainLength, WandColour, WandLength, BracketOption, BracketColour, HangerType, BottomHoldDown, InsertInTrack, Sloper, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @SlatSize, @SlatQty, @Width, @Drop, @StackPosition, @ControlPosition, @TrackColour, @ChainLength, @WandColour, @WandLength, @BracketOption, @BracketColour, @HangerType, @BottomHoldDown, @InsertInTrack, @Sloper, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)"
-                ' End If
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand(MyQuery, thisConn)
@@ -580,12 +581,53 @@ Partial Class Methods_Order_VerticalBlindMethod
             If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
                 Dim ItemId As String = data.itemid
 
-                ' publicCfg.ResetPriceDetail(ItemId)
-                ' publicCfg.HitungHarga(data.headerid, ItemId)
-                ' publicCfg.HitungSurcharge(data.headerid, ItemId)
+                Dim MyQuery As String = "UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, SlatSize=@SlatSize, SlatQty=@SlatQty, Width=@Width, [Drop]=@Drop, StackPosition=@StackPosition, ControlPosition=@ControlPosition, TrackColour=@TrackColour, ChainLength=@ChainLength, WandColour=@WandColour, WandLength=@WandLength, BracketOption=@BracketOption, BracketColour=@BracketColour, HangerType=@HangerType, BottomHoldDown=@BottomHoldDown, InsertInTrack=@InsertInTrack, Sloper=@Sloper, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id"
 
-                ' Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Update Item Order"}
-                ' orderCfg.Log_Orders(dataLog)
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand(MyQuery, thisConn)
+                        myCmd.Parameters.AddWithValue("@Id", ItemId)
+                        myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
+                        myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
+                        myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.controltype), DBNull.Value, UCase(data.controltype).ToString()))
+                        myCmd.Parameters.AddWithValue("@SoeKitId", If(String.IsNullOrEmpty(SoeId), DBNull.Value, SoeId))
+                        myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
+                        myCmd.Parameters.AddWithValue("@FabricId", If(String.IsNullOrEmpty(data.fabriccolour), DBNull.Value, UCase(data.fabriccolour).ToString()))
+                        myCmd.Parameters.AddWithValue("@ChainId", If(String.IsNullOrEmpty(ChainId), DBNull.Value, ChainId))
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(PriceGroupId), DBNull.Value, PriceGroupId))
+                        myCmd.Parameters.AddWithValue("@Qty", qty)
+                        myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
+                        myCmd.Parameters.AddWithValue("@SlatSize", data.slatsize)
+                        myCmd.Parameters.AddWithValue("@SlatQty", data.slatqty)
+                        myCmd.Parameters.AddWithValue("@Width", width)
+                        myCmd.Parameters.AddWithValue("@Drop", drop)
+                        myCmd.Parameters.AddWithValue("@StackPosition", data.stackposition)
+                        myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
+                        myCmd.Parameters.AddWithValue("@TrackColour", data.trackcolour)
+                        myCmd.Parameters.AddWithValue("@ChainLength", If(String.IsNullOrEmpty(CLength), DBNull.Value, CLength))
+                        myCmd.Parameters.AddWithValue("@WandColour", data.wandcolour)
+                        myCmd.Parameters.AddWithValue("@WandLength", data.wandlength)
+                        myCmd.Parameters.AddWithValue("@BracketOption", data.bracket)
+                        myCmd.Parameters.AddWithValue("@BracketColour", data.bracketcolour)
+                        myCmd.Parameters.AddWithValue("@HangerType", data.hangertype)
+                        myCmd.Parameters.AddWithValue("@BottomHoldDown", data.bottom)
+                        myCmd.Parameters.AddWithValue("@InsertInTrack", data.inserttrack)
+                        myCmd.Parameters.AddWithValue("@Sloper", data.sloper)
+                        myCmd.Parameters.AddWithValue("@Notes", data.notes)
+                        myCmd.Parameters.AddWithValue("@MarkUp", markup)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+
+                publicCfg.ResetPriceDetail(ItemId)
+                publicCfg.HitungHarga(data.headerid, ItemId)
+                publicCfg.HitungSurcharge(data.headerid, ItemId)
+
+                Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Update Item Order"}
+                orderCfg.Log_Orders(dataLog)
 
 
                 msg = "Item updated successfully !"

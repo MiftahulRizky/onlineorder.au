@@ -24,7 +24,7 @@
                                 <div class="col-4 col-lg-4 col-md-4">
                                     <label class="form-label text-secondary text-uppercase">Order #</label>
                                     <label class="form-label" id="lblOrder">-</label>
-                                    <label class="form-label" id="lblItemId">-</label>
+                                    <label class="form-label" id="lblItemId" hidden>-</label>
                                 </div>
                                 <div class="col-4 col-lg-4 col-md-4">
                                     <label class="form-label text-secondary text-uppercase">Order Number</label>
