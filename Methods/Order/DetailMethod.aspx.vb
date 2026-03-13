@@ -266,6 +266,8 @@ Partial Class Methods_Order_DetailMethod
             End If
 
             Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Designs.Id, Designs.Name FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '{0}' AND Designs.Type <> 'Additional' AND Designs.Type = '{1}' {2} AND Designs.Active = 1 ORDER BY Designs.Name ASC", customerid, ordertype, Env))
+
+            ' Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Designs.Id, Designs.Name FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '{0}' AND Designs.Type <> 'Additional' AND Designs.Type IN ('Blinds', 'Door', 'Window') {2} AND Designs.Active = 1 ORDER BY Designs.Name ASC", customerid, ordertype, Env))
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -2435,7 +2437,7 @@ Partial Class Methods_Order_DetailMethod
             End Using
             Return "200"
         Catch ex As Exception
-            Return "ERROR: " & ex.Message ' biar kelihatan errornya
+            Return "ERROR ThisCreatePDFOrder: " & ex.Message ' biar kelihatan errornya
         End Try
     End Function
 

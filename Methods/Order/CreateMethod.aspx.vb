@@ -242,13 +242,14 @@ Partial Class Methods_Order_CreateMethod
                 IF data.ordertype = "Blinds" OR data.ordertype = "Door" OR data.ordertype = "Window"  Then
                     Dim id As String = publicCfg.CreateOrderHeaderId()
                     Using thisConn As New SqlConnection(myConn)
-                        Using myCmd As New SqlCommand("INSERT INTO OrderHeaders (Id, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, CreatedDate, Active) VALUES (@Id, @UserId, @StoreId, LTRIM(RTRIM(@OrderNo)), LTRIM(RTRIM(@OrderCust)), @Delivery, @Note, 'Yes', 0, 0, 0,  'Draft', GETDATE(), 1)", thisConn)
+                        Using myCmd As New SqlCommand("INSERT INTO OrderHeaders (Id, UserId, StoreId, OrderNo, OrderCust, Delivery, OrderType, Note, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, CreatedDate, Active) VALUES (@Id, @UserId, @StoreId, LTRIM(RTRIM(@OrderNo)), LTRIM(RTRIM(@OrderCust)), @Delivery, @OrderType, @Note, 'Yes', 0, 0, 0,  'Draft', GETDATE(), 1)", thisConn)
                             myCmd.Parameters.AddWithValue("@Id", id)
                             myCmd.Parameters.AddWithValue("@UserId", UCase(data.loginid).ToString())
                             myCmd.Parameters.AddWithValue("@StoreId", UCase(data.customer).ToString())
                             myCmd.Parameters.AddWithValue("@OrderNo", data.ordernumber)
                             myCmd.Parameters.AddWithValue("@OrderCust", data.ordername)
                             myCmd.Parameters.AddWithValue("@Delivery", FinalDelivery)
+                            myCmd.Parameters.AddWithValue("@OrderType", data.ordertype)
                             myCmd.Parameters.AddWithValue("@Note", data.Note)
                             myCmd.Connection = thisConn
                             thisConn.Open()
