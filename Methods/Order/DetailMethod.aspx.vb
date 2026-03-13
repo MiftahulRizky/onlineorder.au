@@ -593,7 +593,7 @@ Partial Class Methods_Order_DetailMethod
                             Product = String.Format("{0} {1}", KitName, Size)
                         End If
 
-                         If DesignName = "Roller Blinds" Then
+                        If DesignName = "Roller Blinds" Or DesignName = "Roller Global Blinds" Then
                             Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
 
                             '#Linked 3 Blinds (Dep) & Linked 3 Blinds (Ind)
@@ -747,7 +747,9 @@ Partial Class Methods_Order_DetailMethod
                                 Product = "Roller Skin Only (+Tube Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
                             End If
 
-                         End If
+                            Product = String.Format("Global - {0}", Product)
+
+                        End If
 
                         If DesignName = "Vari Shades" Or DesignName = "Vertical Blinds" Then
                             Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
@@ -781,7 +783,7 @@ Partial Class Methods_Order_DetailMethod
                         End If
 
                         '#----------------|| Hidden Button Next ||----------------#
-                        If DesignName = "Roller Blinds" Then
+                        If DesignName = "Roller Blinds" Or DesignName = "Roller Global Blinds" Then
 
                             Dim TotalBlind As Integer = Convert.ToInt32(publicCfg.GetItemData("SELECT COUNT(Id) FROM OrderDetails WHERE UniqueId = '" + UniqueId + "' AND Active = 1"))
                             If BracketType = "Double" Or BracketType = "Linked 2 Blinds (Ind)" Or BracketType = "Linked 2 Blinds (Dep)" Then
