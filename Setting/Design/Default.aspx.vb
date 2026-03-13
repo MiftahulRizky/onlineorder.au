@@ -116,6 +116,12 @@
         Return result
     End Function
 
+    Protected Function Descpription(Desc As String) As String
+        Dim result As String = "<span class='badge badge-outline text-green'>Production</span>"
+        If InStr(Desc, "Development") Then : Return "<span class='badge badge-outline text-red'>Development</span>" : End If
+        Return result
+    End Function
+
     Private Sub MessageError(Show As Boolean, Msg As String)
         divError.Visible = False : msgError.InnerText = Msg
         If Show = True Then : divError.Visible = True : End If

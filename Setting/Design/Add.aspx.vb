@@ -50,8 +50,7 @@
             If msgError.InnerText = "" Then
                 sdsPage.Insert()
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
-                publicCfg.InsertActivity(userId, Page.Title, "INSERT NEW DESIGN TYPE. NAME : " & txtName.Text)
+               
 
                 Response.Redirect("~/setting/design", False)
             End If

@@ -142,10 +142,10 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Design Type" %>
                   </asp:TemplateField>
                   <asp:BoundField DataField="Company" HeaderText="Company" />
                   <asp:BoundField DataField="Page" HeaderText="Page" />
-                  <asp:BoundField
-                    DataField="Description"
-                    HeaderText="Description"
-                  />
+                
+                  <asp:TemplateField HeaderText="Description">
+                    <ItemTemplate><%# Descpription(Eval("Description").ToString()) %></ItemTemplate>
+                  </asp:TemplateField>
                   <asp:BoundField
                     DataField="Active"
                     HeaderStyle-CssClass="hiddencol"

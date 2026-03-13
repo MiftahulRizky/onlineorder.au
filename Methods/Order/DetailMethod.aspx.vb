@@ -258,9 +258,14 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindDesignType(ByVal customerid As String, ByVal ordertype As String) As Object
+    Public Shared Function BindDesignType(ByVal customerid As String, ByVal ordertype As String, ByVal rolename As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT Designs.Id, Designs.Name FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '" + customerid + "' AND Designs.Type <> 'Additional' AND Designs.Type = '" + ordertype + "' AND Designs.Active = 1 ORDER BY Designs.Name ASC")
+            Dim Env As String = "AND Designs.Description <> 'Environment : Development'"
+            If Not rolename = "Customer" Then
+                Env = ""
+            End If
+
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Designs.Id, Designs.Name FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '{0}' AND Designs.Type <> 'Additional' AND Designs.Type = '{1}' {2} AND Designs.Active = 1 ORDER BY Designs.Name ASC", customerid, ordertype, Env))
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -2407,6 +2412,13 @@ Partial Class Methods_Order_DetailMethod
             result += Print_Cassette(headerid)
             result += Print_CassetteMotorised(headerid)
 
+            'ROLLER
+            result += Print_Global_Roller_SkinOnly(headerid)
+            result += Print_Global_RollerBlind(headerid)
+            result += Print_Global_Roller_Motorised(headerid)
+            result += Print_Global_Cassette(headerid)
+            result += Print_Global_CassetteMotorised(headerid)
+
             Using stream As FileStream = New FileStream(directory + "/" + filename, FileMode.Create)
                 Dim pdfDoc As Document = New Document(PageSize.A4.Rotate)
                 Dim writer As PdfWriter = PdfWriter.GetInstance(pdfDoc, stream)
@@ -4061,6 +4073,486 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
+    Private Shared Function Print_Global_Roller_SkinOnly(HeaderId As String) As String
+        Dim result As String = String.Empty
+        Try
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Global Blinds' AND BlindName='Skin Only' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='8' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
+                result += spanStart & "ROLLER GLOBAL SKIN ONLY" & spanEnd
+
+                result += tableStart
+
+                result += trStart
+                result += thStart & "No" & thEnd
+                result += thStart & "ID" & thEnd
+                result += thStart & "Qty" & thEnd
+                result += thStart & "Location" & thEnd
+                result += thStart & "Fabric" & thEnd
+                result += thStart & "Width" & thEnd
+                result += thStart & "Drop" & thEnd
+                result += thStart & "Trim" & thEnd
+                result += trEnd
+
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Trim").ToString() & tdEnd
+                    result += trEnd
+
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result = "ERROR CREATE PDF ROLLER SKIN ONLY"
+        End Try
+        Return result
+    End Function
+
+    Private Shared Function Print_Global_RollerBlind(HeaderId As String) As String
+        Dim result As String = String.Empty
+        Try
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Global Blinds' AND BlindName='Roller Blind' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='20' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
+                result += spanStart & "ROLLER GLOBAL BLIND" & spanEnd
+                result += tableStart
+
+                result += trStart
+                result += thStart & "No" & thEnd
+                result += thStart & "ID" & thEnd
+                result += thStart & "Qty" & thEnd
+                result += thStart & "Product" & thEnd
+                result += thStart & "Location" & thEnd
+                result += thStart & "Mounting" & thEnd
+                result += thStart & "Width" & thEnd
+                result += thStart & "Drop" & thEnd
+                result += thStart & "Fabric" & thEnd
+                result += thStart & "Roll" & thEnd
+                result += thStart & "Control" & thEnd
+                result += thStart & "Chain Colour" & thEnd
+                result += thStart & "Chain Length" & thEnd
+                result += thStart & "Trim" & thEnd
+                result += thStart & "Bottom Rail" & thEnd
+                result += thStart & "Tube" & thEnd
+                result += thStart & "Childsafe" & thEnd
+                result += thStart & "Accessory" & thEnd
+                result += thStart & "Bracket Covers" & thEnd
+                result += thStart & "Bracket Ext" & thEnd
+                result += trEnd
+
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    Dim bracketType As String = thisData.Tables(0).Rows(i).Item("BracketType").ToString()
+                    Dim kitName As String = thisData.Tables(0).Rows(i).Item("KitName").ToString()
+
+                    If bracketType = "Double" Or bracketType = "Linked 2 Blinds (Dep)" Or bracketType = "Linked 2 Blinds (Ind)" Then
+                        Dim blindNo As String = thisData.Tables(0).Rows(i).Item("BlindNo").ToString()
+                        Dim uniqueId As String = thisData.Tables(0).Rows(i).Item("UniqueId").ToString()
+
+                        If blindNo = "Blind 1" Then
+                            Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            If Not getConnectedId = "" Then
+                                kitName += "<br />"
+                                kitName += "<span style='font-size:6px;color:red;'>" & "* COMPLETE SET WITH ITEM ID : " & getConnectedId & "</span>"
+                            End If
+                        End If
+
+                        If blindNo = "Blind 2" Then
+                            Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            If Not getConnectedId = "" Then
+                                kitName += "<br />"
+                                kitName += "<span style='font-size:6px;color:red;'>" & "* COMPLETE SET WITH ITEM ID : " & getConnectedId & "</span>"
+                            End If
+                        End If
+                    End If
+
+
+                    If bracketType = "Linked 3 Blinds (Dep)" Or bracketType = "Linked 3 Blinds (Ind)" Then
+                        Dim blindNo As String = thisData.Tables(0).Rows(i).Item("BlindNo").ToString()
+                        Dim uniqueId As String = thisData.Tables(0).Rows(i).Item("UniqueId").ToString()
+
+                        If blindNo = "Blind 1" Then
+                            Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId2 As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            Dim id2 As String = String.Empty
+
+                            If Not getConnectedId2 = "" Then
+                                id2 = " item ID " & getConnectedId2
+                            End If
+                            kitName += "<br />"
+                            kitName += "<span style='font-size:6px;color:red;'>" & "* LINKED WITH ITEM ID : " & getConnectedId & id2 & "</span>"
+                        End If
+
+                        If blindNo = "Blind 2" Then
+                            Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId2 As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            Dim id2 As String = String.Empty
+
+                            If Not getConnectedId2 = "" Then
+                                id2 = " item ID " & getConnectedId2
+                            End If
+                            kitName += "<br />"
+                            kitName += "<span style='font-size:6px;color:red;'>" & "* LINKED WITH ITEM ID : " & getConnectedId & id2 & "</span>"
+                        End If
+
+                        If blindNo = "Blind 3" Then
+                            Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId2 As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            Dim id2 As String = String.Empty
+
+                            If Not getConnectedId2 = "" Then
+                                id2 = " item ID " & getConnectedId2
+                            End If
+                            kitName += "<br />"
+                            kitName += "<span style='font-size:6px;color:red;'>" & "* LINKED WITH ITEM ID : " & getConnectedId & id2 & "</span>"
+                        End If
+                    End If
+
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & kitName & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("RollDirection").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ChainColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ChainLength").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Trim").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BottomName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("TubeSize").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ChildSafe").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Accessory").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BracketCover").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BracketExtension").ToString() & tdEnd
+                    result += trEnd
+
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result += "THERE IS AN ERROR IN THE ROLLER BLIND. PLEASE CONTACT <b>support@onlineorder.au</b>"
+        End Try
+        Return result
+    End Function
+
+    Private Shared Function Print_Global_Roller_Motorised(HeaderId As String) As String
+        Dim result As String = String.Empty
+        Try
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Global Blinds' AND BlindName='Motorised' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='20' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse: collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
+                result += spanStart & "ROLLER GLOBAL MOTORISED" & spanEnd
+                result += tableStart
+
+                result += trStart
+                result += thStart & "No" & thEnd
+                result += thStart & "ID" & thEnd
+                result += thStart & "Qty" & thEnd
+                result += thStart & "Product" & thEnd
+                result += thStart & "Location" & thEnd
+                result += thStart & "Mounting" & thEnd
+                result += thStart & "Width" & thEnd
+                result += thStart & "Drop" & thEnd
+                result += thStart & "Roll" & thEnd
+                result += thStart & "Fabric" & thEnd
+                result += thStart & "Control" & thEnd
+                result += thStart & "Motor" & thEnd
+                result += thStart & "Remote" & thEnd
+                result += thStart & "Charger" & thEnd
+                result += thStart & "Flush Connect" & thEnd
+                result += thStart & "Trim" & thEnd
+                result += thStart & "Bottom" & thEnd
+                result += thStart & "Tube" & thEnd
+                result += thStart & "Accessory" & thEnd
+                result += thStart & "Extras" & thEnd
+                result += thStart & "Bracket Covers" & thEnd
+                result += trEnd
+
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    Dim bracketType As String = thisData.Tables(0).Rows(i).Item("BracketType").ToString()
+                    Dim kitName As String = thisData.Tables(0).Rows(i).Item("KitName").ToString()
+
+                    If bracketType = "Double" Or bracketType = "Linked 2 Blinds (Dep)" Or bracketType = "Linked 2 Blinds (Ind)" Then
+                        Dim blindNo As String = thisData.Tables(0).Rows(i).Item("BlindNo").ToString()
+                        Dim uniqueId As String = thisData.Tables(0).Rows(i).Item("UniqueId").ToString()
+
+                        If blindNo = "Blind 1" Then
+                            Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            If Not getConnectedId = "" Then
+                                kitName += "<br />"
+                                kitName += "<span style='font-size:6px;color:red;'>" & "* COMPLETE SET WITH ITEM ID : " & getConnectedId & "</span>"
+                            End If
+                        End If
+
+                        If blindNo = "Blind 2" Then
+                            Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            If Not getConnectedId = "" Then
+                                kitName += "<br />"
+                                kitName += "<span style='font-size:6px;color:red;'>" & "* COMPLETE SET WITH ITEM ID : " & getConnectedId & "</span>"
+                            End If
+                        End If
+                    End If
+
+
+                    If bracketType = "Linked 3 Blinds (Dep)" Or bracketType = "Linked 3 Blinds (Ind)" Then
+                        Dim blindNo As String = thisData.Tables(0).Rows(i).Item("BlindNo").ToString()
+                        Dim uniqueId As String = thisData.Tables(0).Rows(i).Item("UniqueId").ToString()
+
+                        If blindNo = "Blind 1" Then
+                            Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId2 As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            Dim id2 As String = String.Empty
+
+                            If Not getConnectedId2 = "" Then
+                                id2 = " item ID " & getConnectedId2
+                            End If
+                            kitName += "<br />"
+                            kitName += "<span style='font-size:6px;color:red;'>" & "* LINKED WITH ITEM ID : " & getConnectedId & id2 & "</span>"
+                        End If
+
+                        If blindNo = "Blind 2" Then
+                            Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId2 As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            Dim id2 As String = String.Empty
+
+                            If Not getConnectedId2 = "" Then
+                                id2 = " item ID " & getConnectedId2
+                            End If
+                            kitName += "<br />"
+                            kitName += "<span style='font-size:6px;color:red;'>" & "* LINKED WITH ITEM ID : " & getConnectedId & id2 & "</span>"
+                        End If
+
+                        If blindNo = "Blind 3" Then
+                            Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId2 As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            Dim id2 As String = String.Empty
+
+                            If Not getConnectedId2 = "" Then
+                                id2 = " item ID " & getConnectedId2
+                            End If
+                            kitName += "<br />"
+                            kitName += "<span style='font-size:6px;color:red;'>" & "* LINKED WITH ITEM ID : " & getConnectedId & id2 & "</span>"
+                        End If
+                    End If
+
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & kitName & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("RollDirection").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("MotorStyle").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("MotorRemote").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("MotorCharger").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Connector").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Trim").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BottomName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("TubeSize").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Accessory").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("AdditionalMotor").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BracketCover").ToString() & tdEnd
+                    result += trEnd
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result = "ERROR CREATE PDF ROLLER MOTORIZED"
+        End Try
+        Return result
+    End Function
+
+    Private Shared Function Print_Global_Cassette(HeaderId As String) As String
+        Dim result As String = String.Empty
+        Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Global Blinds' AND BlindName='Cassette' AND TubeType='JAI Geared' AND Active=1 ORDER BY Id, BlindNo ASC")
+        If Not thisData.Tables(0).Rows.Count = 0 Then
+            Dim tdNotes As String = "<td colspan='18' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
+            result += spanStart & "ROLLER GLOBAL CASSETTE - JAI SYSTEM" & spanEnd
+            result += tableStart
+
+            result += trStart
+            result += thStart & "No" & thEnd
+            result += thStart & "ID" & thEnd
+            result += thStart & "Qty" & thEnd
+            result += thStart & "Product" & thEnd
+            result += thStart & "Location" & thEnd
+            result += thStart & "Mounting" & thEnd
+            result += thStart & "Width" & thEnd
+            result += thStart & "Drop" & thEnd
+            result += thStart & "Roll" & thEnd
+            result += thStart & "Fabric" & thEnd
+            result += thStart & "Control" & thEnd
+            result += thStart & "Chain Colour" & thEnd
+            result += thStart & "Chain Length" & thEnd
+            result += thStart & "Trim" & thEnd
+            result += thStart & "Bottom" & thEnd
+            result += thStart & "ChildSafe" & thEnd
+            result += thStart & "Accessory" & thEnd
+            result += thStart & "Bracket Covers" & thEnd
+            result += trEnd
+
+            For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                result += trStart
+                result += tdStart & i + 1 & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("RollDirection").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("ChainColour").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("ChainLength").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Trim").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("BottomName").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("ChildSafe").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Accessory").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("BracketCover").ToString() & tdEnd
+                result += trEnd
+
+                If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                    result += trStart
+                    result += tdNotes
+                    result += bNotesStart
+                    result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                    result += bNotesEnd
+                    result += tdEnd
+                    result += trEnd
+                End If
+            Next
+            result += tableEnd
+        End If
+        Return result
+    End Function
+
+    Private Shared Function Print_Global_CassetteMotorised(HeaderId As String) As String
+        Dim result As String = String.Empty
+        Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Global Blinds' AND BlindName='Cassette' AND TubeType='Motorised' AND Active=1 ORDER BY Id, BlindNo ASC")
+        If Not thisData.Tables(0).Rows.Count = 0 Then
+            Dim tdNotes As String = "<td colspan='21' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
+            result += spanStart & "ROLLER GLOBAL CASSETTE - MOTORISED" & spanEnd
+            result += tableStart
+
+            result += trStart
+            result += thStart & "No" & thEnd
+            result += thStart & "ID" & thEnd
+            result += thStart & "Qty" & thEnd
+            result += thStart & "Product" & thEnd
+            result += thStart & "Location" & thEnd
+            result += thStart & "Mounting" & thEnd
+            result += thStart & "Control" & thEnd
+            result += thStart & "Fabric" & thEnd
+            result += thStart & "Width" & thEnd
+            result += thStart & "Drop" & thEnd
+            result += thStart & "Roll Direction" & thEnd
+            result += thStart & "Motor" & thEnd
+            result += thStart & "Remote" & thEnd
+            result += thStart & "Charger" & thEnd
+            result += thStart & "Flush Connect" & thEnd
+            result += thStart & "Cable Exit" & thEnd
+            result += thStart & "Trim" & thEnd
+            result += thStart & "Bottom" & thEnd
+            result += thStart & "Accessory" & thEnd
+            result += thStart & "Extras" & thEnd
+            result += thStart & "Bracket Covers" & thEnd
+            result += trEnd
+
+            For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                result += trStart
+                result += tdStart & i + 1 & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("ID").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("RollDirection").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("MotorStyle").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("MotorRemote").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("MotorCharger").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Connector").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("CableExitPoint").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Trim").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("BottomName").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("Accessory").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("AdditionalMotor").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("BracketCover").ToString() & tdEnd
+                result += trEnd
+
+                If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                    result += trStart
+                    result += tdNotes
+                    result += bNotesStart
+                    result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                    result += bNotesEnd
+                    result += tdEnd
+                    result += trEnd
+                End If
+            Next
+            result += tableEnd
+        End If
+        Return result
+    End Function
+
     Private Shared Function BindDescOrderItem(HeaderId As String) As String
         Dim result As String = ""
 
@@ -4070,6 +4562,7 @@ Partial Class Methods_Order_DetailMethod
         Dim totalPG As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Panel Glides' AND Active=1")
         Dim totalVenetian As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Venetian Blinds' AND Active=1")
         Dim totalRoller As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roller Blinds' AND Active=1")
+        Dim totalGlobalRoller As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roller Global Blinds' AND Active=1")
         Dim totalRoman As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roman Blinds' AND Active=1")
         Dim totalVerishades As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Veri Shades' AND Active=1")
         Dim totalVertical As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Vertical Blinds' AND Active=1")
@@ -4079,6 +4572,7 @@ Partial Class Methods_Order_DetailMethod
         If totalPG = "" Then : totalPG = "-" : End If
         If totalVenetian = "" Then : totalVenetian = "-" : End If
         If totalRoller = "" Then : totalRoller = "-" : End If
+        If totalGlobalRoller = "" Then : totalGlobalRoller = "-" : End If
         If totalRoman = "" Then : totalRoman = "-" : End If
         If totalVerishades = "" Then : totalVerishades = "-" : End If
         If totalVertical = "" Then : totalVertical = "-" : End If
@@ -4088,11 +4582,12 @@ Partial Class Methods_Order_DetailMethod
         Dim panelGlides As String = "<b>Panel Glides: " & totalPG & "</b>"
         Dim venetianblinds As String = "<b>Venetian Blinds:  " & totalVenetian & "</b>"
         Dim rollerblinds As String = "<b>Roller Blinds: " & totalRoller & "</b>"
+        Dim rollerglobalblinds As String = "<b>Roller Global Blinds: " & totalGlobalRoller & "</b>"
         Dim romanBlinds As String = "<b>Roman Blinds: " & totalRoman & "</b>"
         Dim verishades As String = "<b>Veri Shades: " & totalVerishades & "</b>"
         Dim verticalblinds As String = "<b>Vertical Blinds: " & totalVertical & "</b>"
 
-        result = celloraBlinds & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
+        result = celloraBlinds & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & rollerglobalblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
         Return result
     End Function
 
@@ -7089,6 +7584,7 @@ Partial Class Methods_Order_DetailMethod
                 "JobSheet_Cellular",
                 "JobSheet_PanelGlides",
                 "JobSheet_RollerBlinds",
+                "JobSheet_RollerGlobalBlinds",
                 "JobSheet_RomanBlinds",
                 "JobSheet_Venetian",
                 "JobSheet_Verishades",
@@ -7208,6 +7704,11 @@ Partial Class Methods_Order_DetailMethod
                                 fieldsToProcess.AddRange({"Line", "BlindNo", "LinkBlind", "Qty", "Location", "Mounting", "Width", "Drop", "RollDirection", "ControlPosition", "ControlLength", "MotorStyle", "MotorRemote", "MotorCharger", "Connector", "Accessory", "TubeSize", "Trim", "ChildSafe", "Notes", "KitName", "BracketType", "TubeType", "TubeSkinSize", "NumBoldNuts",  "ControlType",  "ColourType", "ChainName", "ChainColour", "ChainLength","BottomName", "BottomType", "BottomColour","FabricName", "FabricType", "FabricColour", "FabricWidth"})
 
                                 tableName = "JobSheet_RollerBlinds"
+
+                            Case "Roller Global Blinds"
+                                fieldsToProcess.AddRange({"Line", "BlindNo", "LinkBlind", "Qty", "Location", "Mounting", "Width", "Drop", "RollDirection", "ControlPosition", "ControlLength", "MotorStyle", "MotorRemote", "MotorCharger", "Connector", "Accessory", "TubeSize", "Trim", "ChildSafe", "Notes", "KitName", "BracketType", "TubeType", "TubeSkinSize", "NumBoldNuts",  "ControlType",  "ColourType", "ChainName", "ChainColour", "ChainLength","BottomName", "BottomType", "BottomColour","FabricName", "FabricType", "FabricColour", "FabricWidth"})
+
+                                tableName = "JobSheet_RollerGlobalBlinds"
 
                             Case "Roman Blinds"
                                 fieldsToProcess.AddRange({"Line", "BlindNo", "Qty", "Location", "Mounting", "Width", "Drop", "ControlPosition", "ChainLength", "MaterialChain", "CordColour", "CordLength", "AcornPlasticColour", "BattenColour", "Cleat", "Notes", "KitName", "VenetianType", "ControlType", "ChainName", "ChainColour", "CLength","FabricName", "FabricType", "FabricColour", "FabricWidth"})
@@ -7337,6 +7838,7 @@ Partial Class Methods_Order_DetailMethod
                 {"JobSheet_Cellular", AddressOf JobSheetCellular},
                 {"JobSheet_PanelGlides", AddressOf JobSheetPanelGlides},
                 {"JobSheet_RollerBlinds", AddressOf JobSheetRollerBlinds},
+                {"JobSheet_RollerGlobalBlinds", AddressOf JobSheetRollerGlobalBlinds},
                 {"JobSheet_RomanBlinds", AddressOf JobSheetRomanBlinds},
                 {"JobSheet_Venetian", AddressOf JobSheetVenetian},
                 {"JobSheet_Verishades", AddressOf JobSheetVerishades},
@@ -7454,6 +7956,23 @@ Partial Class Methods_Order_DetailMethod
                 result += PrintRollerBlind(currentData)
             Case "Skin Only"
                 result += PrintRollerSkin(currentData)
+        End Select
+
+        Return result
+    End Function
+
+    Private Shared Function JobSheetRollerGlobalBlinds(currentData As DataRow) As String
+        Dim result As String = String.Empty
+        
+        Select Case currentData("BlindName").ToString()
+            Case "Cassette Complete", "Cassette Headbox"
+                result += PrintRollerGlobalCassette(currentData)
+            Case "Motorised"
+                result += PrintRollerGlobalMotorised(currentData)
+            Case "Roller Blind"
+                result += PrintRollerGlobalBlind(currentData)
+            Case "Skin Only"
+                result += PrintRollerGlobalSkin(currentData)
         End Select
 
         Return result
@@ -7599,6 +8118,24 @@ Partial Class Methods_Order_DetailMethod
             End Select
         Next
 
+        '#Roller Global Blinds
+        Dim rollerGlobalList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_RollerGlobalBlinds WHERE JobId = '" & JobId & "'")
+        For i As Integer = 0 To rollerGlobalList.Tables(0).Rows.Count - 1
+            Dim blindName As String = rollerGlobalList.Tables(0).Rows(i).Item("BlindName").ToString()
+            Select Case blindName
+                Case "Roller Blind"
+                        goWithList.Add("H")
+                Case "Motorised"
+                    goWithList.Add("Motorised")
+                Case "Cassette Complete"
+                    goWithList.Add("Cc")
+                Case "Cassette Headbox"
+                    goWithList.Add("Ch")
+                Case "Skin Only"
+                    goWithList.Add("Hs")
+            End Select
+        Next
+
         '#Venetian Blinds
         Dim venList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_Venetian WHERE JobId = '" & JobId & "'")
         For i As Integer = 0 To venList.Tables(0).Rows.Count - 1
@@ -7704,6 +8241,31 @@ Partial Class Methods_Order_DetailMethod
                     Case "Skin Only"
                         ReportType = "Holland Skin"
                         ReportIcon = "Hs"
+                End Select
+
+            Case "Roller Global Blinds"
+                ReportIcon = "H"
+                ReportType = "Holland Global"
+
+                Select Case  currentData("BlindName").ToString()
+                    Case "Roller Blind"
+                        ReportType = "Holland Global Blinds"
+                        ReportIcon = "H <br/><span style='font-size: 15px;'>Global</span>"
+
+                    Case "Motorised"
+                        ReportType = "Holland Global Motorised"
+                        ReportIcon = "HM <br/><span style='font-size: 15px;'>Global</span>"
+
+                    Case "Cassette Complete"
+                        ReportType = "Holland Global Cassette C"
+                        ReportIcon = "Cc <br/><span style='font-size: 15px;'>Global</span>"
+                    Case "Cassette Headbox"
+                        ReportType = "Holland Global Cassette H"
+                        ReportIcon = "Ch <br/><span style='font-size: 15px;'>Global</span>"
+
+                    Case "Skin Only"
+                        ReportType = "Holland Global Skin"
+                        ReportIcon = "Hs <br/><span style='font-size: 15px;'>Global</span>"
                 End Select
 
             Case "Roman Blinds"
@@ -10539,6 +11101,1390 @@ Partial Class Methods_Order_DetailMethod
     End Function
 
     Private Shared Function PrintRollerSkin(currentData As DataRow) As String
+        Dim result As String = String.Empty
+
+        Dim initControlType As String() = {
+            currentData("Qty1").ToString(),
+            currentData("Qty2").ToString(),
+            currentData("Qty3").ToString(),
+            currentData("Qty4").ToString(),
+            currentData("Qty5").ToString(),
+            currentData("Qty6").ToString()
+        }
+        For i As Integer = 0 To initControlType.Length - 1
+            If Not String.IsNullOrEmpty(initControlType(i).ToString()) Then
+                initControlType(i) = "Skin Only"
+            Else
+                initControlType(i) = String.Empty
+            End If
+        Next
+
+        Dim skinInfo As String = fs10Start & "<b>skin comes with top splin and bottom spline only (pocket if 1P trim) </b>" & fsEnd
+
+        Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
+
+        result+= SubstituteFabric()
+        result+= LineOptions(currentData)
+
+        result+= tableDetStart
+            '#QTY
+            result+= trDetStart
+                result+= tdTitleStart & "Qty" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty1").ToString()), "0", currentData("Qty1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty2").ToString()), "0", currentData("Qty2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty3").ToString()), "0", currentData("Qty3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty4").ToString()), "0", currentData("Qty4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty5").ToString()), "0", currentData("Qty5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Qty6").ToString()), "0", currentData("Qty6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#FabricType Or Fabric
+            result+= trDetStart
+                result+= tdTitleStart & "Fabric" & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType1").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType2").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType3").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType4").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType5").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs11Start & currentData("FabricType6").ToString() & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#FabricColour Or Colour
+            result+= trDetStart
+                result+= tdTitleStart & "Colour" & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour1").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour2").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour3").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour4").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour5").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs11Start & currentData("FabricColour6").ToString() & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#Width
+            result+= trDetStart
+                result+= tdTitleStart & "Width (mm)" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width1").ToString()), "0", currentData("Width1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width2").ToString()), "0", currentData("Width2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width3").ToString()), "0", currentData("Width3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width4").ToString()), "0", currentData("Width4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width5").ToString()), "0", currentData("Width5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Width6").ToString()), "0", currentData("Width6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#Drop
+            result+= trDetStart
+                result+= tdTitleStart & "Drop (mm)" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop1").ToString()), "0", currentData("Drop1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop2").ToString()), "0", currentData("Drop2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop3").ToString()), "0", currentData("Drop3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop4").ToString()), "0", currentData("Drop4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop5").ToString()), "0", currentData("Drop5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Drop6").ToString()), "0", currentData("Drop6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#Trim Or Trims
+            result+= trDetStart
+                result+= tdTitleStart & "Trim <br></br>" & skinInfo & tdDetEnd
+                result+= tdDetStart & currentData("Trim1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Trim6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#ControllType
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Control Type" & boldEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & initControlType(0) & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & initControlType(1) & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & initControlType(2) & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & initControlType(3) & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & initControlType(4) & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetRight & fs12Start & boldStart & initControlType(5) & boldEnd & fsEnd & tdDetEnd
+            result+= trDetEnd
+
+             '#line Blank
+            result += BlankLineEachRow(20)
+
+        result+= tableDetEnd
+
+        '#Footer
+        result+= "<table style='width: 100%; font-size:11px; border-collapse: collapse;'>"
+            '#Offcut Fabric Used
+            result+= trDetStart
+                result+= "<td style='width:100px;'>" & "Offcut Fabric Used" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+            result+= trDetEnd
+            '#Recut Made
+            result+= trDetStart
+                result+= "<td style='width:100px;'>" & "Recut Made" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+            result+= trDetEnd
+            '#If ys, how  many times
+            result+= trDetStart
+                result+= "<td style='width:100px;'>" & "If yes, how  many times" & tdDetEnd
+                ' result+= "<td style='width:100px;'>" & "<td style='border: 1px solid black;'>|0|0|</td>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+            result+= trDetEnd
+            '#Total Rollers
+            result+= trDetStart
+                result+= "<td style='width:100px; padding:5px 0px;'>" & "<span>Total Rollers: </span><span style='color:white;'>------</span><span style='font-weight:bold;'>" & TotalBlind & "</span>" &  tdDetEnd
+                result+= tdDetFooterStart &  "Issued By" & tdDetEnd
+                result+= tdDetFooterStart &  "Cutting Tube" & tdDetEnd
+                result+= tdDetFooterStart &  "Cutting Fabric" & tdDetEnd
+                result+= tdDetFooterStart &  "Sewing" & tdDetEnd
+                result+= tdDetFooterStart &  "Assembling, Packing" & tdDetEnd
+                result+= tdDetFooterStart &  "QC" & tdDetEnd
+            result+= trDetEnd
+            '#Page
+            result+= trDetStart
+                result+= "<td rowspan='2' style='width:100px; padding:5px 2px; text-align:center;'>" &  "<div style='font-size:12px;'>Page </div><div style='padding-top:8px; font-size:12px;'>" & currentData("PageOf").ToString() &" OF "& currentData("AmountOfPage").ToString() & "</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+            result+= trDetEnd
+            '#Of
+            result+= trDetStart
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+            result+= trDetEnd
+        result+= tableDetEnd
+
+        Return result
+    End Function
+
+    '#------------------------------------------|| Print Detail - Roller Global Blinds||------------------------------------------#
+    Private Shared Function PrintRollerGlobalCassette(currentData As DataRow) As String
+        Dim result As String = String.Empty
+
+        Dim bracketTypes As String() = {
+            currentData("BracketType1").ToString(),
+            currentData("BracketType2").ToString(),
+            currentData("BracketType3").ToString(),
+            currentData("BracketType4").ToString(),
+            currentData("BracketType5").ToString(),
+            currentData("BracketType6").ToString()
+        }
+
+        For i As Integer = 0 To bracketTypes.Length - 1
+            Select Case bracketTypes(i)
+                Case "Headbox & Side Channels"
+                    bracketTypes(i) = "Hb & SC"
+                Case "Headbox Only"
+                    bracketTypes(i) = "Hb Only"
+            End Select
+        Next
+
+        Dim BracketType1 As String = bracketTypes(0)
+        Dim BracketType2 As String = bracketTypes(1)
+        Dim BracketType3 As String = bracketTypes(2)
+        Dim BracketType4 As String = bracketTypes(3)
+        Dim BracketType5 As String = bracketTypes(4)
+        Dim BracketType6 As String = bracketTypes(5)
+
+
+
+        Dim ControlLength As String() = {
+            currentData("ChainLength1").ToString(),
+            currentData("ChainLength2").ToString(),
+            currentData("ChainLength3").ToString(),
+            currentData("ChainLength4").ToString(),
+            currentData("ChainLength5").ToString(),
+            currentData("ChainLength6").ToString()
+        }
+
+        For i As Integer = 0 To ControlLength.Length - 1
+            If String.IsNullOrEmpty(ControlLength(i)) OR ControlLength(i) = "0" Then
+                ControlLength(i) = ""
+            Else
+                ControlLength(i) = ControlLength(i) & " + joiner"
+            End If
+        Next
+
+        
+
+        Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
+
+
+        '#line options
+        result+= SubstituteFabric()
+        result+= LineOptions(currentData)
+
+        '#Table Data
+        result+= tableDetStart
+            '#QTY
+            result+= trDetStart
+                result+= tdTitleStart & "Qty" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty1").ToString()), "0", currentData("Qty1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty2").ToString()), "0", currentData("Qty2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty3").ToString()), "0", currentData("Qty3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty4").ToString()), "0", currentData("Qty4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty5").ToString()), "0", currentData("Qty5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Qty6").ToString()), "0", currentData("Qty6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#Fabrics
+            result+= trDetStart
+                result+= tdTitleStart & "Fabric" & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType1").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType2").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType3").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType4").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType5").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs11Start & currentData("FabricType6").ToString() & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#FabricColour
+            result+= trDetStart
+                result+= tdTitleStart & "Colour" & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour1").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour2").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour3").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour4").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour5").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs11Start & currentData("FabricColour6").ToString() & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#Width
+            result+= trDetStart
+                result+= tdTitleStart & "Width (mm)" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width1").ToString()), "0", currentData("Width1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width2").ToString()), "0", currentData("Width2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width3").ToString()), "0", currentData("Width3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width4").ToString()), "0", currentData("Width4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width5").ToString()), "0", currentData("Width5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Width6").ToString()), "0", currentData("Width6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#Drop
+            result+= trDetStart
+                result+= tdTitleStart & "Drop (mm)" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop1").ToString()), "0", currentData("Drop1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop2").ToString()), "0", currentData("Drop2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop3").ToString()), "0", currentData("Drop3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop4").ToString()), "0", currentData("Drop4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop5").ToString()), "0", currentData("Drop5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Drop6").ToString()), "0", currentData("Drop6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#SkinWidth
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Skin Width" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize1").ToString()), "0", currentData("TubeSkinSize1").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize2").ToString()), "0", currentData("TubeSkinSize2").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize3").ToString()), "0", currentData("TubeSkinSize3").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize4").ToString()), "0", currentData("TubeSkinSize4").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize5").ToString()), "0", currentData("TubeSkinSize5").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize6").ToString()), "0", currentData("TubeSkinSize6").ToString()) & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#SkinDrop
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Skin Drop" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts1").ToString()), "0", currentData("NumBoldNuts1").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts2").ToString()), "0", currentData("NumBoldNuts2").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts3").ToString()), "0", currentData("NumBoldNuts3").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts4").ToString()), "0", currentData("NumBoldNuts4").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts5").ToString()), "0", currentData("NumBoldNuts5").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts6").ToString()), "0", currentData("NumBoldNuts6").ToString()) & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#Trim
+            result+= trDetStart
+                result+= tdTitleStart & "Trim" & tdDetEnd
+                result+= tdDetStart & currentData("Trim1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Trim6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#RollDirection
+            result+= trDetStart
+                result+= tdTitleStart & "Roll Direction" & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("RollDirection6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#ControlType
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Control Type" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("ControlType1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("ControlType2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("ControlType3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("ControlType4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("ControlType5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("ControlType6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#ControlPosition
+            result+= trDetStart
+                result+= tdTitleStart & "Control Position" & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("ControlPosition6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#ChainColour
+            result+= trDetStart
+                result+= tdTitleStart & "Chain Colour" & tdDetEnd
+                result+= tdDetStart & currentData("ChainColour1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainColour2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainColour3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainColour4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainColour5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("ChainColour6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#ChildSafe
+            result+= trDetStart
+                result+= tdTitleStart & "Delux Child Safe" & tdDetEnd
+                result+= tdDetStart & currentData("ChildSafe1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChildSafe2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChildSafe3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChildSafe4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChildSafe5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("ChildSafe6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#CLength
+            result+= trDetStart
+                result+= tdTitleStart & "Control Length" & tdDetEnd
+                result+= tdDetStart & ControlLength(0) & tdDetEnd
+                result+= tdDetStart & ControlLength(1) & tdDetEnd
+                result+= tdDetStart & ControlLength(2) & tdDetEnd
+                result+= tdDetStart & ControlLength(3) & tdDetEnd
+                result+= tdDetStart & ControlLength(4) & tdDetEnd
+                result+= tdDetRight & ControlLength(5) & tdDetEnd
+            result+= trDetEnd
+
+            '#TubeSize
+            result+= trDetStart
+                result+= tdTitleStart & "Tube Size" & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("TubeSize6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#BottomType
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "BRail Shape" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("BottomType6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#BottomColour
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "BRail Colour" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("BottomColour6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#TubeType
+            result+= trDetStart
+                result+= tdTitleStart & "Bracket" & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TubeType1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TubeType2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TubeType3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TubeType4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TubeType5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("TubeType6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#BracketType
+            result+= trDetStart
+                result+= tdTitleStart & "Cassette" & tdDetEnd
+                result+= tdDetStart & boldStart & BracketType1 & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & BracketType2 & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & BracketType3 & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & BracketType4 & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & BracketType5 & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & BracketType6 & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#ColourType
+            result+= trDetStart
+                result+= tdTitleStart & "Cassette Colour" & tdDetEnd
+                result+= tdDetStart & currentData("ColourType1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ColourType2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ColourType3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ColourType4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ColourType5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("ColourType6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#Mounting
+            result+= trDetStart
+                result+= tdTitleStart & "FIXING" & tdDetEnd
+                result+= tdDetStart & currentData("Mounting1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Mounting6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#Location
+            result+= trDetStart
+                result+= tdTitleStart & "LOCATION" & tdDetEnd
+                result+= tdDetStart & currentData("Location1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Location6").ToString() & tdDetEnd
+            result+= trDetEnd
+            
+            '#Blank Line
+            result+= BlankLineEachRow(8)
+
+        result+= tableDetEnd
+
+        '#Footer
+        result+= "<table style='width: 100%; font-size:11px; border-collapse: collapse;'>"
+            '#Offcut Fabric Used
+            result+= trDetStart
+                result+= "<td style='width:100px;'>" & "Offcut Fabric Used" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+            result+= trDetEnd
+            '#Recut Made
+            result+= trDetStart
+                result+= "<td style='width:100px;'>" & "Recut Made" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+            result+= trDetEnd
+            '#If ys, how  many times
+            result+= trDetStart
+                result+= "<td style='width:100px;'>" & "If yes, how  many times" & tdDetEnd
+                ' result+= "<td style='width:100px;'>" & "<td style='border: 1px solid black;'>|0|0|</td>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+            result+= trDetEnd
+            '#Total Rollers
+            result+= trDetStart
+                result+= "<td style='width:100px; padding:5px 0px;'>" & "<span>Total Rollers: </span><span style='color:white;'>------</span><span style='font-weight:bold;'>" & TotalBlind & "</span>" &  tdDetEnd
+                result+= tdDetFooterStart &  "Issued By" & tdDetEnd
+                result+= tdDetFooterStart &  "Cutting Tube" & tdDetEnd
+                result+= tdDetFooterStart &  "Cutting Fabric" & tdDetEnd
+                result+= tdDetFooterStart &  "Sewing" & tdDetEnd
+                result+= tdDetFooterStart &  "Assembling, Packing" & tdDetEnd
+                result+= tdDetFooterStart &  "QC" & tdDetEnd
+            result+= trDetEnd
+            '#Page
+            result+= trDetStart
+                result+= "<td rowspan='2' style='width:100px; padding:5px 2px; text-align:center;'>" &  "<div style='font-size:12px;'>Page </div><div style='padding-top:8px; font-size:12px;'>" & currentData("PageOf").ToString() &" OF "& currentData("AmountOfPage").ToString() & "</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+            result+= trDetEnd
+            '#Of
+            result+= trDetStart
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+            result+= trDetEnd
+        result+= tableDetEnd
+
+
+        Return result
+    End Function
+
+    Private Shared Function PrintRollerGlobalMotorised(currentData As DataRow) As String
+        Dim result As String = String.Empty
+       
+        Dim ControlType As String() = {
+            currentData("ControlType1").ToString(),
+            currentData("ControlType2").ToString(),
+            currentData("ControlType3").ToString(),
+            currentData("ControlType4").ToString(),
+            currentData("ControlType5").ToString(),
+            currentData("ControlType6").ToString()
+        }
+        For i As Integer = 0 To ControlType.Length - 1
+            Select Case ControlType(i)
+                Case "Alpha RTS"
+                    ControlType(i) = "AP RTS"
+                Case "Alpha WF"
+                    ControlType(i) = "AP WF"
+                Case "Alpha WS"
+                    ControlType(i) = "AP WS"
+                Case "Somfy RTS"
+                    ControlType(i) = "SF RTS"
+                Case "Somfy WF"
+                    ControlType(i) = "SF WF"
+                Case "Somfy WS"
+                    ControlType(i) = "SF WS"
+            End Select
+        Next
+
+        Dim Motorised1 As String = ControlType(0) & " " & currentData("TubeSize1").ToString() & " (" & currentData("ColourType1").ToString() & ")"
+        Dim Motorised2 As String = ControlType(1) & " " & currentData("TubeSize2").ToString() & " (" & currentData("ColourType2").ToString() & ")"
+        Dim Motorised3 As String = ControlType(2) & " " & currentData("TubeSize3").ToString() & " (" & currentData("ColourType3").ToString() & ")"
+        Dim Motorised4 As String = ControlType(3) & " " & currentData("TubeSize4").ToString() & " (" & currentData("ColourType4").ToString() & ")"
+        Dim Motorised5 As String = ControlType(4) & " " & currentData("TubeSize5").ToString() & " (" & currentData("ColourType5").ToString() & ")"
+        Dim Motorised6 As String = ControlType(5) & " " & currentData("TubeSize6").ToString() & " (" & currentData("ColourType6").ToString() & ")"
+
+        Dim initBracketType As String() = {
+            currentData("BracketType1").ToString(),
+            currentData("BracketType2").ToString(),
+            currentData("BracketType3").ToString(),
+            currentData("BracketType4").ToString(),
+            currentData("BracketType5").ToString(),
+            currentData("BracketType6").ToString()
+        }
+        For i As Integer = 0 To initBracketType.Length - 1
+            Select Case initBracketType(i)
+                Case "Single"
+                    initBracketType(i) = ""
+                Case "Linked 2 Blinds (Dep)"
+                    initBracketType(i) = "L2B1C"
+                Case "Linked 2 Blinds (Ind)"
+                    initBracketType(i) = "L2B2C"
+                Case "Linked 3 Blinds (Dep)"
+                    initBracketType(i) = "L3B1C"
+                Case "Linked 3 Blinds (Ind)"
+                    initBracketType(i) = "L3B2C"
+                Case "Double"
+                    initBracketType(i) = "D"
+                Case "Double and Link System Dep"
+                    initBracketType(i) = "DL4B2C"
+                Case "Double and Link System Ind"
+                    initBracketType(i) = "DL4B4C"
+            End Select
+        Next
+
+         Dim initTubeType As String() = {
+            currentData("TubeType1").ToString(),
+            currentData("TubeType2").ToString(),
+            currentData("TubeType3").ToString(),
+            currentData("TubeType4").ToString(),
+            currentData("TubeType5").ToString(),
+            currentData("TubeType6").ToString()
+        }
+
+         For i As Integer = 0 To initTubeType.Length - 1
+            If InStr(initTubeType(i), "JAI") > 0 Then : initTubeType(i) = "MJH" : End If
+            If InStr(initTubeType(i), "Acmeda") > 0 Then : initTubeType(i) = "MAC" : End If
+            If InStr(initTubeType(i), "LOV") > 0 Then : initTubeType(i) = "MLOV" : End If
+        Next
+
+        Dim Bracket1 As String = initTubeType(0) & " " & initBracketType(0)
+        Dim Bracket2 As String = initTubeType(1) & " " & initBracketType(1)
+        Dim Bracket3 As String = initTubeType(2) & " " & initBracketType(2)
+        Dim Bracket4 As String = initTubeType(3) & " " & initBracketType(3)
+        Dim Bracket5 As String = initTubeType(4) & " " & initBracketType(4)
+        Dim Bracket6 As String = initTubeType(5) & " " & initBracketType(5)
+
+        Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
+
+
+       
+        
+        '#line options
+        result+= SubstituteFabric()
+        result+= LineOptions(currentData)
+
+        '#Table Data
+        result+= tableDetStart
+            '#QTY
+            result+= trDetStart
+                result+= tdTitleStart & "Qty" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty1").ToString()), "0", currentData("Qty1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty2").ToString()), "0", currentData("Qty2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty3").ToString()), "0", currentData("Qty3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty4").ToString()), "0", currentData("Qty4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty5").ToString()), "0", currentData("Qty5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Qty6").ToString()), "0", currentData("Qty6").ToString()) & tdDetEnd
+            result+= trDetEnd
+        
+            '#Fabrics
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Fabric" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType1").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType2").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType3").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType4").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType5").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs11Start & currentData("FabricType6").ToString() & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#FabricColour
+            result+= trDetStart
+                result+= tdTitleStart & "Colour" & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour1").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour2").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour3").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour4").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour5").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs11Start & currentData("FabricColour6").ToString() & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#TubeSkinSize
+            result+= trDetStart
+                result+= tdTitleStart & fs11Start & boldStart &  "Tube & Skin Width" & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize1").ToString()), "0", currentData("TubeSkinSize1").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize2").ToString()), "0", currentData("TubeSkinSize2").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize3").ToString()), "0", currentData("TubeSkinSize3").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize4").ToString()), "0", currentData("TubeSkinSize4").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize5").ToString()), "0", currentData("TubeSkinSize5").ToString()) & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize6").ToString()), "0", currentData("TubeSkinSize6").ToString()) & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#NumBoldNuts
+            result+= trDetStart
+                result+= tdTitleStart & "Skin Drop" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts1").ToString()), "0", currentData("NumBoldNuts1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts2").ToString()), "0", currentData("NumBoldNuts2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts3").ToString()), "0", currentData("NumBoldNuts3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts4").ToString()), "0", currentData("NumBoldNuts4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts5").ToString()), "0", currentData("NumBoldNuts5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("NumBoldNuts6").ToString()), "0", currentData("NumBoldNuts6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#TubeSize
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Tube" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TubeSize1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TubeSize2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TubeSize3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TubeSize4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TubeSize5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("TubeSize6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#TubeType
+            result+= trDetStart
+                result+= tdTitleStart & "Control Type" & tdDetEnd
+                result+= tdDetStart & currentData("TubeType1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeType2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeType3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeType4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeType5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("TubeType6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#MotorStyle
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Motor Style" & boldEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & boldStart & currentData("MotorStyle1").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & boldStart & currentData("MotorStyle2").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & boldStart & currentData("MotorStyle3").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & boldStart & currentData("MotorStyle4").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & boldStart & currentData("MotorStyle5").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetRight & fs11Start & boldStart & currentData("MotorStyle6").ToString() & boldEnd & fsEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#ColourType
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Ctrl Colour" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("ColourType1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("ColourType2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("ColourType3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("ColourType4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("ColourType5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("ColourType6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#RollDirection
+            result+= trDetStart
+                result+= tdTitleStart & "Roll Direction" & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("RollDirection6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#MotorRemote
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Remote/Switch" & boldEnd & tdDetEnd
+                result+= tdDetStart & fs10Start & boldStart & currentData("MotorRemote1").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs10Start & boldStart & currentData("MotorRemote2").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs10Start & boldStart & currentData("MotorRemote3").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs10Start & boldStart & currentData("MotorRemote4").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs10Start & boldStart & currentData("MotorRemote5").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetRight & fs10Start & boldStart & currentData("MotorRemote6").ToString() & boldEnd & fsEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#MotorCharger
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Charger" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("MotorCharger1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("MotorCharger2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("MotorCharger3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("MotorCharger4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("MotorCharger5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("MotorCharger6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#Connector
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Flush Connect" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("Connector1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("Connector2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("Connector3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("Connector4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("Connector5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("Connector6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#ControlPosition
+            result+= trDetStart
+                result+= tdTitleStart & "Motor Side" & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("ControlPosition6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#BracketType
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Bracket" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & Bracket1 & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & Bracket2 & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & Bracket3 & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & Bracket4 & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & Bracket5 & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & Bracket6 & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#LinkBlind
+            result+= trDetStart
+                result+= tdTitleStart & "Link Blinds" & tdDetEnd
+                result+= tdDetStart & currentData("LinkBlind1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LinkBlind2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LinkBlind3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LinkBlind4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LinkBlind5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("LinkBlind6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#
+            result+= trDetStart
+                result+= tdTitleStart & "Bkt Cover Colour" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetRight & "" & tdDetEnd
+            result+= trDetEnd
+
+            '#Trim
+            result+= trDetStart
+                result+= tdTitleStart & "Trim" & tdDetEnd
+                result+= tdDetStart & currentData("Trim1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Trim6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#BottomType
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "BRail Shape" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("BottomType6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#BottomColour
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "BRail Colour" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("BottomColour6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#Accessory
+            result+= trDetStart
+                result+= tdTitleStart & "Accessory" & tdDetEnd
+                result+= tdDetStart & currentData("Accessory1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Accessory2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Accessory3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Accessory4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Accessory5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Accessory6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#Width
+            result+= trDetStart
+                result+= tdTitleStart & "Blind Width (mm)" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width1").ToString()), "0", currentData("Width1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width2").ToString()), "0", currentData("Width2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width3").ToString()), "0", currentData("Width3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width4").ToString()), "0", currentData("Width4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width5").ToString()), "0", currentData("Width5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Width6").ToString()), "0", currentData("Width6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#Drop
+            result+= trDetStart
+                result+= tdTitleStart & "Blind Drop (mm)" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop1").ToString()), "0", currentData("Drop1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop2").ToString()), "0", currentData("Drop2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop3").ToString()), "0", currentData("Drop3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop4").ToString()), "0", currentData("Drop4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop5").ToString()), "0", currentData("Drop5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Drop6").ToString()), "0", currentData("Drop6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#Mounting
+            result+= trDetStart
+                result+= tdTitleStart & "Fixing" & tdDetEnd
+                result+= tdDetStart & currentData("Mounting1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Mounting6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#Location
+            result+= trDetStart
+                result+= tdTitleStart & "location" & tdDetEnd
+                result+= tdDetStart & currentData("Location1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Location6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+             '#KitName
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Motorised" & boldEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & boldStart & Motorised1 & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & boldStart & Motorised2 & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & boldStart & Motorised3 & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & boldStart & Motorised4 & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & boldStart & Motorised5 & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetRight & fs11Start & boldStart & Motorised6 & boldEnd & fsEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#line Blank
+            result += BlankLineEachRow(4)
+
+        result+= tableDetEnd
+
+        '#Footer
+        result+= "<table style='width: 100%; font-size:11px; border-collapse: collapse;'>"
+            '#Offcut Fabric Used
+            result+= trDetStart
+                result+= "<td style='width:100px;'>" & "Offcut Fabric Used" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+            result+= trDetEnd
+            '#Recut Made
+            result+= trDetStart
+                result+= "<td style='width:100px;'>" & "Recut Made" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+            result+= trDetEnd
+            '#If ys, how  many times
+            result+= trDetStart
+                result+= "<td style='width:100px;'>" & "If yes, how  many times" & tdDetEnd
+                ' result+= "<td style='width:100px;'>" & "<td style='border: 1px solid black;'>|0|0|</td>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+            result+= trDetEnd
+            '#Total Rollers
+            result+= trDetStart
+                result+= "<td style='width:100px; padding:5px 0px;'>" & "<span>Total Rollers: </span><span style='color:white;'>------</span><span style='font-weight:bold;'>" & TotalBlind & "</span>" &  tdDetEnd
+                result+= tdDetFooterStart &  "Issued By" & tdDetEnd
+                result+= tdDetFooterStart &  "Cutting Tube" & tdDetEnd
+                result+= tdDetFooterStart &  "Cutting Fabric" & tdDetEnd
+                result+= tdDetFooterStart &  "Sewing" & tdDetEnd
+                result+= tdDetFooterStart &  "Assembling, Packing" & tdDetEnd
+                result+= tdDetFooterStart &  "QC" & tdDetEnd
+            result+= trDetEnd
+            '#Page
+            result+= trDetStart
+                result+= "<td rowspan='2' style='width:100px; padding:5px 2px; text-align:center;'>" &  "<div style='font-size:12px;'>Page </div><div style='padding-top:8px; font-size:12px;'>" & currentData("PageOf").ToString() &" OF "& currentData("AmountOfPage").ToString() & "</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+            result+= trDetEnd
+            '#Of
+            result+= trDetStart
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+            result+= trDetEnd
+        result+= tableDetEnd
+
+        Return result
+    End Function
+
+    Private Shared Function PrintRollerGlobalBlind(currentData As DataRow) As String
+        Dim result As String = String.Empty
+
+        Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
+        
+        result+= SubstituteFabric()
+        result+= LineOptions(currentData)
+
+        '#Table Data
+        result+= tableDetStart
+            '#QTY
+            result+= trDetStart
+                result+= tdTitleStart & "Qty" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty1").ToString()), "0", currentData("Qty1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty2").ToString()), "0", currentData("Qty2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty3").ToString()), "0", currentData("Qty3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty4").ToString()), "0", currentData("Qty4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Qty5").ToString()), "0", currentData("Qty5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Qty6").ToString()), "0", currentData("Qty6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#FabricType Or Fabric
+            result+= trDetStart
+                result+= tdTitleStart & "Fabric" & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType1").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType2").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType3").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType4").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricType5").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs11Start & currentData("FabricType6").ToString() & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#FabricColour Or Colour
+            result+= trDetStart
+                result+= tdTitleStart & "Colour" & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour1").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour2").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour3").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour4").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs11Start & currentData("FabricColour5").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs11Start & currentData("FabricColour6").ToString() & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#TubeSkinSize Or Tube Width
+            result+= trDetStart
+                result+= tdTitleStart & "Tube Width" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize1").ToString()), "0", currentData("TubeSkinSize1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize2").ToString()), "0", currentData("TubeSkinSize2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize3").ToString()), "0", currentData("TubeSkinSize3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize4").ToString()), "0", currentData("TubeSkinSize4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize5").ToString()), "0", currentData("TubeSkinSize5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("TubeSkinSize6").ToString()), "0", currentData("TubeSkinSize6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#TubeSkinSize Or Skin Width
+            result+= trDetStart
+                result+= tdTitleStart & "Skin Width" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize1").ToString()), "0", currentData("TubeSkinSize1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize2").ToString()), "0", currentData("TubeSkinSize2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize3").ToString()), "0", currentData("TubeSkinSize3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize4").ToString()), "0", currentData("TubeSkinSize4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize5").ToString()), "0", currentData("TubeSkinSize5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("TubeSkinSize6").ToString()), "0", currentData("TubeSkinSize6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#NumBoldNuts Or Skin Drop
+            result+= trDetStart
+                result+= tdTitleStart & "Skin Drop" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts1").ToString()), "0", currentData("NumBoldNuts1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts2").ToString()), "0", currentData("NumBoldNuts2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts3").ToString()), "0", currentData("NumBoldNuts3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts4").ToString()), "0", currentData("NumBoldNuts4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts5").ToString()), "0", currentData("NumBoldNuts5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("NumBoldNuts6").ToString()), "0", currentData("NumBoldNuts6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#Trim Or Trims
+            result+= trDetStart
+                result+= tdTitleStart & "Trim" & tdDetEnd
+                result+= tdDetStart & currentData("Trim1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Trim5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Trim6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#RollDirection
+            result+= trDetStart
+                result+= tdTitleStart & "Roll Direction" & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("RollDirection5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("RollDirection6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#ControllType
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Control Type" & boldEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & currentData("TubeType1").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & currentData("TubeType2").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & currentData("TubeType3").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & currentData("TubeType4").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetStart & fs12Start & boldStart & currentData("TubeType5").ToString() & boldEnd & fsEnd & tdDetEnd
+                result+= tdDetRight & fs12Start & boldStart & currentData("TubeType6").ToString() & boldEnd & fsEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#ControllColour
+            result+= trDetStart
+                result+= tdTitleStart & "Control Colour" & tdDetEnd
+                result+= tdDetStart & currentData("ColourType1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ColourType2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ColourType3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ColourType4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ColourType5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("ColourType6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#ControllPosition
+            result+= trDetStart
+                result+= tdTitleStart & "Control Position" & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ControlPosition5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("ControlPosition6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#ChainColour
+            result+= trDetStart
+                result+= tdTitleStart & "Chain Colour" & tdDetEnd
+                result+= tdDetStart & currentData("ChainColour1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainColour2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainColour3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainColour4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainColour5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("ChainColour6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#ChildSafe
+            result+= trDetStart
+                result+= tdTitleStart & "Delux Child Safe" & tdDetEnd
+                result+= tdDetStart & fs11Start & currentData("ChildSafe1").ToString() & fsEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & currentData("ChildSafe2").ToString() & fsEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & currentData("ChildSafe3").ToString() & fsEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & currentData("ChildSafe4").ToString() & fsEnd & tdDetEnd
+                result+= tdDetStart & fs11Start & currentData("ChildSafe5").ToString() & fsEnd & tdDetEnd
+                result+= tdDetRight & fs11Start & currentData("ChildSafe6").ToString() & fsEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#ControlLength
+            result+= trDetStart
+                result+= tdTitleStart & "Control Length" & tdDetEnd
+                result+= tdDetStart & currentData("ChainLength1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainLength2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainLength3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainLength4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("ChainLength5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("ChainLength6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#TubeSize
+            result+= trDetStart
+                result+= tdTitleStart & "Tube Size" & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("TubeSize6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#BottomRailShape
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "BRail Shape" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("BottomType6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#BottomRailColour
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "BRail Colour" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("BottomColour6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#Accessory
+            result+= trDetStart
+                result+= tdTitleStart & "Accessories" & tdDetEnd
+                result+= tdDetStart & currentData("Accessory1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Accessory2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Accessory3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Accessory4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Accessory5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Accessory6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#Spring Assist
+            result+= trDetStart
+                result+= tdTitleStart & "Spring Assist" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetRight & "" & tdDetEnd
+            result+= trDetEnd
+
+            '#BracketType
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Bracket" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BracketType1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BracketType2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BracketType3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BracketType4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BracketType5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("BracketType6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#LinkBlind
+            result+= trDetStart
+                result+= tdTitleStart & "Link Blinds" & tdDetEnd
+                result+= tdDetStart & currentData("LinkBlind1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LinkBlind2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LinkBlind3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LinkBlind4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("LinkBlind5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("LinkBlind6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#Bkt Cover Colour
+            result+= trDetStart
+                result+= tdTitleStart & "Bkt Cover Colour" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetRight & "" & tdDetEnd
+            result+= trDetEnd
+
+            '#Width
+            result+= trDetStart
+                result+= tdTitleStart & "Width (mm)" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width1").ToString()), "0", currentData("Width1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width2").ToString()), "0", currentData("Width2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width3").ToString()), "0", currentData("Width3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width4").ToString()), "0", currentData("Width4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width5").ToString()), "0", currentData("Width5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Width6").ToString()), "0", currentData("Width6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#Drop
+            result+= trDetStart
+                result+= tdTitleStart & "Drop (mm)" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop1").ToString()), "0", currentData("Drop1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop2").ToString()), "0", currentData("Drop2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop3").ToString()), "0", currentData("Drop3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop4").ToString()), "0", currentData("Drop4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop5").ToString()), "0", currentData("Drop5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Drop6").ToString()), "0", currentData("Drop6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+             '#Spring Type
+            result+= trDetStart
+                result+= tdTitleStart & "Spring Type" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetRight & "" & tdDetEnd
+            result+= trDetEnd
+
+            '#Mounting
+            result+= trDetStart
+                result+= tdTitleStart & "Fixing" & tdDetEnd
+                result+= tdDetStart & currentData("Mounting1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Mounting5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Mounting6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#Location
+            result+= trDetStart
+                result+= tdTitleStart & "LOCATION" & tdDetEnd
+                result+= tdDetStart & currentData("Location1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("Location5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("Location6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#line Blank
+            result += BlankLineEachRow(1)
+
+        result+= tableDetEnd
+
+        '#Footer
+        result+= "<table style='width: 100%; font-size:11px; border-collapse: collapse;'>"
+            '#Offcut Fabric Used
+            result+= trDetStart
+                result+= "<td style='width:100px;'>" & "Offcut Fabric Used" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+            result+= trDetEnd
+            '#Recut Made
+            result+= trDetStart
+                result+= "<td style='width:100px;'>" & "Recut Made" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+                result+= tdDetFooterStart & "Yes / No" & tdDetEnd
+            result+= trDetEnd
+            '#If ys, how  many times
+            result+= trDetStart
+                result+= "<td style='width:100px;'>" & "If yes, how  many times" & tdDetEnd
+                ' result+= "<td style='width:100px;'>" & "<td style='border: 1px solid black;'>|0|0|</td>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+                result+= tdDetFooterStart & "<span style='border:1px solid black; background-color:#b4b4b4; color:#b4b4b4; font-size:13px;'>|0|0|</span>" & tdDetEnd
+            result+= trDetEnd
+            '#Total Rollers
+            result+= trDetStart
+                result+= "<td style='width:100px; padding:5px 0px;'>" & "<span>Total Rollers: </span><span style='color:white;'>------</span><span style='font-weight:bold;'>" & TotalBlind & "</span>" &  tdDetEnd
+                result+= tdDetFooterStart &  "Issued By" & tdDetEnd
+                result+= tdDetFooterStart &  "Cutting Tube" & tdDetEnd
+                result+= tdDetFooterStart &  "Cutting Fabric" & tdDetEnd
+                result+= tdDetFooterStart &  "Sewing" & tdDetEnd
+                result+= tdDetFooterStart &  "Assembling, Packing" & tdDetEnd
+                result+= tdDetFooterStart &  "QC" & tdDetEnd
+            result+= trDetEnd
+            '#Page
+            result+= trDetStart
+                result+= "<td rowspan='2' style='width:100px; padding:5px 2px; text-align:center;'>" &  "<div style='font-size:12px;'>Page </div><div style='padding-top:8px; font-size:12px;'>" & currentData("PageOf").ToString() &" OF "& currentData("AmountOfPage").ToString() & "</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+                result+= tdDetFooterStart &  "<div style='color:white;'>01010</div>" & tdDetEnd
+            result+= trDetEnd
+            '#Of
+            result+= trDetStart
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+                result+= tdDetFooterStart & "<div>________________</div> <div style='padding-top:5px; text-align:left;'>Date:</div> <div style='text-align:left;'>Time:</div>" & tdDetEnd
+            result+= trDetEnd
+        result+= tableDetEnd
+
+        Return result
+    End Function
+
+    Private Shared Function PrintRollerGlobalSkin(currentData As DataRow) As String
         Dim result As String = String.Empty
 
         Dim initControlType As String() = {

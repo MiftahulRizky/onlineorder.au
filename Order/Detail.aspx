@@ -432,7 +432,7 @@
                     <div class="col-12">
                         <label for="designid" class="form-label text-uppercase">select product <span class="text-danger">*</span></label>
                         <select name="designid" id="designid" class="form-select"></select>
-                        <small class="form-hint" style="color:red;">* Please select a product then click the submit button</small>
+                        <!-- <small class="form-hint" style="color:red;">* Please select a product then click the submit button</small> -->
                     </div>
                 </div>
                 <div class="modal-footer">

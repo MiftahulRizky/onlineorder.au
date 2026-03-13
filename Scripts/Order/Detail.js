@@ -183,7 +183,7 @@ document.addEventListener("click", (e) => {
 });
 
 // BUTTON ADD ITEMS
-document.querySelector("#btnAddItem").addEventListener("click", () => {
+document.querySelector("#btnAddItem").addEventListener("click", async () => {
   document
     .querySelectorAll("#modalAddItem .form-control, #modalAddItem .form-select")
     .forEach((e) => {
@@ -192,7 +192,7 @@ document.querySelector("#btnAddItem").addEventListener("click", () => {
 
   const production = document.querySelector("#spanProduction");
 
-  handlerSelDesignType("#modalAddItem #designid", production);
+  await handlerSelDesignType("#modalAddItem #designid", production);
   handlerShowBSModal("modalAddItem");
 });
 
@@ -1872,6 +1872,7 @@ const handlerSelDesignType = async (params, production) => {
         customerid: CUSTOMERID,
         ordertype: ORDERTYPE,
         production,
+        rolename: ROLENAME,
       }),
     });
 
@@ -1883,11 +1884,7 @@ const handlerSelDesignType = async (params, production) => {
     const result = data.d;
 
     if (!result || result.length === 0) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? "No data returned from server : handlerSelDesignType"
-          : "Please contact our IT team at support@onlineorder.au";
-      throw new Error(msg);
+      throw new Error("No data returned from server : handlerSelDesignType");
     }
 
     if (Array.isArray(result)) {

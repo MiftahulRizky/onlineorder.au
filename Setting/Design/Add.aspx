@@ -126,7 +126,7 @@
         }
     </script>
     <div runat="server" visible="false">
-        <asp:SqlDataSource runat="server" ID="sdsPage" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO Designs VALUES (NEWID(), @Name, @Company, @Description, @Page, @Active)">
+        <asp:SqlDataSource runat="server" ID="sdsPage" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO Designs VALUES (NEWID(), @Name, 'Blinds', @Company, @Description, @Page, @Active)">
             <InsertParameters>
                 <asp:ControlParameter ControlID="txtName" Name="Name" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlCompany" Name="Company" PropertyName="SelectedItem.Value" />
