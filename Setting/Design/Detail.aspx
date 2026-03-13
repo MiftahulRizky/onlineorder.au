@@ -36,10 +36,23 @@
                                 </div>
                             </div>
 
-                            <div class="mb-6 row">
+                            <div class="mb-3 row">
                                 <label class="col-lg-3 col-form-label required">URL PAGE</label>
                                 <div class="col-lg-5 col-md-12 col-sm-12">
                                     <asp:TextBox runat="server" ID="txtPage" CssClass="form-control" placeholder="Url Page ..." autocomplete="off"></asp:TextBox>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label class="col-lg-3 col-form-label required">PRODUCT TYPE</label>
+                                <div class="col-lg-3 col-md-12 col-sm-12">
+                                    <asp:DropDownList runat="server" ID="ddlType" CssClass="form-select">
+                                        <asp:ListItem Value="Blinds" Text="BLINDS"></asp:ListItem>
+                                        <asp:ListItem Value="Panorama" Text="PANORAMA"></asp:ListItem>
+                                        <asp:ListItem Value="Evolve" Text="EVOLVE"></asp:ListItem>
+                                        <asp:ListItem Value="Door" Text="DOOR"></asp:ListItem>
+                                        <asp:ListItem Value="Window" Text="WINDOW"></asp:ListItem>
+                                    </asp:DropDownList>
                                 </div>
                             </div>
 
@@ -128,12 +141,13 @@
     <div runat="server" visible="false">
         <asp:Label runat="server" ID="lblId"></asp:Label>
 
-        <asp:SqlDataSource runat="server" ID="sdsPage" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" UpdateCommand="UPDATE Designs SET Name=@Name, Company=@Company, Description=@Description, Page=@Page, Active=@Active WHERE Id=@Id">
+        <asp:SqlDataSource runat="server" ID="sdsPage" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" UpdateCommand="UPDATE Designs SET Name=@Name, Company=@Company, Description=@Description, Type=@Type, Page=@Page, Active=@Active WHERE Id=@Id">
             <UpdateParameters>
                 <asp:ControlParameter ControlID="lblId" Name="Id" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtName" Name="Name" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlCompany" Name="Company" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="txtPage" Name="Page" PropertyName="Text" />
+                <asp:ControlParameter ControlID="ddlType" Name="Type" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="txtDescription" Name="Description" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlActive" Name="Active" PropertyName="SelectedItem.Value" />
             </UpdateParameters>

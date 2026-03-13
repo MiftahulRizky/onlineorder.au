@@ -142,6 +142,7 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Design Type" %>
                   </asp:TemplateField>
                   <asp:BoundField DataField="Company" HeaderText="Company" />
                   <asp:BoundField DataField="Page" HeaderText="Page" />
+                  <asp:BoundField DataField="Type" HeaderText="Type" />
                 
                   <asp:TemplateField HeaderText="Description">
                     <ItemTemplate><%# Descpription(Eval("Description").ToString()) %></ItemTemplate>

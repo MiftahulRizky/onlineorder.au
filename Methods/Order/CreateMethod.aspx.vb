@@ -77,6 +77,35 @@ Partial Class Methods_Order_CreateMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindProductType(ByVal customerid As String, ByVal username As String) As Object
+        Try
+            Dim Name As String = ""
+            If customerid = "LS-A224" Then '#JPM Direct
+                Name = "AND Name IN ('Panorama')"
+            End If
+            If customerid = "DEFAULT" AndAlso username = "galih" Then
+                Name = "AND Name IN ('Panorama', 'Evolve')"
+            End If
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Name FROM ProductType WHERE Active=1 {0} ORDER BY Name ASC", Name))
+            Dim list As New List(Of Dictionary(Of String, String))()
+            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
+                For Each row As DataRow In datas.Tables(0).Rows
+                    Dim result As New Dictionary(Of String, String) From {
+                        {"value", row("Name").ToString()},
+                        {"text", row("Name").ToString()}
+                    }
+                    list.Add(result)
+                Next
+            End If
+            Return list
+        Catch ex As Exception
+            ' Return sebagai objek error agar bisa ditangani di sisi client
+            Return New With {.error = ex.Message}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Find(ByVal id As String, ByVal ordertype As String) As Object
         Try
             Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE Id = '" + UCase(id).ToString() + "' AND OrderType = '" + ordertype + "'")
@@ -210,7 +239,7 @@ Partial Class Methods_Order_CreateMethod
             Dim url As String = "/"
             '#insert
             If String.IsNullOrEmpty(data.id) Then
-                IF data.ordertype = "Blinds" Then
+                IF data.ordertype = "Blinds" OR data.ordertype = "Door" OR data.ordertype = "Window"  Then
                     Dim id As String = publicCfg.CreateOrderHeaderId()
                     Using thisConn As New SqlConnection(myConn)
                         Using myCmd As New SqlCommand("INSERT INTO OrderHeaders (Id, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, CreatedDate, Active) VALUES (@Id, @UserId, @StoreId, LTRIM(RTRIM(@OrderNo)), LTRIM(RTRIM(@OrderCust)), @Delivery, @Note, 'Yes', 0, 0, 0,  'Draft', GETDATE(), 1)", thisConn)

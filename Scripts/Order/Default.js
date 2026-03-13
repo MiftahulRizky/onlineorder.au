@@ -313,6 +313,67 @@ const submitChangeStatus = async () => {
 };
 
 // --------------------------------------------||Binding Function ||-------------------------------------------
+const bindProductType = async () => {
+  const select = document.getElementById("ordertype");
+  select.innerHTML = "";
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindProductType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      // body: JSON.stringify({ designid: DESIGNID }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindProductType");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "ALL";
+        defaultOption.value = "ALL";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
 // BIND ORDERS
 const bindOrders = async (status, ordertype, active, storetype, params) => {
   const paramData = {
@@ -644,6 +705,7 @@ const handlerSelStatus = (params, statusNow) => {
     option.value = value;
     option.textContent = text.toUpperCase();
     sel.appendChild(option);
+    sel.classList.add("fw-bold");
   }
 
   // === cardOrder behavior ===
@@ -1170,9 +1232,12 @@ const handlerTooltip = (modalName, params) => {
 };
 // --------------------------------------------||Other Function ||-------------------------------------------
 // CHECK SESSION
-const checkSession = () => {
-  handlerSelStatus("#cardOrder #status", null);
-  visibleColumnServerside();
+const checkSession = async () => {
+  await bindProductType();
+  await Promise.all([
+    handlerSelStatus("#cardOrder #status", null),
+    visibleColumnServerside(),
+  ]);
 };
 
 const setState = (name, value) => {

@@ -69,7 +69,7 @@
             Dim rowIndex As Integer = Convert.ToInt32(TryCast(TryCast(sender, LinkButton).NamingContainer, GridViewRow).RowIndex)
             Dim row As GridViewRow = gvList.Rows(rowIndex)
 
-            Dim active As String = row.Cells(6).Text
+            Dim active As String = row.Cells(7).Text
 
             Dim newActive As Integer = 0
             If active = "False" Then : newActive = 1 : End If

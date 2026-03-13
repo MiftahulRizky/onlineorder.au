@@ -36,17 +36,30 @@
                                 </div>
                             </div>
 
-                            <div class="mb-6 row">
+                            <div class="mb-3 row">
                                 <label class="col-lg-3 col-form-label required">URL PAGE</label>
                                 <div class="col-lg-5 col-md-12 col-sm-12">
-                                    <asp:TextBox runat="server" ID="txtPage" CssClass="form-control" placeholder="Url Page ..." autocomplete="off"></asp:TextBox>
+                                    <asp:TextBox runat="server" ID="txtPage" CssClass="form-control" placeholder="Url Page ..." autocomplete="off" value="~/order/..."></asp:TextBox>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label class="col-lg-3 col-form-label required">PRODUCT TYPE</label>
+                                <div class="col-lg-2 col-md-12 col-sm-12">
+                                    <asp:DropDownList runat="server" ID="ddlType" CssClass="form-select">
+                                        <asp:ListItem Value="Blinds" Text="BLINDS"></asp:ListItem>
+                                        <asp:ListItem Value="Panorama" Text="PANORAMA"></asp:ListItem>
+                                        <asp:ListItem Value="Evolve" Text="EVOLVE"></asp:ListItem>
+                                        <asp:ListItem Value="Door" Text="DOOR"></asp:ListItem>
+                                        <asp:ListItem Value="Window" Text="WINDOW"></asp:ListItem>
+                                    </asp:DropDownList>
                                 </div>
                             </div>
 
                             <div class="mb-3 row">
                                 <label class="col-lg-3 col-form-label">DESCRITPION</label>
                                 <div class="col-lg-7 col-md-12 col-sm-12">
-                                    <asp:TextBox runat="server" TextMode="MultiLine" ID="txtDescription" Height="100px" CssClass="form-control" placeholder="Description ..." autocomplete="off" style="resize:none;"></asp:TextBox>
+                                    <asp:TextBox runat="server" TextMode="MultiLine" ID="txtDescription" Height="100px" CssClass="form-control" placeholder="Description ..." autocomplete="off" style="resize:none;">Environment : Development</asp:TextBox>
                                 </div>
                             </div>
                             
@@ -126,11 +139,12 @@
         }
     </script>
     <div runat="server" visible="false">
-        <asp:SqlDataSource runat="server" ID="sdsPage" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO Designs VALUES (NEWID(), @Name, 'Blinds', @Company, @Description, @Page, @Active)">
+        <asp:SqlDataSource runat="server" ID="sdsPage" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO Designs VALUES (NEWID(), @Name, @Type, @Company, @Description, @Page, @Active)">
             <InsertParameters>
                 <asp:ControlParameter ControlID="txtName" Name="Name" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlCompany" Name="Company" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="txtPage" Name="Page" PropertyName="Text" />
+                <asp:ControlParameter ControlID="ddlType" Name="Type" PropertyName="SelectedItem.Value" />
                 <asp:ControlParameter ControlID="txtDescription" Name="Description" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlActive" Name="Active" PropertyName="SelectedItem.Value" />
             </InsertParameters>

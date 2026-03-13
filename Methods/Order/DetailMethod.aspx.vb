@@ -747,7 +747,9 @@ Partial Class Methods_Order_DetailMethod
                                 Product = "Roller Skin Only (+Tube Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
                             End If
 
-                            Product = String.Format("Global - {0}", Product)
+                            If DesignName = "Roller Global Blinds" Then
+                                Product = String.Format("Global - {0}", Product)
+                            End If
 
                         End If
 

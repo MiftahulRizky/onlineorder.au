@@ -84,6 +84,7 @@ Partial Class Setting_Design_Detail
             txtName.Text = myData.Tables(0).Rows(0).Item("Name").ToString()
             ddlCompany.SelectedValue = myData.Tables(0).Rows(0).Item("Company").ToString()
             txtPage.Text = myData.Tables(0).Rows(0).Item("Page").ToString()
+            ddlType.SelectedValue = myData.Tables(0).Rows(0).Item("Type").ToString()
             txtDescription.Text = myData.Tables(0).Rows(0).Item("Description").ToString()
             ddlActive.SelectedValue = Convert.ToInt32(myData.Tables(0).Rows(0).Item("Active"))
         Catch ex As Exception
