@@ -265,7 +265,7 @@ Partial Class Methods_Order_DetailMethod
                 Env = ""
             End If
 
-            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Designs.Id, Designs.Name FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '{0}' AND Designs.Type <> 'Additional' AND Designs.Type = '{1}' {2} AND Designs.Active = 1 ORDER BY Designs.Name ASC", customerid, ordertype, Env))
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Designs.Id, Designs.Name FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '{0}' AND Designs.Type <> 'Additional' AND Designs.Company = 'SP' AND Designs.Type = '{1}' {2} AND Designs.Active = 1 ORDER BY Designs.Name ASC", customerid, ordertype, Env))
 
             ' Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Designs.Id, Designs.Name FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '{0}' AND Designs.Type <> 'Additional' AND Designs.Type IN ('Blinds', 'Door', 'Window') {2} AND Designs.Active = 1 ORDER BY Designs.Name ASC", customerid, ordertype, Env))
             Dim list As New List(Of Dictionary(Of String, String))()
@@ -3399,10 +3399,10 @@ Partial Class Methods_Order_DetailMethod
 
                     Dim insertInTrack As String = "No"
                     Dim sloper As String = "No"
-                    If Not thisData.Tables(0).Rows(i).Item("InsertInTrack").ToString() = "" Then
+                    If thisData.Tables(0).Rows(i).Item("InsertInTrack").ToString() = "1" Then
                         insertInTrack = "Yes"
                     End If
-                    If Not thisData.Tables(0).Rows(i).Item("Sloper").ToString() = "" Then
+                    If thisData.Tables(0).Rows(i).Item("Sloper").ToString() = "1" Then
                         sloper = "Yes"
                     End If
 

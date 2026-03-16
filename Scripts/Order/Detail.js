@@ -65,7 +65,7 @@ document.querySelector("#btnSubmit").addEventListener("click", () => {
 // BUTTON EDIT HEADER
 document.querySelector("#btnEditHeader").addEventListener("click", () => {
   // handlerEditHeader(HEADERID);
-  window.location.href = `/order/header?action=edit&param=${HEADERID}&ordertype=blinds`;
+  window.location.href = `/order/header?action=edit&param=${HEADERID}&ordertype=${ORDERTYPE}`;
 });
 
 // BUTTON DELETE HEADER
@@ -189,7 +189,8 @@ document.querySelector("#btnAddItem").addEventListener("click", async () => {
     .forEach((e) => {
       e.classList.remove("is-invalid");
     });
-
+  const divProduction = document.getElementById("divProduction");
+  divProduction.classList.add("d-none");
   const production = document.querySelector("#spanProduction");
 
   await handlerSelDesignType("#modalAddItem #designid", production);
@@ -242,8 +243,22 @@ document
 // ------------------------------------------||modalAddItem Event ||------------------------------------
 // CHANGE DESIGN TYPE
 document.querySelectorAll("#modalAddItem .form-select").forEach((e) => {
-  e.addEventListener("change", (e) => {
+  e.addEventListener("change", async (e) => {
     e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "designid") {
+      const divProduction = document.getElementById("divProduction");
+      divProduction.classList.add("d-none");
+      const designid = e.target.value;
+      const designname = await getItemData(
+        `SELECT Name FROM Designs WHERE Id = '${designid}'`,
+      );
+
+      if (["Roller Blinds"].includes(designname)) {
+        divProduction.classList.remove("d-none");
+      }
+      await bindProduction(designname);
+    }
   });
 });
 
@@ -1018,6 +1033,7 @@ const handlerHeaderInfo = async (item) => {
   const spanRetailerId = document.getElementById("spanRetailerId");
   const spanOrderId = document.getElementById("spanOrderId");
   const spanJoNumber = document.getElementById("spanJoNumber");
+  const spanOrderProductType = document.getElementById("spanOrderProductType");
   const spanOrderNo = document.getElementById("spanOrderNo");
   const spanOrderCust = document.getElementById("spanOrderCust");
   const spanCreatedDate = document.getElementById("spanCreatedDate");
@@ -1061,6 +1077,7 @@ const handlerHeaderInfo = async (item) => {
     spanJoNumber.innerHTML = item.JoNumberId
       ? `<span class="badge badge-outline text-red">${item.JoNumberId}</span> <a href="javascript:void(0);" id="btnCopyJoNumber" class="btn btn-sm  border-0 bg-transparent" data-jonumber="${item.JoNumberId}"><i class="ti ti-copy fs-2 opacity-50"></i></a>`
       : "-";
+    spanOrderProductType.innerHTML = item.OrderType;
     spanOrderNo.innerHTML = item.OrderNumber;
     spanOrderCust.innerHTML = item.OrderName;
 
@@ -2636,6 +2653,41 @@ const bindDetails = async (headerid, status, createdby) => {
       }
     },
     columns: columnDefs,
+  });
+};
+
+const bindProduction = async (designname) => {
+  const sel = document.querySelector("#modalAddItem #production");
+  sel.innerHTML = ""; //reset
+
+  if (!designname) return;
+
+  let data = [];
+
+  if (
+    ["Roller Blinds", "Vertical Blinds", "Panel Glides"].includes(designname)
+  ) {
+    data.push(
+      { value: "Sunlight", text: "Sunlight" },
+      { value: "Global", text: "Global" },
+    );
+  } else {
+    data.push({ value: "Sunlight", text: "Sunlight" });
+  }
+
+  // if (data.length > 1) {
+  //   const defaultOption = document.createElement("option");
+  //   defaultOption.text = "";
+  //   defaultOption.value = "";
+  //   sel.add(defaultOption);
+  // }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
   });
 };
 

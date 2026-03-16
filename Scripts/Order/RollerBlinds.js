@@ -9,7 +9,7 @@
     console.log("ORDERTYPE: " + ORDERTYPE);
     console.log("URIMETHOD: " + URIMETHOD);
   }
-  pageLoaded();
+  rollerPageLoaded();
 });
 
 // =================================================EVENTS==================================================
@@ -257,7 +257,7 @@ document.querySelector("#btnCancel").addEventListener("click", (e) => {
   window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
 });
 // ===============================================FUNCTION==================================================
-const pageLoaded = async () => {
+const rollerPageLoaded = async () => {
   if (!HEADERID) {
     window.location.href = "/order";
     return;

@@ -258,6 +258,11 @@
                                     <br />
                                     <div  id="spanJoNumber" style="font-size: larger;" ></div>
                                 </div>
+                                 <div class="col-lg-6">
+                                    <span style="font-size:larger;">Order Product Type :</span>
+                                    <br />
+                                    <div  id="spanOrderProductType" style="font-size: larger;font-weight: bold;" ></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -430,9 +435,13 @@
                 </div>
                 <div class="modal-body row">
                     <div class="col-12">
-                        <label for="designid" class="form-label text-uppercase">select product <span class="text-danger">*</span></label>
+                        <label for="designid" class="form-label text-uppercase">select product</label>
                         <select name="designid" id="designid" class="form-select"></select>
                         <!-- <small class="form-hint" style="color:red;">* Please select a product then click the submit button</small> -->
+                    </div>
+                    <div class="col-12 mt-3" id="divProduction" hidden>
+                        <label for="designid" class="form-label text-uppercase">production</label>
+                        <select name="production" id="production" class="form-select"></select>
                     </div>
                 </div>
                 <div class="modal-footer">

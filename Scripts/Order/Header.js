@@ -15,7 +15,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       // await visibleElementFormOnChange(ordertype);
       // alert(ordertype);
       await handlerSelCustomer(ordertype, "#customer");
-      if (["Panorama", "Evolve", "Door", "Window"].includes(ordertype)) {
+      if (["Panorama", "Evolve"].includes(ordertype)) {
         await Promise.all([handlerSelUser("#createdby")]);
       }
       await visibleElementForm(ordertype);
@@ -794,7 +794,7 @@ const visibleElementForm = async (ordertype, customer) => {
     if (!ordertype) return; //throw new Error(ordertype);
     formDetail.removeAttribute("hidden");
 
-    if (["Blinds"].includes(ordertype)) {
+    if (["Blinds", "Door", "Window"].includes(ordertype)) {
       if (
         [
           "Administrator",
@@ -813,7 +813,7 @@ const visibleElementForm = async (ordertype, customer) => {
       }
     }
 
-    if (["Panorama", "Evolve", "Door", "Window"].includes(ordertype)) {
+    if (["Panorama", "Evolve"].includes(ordertype)) {
       if (
         [
           "Administrator",
@@ -858,7 +858,7 @@ const visibleElementForm = async (ordertype, customer) => {
     orderidEl.classList.add("bg-body-secondary");
     orderidEl.classList.add("text-secondary");
 
-    if (ordertype == "Blinds") {
+    if (["Blinds", "Door", "Window"].includes(ordertype)) {
       divDelivery.removeAttribute("hidden");
     }
 

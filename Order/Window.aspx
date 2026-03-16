@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Roller Blinds" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="RollerBlinds.aspx.vb" Inherits="Order_RollerBlinds" MaintainScrollPositionOnPostback="true" Debug="true" %>
+﻿<%@ Page Title="Window" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="Window.aspx.vb" Inherits="Order_Window" MaintainScrollPositionOnPostback="true" Debug="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
     <div class="page-header">
@@ -45,15 +45,13 @@
                 <div class="col-7 col-lg-7 col-md-12">
                     <div class="card">
                         <form action="javascript:void(0)" method="post" id="formSubmit">
-                            <div class="card-header d-flex justify-content-between">
+                            <div class="card-header">
                                 <h3 class="card-title" id="cardTitle"></h3>
-                                <label class="card-title" id="lblBlindNo"></label>
-                                <label class="card-title" id="lblUniqueId"></label>
                             </div>
                             <div class="card-body">
                                 
                                 <div class="mb-3 row">
-                                    <label for="blindtype" class="col-lg-3 text-uppercase fw-bold">roller type</label>
+                                    <label for="blindtype" class="col-lg-3 text-uppercase fw-bold">window type</label>
                                     <div class="col-lg-4">
                                         <select type="text" name="blindtype" id="blindtype" class="form-select"></select>
                                     </div>  
@@ -409,7 +407,7 @@
     </div>
 
     <script type="text/javascript">
-        let DESIGNIDORI = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2";
+        let DESIGNIDORI = "9756F316-F324-42FB-9588-874BBFAC50E4";
         let HEADERID = '<%=Session("headerId")%>';
         let ORDERTYPE = '<%= Session("orderType") %>';
         let ITEMACTION = '<%= Session("itemAction") %>';
@@ -420,8 +418,9 @@
         let ROLENAME = '<%= Session("RoleName") %>';
         let LEVELNAME = '<%= Session("LevelName") %>';
         let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
-        let URIMETHOD = "/Methods/Order/RollerBlindMethod.aspx";
+        let URIMETHOD = "/Methods/Order/WindowMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/RollerBlinds.js?<%= DateTime.Now.Ticks %>"></script>
+    <script type="text/javascript" src="/Scripts/Order/Window.js?<%= DateTime.Now.Ticks %>"></script>
 </asp:Content>
+
