@@ -13,6 +13,11 @@
 });
 
 // ==================================================EVENTS==================================================
+
+// button cancel
+document.querySelector("#btnCancel").addEventListener("click", (e) => {
+  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+});
 // ==================================================FUNCTION================================================
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const windowPageLoaded = async () => {

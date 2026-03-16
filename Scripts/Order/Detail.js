@@ -1097,8 +1097,8 @@ const handlerHeaderInfo = async (item) => {
     }
 
     spanNote.innerHTML = item.Note ? item.Note : "-";
-    spanStatusNote.innerHTML = item.StatusDescription
-      ? item.StatusDescription
+    spanStatusNote.innerHTML = item.StatusAdditional
+      ? item.StatusAdditional
       : "-";
     spanStatusOrder.innerHTML = item.Status;
     spanDelivery.innerHTML = item.Delivery;

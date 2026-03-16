@@ -206,7 +206,7 @@
                                     <span id="spanProduction" style="font-size:larger;font-weight:bold;">-</span>
                                 </div>
 
-                                <div class="col-lg-4">
+                                <div class="col-lg-8">
                                     <span style="font-size:larger;">Status Note :</span>
                                     <br />
                                     <span id="spanStatusNote" style="font-size:small;font-weight:bold;"></span>

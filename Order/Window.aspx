@@ -70,12 +70,7 @@
                                     <div class="mb-3 row" >
                                         <label for="qty" class="col-lg-3 text-uppercase fw-bold" >quantity</label>
                                         <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <input type="number" min="1" value="1" name="qty" id="qty" class="form-control">
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoQty">
-                                                    <i class="ti ti-info-square-rounded fs-2"></i>
-                                                </button>
-                                            </div>
+                                            <input type="number" min="1" value="1" name="qty" id="qty" class="form-control">
                                         </div>  
                                     </div>
 
@@ -151,14 +146,14 @@
                                             </select>
                                             <small class="form-hint">* Type</small>
                                         </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="anglelength" id="anglelength" class="form-control  " autocomplete="off"/>
                                                 <span class="input-group-text ">mm</span>
                                             </div>
                                             <small class="form-hint">* Length</small>
                                         </div>
-                                        <div class="col-lg-2 col-md-12 col-sm-12">
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
                                             <input type="number" min="1" name="angleqty" id="angleqty" class="form-control  " autocomplete="off"/>
                                             <small class="form-hint">* Qty</small>
                                         </div>
@@ -215,50 +210,17 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-1 mt-6 row" id="divAdditional">
-                                        <p class="text-danger fw-bold text-uppercase text-underline">
-                                            additional
-                                        </p>
-                                    </div>
-
-                                    <div class="mb-3 row" id="divChildSafe">
-                                        <label for="childsafe" class="col-lg-3 text-uppercase fw-bold" >childsafe</label>
+                                    <div class="mb-3 row" id="divSpringQty">
+                                        <label for="springqty" class="col-lg-3 text-uppercase fw-bold" >spring clip qty</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="childsafe" id="childsafe" class="form-select"></select>
+                                           <input type="number" id="springqty" name="springqty" min="1" class="form-control ">
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divAccessory">
-                                        <label for="accessory" class="col-lg-3 text-uppercase fw-bold" >accessory</label>
+                                    <div class="mb-3 row" id="divTopPlasticQty">
+                                        <label for="topplasticqty" class="col-lg-3 text-uppercase fw-bold" >spring clip qty</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="accessory" id="accessory" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divExtras">
-                                        <label for="extras" class="col-lg-3 text-uppercase fw-bold" >extras</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="extras" id="extras" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divBracketCover">
-                                        <label for="bracketcovers" class="col-lg-3 text-uppercase fw-bold" >bracket covers</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="bracketcovers" id="bracketcovers" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Yes">YES</option>
-                                            </select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divBracketExt">
-                                        <label for="bracketext" class="col-lg-3 text-uppercase fw-bold" >bracket extension</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="bracketext" id="bracketext" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Yes">YES</option>
-                                            </select>
+                                           <input type="number" id="topplasticqty" name="topplasticqty" min="1" class="form-control ">
                                         </div>  
                                     </div>
 
