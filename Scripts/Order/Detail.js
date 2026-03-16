@@ -1008,7 +1008,9 @@ const handlerDisplayElement = (item) => {
   // btnReloadPricing
   if (item.Status !== "Canceled") {
     btnReloadPricing.removeAttribute("hidden");
-    if (ROLENAME !== "Administrator") {
+    if (
+      !["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)
+    ) {
       btnReloadPricing.setAttribute("hidden", true);
     }
   }
