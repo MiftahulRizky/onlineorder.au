@@ -356,9 +356,9 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
             End If
 
-            If String.IsNullOrEmpty(data.mounting) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
-            End If
+            ' If String.IsNullOrEmpty(data.mounting) Then
+            '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
+            ' End If
 
             Dim width As Integer
             If String.IsNullOrEmpty(data.width) Then

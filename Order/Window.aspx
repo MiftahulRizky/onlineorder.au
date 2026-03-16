@@ -57,34 +57,8 @@
                                     </div>  
                                 </div>
 
-                                <div class="mb-3 row" id="divBracketType">
-                                    <label for="brackettype" class="col-lg-3 text-uppercase fw-bold" id="lblBracketType">bracket type</label>
-                                    <div class="col-lg-4">
-                                        <select type="text" name="brackettype" id="brackettype" class="form-select"></select>
-                                    </div>  
-                                </div>
-
-                                <div class="mb-3 row" id="divTubeType">
-                                    <label for="tubetype" class="col-lg-3 text-uppercase fw-bold" id="lblTubeType">mechanism type</label>
-                                    <div class="col-lg-4">
-                                        <select type="text" name="tubetype" id="tubetype" class="form-select"></select>
-                                    </div>  
-                                </div>
-
-                                <div class="mb-3 row" id="divControlType">
-                                    <label for="controltype" class="col-lg-3 text-uppercase fw-bold">control type</label>
-                                    <div class="col-lg-4">
-                                        <div class="input-group">
-                                            <select type="text" name="controltype" id="controltype" class="form-select"></select>
-                                            <button class="btn btn-primary btn-information" type="button" id="btnInfoControlType">
-                                                <i class="ti ti-info-square-rounded fs-2"></i>
-                                            </button>
-                                        </div>
-                                    </div>  
-                                </div>
-
                                 <div class="mb-3 row" id="divColourType">
-                                    <label for="colourtype" class="col-lg-3 text-uppercase fw-bold" id="lblColourType">control colour</label>
+                                    <label for="colourtype" class="col-lg-3 text-uppercase fw-bold" id="lblColourType">window product</label>
                                     <div class="col-lg-4">
                                         <select type="text" name="colourtype" id="colourtype" class="form-select"></select>
                                     </div>  
@@ -92,24 +66,6 @@
 
                                 <div  id="divFormDetail">
                                     <hr/>
-
-                                    <div class="mb-3 row"  id="divAttention">
-                                        <div class="col-lg-12">
-                                            <div class="alert alert-danger" role="alert">
-                                                <div class="d-flex">
-                                                    <div class="me-1">
-                                                        <i class="ti ti-alert-square-rounded fs-2"></i>
-                                                    </div>
-                                                    <div>
-                                                        <h4 class="alert-title">ATTENTION !</h4>
-                                                        <div class="text-secondary">
-                                                            <span id="lblNextDesc">Lorem ipsum dolor sit amet.</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     <div class="mb-3 row" >
                                         <label for="qty" class="col-lg-3 text-uppercase fw-bold" >quantity</label>
@@ -124,7 +80,7 @@
                                     </div>
 
                                     <div class="mb-3 row" >
-                                        <label for="room" class="col-lg-3 text-uppercase fw-bold" >room to install</label>
+                                        <label for="room" class="col-lg-3 text-uppercase fw-bold" >room / location</label>
                                         <div class="col-lg-4">
                                             <input type="text" name="room" id="room" class="form-control" autocomplete="off">
                                         </div>  
@@ -133,16 +89,12 @@
                                     <div class="mb-3 row" id="divMounting">
                                         <label for="mounting" class="col-lg-3 text-uppercase fw-bold" >mounting</label>
                                         <div class="col-lg-4">
-                                            <select name="mounting" id="mounting" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Face Fit">FACE FIT</option>
-                                                <option value="Reveal Fit">REVEAL FIT</option>
-                                            </select>
+                                            <select name="mounting" id="mounting" class="form-select"></select>
                                         </div>  
                                     </div>
 
                                     <div class="mb-3 row">
-                                        <label for="width" class="col-lg-3 text-uppercase fw-bold">width x drop</label>
+                                        <label for="width" class="col-lg-3 text-uppercase fw-bold">width x height</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="width" id="width" class="form-control " autocomplete="off" placeholder="Width ...." />
@@ -155,158 +107,112 @@
                                                 <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off" placeholder="Drop ...." />
                                                 <span class="input-group-text ">mm</span>
                                             </div>
-                                            <small class="form-hint">* Drop</small>
+                                            <small class="form-hint">* Height</small>
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row">
-                                        <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">fabric type x colour</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <select name="fabrictype" id="fabrictype" class="form-select "></select>
+                                    <div class="mb-3 row" id="divMesh">
+                                        <label for="meshtype" class="col-lg-3 text-uppercase fw-bold" >mesh type</label>
+                                        <div class="col-lg-4">
+                                            <select name="meshtype" id="meshtype" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divFrameColour">
+                                        <label for="framecolour" class="col-lg-3 text-uppercase fw-bold" >frame colour</label>
+                                        <div class="col-lg-4">
+                                            <select name="framecolour" id="framecolour" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divBrace">
+                                        <label for="brace" class="col-lg-3 text-uppercase fw-bold" >brace</label>
+                                        <div class="col-lg-4">
+                                            <select name="brace" id="brace" class="form-select">
+                                                <option value=""></option>
+                                                <option value="Centre of Horizontal">CENTRE OF HORIZONTAL</option>
+                                                <option value="Centre of Vertical">CENTRE OF VERTICAL</option>
+                                            </select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divAngle">
+                                        <label for="angletype" class="col-lg-3 text-uppercase fw-bold">angle type x Length x qty</label>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                            <select name="angletype" id="angletype" class="form-select">
+                                                <option value=""></option>
+                                                <option value="12x12mm">12X12MM</option>
+                                                <option value="12x20mm">12X20MM</option>
+                                                <option value="12x25mm">12X25MM</option>
+                                                <option value="20x20mm">20X20MM</option>
+                                                <option value="20x25mm">20X25MM</option>
+                                                <option value="20x40mm">20X40MM</option>
+                                                <option value="25x50mm">25X50MM</option>
+                                            </select>
                                             <small class="form-hint">* Type</small>
                                         </div>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <select name="fabriccolour" id="fabriccolour" class="form-select " ></select>
-                                            <small class="form-hint">* Colour</small>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3 row" id="divMotorStyle">
-                                        <label for="motorstyle" class="col-lg-3 text-uppercase fw-bold">motor style</label>
-                                        <div class="col-lg-4">
                                             <div class="input-group">
-                                                <select type="text" name="motorstyle" id="motorstyle" class="form-select"></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoMotorStyle">
-                                                    <i class="ti ti-info-square-rounded fs-2"></i>
-                                                </button>
-                                            </div>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divMotorRemote">
-                                        <label for="motorremote" class="col-lg-3 text-uppercase fw-bold">motor remote</label>
-                                        <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <select type="text" name="motorremote" id="motorremote" class="form-select"></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoMotorRemote">
-                                                    <i class="ti ti-info-square-rounded fs-2"></i>
-                                                </button>
-                                            </div>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divMotorBattery">
-                                        <label for="externalbattery" class="col-lg-3 text-uppercase fw-bold">external battery</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="externalbattery" id="externalbattery" class="form-select">
-                                                <!-- <option value=""></option> -->
-                                                <option value="Yes">YES</option>
-                                            </select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divMotorCharger">
-                                        <label for="charger" class="col-lg-3 text-uppercase fw-bold">charger</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="charger" id="charger" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divCableExitPoint">
-                                        <label for="cableexitpoint" class="col-lg-3 text-uppercase fw-bold">cable exit point</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="cableexitpoint" id="cableexitpoint" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Side">SIDE</option>
-                                                <option value="Top">TOP</option>
-                                            </select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divConnector">
-                                        <label for="connector" class="col-lg-3 text-uppercase fw-bold">flush connect</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="connector" id="connector" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Yes">YES</option>
-                                            </select>
-                                            <small class="form-hint">* Flush Connector Housing</small>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divRoll">
-                                        <label for="roll" class="col-lg-3 text-uppercase fw-bold">roll direction</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="roll" id="roll" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Reverse Roll">REVERSE ROLL</option>
-                                                <option value="Standard">STANDARD</option>
-                                            </select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divControlPosition">
-                                        <label for="controlposition" class="col-lg-3 text-uppercase fw-bold" id="lblControlPosition">control position</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="controlposition" id="controlposition" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Left">LEFT</option>
-                                                <option value="Right">RIGHT</option>
-                                            </select>
-                                        </div>  
-                                    </div>
-                                    
-                                    <div class="mb-3 row" id="divChain">
-                                        <label for="chaincolour" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">chain colour x length</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <select name="chaincolour" id="chaincolour" class="form-select "></select>
-                                            <small class="form-hint">* Colour</small>
-                                        </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="chainlength" id="chainlength" class="form-control ">
+                                                <input type="number" min="1" name="anglelength" id="anglelength" class="form-control  " autocomplete="off"/>
                                                 <span class="input-group-text ">mm</span>
                                             </div>
                                             <small class="form-hint">* Length</small>
                                         </div>
-                                    </div>
-
-                                    <div class="mb-3 row" id="divTrim">
-                                        <label for="trim" class="col-lg-3 text-uppercase fw-bold" >trim</label>
-                                        <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <select type="text" name="trim" id="trim" class="form-select"></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoTrim">
-                                                    <i class="ti ti-info-square-rounded fs-2"></i>
-                                                </button>
-                                            </div>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divBottomRail">
-                                        <label for="railtype" class="col-lg-3 text-uppercase fw-bold">bottom rail type x colour</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <select name="railtype" id="railtype" class="form-select "></select>
-                                            <small class="form-hint">* Type</small>
-                                        </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <div class="input-group">
-                                                <select name="railcolour" id="railcolour" class="form-select "></select>
-                                            </div>
-                                            <small class="form-hint">* Colour</small>
+                                        <div class="col-lg-2 col-md-12 col-sm-12">
+                                            <input type="number" min="1" name="angleqty" id="angleqty" class="form-control  " autocomplete="off"/>
+                                            <small class="form-hint">* Qty</small>
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row" id="divTubeSize">
-                                        <label for="tubesize" class="col-lg-3 text-uppercase fw-bold" >tube size</label>
+                                    <div class="mb-3 row" id="divPortHole">
+                                        <label for="porthole" class="col-lg-3 text-uppercase fw-bold" >screen port hole</label>
                                         <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <select type="text" name="tubesize" id="tubesize" class="form-select"></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoTubeSize">
-                                                    <i class="ti ti-info-square-rounded fs-2"></i>
-                                                </button>
-                                            </div>
+                                            <select name="porthole" id="porthole" class="form-select">
+                                                <option value=""></option>
+                                                <option value="Supply Loose">SUPPLY LOOSE</option>
+                                                <option value="Fitted (Diagram)">FITTED (DIAGRAM)</option>
+                                            </select>
                                         </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divPortHole">
+                                        <label for="plungerpin" class="col-lg-3 text-uppercase fw-bold" >plunger pin</label>
+                                        <div class="col-lg-4">
+                                            <select name="plungerpin" id="plungerpin" class="form-select">
+                                                <option value=""></option>
+                                                <option value="Metal Loose (4)">METAL LOOSE (4)</option>
+                                                <option value="Metal Loose (6)">METAL LOOSE (6)</option>
+                                                <option value="Plain Loose (4)">PLAIN LOOSE (4)</option>
+                                                <option value="Plain Loose (6)">PLAIN LOOSE (6)</option>
+                                            </select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divSwivalColour">
+                                        <label for="swivelcolour" class="col-lg-3 text-uppercase fw-bold" >swivel clip colour</label>
+                                        <div class="col-lg-4">
+                                            <select name="swivelcolour" id="swivelcolour" class="form-select">
+                                                <option value=""></option>
+                                                <option value="Black">BLACK</option>
+                                                <option value="White">WHITE</option>
+                                            </select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divSwivalQty">
+                                        <label for="swivelqty" class="col-lg-3 text-uppercase fw-bold">swivel clip qty</label>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <div class="input-group">
+                                                <span class="input-group-text ">1.6MM</span>
+                                                <input type="number" min="1" name="swivelqty" id="swivelqty" class="form-control " autocomplete="off" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <div class="input-group">
+                                                <span class="input-group-text ">11MM</span>
+                                                <input type="number" min="1" name="swivelqty" id="swivelqty" class="form-control  " autocomplete="off"/>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="mb-1 mt-6 row" id="divAdditional">
