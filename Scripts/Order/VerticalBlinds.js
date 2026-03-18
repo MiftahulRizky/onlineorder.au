@@ -45,7 +45,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindWandLength(),
         bindBracketType(),
         bindBracketColour(tubetype),
-        bindHanger(blindname),
+        bindHanger(blindname, tubetype),
         bindBottom(),
       ]);
       await handlerElementVisibility(blindtype, tubetype, controltype);
@@ -390,7 +390,7 @@ const bindControls = async (designid, blindid, tubetype) => {
           bindWandLength(),
           bindBracketType(),
           bindBracketColour(tubetype),
-          bindHanger(blindname),
+          bindHanger(blindname, tubetype),
           bindBottom(),
         ]);
         await handlerElementVisibility(blindtype, tubetype, controltype);
@@ -869,24 +869,31 @@ const bindBracketColour = (tubetype) => {
   });
 };
 
-const bindHanger = (blindname) => {
+const bindHanger = (blindname, tubetype) => {
   const sel = document.getElementById("hangertype");
   sel.innerHTML = ""; //reset
 
-  if (!blindname) return;
+  if (!blindname || !tubetype) return;
 
   let data = [];
-  if (blindname === "Vertical Slat Only") {
+  if (["Slat Only"].includes(blindname)) {
     data.push(
       { value: "Standard", text: "Standard" },
       { value: "Peghook", text: "Peghook" },
       { value: "Tiltrack 28mm", text: "Tiltrack 28mm" },
     );
-  } else {
-    data.push(
-      { value: "Standard", text: "Standard" },
-      { value: "Peghook", text: "Peghook" },
-    );
+  }
+
+  if (["Complete", "Track Only"].includes(blindname)) {
+    if (["Louvolite"].includes(tubetype)) {
+      data.push(
+        { value: "Opaque", text: "Opaque" },
+        { value: "White", text: "White" },
+      );
+    }
+    if (["Fairline", "Javaline"].includes(tubetype)) {
+      data.push({ value: "Standard", text: "Standard" });
+    }
   }
 
   if (data.length > 1) {
@@ -903,6 +910,10 @@ const bindHanger = (blindname) => {
     option.setAttribute("data-name", item.text);
     sel.add(option);
   });
+
+  if (["Louvolite"].includes(tubetype)) {
+    sel.value = "White";
+  }
 };
 
 const bindBottom = () => {
@@ -979,7 +990,7 @@ const bindItemOrders = async (itemid) => {
         bindWandColour(item.WandLength),
         bindBracketType(),
         bindBracketColour(item.TubeType),
-        bindHanger(item.BlindName),
+        bindHanger(item.BlindName, item.TubeType),
         bindBottom(),
         handlerSetElementValues(item),
       ]);
