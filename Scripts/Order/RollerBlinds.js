@@ -24,7 +24,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
       const blindid = e.target.value;
       const blindname = e.target.selectedOptions[0].dataset.name;
-      await Promise.all([handlerElementVisibility(blindname)]);
+      await handlerElementVisibility(blindname);
       await bindBrackets(DESIGNID, blindid);
     }
 
@@ -36,7 +36,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindid = blindtype.value;
       const blindname = blindtype.selectedOptions[0].dataset.name;
       const brackettype = e.target.value;
-      await Promise.all([handlerElementVisibility(blindname, brackettype)]);
+      await handlerElementVisibility(blindname, brackettype);
       await bindTubes(DESIGNID, blindid, brackettype);
     }
 
@@ -49,9 +49,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindname = blindtype.selectedOptions[0].dataset.name;
       const brackettype = document.getElementById("brackettype").value;
       const tubetype = e.target.value;
-      await Promise.all([
-        handlerElementVisibility(blindname, brackettype, tubetype),
-      ]);
+      await handlerElementVisibility(blindname, brackettype, tubetype);
       await bindControls(DESIGNID, blindid, brackettype, tubetype);
     }
 
@@ -65,9 +63,12 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const brackettype = document.getElementById("brackettype").value;
       const tubetype = document.getElementById("tubetype").value;
       const controltype = e.target.value;
-      await Promise.all([
-        handlerElementVisibility(blindname, brackettype, tubetype, controltype),
-      ]);
+      await handlerElementVisibility(
+        blindname,
+        brackettype,
+        tubetype,
+        controltype,
+      );
       await bindColours(DESIGNID, blindid, brackettype, tubetype, controltype);
     }
 
@@ -97,14 +98,14 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindTubeSize(blindname, tubetype),
         bindChildSafe(),
         bindAccessory(),
-        handlerElementVisibility(
-          blindname,
-          brackettype,
-          tubetype,
-          controltype,
-          colourtype,
-        ),
       ]);
+      await handlerElementVisibility(
+        blindname,
+        brackettype,
+        tubetype,
+        controltype,
+        colourtype,
+      );
     }
 
     // ---------------------------------||fabrictype||---------------------------------
@@ -280,12 +281,12 @@ const rollerPageLoaded = async () => {
 
   await bindDesigns(DESIGNID);
   await bindHeaders(HEADERID);
-  bindFormAction(ITEMACTION);
+  bindFormAction(ITEMACTION, ITEMID);
 
   if (ITEMACTION === "AddItem") {
     await bindBlinds(DESIGNID);
     document.getElementById("lblBlindNo").innerHTML = "Blind 1";
-    handlerElementVisibility();
+    await handlerElementVisibility();
     loaderFadeOut();
   } else if (
     ["NextItem", "EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)
@@ -951,13 +952,13 @@ const handlerSetElementValues = (itemData) => {
   });
 };
 // ------------------------------------------------------|| Binding Functions ||--------------------------------------
-const bindFormAction = (itemaction) => {
+const bindFormAction = (itemaction, id) => {
   const cardTitle = document.getElementById("cardTitle");
   const actionMap = {
     AddItem: "ADD ITEM",
     NextItem: "NEXT ITEM",
-    EditItem: "EDIT ITEM",
-    ViewItem: "VIEW ITEM",
+    EditItem: "EDIT ITEM ID: " + id,
+    ViewItem: "VIEW ITEM ID: " + id,
     CopyItem: "COPY ITEM",
   };
   cardTitle.innerText = actionMap[itemaction] || "";
@@ -1189,9 +1190,7 @@ const bindTubes = async (designid, blindid, brackettype) => {
         select.selectedIndex = 0;
         const blindname =
           document.getElementById("blindtype").selectedOptions[0].dataset.name;
-        await Promise.all([
-          handlerElementVisibility(blindname, brackettype, select.value),
-        ]);
+        await handlerElementVisibility(blindname, brackettype, select.value);
         await bindControls(designid, blindid, brackettype, select.value);
       }
     }
@@ -1258,14 +1257,13 @@ const bindControls = async (designid, blindid, brackettype, tubetype) => {
         select.selectedIndex = 0;
         const blindname =
           document.getElementById("blindtype").selectedOptions[0].dataset.name;
-        await Promise.all([
-          handlerElementVisibility(
-            blindname,
-            brackettype,
-            tubetype,
-            select.value,
-          ),
-        ]);
+
+        await handlerElementVisibility(
+          blindname,
+          brackettype,
+          tubetype,
+          select.value,
+        );
         await bindColours(
           designid,
           blindid,
@@ -1370,14 +1368,14 @@ const bindColours = async (
           bindTubeSize(blindname, tubetype),
           bindChildSafe(),
           bindAccessory(),
-          handlerElementVisibility(
-            blindname,
-            brackettype,
-            tubetype,
-            controltype,
-            select.value,
-          ),
         ]);
+        await handlerElementVisibility(
+          blindname,
+          brackettype,
+          tubetype,
+          controltype,
+          select.value,
+        );
       }
     }
   } catch (err) {
@@ -2255,15 +2253,15 @@ const bindItemOrders = async (itemid) => {
         bindChildSafe(),
         bindAccessory(),
         handlerSetElementValues(item),
-        handlerElementVisibility(
-          item.BlindName,
-          item.BracketType,
-          item.TubeType,
-          item.ControlType,
-          item.ColourType,
-          item,
-        ),
       ]);
+      await handlerElementVisibility(
+        item.BlindName,
+        item.BracketType,
+        item.TubeType,
+        item.ControlType,
+        item.ColourType,
+        item,
+      );
     }
 
     return true; // ✅ success

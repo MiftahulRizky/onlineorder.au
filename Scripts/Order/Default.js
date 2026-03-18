@@ -105,9 +105,9 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const id = e.target.dataset.id;
     const type = e.target.dataset.type;
     // handlerOpenDetailOrder(id);
-    if (type == "Blinds") {
+    if (["Blinds", "Door", "Window"].includes(type)) {
       window.location.href = `/order/detail?param=${id}&ordertype=${type.toLowerCase()}`;
-    } else if (type == "Panorama" || type == "Evolve") {
+    } else if (["Panorama", "Evolve"].includes(type)) {
       window.location.href = `/order/shutters/detail?param=${id}&ordertype=${type.toLowerCase()}`;
     } else {
       window.location.href = `/order`;

@@ -19,14 +19,14 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     if (e.target.id === "blindtype") {
       const blindtype = e.target.value;
-      await Promise.all([handlerElementVisibility(blindtype)]);
+      await handlerElementVisibility(blindtype);
       await bindTubes(DESIGNID, blindtype);
     }
 
     if (e.target.id === "tubetype") {
       const blindtype = document.getElementById("blindtype").value;
       const tubetype = e.target.value;
-      await Promise.all([handlerElementVisibility(blindtype, tubetype)]);
+      await handlerElementVisibility(blindtype, tubetype);
       await bindControls(DESIGNID, blindtype, tubetype);
     }
 
@@ -47,8 +47,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindBracketColour(tubetype),
         bindHanger(blindname),
         bindBottom(),
-        handlerElementVisibility(blindtype, tubetype, controltype),
       ]);
+      await handlerElementVisibility(blindtype, tubetype, controltype);
     }
 
     if (e.target.id === "fabrictype") {
@@ -76,6 +76,13 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   });
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "notes") {
+      let maxLength = 1000;
+      let currentLength = e.target.value.length;
+      document.querySelector("#notescount").textContent =
+        `${currentLength}/${maxLength}`;
+    }
   });
 });
 
@@ -385,8 +392,8 @@ const bindControls = async (designid, blindid, tubetype) => {
           bindBracketColour(tubetype),
           bindHanger(blindname),
           bindBottom(),
-          handlerElementVisibility(blindtype, tubetype, controltype),
         ]);
+        await handlerElementVisibility(blindtype, tubetype, controltype);
       }
     }
   } catch (err) {
@@ -975,8 +982,13 @@ const bindItemOrders = async (itemid) => {
         bindHanger(item.BlindName),
         bindBottom(),
         handlerSetElementValues(item),
-        handlerElementVisibility(item.BlindId, item.TubeType, item.KitId, item),
       ]);
+      await handlerElementVisibility(
+        item.BlindId,
+        item.TubeType,
+        item.KitId,
+        item,
+      );
     }
 
     return true; // ✅ success
@@ -1329,7 +1341,7 @@ const pageLoaded = async () => {
 
   if (ITEMACTION === "AddItem") {
     await bindBlinds(DESIGNID);
-    handlerElementVisibility();
+    await handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
     await bindItemOrders(ITEMID);

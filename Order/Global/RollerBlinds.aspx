@@ -1,7 +1,4 @@
-﻿<%@ Page Title="Roller Global Blinds" Language="VB" MasterPageFile="~/Site.master"
-AutoEventWireup="true" CodeFile="RollerGlobalBlinds.aspx.vb"
-Inherits="Order_RollerGlobalBlinds" MaintainScrollPositionOnPostback="true"
-Debug="true" %>
+﻿<%@ Page Title="Global Roller Blinds" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="RollerBlinds.aspx.vb" Inherits="Order_RollerBlinds" MaintainScrollPositionOnPostback="true" Debug="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
     <div class="page-header">
@@ -423,8 +420,8 @@ Debug="true" %>
         let ROLENAME = '<%= Session("RoleName") %>';
         let LEVELNAME = '<%= Session("LevelName") %>';
         let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
-        let URIMETHOD = "/Methods/Order/RollerGlobalBlindMethod.aspx";
+        let URIMETHOD = "/Methods/Order/Global/RollerBlindMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/RollerGlobalBlinds.js?<%= DateTime.Now.Ticks %>"></script>
+    <script type="text/javascript" src="/Scripts/Order/Global/RollerBlinds.js?<%= DateTime.Now.Ticks %>"></script>
 </asp:Content>

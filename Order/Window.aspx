@@ -121,29 +121,16 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divBrace">
-                                        <label for="brace" class="col-lg-3 text-uppercase fw-bold" >brace</label>
+                                        <label for="brace" class="col-lg-3 text-uppercase fw-bold" >brace /  joiner height</label>
                                         <div class="col-lg-4">
-                                            <select name="brace" id="brace" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Centre of Horizontal">CENTRE OF HORIZONTAL</option>
-                                                <option value="Centre of Vertical">CENTRE OF VERTICAL</option>
-                                            </select>
+                                            <select name="brace" id="brace" class="form-select"></select>
                                         </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divAngle">
                                         <label for="angletype" class="col-lg-3 text-uppercase fw-bold">angle type x Length x qty</label>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="angletype" id="angletype" class="form-select">
-                                                <option value=""></option>
-                                                <option value="12x12mm">12X12MM</option>
-                                                <option value="12x20mm">12X20MM</option>
-                                                <option value="12x25mm">12X25MM</option>
-                                                <option value="20x20mm">20X20MM</option>
-                                                <option value="20x25mm">20X25MM</option>
-                                                <option value="20x40mm">20X40MM</option>
-                                                <option value="25x50mm">25X50MM</option>
-                                            </select>
+                                            <select name="angletype" id="angletype" class="form-select"></select>
                                             <small class="form-hint">* Type</small>
                                         </div>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
@@ -162,35 +149,21 @@
                                     <div class="mb-3 row" id="divPortHole">
                                         <label for="porthole" class="col-lg-3 text-uppercase fw-bold" >screen port hole</label>
                                         <div class="col-lg-4">
-                                            <select name="porthole" id="porthole" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Supply Loose">SUPPLY LOOSE</option>
-                                                <option value="Fitted (Diagram)">FITTED (DIAGRAM)</option>
-                                            </select>
+                                            <select name="porthole" id="porthole" class="form-select"></select>
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divPortHole">
+                                    <div class="mb-3 row" id="divPlungerPin">
                                         <label for="plungerpin" class="col-lg-3 text-uppercase fw-bold" >plunger pin</label>
                                         <div class="col-lg-4">
-                                            <select name="plungerpin" id="plungerpin" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Metal Loose (4)">METAL LOOSE (4)</option>
-                                                <option value="Metal Loose (6)">METAL LOOSE (6)</option>
-                                                <option value="Plain Loose (4)">PLAIN LOOSE (4)</option>
-                                                <option value="Plain Loose (6)">PLAIN LOOSE (6)</option>
-                                            </select>
+                                            <select name="plungerpin" id="plungerpin" class="form-select"></select>
                                         </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divSwivalColour">
                                         <label for="swivelcolour" class="col-lg-3 text-uppercase fw-bold" >swivel clip colour</label>
                                         <div class="col-lg-4">
-                                            <select name="swivelcolour" id="swivelcolour" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Black">BLACK</option>
-                                                <option value="White">WHITE</option>
-                                            </select>
+                                            <select name="swivelcolour" id="swivelcolour" class="form-select"></select>
                                         </div>  
                                     </div>
 
@@ -218,7 +191,7 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divTopPlasticQty">
-                                        <label for="topplasticqty" class="col-lg-3 text-uppercase fw-bold" >spring clip qty</label>
+                                        <label for="topplasticqty" class="col-lg-3 text-uppercase fw-bold" >top clip plastic qty</label>
                                         <div class="col-lg-4">
                                            <input type="number" id="topplasticqty" name="topplasticqty" min="1" class="form-control ">
                                         </div>  

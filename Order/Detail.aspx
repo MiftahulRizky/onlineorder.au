@@ -439,7 +439,7 @@
                         <select name="designid" id="designid" class="form-select"></select>
                         <!-- <small class="form-hint" style="color:red;">* Please select a product then click the submit button</small> -->
                     </div>
-                    <div class="col-12 mt-3" id="divProduction" hidden>
+                    <div class="col-12 mt-3" id="divProduction" >
                         <label for="designid" class="form-label text-uppercase">production</label>
                         <select name="production" id="production" class="form-select"></select>
                     </div>

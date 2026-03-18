@@ -77,6 +77,7 @@ Partial Class Methods_Order_DetailMethod
         Public Property StatusHeader As String 
         Public Property HideNext As String 
         Public Property TextNext As String 
+        Public Property Production As String 
 
 
         Public Property No As String 
@@ -227,22 +228,55 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod(EnableSession:=True)>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function SetSessionOpenPageInputItem(ByVal id As String, ByVal headerid As String, ByVal ordertype As String, ByVal action As String, ByVal designid As String) As Object
-        HttpContext.Current.Session("headerId") = headerid 
-        HttpContext.Current.Session("itemAction") = action
-        HttpContext.Current.Session("orderType") = ordertype
-        HttpContext.Current.Session("designId") = UCase(designid).ToString()
+    Public Shared Function SetSessionOpenPageInputItem(ByVal id As String, ByVal headerid As String, ByVal ordertype As String, ByVal action As String, ByVal designid As String, ByVal production As String) As Object
+        Try
+            If String.isNullOrEmpty(headerid) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "this order is missing !", .field = "#modalAddItem #designid"}}
+            End If
+            If String.isNullOrEmpty(ordertype) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "this order type is missing !", .field = "#modalAddItem #designid"}}
+            End If
+            If String.isNullOrEmpty(action) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "this action is missing !", .field = "#modalAddItem #designid"}}
+            End If
+            If String.isNullOrEmpty(designid) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "please select a product !", .field = "#modalAddItem #designid"}}
+            End If
 
-        If Not String.IsNullOrEmpty(id) And (action ="EditItem" Or action = "ViewItem" Or action = "NextItem") Then
-            HttpContext.Current.Session("itemId") = id
-        End If
+            Dim DesignName As String = publicCfg.GetDesignName(designid)
+            Dim page As String = publicCfg.GetDesignPage(designId)
+            If DesignName = "Roller Blinds" Then
+                If String.isNullOrEmpty(production) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "production is required !", .field = "#modalAddItem #production"}}
+                End If
+                If Not String.isNullOrEmpty(production) AND production = "Global" Then
+                    Dim Name As String = String.Format("{0} {1}", production, DesignName)
+                    page = publicCfg.GetItemData(String.Format("SELECT Page FROM Designs WHERE Name = '{0}'", Name))
+                    designid = publicCfg.GetItemData(String.Format("SELECT Id FROM Designs WHERE Name = '{0}'", Name))
+                End If
+            Else
+            End If
+            
+            ' Throw New Exception("page: " & page)
 
-        Dim page As String = publicCfg.GetDesignPage(designId)
+            HttpContext.Current.Session("headerId") = headerid 
+            HttpContext.Current.Session("itemAction") = action
+            HttpContext.Current.Session("orderType") = ordertype
+            HttpContext.Current.Session("designId") = UCase(designid).ToString()
 
-        Return New SuccessResponse With {
-            .Success = New SuccessDetail With { .message = page}
-        }
+            If Not String.IsNullOrEmpty(id) And (action ="EditItem" Or action = "ViewItem" Or action = "NextItem") Then
+                HttpContext.Current.Session("itemId") = id
+            End If
+
+
+            Return New SuccessResponse With {
+                .Success = New SuccessDetail With { .message = page}
+            }
+        Catch ex As Exception
+            Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
+        End Try
     End Function
+
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
@@ -595,7 +629,7 @@ Partial Class Methods_Order_DetailMethod
                             Product = String.Format("{0} {1}", KitName, Size)
                         End If
 
-                        If DesignName = "Roller Blinds" Or DesignName = "Roller Global Blinds" Then
+                        If DesignName = "Roller Blinds" Or DesignName = "Global Roller Blinds" Then
                             Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
 
                             '#Linked 3 Blinds (Dep) & Linked 3 Blinds (Ind)
@@ -749,7 +783,7 @@ Partial Class Methods_Order_DetailMethod
                                 Product = "Roller Skin Only (+Tube Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
                             End If
 
-                            If DesignName = "Roller Global Blinds" Then
+                            If DesignName = "Global Roller Blinds" Then
                                 Product = String.Format("Global - {0}", Product)
                             End If
 
@@ -786,8 +820,14 @@ Partial Class Methods_Order_DetailMethod
                             End If
                         End If
 
+                        '#----------------|| Production ||----------------#
+                        Dim Production As String = "Sunlight"
+                        If InStr(DesignName, "Global") > 0 Then
+                            Production = "Global"
+                        End If
+
                         '#----------------|| Hidden Button Next ||----------------#
-                        If DesignName = "Roller Blinds" Or DesignName = "Roller Global Blinds" Then
+                        If DesignName = "Roller Blinds" Or DesignName = "Global Roller Blinds" Then
 
                             Dim TotalBlind As Integer = Convert.ToInt32(publicCfg.GetItemData("SELECT COUNT(Id) FROM OrderDetails WHERE UniqueId = '" + UniqueId + "' AND Active = 1"))
                             If BracketType = "Double" Or BracketType = "Linked 2 Blinds (Ind)" Or BracketType = "Linked 2 Blinds (Dep)" Then
@@ -868,6 +908,7 @@ Partial Class Methods_Order_DetailMethod
                             .Product = Product,
                             .HideNext = HideNext,
                             .TextNext = TextNext,
+                            .Production = Production,
                             .RealCost = RealCost,
                             .Cost =  FindCost,
                             .MarkUp = FindMarkUp,
@@ -2299,7 +2340,7 @@ Partial Class Methods_Order_DetailMethod
                 End If
 
                 Dim TotalBlind As Integer = publicCfg.GetItemData("SELECT COUNT(*) FROM view_details WHERE UniqueId = '" + UniqueId + "' AND Active = 1")
-                If DesignName = "Roller Blinds" Then
+                If DesignName = "Roller Blinds" or DesignName = "Global Roller Blinds" Then
 
                     If BracketType = "Double" Or BracketType = "Linked 2 Blinds (Dep)" Or BracketType = "Linked 2 Blinds (Ind)" Then
                         If TotalBlind < 2 Then
@@ -4082,10 +4123,10 @@ Partial Class Methods_Order_DetailMethod
     Private Shared Function Print_Global_Roller_SkinOnly(HeaderId As String) As String
         Dim result As String = String.Empty
         Try
-            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Global Blinds' AND BlindName='Skin Only' AND Active=1 ORDER BY Id, BlindNo ASC")
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Global Roller Blinds' AND BlindName='Skin Only' AND Active=1 ORDER BY Id, BlindNo ASC")
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim tdNotes As String = "<td colspan='8' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
-                result += spanStart & "ROLLER GLOBAL SKIN ONLY" & spanEnd
+                result += spanStart & "GLOBAL ROLLER SKIN ONLY" & spanEnd
 
                 result += tableStart
 
@@ -4133,10 +4174,10 @@ Partial Class Methods_Order_DetailMethod
     Private Shared Function Print_Global_RollerBlind(HeaderId As String) As String
         Dim result As String = String.Empty
         Try
-            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Global Blinds' AND BlindName='Roller Blind' AND Active=1 ORDER BY Id, BlindNo ASC")
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Global Roller Blinds' AND BlindName='Roller Blind' AND Active=1 ORDER BY Id, BlindNo ASC")
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim tdNotes As String = "<td colspan='20' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
-                result += spanStart & "ROLLER GLOBAL BLIND" & spanEnd
+                result += spanStart & "GLOBAL ROLLER BLIND" & spanEnd
                 result += tableStart
 
                 result += trStart
@@ -4278,10 +4319,10 @@ Partial Class Methods_Order_DetailMethod
     Private Shared Function Print_Global_Roller_Motorised(HeaderId As String) As String
         Dim result As String = String.Empty
         Try
-            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Global Blinds' AND BlindName='Motorised' AND Active=1 ORDER BY Id, BlindNo ASC")
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Global Roller Blinds' AND BlindName='Motorised' AND Active=1 ORDER BY Id, BlindNo ASC")
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim tdNotes As String = "<td colspan='20' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse: collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
-                result += spanStart & "ROLLER GLOBAL MOTORISED" & spanEnd
+                result += spanStart & "GLOBAL ROLLER MOTORISED" & spanEnd
                 result += tableStart
 
                 result += trStart
@@ -4423,10 +4464,10 @@ Partial Class Methods_Order_DetailMethod
 
     Private Shared Function Print_Global_Cassette(HeaderId As String) As String
         Dim result As String = String.Empty
-        Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Global Blinds' AND BlindName='Cassette' AND TubeType='JAI Geared' AND Active=1 ORDER BY Id, BlindNo ASC")
+        Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Global Roller Blinds' AND BlindName='Cassette' AND TubeType='JAI Geared' AND Active=1 ORDER BY Id, BlindNo ASC")
         If Not thisData.Tables(0).Rows.Count = 0 Then
             Dim tdNotes As String = "<td colspan='18' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
-            result += spanStart & "ROLLER GLOBAL CASSETTE - JAI SYSTEM" & spanEnd
+            result += spanStart & "GLOBAL ROLLER CASSETTE - JAI SYSTEM" & spanEnd
             result += tableStart
 
             result += trStart
@@ -4489,10 +4530,10 @@ Partial Class Methods_Order_DetailMethod
 
     Private Shared Function Print_Global_CassetteMotorised(HeaderId As String) As String
         Dim result As String = String.Empty
-        Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Global Blinds' AND BlindName='Cassette' AND TubeType='Motorised' AND Active=1 ORDER BY Id, BlindNo ASC")
+        Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Global Roller Blinds' AND BlindName='Cassette' AND TubeType='Motorised' AND Active=1 ORDER BY Id, BlindNo ASC")
         If Not thisData.Tables(0).Rows.Count = 0 Then
             Dim tdNotes As String = "<td colspan='21' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
-            result += spanStart & "ROLLER GLOBAL CASSETTE - MOTORISED" & spanEnd
+            result += spanStart & "GLOBAL ROLLER CASSETTE - MOTORISED" & spanEnd
             result += tableStart
 
             result += trStart
@@ -4568,7 +4609,7 @@ Partial Class Methods_Order_DetailMethod
         Dim totalPG As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Panel Glides' AND Active=1")
         Dim totalVenetian As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Venetian Blinds' AND Active=1")
         Dim totalRoller As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roller Blinds' AND Active=1")
-        Dim totalGlobalRoller As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roller Global Blinds' AND Active=1")
+        Dim totalGlobalRoller As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Global Roller Blinds' AND Active=1")
         Dim totalRoman As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roman Blinds' AND Active=1")
         Dim totalVerishades As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Veri Shades' AND Active=1")
         Dim totalVertical As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Vertical Blinds' AND Active=1")
@@ -4588,7 +4629,7 @@ Partial Class Methods_Order_DetailMethod
         Dim panelGlides As String = "<b>Panel Glides: " & totalPG & "</b>"
         Dim venetianblinds As String = "<b>Venetian Blinds:  " & totalVenetian & "</b>"
         Dim rollerblinds As String = "<b>Roller Blinds: " & totalRoller & "</b>"
-        Dim rollerglobalblinds As String = "<b>Roller Global Blinds: " & totalGlobalRoller & "</b>"
+        Dim rollerglobalblinds As String = "<b>Global Roller Blinds: " & totalGlobalRoller & "</b>"
         Dim romanBlinds As String = "<b>Roman Blinds: " & totalRoman & "</b>"
         Dim verishades As String = "<b>Veri Shades: " & totalVerishades & "</b>"
         Dim verticalblinds As String = "<b>Vertical Blinds: " & totalVertical & "</b>"
@@ -4810,6 +4851,7 @@ Partial Class Methods_Order_DetailMethod
                     Dim TubeSkinSize As Integer = 0
                     Dim NumBoldNuts As Integer = 0
                     Dim LinkBlind As String = String.Empty
+                    Dim DesignName As String = row("DesignName").ToString()
                     Dim BlindName As String = row("BlindName").ToString()
                     Dim KitName As String = row("KitName").ToString()
                     Dim BracketType As String = row("BracketType").ToString()
@@ -4817,11 +4859,14 @@ Partial Class Methods_Order_DetailMethod
                     If BracketType.Contains("Linked") Then
                         LinkBlind = "Linked"
                     End If
-                    '#--------------------------|| TubeSkinSize ||--------------------------#
+                    '#--------------------------|| TubeSkinSize & NumBoldNuts ||--------------------------#
                     TubeSkinSize = GetTubeSkinSize(row)
-
-                    '#--------------------------|| NumBoldNuts ||--------------------------#
                     NumBoldNuts = GetNumBoldNuts(row)
+                    If DesignName = "Global Roller Blinds" Then
+                        TubeSkinSize = 0
+                        NumBoldNuts = 0
+                    End If
+
 
                     If KitName.Contains("Roman") Then
                         If BlindName.Contains("Classic") Then
@@ -4869,6 +4914,10 @@ Partial Class Methods_Order_DetailMethod
                         ElseIf BracketType = "Headbox Only" Then
                             BlindName = "Cassette Headbox"
                         End If
+                    End If
+
+                    If DesignName.Contains("Global") Then
+                        BlindName = String.Format("Global {0}", BlindName)
                     End If
 
                     If KitName.Contains("Cellora") Then
@@ -7590,7 +7639,7 @@ Partial Class Methods_Order_DetailMethod
                 "JobSheet_Cellular",
                 "JobSheet_PanelGlides",
                 "JobSheet_RollerBlinds",
-                "JobSheet_RollerGlobalBlinds",
+                "JobSheet_GlobalRollerBlinds",
                 "JobSheet_RomanBlinds",
                 "JobSheet_Venetian",
                 "JobSheet_Verishades",
@@ -7711,10 +7760,10 @@ Partial Class Methods_Order_DetailMethod
 
                                 tableName = "JobSheet_RollerBlinds"
 
-                            Case "Roller Global Blinds"
+                            Case "Global Roller Blinds"
                                 fieldsToProcess.AddRange({"Line", "BlindNo", "LinkBlind", "Qty", "Location", "Mounting", "Width", "Drop", "RollDirection", "ControlPosition", "ControlLength", "MotorStyle", "MotorRemote", "MotorCharger", "Connector", "Accessory", "TubeSize", "Trim", "ChildSafe", "Notes", "KitName", "BracketType", "TubeType", "TubeSkinSize", "NumBoldNuts",  "ControlType",  "ColourType", "ChainName", "ChainColour", "ChainLength","BottomName", "BottomType", "BottomColour","FabricName", "FabricType", "FabricColour", "FabricWidth"})
 
-                                tableName = "JobSheet_RollerGlobalBlinds"
+                                tableName = "JobSheet_GlobalRollerBlinds"
 
                             Case "Roman Blinds"
                                 fieldsToProcess.AddRange({"Line", "BlindNo", "Qty", "Location", "Mounting", "Width", "Drop", "ControlPosition", "ChainLength", "MaterialChain", "CordColour", "CordLength", "AcornPlasticColour", "BattenColour", "Cleat", "Notes", "KitName", "VenetianType", "ControlType", "ChainName", "ChainColour", "CLength","FabricName", "FabricType", "FabricColour", "FabricWidth"})
@@ -7844,7 +7893,7 @@ Partial Class Methods_Order_DetailMethod
                 {"JobSheet_Cellular", AddressOf JobSheetCellular},
                 {"JobSheet_PanelGlides", AddressOf JobSheetPanelGlides},
                 {"JobSheet_RollerBlinds", AddressOf JobSheetRollerBlinds},
-                {"JobSheet_RollerGlobalBlinds", AddressOf JobSheetRollerGlobalBlinds},
+                {"JobSheet_GlobalRollerBlinds", AddressOf JobSheetGlobalRollerBlinds},
                 {"JobSheet_RomanBlinds", AddressOf JobSheetRomanBlinds},
                 {"JobSheet_Venetian", AddressOf JobSheetVenetian},
                 {"JobSheet_Verishades", AddressOf JobSheetVerishades},
@@ -7967,17 +8016,17 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
-    Private Shared Function JobSheetRollerGlobalBlinds(currentData As DataRow) As String
+    Private Shared Function JobSheetGlobalRollerBlinds(currentData As DataRow) As String
         Dim result As String = String.Empty
         
         Select Case currentData("BlindName").ToString()
-            Case "Cassette Complete", "Cassette Headbox"
+            Case "Global Cassette Complete", "Global Cassette Headbox"
                 result += PrintRollerGlobalCassette(currentData)
-            Case "Motorised"
+            Case "Global Motorised"
                 result += PrintRollerGlobalMotorised(currentData)
-            Case "Roller Blind"
+            Case "Global Roller Blind"
                 result += PrintRollerGlobalBlind(currentData)
-            Case "Skin Only"
+            Case "Global Skin Only"
                 result += PrintRollerGlobalSkin(currentData)
         End Select
 
@@ -8124,21 +8173,21 @@ Partial Class Methods_Order_DetailMethod
             End Select
         Next
 
-        '#Roller Global Blinds
-        Dim rollerGlobalList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_RollerGlobalBlinds WHERE JobId = '" & JobId & "'")
+        '#Global Roller Blinds
+        Dim rollerGlobalList As DataSet = publicCfg.GetListData("SELECT BlindName FROM Jobsheet_GlobalRollerBlinds WHERE JobId = '" & JobId & "'")
         For i As Integer = 0 To rollerGlobalList.Tables(0).Rows.Count - 1
             Dim blindName As String = rollerGlobalList.Tables(0).Rows(i).Item("BlindName").ToString()
             Select Case blindName
-                Case "Roller Blind"
-                        goWithList.Add("H")
-                Case "Motorised"
-                    goWithList.Add("Motorised")
-                Case "Cassette Complete"
-                    goWithList.Add("Cc")
-                Case "Cassette Headbox"
-                    goWithList.Add("Ch")
-                Case "Skin Only"
-                    goWithList.Add("Hs")
+                Case "Global Roller Blind"
+                        goWithList.Add("G.H")
+                Case "Global Motorised"
+                    goWithList.Add("G.Motorised")
+                Case "Global Cassette Complete"
+                    goWithList.Add("G.Cc")
+                Case "Global Cassette Headbox"
+                    goWithList.Add("G.Ch")
+                Case "Global Skin Only"
+                    goWithList.Add("G.Hs")
             End Select
         Next
 
@@ -8249,28 +8298,28 @@ Partial Class Methods_Order_DetailMethod
                         ReportIcon = "Hs"
                 End Select
 
-            Case "Roller Global Blinds"
+            Case "Global Roller Blinds"
                 ReportIcon = "H"
                 ReportType = "Holland Global"
 
                 Select Case  currentData("BlindName").ToString()
-                    Case "Roller Blind"
-                        ReportType = "Holland Global Blinds"
+                    Case "Global Roller Blind"
+                        ReportType = "Global Holand Blinds"
                         ReportIcon = "H <br/><span style='font-size: 15px;'>Global</span>"
 
-                    Case "Motorised"
-                        ReportType = "Holland Global Motorised"
+                    Case "Global Motorised"
+                        ReportType = "Global Holand Motorised"
                         ReportIcon = "HM <br/><span style='font-size: 15px;'>Global</span>"
 
-                    Case "Cassette Complete"
-                        ReportType = "Holland Global Cassette C"
+                    Case "Global Cassette Complete"
+                        ReportType = "Global Holand Cassette C"
                         ReportIcon = "Cc <br/><span style='font-size: 15px;'>Global</span>"
-                    Case "Cassette Headbox"
-                        ReportType = "Holland Global Cassette H"
+                    Case "Global Cassette Headbox"
+                        ReportType = "Global Holand Cassette H"
                         ReportIcon = "Ch <br/><span style='font-size: 15px;'>Global</span>"
 
-                    Case "Skin Only"
-                        ReportType = "Holland Global Skin"
+                    Case "Global Skin Only"
+                        ReportType = "Global Holand Skin"
                         ReportIcon = "Hs <br/><span style='font-size: 15px;'>Global</span>"
                 End Select
 
@@ -11282,7 +11331,7 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
-    '#------------------------------------------|| Print Detail - Roller Global Blinds||------------------------------------------#
+    '#------------------------------------------|| Print Detail - Global Roller Blinds||------------------------------------------#
     Private Shared Function PrintRollerGlobalCassette(currentData As DataRow) As String
         Dim result As String = String.Empty
 

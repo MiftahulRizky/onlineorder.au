@@ -34,7 +34,7 @@
                             </div>
                             <div id="formDetail">
                                 <div class="row mb-5" id="divCustomer">
-                                    <label for="customer" class="col-lg-4 form-label text-uppercase required" id="lblcustomer">cutomer name</label>
+                                    <label for="customer" class="col-lg-4 form-label text-uppercase required" id="lblcustomer">customer name</label>
                                     <div class="col-lg-8">
                                         <select name="customer" id="customer" class="form-select "></select>
                                     </div>

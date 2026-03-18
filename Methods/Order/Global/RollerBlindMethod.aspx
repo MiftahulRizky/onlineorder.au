@@ -1,4 +1,4 @@
-﻿<%@ Page Language="VB" AutoEventWireup="false" CodeFile="RollerGlobalBlindMethod.aspx.vb" Inherits="Methods_Order_RollerGlobalBlindMethod" %>
+﻿<%@ Page Language="VB" AutoEventWireup="false" CodeFile="RollerBlindMethod.aspx.vb" Inherits="Methods_Order_RollerBlindMethod" %>
 
 <!DOCTYPE html>
 

@@ -267,8 +267,11 @@ document
   .querySelector("#modalAddItem #submitAddItem")
   .addEventListener("click", () => {
     const designId = document.querySelector("#modalAddItem #designid").value;
+    const production = document.querySelector(
+      "#modalAddItem #production",
+    )?.value;
     const action = "AddItem";
-    submitSelectProduct(HEADERID, ORDERTYPE, action, designId);
+    submitSelectProduct(HEADERID, ORDERTYPE, action, designId, production);
   });
 
 // ------------------------------------------||modalAddService Event ||-------------------------------------
@@ -369,10 +372,19 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnDetailItem") {
     const id = e.target.dataset.id;
     const designid = e.target.dataset.designid;
+    const production = e.target.dataset.production;
     const headerid = e.target.dataset.headerid;
     const ordertype = ORDERTYPE;
     const designname = e.target.dataset.designname;
-    handlerEditItem(id, headerid, ordertype, "ViewItem", designid, designname);
+    handlerEditItem(
+      id,
+      headerid,
+      ordertype,
+      "ViewItem",
+      designid,
+      production,
+      designname,
+    );
   }
 });
 
@@ -380,10 +392,19 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnEditItem") {
     const id = e.target.dataset.id;
     const designid = e.target.dataset.designid;
+    const production = e.target.dataset.production;
     const headerid = e.target.dataset.headerid;
     const ordertype = ORDERTYPE;
     const designname = e.target.dataset.designname;
-    handlerEditItem(id, headerid, ordertype, "EditItem", designid, designname);
+    handlerEditItem(
+      id,
+      headerid,
+      ordertype,
+      "EditItem",
+      designid,
+      production,
+      designname,
+    );
   }
 });
 
@@ -438,9 +459,18 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
 document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnNextItem") {
     const id = e.target.dataset.id;
-    const designId = e.target.dataset.designid;
+    const designid = e.target.dataset.designid;
+    const production = e.target.dataset.production;
     const msgBody = e.target.dataset.next;
-    handlerNextItem(id, HEADERID, ORDERTYPE, "NextItem", designId, msgBody);
+    handlerNextItem(
+      id,
+      HEADERID,
+      ORDERTYPE,
+      "NextItem",
+      designid,
+      production,
+      msgBody,
+    );
   }
 });
 
@@ -525,102 +555,62 @@ const submitChangeStatus = async () => {
 };
 
 // SUBMIT SELECT PRODUCT
-const submitSelectProduct = (headerid, ordertype, action, designid) => {
-  // VALIDATE FORM
-  if (!headerid || !action || !designid) {
-    if (ROLENAME === "Administrator") {
-      if (!headerid) {
-        isError("HEADER ID NOT FOUND !").then(() => {
-          const fieldElement = document.querySelector(
-            "#modalAddItem #designid",
-          );
-          if (fieldElement) {
-            fieldElement.focus();
-            fieldElement.classList.add("is-invalid");
-          }
-        });
-      }
-      if (!action) {
-        isError("ACTION NOT FOUND !").then(() => {
-          const fieldElement = document.querySelector(
-            "#modalAddItem #designid",
-          );
-          if (fieldElement) {
-            fieldElement.focus();
-            fieldElement.classList.add("is-invalid");
-          }
-        });
-      }
-      if (!designid) {
-        isError("DESIGN ID NOT FOUND !").then(() => {
-          const fieldElement = document.querySelector(
-            "#modalAddItem #designid",
-          );
-          if (fieldElement) {
-            fieldElement.focus();
-            fieldElement.classList.add("is-invalid");
-          }
-        });
-      }
-      return;
-    }
-    if (!headerid) {
-      isError("THIS ORDER IS MISSING !").then(() => {
-        const fieldElement = document.querySelector("#modalAddItem #designid");
-        if (fieldElement) {
-          fieldElement.focus();
-          fieldElement.classList.add("is-invalid");
-        }
-      });
-    }
-    if (!action) {
-      isError("THIS ORDER IS MISSING !").then(() => {
-        const fieldElement = document.querySelector("#modalAddItem #designid");
-        if (fieldElement) {
-          fieldElement.focus();
-          fieldElement.classList.add("is-invalid");
-        }
-      });
-    }
-    if (!designid) {
-      isError("PLEASE SELECT A PRODUCT !").then(() => {
-        const fieldElement = document.querySelector("#modalAddItem #designid");
-        if (fieldElement) {
-          fieldElement.focus();
-          fieldElement.classList.add("is-invalid");
-        }
-      });
-    }
-    return;
-  }
+const submitSelectProduct = async (
+  headerid,
+  ordertype,
+  action,
+  designid,
+  production,
+) => {
+  const btn = document.querySelector("#modalAddItem #submitAddItem");
+  btn.innerHTML = "Proccessing...";
+  try {
+    const response = await fetch(URIMETHOD + "/SetSessionOpenPageInputItem", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        id: "",
+        headerid: headerid,
+        ordertype: ordertype,
+        action: action,
+        designid: designid,
+        production: production,
+      }),
+    });
 
-  $.ajax({
-    type: "POST",
-    url: URIMETHOD + "/SetSessionOpenPageInputItem",
-    contentType: "application/json; charset=utf-8",
-    data: JSON.stringify({
-      id: "",
-      headerid: headerid,
-      ordertype: ordertype,
-      action: action,
-      designid: designid,
-    }),
-    success: function (response) {
-      const result = response.d || response;
-      var finePage = result.success.message.replace("~", "");
-      window.location.href = finePage;
-    },
-    error: function (xhr, status, error) {
-      var msg = xhr.status + "\n" + xhr.responseText + "\n" + error;
-      // isError(msg);
-      // return;
-      if (ROLENAME === "Administrator") {
-        isError("Gagal menyetel session: " + error);
-        return;
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      if (dataResult.error.field) {
+        const field = document.querySelector(dataResult.error.field);
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
       }
-      isError("Please contact our IT team at support@onlineorder.au");
-    },
-  });
+    } else {
+      // await isSuccess(dataResult.success.message);
+      // window.location.href = dataResult.success.message;
+      var finePage = dataResult.success.message.replace("~", "");
+      window.location.href = finePage;
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up me-2"></i>Submit`;
+  }
 };
 
 // SUBMIT SERVICE
@@ -1098,7 +1088,7 @@ const handlerHeaderInfo = async (item) => {
       spanCreatedDate.innerHTML = customDate.toLocaleDateString("en-US", indo);
     }
 
-    spanNote.innerHTML = item.Note ? item.Note : "-";
+    spanNote.innerHTML = item.OrderNote ? item.OrderNote : "-";
     spanStatusNote.innerHTML = item.StatusAdditional
       ? item.StatusAdditional
       : "-";
@@ -2053,21 +2043,9 @@ const handlerEditItem = async (
   ordertype,
   action,
   designid,
+  production,
   designname,
 ) => {
-  if (!id || !headerid || !action || !designid || !designname) {
-    if (ROLENAME === "Administrator") {
-      if (!id) await isError("ID NOT FOUND!");
-      if (!headerid) await isError("HEADER ID NOT FOUND!");
-      if (!action) await isError("ACTION NOT FOUND!");
-      if (!designid) await isError("DESIGN ID NOT FOUND!");
-      if (!designname) await isError("DESIGN NAME NOT FOUND!");
-      return;
-    }
-
-    await isError("Please contact our IT team at support@onlineorder.au");
-    return;
-  }
   if (designname == "Additional") {
     swalLoadingShow("Please wait while we prepare the data.");
     try {
@@ -2119,6 +2097,7 @@ const handlerEditItem = async (
           ordertype,
           action,
           designid,
+          production,
         }),
       });
 
@@ -2383,6 +2362,7 @@ const handlerNextItem = async (
   ordertype,
   action,
   designid,
+  production,
   msgbody,
 ) => {
   const result = await Swal.fire({
@@ -2400,19 +2380,6 @@ const handlerNextItem = async (
 
   if (!result.isConfirmed) return;
 
-  // VALIDATE FORM
-  if (!id || !headerid || !action || !designid) {
-    if (ROLENAME === "Administrator") {
-      if (!id) isError("ID NOT FOUND !");
-      if (!headerid) isError("HEADER ID NOT FOUND !");
-      if (!action) isError("ACTION NOT FOUND !");
-      if (!designid) isError("DESIGN ID NOT FOUND !");
-      return;
-    }
-    isError("Please contact our IT team at support@onlineorder.au");
-    return;
-  }
-
   try {
     const response = await fetch(`${URIMETHOD}/SetSessionOpenPageInputItem`, {
       method: "POST",
@@ -2425,6 +2392,7 @@ const handlerNextItem = async (
         ordertype,
         action,
         designid,
+        production,
       }),
     });
 
@@ -2438,11 +2406,11 @@ const handlerNextItem = async (
     const finePage = resultData.success.message.replace("~", "");
     window.location.href = finePage;
   } catch (error) {
+    var msg = "Please contact our IT team at support@onlineorder.au";
     if (ROLENAME === "Administrator") {
-      isError("Gagal menyetel session: " + error.message);
-    } else {
-      isError("Please contact our IT team at support@onlineorder.au");
+      msg = "Gagal menyetel session: " + error.message;
     }
+    isError(msg);
   }
 };
 
@@ -2590,7 +2558,7 @@ const bindDetails = async (headerid, status, createdby) => {
         return `
           ${row.Product}
           ${brNext}
-          <button type="button" class="btn btn-sm btn-outline-success mt-1" id="btnNextItem" data-id="${row.Id}" data-designid="${row.DesignId}" data-next="${row.TextNext}" ${row.HideNext}>
+          <button type="button" class="btn btn-sm btn-outline-success mt-1" id="btnNextItem" data-id="${row.Id}" data-designid="${row.DesignId}" data-next="${row.TextNext}" data-production="${row.Production}" ${row.HideNext}>
             <i class="bi bi-node-plus me-1"></i>
             Next Item
           </button>
@@ -2677,12 +2645,12 @@ const bindProduction = async (designname) => {
     data.push({ value: "Sunlight", text: "Sunlight" });
   }
 
-  // if (data.length > 1) {
-  //   const defaultOption = document.createElement("option");
-  //   defaultOption.text = "";
-  //   defaultOption.value = "";
-  //   sel.add(defaultOption);
-  // }
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
 
   data.forEach((item) => {
     const option = document.createElement("option");
@@ -2883,12 +2851,12 @@ const dropdownActionButton = (row, createdby) => {
         </button>
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
           <li ${hideDetail}>
-            <a class="dropdown-item" href="javascript:void(0);" id="btnDetailItem" data-id="${row.Id}"" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}" data-designname="${row.DesignName}">
+            <a class="dropdown-item" href="javascript:void(0);" id="btnDetailItem" data-id="${row.Id}"" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}" data-designname="${row.DesignName}" data-production='${row.Production}'>
               <i class="ti ti-info-square-rounded me-1 opacity-50 fs-2"></i>Detail
             </a>
           </li>
           <li ${hideEdit}>
-            <a class="dropdown-item" href="javascript:void(0);" id="btnEditItem" data-id="${row.Id}" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}" data-designname="${row.DesignName}">
+            <a class="dropdown-item" href="javascript:void(0);" id="btnEditItem" data-id="${row.Id}" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}" data-designname="${row.DesignName}" data-production='${row.Production}'>
             <i class="ti ti-edit me-1 opacity-50 fs-2"></i>Edit
             </a>
           </li>
