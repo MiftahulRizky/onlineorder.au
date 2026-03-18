@@ -161,19 +161,19 @@
                                     <span  id="spanRetailerId" style="font-size: larger; font-weight: bold;" hidden></span>
                                 </div>
 
-                                <div class="col-lg-4">
+                                <div class="col-lg-2">
                                     <span style="font-size:larger;">Order # :</span>
                                     <br />
                                     <span  id="spanOrderId" style="font-size:larger;font-weight:bold;"></span>
                                 </div>
 
-                                <div class="col-lg-4">
+                                <div class="col-lg-5">
                                     <span style="font-size:larger;">Customer Order Number :</span>
                                     <br />
                                     <span  id="spanOrderNo" style="font-size:larger;font-weight:bold;"></span>
                                 </div>
 
-                                <div class="col-lg-4">
+                                <div class="col-lg-5">
                                     <span style="font-size:larger;">Customer Order Name :</span>
                                     <br />
                                     <span id="spanOrderCust" style="font-size:larger;font-weight:bold;"></span>

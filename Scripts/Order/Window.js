@@ -40,6 +40,18 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   });
 });
 
+// button submit
+document.querySelector("#btnSubmit").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+
+  // handlerSubmit(e.target.form, e.target.id);
+  handlerSubmit(e.target.id);
+});
+
 // button cancel
 document.querySelector("#btnCancel").addEventListener("click", (e) => {
   window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
@@ -599,6 +611,89 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
         ? error.message
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
+  }
+};
+
+const handlerSubmit = async (button) => {
+  try {
+    // return alert(button);
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = [
+      "blindtype",
+      "colourtype",
+      "qty",
+      "room",
+      "mounting",
+      "width",
+      "drop",
+      "meshtype",
+      "framecolour",
+      "brace",
+      "angletype",
+      "anglelength",
+      "angleqty",
+      "porthole",
+      "plungerpin",
+      "swivelcolour",
+      "swivelqty",
+      "swivelqtyb",
+      "springqty",
+      "topplasticqty",
+      "notes",
+      "markup",
+    ];
+
+    const formData = {
+      headerid: HEADERID,
+      itemaction: ITEMACTION,
+      itemid: ITEMID,
+      designid: DESIGNID,
+      loginid: LOGINID,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.getElementById(field).value;
+    });
+
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/Submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success);
+      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Submit";
   }
 };
 // ----------------------------------------------|| Other Functions ||---------------------------------------

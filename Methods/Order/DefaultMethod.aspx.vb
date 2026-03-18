@@ -649,7 +649,7 @@ Partial Class Methods_Order_DefaultMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Logs(ByVal id As String, ByVal ordertype As String) As Object
         Try
-            Dim ds As DataSet = orderCfg.GetListData("SELECT CustomerLogins.FullName, Log_Orders.ActionDate, Log_Orders.Description FROM Log_Orders INNER JOIN CustomerLogins ON Log_Orders.ActionBy=CustomerLogins.Id WHERE Log_Orders.HeaderId='" + id + "' AND Log_Orders.Type='" + ordertype + "'  ORDER BY ActionDate ASC")
+            Dim ds As DataSet = orderCfg.GetListData("SELECT CustomerLogins.FullName, Log_Orders.ActionDate, Log_Orders.Description FROM Log_Orders INNER JOIN CustomerLogins ON Log_Orders.ActionBy=CustomerLogins.Id WHERE Log_Orders.HeaderId='" + id + "' AND Log_Orders.Type='" + ordertype + "'  ORDER BY ActionDate DESC")
 
             Dim list As New List(Of Dictionary(Of String, Object))()
 

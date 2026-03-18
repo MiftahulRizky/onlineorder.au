@@ -178,7 +178,7 @@
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
                                                 <span class="input-group-text ">11MM</span>
-                                                <input type="number" min="1" name="swivelqty" id="swivelqty" class="form-control  " autocomplete="off"/>
+                                                <input type="number" min="1" name="swivelqtyb" id="swivelqtyb" class="form-control  " autocomplete="off"/>
                                             </div>
                                         </div>
                                     </div>

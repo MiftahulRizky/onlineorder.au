@@ -2454,14 +2454,14 @@ Partial Class Methods_Order_DetailMethod
 
             'ROLLER
             result += Print_Roller_SkinOnly(headerid)
-            result += Print_RollerBlind(headerid)
+            result += PrintPDFRollerStandard(headerid)
             result += Print_Roller_Motorised(headerid)
             result += Print_Cassette(headerid)
             result += Print_CassetteMotorised(headerid)
 
             'ROLLER
             result += Print_Global_Roller_SkinOnly(headerid)
-            result += Print_Global_RollerBlind(headerid)
+            result += PrintPDFGlobalGearReduction(headerid)
             result += Print_Global_Roller_Motorised(headerid)
             result += Print_Global_Cassette(headerid)
             result += Print_Global_CassetteMotorised(headerid)
@@ -3691,13 +3691,13 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
-    Private Shared Function Print_RollerBlind(HeaderId As String) As String
+    Private Shared Function PrintPDFRollerStandard(HeaderId As String) As String
         Dim result As String = String.Empty
         Try
-            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Blinds' AND BlindName='Roller Blind' AND Active=1 ORDER BY Id, BlindNo ASC")
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Blinds' AND BlindName='Standard' AND Active=1 ORDER BY Id, BlindNo ASC")
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim tdNotes As String = "<td colspan='20' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
-                result += spanStart & "ROLLER BLIND" & spanEnd
+                result += spanStart & "ROLLER STANDARD" & spanEnd
                 result += tableStart
 
                 result += trStart
@@ -3831,7 +3831,7 @@ Partial Class Methods_Order_DetailMethod
                 result += tableEnd
             End If
         Catch ex As Exception
-            result += "THERE IS AN ERROR IN THE ROLLER BLIND. PLEASE CONTACT <b>support@onlineorder.au</b>"
+            result += "THERE IS AN ERROR IN THE ROLLER STANDARD. PLEASE CONTACT <b>support@onlineorder.au</b>"
         End Try
         Return result
     End Function
@@ -4120,6 +4120,8 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
+
+
     Private Shared Function Print_Global_Roller_SkinOnly(HeaderId As String) As String
         Dim result As String = String.Empty
         Try
@@ -4171,13 +4173,13 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
-    Private Shared Function Print_Global_RollerBlind(HeaderId As String) As String
+    Private Shared Function PrintPDFGlobalGearReduction(HeaderId As String) As String
         Dim result As String = String.Empty
         Try
-            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Global Roller Blinds' AND BlindName='Roller Blind' AND Active=1 ORDER BY Id, BlindNo ASC")
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Global Roller Blinds' AND BlindName='Gear Reduction' AND Active=1 ORDER BY Id, BlindNo ASC")
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim tdNotes As String = "<td colspan='20' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
-                result += spanStart & "GLOBAL ROLLER BLIND" & spanEnd
+                result += spanStart & "GLOBAL GEAR REDUCTION" & spanEnd
                 result += tableStart
 
                 result += trStart
@@ -4311,7 +4313,7 @@ Partial Class Methods_Order_DetailMethod
                 result += tableEnd
             End If
         Catch ex As Exception
-            result += "THERE IS AN ERROR IN THE ROLLER BLIND. PLEASE CONTACT <b>support@onlineorder.au</b>"
+            result += "THERE IS AN ERROR IN THE GLOBAL GEAR REDUCTION. PLEASE CONTACT <b>support@onlineorder.au</b>"
         End Try
         Return result
     End Function
@@ -5129,7 +5131,7 @@ Partial Class Methods_Order_DetailMethod
         Dim Width As Integer = CInt(row("Width").ToString())
 
         '#..........................................|| Blinds ||..........................................#
-        If BlindName = "Roller Blind" Then
+        If BlindName = "Standard" Then
             '#-----------------------|| JAI / LOV ||-----------------------#
             If InStr(KitName, "JAI") > 0 Or InStr(KitName, "LOV") > 0 Or InStr(TubeType, "JAI") > 0 Or InStr(TubeType, "LOV") > 0 Then
 
@@ -8007,8 +8009,8 @@ Partial Class Methods_Order_DetailMethod
                 result += PrintRollerCassette(currentData)
             Case "Motorised"
                 result += PrintRollerMotorised(currentData)
-            Case "Roller Blind"
-                result += PrintRollerBlind(currentData)
+            Case "Standard"
+                result += PrintRollerStandard(currentData)
             Case "Skin Only"
                 result += PrintRollerSkin(currentData)
         End Select
@@ -8024,8 +8026,8 @@ Partial Class Methods_Order_DetailMethod
                 result += PrintRollerGlobalCassette(currentData)
             Case "Global Motorised"
                 result += PrintRollerGlobalMotorised(currentData)
-            Case "Global Roller Blind"
-                result += PrintRollerGlobalBlind(currentData)
+            Case "Global Gear Reduction"
+                result += PrintGlobalGearReduction(currentData)
             Case "Global Skin Only"
                 result += PrintRollerGlobalSkin(currentData)
         End Select
@@ -8178,8 +8180,8 @@ Partial Class Methods_Order_DetailMethod
         For i As Integer = 0 To rollerGlobalList.Tables(0).Rows.Count - 1
             Dim blindName As String = rollerGlobalList.Tables(0).Rows(i).Item("BlindName").ToString()
             Select Case blindName
-                Case "Global Roller Blind"
-                        goWithList.Add("G.H")
+                Case "Global Gear Reduction"
+                        goWithList.Add("G.GR")
                 Case "Global Motorised"
                     goWithList.Add("G.Motorised")
                 Case "Global Cassette Complete"
@@ -8303,19 +8305,19 @@ Partial Class Methods_Order_DetailMethod
                 ReportType = "Holland Global"
 
                 Select Case  currentData("BlindName").ToString()
-                    Case "Global Roller Blind"
-                        ReportType = "Global Holand Blinds"
-                        ReportIcon = "H <br/><span style='font-size: 15px;'>Global</span>"
+                    Case "Global Gear Reduction"
+                        ReportType = "Holand Gear Reduction"
+                        ReportIcon = "GR <br/><span style='font-size: 15px;'>Global</span>"
 
                     Case "Global Motorised"
-                        ReportType = "Global Holand Motorised"
+                        ReportType = "Holand Motorised"
                         ReportIcon = "HM <br/><span style='font-size: 15px;'>Global</span>"
 
                     Case "Global Cassette Complete"
-                        ReportType = "Global Holand Cassette C"
+                        ReportType = "Holand Cassette C"
                         ReportIcon = "Cc <br/><span style='font-size: 15px;'>Global</span>"
                     Case "Global Cassette Headbox"
-                        ReportType = "Global Holand Cassette H"
+                        ReportType = "Holand Cassette H"
                         ReportIcon = "Ch <br/><span style='font-size: 15px;'>Global</span>"
 
                     Case "Global Skin Only"
@@ -10776,7 +10778,7 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
-    Private Shared Function PrintRollerBlind(currentData As DataRow) As String
+    Private Shared Function PrintRollerStandard(currentData As DataRow) As String
         Dim result As String = String.Empty
 
         Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
@@ -12160,7 +12162,7 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
-    Private Shared Function PrintRollerGlobalBlind(currentData As DataRow) As String
+    Private Shared Function PrintGlobalGearReduction(currentData As DataRow) As String
         Dim result As String = String.Empty
 
         Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))

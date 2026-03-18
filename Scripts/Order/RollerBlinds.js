@@ -154,9 +154,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         divBottomRail.classList.remove("d-none");
       }
       if (
-        (blindname == "Roller Blind" ||
-          blindname == "Motorised" ||
-          blindname == "Cassette") &&
+        ["Cassette", "Motorised", "Standard"].includes(blindname) &&
         trim == "1F"
       ) {
         divBottomRail.classList.remove("d-none");
@@ -392,11 +390,11 @@ const handlerElementVisibility = async (
       lblColourType.innerHTML = "cassette colour";
     }
 
-    if (["Motorised", "Roller Blind"].includes(blindname)) {
+    if (["Motorised", "Standard"].includes(blindname)) {
       lblColourType.innerHTML = "colour type";
     }
 
-    if (["Cassette", "Motorised", "Roller Blind"].includes(blindname)) {
+    if (["Cassette", "Motorised", "Standard"].includes(blindname)) {
       divAdditional.classList.remove("d-none");
     }
 
@@ -404,7 +402,7 @@ const handlerElementVisibility = async (
 
     // ---------------------------------|| on change brackettype ||---------------------------------
     if (!brackettype) return;
-    if (["Cassette", "Motorised", "Roller Blind"].includes(blindname)) {
+    if (["Cassette", "Motorised", "Standard"].includes(blindname)) {
       divTubeType.classList.remove("d-none");
     }
 
@@ -427,7 +425,7 @@ const handlerElementVisibility = async (
       btnInfoControlType.classList.remove("d-none");
     }
 
-    if (["Cassette", "Motorised", "Roller Blind"].includes(blindname)) {
+    if (["Cassette", "Motorised", "Standard"].includes(blindname)) {
       if (tubetype !== "Spring Operated") {
         divControlType.classList.remove("d-none");
       }
@@ -435,7 +433,7 @@ const handlerElementVisibility = async (
 
     // ---------------------------------|| on change controltype ||---------------------------------
     if (!controltype) return;
-    if (["Cassette", "Motorised", "Roller Blind"].includes(blindname)) {
+    if (["Cassette", "Motorised", "Standard"].includes(blindname)) {
       if (tubetype !== "Spring Operated") {
         divColourType.classList.remove("d-none");
       }
@@ -497,7 +495,7 @@ const handlerElementVisibility = async (
       }
     }
 
-    if (blindname === "Roller Blind") {
+    if (blindname === "Standard") {
       if (tubetype !== "Spring Operated") {
         divRoll.classList.remove("d-none");
         divControlPosition.classList.remove("d-none");
@@ -962,6 +960,14 @@ const bindFormAction = (itemaction, id) => {
     CopyItem: "COPY ITEM",
   };
   cardTitle.innerText = actionMap[itemaction] || "";
+
+  if (["NextItem", "EditItem", "ViewItem"].includes(itemaction)) {
+    const blindtype = document.getElementById("blindtype");
+    const brackettype = document.getElementById("brackettype");
+
+    blindtype.setAttribute("disabled", true);
+    brackettype.setAttribute("disabled", true);
+  }
 };
 
 const bindDesigns = async (designid) => {
@@ -1993,7 +1999,7 @@ const bindTubeSize = (blindname, tubetype) => {
   if (!blindname || !tubetype) return;
 
   let data = [];
-  if (blindname == "Roller Blind") {
+  if (blindname == "Standard") {
     if (
       tubetype == "JAI Standard" ||
       tubetype == "JAI Geared" ||

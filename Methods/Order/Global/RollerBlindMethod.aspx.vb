@@ -987,14 +987,14 @@ Partial Class Methods_Order_RollerBlindMethod
             End If
 
             
-            data.designid ="50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
+            ' data.designid ="50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
             Dim SoeId As String = publicCfg.GetSoeKitId(data.colourtype)
             Dim DesignName As String = publicCfg.GetDesignName(data.designid)
             Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
             Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
 
             Dim FabricGroup As String = publicCfg.GetFabricGroup(data.fabriccolour)
-            Dim PriceGroupName As String = String.Format("Roller Blind - {0}", FabricGroup)
+            Dim PriceGroupName As String = String.Format("Gear Reduction - {0}", FabricGroup)
             If BlindName = "Skin Only" Then
                 PriceGroupName = String.Format("Roller Skin Only - {0}", FabricGroup)
             End If
