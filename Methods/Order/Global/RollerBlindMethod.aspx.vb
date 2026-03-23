@@ -203,7 +203,7 @@ Partial Class Methods_Order_RollerBlindMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindFabricType(ByVal designid As String) As Object
         Try
-            designid = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
+            ' designid = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
             Dim MyQuery As String = String.Format("SELECT Type FROM Fabrics WHERE DesignId='{0}' AND Active='1' GROUP BY Type ORDER BY Type ASC", designid)
             Dim datas As DataSet = publicCfg.GetListData(MyQuery)
             Dim list As New List(Of Dictionary(Of String, String))()
@@ -227,7 +227,7 @@ Partial Class Methods_Order_RollerBlindMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindFabricColour(ByVal designid As String, ByVal fabrictype As String) As Object
         Try
-            designid = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
+            ' designid = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
             Dim MyQuery As String = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId='{0}' AND Active='1' AND Type='{1}' ORDER BY Name ASC", designid, fabrictype)
             Dim datas As DataSet = publicCfg.GetListData(MyQuery)
             Dim list As New List(Of Dictionary(Of String, String))()
