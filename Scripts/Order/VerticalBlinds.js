@@ -63,6 +63,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     }
 
     if (e.target.id === "wandlength") {
+      const tubetype = document.getElementById("tubetype").value;
       const divWandCustomLength = document.querySelector(
         "#divWandCustomLength",
       );
@@ -71,7 +72,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       if (wandlength === "custom") {
         divWandCustomLength.classList.remove("d-none");
       }
-      await Promise.all([bindWandColour(wandlength)]);
+      await Promise.all([bindWandColour(tubetype, wandlength)]);
     }
   });
   el.addEventListener("input", (e) => {
@@ -656,11 +657,7 @@ const bindTrackColour = (tubetype) => {
     );
   }
   if (tubetype === "Louvolite") {
-    data.push(
-      { value: "Black", text: "Black" },
-      { value: "White", text: "White" },
-      { value: "Grey", text: "Grey" },
-    );
+    data.push({ value: "White", text: "White" });
   }
 
   if (data.length > 1) {
@@ -769,7 +766,7 @@ const bindWandLength = () => {
   });
 };
 
-const bindWandColour = (wandlength) => {
+const bindWandColour = (tubetype, wandlength) => {
   const sel = document.getElementById("wandcolour");
   sel.innerHTML = ""; //reset
 
@@ -779,12 +776,16 @@ const bindWandColour = (wandlength) => {
   if (wandlength === "custom") {
     data.push({ value: "White", text: "White" });
   } else {
-    data.push(
-      { value: "Birch", text: "Birch" },
-      { value: "Black", text: "Black" },
-      { value: "Beige", text: "Beige" },
-      { value: "White", text: "White" },
-    );
+    if (tubetype === "Louvolite") {
+      data.push({ value: "White", text: "White" });
+    } else {
+      data.push(
+        { value: "Birch", text: "Birch" },
+        { value: "Black", text: "Black" },
+        { value: "Beige", text: "Beige" },
+        { value: "White", text: "White" },
+      );
+    }
   }
 
   if (data.length > 1) {
