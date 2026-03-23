@@ -255,7 +255,12 @@ document.querySelectorAll("#modalAddItem .form-select").forEach((e) => {
       );
 
       if (["Roller Blinds"].includes(designname)) {
-        divProduction.classList.remove("d-none");
+        const designs = await getItemData(
+          `SELECT Id FROM Designs WHERE Name = 'Global ${designname}' AND Description = 'Environment : Production' AND Active = 1`,
+        );
+        if (ROLENAME !== "Customer" || designs) {
+          divProduction.classList.remove("d-none");
+        }
       }
       await bindProduction(designname);
     }
@@ -2632,15 +2637,15 @@ const bindProduction = async (designname) => {
 
   if (!designname) return;
 
-  let data = [];
-
-  if (
-    ["Roller Blinds", "Vertical Blinds", "Panel Glides"].includes(designname)
-  ) {
-    data.push(
-      { value: "Sunlight", text: "Sunlight" },
-      { value: "Global", text: "Global" },
+  let data = [{ value: "Sunlight", text: "Sunlight" }];
+  if (["Roller Blinds"].includes(designname)) {
+    const designs = await getItemData(
+      `SELECT Id FROM Designs WHERE Name = 'Global ${designname}' AND Description = 'Environment : Production' AND Active = 1`,
     );
+
+    if (ROLENAME !== "Customer" || designs) {
+      data.push({ value: "Global", text: "Global" });
+    }
   } else {
     data.push({ value: "Sunlight", text: "Sunlight" });
   }
