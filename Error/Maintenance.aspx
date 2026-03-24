@@ -16,4 +16,34 @@
             Take me home
         </a>
     </div>
+
+    <script >
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            setInterval(async () => {
+                let Appid = '<%=Session("ApplicationId")%>';
+                const app = await getItemData(`SELECT Active FROM Applications WHERE Id = '${Appid}'`);      
+                if (app == "True" || app == "1") {     
+                    window.location.href = '/';
+                }
+            }, 120000);
+        })
+
+
+        const getItemData = async (query) => {
+            try {
+                const response = await fetch(`/Methods/Error/MaintenanceMenthod.aspx/GetItemData`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: query }), // ✅ FIX
+                });
+
+                const json = await response.json();
+                return json.d;
+            } catch (err) {
+                console.error(err);
+                isError(err);
+            }
+        };
+    </script>
 </asp:Content>
