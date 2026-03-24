@@ -1307,7 +1307,7 @@ Partial Class Methods_Order_DetailMethod
                 End If
             End If
             
-            If data.description = "" AndAlso (data.status <> "Draft" AndAlso data.status <> "On Hold" AndAlso data.status <> "In Production") Then
+            If data.description = "" Then
                 Return New ErrorResponse With {
                     .error = New ErrorDetail With {
                         .message = "description is required !",
@@ -1321,6 +1321,12 @@ Partial Class Methods_Order_DetailMethod
 
             Dim findDesc As String = data.description
             Select Case data.status
+                Case "Draft"
+                    findDesc = "Status changed to draft by <b>" & data.username & "</b>"
+                    findDesc += "<br />"
+                    findDesc += "Notes from the office:"
+                    findDesc += "<br />"
+                    findDesc += data.description
                 Case "New Order"
                     findDesc = "Status changed to new order by <b>" & data.username & "</b>"
                     findDesc += "<br />"
@@ -1352,7 +1358,7 @@ Partial Class Methods_Order_DetailMethod
             End Select
 
             If Not String.IsNullOrEmpty(data.id) Then
-                Dim query As String = "UPDATE OrderHeaders SET Status='Draft', StatusDescription=NULL, SubmittedDate=NULL, JobDate=NULL, CanceledDate=NULL, CompletedDate=NULL WHERE Id=@Id"
+                Dim query As String = "UPDATE OrderHeaders SET Status='Draft', StatusDescription=@StatusDescription, SubmittedDate=NULL, JobDate=NULL, CanceledDate=NULL, CompletedDate=NULL WHERE Id=@Id"
                 Select Case data.status
                     Case "New Order"
                         query = "UPDATE OrderHeaders SET Status='New Order', StatusDescription=@StatusDescription, SubmittedDate=@SubmittedDate WHERE Id=@Id"

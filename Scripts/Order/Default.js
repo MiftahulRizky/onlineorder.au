@@ -671,9 +671,6 @@ const handlerSelStatus = (params, statusNow) => {
           { value: "New Order", text: "New Order" },
           { value: "Canceled", text: "Canceled" },
         ];
-        if (ROLENAME !== "Administrator") {
-          data.unshift({ value: "Draft", text: "Draft / Unsubmitted" });
-        }
         break;
 
       case "New Order":
@@ -694,7 +691,7 @@ const handlerSelStatus = (params, statusNow) => {
         break;
     }
 
-    if (ROLENAME === "Administrator") {
+    if (ROLENAME !== "Customer") {
       data.unshift({ value: "Draft", text: "Draft / Unsubmitted" });
     }
   }
@@ -1178,6 +1175,7 @@ const hanlderDisplayElementModalChangeStatus = (status) => {
   const divCompletedDate = document.getElementById("divCompletedDate");
   const divCanceledDate = document.getElementById("divCanceledDate");
   const divDescription = document.getElementById("divDescription");
+  const description = document.getElementById("description");
 
   // SET DEFAULT HIDE ELEMENT
   divSubmittedDate.setAttribute("hidden", true);
@@ -1186,18 +1184,16 @@ const hanlderDisplayElementModalChangeStatus = (status) => {
   divDescription.setAttribute("hidden", true);
 
   if (status) {
+    divDescription.removeAttribute("hidden");
     switch (status) {
       case "New Order":
         divSubmittedDate.removeAttribute("hidden");
-        divDescription.removeAttribute("hidden");
         break;
       case "Completed":
         divCompletedDate.removeAttribute("hidden");
-        divDescription.removeAttribute("hidden");
         break;
       case "Canceled":
         divCanceledDate.removeAttribute("hidden");
-        divDescription.removeAttribute("hidden");
         break;
     }
   }

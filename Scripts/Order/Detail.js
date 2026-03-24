@@ -1580,9 +1580,6 @@ const handlerSelStatus = async (params, statusNow) => {
           { value: "New Order", text: "New Order" },
           { value: "Canceled", text: "Canceled" },
         ];
-        if (ROLENAME !== "Administrator") {
-          data.unshift({ value: "Draft", text: "Draft" });
-        }
         break;
 
       case "New Order":
@@ -1603,7 +1600,7 @@ const handlerSelStatus = async (params, statusNow) => {
         break;
     }
 
-    if (ROLENAME === "Administrator") {
+    if (ROLENAME !== "Customer") {
       data.unshift({ value: "Draft", text: "Draft" });
     }
   }
@@ -1684,18 +1681,16 @@ const hanlderDisplayElementModalChangeStatus = (status) => {
   divDescription.setAttribute("hidden", true);
 
   if (status) {
+    divDescription.removeAttribute("hidden");
     switch (status) {
       case "New Order":
         divSubmittedDate.removeAttribute("hidden");
-        divDescription.removeAttribute("hidden");
         break;
       case "Completed":
         divCompletedDate.removeAttribute("hidden");
-        divDescription.removeAttribute("hidden");
         break;
       case "Canceled":
         divCanceledDate.removeAttribute("hidden");
-        divDescription.removeAttribute("hidden");
         break;
     }
   }
