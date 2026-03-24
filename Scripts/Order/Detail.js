@@ -173,6 +173,13 @@ document.querySelector("#btnEmailQuote").addEventListener("click", async () => {
   }
 });
 
+// BTN LOGS
+document.querySelector("#btnLogs").addEventListener("click", () => {
+  const id = HEADERID;
+  const ordertype = ORDERTYPE;
+  handlerLogs(id, ordertype);
+});
+
 // BTN COPY JO NUMBER
 document.addEventListener("click", (e) => {
   const btn = e.target.closest("#btnCopyJoNumber, [data-jonumber]"); // id atau attribute
@@ -417,8 +424,14 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
 document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnCopyItem") {
     const id = e.target.dataset.id;
+    const headerid = e.target.dataset.headerid;
     const product = e.target.dataset.product;
-    handlerCopyItem(id, product, "Please wait while we copy the item...");
+    handlerCopyItem(
+      id,
+      headerid,
+      product,
+      "Please wait while we copy the item...",
+    );
   }
 });
 
@@ -1866,6 +1879,63 @@ const handlerPrintQuote = async (headerid, action) => {
   }
 };
 
+// HANLDER LOGS
+const handlerLogs = async (id, ordertype) => {
+  try {
+    const response = await fetch(`${URIMETHOD}/Logs`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ id: id, ordertype: ordertype }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const resultData = data.d || data;
+
+    if (resultData.error) {
+      await isError(resultData.error.message.toUpperCase());
+    } else {
+      const table = document.querySelector("#modalLogs #table-logs tbody");
+      table.innerHTML = "";
+
+      const logs =
+        typeof resultData === "string" ? JSON.parse(resultData) : resultData;
+
+      if (logs.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+        <td  class="text-center">
+          No logs found
+        </td>
+        `;
+        table.appendChild(tr);
+      }
+
+      logs.forEach((log) => {
+        const formattedDate = formatDotNetDate(log.ActionDate);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+        <td >
+          <b>${log.FullName}</b> on ${formattedDate}. Action: ${log.Description} 
+        </td>
+        `;
+        table.appendChild(tr);
+      });
+
+      await handlerShowBSModal("modalLogs");
+    }
+    // await handlerShowBSModal("modalLogs");
+  } catch (error) {
+    const msg = `${error.message || error}`;
+    await isError(msg);
+  }
+};
+
 // HANDLER SELECT DESIGN TYPE
 const handlerSelDesignType = async (params, production) => {
   const sel = document.querySelector(params);
@@ -2158,7 +2228,7 @@ const visibleFormService = (itemData) => {
 };
 
 // HANDLER COPY ITEM
-const handlerCopyItem = async (id, product, msgloading) => {
+const handlerCopyItem = async (id, headerid, product, msgloading) => {
   const result = await Swal.fire({
     title: "Copy this item?",
     html: product,
@@ -2182,7 +2252,7 @@ const handlerCopyItem = async (id, product, msgloading) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ id, headerid, loginid: LOGINID }),
     });
 
     if (!response.ok) {
@@ -2760,6 +2830,38 @@ const getItemData = async (query) => {
   }
 };
 
+const formatDotNetDate = (value) => {
+  if (!value) return "";
+
+  // Ambil angka di dalam /Date(XXXXX)/
+  const timestamp = parseInt(value.replace("/Date(", "").replace(")/", ""));
+
+  const date = new Date(timestamp);
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${day} ${month} ${year} ${hours}:${minutes}`;
+};
+
 // --------------------------------------------||Additional Serverside ||-------------------------------------------
 const dropdownActionButton = (row, createdby) => {
   // HIDE BUTTON DETAIL
@@ -2861,7 +2963,7 @@ const dropdownActionButton = (row, createdby) => {
             </a>
           </li>
           <li ${hideCopy}>
-            <a class="dropdown-item" href="javascript:void(0);" id="btnCopyItem" data-id="${row.Id}" data-product="${row.Product}" >
+            <a class="dropdown-item" href="javascript:void(0);" id="btnCopyItem" data-id="${row.Id}" data-headerid="${row.HeaderId}" data-product="${row.Product}" >
               <i class="ti ti-copy-plus me-1 opacity-50 fs-2"></i>Copy
             </a>
           </li>

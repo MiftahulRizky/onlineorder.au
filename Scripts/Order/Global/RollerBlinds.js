@@ -1926,6 +1926,8 @@ const bindRailType = async (brackettype) => {
 };
 
 const bindRailColour = async (brackettype, railtype) => {
+  const divRailColour = document.getElementById("divRailColour");
+  const lblBotomRail = document.getElementById("lblBotomRail");
   const select = document.getElementById("railcolour");
   select.innerHTML = "";
 
@@ -1963,6 +1965,8 @@ const bindRailColour = async (brackettype, railtype) => {
       select.innerHTML = ""; //reset
 
       if (data.length > 1) {
+        divRailColour.classList.remove("d-none");
+        lblBotomRail.innerHTML = "bottom rail type x colour";
         const defaultOption = document.createElement("option");
         defaultOption.text = "";
         defaultOption.value = "";
@@ -1980,7 +1984,12 @@ const bindRailColour = async (brackettype, railtype) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
-        // bindControls(DESIGNID, select.value);
+        lblBotomRail.innerHTML = "bottom rail";
+        const railcolour = select.selectedOptions[0].dataset.name;
+        divRailColour.classList.add("d-none");
+        if (railcolour !== "N/A") {
+          divRailColour.classList.remove("d-none");
+        }
       }
     }
   } catch (err) {

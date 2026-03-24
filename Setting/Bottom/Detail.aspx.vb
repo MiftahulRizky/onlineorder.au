@@ -92,8 +92,6 @@ Partial Class Setting_Bottom_Detail
                 lblBracketType.Text = bracketFinal
                 sdsPage.Update()
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
-                publicCfg.InsertActivity(userId, Page.Title, "UPDATE BOTTOM RAIL. ID : " & txtId.Text)
 
                 Response.Redirect("~/setting/bottom", False)
             End If

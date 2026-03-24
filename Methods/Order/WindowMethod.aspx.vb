@@ -267,31 +267,18 @@ Partial Class Methods_Order_WindowMethod
 
             
             
-            ' Dim SoeId As String = publicCfg.GetSoeKitId(data.colourtype)
-            ' Dim DesignName As String = publicCfg.GetDesignName(data.designid)
-            ' Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
-            ' Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
+            Dim SoeId As String = publicCfg.GetSoeKitId(data.colourtype)
+            Dim DesignName As String = publicCfg.GetDesignName(data.designid)
+            Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
+            Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
 
-            ' Dim FabricGroup As String = publicCfg.GetFabricGroup(data.fabriccolour)
-            ' Dim PriceGroupName As String = String.Format("Roller Blind - {0}", FabricGroup)
-            ' If BlindName = "Skin Only" Then
-            '     PriceGroupName = String.Format("Roller Skin Only - {0}", FabricGroup)
-            ' End If
+            Dim PriceGroupName As String = String.Format("Window - {0}", BlindName)
+            Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
+           
 
-            ' Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
-            ' Dim CassetteExtraId As String = ""
-            ' If BlindName = "Cassette" Then
-            '     Dim CassetteExtraName As String = String.Format("{0} - {1}", data.brackettype, data.mounting)
-            '     If data.brackettype = "Headbox Only" Then
-            '         CassetteExtraName = data.brackettype
-            '     End If
-            '     ' PriceGroupId = publicCfg.GetPriceGroupId(data.designid, CassetteExtraName)
-            '     CassetteExtraId = publicCfg.GetPriceGroupId(data.designid, CassetteExtraName)
-            ' End If
-
-            ' If PriceGroupId = "" Then
-            '     Throw New Exception("Something went wrong !")
-            ' End If
+            If PriceGroupId = "" Then
+                Throw New Exception("Something went wrong !")
+            End If
 
             
             ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = data.uniqueid, .field = ""}}

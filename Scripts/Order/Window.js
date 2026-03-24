@@ -485,7 +485,7 @@ const bindPlunger = () => {
 };
 
 const bindSwivalColour = () => {
-  const sel = document.getElementById("plungerpin");
+  const sel = document.getElementById("swivelcolour");
   sel.innerHTML = ""; //reset
 
   let data = [];

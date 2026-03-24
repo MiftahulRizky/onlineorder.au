@@ -12,6 +12,10 @@
         If Not IsPostBack Then
             Call BackColor()
 
+            Dim LastID As Integer = publicCfg.GetItemData("SELECT TOP 1 Id FROM Bottoms ORDER BY Id DESC")
+            Dim NewId As Integer = LastID + 1
+            txtId.Text = NewId.ToString
+
             Call BindDataBracket()
         End If
     End Sub
@@ -85,8 +89,6 @@
                 lblBracketType.Text = bracketFinal
                 sdsPage.Insert()
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
-                publicCfg.InsertActivity(userId, Page.Title, "INSERT NEW BOTTOM RAIL. ID : " & txtId.Text)
 
                 Response.Redirect("~/setting/bottom", False)
             End If

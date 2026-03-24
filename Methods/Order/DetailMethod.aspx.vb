@@ -277,6 +277,34 @@ Partial Class Methods_Order_DetailMethod
         End Try
     End Function
 
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function Logs(ByVal id As String, ByVal ordertype As String) As Object
+        Try
+            Dim ds As DataSet = orderCfg.GetListData("SELECT CustomerLogins.FullName, Log_Orders.ActionDate, Log_Orders.Description FROM Log_Orders INNER JOIN CustomerLogins ON Log_Orders.ActionBy=CustomerLogins.Id WHERE Log_Orders.HeaderId='" + id + "' AND Log_Orders.Type='" + ordertype + "'  ORDER BY ActionDate DESC")
+
+            Dim list As New List(Of Dictionary(Of String, Object))()
+
+            For Each row As DataRow In ds.Tables(0).Rows
+                Dim dict As New Dictionary(Of String, Object)()
+                For Each col As DataColumn In ds.Tables(0).Columns
+                    dict.Add(col.ColumnName, row(col))
+                Next
+                list.Add(dict)
+            Next
+
+            Dim json = New JavaScriptSerializer().Serialize(list)
+
+            Return json
+        Catch ex As Exception
+            Return New ErrorResponse With {
+                .error = New ErrorDetail With {
+                    .message = ex.Message,
+                    .field = ""
+                }
+            }
+        End Try
+    End Function
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
@@ -1954,7 +1982,7 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function CopyItem(ByVal id As String) As Object
+    Public Shared Function CopyItem(ByVal id As String, ByVal headerid As String, ByVal loginid As String) As Object
         Try
             
 
@@ -1980,8 +2008,10 @@ Partial Class Methods_Order_DetailMethod
                 NewUniqueId = GenerateUniqueId()
             End IF
 
+            Dim OngoingField As String = "MeshType, FrameColour, Brace, AngleType, AngleLength, AngleQty, PortHole, PlungerPin, SwipelColour, SwipelQty, SwipelQtyB, SpringQty, TopPLasticQty,"
+
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("INSERT INTO OrderDetails SELECT @IdNew, HeaderId, KitId, SoeKitId, ExactId, FabricId, FabricIdB, ChainId, BottomRailId, PriceGroupId, PriceGroupIdB, CassetteExtraId, @UniqueId, BlindNo, Qty, Location, Mounting, Width, WidthB, WidthMiddle, WidthBottom, [Drop], DropB, DropMiddle, DropRight, SemiInsideMount, LouvreSize, LouvrePosition, HingeColour, MidrailHeight1, MidrailHeight2, MidrailCritical, Layout, LayoutSpecial, CustomHeaderLength, FrameType, FrameLeft, FrameRight, FrameTop, FrameBottom, BottomTrackType, BottomTrackRecess, Buildout, BuildoutPosition, PanelQty, TrackQty, PanelSize, NumOfPanel, HingeQtyPerPanel, PanelQtyWithHinge, LocationTPost1, LocationTPost2, LocationTPost3, LocationTPost4, LocationTPost5, HorizontalTPost, HorizontalTPostHeight, JoinedPanels, ReverseHinged, PelmetFlat, ExtraFascia, HingesLoose, TiltrodType, TiltrodSplit, SplitHeight1, SplitHeight2, DoorCutOut, SpecialShape, TemplateProvided, SquareMetre, LinearMetre, StackPosition, TilterPosition, RollDirection, ControlPosition, ControlColour, ControlLength, ChainLength, MaterialChain, MotorStyle, MotorRemote, MotorRequired, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, TrackType, TrackColour, TrackLength, NumOfWand, WandPosition,  WandColour, WandLength, CordColour, CordLength, MaterialCord, AcornPlasticColour, Accessory, SideBySide, SlatSize, SlatQty, TubeSize, Trim, Batten, BattenColour,  BracketOption, BracketColour, BracketCover, BracketExtension, Fitting, FlatType, ChildSafe, Cleat, BottomHoldDown, HangerType, PelmetType, @PelmetWidth, PelmetSize, PelmetReturn, PelmetReturnPosition, PelmetReturnSize, PelmetReturnSize2, CutOut_LeftTop, CutOut_RightTop, CutOut_LeftBottom, CutOut_RightBottom, LHSWidth_Top, LHSHeight_Top, RHSWidth_Top, RHSHeight_Top, LHSWidth_Bottom, LHSHeight_Bottom, RHSWidth_Bottom, RHSHeight_Bottom, BlindSize, Sloper, InsertInTrack, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active FROM OrderDetails WHERE Id=@Id", thisConn)
+                Using myCmd As New SqlCommand(String.Format("INSERT INTO OrderDetails SELECT @IdNew, HeaderId, KitId, SoeKitId, ExactId, FabricId, FabricIdB, ChainId, BottomRailId, PriceGroupId, PriceGroupIdB, CassetteExtraId, @UniqueId, BlindNo, Qty, Location, Mounting, Width, WidthB, WidthMiddle, WidthBottom, [Drop], DropB, DropMiddle, DropRight, SemiInsideMount, LouvreSize, LouvrePosition, HingeColour, MidrailHeight1, MidrailHeight2, MidrailCritical, Layout, LayoutSpecial, CustomHeaderLength, FrameType, FrameLeft, FrameRight, FrameTop, FrameBottom, BottomTrackType, BottomTrackRecess, Buildout, BuildoutPosition, PanelQty, TrackQty, PanelSize, NumOfPanel, HingeQtyPerPanel, PanelQtyWithHinge, LocationTPost1, LocationTPost2, LocationTPost3, LocationTPost4, LocationTPost5, HorizontalTPost, HorizontalTPostHeight, JoinedPanels, ReverseHinged, PelmetFlat, ExtraFascia, HingesLoose, TiltrodType, TiltrodSplit, SplitHeight1, SplitHeight2, DoorCutOut, SpecialShape, TemplateProvided, {0} SquareMetre, LinearMetre, StackPosition, TilterPosition, RollDirection, ControlPosition, ControlColour, ControlLength, ChainLength, MaterialChain, MotorStyle, MotorRemote, MotorRequired, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, TrackType, TrackColour, TrackLength, NumOfWand, WandPosition,  WandColour, WandLength, CordColour, CordLength, MaterialCord, AcornPlasticColour, Accessory, SideBySide, SlatSize, SlatQty, TubeSize, Trim, Batten, BattenColour,  BracketOption, BracketColour, BracketCover, BracketExtension, Fitting, FlatType, ChildSafe, Cleat, BottomHoldDown, HangerType, PelmetType, @PelmetWidth, PelmetSize, PelmetReturn, PelmetReturnPosition, PelmetReturnSize, PelmetReturnSize2, CutOut_LeftTop, CutOut_RightTop, CutOut_LeftBottom, CutOut_RightBottom, LHSWidth_Top, LHSHeight_Top, RHSWidth_Top, RHSHeight_Top, LHSWidth_Bottom, LHSHeight_Bottom, RHSWidth_Bottom, RHSHeight_Bottom, BlindSize, Sloper, InsertInTrack, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active FROM OrderDetails WHERE Id=@Id", OngoingField), thisConn)
                     myCmd.Parameters.AddWithValue("@Id", id)
                     myCmd.Parameters.AddWithValue("@IdNew", NewItemId)
                     myCmd.Parameters.AddWithValue("@UniqueId", NewUniqueId)
@@ -2005,6 +2035,14 @@ Partial Class Methods_Order_DetailMethod
                     End Using
                 End Using
             End If
+
+
+            publicCfg.ResetPriceDetail(NewItemId)
+            publicCfg.HitungHarga(headerid, NewItemId)
+            publicCfg.HitungSurcharge(headerid, NewItemId)
+
+            Dim dataLog As Object() = {headerid, NewItemId, "Blinds", loginid, "Copy Item Order"}
+            orderCfg.Log_Orders(dataLog)
 
             Return New SuccessResponse With {
                 .Success = New SuccessDetail With { 

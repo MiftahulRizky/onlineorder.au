@@ -286,12 +286,12 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divBottomRail">
-                                        <label for="railtype" class="col-lg-3 text-uppercase fw-bold">bottom rail type x colour</label>
+                                        <label for="railtype" class="col-lg-3 text-uppercase fw-bold" id="lblBotomRail">bottom rail type x colour</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <select name="railtype" id="railtype" class="form-select "></select>
                                             <small class="form-hint">* Type</small>
                                         </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="col-lg-4 col-md-12 col-sm-12" id="divRailColour">
                                             <div class="input-group">
                                                 <select name="railcolour" id="railcolour" class="form-select "></select>
                                             </div>

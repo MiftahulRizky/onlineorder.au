@@ -74,6 +74,7 @@
                                     </asp:TemplateField>
                                     <asp:BoundField DataField="Type" HeaderText="Type" />
                                     <asp:BoundField DataField="Colour" HeaderText="Colour" />
+                                    <asp:BoundField DataField="Description" HeaderText="Description" />
                                     <asp:BoundField DataField="Active" HeaderStyle-CssClass="hiddencol" ItemStyle-CssClass="hiddencol" />
 
                                     <asp:TemplateField ItemStyle-Width="200px">
