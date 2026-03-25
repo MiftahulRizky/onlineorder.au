@@ -148,14 +148,14 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindname = blindtype.options[blindtype.selectedIndex].dataset.name;
       const brackettype = document.getElementById("brackettype").value;
       const trim = e.target.value;
-      bindRailType(brackettype);
+      bindRailType(brackettype, trim);
 
       if (blindname == "Skin Only" && trim == "1F") {
         divBottomRail.classList.remove("d-none");
       }
       if (
         ["Cassette", "Motorised", "Gear Reduction"].includes(blindname) &&
-        trim == "1F"
+        ["Base Bar Trim", "Decorative Trim"].includes(trim)
       ) {
         divBottomRail.classList.remove("d-none");
         divAccessory.classList.remove("d-none");
@@ -166,8 +166,9 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     if (e.target.id === "railtype") {
       const brackettype = document.getElementById("brackettype").value;
       const railtype = e.target.value;
+      const trim = document.getElementById("trim").value;
 
-      bindRailColour(brackettype, railtype);
+      bindRailColour(brackettype, railtype, trim);
     }
   });
   el.addEventListener("input", (e) => {
@@ -230,7 +231,7 @@ if (btnInfo) {
             break;
           case "btnInfoTrim":
             text =
-              "If you want to use the BOTTOM RAIL.<br />Please select <b>1F</b>.";
+              "If you want to use the BOTTOM RAIL.<br />Please select <b>Base Bar Trim</b> Or <b>Decorative Trim</b>.";
             break;
           case "btnInfoTubeSize":
             text =
@@ -1777,24 +1778,9 @@ const bindTrims = (blindname, brackettype, tubetype) => {
   let data = [];
   if (blindname != "Skin Only") {
     data.push(
-      { value: "1P", text: "1P" },
-      { value: "1F", text: "1F" },
-      { value: "5F", text: "5F" },
-      { value: "6F", text: "6F" },
-      { value: "7F", text: "7F" },
-      { value: "9F", text: "9F" },
-      { value: "10F", text: "10F" },
-      { value: "12F", text: "12F" },
-      { value: "15F", text: "15F" },
-      { value: "17F", text: "17F" },
-      { value: "18F", text: "18F" },
-      { value: "19F", text: "19F" },
-      { value: "20F", text: "20F" },
-      { value: "22F", text: "22F" },
-      { value: "23F", text: "23F" },
-      { value: "24F", text: "24F" },
-      { value: "25F", text: "25F" },
-      { value: "26F", text: "26F" },
+      { value: "Plain Trim", text: "Plain Trim" },
+      { value: "Base Bar Trim", text: "Base Bar Trim" },
+      { value: "Decorative Trim", text: "Decorative Trim" },
     );
   }
 
@@ -1858,12 +1844,12 @@ const bindTrims = (blindname, brackettype, tubetype) => {
   });
 };
 
-const bindRailType = async (brackettype) => {
+const bindRailType = async (brackettype, trim) => {
   const select = document.getElementById("railtype");
   document.getElementById("railcolour").innerHTML = "";
   select.innerHTML = "";
 
-  if (!brackettype) return;
+  if (!brackettype || !trim) return;
 
   try {
     const response = await fetch(`${URIMETHOD}/BindRailType`, {
@@ -1873,6 +1859,7 @@ const bindRailType = async (brackettype) => {
       },
       body: JSON.stringify({
         brackettype,
+        trim,
       }),
     });
 
@@ -1925,13 +1912,13 @@ const bindRailType = async (brackettype) => {
   }
 };
 
-const bindRailColour = async (brackettype, railtype) => {
+const bindRailColour = async (brackettype, railtype, trim) => {
   const divRailColour = document.getElementById("divRailColour");
   const lblBotomRail = document.getElementById("lblBotomRail");
   const select = document.getElementById("railcolour");
   select.innerHTML = "";
 
-  if (!brackettype || !railtype) return;
+  if (!brackettype || !railtype || !trim) return;
 
   try {
     const response = await fetch(`${URIMETHOD}/BindRailColour`, {
@@ -1942,6 +1929,7 @@ const bindRailColour = async (brackettype, railtype) => {
       body: JSON.stringify({
         brackettype,
         railtype,
+        trim,
       }),
     });
 
@@ -2268,8 +2256,8 @@ const bindItemOrders = async (itemid) => {
         bindChains(item.DesignId),
         bindTrims(item.BlindName, item.BracketType, item.TubeType),
       ]);
-      await bindRailType(item.BracketType);
-      await bindRailColour(item.BracketType, item.BottomType);
+      await bindRailType(item.BracketType, item.Trim);
+      await bindRailColour(item.BracketType, item.BottomType, item.Trim);
       await Promise.all([
         bindTubeSize(item.BlindName, item.TubeType),
         bindChildSafe(),

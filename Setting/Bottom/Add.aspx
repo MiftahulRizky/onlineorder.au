@@ -58,6 +58,23 @@
                             </div>
 
                             <div class="mb-3 row">
+                                <label class="col-lg-3 col-form-label required">COMPANY</label>
+                                <div class="col-lg-2 col-md-12 col-sm-12">
+                                    <asp:DropDownList runat="server" ID="ddlCompany" CssClass="form-select">
+                                        <asp:ListItem Value="SP" Text="SP"></asp:ListItem>
+                                        <asp:ListItem Value="SG" Text="SG"></asp:ListItem>
+                                    </asp:DropDownList>
+                                </div>
+                            </div>
+
+                            <div class="mb-6 row">
+                                <label class="col-lg-3 col-form-label required">TRIM</label>
+                                <div class="col-lg-3 col-md-12 col-sm-12">
+                                    <asp:TextBox runat="server" ID="txtTrim" CssClass="form-control" placeholder="Trim ..." autocomplete="off"></asp:TextBox>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
                                 <label class="col-lg-3 col-form-label">DESCRITPION</label>
                                 <div class="col-lg-7 col-md-12 col-sm-12">
                                     <asp:TextBox runat="server" TextMode="MultiLine" ID="txtDescription" Height="100px" CssClass="form-control" placeholder="Description ..." autocomplete="off" style="resize:none;"></asp:TextBox>
@@ -137,13 +154,15 @@
     <div runat="server" visible="false">
         <asp:Label runat="server" ID="lblBracketType"></asp:Label>
 
-        <asp:SqlDataSource runat="server" ID="sdsPage" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO Bottoms VALUES (@Id, @Name, @Type, @Colour, @BracketType, @Description, @Active)">
+        <asp:SqlDataSource runat="server" ID="sdsPage" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO Bottoms VALUES (@Id, @Name, @Type, @Colour, @BracketType, @Company, @Trim, @Description, @Active)">
             <InsertParameters>
                 <asp:ControlParameter ControlID="txtId" Name="Id" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtName" Name="Name" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtType" Name="Type" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtColour" Name="Colour" PropertyName="Text" />
                 <asp:ControlParameter ControlID="lblBracketType" Name="BracketType" PropertyName="Text" />
+                <asp:ControlParameter ControlID="ddlCompany" Name="Company" PropertyName="SelectedItem.Value" />
+                <asp:ControlParameter ControlID="txtTrim" Name="Trim" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtDescription" Name="Description" PropertyName="Text" />
                 <asp:ControlParameter ControlID="ddlActive" Name="Active" PropertyName="SelectedItem.Value" />
             </InsertParameters>

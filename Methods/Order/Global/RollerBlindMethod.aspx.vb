@@ -249,7 +249,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindRailType(ByVal brackettype As String) As Object
+    Public Shared Function BindRailType(ByVal brackettype As String, ByVal trim As String) As Object
         Try
             Dim FindBracket As String = brackettype
 
@@ -261,7 +261,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 FindBracket = "With Tube &amp; Bottom Included"
             End If
 
-            Dim MyQuery As String = String.Format("SELECT UPPER(Type) AS TypeText, Type AS TypeValue FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Description = 'SG' AND Active ='1' GROUP BY Type ORDER BY Type ASC", FindBracket)
+            Dim MyQuery As String = String.Format("SELECT UPPER(Type) AS TypeText, Type AS TypeValue FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Company = 'SG' AND Trim ='{1}' AND Active ='1' GROUP BY Type ORDER BY Type ASC", FindBracket, trim)
             Dim datas As DataSet = publicCfg.GetListData(MyQuery)
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
@@ -282,7 +282,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindRailColour(ByVal brackettype As String, ByVal railtype As String) As Object
+    Public Shared Function BindRailColour(ByVal brackettype As String, ByVal railtype As String, ByVal trim As String) As Object
         Try
             Dim FindBracket As String = brackettype
 
@@ -294,7 +294,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 FindBracket = "With Tube &amp; Bottom Included"
             End If
 
-            Dim MyQuery As String = String.Format("SELECT Id, UPPER(Colour) AS Colour, VALUE Product FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Type='{1}' AND Description = 'SG' AND  Active ='1' ORDER BY Name ASC", FindBracket, railtype)
+            Dim MyQuery As String = String.Format("SELECT Id, UPPER(Colour) AS Colour, VALUE Product FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Type='{1}' AND Company = 'SG' AND Trim ='{2}' AND  Active ='1' ORDER BY Name ASC", FindBracket, railtype, trim)
             Dim datas As DataSet = publicCfg.GetListData(MyQuery)
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then

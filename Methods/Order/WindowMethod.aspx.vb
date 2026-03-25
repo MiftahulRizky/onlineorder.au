@@ -281,96 +281,79 @@ Partial Class Methods_Order_WindowMethod
             End If
 
             
-            ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = data.uniqueid, .field = ""}}
             
             
             Dim msg As String = "200"
-            ' If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
-            '     Dim ItemId As String = publicCfg.CreateOrderItemId()
-            '     data.uniqueid = ""
+            If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
+                Dim ItemId As String = publicCfg.CreateOrderItemId()
 
-            '     If data.brackettype = "Double" Or InStr(data.brackettype, "Linked") > 0 Or InStr(data.brackettype, "Link") > 0 Then
-            '         data.uniqueid = GenerateUniqueId()
-            '     End If
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], MeshType, FrameColour, Brace, AngleType, AngleLength, AngleQty, PortHole, PlungerPin, SwipelColour, SwivelQty, SwivelQtyB, SpringQty, TopPlasticQty, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                        myCmd.Parameters.AddWithValue("@Id", ItemId)
+                        myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
+                        myCmd.Parameters.AddWithValue("@BlindNo", data.blindno)
+                        myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.colourtype), DBNull.Value, UCase(data.colourtype).ToString()))
+                        myCmd.Parameters.AddWithValue("@SoeKitId", If(String.IsNullOrEmpty(SoeId), DBNull.Value, SoeId))
+                        myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(PriceGroupId), DBNull.Value, PriceGroupId))
+                        myCmd.Parameters.AddWithValue("@Qty", qty)
+                        myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
+                        myCmd.Parameters.AddWithValue("@Width", width)
+                        myCmd.Parameters.AddWithValue("@Drop", drop)
+                        myCmd.Parameters.AddWithValue("@MeshType", data.meshtype)
+                        myCmd.Parameters.AddWithValue("@FrameColour", data.framecolour)
+                        myCmd.Parameters.AddWithValue("@Brace", data.brace)
+                        myCmd.Parameters.AddWithValue("@AngleType", data.angletype)
+                        myCmd.Parameters.AddWithValue("@AngleLength", data.anglelength)
+                        myCmd.Parameters.AddWithValue("@AngleQty", data.angleqty)
+                        myCmd.Parameters.AddWithValue("@PortHole", data.porthole)
+                        myCmd.Parameters.AddWithValue("@PlungerPin", data.plungerpin)
+                        myCmd.Parameters.AddWithValue("@SwivalColour", data.swivelcolour)
+                        myCmd.Parameters.AddWithValue("@SwivalQty", data.swivelqty)
+                        myCmd.Parameters.AddWithValue("@SwivalQtyB", data.swivelqtyb)
+                        myCmd.Parameters.AddWithValue("@SpringQty", data.springqty)
+                        myCmd.Parameters.AddWithValue("@TopPlasticQty", data.topplasticqty)
+                        myCmd.Parameters.AddWithValue("@Notes", data.notes)
+                        myCmd.Parameters.AddWithValue("@MarkUp", markup)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
 
-            '     ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = data.uniqueid, .field = ""}}
+                publicCfg.ResetPriceDetail(ItemId)
+                publicCfg.HitungHarga(data.headerid, ItemId)
+                publicCfg.HitungSurcharge(data.headerid, ItemId)
 
+                Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Add Item Order"}
+                orderCfg.Log_Orders(dataLog)
 
-            '     Using thisConn As New SqlConnection(myConn)
-            '         Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
-            '             myCmd.Parameters.AddWithValue("@Id", ItemId)
-            '             myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
-            '             myCmd.Parameters.AddWithValue("@UniqueId", If( String.IsNullOrEmpty(data.uniqueid), DBNull.Value, data.uniqueid))
-            '             myCmd.Parameters.AddWithValue("@BlindNo", data.blindno)
-            '             myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.colourtype), DBNull.Value, UCase(data.colourtype).ToString()))
-            '             myCmd.Parameters.AddWithValue("@SoeKitId", If(String.IsNullOrEmpty(SoeId), DBNull.Value, SoeId))
-            '             myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
-            '             myCmd.Parameters.AddWithValue("@FabricId", If(String.IsNullOrEmpty(data.fabriccolour), DBNull.Value, UCase(data.fabriccolour).ToString()))
-            '             myCmd.Parameters.AddWithValue("@ChainId", If(String.IsNullOrEmpty(ChainId), DBNull.Value, ChainId))
-            '             myCmd.Parameters.AddWithValue("@BottomRailId", If(String.IsNullOrEmpty(BottomRailId), DBNull.Value, BottomRailId))
-            '             myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(PriceGroupId), DBNull.Value, PriceGroupId))
-            '             myCmd.Parameters.AddWithValue("@CassetteExtraId", If(String.IsNullOrEmpty(CassetteExtraId), DBNull.Value, CassetteExtraId))
-            '             myCmd.Parameters.AddWithValue("@Qty", qty)
-            '             myCmd.Parameters.AddWithValue("@Location", data.room)
-            '             myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
-            '             myCmd.Parameters.AddWithValue("@Width", width)
-            '             myCmd.Parameters.AddWithValue("@Drop", drop)
-            '             myCmd.Parameters.AddWithValue("@RollDirection", data.roll)
-            '             myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
-            '             myCmd.Parameters.AddWithValue("@ChainLength", If(String.IsNullOrEmpty(CLength), DBNull.Value, CLength))
-            '             myCmd.Parameters.AddWithValue("@Accessory", data.accessory)
-            '             myCmd.Parameters.AddWithValue("@TubeSize", data.tubesize)
-            '             myCmd.Parameters.AddWithValue("@Trim", data.trim)
-            '             myCmd.Parameters.AddWithValue("@BracketCover", data.bracketcovers)
-            '             myCmd.Parameters.AddWithValue("@BracketExtension", data.bracketext)
-            '             myCmd.Parameters.AddWithValue("@ChildSafe", data.childsafe)
-            '             myCmd.Parameters.AddWithValue("@MotorStyle", data.motorstyle)
-            '             myCmd.Parameters.AddWithValue("@MotorRemote", data.motorremote)
-            '             myCmd.Parameters.AddWithValue("@MotorBattery", data.externalbattery)
-            '             myCmd.Parameters.AddWithValue("@MotorCharger", data.charger)
-            '             myCmd.Parameters.AddWithValue("@Connector", data.connector)
-            '             myCmd.Parameters.AddWithValue("@AdditionalMotor", data.extras)
-            '             myCmd.Parameters.AddWithValue("@CableExitPoint", data.cableexitpoint)
-            '             myCmd.Parameters.AddWithValue("@Notes", data.notes)
-            '             myCmd.Parameters.AddWithValue("@MarkUp", markup)
-            '             myCmd.Connection = thisConn
-            '             thisConn.Open()
-            '             myCmd.ExecuteNonQuery()
-            '             thisConn.Close()
-            '         End Using
-            '     End Using
+                msg = "Item added successfully !"
 
-            '     publicCfg.ResetPriceDetail(ItemId)
-            '     publicCfg.HitungHarga(data.headerid, ItemId)
-            '     publicCfg.HitungSurcharge(data.headerid, ItemId)
+                If data.brackettype = "Double" Or InStr(data.brackettype, "Linked") > 0 Or InStr(data.brackettype, "Link") > 0 Then
+                    Dim BlindNoSelected As String = "first blind"
+                    If data.blindno = "Blind 2" Then
+                        BlindNoSelected = "second blind"
+                    End If
 
-            '     Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Add Item Order"}
-            '     orderCfg.Log_Orders(dataLog)
+                    msg += String.Format("<br/><br/> This is the <b>{0}</b>.", BlindNoSelected)
+                    msg += String.Format("<br/> from <b>{0}</b> - <b>{1}</b>", BlindName, data.brackettype)
+                    msg += String.Format("<br /><br />Please click the <b>Next Item</b> button that is written in green color of the <b>ITEM ID {0}</b>.", ItemId)
+                End If
 
-            '     msg = "Item added successfully !"
+                If InStr(data.brackettype, "Linked") > 0 AND data.controltype = "Somfy WF" Then
+                    msg += "<br/><br/><b>Warning :</b>Check SP the availability for linking blind for WF motorised !"
+                End If
+                If InStr(data.brackettype, "Linked") > 0 AND data.controltype = "Alpha WF" AndAlso data.motorstyle = "Alpha 2NM Std" Then
+                    msg += "<br/><br/><b>Warning :</b> Check SP the availability for linking blind for WF motorised !"
+                End If
 
-            '     If data.brackettype = "Double" Or InStr(data.brackettype, "Linked") > 0 Or InStr(data.brackettype, "Link") > 0 Then
-            '         Dim BlindNoSelected As String = "first blind"
-            '         If data.blindno = "Blind 2" Then
-            '             BlindNoSelected = "second blind"
-            '         End If
-
-            '         msg += String.Format("<br/><br/> This is the <b>{0}</b>.", BlindNoSelected)
-            '         msg += String.Format("<br/> from <b>{0}</b> - <b>{1}</b>", BlindName, data.brackettype)
-            '         msg += String.Format("<br /><br />Please click the <b>Next Item</b> button that is written in green color of the <b>ITEM ID {0}</b>.", ItemId)
-            '     End If
-
-            '     If InStr(data.brackettype, "Linked") > 0 AND data.controltype = "Somfy WF" Then
-            '         msg += "<br/><br/><b>Warning :</b>Check SP the availability for linking blind for WF motorised !"
-            '     End If
-            '     If InStr(data.brackettype, "Linked") > 0 AND data.controltype = "Alpha WF" AndAlso data.motorstyle = "Alpha 2NM Std" Then
-            '         msg += "<br/><br/><b>Warning :</b> Check SP the availability for linking blind for WF motorised !"
-            '     End If
-
-            '     ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = msg, .field = ""}}
+                ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = msg, .field = ""}}
 
                 
-            ' End If
+            End If
 
             ' If data.itemaction = "NextItem" Then
             '     Dim ItemId As String = publicCfg.CreateOrderItemId()

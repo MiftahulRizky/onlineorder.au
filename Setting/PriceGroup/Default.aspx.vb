@@ -118,7 +118,7 @@
     Private Sub BindDesign()
         ddlDesign.Items.Clear()
         Try
-            ddlDesign.DataSource = publicCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Designs WHERE Type IN ('Blinds', 'Additional') ORDER BY Name ASC")
+            ddlDesign.DataSource = publicCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Designs WHERE Type IN ('Blinds', 'Door', 'Window', 'Additional') ORDER BY Name ASC")
             ddlDesign.DataTextField = "NameText"
             ddlDesign.DataValueField = "Id"
             ddlDesign.DataBind()

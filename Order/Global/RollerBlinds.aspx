@@ -304,7 +304,7 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <select type="text" name="tubesize" id="tubesize" class="form-select"></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoTubeSize">
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoTubeSize" hidden>
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>

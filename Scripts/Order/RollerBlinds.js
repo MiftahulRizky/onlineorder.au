@@ -148,7 +148,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindname = blindtype.options[blindtype.selectedIndex].dataset.name;
       const brackettype = document.getElementById("brackettype").value;
       const trim = e.target.value;
-      bindRailType(brackettype);
+      bindRailType(brackettype, trim);
 
       if (blindname == "Skin Only" && trim == "1F") {
         divBottomRail.classList.remove("d-none");
@@ -166,8 +166,9 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     if (e.target.id === "railtype") {
       const brackettype = document.getElementById("brackettype").value;
       const railtype = e.target.value;
+      const trim = document.getElementById("trim").value;
 
-      bindRailColour(brackettype, railtype);
+      bindRailColour(brackettype, railtype, trim);
     }
   });
   el.addEventListener("input", (e) => {
@@ -1858,12 +1859,12 @@ const bindTrims = (blindname, brackettype, tubetype) => {
   });
 };
 
-const bindRailType = async (brackettype) => {
+const bindRailType = async (brackettype, trim) => {
   const select = document.getElementById("railtype");
   document.getElementById("railcolour").innerHTML = "";
   select.innerHTML = "";
 
-  if (!brackettype) return;
+  if (!brackettype || !trim) return;
 
   try {
     const response = await fetch(`${URIMETHOD}/BindRailType`, {
@@ -1873,6 +1874,7 @@ const bindRailType = async (brackettype) => {
       },
       body: JSON.stringify({
         brackettype,
+        trim,
       }),
     });
 
@@ -1925,11 +1927,11 @@ const bindRailType = async (brackettype) => {
   }
 };
 
-const bindRailColour = async (brackettype, railtype) => {
+const bindRailColour = async (brackettype, railtype, trim) => {
   const select = document.getElementById("railcolour");
   select.innerHTML = "";
 
-  if (!brackettype || !railtype) return;
+  if (!brackettype || !railtype || !trim) return;
 
   try {
     const response = await fetch(`${URIMETHOD}/BindRailColour`, {
@@ -1940,6 +1942,7 @@ const bindRailColour = async (brackettype, railtype) => {
       body: JSON.stringify({
         brackettype,
         railtype,
+        trim,
       }),
     });
 
@@ -2252,8 +2255,8 @@ const bindItemOrders = async (itemid) => {
         bindChains(item.DesignId),
         bindTrims(item.BlindName, item.BracketType, item.TubeType),
       ]);
-      await bindRailType(item.BracketType);
-      await bindRailColour(item.BracketType, item.BottomType);
+      await bindRailType(item.BracketType, item.Trim);
+      await bindRailColour(item.BracketType, item.BottomType, item.Trim);
       await Promise.all([
         bindTubeSize(item.BlindName, item.TubeType),
         bindChildSafe(),

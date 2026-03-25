@@ -119,6 +119,8 @@ Partial Class Setting_Bottom_Detail
             txtName.Text = myData.Tables(0).Rows(0).Item("Name").ToString()
             txtType.Text = myData.Tables(0).Rows(0).Item("Type").ToString()
             txtColour.Text = myData.Tables(0).Rows(0).Item("Colour").ToString()
+            ddlCompany.Text = myData.Tables(0).Rows(0).Item("Company").ToString()
+            txtTrim.Text = myData.Tables(0).Rows(0).Item("Trim").ToString()
             txtDescription.Text = myData.Tables(0).Rows(0).Item("Description").ToString()
             ddlActive.SelectedValue = Convert.ToInt32(myData.Tables(0).Rows(0).Item("Active"))
 
