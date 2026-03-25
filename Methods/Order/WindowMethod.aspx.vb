@@ -288,10 +288,10 @@ Partial Class Methods_Order_WindowMethod
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], MeshType, FrameColour, Brace, AngleType, AngleLength, AngleQty, PortHole, PlungerPin, SwipelColour, SwivelQty, SwivelQtyB, SpringQty, TopPlasticQty, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], MeshType, FrameColour, Brace, AngleType, AngleLength, AngleQty, PortHole, PlungerPin, SwipelColour, SwipelQty, SwipelQtyB, SpringQty, TopPlasticQty, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @MeshType, @FrameColour, @Brace, @AngleType, @AngleLength, @AngleQty, @PortHole, @PlungerPin, @SwipelColour, @SwipelQty, @SwipelQtyB, @SpringQty, @TopPlasticQty, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
-                        myCmd.Parameters.AddWithValue("@BlindNo", data.blindno)
+                        myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
                         myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.colourtype), DBNull.Value, UCase(data.colourtype).ToString()))
                         myCmd.Parameters.AddWithValue("@SoeKitId", If(String.IsNullOrEmpty(SoeId), DBNull.Value, SoeId))
                         myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
@@ -309,9 +309,9 @@ Partial Class Methods_Order_WindowMethod
                         myCmd.Parameters.AddWithValue("@AngleQty", data.angleqty)
                         myCmd.Parameters.AddWithValue("@PortHole", data.porthole)
                         myCmd.Parameters.AddWithValue("@PlungerPin", data.plungerpin)
-                        myCmd.Parameters.AddWithValue("@SwivalColour", data.swivelcolour)
-                        myCmd.Parameters.AddWithValue("@SwivalQty", data.swivelqty)
-                        myCmd.Parameters.AddWithValue("@SwivalQtyB", data.swivelqtyb)
+                        myCmd.Parameters.AddWithValue("@SwipelColour", data.swivelcolour)
+                        myCmd.Parameters.AddWithValue("@SwipelQty", data.swivelqty)
+                        myCmd.Parameters.AddWithValue("@SwipelQtyB", data.swivelqtyb)
                         myCmd.Parameters.AddWithValue("@SpringQty", data.springqty)
                         myCmd.Parameters.AddWithValue("@TopPlasticQty", data.topplasticqty)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
@@ -331,27 +331,6 @@ Partial Class Methods_Order_WindowMethod
                 orderCfg.Log_Orders(dataLog)
 
                 msg = "Item added successfully !"
-
-                If data.brackettype = "Double" Or InStr(data.brackettype, "Linked") > 0 Or InStr(data.brackettype, "Link") > 0 Then
-                    Dim BlindNoSelected As String = "first blind"
-                    If data.blindno = "Blind 2" Then
-                        BlindNoSelected = "second blind"
-                    End If
-
-                    msg += String.Format("<br/><br/> This is the <b>{0}</b>.", BlindNoSelected)
-                    msg += String.Format("<br/> from <b>{0}</b> - <b>{1}</b>", BlindName, data.brackettype)
-                    msg += String.Format("<br /><br />Please click the <b>Next Item</b> button that is written in green color of the <b>ITEM ID {0}</b>.", ItemId)
-                End If
-
-                If InStr(data.brackettype, "Linked") > 0 AND data.controltype = "Somfy WF" Then
-                    msg += "<br/><br/><b>Warning :</b>Check SP the availability for linking blind for WF motorised !"
-                End If
-                If InStr(data.brackettype, "Linked") > 0 AND data.controltype = "Alpha WF" AndAlso data.motorstyle = "Alpha 2NM Std" Then
-                    msg += "<br/><br/><b>Warning :</b> Check SP the availability for linking blind for WF motorised !"
-                End If
-
-                ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = msg, .field = ""}}
-
                 
             End If
 

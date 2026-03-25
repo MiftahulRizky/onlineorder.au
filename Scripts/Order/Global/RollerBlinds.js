@@ -139,24 +139,38 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     if (e.target.id === "trim") {
       const divBottomRail = document.getElementById("divBottomRail");
       const divAccessory = document.getElementById("divAccessory");
+      const lblBotomRail = document.getElementById("lblBotomRail");
+      const divRailColour = document.getElementById("divRailColour");
 
       divBottomRail.classList.add("d-none");
       divAccessory.classList.add("d-none");
+      divRailColour.classList.add("d-none");
+      lblBotomRail.innerHTM = "bottom rail type x colour";
 
       if (!e.target.value) return;
       const blindtype = document.getElementById("blindtype");
       const blindname = blindtype.options[blindtype.selectedIndex].dataset.name;
       const brackettype = document.getElementById("brackettype").value;
       const trim = e.target.value;
+
+      if (trim == "Decorative") {
+        lblBotomRail.innerHTML = "Decorative Trim";
+      }
+
       bindRailType(brackettype, trim);
 
       if (blindname == "Skin Only" && trim == "1F") {
         divBottomRail.classList.remove("d-none");
+        divRailColour.classList.remove("d-none");
       }
       if (
         ["Cassette", "Motorised", "Gear Reduction"].includes(blindname) &&
-        ["Base Bar Trim", "Decorative Trim"].includes(trim)
+        ["Bottom Rail", "Decorative"].includes(trim)
       ) {
+        divBottomRail.classList.remove("d-none");
+        if (trim == "Bottom Rail") {
+          divRailColour.classList.remove("d-none");
+        }
         divBottomRail.classList.remove("d-none");
         divAccessory.classList.remove("d-none");
       }
@@ -1776,57 +1790,11 @@ const bindTrims = (blindname, brackettype, tubetype) => {
   if (!blindname || !brackettype || !tubetype) return;
 
   let data = [];
-  if (blindname != "Skin Only") {
-    data.push(
-      { value: "Plain Trim", text: "Plain Trim" },
-      { value: "Base Bar Trim", text: "Base Bar Trim" },
-      { value: "Decorative Trim", text: "Decorative Trim" },
-    );
-  }
-
-  if (blindname == "Skin Only") {
-    if (brackettype == "Excluded" || brackettype == "With Tube Included") {
-      data.push(
-        { value: "1P", text: "1P" },
-        { value: "Spline", text: "Spline" },
-      );
-    }
-
-    if (brackettype == "Excluded") {
-      data.push(
-        { value: "Pocket", text: "Pocket" },
-        { value: "1RS", text: "1RS" },
-        { value: "1OS", text: "1OS" },
-        { value: "Added Trim", text: "Added Trim" },
-      );
-    }
-
-    if (
-      brackettype == "With Tube & Bottom Included" ||
-      brackettype == "With Bottom Included"
-    ) {
-      data.push(
-        { value: "1P", text: "1P" },
-        { value: "1F", text: "1F" },
-        { value: "5F", text: "5F" },
-        { value: "7F", text: "7F" },
-        { value: "9F", text: "9F" },
-        { value: "10F", text: "10F" },
-        { value: "12F", text: "12F" },
-        { value: "15F", text: "15F" },
-        { value: "17F", text: "17F" },
-        { value: "18F", text: "18F" },
-        { value: "19F", text: "19F" },
-        { value: "20F", text: "20F" },
-        { value: "20F", text: "20F" },
-        { value: "22F", text: "22F" },
-        { value: "23F", text: "23F" },
-        { value: "24F", text: "24F" },
-        { value: "25F", text: "25F" },
-        { value: "26F", text: "26F" },
-      );
-    }
-  }
+  data.push(
+    { value: "Plain", text: "Plain" },
+    { value: "Bottom Rail", text: "Bottom Rail" },
+    { value: "Decorative", text: "Decorative" },
+  );
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
@@ -1913,8 +1881,6 @@ const bindRailType = async (brackettype, trim) => {
 };
 
 const bindRailColour = async (brackettype, railtype, trim) => {
-  const divRailColour = document.getElementById("divRailColour");
-  const lblBotomRail = document.getElementById("lblBotomRail");
   const select = document.getElementById("railcolour");
   select.innerHTML = "";
 
@@ -1953,8 +1919,6 @@ const bindRailColour = async (brackettype, railtype, trim) => {
       select.innerHTML = ""; //reset
 
       if (data.length > 1) {
-        divRailColour.classList.remove("d-none");
-        lblBotomRail.innerHTML = "bottom rail type x colour";
         const defaultOption = document.createElement("option");
         defaultOption.text = "";
         defaultOption.value = "";
@@ -1972,12 +1936,6 @@ const bindRailColour = async (brackettype, railtype, trim) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
-        lblBotomRail.innerHTML = "bottom rail";
-        const railcolour = select.selectedOptions[0].dataset.name;
-        divRailColour.classList.add("d-none");
-        if (railcolour !== "N/A") {
-          divRailColour.classList.remove("d-none");
-        }
       }
     }
   } catch (err) {
