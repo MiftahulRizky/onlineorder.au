@@ -945,11 +945,11 @@ Partial Class Methods_Order_RollerBlindMethod
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "trim 1f is not allowed for spring operated !",.field = "trim"}}
                 End If
 
-                If Not String.IsNullOrEmpty(data.trim) AND data.trim = "1F" Then
+                If Not String.IsNullOrEmpty(data.trim) AND (data.trim = "Bottom Rail" OR data.trim = "Decorative") Then
                     If String.IsNullOrEmpty(data.railtype) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail type is required !",.field = "railtype"}}
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = String.Format("{0} type is required !", data.trim),.field = "railtype"}}
                     End If
-                    If String.IsNullOrEmpty(data.railcolour) Then
+                    If String.IsNullOrEmpty(data.railcolour) AND data.trim = "Bottom Rail" Then
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail colour is required !",.field = "railcolour"}}
                     End If
                 End If

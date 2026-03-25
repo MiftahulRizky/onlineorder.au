@@ -408,6 +408,25 @@
         </div>
     </div>
 
+
+    <!-- Modal Infro Trim -->
+    <div class="modal fade" id="modalInfoTrim" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalInfoTrimLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="modalInfoTrimLabel">Information</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="\Content\static\product\roller\global-trim.PNG" alt="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="text/javascript">
         let DESIGNIDORI = "919E843A-A3F4-4BE2-98E8-C0CC4088F513";
         let HEADERID = '<%=Session("headerId")%>';

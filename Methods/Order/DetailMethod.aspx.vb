@@ -4241,7 +4241,7 @@ Partial Class Methods_Order_DetailMethod
                 result += thStart & "Chain Colour" & thEnd
                 result += thStart & "Chain Length" & thEnd
                 result += thStart & "Trim" & thEnd
-                result += thStart & "Bottom Rail" & thEnd
+                result += thStart & "Bottom Rail / Decorative" & thEnd
                 result += thStart & "Tube" & thEnd
                 result += thStart & "Childsafe" & thEnd
                 result += thStart & "Accessory" & thEnd

@@ -244,8 +244,7 @@ if (btnInfo) {
               "If any another blind (Double or linked) <br /> If you change this MOTOR REMOTE then the other motor remote will follow this motor remote.";
             break;
           case "btnInfoTrim":
-            text =
-              "If you want to use the BOTTOM RAIL.<br />Please select <b>Base Bar Trim</b> Or <b>Decorative Trim</b>.";
+            text = "Trim";
             break;
           case "btnInfoTubeSize":
             text =
@@ -253,8 +252,12 @@ if (btnInfo) {
             break;
         }
 
-        if (text) {
+        if (text && text !== "Trim") {
           isInfo(text);
+        }
+
+        if (text == "Trim") {
+          handlerShowBSModal("modalInfoTrim");
         }
       } catch (error) {
         var msg = error.message;
@@ -346,6 +349,8 @@ const handlerElementVisibility = async (
     const lblControlPosition = document.getElementById("lblControlPosition");
     const divChain = document.getElementById("divChain");
     const divBottomRail = document.getElementById("divBottomRail");
+    const lblBotomRail = document.getElementById("lblBotomRail");
+    const divRailColour = document.getElementById("divRailColour");
     const divTubeSize = document.getElementById("divTubeSize");
     const divAdditional = document.getElementById("divAdditional");
     const divChildSafe = document.getElementById("divChildSafe");
@@ -383,6 +388,8 @@ const handlerElementVisibility = async (
     lblControlPosition.innerHTML = "control position";
     divChain.classList.add("d-none");
     divBottomRail.classList.add("d-none");
+    lblBotomRail.innerHTML = "bottom rail type x colour";
+    divRailColour.classList.add("d-none");
     divTubeSize.classList.add("d-none");
     divAdditional.classList.add("d-none");
     divChildSafe.classList.add("d-none");
@@ -748,8 +755,12 @@ const handlerElementVisibility = async (
         lblNextDesc.innerHTML = `This is the <b><u>${blinds}</b></u> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID ${connectId}</u></b>  blind will automatically be changed according to this data.`;
       }
 
-      if (item.Trim === "1F") {
+      if (["Bottom Rail", "Decorative"].includes(item.Trim)) {
+        lblBotomRail.innerHTML = item.Trim;
         divBottomRail.classList.remove("d-none");
+        if (item.Trim == "Bottom Rail") {
+          divRailColour.classList.remove("d-none");
+        }
       }
     }
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
@@ -2253,4 +2264,25 @@ const getItemData = async (query) => {
     console.error(err);
     isError(err);
   }
+};
+
+const handlerHideBSModal = (id) => {
+  var modalEl = document.getElementById(id);
+  var modalInstance = bootstrap.Modal.getInstance(modalEl);
+
+  if (modalInstance) {
+    modalInstance.hide();
+  } else {
+    // Jika modal belum pernah di-show dan belum punya instance, buat dan langsung hide
+    modalInstance = new bootstrap.Modal(modalEl);
+    modalInstance.hide();
+  }
+};
+
+// HANDLER SHOW BOOTSTRAP MODAL
+const handlerShowBSModal = (params) => {
+  var myModal = new bootstrap.Modal(document.getElementById(params), {
+    keyboard: false,
+  });
+  myModal.show();
 };
