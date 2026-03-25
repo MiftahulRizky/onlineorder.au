@@ -153,10 +153,6 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const brackettype = document.getElementById("brackettype").value;
       const trim = e.target.value;
 
-      if (trim == "Decorative") {
-        lblBotomRail.innerHTML = "Decorative Trim";
-      }
-
       bindRailType(brackettype, trim);
 
       if (blindname == "Skin Only" && trim == "1F") {
@@ -168,7 +164,9 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         ["Bottom Rail", "Decorative"].includes(trim)
       ) {
         divBottomRail.classList.remove("d-none");
+        lblBotomRail.innerHTML = "Decorative Trim";
         if (trim == "Bottom Rail") {
+          lblBotomRail.innerHTML = "bottom rail type x colour";
           divRailColour.classList.remove("d-none");
         }
         divBottomRail.classList.remove("d-none");
@@ -759,6 +757,7 @@ const handlerElementVisibility = async (
         lblBotomRail.innerHTML = item.Trim;
         divBottomRail.classList.remove("d-none");
         if (item.Trim == "Bottom Rail") {
+          lblBotomRail.innerHTML = "bottom rail type x colour";
           divRailColour.classList.remove("d-none");
         }
       }
