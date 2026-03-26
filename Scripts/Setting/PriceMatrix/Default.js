@@ -193,7 +193,7 @@ $("#modalSaveData #submitSave").on("click", submitSave);
 // SUBMIT SAVE
 function submitSave() {
   handlerResetFormSaveDataError();
-
+  swalLoadingShow("Please wait while we save the data.");
   const fields = [
     "id",
     "designid",

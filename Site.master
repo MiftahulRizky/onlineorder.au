@@ -1045,6 +1045,13 @@ Inherits="SiteMaster" %>
                               <div class="dropdown-menu">
                                 <a
                                   runat="server"
+                                  id="aProductType"
+                                  class="dropdown-item"
+                                  href="~/setting/producttype"
+                                  >Product Type</a
+                                >
+                                <a
+                                  runat="server"
                                   id="aDesign"
                                   class="dropdown-item"
                                   href="~/setting/design"

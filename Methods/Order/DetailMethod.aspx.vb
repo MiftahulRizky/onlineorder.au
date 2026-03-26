@@ -999,7 +999,7 @@ Partial Class Methods_Order_DetailMethod
             End If
 
             '# --------------------------|| Check Order Header ||-------------------------------
-            Dim headerData As DataSet = publicCfg.GetListData("SELECT * FROM view_headers WHERE Id='" + headerid + "'")
+            Dim headerData As DataSet = publicCfg.GetListData("SELECT * FROM OrderHeaders WHERE Id='" + headerid + "'")
             Dim status As String = headerData.Tables(0).Rows(0).Item("Status").ToString()
             if headerData.Tables(0).Rows.Count < 1 Then
                 Return New ErrorResponse With {
@@ -3689,7 +3689,7 @@ Partial Class Methods_Order_DetailMethod
         Try
             Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roller Blinds' AND BlindName='Skin Only' AND Active=1 ORDER BY Id, BlindNo ASC")
             If Not thisData.Tables(0).Rows.Count = 0 Then
-                Dim tdNotes As String = "<td colspan='8' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
+                Dim tdNotes As String = "<td colspan='9' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
                 result += spanStart & "ROLLER SKIN ONLY" & spanEnd
 
                 result += tableStart
@@ -3703,6 +3703,7 @@ Partial Class Methods_Order_DetailMethod
                 result += thStart & "Width" & thEnd
                 result += thStart & "Drop" & thEnd
                 result += thStart & "Trim" & thEnd
+                result += thStart & "Bottom Rail" & thEnd
                 result += trEnd
 
                 For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
@@ -3715,6 +3716,7 @@ Partial Class Methods_Order_DetailMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Trim").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BottomName").ToString() & tdEnd
                     result += trEnd
 
                     If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then

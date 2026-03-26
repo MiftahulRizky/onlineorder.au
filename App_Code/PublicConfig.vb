@@ -963,6 +963,11 @@ Public Class PublicConfig
                     drop = "0"
                     findMetre = sqm
                 End If
+                If designName = "Window" Then
+                    width = "0"
+                    drop = "0"
+                    findMetre = sqm
+                End If
 
                 Dim getMatrix As Decimal = GetGridCost(priceGroupId, delivery, drop, width)
                 
@@ -974,6 +979,10 @@ Public Class PublicConfig
                 End If
 
                 If designName = "Cellular Blinds" And blindName = "Potrait" Then
+                    getMatrix = getMatrix * Convert.ToDecimal(findMetre)
+                End If
+
+                If designName = "Window" Then
                     getMatrix = getMatrix * Convert.ToDecimal(findMetre)
                 End If
 

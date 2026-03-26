@@ -510,6 +510,57 @@ const bindSwivalColour = () => {
     sel.add(option);
   });
 };
+
+const bindItemOrders = async (itemid) => {
+  try {
+    if (!itemid) return;
+
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid }),
+    });
+
+    if (!res.ok) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d;
+
+    if (!data || data.length === 0) {
+      throw isError("No data returned from server : bindItemOrders");
+    }
+
+    for (const item of data) {
+      await bindBlinds(item.DesignId);
+      await bindColours(item.DesignId, item.BlindId);
+      await Promise.all([
+        bindMounting(),
+        bindMesh(item.BlindName),
+        bindFrameColour(),
+        bindBrace(),
+        bindAngleType(),
+        bindPortHole(),
+        bindPlunger(),
+        bindSwivalColour(),
+        handlerSetElementValues(item),
+      ]);
+      await handlerElementVisibility(item.BlindId, item.KitId, item);
+    }
+
+    return true; // ✅ success
+  } catch (error) {
+    console.error("bindItemOrder error:", error);
+    throw error;
+  }
+};
 // ----------------------------------------------|| Handler Functions ||---------------------------------------
 const handlerElementVisibility = async (blindtype, colourtype, item) => {
   try {
@@ -696,6 +747,50 @@ const handlerSubmit = async (button) => {
     document.getElementById(button).innerHTML = "Submit";
   }
 };
+
+const handlerSetElementValues = (itemData) => {
+  const mapping = {
+    blindtype: "BlindId",
+    colourtype: "KitId",
+    qty: "Qty",
+    room: "Location",
+    mounting: "Mounting",
+    width: "Width",
+    drop: "Drop",
+    meshtype: "MeshType",
+    framecolour: "FrameColour",
+    brace: "Brace",
+    angletype: "AngleType",
+    anglelength: "AngleLength",
+    angleqty: "AngleQty",
+    porthole: "PortHole",
+    plungerpin: "PlungerPin",
+    swivelcolour: "SwipelColour",
+    swivelqty: "SwipelQty",
+    swivelqtyb: "SwipelQtyB",
+    springqty: "SpringQty",
+    topplasticqty: "TopPlasticQty",
+    notes: "Notes",
+    markup: "MarkUp",
+  };
+
+  // Set nilai ke input sesuai mapping
+  Object.entries(mapping).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) {
+      console.warn(`Elemen '${id}' tidak ditemukan.`);
+      return;
+    }
+
+    let value = itemData[key];
+    if (id === "markup" && value === 0) value = "";
+
+    el.value = value ?? ""; // fallback ke string kosong
+
+    // jika nilainya "0" → kosong
+    if (el.value === "0") el.value = "";
+  });
+};
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const windowPageLoaded = async () => {
   if (!HEADERID) {
@@ -727,7 +822,7 @@ const windowPageLoaded = async () => {
     handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    // await bindItemOrders(ITEMID);
+    await bindItemOrders(ITEMID);
     loaderFadeOut();
   }
 };
