@@ -1722,31 +1722,35 @@ Partial Class Methods_Order_RollerBlindMethod
         Return list.Contains(value)
     End Function
 
+    ' Private Shared Function GenerateUniqueId() As String
+    '     Try
+    '         Dim result As String = String.Empty
+
+    '         Dim alphabets As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    '         Dim small_alphabets As String = "abcdefghijklmnopqrstuvwxyz"
+    '         Dim numbers As String = "1234567890"
+
+    '         Dim characters As String = Convert.ToString(alphabets & small_alphabets) & numbers
+    '         Dim length As Integer = Integer.Parse(20)
+    '         Dim uniqueId As String = String.Empty
+    '         For i As Integer = 0 To length - 1
+    '             Dim character As String = String.Empty
+    '             Do
+    '                 Dim index As Integer = New Random().Next(0, characters.Length)
+    '                 character = characters.ToCharArray()(index).ToString()
+    '             Loop While uniqueId.IndexOf(character) <> -1
+    '             uniqueId += character
+    '         Next
+    '         result = uniqueId
+
+    '         Return result
+    '     Catch ex As Exception
+    '         Return "500"
+    '     End Try
+    ' End Function
+
     Private Shared Function GenerateUniqueId() As String
-        Try
-            Dim result As String = String.Empty
-
-            Dim alphabets As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            Dim small_alphabets As String = "abcdefghijklmnopqrstuvwxyz"
-            Dim numbers As String = "1234567890"
-
-            Dim characters As String = Convert.ToString(alphabets & small_alphabets) & numbers
-            Dim length As Integer = Integer.Parse(20)
-            Dim uniqueId As String = String.Empty
-            For i As Integer = 0 To length - 1
-                Dim character As String = String.Empty
-                Do
-                    Dim index As Integer = New Random().Next(0, characters.Length)
-                    character = characters.ToCharArray()(index).ToString()
-                Loop While uniqueId.IndexOf(character) <> -1
-                uniqueId += character
-            Next
-            result = uniqueId
-
-            Return result
-        Catch ex As Exception
-            Return "500"
-        End Try
+        Return Guid.NewGuid().ToString("N") ' tanpa dash
     End Function
 
     Private Shared Function SdsNext(ListParam As List(Of Object)) As String
