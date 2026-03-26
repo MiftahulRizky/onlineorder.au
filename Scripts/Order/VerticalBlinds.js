@@ -1140,6 +1140,13 @@ const handlerElementVisibility = async (
       if (tubetype === "Fairline") {
         divInsertInTrack.classList.remove("d-none");
       }
+
+      if (controlname === "Chain") {
+        divChain.classList.remove("d-none");
+      }
+      if (controlname === "Wand") {
+        divWand.classList.remove("d-none");
+      }
     }
 
     if (item) {
