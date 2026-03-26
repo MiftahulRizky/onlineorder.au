@@ -1132,7 +1132,7 @@ const handlerElementVisibility = async (
       divTrackColour.classList.remove("d-none");
       divStackPosition.classList.remove("d-none");
       divControlPosition.classList.remove("d-none");
-      divChain.classList.remove("d-none");
+      // divChain.classList.remove("d-none");
       divBrackets.classList.remove("d-none");
       divHangerType.classList.remove("d-none");
       divSloper.classList.remove("d-none");
