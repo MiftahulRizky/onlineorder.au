@@ -688,7 +688,11 @@ const bindProductType = async () => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ customerid: CUSTOMERID, username: USERNAME }),
+      body: JSON.stringify({
+        customerid: CUSTOMERID,
+        username: USERNAME,
+        rolename: ROLENAME,
+      }),
     });
 
     if (!response.ok) {

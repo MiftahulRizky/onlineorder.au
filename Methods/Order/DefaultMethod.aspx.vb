@@ -138,9 +138,21 @@ Partial Class Methods_Order_DefaultMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindProductType() As Object
+    Public Shared Function BindProductType(ByVal customerid As String, ByVal username As String, ByVal rolename As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Name FROM ProductType WHERE Active=1 ORDER BY Name ASC"))
+            Dim Name As String = ""
+            If customerid = "LS-A224" Then '#JPM Direct
+                Name = "AND Name IN ('Panorama')"
+            End If
+            If customerid = "DEFAULT" AndAlso username = "galih" Then
+                Name = "AND Name IN ('Panorama', 'Evolve')"
+            End If
+
+            Dim Environment As String = ""
+            If rolename = "Customer" Then
+                Environment = "AND Description = 'Environment : Production'"
+            End If
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Name FROM ProductType WHERE Active=1 {0} {1} ORDER BY Name ASC", Name, Environment))
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows

@@ -148,6 +148,13 @@
                                         </div>  
                                     </div>
 
+                                    <div class="mb-3 row" id="divLayoutCode">
+                                        <label for="layoutcode" class="col-lg-3 text-uppercase fw-bold" >layout</label>
+                                        <div class="col-lg-4">
+                                            <select name="layoutcode" id="layoutcode" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
                                     <div class="mb-3 row" id="divHandle">
                                         <label for="handlepostion" class="col-lg-3 text-uppercase fw-bold">handle</label>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
@@ -202,42 +209,27 @@
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divSwivalColour">
-                                        <label for="swivelcolour" class="col-lg-3 text-uppercase fw-bold" >swivel clip colour</label>
+                                    <div class="mb-3 row" id="divBugSeal">
+                                        <label for="bugseal" class="col-lg-3 text-uppercase fw-bold" >bugseal aluminium</label>
                                         <div class="col-lg-4">
-                                            <select name="swivelcolour" id="swivelcolour" class="form-select"></select>
+                                            <select name="bugseal" id="bugseal" class="form-select"></select>
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divSwivalQty">
-                                        <label for="swivelqty" class="col-lg-3 text-uppercase fw-bold">swivel clip qty</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <div class="input-group">
-                                                <span class="input-group-text ">1.6MM</span>
-                                                <input type="number" min="1" name="swivelqty" id="swivelqty" class="form-control " autocomplete="off" />
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <div class="input-group">
-                                                <span class="input-group-text ">11MM</span>
-                                                <input type="number" min="1" name="swivelqtyb" id="swivelqtyb" class="form-control  " autocomplete="off"/>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3 row" id="divSpringQty">
-                                        <label for="springqty" class="col-lg-3 text-uppercase fw-bold" >spring clip qty</label>
+                                    <div class="mb-3 row" id="divDoorCloser">
+                                        <label for="doorcloser" class="col-lg-3 text-uppercase fw-bold" >door closer</label>
                                         <div class="col-lg-4">
-                                           <input type="number" id="springqty" name="springqty" min="1" class="form-control ">
+                                            <select name="doorcloser" id="doorcloser" class="form-select"></select>
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divTopPlasticQty">
-                                        <label for="topplasticqty" class="col-lg-3 text-uppercase fw-bold" >top clip plastic qty</label>
+                                    <div class="mb-3 row" id="divBoldPatio">
+                                        <label for="boldpatio" class="col-lg-3 text-uppercase fw-bold" >bold patio lockable</label>
                                         <div class="col-lg-4">
-                                           <input type="number" id="topplasticqty" name="topplasticqty" min="1" class="form-control ">
+                                            <input type="number" min="1" name="swivelqtyb" id="swivelqtyb" class="form-control  " autocomplete="off"/>
                                         </div>  
                                     </div>
+
 
                                     <div class="mb-3 row" >
                                         <label for="notes" class="col-lg-3 text-uppercase fw-bold">special information</label>

@@ -404,9 +404,9 @@ Partial Class Methods_Order_RollerBlindMethod
                 If String.IsNullOrEmpty(data.motorstyle) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor style is required !",.field = "motorstyle"}}
                 End If
-                If String.IsNullOrEmpty(data.motorremote) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor remote is required !",.field = "motorremote"}}
-                End If
+                ' If String.IsNullOrEmpty(data.motorremote) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor remote is required !",.field = "motorremote"}}
+                ' End If
             End If
 
             If Not (data.tubetype = "Spring Operated" OR data.tubetype = "N/A") Then
