@@ -183,6 +183,7 @@
                                                 <option value=""></option>
                                                 <option value="Left">LEFT</option>
                                                 <option value="Right">RIGHT</option>
+                                                <option value="Twin Wand">TWIN WAND</option>
                                             </select>
                                         </div>  
                                     </div>
