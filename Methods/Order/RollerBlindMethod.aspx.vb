@@ -401,8 +401,11 @@ Partial Class Methods_Order_RollerBlindMethod
 
             Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.blindtype))
             If (BlindName = "Cassette" AND data.tubetype = "Motorised") OR BlindName = "Motorised" Then
-                If String.IsNullOrEmpty(data.motorstyle) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor style is required !",.field = "motorstyle"}}
+                
+                If Not InArray(data.brackettype, "Linked 2 Blinds (Ind)", "Linked 3 Blinds (Ind)") Then
+                    If String.IsNullOrEmpty(data.motorstyle) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor style is required !",.field = "motorstyle"}}
+                    End If
                 End If
                 ' If String.IsNullOrEmpty(data.motorremote) Then
                 '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor remote is required !",.field = "motorremote"}}
