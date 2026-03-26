@@ -411,7 +411,7 @@ Partial Class Order_Detail
             Dim dataLog As Object() = {lblHeaderId.Text, "", lblOrderType.Text, Session("LoginId").ToString(), "Generate Job Order"}
             orderCfg.Log_Orders(dataLog)
 
-            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+            If lblOrderType.Text = "Panorama" Then
                 Dim fileName As String = String.Format("Job Order {0}.pdf", spanOrderId.InnerText)
                 Dim filePath As String = Server.MapPath("~/file/order/")
 

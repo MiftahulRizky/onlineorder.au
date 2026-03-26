@@ -148,43 +148,57 @@
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divBrace">
-                                        <label for="brace" class="col-lg-3 text-uppercase fw-bold" >brace /  joiner height</label>
-                                        <div class="col-lg-4">
-                                            <select name="brace" id="brace" class="form-select"></select>
-                                        </div>  
+                                    <div class="mb-3 row" id="divHandle">
+                                        <label for="handlepostion" class="col-lg-3 text-uppercase fw-bold">handle</label>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                            <select name="handlepostion" id="handlepostion" class="form-select"></select>
+                                            <small class="form-hint">* Position</small>
+                                        </div>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                            <select name="handlemeasure" id="handlemeasure" class="form-select"></select>
+                                            <small class="form-hint">* Measure</small>
+                                        </div>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                            <input type="number" min="1" name="handleheight" id="handleheight" class="form-control  " autocomplete="off"/>
+                                            <small class="form-hint">* Height</small>
+                                        </div>
                                     </div>
 
-                                    <div class="mb-3 row" id="divAngle">
-                                        <label for="angletype" class="col-lg-3 text-uppercase fw-bold">angle type x Length x qty</label>
+                                    <div class="mb-3 row" id="divMidrail">
+                                        <label for="midrailpostion" class="col-lg-3 text-uppercase fw-bold">midrail</label>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="angletype" id="angletype" class="form-select"></select>
+                                            <select name="midrailpostion" id="midrailpostion" class="form-select"></select>
+                                            <small class="form-hint">* Position</small>
+                                        </div>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                            <input type="number" min="1" name="midrailrequest" id="midrailrequest" class="form-control  " autocomplete="off"/>
+                                            <small class="form-hint">* Request</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divPetDor">
+                                        <label for="petdortype" class="col-lg-3 text-uppercase fw-bold">Pet Dor</label>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                            <select name="petdortype" id="petdortype" class="form-select"></select>
                                             <small class="form-hint">* Type</small>
                                         </div>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="anglelength" id="anglelength" class="form-control  " autocomplete="off"/>
-                                                <span class="input-group-text ">mm</span>
-                                            </div>
-                                            <small class="form-hint">* Length</small>
-                                        </div>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <input type="number" min="1" name="angleqty" id="angleqty" class="form-control  " autocomplete="off"/>
-                                            <small class="form-hint">* Qty</small>
+                                            <select name="petdorposition" id="petdorposition" class="form-select"></select>
+                                            <small class="form-hint">* Type</small>
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row" id="divPortHole">
-                                        <label for="porthole" class="col-lg-3 text-uppercase fw-bold" >screen port hole</label>
+                                    <div class="mb-3 row" id="divTripleLock">
+                                        <label for="triplelock" class="col-lg-3 text-uppercase fw-bold" >Triple Lock</label>
                                         <div class="col-lg-4">
-                                            <select name="porthole" id="porthole" class="form-select"></select>
+                                            <select name="triplelock" id="triplelock" class="form-select"></select>
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divPlungerPin">
-                                        <label for="plungerpin" class="col-lg-3 text-uppercase fw-bold" >plunger pin</label>
+                                    <div class="mb-3 row" id="divLatchBass">
+                                        <label for="latchbass" class="col-lg-3 text-uppercase fw-bold" >Latch Bass</label>
                                         <div class="col-lg-4">
-                                            <select name="plungerpin" id="plungerpin" class="form-select"></select>
+                                            <select name="latchbass" id="latchbass" class="form-select"></select>
                                         </div>  
                                     </div>
 
@@ -276,7 +290,7 @@
     </div>
 
     <script type="text/javascript">
-        let DESIGNIDORI = "BACF472C-B4DC-4D55-810B-EE35E30C2D6F";
+        let DESIGNIDORI = "397EB210-E264-49EC-ABF4-DA39B6C018F3";
         let HEADERID = '<%=Session("headerId")%>';
         let ORDERTYPE = '<%= Session("orderType") %>';
         let ITEMACTION = '<%= Session("itemAction") %>';
