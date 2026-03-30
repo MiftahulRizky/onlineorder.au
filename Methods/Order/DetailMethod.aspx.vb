@@ -653,6 +653,8 @@ Partial Class Methods_Order_DetailMethod
                                 Dim States As String = publicCfg.GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId = '{0}'", CustomerId))
                                 Product = String.Format("{0} {1}", KitName, States)
                             End IF
+
+                            Product = String.Format("Service - {0}", Product)
                         End If
 
                         If DesignName = "Aluminium Blinds" Or DesignName = "Venetian Blinds" Then
