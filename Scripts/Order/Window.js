@@ -167,7 +167,7 @@ const bindBlinds = async () => {
       });
 
       if (data.length === 1) {
-        select.selectedIndex = 0;
+        // select.selectedIndex = 0;
       }
     }
   } catch (err) {
