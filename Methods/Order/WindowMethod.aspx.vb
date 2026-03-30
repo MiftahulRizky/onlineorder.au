@@ -210,8 +210,10 @@ Partial Class Methods_Order_WindowMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "frame size is required !",.field = "framesize"}}
             End If
 
+
+                
             Dim anglelength As Integer
-            Dim angletype As Integer
+            Dim angleqty As Integer
             If Not String.IsNullOrEmpty(data.angletype) Then
                 If String.IsNullOrEmpty(data.anglelength) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "angle length is required !",.field = "anglelength"}}
@@ -226,17 +228,17 @@ Partial Class Methods_Order_WindowMethod
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "angle length must be less than or equal to 5000 !",.field = "anglelength"}}
                 End If
 
-                If String.IsNullOrEmpty(data.angletype) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "angle type is required !",.field = "angletype"}}
+                If String.IsNullOrEmpty(data.angleqty) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "angle qty is required !",.field = "angleqty"}}
                 End If
-                If Not Integer.TryParse(data.angletype, angletype) OrElse angletype <= 0 Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "angle type must be a positive integer !",.field = "angletype"}}
+                If Not Integer.TryParse(data.angleqty, angleqty) OrElse angleqty <= 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "angle qty must be a positive integer !",.field = "angleqty"}}
                 End If
-                If angletype < 1 Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check your angle type !",.field = "angletype"}}
+                If angleqty < 1 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check your angle qty !",.field = "angleqty"}}
                 End If
-                If angletype > 10 Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "angle type must be less than or equal to 10 !",.field = "angletype"}}
+                If angleqty > 10 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "angle qty must be less than or equal to 10 !",.field = "angleqty"}}
                 End If
             End If
 
