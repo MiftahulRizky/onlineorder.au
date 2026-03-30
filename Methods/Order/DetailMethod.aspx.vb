@@ -318,18 +318,25 @@ Partial Class Methods_Order_DetailMethod
     End Function
 
 
+    Private Shared Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
+    End Function
+
+
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindDesignType(ByVal customerid As String, ByVal ordertype As String, ByVal rolename As String) As Object
         Try
-            Dim Env As String = "AND Designs.Description <> 'Environment : Development'"
-            If Not rolename = "Customer" Then
-                Env = ""
+            Dim Env As String = ""
+            If rolename = "Customer" Then
+                Env = "AND Designs.Description = 'Environment : Production'"
+            End If
+            If InArray(rolename, "PPIC & DE", "Manager", "Customer Service") Then
+                Env = "AND Designs.Description IN ('Environment : Production', 'Environment : Testing')"
             End If
 
             Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Designs.Id, Designs.Name FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '{0}' AND Designs.Type <> 'Additional' AND Designs.Company = 'SP' AND Designs.Type = '{1}' {2} AND Designs.Active = 1 ORDER BY Designs.Name ASC", customerid, ordertype, Env))
 
-            ' Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Designs.Id, Designs.Name FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '{0}' AND Designs.Type <> 'Additional' AND Designs.Type IN ('Blinds', 'Door', 'Window') {2} AND Designs.Active = 1 ORDER BY Designs.Name ASC", customerid, ordertype, Env))
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows

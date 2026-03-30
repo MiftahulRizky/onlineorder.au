@@ -190,7 +190,7 @@ document.addEventListener("click", (e) => {
 });
 
 // BUTTON ADD ITEMS
-document.querySelector("#btnAddItem").addEventListener("click", async () => {
+document.querySelector("#btnAddItem").addEventListener("click", async (el) => {
   document
     .querySelectorAll("#modalAddItem .form-control, #modalAddItem .form-select")
     .forEach((e) => {
@@ -262,10 +262,19 @@ document.querySelectorAll("#modalAddItem .form-select").forEach((e) => {
       );
 
       if (["Roller Blinds"].includes(designname)) {
+        let env = "";
+        if (["Customer"].includes(ROLENAME)) {
+          env = "AND Description = 'Environment : Production'";
+        }
+        if (["PPIC & DE", "Manager", "Customer Service"].includes(ROLENAME)) {
+          env =
+            "AND Description IN ('Environment : Production', 'Environment : Testing')";
+        }
         const designs = await getItemData(
-          `SELECT Id FROM Designs WHERE Name = 'Global ${designname}' AND Description = 'Environment : Production' AND Active = 1`,
+          `SELECT Id FROM Designs WHERE Name = 'Global ${designname}' ${env} AND Active = 1`,
         );
-        if (ROLENAME !== "Customer" || designs) {
+
+        if (designs) {
           divProduction.classList.remove("d-none");
         }
       }
@@ -2707,11 +2716,19 @@ const bindProduction = async (designname) => {
 
   let data = [{ value: "Sunlight", text: "Sunlight" }];
   if (["Roller Blinds"].includes(designname)) {
+    let env = "";
+    if (["Customer"].includes(ROLENAME)) {
+      env = "AND Description = 'Environment : Production'";
+    }
+    if (["PPIC & DE", "Manager", "Customer Service"].includes(ROLENAME)) {
+      env =
+        "AND Description IN ('Environment : Production', 'Environment : Testing')";
+    }
     const designs = await getItemData(
-      `SELECT Id FROM Designs WHERE Name = 'Global ${designname}' AND Description = 'Environment : Production' AND Active = 1`,
+      `SELECT Id FROM Designs WHERE Name = 'Global ${designname}' ${env} AND Active = 1`,
     );
 
-    if (ROLENAME !== "Customer" || designs) {
+    if (designs) {
       data.push({ value: "Global", text: "Global" });
     }
   } else {
