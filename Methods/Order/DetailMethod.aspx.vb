@@ -520,7 +520,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, Qty, Location, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], Matrix, Charge, Markup, FabricGroups")
+                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, Qty, Location, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, MeshType, Matrix, Charge, Markup, FabricGroups")
                 sqlBuilder.AppendLine("FROM view_details")
                 sqlBuilder.AppendLine("WHERE Active=@Active AND HeaderId=@HeaderId")
 
@@ -609,6 +609,8 @@ Partial Class Methods_Order_DetailMethod
                         Dim UniqueId As String = reader("UniqueId").ToString()
                         Dim Width As String = reader("Width").ToString()
                         Dim Drop As String = reader("Drop").ToString()
+                        Dim FrameColour As String = reader("FrameColour").ToString()
+                        Dim MeshType As String = reader("MeshType").ToString()
                         Dim Matrix As String = reader("Matrix").ToString()
                         Dim Charge As String = reader("Charge").ToString()
                         Dim MarkUp As String = reader("MarkUp").ToString()
@@ -846,6 +848,10 @@ Partial Class Methods_Order_DetailMethod
                             If BlindName = "Potrait" Then
                                 Product = String.Format("{0} ({1}) {2} #{3} {4}", BlindName, BracketType, ControlType, FabricType, Size)
                             End If
+                        End If
+
+                        If DesignName = "Window" Then
+                            Product = String.Format("{0} {1} ({2}) {3}", KitName, MeshType, FrameColour, Size)
                         End If
 
                         '#----------------|| Production ||----------------#

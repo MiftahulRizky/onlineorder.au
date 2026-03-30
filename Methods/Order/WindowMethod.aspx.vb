@@ -24,6 +24,7 @@ Partial Class Methods_Order_WindowMethod
         Public Property drop As String
         Public Property meshtype As String
         Public Property framecolour As String
+        Public Property framesize As String
         Public Property brace As String
         Public Property angletype As String
         Public Property anglelength As String
@@ -205,6 +206,10 @@ Partial Class Methods_Order_WindowMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "frame colour is required !",.field = "framecolour"}}
             End If
 
+            If String.IsNullOrEmpty(data.framesize) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "frame size is required !",.field = "framesize"}}
+            End If
+
             Dim anglelength As Integer
             Dim angletype As Integer
             If Not String.IsNullOrEmpty(data.angletype) Then
@@ -322,7 +327,7 @@ Partial Class Methods_Order_WindowMethod
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], MeshType, FrameColour, Brace, AngleType, AngleLength, AngleQty, PortHole, PlungerPin, SwipelColour, SwipelQty, SwipelQtyB, SpringQty, TopPlasticQty, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @MeshType, @FrameColour, @Brace, @AngleType, @AngleLength, @AngleQty, @PortHole, @PlungerPin, @SwipelColour, @SwipelQty, @SwipelQtyB, @SpringQty, @TopPlasticQty, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], MeshType, FrameColour, FrameType, Brace, AngleType, AngleLength, AngleQty, PortHole, PlungerPin, SwipelColour, SwipelQty, SwipelQtyB, SpringQty, TopPlasticQty, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @MeshType, @FrameColour, @FrameType, @Brace, @AngleType, @AngleLength, @AngleQty, @PortHole, @PlungerPin, @SwipelColour, @SwipelQty, @SwipelQtyB, @SpringQty, @TopPlasticQty, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -337,6 +342,7 @@ Partial Class Methods_Order_WindowMethod
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@MeshType", data.meshtype)
                         myCmd.Parameters.AddWithValue("@FrameColour", data.framecolour)
+                        myCmd.Parameters.AddWithValue("@FrameType", data.framesize)
                         myCmd.Parameters.AddWithValue("@Brace", data.brace)
                         myCmd.Parameters.AddWithValue("@AngleType", data.angletype)
                         myCmd.Parameters.AddWithValue("@AngleLength", data.anglelength)
@@ -375,7 +381,7 @@ Partial Class Methods_Order_WindowMethod
 
                 Dim ItemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@width, [Drop]=@Drop, MeshType=@MeshType, FrameColour=@FrameColour, Brace=@Brace, AngleType=@AngleType, AngleLength=@AngleLength, AngleQty=@AngleQty, PortHole=@PortHole, PlungerPin=@PlungerPin, SwipelColour=@SwipelColour, SwipelQty=@SwipelQty, SwipelQtyB=@SwipelQtyB, SpringQty=@SpringQty, TopPlasticQty=@TopPlasticQty, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@width, [Drop]=@Drop, MeshType=@MeshType, FrameColour=@FrameColour, FrameType=@FrameType, Brace=@Brace, AngleType=@AngleType, AngleLength=@AngleLength, AngleQty=@AngleQty, PortHole=@PortHole, PlungerPin=@PlungerPin, SwipelColour=@SwipelColour, SwipelQty=@SwipelQty, SwipelQtyB=@SwipelQtyB, SpringQty=@SpringQty, TopPlasticQty=@TopPlasticQty, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -390,6 +396,7 @@ Partial Class Methods_Order_WindowMethod
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@MeshType", data.meshtype)
                         myCmd.Parameters.AddWithValue("@FrameColour", data.framecolour)
+                        myCmd.Parameters.AddWithValue("@FrameType", data.framesize)
                         myCmd.Parameters.AddWithValue("@Brace", data.brace)
                         myCmd.Parameters.AddWithValue("@AngleType", data.angletype)
                         myCmd.Parameters.AddWithValue("@AngleLength", data.anglelength)

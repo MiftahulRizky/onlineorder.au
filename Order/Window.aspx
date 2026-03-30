@@ -120,6 +120,13 @@
                                         </div>  
                                     </div>
 
+                                    <div class="mb-3 row" id="divFrameSize">
+                                        <label for="framesize" class="col-lg-3 text-uppercase fw-bold" >frame size</label>
+                                        <div class="col-lg-4">
+                                            <select name="framesize" id="framesize" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
                                     <div class="mb-3 row" id="divBrace">
                                         <label for="brace" class="col-lg-3 text-uppercase fw-bold" >brace /  joiner height</label>
                                         <div class="col-lg-4">

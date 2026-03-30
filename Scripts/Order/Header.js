@@ -812,7 +812,7 @@ const visibleElementForm = async (ordertype, customer) => {
       const customerDelivery = await getItemData(
         `SELECT Delivery FROM Customers WHERE Id = '${customerEl.value}'`,
       );
-      if (!customerDelivery) {
+      if (!customerDelivery && ordertype !== "Door") {
         divDelivery.removeAttribute("hidden");
       }
     }

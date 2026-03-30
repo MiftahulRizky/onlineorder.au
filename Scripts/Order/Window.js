@@ -244,7 +244,8 @@ const bindColours = async (designid, blindid) => {
         await Promise.all([
           bindMounting(),
           bindMesh(blindname),
-          bindFrameColour(),
+          bindFrameColour(blindname),
+          bindFrameSize(blindname),
           bindBrace(),
           bindAngleType(),
           bindPortHole(),
@@ -298,9 +299,10 @@ const bindMesh = (blindname) => {
 
   if (["Flyscreen", "Standard"].includes(blindname)) {
     data.push(
-      { value: "Fiberglass Mesh", text: "Fiberglass Mesh" },
-      { value: "Pawproof", text: "Pawproof" },
-      { value: "SS Mesh", text: "SS Mesh" },
+      { value: "Fiberglass", text: "Fiberglass" },
+      { value: "Aluminium", text: "Aluminium" },
+      { value: "Stainless Steel", text: "Stainless Steel" },
+      { value: "Pet Mesh", text: "Pet Mesh" },
     );
   }
   if (["Safety"].includes(blindname)) {
@@ -325,33 +327,91 @@ const bindMesh = (blindname) => {
     sel.add(option);
   });
 };
-const bindFrameColour = () => {
+
+const bindFrameColour = (blindname) => {
   const sel = document.getElementById("framecolour");
   sel.innerHTML = ""; //reset
 
+  if (!blindname) return;
+
   let data = [];
 
-  data.push(
-    { value: "Apo Grey", text: "Apo Grey" },
-    { value: "Beige", text: "Beige" },
-    { value: "Birch White", text: "Birch White" },
-    { value: "Black", text: "Black" },
-    { value: "Brown", text: "Brown" },
-    { value: "Charcoal", text: "Charcoal" },
-    { value: "Deep Ocean", text: "Deep Ocean" },
-    { value: "Dune", text: "Dune" },
-    { value: "Hawthorne Green", text: "Hawthorne Green" },
-    { value: "Jasper", text: "Jasper" },
-    { value: "Monument", text: "Monument" },
-    { value: "Notre Dame", text: "Notre Dame" },
-    { value: "Pale Eucalypt", text: "Pale Eucalypt" },
-    { value: "Paperbark", text: "Paperbark" },
-    { value: "Primrose", text: "Primrose" },
-    { value: "Silver", text: "Silver" },
-    { value: "Surf Mist", text: "Surf Mist" },
-    { value: "White", text: "White" },
-    { value: "Woodland Grey", text: "Woodland Grey" },
-  );
+  if (blindname == "Flyscreen") {
+    data.push(
+      { value: "Apo Grey", text: "Apo Grey" },
+      { value: "Beige", text: "Beige" },
+      { value: "Birch White", text: "Birch White" },
+      { value: "Black", text: "Black" },
+      { value: "Bronze", text: "Bronze" },
+      { value: "Brown", text: "Brown" },
+      { value: "Charcoal", text: "Charcoal" },
+      { value: "Deep Ocean", text: "Deep Ocean" },
+      { value: "Dune", text: "Dune" },
+      { value: "Hawthorne Green", text: "Hawthorne Green" },
+      { value: "Jasper", text: "Jasper" },
+      { value: "Monument", text: "Monument" },
+      { value: "Notre Dame", text: "Notre Dame" },
+      { value: "Primrose", text: "Primrose" },
+      { value: "Silver", text: "Silver" },
+      { value: "Surf Mist", text: "Surf Mist" },
+      { value: "White", text: "White" },
+      { value: "Woodland Grey", text: "Woodland Grey" },
+    );
+  } else {
+    data.push(
+      { value: "Apo Grey", text: "Apo Grey" },
+      { value: "Beige", text: "Beige" },
+      { value: "Birch White", text: "Birch White" },
+      { value: "Black", text: "Black" },
+      { value: "Bronze", text: "Bronze" },
+      { value: "Brown", text: "Brown" },
+      { value: "Charcoal", text: "Charcoal" },
+      { value: "Deep Ocean", text: "Deep Ocean" },
+      { value: "Dune", text: "Dune" },
+      { value: "Hawthorne Green", text: "Hawthorne Green" },
+      { value: "Jasper", text: "Jasper" },
+      { value: "Monument", text: "Monument" },
+      { value: "Notre Dame", text: "Notre Dame" },
+      { value: "Primrose", text: "Primrose" },
+      { value: "Silver", text: "Silver" },
+      { value: "Surf Mist", text: "Surf Mist" },
+      { value: "White", text: "White" },
+      { value: "Woodland Grey", text: "Woodland Grey" },
+    );
+  }
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindFrameSize = (blindname) => {
+  const sel = document.getElementById("framesize");
+  sel.innerHTML = ""; //reset
+
+  if (!blindname) return;
+
+  let data = [];
+  if (blindname == "Flyscreen") {
+    data.push(
+      { value: "21x9", text: "21x9" },
+      { value: "25x11", text: "25x11" },
+      { value: "35x11 Grille", text: "35x11 Grille" },
+    );
+  } else {
+    data.push({ value: "35x11 Grille", text: "35x11 Grille" });
+  }
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
@@ -544,7 +604,8 @@ const bindItemOrders = async (itemid) => {
       await Promise.all([
         bindMounting(),
         bindMesh(item.BlindName),
-        bindFrameColour(),
+        bindFrameColour(item.BlindName),
+        bindFrameSize(item.BlindName),
         bindBrace(),
         bindAngleType(),
         bindPortHole(),
@@ -680,6 +741,7 @@ const handlerSubmit = async (button) => {
       "drop",
       "meshtype",
       "framecolour",
+      "framesize",
       "brace",
       "angletype",
       "anglelength",
@@ -759,6 +821,7 @@ const handlerSetElementValues = (itemData) => {
     drop: "Drop",
     meshtype: "MeshType",
     framecolour: "FrameColour",
+    framesize: "FrameType",
     brace: "Brace",
     angletype: "AngleType",
     anglelength: "AngleLength",

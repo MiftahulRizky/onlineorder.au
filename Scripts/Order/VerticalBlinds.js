@@ -651,7 +651,7 @@ const bindTrackColour = (tubetype) => {
   if (["Fairline", "Javaline"].includes(tubetype)) {
     data.push(
       { value: "Beige", text: "Beige" },
-      { value: "Birch White", text: "Birch White" },
+      // { value: "Birch White", text: "Birch White" },
       { value: "Black", text: "Black" },
       { value: "Silver", text: "Silver" },
     );

@@ -215,7 +215,7 @@ Partial Class Methods_Order_CreateMethod
             Dim CustomerDelivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM Customers WHERE Id = '{0}'", data.customer))
             If data.ordertype = "Blinds" Or data.ordertype = "Door" Or data.ordertype = "Window" Then
 
-                If String.IsNullOrEmpty(data.delivery) AND String.IsNullOrEmpty(CustomerDelivery) Then
+                If String.IsNullOrEmpty(data.delivery) AND String.IsNullOrEmpty(CustomerDelivery) AND Not data.ordertype = "Door" Then
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "delivery is required !", .field = "delivery"}}
                 End If
 
@@ -233,6 +233,10 @@ Partial Class Methods_Order_CreateMethod
                     Else
                         FinalDelivery = data.delivery
                     End If
+
+                    If data.ordertype = "Door" Then
+                        FinalDelivery = ""
+                    End If
                 End If
             End If
 
@@ -244,7 +248,7 @@ Partial Class Methods_Order_CreateMethod
             Dim url As String = "/"
             '#insert
             If String.IsNullOrEmpty(data.id) Then
-                IF data.ordertype = "Blinds" OR data.ordertype = "Door" OR data.ordertype = "Window"  Then
+                IF InArray(data.ordertype, "Blinds", "Door", "Window")  Then
                     Dim id As String = publicCfg.CreateOrderHeaderId()
                     Using thisConn As New SqlConnection(myConn)
                         Using myCmd As New SqlCommand("INSERT INTO OrderHeaders (Id, UserId, StoreId, OrderNo, OrderCust, Delivery, OrderType, Note, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, CreatedDate, Active) VALUES (@Id, @UserId, @StoreId, LTRIM(RTRIM(@OrderNo)), LTRIM(RTRIM(@OrderCust)), @Delivery, @OrderType, @Note, 'Yes', 0, 0, 0,  'Draft', GETDATE(), 1)", thisConn)
@@ -266,7 +270,7 @@ Partial Class Methods_Order_CreateMethod
 
                     Dim dataLog As Object() = {id, "", data.ordertype, HttpContext.Current.Session("LoginId").ToString(), "Create Order"}
                     orderCfg.Log_Orders(dataLog)
-                Else If data.ordertype = "Panorama" Or data.ordertype = "Evolve" Then
+                Else If InArray(data.ordertype, "Panorama" ,"Evolve") Then
                     Dim headerId As String = orderCfg.CreateOrderHeaderId()
                     Dim orderId As String = "SPP-" & headerId
 
@@ -303,7 +307,7 @@ Partial Class Methods_Order_CreateMethod
 
             '#update
             If Not String.IsNullOrEmpty(data.id) Then
-                IF data.ordertype = "Blinds" Then
+                IF InArray(data.ordertype, "Blinds","Door","Window") Then
                     Dim id As String = data.id
                     Using thisConn As New SqlConnection(myConn)
                         Using myCmd As New SqlCommand("UPDATE OrderHeaders SET UserId=@UserId, StoreId=@StoreId, OrderNo=LTRIM(RTRIM(@OrderNo)), OrderCust=LTRIM(RTRIM(@OrderCust)), Delivery=@Delivery, Note=@Note, Active=1 WHERE Id=@Id", thisConn)
@@ -321,7 +325,7 @@ Partial Class Methods_Order_CreateMethod
                         End Using
                     End Using
                     url = "/order/detail?param=" & id & "&ordertype=" & data.ordertype.ToLower()
-                Else If data.ordertype = "Panorama" Or data.ordertype = "Evolve" Then
+                Else If InArray(data.ordertype, "Panorama", "Evolve") Then
                     Using thisConn As New SqlConnection(myConn)
                         Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders_Shutters SET OrderId=@OrderId, JobId=@JobId, JobDate=@JobDate, ShipmentId=@ShipmentId, CustomerId=@CustomerId, CreatedBy=@CreatedBy, OrderNumber=@OrderNumber, OrderName=@OrderName, OrderNote=@OrderNote WHERE Id=@Id")
                             myCmd.Parameters.AddWithValue("@Id", data.id)
@@ -534,6 +538,11 @@ Partial Class Methods_Order_CreateMethod
             ' Tangani error agar bisa dikenali di JavaScript
             Return New With {.error = True, .message = ex.Message}
         End Try
+    End Function
+
+
+    Private Shared Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
     End Function
 
 End Class
