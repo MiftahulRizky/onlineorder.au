@@ -150,7 +150,7 @@ const bindBlinds = async () => {
     if (Array.isArray(data)) {
       select.innerHTML = ""; //reset
 
-      if (data.length > 1) {
+      if (data.length > 0) {
         const defaultOption = document.createElement("option");
         defaultOption.text = "";
         defaultOption.value = "";
