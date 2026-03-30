@@ -962,7 +962,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "tube size is required !",.field = "tubesize"}}
                 End If
                 If data.tubesize = "38" AND width > 1810 Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "tube size is required !",.field = "tubesize"}}
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cannot down grade to 38mm tube !",.field = "tubesize"}}
                 End If
             End If
 
