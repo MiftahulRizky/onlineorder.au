@@ -657,6 +657,8 @@ const submitService = async () => {
     additionalParams[field] = el ? el.value : "";
   });
 
+  // return console.table(additionalParams);
+
   try {
     // === Sebelum request ===
     btnSubmit.setAttribute("disabled", "disabled");

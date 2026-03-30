@@ -1484,10 +1484,17 @@ Partial Class Methods_Order_DetailMethod
                 End If
             End If
 
+            IF blindName = "Interim Levy Surcharge" Then
+                PriceGroupName = "Interim Levy Surcharge"
+            End If
+
             Dim priceGroupId As String = publicCfg.GetPriceGroupId("6C0B3347-9730-45CA-905C-5EF682CD06EA", priceGroupName)
 
+            If String.IsNullOrEmpty(priceGroupId) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Something went wrong !", .field = "#modalAddService #category"}}
+            End If
 
-            ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = priceGroupName, .field = "#modalAddService #category"}}
+
 
             
             '#Insert
