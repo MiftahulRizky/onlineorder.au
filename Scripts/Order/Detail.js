@@ -948,6 +948,7 @@ const handlerDisplayElement = (item) => {
         btnAddItem.removeAttribute("hidden");
         break;
       case "PPIC & DE":
+      case "Manager":
       case "Customer Service":
         if (item.CreatedBy.toUpperCase() === LOGINID) {
           btnEditHeader.removeAttribute("hidden");

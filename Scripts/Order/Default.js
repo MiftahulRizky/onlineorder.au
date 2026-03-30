@@ -1510,7 +1510,8 @@ const visibleColumnServerside = () => {
     ROLENAME == "Customer Service" ||
     ROLENAME == "Data Entry" ||
     ROLENAME == "PPIC & DE" ||
-    ROLENAME == "Representative"
+    ROLENAME == "Representative" ||
+    ROLENAME == "Manager"
   ) {
     btnCreateNewOrder.removeAttribute("hidden");
   }
