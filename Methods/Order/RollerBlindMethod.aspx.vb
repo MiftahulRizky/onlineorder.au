@@ -1065,6 +1065,8 @@ Partial Class Methods_Order_RollerBlindMethod
 
                 Dim ChainName As String = String.Format("{0} Chain + Joiner {1}", CLength, ChainColour)
                 ChainId = publicCfg.GetItemData(String.Format("SELECT Id FROM Chains WHERE Name = '{0}'", ChainName))
+                ' Throw New Exception(data.chainlength)
+
 
                 data.motorstyle = ""
                 data.externalbattery = ""

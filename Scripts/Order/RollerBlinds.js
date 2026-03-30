@@ -782,6 +782,7 @@ const handlerSubmit = async (button) => {
       "roll",
       "controlposition",
       "chaincolour",
+      "chainlength",
       "trim",
       "railtype",
       "railcolour",
