@@ -91,6 +91,9 @@ Partial Class Methods_Order_CreateMethod
             If rolename = "Customer" Then
                 Environment = "AND Description = 'Environment : Production'"
             End If
+            If InArray(rolename, "PPIC & DE", "Manager", "Customer Service") Then
+                Environment = "AND Description IN ('Environment : Production', 'Environment : Testing')"
+            End If
             Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Name FROM ProductType WHERE Active=1 {0} {1} ORDER BY Name ASC", Name, Environment))
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then

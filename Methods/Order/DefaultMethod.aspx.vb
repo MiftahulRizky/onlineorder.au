@@ -136,6 +136,10 @@ Partial Class Methods_Order_DefaultMethod
         HttpContext.Current.Session("headerId") = headerid 
     End Sub
 
+    Private Shared Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
+    End Function
+
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindProductType(ByVal customerid As String, ByVal username As String, ByVal rolename As String) As Object
@@ -151,6 +155,9 @@ Partial Class Methods_Order_DefaultMethod
             Dim Environment As String = ""
             If rolename = "Customer" Then
                 Environment = "AND Description = 'Environment : Production'"
+            End If
+            If InArray(rolename, "PPIC & DE", "Manager", "Customer Service") Then
+                Environment = "AND Description IN ('Environment : Production', 'Environment : Testing')"
             End If
             Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Name FROM ProductType WHERE Active=1 {0} {1} ORDER BY Name ASC", Name, Environment))
             Dim list As New List(Of Dictionary(Of String, String))()
