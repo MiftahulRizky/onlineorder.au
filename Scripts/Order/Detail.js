@@ -2357,7 +2357,18 @@ const handlerPricingItem = (id) => {
       render: (row) => `<div class="text-center">${row.Qty}</div>`,
     },
     { width: "100%", orderable: false, data: "Description" },
-    { width: "15%", orderable: false, data: "Cost" },
+    {
+      width: "15%",
+      orderable: false,
+      data: null,
+      render: (row) => {
+        let Cost = row.Cost;
+        if (row.CostB) {
+          Cost += `<br/>${row.CostB}`;
+        }
+        return Cost;
+      },
+    },
     { width: "15%", orderable: false, data: "Poa" },
     {
       width: "15%",
@@ -2365,22 +2376,40 @@ const handlerPricingItem = (id) => {
       data: null,
       render: (row) => {
         let DisInPercent = row.Discount;
-        if (
-          ["Administrator", "PPIC & DE", "Customer Service"].includes(
-            ROLENAME,
-          ) &&
-          row.Discount
-        ) {
-          DisInPercent = `
-          <button type="button" class="border-0 bg-transparent" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="Discount in ${row.DiscountInPercent}">
-             ${row.Discount}
-          </button>
-        `;
+        // if (
+        //   ["Administrator", "PPIC & DE", "Customer Service"].includes(
+        //     ROLENAME,
+        //   ) &&
+        //   row.Discount
+        // ) {
+        // }
+        DisInPercent = `
+        <button type="button" class="border-0 bg-transparent" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="Discount in ${row.DiscountInPercent}%">
+           ${row.Discount}
+        </button>
+      `;
+        if (row.DiscountB) {
+          DisInPercent += `
+            <br/><button type="button" class="border-0 bg-transparent" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="Discount in ${row.DiscountInPercentB}%">
+              ${row.DiscountB}
+            </button>
+          `;
         }
         return DisInPercent;
       },
     },
-    { width: "15%", orderable: false, data: "FinalCost" },
+    {
+      width: "15%",
+      orderable: false,
+      data: null,
+      render: (row) => {
+        let FinalCost = row.FinalCost;
+        if (row.FinalCostB) {
+          FinalCost += `<br/>${row.FinalCostB}`;
+        }
+        return FinalCost;
+      },
+    },
   ];
 
   tablePricingData = $("#tablePricingDetail").DataTable({

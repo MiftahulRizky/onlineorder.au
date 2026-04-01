@@ -143,10 +143,14 @@ Partial Class Methods_Order_DetailMethod
         Public Property Qty As String 
         Public Property Description As String 
         Public Property Cost As String 
+        Public Property CostB As String 
         Public Property DiscountInPercent As String 
+        Public Property DiscountInPercentB As String 
         Public Property Discount As String 
+        Public Property DiscountB As String 
         Public Property Poa As String 
         Public Property FinalCost As String 
+        Public Property FinalCostB As String 
     End Class
     '#---------------------------------------|| /Server side Order Detail Pricing Class || ---------------------------------------#
 
@@ -1677,11 +1681,7 @@ Partial Class Methods_Order_DetailMethod
             If Not String.IsNullOrEmpty(data.id) Then
                 Dim qty As Integer = publicCfg.GetItemData(String.Format("SELECT Qty FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", data.headerid, data.id))
               
-                Dim RealFinalCost As Decimal = qty * cost
-                Dim FinalCost As Decimal = qty * newcost
-
-
-                Dim Res As String = UpdateOverridePricing(data.id, cost, newcost, RealFinalCost, FinalCost)
+                Dim Res As String = UpdateOverridePricing(data.id, cost, newcost)
                 IF Not Res = "200" Then
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = Res, .field = "#cost" }}
                 End If
@@ -1702,16 +1702,13 @@ Partial Class Methods_Order_DetailMethod
     End Function
 
 
-    Private Shared Function UpdateOverridePricing(id As String, cost As Decimal, poa As Decimal, rfinalcost As Decimal, finalcost As Decimal) As String
+    Private Shared Function UpdateOverridePricing(id As String, cost As Decimal, poa As Decimal) As String
         Try
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET RealCost=@RealCost, Cost=@Poa, Poa=@Poa, RealFinalCost=@RealFinalCost, FinalCost=@FinalCost WHERE ItemId=@Id AND Type='Matrix'", thisConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET Cost=@Cost, Poa=@Poa WHERE ItemId=@Id AND Type='Matrix'", thisConn)
                     myCmd.Parameters.AddWithValue("@Id", UCase(id).ToString())
-                    myCmd.Parameters.AddWithValue("@RealCost", cost)
-                    ' myCmd.Parameters.AddWithValue("@Cost", poa)
+                    myCmd.Parameters.AddWithValue("@Cost", poa)
                     myCmd.Parameters.AddWithValue("@Poa", poa)
-                    myCmd.Parameters.AddWithValue("@RealFinalCost", rfinalcost)
-                    myCmd.Parameters.AddWithValue("@FinalCost", finalcost)
                     myCmd.Connection = thisConn
                     thisConn.Open()
                     myCmd.ExecuteNonQuery()
@@ -1793,18 +1790,15 @@ Partial Class Methods_Order_DetailMethod
                     Dim Prices As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix'", headerid, itemId))
                     If Prices.Tables(0).Rows.Count > 0 Then
                         Dim Qty As Integer = Convert.ToInt32(Prices.Tables(0).Rows(0)("Qty"))
-                        Dim RealCost As Decimal = Convert.ToDecimal(Prices.Tables(0).Rows(0)("RealCost"))
                         Dim Cost As Decimal = Convert.ToDecimal(Prices.Tables(0).Rows(0)("Cost"))
                         Dim Poa As Decimal = Convert.ToDecimal(Prices.Tables(0).Rows(0)("Poa"))
 
-                        Dim RealFinalCost As Decimal = Qty * RealCost
-                        Dim FinalCost As Decimal = Qty * Cost
 
                         publicCfg.ResetPriceDetail(itemId)
                         publicCfg.HitungHarga(headerid, itemId)
                         publicCfg.HitungSurcharge(headerid, itemId)
 
-                        Dim Res As String = UpdateOverridePricing(itemId, RealCost, Cost, RealFinalCost, FinalCost)
+                        Dim Res As String = UpdateOverridePricing(itemId, Cost, Poa)
                         IF Not Res = "200" Then
                             Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res}}
                         End If
@@ -2221,7 +2215,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT *, FORMAT(RealCost, 'C', 'en-US') AS FormatRealCost, FORMAT(Cost, 'C', 'en-US') AS FormatCost, FORMAT(Discount, 'C', 'en-US') AS FormatDiscount, FORMAT ( Poa, 'C', 'en-US' ) AS FormatPoa, FORMAT(RealFinalCost, 'C', 'en-US') AS FormatRealFinalCost, FORMAT(FinalCost, 'C', 'en-US') AS FormatFinalCost")
+                sqlBuilder.AppendLine("SELECT *, FORMAT(Cost, 'C', 'en-US') AS FormatCost, FORMAT(Discount, 'C', 'en-US') AS FormatDiscount, FORMAT(DiscountB, 'C', 'en-US') AS FormatDiscountB, FORMAT ( Poa, 'C', 'en-US' ) AS FormatPoa")
                 sqlBuilder.AppendLine("FROM OrderDetailsPrice")
                 sqlBuilder.AppendLine("WHERE ItemId = @ItemId")
 
@@ -2288,33 +2282,38 @@ Partial Class Methods_Order_DetailMethod
                         Dim HeaderId As String = reader("HeaderId").ToString()
                         Dim ItemId As String = reader("ItemId").ToString()
                         Dim Type As String = reader("Type").ToString()
-                        Dim Qty As String = reader("Qty").ToString()
+                        Dim Qty As Integer = reader("Qty").ToString()
                         Dim Description As String = reader("Description").ToString()
-                        Dim Discount As Integer = CInt(reader("Discount"))
-                        Dim Poa As Integer = CInt(reader("Poa"))
-                        Dim RealCost As String = "<br><span class='text-decoration-line-through text-secondary'>" & reader("FormatRealCost").ToString() & "</span>"
-                        Dim Cost As String = reader("FormatCost").ToString() & If(Discount = 0 AND Poa = 0, "", RealCost)
-                        Dim RealFinalCost As String = "<br><span class='text-decoration-line-through text-secondary'>" & reader("FormatRealFinalCost").ToString() & "</span>"
-                        Dim FinalCost As String = reader("FormatFinalCost").ToString() & If(Discount = 0 AND Poa = 0, "", RealFinalCost)
+                        Dim Cost As Decimal = CDec(reader("Cost"))
+                        Dim Discount As Decimal = CDec(reader("Discount"))
+                        Dim DiscountB As Decimal = CDec(reader("DiscountB"))
+                        Dim DiscounCt As Decimal = CDec(reader("DiscountC"))
+                        Dim Poa As Decimal = CDec(reader("Poa"))
 
-                        Dim discountValue As Decimal = 0
-                        Dim costValue As Decimal = 0
-
-                        If Not IsDBNull(reader("Discount")) Then
-                            discountValue = Convert.ToDecimal(reader("Discount"))
+                        Dim FindCost As Decimal = Cost
+                        IF CInt(reader("Poa")) > 0 Then
+                            FindCost = Poa
                         End If
 
-                        If Not IsDBNull(reader("RealCost")) Then
-                            costValue = Convert.ToDecimal(reader("RealCost"))
-                        End If
+                        Dim FinalCost As Decimal = (FindCost - Discount) * Qty
+                        Dim DiscountInPercent As Decimal = (Discount / FindCost) * 100
 
-                        Dim DiscountInPercent As String = "0 %"
-                        If costValue <> 0 Then
-                            Dim percent As Decimal = (discountValue / costValue) * 100
-                            DiscountInPercent = percent.ToString("0.##") & "%"
+                        Dim FinalCostB As Decimal = 0
+                        Dim DiscountInPercentB As Decimal = 0
+                        If CInt(reader("DiscountB")) > 0 Then
+                            FinalCostB = (FinalCost - DiscountB) * Qty
+                            DiscountInPercentB = (DiscountB / FinalCost) * 100
                         End If
 
 
+                        Dim ResutCostB As String = ""
+                        Dim ResutDiscountB As String = ""
+                        Dim ResutFinalCostB As String = ""
+                        IF CInt(reader("DiscountB")) > 0 Then
+                            ResutCostB = FinalCost.ToString("C", New CultureInfo("en-US"))
+                            ResutDiscountB = If(Type = "Matrix", DiscountB.ToString("C", New CultureInfo("en-US")), "")
+                            ResutFinalCostB = If(Type = "Matrix", FinalCostB.ToString("C", New CultureInfo("en-US")), "")
+                        End If
 
                         Dim row As New OrdersMatrixReturnRowPricing With {
                             .No = noCounter.ToString(),
@@ -2323,11 +2322,15 @@ Partial Class Methods_Order_DetailMethod
                             .ItemId = ItemId,
                             .Qty = Qty,
                             .Description = Description,
-                            .Cost = If(Type = "Discount", "", Cost),
-                            .DiscountInPercent = DiscountInPercent,
-                            .Discount = If(Discount = 0, "", "-" & reader("FormatDiscount").ToString()),
-                            .Poa = If(Poa = 0, "", reader("FormatPoa").ToString()),
-                            .FinalCost = If(Type = "Discount", "", FinalCost)
+                            .Cost = Cost.ToString("C", New CultureInfo("en-US")),
+                            .CostB = ResutCostB,
+                            .DiscountInPercent = Math.Round(DiscountInPercent, 0, MidpointRounding.AwayFromZero),
+                            .DiscountInPercentB = Math.Round(DiscountInPercentB, 0, MidpointRounding.AwayFromZero),
+                            .Discount = If(CInt(reader("Discount")) > 0, Discount.ToString("C", New CultureInfo("en-US")), ""),
+                            .DiscountB = ResutDiscountB,
+                            .Poa = If(CInt(reader("Poa")) > 0, Poa.ToString("C", New CultureInfo("en-US")), ""),
+                            .FinalCost = FinalCost.ToString("C", New CultureInfo("en-US")),
+                            .FinalCostB = ResutFinalCostB
                         }
                         resultList.Add(row)
                         noCounter += 1

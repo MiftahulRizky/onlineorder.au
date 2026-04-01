@@ -625,6 +625,7 @@ const bindItemOrders = async (itemid) => {
 // ----------------------------------------------|| Handler Functions ||---------------------------------------
 const handlerElementVisibility = async (blindtype, colourtype, item) => {
   try {
+    const lblItemId = document.getElementById("lblItemId");
     const divColourType = document.getElementById("divColourType");
 
     const divFormDetail = document.getElementById("divFormDetail");
@@ -642,7 +643,7 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     const divMarkUp = document.getElementById("divMarkUp");
 
     const btnSubmit = document.querySelector("#btnSubmit");
-
+    lblItemId.classList.add("d-none");
     divColourType.classList.add("d-none");
     divFormDetail.classList.add("d-none");
     divMounting.classList.add("d-none");

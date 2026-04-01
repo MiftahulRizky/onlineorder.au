@@ -9,7 +9,7 @@
     console.log("ORDERTYPE: " + ORDERTYPE);
     console.log("URIMETHOD: " + URIMETHOD);
   }
-  pageLoaded();
+  verticalPageLoaded();
 });
 
 // =======================================================|| EVENT LISTENERS ||=======================================================
@@ -1333,7 +1333,7 @@ const handlerSetElementValues = (itemData) => {
   });
 };
 // ----------------------------------------------------------- || Other Funtions ||------------------------------------------------------------
-const pageLoaded = async () => {
+const verticalPageLoaded = async () => {
   if (!HEADERID) {
     window.location.href = "/order";
     return;

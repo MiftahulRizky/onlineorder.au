@@ -1048,8 +1048,6 @@ Public Class PublicConfig
                     qty,
                     description,
                     getMatrix,
-                    realMatrix,
-                    thisMatrix,
                     thisDiscount,
                     thisCustomDiscount
                 }
@@ -1104,8 +1102,6 @@ Public Class PublicConfig
                     qty,
                     descriptionB,
                     getMatrixB,
-                    realMatrixB,
-                    thisMatrixB,
                     thisDiscountB,
                     thisCustomDiscountB
                 }
@@ -1220,11 +1216,9 @@ Public Class PublicConfig
                             type,
                             qty,
                             description,
-                            charge,
                             realCharge,
-                            thisCharge,
-                            0,
-                            customDiscount
+                            customDiscount,
+                            0
                         }
                         ' Call PriceDetail(headerId, itemId, type, qty, description, realCharge, thisCharge, 0, customDiscount)
                         Call PriceDetail(ListParam)
@@ -1244,54 +1238,25 @@ Public Class PublicConfig
         Dim Type As String = CStr(ListParam(2))
         Dim Qty As Integer = CInt(ListParam(3))
         Dim Desc As String = CStr(ListParam(4))
-        Dim GetCost As String = CStr(ListParam(5))
-        Dim RealCost As Decimal = CDec(ListParam(6))
-        Dim Cost As Decimal = CDec(ListParam(7))
-        Dim Discount As Decimal = CDec(ListParam(8))
-        Dim CustomDiscount As Decimal = CDec(ListParam(9))
-
-        Dim DesignName As String = GetItemData(String.Format("SELECT DesignName FROM view_details WHERE Id='{0}'", Item))
-
+        Dim Cost As Integer = CStr(ListParam(5))
+        Dim Discount As Decimal = CDec(ListParam(6))
+        Dim CustomDiscount As Decimal = CDec(ListParam(7))
  
         Dim Poa As Decimal = 0
-        Dim RealFinalCost As Decimal = RealCost * Qty
-        Dim FinalCost As Decimal = Cost * Qty
-        
-        If Type = "Discount" Then
-            RealCost = 0
-            Cost = 0
-            RealFinalCost = 0
-            FinalCost = 0
-        End If
-        
-        Dim FindDiscount As Decimal = CustomDiscount
-        Dim FindRealCost As Decimal = RealCost
-        Dim FindRealFinalCost As Decimal = RealFinalCost
-        If Type = "Matrix" Then
-            FindDiscount = Discount
-            FindRealCost = GetCost
-            FindRealFinalCost = FindRealCost * Qty
-        End If
-
-        ' If Type = "Charge" Then
-        '     Item = GetItemData(String.Format("SELECT TOP 1 ItemId FROM OrderDetailsPrice WHERE HeaderId='{0}' AND Type='Charge' AND Description='Long Length' ORDER BY ItemId ASC", Header))
-        '     ResetLongLength(Header, Item)
-        ' End IF
 
         Using thisConn As SqlConnection = New SqlConnection(myConn)
-            Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetailsPrice VALUES(NEWID(), @HeaderId, @ItemId, @Type, @Qty, @Description, @RealCost, @Cost, @Discount, @Poa, @RealFinalCost, @FinalCost)")
+            Using myCmd As SqlCommand = New SqlCommand("INSERT INTO OrderDetailsPrice VALUES(NEWID(), @HeaderId, @ItemId, @Type, @Qty, @Description, @Cost, @Discount, @DiscountB, @DiscountC, @Poa)")
                 ' myCmd.Parameters.AddWithValue("@Ordered", UpdateOrdered)
                 myCmd.Parameters.AddWithValue("@HeaderId", Header)
                 myCmd.Parameters.AddWithValue("@ItemId", Item)
                 myCmd.Parameters.AddWithValue("@Type", Type)
                 myCmd.Parameters.AddWithValue("@Qty", Qty)
                 myCmd.Parameters.AddWithValue("@Description", Desc)
-                myCmd.Parameters.AddWithValue("@RealCost", FindRealCost)
                 myCmd.Parameters.AddWithValue("@Cost", Cost)
-                myCmd.Parameters.AddWithValue("@Discount", FindDiscount)
+                myCmd.Parameters.AddWithValue("@Discount", Discount)
+                myCmd.Parameters.AddWithValue("@DiscountB", CustomDiscount)
+                myCmd.Parameters.AddWithValue("@DiscountC", 0)
                 myCmd.Parameters.AddWithValue("@Poa", Poa)
-                myCmd.Parameters.AddWithValue("@RealFinalCost", FindRealFinalCost)
-                myCmd.Parameters.AddWithValue("@FinalCost", FinalCost)
                 myCmd.Connection = thisConn
                 thisConn.Open()
                 myCmd.ExecuteNonQuery()

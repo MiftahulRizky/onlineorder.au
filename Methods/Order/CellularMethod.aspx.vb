@@ -522,20 +522,16 @@ Partial Class Methods_Order_CelloraMethod
                 End Using
 
                 Dim Group As String = publicCfg.GetItemData(String.Format("SELECT [Group] FROM Fabrics WHERE Id = '{0}'", data.fabriccolour))
-                Dim RealCost As Decimal = publicCfg.GetItemData(String.Format("SELECT RealCost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1} AND Type='Matrix'", data.headerid, itemId))
                 Dim Cost As Decimal = publicCfg.GetItemData(String.Format("SELECT Cost FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1} AND Type='Matrix'", data.headerid, itemId))
                 Dim Poa As Decimal = publicCfg.GetItemData(String.Format("SELECT Poa FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1} AND Type='Matrix'", data.headerid, itemId))
-
-                Dim RealFinalCost As Decimal = qty * RealCost
-                Dim FinalCost As Decimal = qty * Cost
 
                 publicCfg.ResetPriceDetail(itemId)
                 publicCfg.HitungHarga(data.headerid, itemId)
                 publicCfg.HitungSurcharge(data.headerid, itemId)
 
                 IF Group = "POA" Then
-                    Dim Res As String = UpdateOverridePricing(itemId, RealCost, Cost, RealFinalCost, FinalCost)
-                    IF Not Res = "200" Then
+                    Dim Res As String = UpdateOverridePricing(itemId, Cost, Poa)
+                    If Not Res = "200" Then
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res}}
                     End If
 
@@ -561,17 +557,14 @@ Partial Class Methods_Order_CelloraMethod
         End Try
     End Function
 
-    Private Shared Function UpdateOverridePricing(id As String, cost As Decimal, poa As Decimal, rfinalcost As Decimal, finalcost As Decimal) As String
+    Private Shared Function UpdateOverridePricing(id As String, cost As Decimal, poa As Decimal) As String
         Try
             Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET RealCost=@RealCost, Cost=@Poa, Poa=@Poa, RealFinalCost=@RealFinalCost, FinalCost=@FinalCost WHERE Type='Matrix' AND ItemId=@Id", thisConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET Cost=@Cost, Poa=@Poa WHERE Type='Matrix' AND ItemId=@Id", thisConn)
                     myCmd.Parameters.AddWithValue("@Id", UCase(id).ToString())
-                    myCmd.Parameters.AddWithValue("@RealCost", cost)
-                    ' myCmd.Parameters.AddWithValue("@Cost", poa)
+                    myCmd.Parameters.AddWithValue("@Cost", poa)
                     myCmd.Parameters.AddWithValue("@Poa", poa)
-                    myCmd.Parameters.AddWithValue("@RealFinalCost", rfinalcost)
-                    myCmd.Parameters.AddWithValue("@FinalCost", finalcost)
                     myCmd.Connection = thisConn
                     thisConn.Open()
                     myCmd.ExecuteNonQuery()
