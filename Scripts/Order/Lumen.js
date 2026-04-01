@@ -12,6 +12,88 @@
   lumenPageLoaded();
 });
 // ===============================================================EVENTS========================================================================
+document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+  el.addEventListener("change", async (e) => {
+    e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "blindtype") {
+      const blindtype = e.target.value;
+      await handlerElementVisibility(blindtype);
+      await bindControls(DESIGNID, blindtype);
+    }
+
+    if (e.target.id === "controltype") {
+      const blind = document.getElementById("blindtype");
+      const blindtype = blind.value;
+      const blindname = blind.selectedOptions[0].dataset.name;
+      const controltype = e.target.value;
+      const controlname = e.target.selectedOptions[0].dataset.name;
+      await bindFabrics(DESIGNID);
+      await Promise.all([bindRailColour(), bindChainColour(controlname)]);
+      await handlerElementVisibility(blindtype, controltype);
+    }
+
+    if (e.target.id === "fabrictype") {
+      const fabrictype = e.target.value;
+      await bindFabricColours(DESIGNID, fabrictype);
+    }
+  });
+  el.addEventListener("input", (e) => {
+    e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "notes") {
+      let maxLength = 1000;
+      let currentLength = e.target.value.length;
+      document.querySelector("#notescount").textContent =
+        `${currentLength}/${maxLength}`;
+    }
+  });
+});
+
+document.querySelectorAll(".btn-information").forEach((el) => {
+  el.addEventListener("click", async (e) => {
+    const id = e.currentTarget.id;
+    let msg = "";
+
+    switch (id) {
+      case "btnInfoQty":
+        msg =
+          "Please pay attention to the quantity you want to order, because the quantity you enter will be processed automatically.";
+        break;
+      case "btnInfoWD":
+        msg =
+          "Very long tracks are not recommended. Butting shorter tracks will work more effectively.";
+        break;
+      case "btnInfoSlatQty":
+        msg = "If left blank, the system will calculate it.";
+        break;
+      case "btnInfoCustomLength":
+        msg =
+          "Custom wand length is available in white color only with maximum length 3000mm.";
+        break;
+    }
+
+    if (msg) {
+      isInfo(msg);
+    }
+  });
+});
+
+document.querySelector("#btnSubmit").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+
+  // handlerSubmit(e.target.form, e.target.id);
+  handlerSubmit(e.target.id);
+});
+
+document.querySelector("#btnCancel").addEventListener("click", (e) => {
+  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+});
+// ==============================================================FUNCTIONS======================================================================
 // ----------------------------------------------------------- || Binding Funtions ||------------------------------------------------------------
 const bindDesigns = async (designid) => {
   try {
@@ -133,7 +215,425 @@ const bindBlinds = async () => {
     isError(msg);
   }
 };
-// ==============================================================FUNCTIONS======================================================================
+
+const bindControls = async (designid, blindid) => {
+  const select = document.getElementById("controltype");
+  select.innerHTML = "";
+
+  if (!designid || !blindid) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindControlType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ designid, blindid }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindControls");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+        // const blind = document.getElementById("blindtype");
+        // const blindtype = blind.value;
+        // const blindname = blind.selectedOptions[0].dataset.name;
+        // const tubetype = document.getElementById("tubetype").value;
+        // const controltype = select.value;
+        // await bindFabrics(designid);
+        // await Promise.all([
+        //   bindSlatSize(),
+        //   bindTrackColour(tubetype),
+        //   bindStackPosition(),
+        //   bindChains(),
+        //   bindWandLength(),
+        //   bindBracketType(),
+        //   bindBracketColour(tubetype),
+        //   bindHanger(blindname, tubetype),
+        //   bindBottom(),
+        // ]);
+        // await handlerElementVisibility(blindtype, tubetype, controltype);
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const bindFabrics = async (designid) => {
+  const select = document.getElementById("fabrictype");
+  document.getElementById("fabriccolour").innerHTML = "";
+  select.innerHTML = "";
+
+  if (!designid) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindFabricType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        designid,
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindFabrics");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const bindFabricColours = async (designid, fabrictype) => {
+  const select = document.getElementById("fabriccolour");
+  select.innerHTML = "";
+
+  if (!designid || !fabrictype) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindFabricColour`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        designid,
+        fabrictype,
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindFabricLength");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const bindRailColour = () => {
+  const sel = document.getElementById("railcolour");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "Black", text: "Black" },
+    { value: "Ivory", text: "Ivory" },
+    { value: "Silver", text: "Silver" },
+    { value: "White", text: "White" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindChainColour = (controltype) => {
+  const sel = document.getElementById("chaincolour");
+  sel.innerHTML = ""; //reset
+
+  if (!controltype) return;
+
+  let data = [];
+  data.push(
+    { value: "Black", text: "Black" },
+    { value: "Ivory", text: "Ivory" },
+    { value: "Silver", text: "Silver" },
+    { value: "White", text: "White" },
+  );
+
+  if (controltype === "Chain") {
+    data.push({ value: "Stainless Steel", text: "Stainless Steel" });
+  }
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+// ----------------------------------------------------------- || Handler Funtions ||------------------------------------------------------------
+const handlerElementVisibility = async (blindtype, controltype, item) => {
+  try {
+    const lblItemId = document.getElementById("lblItemId");
+    const divControlType = document.getElementById("divControlType");
+
+    const divFormDetail = document.getElementById("divFormDetail");
+    const divMounting = document.getElementById("divMounting");
+    const divWidth = document.getElementById("divWidth");
+    const divDrop = document.getElementById("divDrop");
+    const divFabric = document.getElementById("divFabric");
+    const divRailColour = document.getElementById("divRailColour");
+    const divControlPosition = document.getElementById("divControlPosition");
+    const lblChain = document.getElementById("lblChain");
+    const divChain = document.getElementById("divChain");
+    const divSide = document.getElementById("divSide");
+    const divMarkUp = document.getElementById("divMarkUp");
+
+    const btnSubmit = document.querySelector("#btnSubmit");
+
+    divControlType.classList.add("d-none");
+
+    divFormDetail.classList.add("d-none");
+    // divMounting.classList.add("d-none");
+    // divWidth.classList.add("d-none");
+    // divDrop.classList.add("d-none");
+    // divInfoWD.classList.add("d-none");
+    // divFabric.classList.add("d-none");
+    // divRailColour.classList.add("d-none");
+    // divControlPosition.classList.add("d-none");
+    lblChain.innerHTML = "chain colour x length";
+    // divChain.classList.add("d-none");
+    // divSide.classList.add("d-none");
+    divMarkUp.classList.add("d-none");
+    btnSubmit.classList.add("d-none");
+
+    if (!blindtype) return;
+    divControlType.classList.remove("d-none");
+
+    if (!controltype) return;
+    const controlname = await getItemData(
+      `SELECT ControlType FROM HardwareKits WHERE Id = '${controltype}'`,
+    );
+
+    divFormDetail.classList.remove("d-none");
+
+    if (controlname == "Cord") {
+      lblChain.innerHTML = "cord colour x length";
+    }
+
+    if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
+
+    if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
+      btnSubmit.classList.remove("d-none");
+    } else if (ITEMACTION === "ViewItem") {
+      btnSubmit.classList.remove("d-none");
+      if (ROLENAME !== "Administrator") btnSubmit.classList.add("d-none");
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  }
+};
+
+const handlerSubmit = async (button) => {
+  try {
+    // return alert(button);
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = [
+      "blindtype",
+      "controltype",
+      "qty",
+      "room",
+      "mounting",
+      "width",
+      "drop",
+      "fabrictype",
+      "fabriccolour",
+      "railcolour",
+      "controlposition",
+      "chaincolour",
+      "chainlength",
+      "side",
+      "notes",
+      "markup",
+    ];
+
+    const formData = {
+      headerid: HEADERID,
+      itemaction: ITEMACTION,
+      itemid: ITEMID,
+      designid: DESIGNID,
+      loginid: LOGINID,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.getElementById(field).value;
+    });
+
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/Submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success);
+      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Submit";
+  }
+};
+
 // ----------------------------------------------------------- || Other Funtions ||------------------------------------------------------------
 const lumenPageLoaded = async () => {
   if (!HEADERID) {
@@ -162,7 +662,7 @@ const lumenPageLoaded = async () => {
 
   if (ITEMACTION === "AddItem") {
     await bindBlinds(DESIGNID);
-    // await handlerElementVisibility();
+    await handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
     // await bindItemOrders(ITEMID);

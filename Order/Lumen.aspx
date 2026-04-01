@@ -93,8 +93,8 @@
                                         <div class="col-lg-4">
                                             <select name="mounting" id="mounting" class="form-select">
                                                 <option value=""></option>
-                                                <option value="Face Fit">FACE FIT</option>
-                                                <option value="Reveal Fit">REVEAL FIT</option>
+                                                <option value="Inside">INSIDE</option>
+                                                <option value="Outside">OUTSIDE</option>
                                             </select>
                                         </div>  
                                     </div>
@@ -145,7 +145,6 @@
                                                 <option value=""></option>
                                                 <option value="Left">LEFT</option>
                                                 <option value="Right">RIGHT</option>
-                                                <option value="Twin Wand">TWIN WAND</option>
                                             </select>
                                         </div>  
                                     </div>
