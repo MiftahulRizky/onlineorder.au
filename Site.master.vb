@@ -114,6 +114,7 @@ Partial Public Class SiteMaster
 
             liSales.Visible = False '#shutter
             liReport.Visible = False '#shutter
+            liCalendar.Visible = False
 
             liStatistic.Visible = False
             liTutorial.Visible = False
@@ -176,6 +177,7 @@ Partial Public Class SiteMaster
 
                 liShipment.Visible = True '#shutter
                 liReport.Visible = True '#shutter
+                liCalendar.Visible = True
                 
                 liSetting.Visible = True
 
@@ -220,6 +222,7 @@ Partial Public Class SiteMaster
                 liOrder.Visible = True
                 liShipment.Visible = True
                 liReport.Visible = True
+                liCalendar.Visible = True
 
                 liSetting.Visible = True
 
@@ -235,6 +238,7 @@ Partial Public Class SiteMaster
             If Session("RoleName") = "Data Entry" Then
                 liOrder.Visible = True
                 liReport.Visible = True
+                liCalendar.Visible = True
             End If
 
             If Session("RoleName") = "Representative" Then
@@ -251,6 +255,7 @@ Partial Public Class SiteMaster
             If Session("RoleName") = "PPIC & DE" Or Session("RoleName") = "Manager" Then
                 liOrder.Visible = True
                 liReport.Visible = True
+                liCalendar.Visible = True
             End If
 
             If Session("RoleName") = "Customer" Then
@@ -264,6 +269,7 @@ Partial Public Class SiteMaster
                 liOrder.Visible = True
                 liSales.Visible = True
                 liReport.Visible = True
+                liCalendar.Visible = True
             End If
         Catch ex As Exception
             publicCfg.MailError(Session("UserId"), Page.Title, "BindListNavigation", ex.ToString())

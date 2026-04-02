@@ -56,7 +56,7 @@ Partial Class Methods_Order_LumenMethod
     End Class
 
 
-     <WebMethod()>
+    <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function GetItemData(ByVal query As String) As Object
         Try
