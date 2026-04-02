@@ -2037,7 +2037,7 @@ Partial Class Methods_Order_DetailMethod
 
             If Not DesignName = "Roller Blinds" Then
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetailsPrice SELECT	NEWID(), HeaderId, @ItemIdNew, Type, Qty, Description, RealCost, Cost, Discount, Poa, RealFinalCost,FinalCost FROM OrderDetailsPrice WHERE ItemId=@ItemId", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetailsPrice SELECT	NEWID(), HeaderId, @ItemIdNew, Type, Qty, Description, Cost, Discount, DiscountB, DiscountC, Poa FROM OrderDetailsPrice WHERE ItemId=@ItemId", thisConn)
                         myCmd.Parameters.AddWithValue("@ItemId", id)
                         myCmd.Parameters.AddWithValue("@ItemIdNew", NewItemId)
                         myCmd.Connection = thisConn
