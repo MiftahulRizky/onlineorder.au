@@ -16,7 +16,7 @@ window.addEventListener("DOMContentLoaded", function () {
     console.log("REPRINT: " + REPRINT);
     console.log("URIMETHOD: " + URIMETHOD);
   }
-  checkSessionDetail();
+  detailPageLoaded();
 });
 // ==================================================EVENTS==================================================
 // ------------------------------------------||Card 1 Event ||-------------------------------------------
@@ -2782,7 +2782,7 @@ const bindProduction = async (designname) => {
 
 // --------------------------------------------||Other Function ||-------------------------------------------
 // CHECK SESSION
-const checkSessionDetail = () => {
+const detailPageLoaded = () => {
   if (!ULTRON || !ORDERTYPE) window.location.href = "/order";
 
   if (CUSTOMERID == "LS-A224") window.location.href = "/order"; // JPM Direct

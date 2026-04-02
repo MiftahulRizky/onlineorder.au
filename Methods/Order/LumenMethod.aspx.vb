@@ -163,6 +163,33 @@ Partial Class Methods_Order_LumenMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindItemOrder(ByVal itemid As String) As Object
+        Try
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE Id = '{0}'", itemid))
+
+            Dim data As DataSet = DirectCast(datas, DataSet)
+
+            Dim resultList As New List(Of Dictionary(Of String, String))()
+
+            If data IsNot Nothing AndAlso data.Tables.Count > 0 Then
+                For Each row As DataRow In data.Tables(0).Rows
+                    Dim dict As New Dictionary(Of String, String)()
+                    For Each col As DataColumn In data.Tables(0).Columns
+                        dict(col.ColumnName) = row(col).ToString()
+                    Next
+                    resultList.Add(dict)
+                Next
+            End If
+
+            Return resultList
+        Catch ex As Exception
+            ' Tangani error agar bisa dikenali di JavaScript
+            Return New With {.error = True, .message = ex.Message}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Submit(ByVal data As ParamSubmit) As Object
         Try
             Dim msg As String = "200"
@@ -210,12 +237,215 @@ Partial Class Methods_Order_LumenMethod
             If drop < 600 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be greater than or equal to 600 !",.field = "drop"}}
             End If
-            If drop > 3200 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3200 !",.field = "drop"}}
+            ' If drop > 3200 Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3200 !",.field = "drop"}}
+            ' End If
+
+            If String.IsNullOrEmpty(data.fabrictype) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
             End If
-            
+        
+            If String.IsNullOrEmpty(data.fabriccolour) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
+            End If
+
+            If data.fabrictype = "Sonatine Fresh" Then
+                If drop > 2700 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 2700 !",.field = "drop"}}
+                End If
+            Else
+                If drop > 2600 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 2600 !",.field = "drop"}}
+                End If
+            End IF
+
+            If String.IsNullOrEmpty(data.railcolour) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "rail colour is required !", .field = "railcolour"}}
+            End If
+
+            If String.IsNullOrEmpty(data.controlposition) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "control position is required !", .field = "controlposition"}}
+            End If
+
+            Dim ControlType As String = publicCfg.GetItemData(String.Format("SELECT ControlType FROM HardwareKits WHERE Id = '{0}'", data.controltype))
+            If String.IsNullOrEmpty(data.chaincolour) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = String.Format("{0} colour is required !", controltype), .field = "chaincolour"}}
+            End If
+            If ControlType = "Cord" Then
+                If String.IsNullOrEmpty(data.chainlength) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "cord length is required !", .field = "chainlength"}}
+                End If
+            End If
+
+            If Not String.IsNullOrEmpty(data.notes) Then
+                If InStr(data.notes, "&") > 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must not contain [&] character !",.field = "notes"}}
+                End If
+
+                If data.notes.Trim().Length > 1000 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must be less than 1000 characters !",.field = "notes"}}
+                End If
+            End If
+
+            Dim markup As Integer
+            If Not String.IsNullOrEmpty(data.markup) Then
+                If Not Integer.TryParse(data.markup, markup) OrElse markup < 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check your markup !",.field = "markup"}}
+                End If
+            End If
 
 
+            If String.IsNullOrEmpty(data.markup) Then
+                data.markup = "0"
+            End If
+
+            Dim SoeId As String = publicCfg.GetSoeKitId(data.controltype)
+            Dim DesignName As String = publicCfg.GetDesignName(data.designid)
+            Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
+            Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
+
+            Dim FabricGroup As String = publicCfg.GetFabricGroup(data.fabriccolour)
+            Dim PriceGroupName As String = String.Format("{0} - {1}", BlindName, FabricGroup)
+
+            Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
+            If PriceGroupId = "" Then
+                Throw New Exception("Something went wrong !")
+            End If
+
+            Dim ChainId As String = ""
+            Dim CLength As String = data.chainlength
+            If ControlType = "Chain" Then
+                Dim ChainColour As String = String.format("({0})", data.chaincolour)
+
+                If String.IsNullOrEmpty(data.chainlength) Or data.chainlength = "0" Then
+                    If drop >= 3000 Then
+                        CLength = "2200"
+                    ElseIf drop >= 2700 Then
+                        CLength = "2000"
+                    ElseIf drop >= 2400 Then
+                        CLength = "1800"
+                    ElseIf drop >= 2000 Then
+                        CLength = "1500"
+                    ElseIf drop >= 1600 Then
+                        CLength = "1250"
+                    ElseIf drop >= 1300 Then
+                        CLength = "1000"
+                    ElseIf drop >= 1100 Then
+                        CLength = "800"
+                    ElseIf drop >= 800 Then
+                        CLength = "600"
+                    Else
+                        CLength = "500"
+                    End If
+                End If
+
+
+                Dim ChainName As String = String.Format("{0} Chain + Joiner {1}", CLength, ChainColour)
+                Dim FormulaChain As String = publicCfg.GetItemData(String.Format("SELECT Id FROM Chains WHERE Name = '{0}'", ChainName))
+
+                IF Not FormulaChain = "" Then
+                    ChainId = FormulaChain
+                End If
+                If FormulaChain = "" Then
+                    ChainName = String.Format("Custom Chain + Joiner {0}", ChainColour)
+                    ChainId = publicCfg.GetItemData("SELECT Id FROM Chains WHERE Name = '" + ChainName + "'")
+                End If
+
+            End If
+
+
+            ' Throw New Exception(CLength)
+
+            If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
+                Dim ItemId As String = publicCfg.CreateOrderItemId()
+
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], SwipelColour, ControlPosition, ChainLength, CordColour, CordLength, SideBySide, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @SwipelColour, @ControlPosition, @ChainLength, @CordColour, @CordLength, @SideBySide, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                        myCmd.Parameters.AddWithValue("@Id", ItemId)
+                        myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
+                        myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
+                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
+                        myCmd.Parameters.AddWithValue("@SoeKitId", SoeId)
+                        myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
+                        myCmd.Parameters.AddWithValue("@FabricId", UCase(data.fabriccolour).ToString())
+                        myCmd.Parameters.AddWithValue("@ChainId", If(String.IsNullOrEmpty(ChainId), DBNull.Value, ChainId))
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", PriceGroupId)
+                        myCmd.Parameters.AddWithValue("@Qty", qty)
+                        myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
+                        myCmd.Parameters.AddWithValue("@Width", width)
+                        myCmd.Parameters.AddWithValue("@Drop", drop)
+                        myCmd.Parameters.AddWithValue("@SwipelColour", data.railcolour)
+                        myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
+                        myCmd.Parameters.AddWithValue("@ChainLength", CLength)
+                        myCmd.Parameters.AddWithValue("@CordColour", data.chaincolour)
+                        myCmd.Parameters.AddWithValue("@CordLength", data.chainlength)
+                        myCmd.Parameters.AddWithValue("@SideBySide", data.side)
+                        myCmd.Parameters.AddWithValue("@Notes", data.notes)
+                        myCmd.Parameters.AddWithValue("@MarkUp", markup)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+
+                publicCfg.ResetPriceDetail(ItemId)
+                publicCfg.HitungHarga(data.headerid, ItemId)
+                publicCfg.HitungSurcharge(data.headerid, ItemId)
+
+                Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Add Item Order"}
+                orderCfg.Log_Orders(dataLog)
+
+                msg = "Item added successfully !"
+            End If
+
+
+            If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
+                Dim ItemId As String = data.itemid
+
+
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, SwipelColour=@SwipelColour, ControlPosition=@ControlPosition, ChainLength=@ChainLength, CordColour=@CordColour, CordLength=@CordLength, SideBySide=@SideBySide, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
+                        myCmd.Parameters.AddWithValue("@Id", ItemId)
+                        myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
+                        myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
+                        myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
+                        myCmd.Parameters.AddWithValue("@SoeKitId", SoeId)
+                        myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
+                        myCmd.Parameters.AddWithValue("@FabricId", UCase(data.fabriccolour).ToString())
+                        myCmd.Parameters.AddWithValue("@ChainId", If(String.IsNullOrEmpty(ChainId), DBNull.Value, ChainId))
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", PriceGroupId)
+                        myCmd.Parameters.AddWithValue("@Qty", qty)
+                        myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
+                        myCmd.Parameters.AddWithValue("@Width", width)
+                        myCmd.Parameters.AddWithValue("@Drop", drop)
+                        myCmd.Parameters.AddWithValue("@SwipelColour", data.railcolour)
+                        myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
+                        myCmd.Parameters.AddWithValue("@ChainLength", CLength)
+                        myCmd.Parameters.AddWithValue("@CordColour", data.chaincolour)
+                        myCmd.Parameters.AddWithValue("@CordLength", data.chainlength)
+                        myCmd.Parameters.AddWithValue("@SideBySide", data.side)
+                        myCmd.Parameters.AddWithValue("@Notes", data.notes)
+                        myCmd.Parameters.AddWithValue("@MarkUp", markup)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+
+                publicCfg.ResetPriceDetail(ItemId)
+                publicCfg.HitungHarga(data.headerid, ItemId)
+                publicCfg.HitungSurcharge(data.headerid, ItemId)
+
+                Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Update Item Order"}
+                orderCfg.Log_Orders(dataLog)
+
+
+                msg = "Item updated successfully !"
+            End If
 
             Return New SuccessResponse With {.success = msg}
         Catch ex As Exception
