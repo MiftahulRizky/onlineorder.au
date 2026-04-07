@@ -134,6 +134,13 @@
                                         </div>
                                     </div>
 
+                                    <div class="mb-3 row" id="divFrameColour">
+                                        <label for="framecolour" class="col-lg-3 text-uppercase fw-bold" >frame colour</label>
+                                        <div class="col-lg-4">
+                                            <select name="framecolour" id="framecolour" class="form-select"></select>
+                                        </div>  
+                                    </div>
+                                    
                                     <div class="mb-3 row" id="divMesh">
                                         <label for="meshtype" class="col-lg-3 text-uppercase fw-bold" >mesh type</label>
                                         <div class="col-lg-4">
@@ -141,12 +148,6 @@
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divFrameColour">
-                                        <label for="framecolour" class="col-lg-3 text-uppercase fw-bold" >frame colour</label>
-                                        <div class="col-lg-4">
-                                            <select name="framecolour" id="framecolour" class="form-select"></select>
-                                        </div>  
-                                    </div>
 
                                     <div class="mb-3 row" id="divLayoutCode">
                                         <label for="layoutcode" class="col-lg-3 text-uppercase fw-bold" >layout</label>

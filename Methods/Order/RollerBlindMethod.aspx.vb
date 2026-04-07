@@ -1050,18 +1050,18 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
                 End If
 
-                ' If Not String.IsNullOrEmpty(data.chainlength) Then
-                '     CLength  = "500"
-                '     If data.chainlength > 500 Then : CLength = "600" : End If
-                '     If data.chainlength > 600 Then : CLength = "800" : End If
-                '     If data.chainlength > 800 Then : CLength = "1000" : End If
-                '     If data.chainlength > 1000 Then : CLength = "1250" : End If
-                '     If data.chainlength > 1250 Then : CLength = "1500" : End If
-                '     If data.chainlength > 1500 Then : CLength = "1800" : End If
-                '     If data.chainlength > 1800 Then : CLength = "2000" : End If
-                '     If data.chainlength > 2000 Then : CLength = "2200" : End If
-                '     If data.chainlength > 2200 Then : CLength = "2500" : End If
-                ' End If
+                If Not String.IsNullOrEmpty(data.chainlength) Then
+                    CLength  = "500"
+                    If data.chainlength > 500 Then : CLength = "600" : End If
+                    If data.chainlength > 600 Then : CLength = "800" : End If
+                    If data.chainlength > 800 Then : CLength = "1000" : End If
+                    If data.chainlength > 1000 Then : CLength = "1250" : End If
+                    If data.chainlength > 1250 Then : CLength = "1500" : End If
+                    If data.chainlength > 1500 Then : CLength = "1800" : End If
+                    If data.chainlength > 1800 Then : CLength = "2000" : End If
+                    If data.chainlength > 2000 Then : CLength = "2200" : End If
+                    If data.chainlength > 2200 Then : CLength = "2500" : End If
+                End If
 
                 Dim ChainName As String = String.Format("{0} Chain + Joiner {1}", CLength, ChainColour)
                 ChainId = publicCfg.GetItemData(String.Format("SELECT Id FROM Chains WHERE Name = '{0}'", ChainName))

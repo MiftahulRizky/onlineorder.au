@@ -65,7 +65,7 @@ Partial Class Methods_Order_DoorMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindTubeType(ByVal designid As String, ByVal blindid As String) As Object
         Try
-            Dim MyQuery As String = String.Format("SELECT * FROM HardwareKits WHERE DesignId='{0}' AND BlindId = '{1}' ORDER BY Name ASC", designid, UCase(blindid).ToString())
+            Dim MyQuery As String = String.Format("SELECT * FROM HardwareKits WHERE DesignId='{0}' AND BlindId = '{1}' AND Active=1 ORDER BY Name ASC", designid, UCase(blindid).ToString())
             Dim datas As DataSet = publicCfg.GetListData(MyQuery)
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then

@@ -988,7 +988,7 @@ const bindItemOrders = async (itemid) => {
         bindStackPosition(),
         bindChains(),
         bindWandLength(),
-        bindWandColour(item.WandLength),
+        bindWandColour(item.TubeType, item.WandLength),
         bindBracketType(),
         bindBracketColour(item.TubeType),
         bindHanger(item.BlindName, item.TubeType),

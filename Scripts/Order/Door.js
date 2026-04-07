@@ -19,8 +19,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     if (e.target.id === "blindtype") {
       const blindtype = e.target.value;
-      await bindTubes(DESIGNID, blindtype);
       await handlerElementVisibility(blindtype);
+      await bindTubes(DESIGNID, blindtype);
     }
 
     if (e.target.id === "tubetype") {
@@ -218,8 +218,9 @@ const bindTubes = async (designid, blindid) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
+        const tubetype = select.value;
         await Promise.all([bindMounting()]);
-        await handlerElementVisibility(blindid, select.value);
+        await handlerElementVisibility(blindid, tubetype);
       }
     }
   } catch (err) {
@@ -235,8 +236,6 @@ const bindMounting = () => {
   const sel = document.getElementById("mounting");
   sel.innerHTML = ""; //reset
 
-  if (!tubetype) return;
-
   let data = [];
   data.push(
     { value: "In", text: "In" },
@@ -244,6 +243,50 @@ const bindMounting = () => {
     { value: "Make Size", text: "Make Size" },
     { value: "Inswing", text: "Inswing" },
     { value: "Opening Size", text: "Opening Size" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindFrameColour = (blindname) => {
+  const sel = document.getElementById("framecolour");
+  sel.innerHTML = ""; //reset
+
+  if (!blindname) return;
+
+  let data = [];
+  data.push(
+    { value: "Bronze", text: "Bronze" },
+    { value: "Apo Grey", text: "Apo Grey" },
+    { value: "Black", text: "Black" },
+    { value: "Bronze Anodized", text: "Bronze Anodized" },
+    { value: "Brown", text: "Brown" },
+    { value: "Charcoal", text: "Charcoal" },
+    { value: "Claret", text: "Claret" },
+    { value: "Deep Ocean", text: "Deep Ocean" },
+    { value: "Dune", text: "Dune" },
+    { value: "Hawthorne Green", text: "Hawthorne Green" },
+    { value: "Jasper", text: "Jasper" },
+    { value: "Monument", text: "Monument" },
+    { value: "Notre Dame", text: "Notre Dame" },
+    { value: "Primrose", text: "Primrose" },
+    { value: "Silver", text: "Silver" },
+    { value: "Surf Mist", text: "Surf Mist" },
+    { value: "White", text: "White" },
+    { value: "Woodland Grey", text: "Woodland Grey" },
   );
 
   if (data.length > 1) {
@@ -285,7 +328,6 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     divTubeType.classList.remove("d-none");
 
     if (!tubetype) return;
-
     divFormDetail.classList.remove("d-none");
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
