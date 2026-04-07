@@ -13,6 +13,36 @@
 });
 
 // ==================================================EVENTS==================================================
+document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+  el.addEventListener("change", async (e) => {
+    e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "blindtype") {
+      const blindtype = e.target.value;
+      await bindTubes(DESIGNID, blindtype);
+      await handlerElementVisibility(blindtype);
+    }
+
+    if (e.target.id === "tubetype") {
+      const blind = document.getElementById("blindtype");
+      const blindtype = blind.value;
+      const blindname = blind.selectedOptions[0].dataset.name;
+      const tubetype = e.target.value;
+      await Promise.all([bindMounting()]);
+      await handlerElementVisibility(blindtype, tubetype);
+    }
+  });
+  el.addEventListener("input", (e) => {
+    e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "notes") {
+      let maxLength = 1000;
+      let currentLength = e.target.value.length;
+      document.querySelector("#notescount").textContent =
+        `${currentLength}/${maxLength}`;
+    }
+  });
+});
 // =================================================FUNCTIONS================================================
 // ----------------------------------------------|| Binding Functions ||---------------------------------------
 const bindDesigns = async (designid) => {
@@ -135,6 +165,145 @@ const bindBlinds = async () => {
     isError(msg);
   }
 };
+
+const bindTubes = async (designid, blindid) => {
+  const select = document.getElementById("tubetype");
+  select.innerHTML = "";
+
+  if (!designid || !blindid) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindTubeType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ designid, blindid }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindTubes");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+        await Promise.all([bindMounting()]);
+        await handlerElementVisibility(blindid, select.value);
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const bindMounting = () => {
+  const sel = document.getElementById("mounting");
+  sel.innerHTML = ""; //reset
+
+  if (!tubetype) return;
+
+  let data = [];
+  data.push(
+    { value: "In", text: "In" },
+    { value: "Out", text: "Out" },
+    { value: "Make Size", text: "Make Size" },
+    { value: "Inswing", text: "Inswing" },
+    { value: "Opening Size", text: "Opening Size" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+// ----------------------------------------------|| Other Functions ||---------------------------------------
+const handlerElementVisibility = async (blindtype, tubetype, item) => {
+  try {
+    const lblItemId = document.getElementById("lblItemId");
+    const divTubeType = document.getElementById("divTubeType");
+
+    const divFormDetail = document.getElementById("divFormDetail");
+    const divMounting = document.getElementById("divMounting");
+
+    const divMarkUp = document.getElementById("divMarkUp");
+
+    const btnSubmit = document.querySelector("#btnSubmit");
+    // return;
+    divTubeType.classList.add("d-none");
+
+    divFormDetail.classList.add("d-none");
+
+    divMarkUp.classList.add("d-none");
+    btnSubmit.classList.add("d-none");
+
+    if (!blindtype) return;
+    divTubeType.classList.remove("d-none");
+
+    if (!tubetype) return;
+
+    divFormDetail.classList.remove("d-none");
+
+    if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
+
+    if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
+      btnSubmit.classList.remove("d-none");
+    } else if (ITEMACTION === "ViewItem") {
+      btnSubmit.classList.remove("d-none");
+      if (ROLENAME !== "Administrator") btnSubmit.classList.add("d-none");
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  }
+};
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const doorPageLoaded = async () => {
   if (!HEADERID) {
@@ -163,7 +332,7 @@ const doorPageLoaded = async () => {
 
   if (ITEMACTION === "AddItem") {
     await bindBlinds(DESIGNID);
-    // handlerElementVisibility();
+    await handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
     // await bindItemOrders(ITEMID);

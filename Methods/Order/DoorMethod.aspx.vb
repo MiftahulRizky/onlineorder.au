@@ -61,4 +61,27 @@ Partial Class Methods_Order_DoorMethod
         End Try
     End Function
 
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindTubeType(ByVal designid As String, ByVal blindid As String) As Object
+        Try
+            Dim MyQuery As String = String.Format("SELECT * FROM HardwareKits WHERE DesignId='{0}' AND BlindId = '{1}' ORDER BY Name ASC", designid, UCase(blindid).ToString())
+            Dim datas As DataSet = publicCfg.GetListData(MyQuery)
+            Dim list As New List(Of Dictionary(Of String, String))()
+            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
+                For Each row As DataRow In datas.Tables(0).Rows
+                    Dim result As New Dictionary(Of String, String) From {
+                        {"value", row("Id").ToString()},
+                        {"text", row("TubeType").ToString()}
+                    }
+                    list.Add(result)
+                Next
+            End If
+            Return list
+        Catch ex As Exception
+            ' Return sebagai objek error agar bisa ditangani di sisi client
+            Return New With {.error = ex.Message}
+        End Try
+    End Function
+
 End Class

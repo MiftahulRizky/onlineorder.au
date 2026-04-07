@@ -652,11 +652,8 @@ Partial Class Order_Venetian
                 If Session("itemAction") = "EditItem" Or Session("itemAction") = "ViewItem" Then
                     sdsPage.Update()
 
-                    Dim StatusOrder As String = publicCfg.GetItemData(String.Format("SELECT Status FROM OrderHeaders WHERE Id = '{0}'", lblHeaderId.Text))
-                    If Session("RoleName") <> "Administrator" AndAlso Session("LevelName") <> "Super Admin" AndAlso StatusOrder <> "Draft" Then
-                        Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Update Item Order"}
-                        orderCfg.Log_Orders(dataLog)
-                    End If
+                    Dim dataLog As Object() = {lblHeaderId.Text, lblItemId.Text, lblOrderType.Text, Session("LoginId"), "Update Item Order"}
+                    orderCfg.Log_Orders(dataLog)
 
                     Call SetPricing(lblItemId.Text, lblHeaderId.Text)
                     Call myCancel()

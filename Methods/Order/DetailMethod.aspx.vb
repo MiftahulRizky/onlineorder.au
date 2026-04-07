@@ -2020,14 +2020,16 @@ Partial Class Methods_Order_DetailMethod
                 NewUniqueId = GenerateUniqueId()
             End IF
 
+
             Dim OngoingField As String = "MeshType, FrameColour, Brace, AngleType, AngleLength, AngleQty, PortHole, PlungerPin, SwipelColour, SwipelQty, SwipelQtyB, SpringQty, TopPLasticQty,"
 
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand(String.Format("INSERT INTO OrderDetails SELECT @IdNew, HeaderId, KitId, SoeKitId, ExactId, FabricId, FabricIdB, ChainId, BottomRailId, PriceGroupId, PriceGroupIdB, CassetteExtraId, @UniqueId, BlindNo, Qty, Location, Mounting, Width, WidthB, WidthMiddle, WidthBottom, [Drop], DropB, DropMiddle, DropRight, SemiInsideMount, LouvreSize, LouvrePosition, HingeColour, MidrailHeight1, MidrailHeight2, MidrailCritical, Layout, LayoutSpecial, CustomHeaderLength, FrameType, FrameLeft, FrameRight, FrameTop, FrameBottom, BottomTrackType, BottomTrackRecess, Buildout, BuildoutPosition, PanelQty, TrackQty, PanelSize, NumOfPanel, HingeQtyPerPanel, PanelQtyWithHinge, LocationTPost1, LocationTPost2, LocationTPost3, LocationTPost4, LocationTPost5, HorizontalTPost, HorizontalTPostHeight, JoinedPanels, ReverseHinged, PelmetFlat, ExtraFascia, HingesLoose, TiltrodType, TiltrodSplit, SplitHeight1, SplitHeight2, DoorCutOut, SpecialShape, TemplateProvided, {0} SquareMetre, LinearMetre, StackPosition, TilterPosition, RollDirection, ControlPosition, ControlColour, ControlLength, ChainLength, MaterialChain, MotorStyle, MotorRemote, MotorRequired, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, TrackType, TrackColour, TrackLength, NumOfWand, WandPosition,  WandColour, WandLength, CordColour, CordLength, MaterialCord, AcornPlasticColour, Accessory, SideBySide, SlatSize, SlatQty, TubeSize, Trim, Batten, BattenColour,  BracketOption, BracketColour, BracketCover, BracketExtension, Fitting, FlatType, ChildSafe, Cleat, BottomHoldDown, HangerType, PelmetType, @PelmetWidth, PelmetSize, PelmetReturn, PelmetReturnPosition, PelmetReturnSize, PelmetReturnSize2, CutOut_LeftTop, CutOut_RightTop, CutOut_LeftBottom, CutOut_RightBottom, LHSWidth_Top, LHSHeight_Top, RHSWidth_Top, RHSHeight_Top, LHSWidth_Bottom, LHSHeight_Bottom, RHSWidth_Bottom, RHSHeight_Bottom, BlindSize, Sloper, InsertInTrack, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active FROM OrderDetails WHERE Id=@Id", OngoingField), thisConn)
+                Using myCmd As New SqlCommand(String.Format("INSERT INTO OrderDetails SELECT @IdNew, HeaderId, KitId, SoeKitId, ExactId, FabricId, FabricIdB, ChainId, BottomRailId, PriceGroupId, PriceGroupIdB, CassetteExtraId, @UniqueId, BlindNo, Qty, Location, Mounting, Width, WidthB, WidthMiddle, WidthBottom, [Drop], DropB, DropMiddle, DropRight, SemiInsideMount, LouvreSize, LouvrePosition, HingeColour, MidrailHeight1, MidrailHeight2, MidrailCritical, Layout, LayoutSpecial, CustomHeaderLength, FrameType, FrameLeft, FrameRight, FrameTop, FrameBottom, BottomTrackType, BottomTrackRecess, Buildout, BuildoutPosition, PanelQty, TrackQty, PanelSize, NumOfPanel, HingeQtyPerPanel, PanelQtyWithHinge, LocationTPost1, LocationTPost2, LocationTPost3, LocationTPost4, LocationTPost5, HorizontalTPost, HorizontalTPostHeight, JoinedPanels, ReverseHinged, PelmetFlat, ExtraFascia, HingesLoose, TiltrodType, TiltrodSplit, SplitHeight1, SplitHeight2, DoorCutOut, SpecialShape, TemplateProvided, {0} SquareMetre, LinearMetre, StackPosition, TilterPosition, RollDirection, ControlPosition, ControlColour, @ControlLength, ChainLength, MaterialChain, MotorStyle, MotorRemote, MotorRequired, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, TrackType, TrackColour, TrackLength, NumOfWand, WandPosition,  WandColour, WandLength, CordColour, CordLength, MaterialCord, AcornPlasticColour, Accessory, SideBySide, SlatSize, SlatQty, TubeSize, Trim, Batten, BattenColour,  BracketOption, BracketColour, BracketCover, BracketExtension, Fitting, FlatType, ChildSafe, Cleat, BottomHoldDown, HangerType, PelmetType, @PelmetWidth, PelmetSize, PelmetReturn, PelmetReturnPosition, PelmetReturnSize, PelmetReturnSize2, CutOut_LeftTop, CutOut_RightTop, CutOut_LeftBottom, CutOut_RightBottom, LHSWidth_Top, LHSHeight_Top, RHSWidth_Top, RHSHeight_Top, LHSWidth_Bottom, LHSHeight_Bottom, RHSWidth_Bottom, RHSHeight_Bottom, BlindSize, Sloper, InsertInTrack, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active FROM OrderDetails WHERE Id=@Id", OngoingField), thisConn)
                     myCmd.Parameters.AddWithValue("@Id", id)
                     myCmd.Parameters.AddWithValue("@IdNew", NewItemId)
                     myCmd.Parameters.AddWithValue("@UniqueId", NewUniqueId)
                     myCmd.Parameters.AddWithValue("@PelmetWidth", DBNull.Value)
+                    myCmd.Parameters.AddWithValue("@ControlLength", DBNull.Value)
                     myCmd.Connection = thisConn
                     thisConn.Open()
                     myCmd.ExecuteNonQuery()
@@ -3146,7 +3148,7 @@ Partial Class Methods_Order_DetailMethod
         Try
             Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName ='Venetian Blinds' AND Active=1 ORDER BY Id, BlindNo ASC")
             If Not thisData.Tables(0).Rows.Count = 0 Then
-                Dim tdNotes As String = "<td colspan='24' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
+                Dim tdNotes As String = "<td colspan='25' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
                 result += spanStart & "VENETIAN BLINDS" & spanEnd
                 result += tableStart
 
@@ -3159,6 +3161,7 @@ Partial Class Methods_Order_DetailMethod
                 result += thStartRowSpan2 & "Mounting" & thEnd
                 result += thStartRowSpan2 & "Width" & thEnd
                 result += thStartRowSpan2 & "Drop" & thEnd
+                result += thStartRowSpan2 & "Bracket" & thEnd
                 result += thStartRowSpan2 & "Bottom" & thEnd
                 result += thStartColSpan2 & "Control" & thEnd
                 result += thStartColSpan3 & "Pelmet" & thEnd
@@ -3239,6 +3242,7 @@ Partial Class Methods_Order_DetailMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BracketOption").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
                     result += tdStart & CPosition & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ControlLength").ToString() & tdEnd

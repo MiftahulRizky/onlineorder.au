@@ -191,7 +191,7 @@
                                         </div>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
                                             <select name="petdorposition" id="petdorposition" class="form-select"></select>
-                                            <small class="form-hint">* Type</small>
+                                            <small class="form-hint">* Posotion</small>
                                         </div>
                                     </div>
 

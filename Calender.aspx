@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Calender" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="Calender.aspx.vb" Inherits="Calender" %>
+﻿<%@ Page Title="Calendar" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="Calender.aspx.vb" Inherits="Calender" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
 
@@ -7,9 +7,9 @@
             <div class="row g-2 align-items-center">
                 <div class="col">
                     <div class="page-pretitle">
-                    <span id="pageAction">Summary</span>
+                    <span id="pageAction">Notes</span>
                     </div>
-                    <h2 class="page-title" id="pageTitle">Callender</h2>
+                    <h2 class="page-title" id="pageTitle">Calendar</h2>
                 </div>
             </div>
         </div>
