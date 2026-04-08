@@ -134,13 +134,20 @@
                                         </div>
                                     </div>
 
+                                    <div class="mb-3 row" id="divFrameType">
+                                        <label for="frametype" class="col-lg-3 text-uppercase fw-bold" >frame type</label>
+                                        <div class="col-lg-4">
+                                            <select name="frametype" id="frametype" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
                                     <div class="mb-3 row" id="divFrameColour">
                                         <label for="framecolour" class="col-lg-3 text-uppercase fw-bold" >frame colour</label>
                                         <div class="col-lg-4">
                                             <select name="framecolour" id="framecolour" class="form-select"></select>
                                         </div>  
                                     </div>
-                                    
+
                                     <div class="mb-3 row" id="divMesh">
                                         <label for="meshtype" class="col-lg-3 text-uppercase fw-bold" >mesh type</label>
                                         <div class="col-lg-4">
@@ -157,9 +164,9 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divHandle">
-                                        <label for="handlepostion" class="col-lg-3 text-uppercase fw-bold">handle</label>
+                                        <label for="handleposition" class="col-lg-3 text-uppercase fw-bold">handle</label>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="handlepostion" id="handlepostion" class="form-select"></select>
+                                            <select name="handleposition" id="handleposition" class="form-select"></select>
                                             <small class="form-hint">* Position</small>
                                         </div>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
@@ -173,9 +180,9 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divMidrail">
-                                        <label for="midrailpostion" class="col-lg-3 text-uppercase fw-bold">midrail</label>
+                                        <label for="midrailposition" class="col-lg-3 text-uppercase fw-bold">midrail</label>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="midrailpostion" id="midrailpostion" class="form-select"></select>
+                                            <select name="midrailposition" id="midrailposition" class="form-select"></select>
                                             <small class="form-hint">* Position</small>
                                         </div>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
@@ -185,13 +192,13 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divPetDor">
-                                        <label for="petdortype" class="col-lg-3 text-uppercase fw-bold">Pet Dor</label>
+                                        <label for="petdoortype" class="col-lg-3 text-uppercase fw-bold">Pet Dor</label>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="petdortype" id="petdortype" class="form-select"></select>
+                                            <select name="petdoortype" id="petdoortype" class="form-select"></select>
                                             <small class="form-hint">* Type</small>
                                         </div>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="petdorposition" id="petdorposition" class="form-select"></select>
+                                            <select name="petdoorposition" id="petdoorposition" class="form-select"></select>
                                             <small class="form-hint">* Posotion</small>
                                         </div>
                                     </div>
@@ -227,7 +234,7 @@
                                     <div class="mb-3 row" id="divBoldPatio">
                                         <label for="boldpatio" class="col-lg-3 text-uppercase fw-bold" >bold patio lockable</label>
                                         <div class="col-lg-4">
-                                            <input type="number" min="1" name="swivelqtyb" id="swivelqtyb" class="form-control  " autocomplete="off"/>
+                                            <input type="number" min="1" name="boldpatio" id="boldpatio" class="form-control  " autocomplete="off"/>
                                         </div>  
                                     </div>
 

@@ -2915,66 +2915,30 @@ const formatDotNetDate = (value) => {
 const dropdownActionButton = (row, createdby) => {
   // HIDE BUTTON DETAIL
   let hideDetail = "";
-  if (
-    row.StatusHeader === "Draft" ||
-    row.StatusHeader === "Pending Price Approval"
-  ) {
+  let hideEdit = "hidden";
+  let hideCopy = "hidden";
+  let hideDelete = "hidden";
+  if (["Draft", "Pending Price Approval"].includes(row.StatusHeader)) {
     hideDetail = "hidden";
+    hideEdit = "";
+    hideCopy = "";
+    hideDelete = "";
     if (
-      (ROLENAME === "PPIC & DE" || ROLENAME === "Customer Service") &&
+      ["PPIC & DE", "Customer Service"].includes(ROLENAME) &&
       createdby.toUpperCase() !== LOGINID.toUpperCase()
     ) {
       hideDetail = "";
-    }
-  }
-
-  // HIDE BUTTON EDIT
-  let hideEdit = "hidden";
-  if (
-    row.StatusHeader === "Draft" ||
-    row.StatusHeader === "Pending Price Approval"
-  ) {
-    hideEdit = "";
-    if (
-      (ROLENAME === "PPIC & DE" || ROLENAME === "Customer Service") &&
-      createdby.toUpperCase() !== LOGINID.toUpperCase()
-    ) {
       hideEdit = "hidden";
+      hideCopy = "hidden";
+      hideDelete = "hidden";
+    } else if (["Manager", "Account"].includes(ROLENAME)) {
+      hideCopy = "hidden";
+      hideDelete = "hidden";
     }
   }
 
-  // HIDE BUTTON COPY
-  let hideCopy = "hidden";
-  if (
-    row.StatusHeader === "Draft" ||
-    row.StatusHeader === "Pending Price Approval"
-  ) {
-    hideCopy = "";
-    if (
-      (ROLENAME === "PPIC & DE" || ROLENAME === "Customer Service") &&
-      createdby.toUpperCase() !== LOGINID.toUpperCase()
-    ) {
-      hideCopy = "hidden";
-    } else if (ROLENAME === "Manager" || ROLENAME === "Account") {
-      hideCopy = "hidden";
-    }
-  }
-
-  // HIDE BUTTON DELETE
-  let hideDelete = "hidden";
-  if (
-    row.StatusHeader === "Draft" ||
-    row.StatusHeader === "Pending Price Approval"
-  ) {
+  if (row.DesignName == "Additional") {
     hideDelete = "";
-    if (
-      (ROLENAME === "PPIC & DE" || ROLENAME === "Customer Service") &&
-      createdby.toUpperCase() !== LOGINID.toUpperCase()
-    ) {
-      hideDelete = "hidden";
-    } else if (ROLENAME === "Manager" || ROLENAME === "Account") {
-      hideDelete = "hidden";
-    }
   }
 
   // HIDE BUTTON EDIT PRICING

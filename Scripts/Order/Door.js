@@ -28,7 +28,21 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindtype = blind.value;
       const blindname = blind.selectedOptions[0].dataset.name;
       const tubetype = e.target.value;
-      await Promise.all([bindMounting()]);
+      await Promise.all([
+        bindMounting(),
+        bindFrameColour(blindname),
+        bindMeshType(),
+        bindLayout(),
+        bindHandlePosition(),
+        bindHandleMeasure(),
+        bindMidrailPosition(),
+        bindPetDoorType(),
+        bindPetDoorPosition(),
+        bindTripleLock(),
+        bindLatchBass(),
+        bindBugseal(),
+        bindDoorCloser(),
+      ]);
       await handlerElementVisibility(blindtype, tubetype);
     }
   });
@@ -42,6 +56,11 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         `${currentLength}/${maxLength}`;
     }
   });
+});
+
+// button cancel
+document.querySelector("#btnCancel").addEventListener("click", (e) => {
+  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
 });
 // =================================================FUNCTIONS================================================
 // ----------------------------------------------|| Binding Functions ||---------------------------------------
@@ -218,8 +237,26 @@ const bindTubes = async (designid, blindid) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
+        const blindname = await getItemData(
+          `SELECT Name FROM Blinds WHERE Id = ${blindid}`,
+        );
         const tubetype = select.value;
-        await Promise.all([bindMounting()]);
+        await Promise.all([
+          bindMounting(),
+          bindFrameType(blindname),
+          bindFrameColour(blindname),
+          bindMeshType(),
+          bindLayout(),
+          bindHandlePosition(),
+          bindHandleMeasure(),
+          bindMidrailPosition(),
+          bindPetDoorType(),
+          bindPetDoorPosition(),
+          bindTripleLock(),
+          bindLatchBass(),
+          bindBugseal(),
+          bindDoorCloser(),
+        ]);
         await handlerElementVisibility(blindid, tubetype);
       }
     }
@@ -261,6 +298,34 @@ const bindMounting = () => {
   });
 };
 
+const bindFrameType = (blindname) => {
+  const sel = document.getElementById("frametype");
+  sel.innerHTML = ""; //reset
+
+  if (!blindname) return;
+
+  let data = [];
+  data.push(
+    { value: "Door Frame", text: "Door Frame" },
+    { value: "Grille Frame", text: "Grille Frame" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
 const bindFrameColour = (blindname) => {
   const sel = document.getElementById("framecolour");
   sel.innerHTML = ""; //reset
@@ -279,14 +344,340 @@ const bindFrameColour = (blindname) => {
     { value: "Deep Ocean", text: "Deep Ocean" },
     { value: "Dune", text: "Dune" },
     { value: "Hawthorne Green", text: "Hawthorne Green" },
-    { value: "Jasper", text: "Jasper" },
+    { value: "Mist Green", text: "Mist Green" },
     { value: "Monument", text: "Monument" },
     { value: "Notre Dame", text: "Notre Dame" },
+    { value: "Paperbank", text: "Paperbank" },
     { value: "Primrose", text: "Primrose" },
-    { value: "Silver", text: "Silver" },
+    { value: "Silver/Clear Anodize", text: "Silver/Clear Anodize" },
+    { value: "Stone Beige", text: "Stone Beige" },
     { value: "Surf Mist", text: "Surf Mist" },
     { value: "White", text: "White" },
+    { value: "White Birch", text: "White Birch" },
     { value: "Woodland Grey", text: "Woodland Grey" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindMeshType = () => {
+  const sel = document.getElementById("meshtype");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "HD Diamond", text: "HD Diamond" },
+    { value: "Fiberglass", text: "Fiberglass" },
+    { value: "Pawproof", text: "Pawproof" },
+    { value: "Stainless Steel", text: "Stainless Steel" },
+    { value: "SS304 0.7mm", text: "SS304 0.7mm" },
+    { value: "SS316 0.8mm", text: "SS316 0.8mm" },
+    { value: "SS316 0.9mm", text: "SS316 0.9mm" },
+    { value: "HD Diamond+Fiberglass", text: "HD Diamond+Fiberglass" },
+    { value: "HD Diamond+Pawproof", text: "HD Diamond+Pawproof" },
+    { value: "HD Diamond+Stainless Steel", text: "HD Diamond+Stainless Steel" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindLayout = () => {
+  const sel = document.getElementById("layoutcode");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "L", text: "L" },
+    { value: "R", text: "R" },
+    { value: "L-RA", text: "L-RA" },
+    { value: "A-LR", text: "A-LR" },
+    { value: "AL", text: "AL" },
+    { value: "RA", text: "RA" },
+    { value: "RA-L", text: "RA-L" },
+    { value: "R-AL", text: "R-AL" },
+    { value: "ALL", text: "ALL" },
+    { value: "RRA", text: "RRA" },
+    { value: "FRA", text: "FRA" },
+    { value: "ALF", text: "ALF" },
+    { value: "RRRA", text: "RRRA" },
+    { value: "ALLL", text: "ALLL" },
+    { value: "FRRA", text: "FRRA" },
+    { value: "ALLF", text: "ALLF" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindHandlePosition = () => {
+  const sel = document.getElementById("handleposition");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "Left", text: "Left" },
+    { value: "Right", text: "Right" },
+    { value: "No Handle", text: "No Handle" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindHandleMeasure = () => {
+  const sel = document.getElementById("handlemeasure");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "Lock Height", text: "Lock Height" },
+    { value: "Centre of Handle", text: "Centre of Handle" },
+    { value: "Bottom of Tongue", text: "Bottom of Tongue" },
+    { value: "Centre of Tongue", text: "Centre of Tongue" },
+    { value: "Bottom of Lock body", text: "Bottom of Lock body" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindMidrailPosition = () => {
+  const sel = document.getElementById("midrailposition");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "By Request", text: "By Request" },
+    { value: "Centre of Vertical", text: "Centre of Vertical" },
+    { value: "No Midrail", text: "No Midrail" },
+    { value: "Centre of Horizontal", text: "Centre of Horizontal" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindPetDoorType = () => {
+  const sel = document.getElementById("petdoortype");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "Small 190x240", text: "Small 190x240" },
+    { value: "Medium 255x305", text: "Medium 255x305" },
+    { value: "Large 260x400", text: "Large 260x400" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindPetDoorPosition = () => {
+  const sel = document.getElementById("petdoorposition");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "Left", text: "Left" },
+    { value: "Centre", text: "Centre" },
+    { value: "Right", text: "Right" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindTripleLock = () => {
+  const sel = document.getElementById("triplelock");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push({ value: "No", text: "No" }, { value: "Yes", text: "Yes" });
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindLatchBass = () => {
+  const sel = document.getElementById("latchbass");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "Outer Pull", text: "Outer Pull" },
+    { value: "Bass Standard", text: "Bass Standard" },
+    { value: "Bass Hinged", text: "Bass Hinged" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindBugseal = () => {
+  const sel = document.getElementById("bugseal");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "No", text: "No" },
+    { value: "Yes", text: "Yes" },
+    { value: "Yes (Long Fur)", text: "Yes (Long Fur)" },
+    { value: "Yes (Short Fur)", text: "Yes (Short Fur)" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindDoorCloser = () => {
+  const sel = document.getElementById("doorcloser");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "No", text: "No" },
+    { value: "Black", text: "Black" },
+    { value: "Primrose", text: "Primrose" },
+    { value: "White", text: "White" },
+    { value: "White Birch", text: "White Birch" },
+    { value: "Bronze Anodize", text: "Bronze Anodize" },
+    { value: "Silver/Clear Anodize", text: "Silver/Clear Anodize" },
+    { value: "Stone Beige", text: "Stone Beige" },
+    { value: "Apo Grey", text: "Apo Grey" },
   );
 
   if (data.length > 1) {
