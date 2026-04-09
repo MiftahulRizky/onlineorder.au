@@ -452,7 +452,7 @@
             } else if (Type == 'Quantity') {
                 spanInfo = 'Please pay attention to the quantity you want to order, because the quantity you enter will be processed automatically.';
             } else if (Type == 'Control Length') {
-                spanInfo = 'If you leave this blank, it will automatically follow the factory default.';
+                spanInfo = 'If you leave this blank or 0, it will automatically follow the factory default (standard).';
             } else {
                 spanInfo = '';
             }
