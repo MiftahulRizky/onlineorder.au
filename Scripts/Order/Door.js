@@ -240,13 +240,13 @@ const bindTubes = async (designid, blindid) => {
         const blindname = await getItemData(
           `SELECT Name FROM Blinds WHERE Id = '${blindid}'`,
         );
-        console.log(blindname);
         const tubetype = select.value;
         await Promise.all([
           bindMounting(),
           bindFrameType(blindname),
           bindFrameColour(blindname),
-          bindMeshType(),
+          bindFitted(),
+          bindMeshType(blindname),
           bindLayout(),
           bindHandlePosition(),
           bindHandleMeasure(),
@@ -362,28 +362,74 @@ const bindFrameColour = (blindname) => {
   if (!blindname) return;
 
   let data = [];
+  if (blindname.includes("Steel")) {
+    data.push(
+      { value: "Brown", text: "Brown" },
+      { value: "Birch White", text: "Birch White" },
+      { value: "Black", text: "Black" },
+      { value: "Apo Grey", text: "Apo Grey" },
+      { value: "Charcoal", text: "Charcoal" },
+      { value: "Classic Cream", text: "Classic Cream" },
+      { value: "Flame Red", text: "Flame Red" },
+      { value: "Iron Stone", text: "Iron Stone" },
+      { value: "Magnoli", text: "Magnoli" },
+      { value: "Monument", text: "Monument" },
+      { value: "Primrose", text: "Primrose" },
+      { value: "Stone Beige", text: "Stone Beige" },
+      { value: "Timberland", text: "Timberland" },
+      { value: "White", text: "White" },
+      { value: "Woodland Grey", text: "Woodland Grey" },
+    );
+  } else {
+    data.push(
+      { value: "Bronze", text: "Bronze" },
+      { value: "Apo Grey", text: "Apo Grey" },
+      { value: "Black", text: "Black" },
+      { value: "Bronze Anodized", text: "Bronze Anodized" },
+      { value: "Brown", text: "Brown" },
+      { value: "Charcoal", text: "Charcoal" },
+      { value: "Claret", text: "Claret" },
+      { value: "Deep Ocean", text: "Deep Ocean" },
+      { value: "Dune", text: "Dune" },
+      { value: "Hawthorne Green", text: "Hawthorne Green" },
+      { value: "Mist Green", text: "Mist Green" },
+      { value: "Monument", text: "Monument" },
+      { value: "Notre Dame", text: "Notre Dame" },
+      { value: "Paperbank", text: "Paperbank" },
+      { value: "Primrose", text: "Primrose" },
+      { value: "Silver/Clear Anodize", text: "Silver/Clear Anodize" },
+      { value: "Stone Beige", text: "Stone Beige" },
+      { value: "Surf Mist", text: "Surf Mist" },
+      { value: "White", text: "White" },
+      { value: "White Birch", text: "White Birch" },
+      { value: "Woodland Grey", text: "Woodland Grey" },
+    );
+  }
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindFitted = () => {
+  const sel = document.getElementById("fitted");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
   data.push(
-    { value: "Bronze", text: "Bronze" },
-    { value: "Apo Grey", text: "Apo Grey" },
-    { value: "Black", text: "Black" },
-    { value: "Bronze Anodized", text: "Bronze Anodized" },
-    { value: "Brown", text: "Brown" },
-    { value: "Charcoal", text: "Charcoal" },
-    { value: "Claret", text: "Claret" },
-    { value: "Deep Ocean", text: "Deep Ocean" },
-    { value: "Dune", text: "Dune" },
-    { value: "Hawthorne Green", text: "Hawthorne Green" },
-    { value: "Mist Green", text: "Mist Green" },
-    { value: "Monument", text: "Monument" },
-    { value: "Notre Dame", text: "Notre Dame" },
-    { value: "Paperbank", text: "Paperbank" },
-    { value: "Primrose", text: "Primrose" },
-    { value: "Silver/Clear Anodize", text: "Silver/Clear Anodize" },
-    { value: "Stone Beige", text: "Stone Beige" },
-    { value: "Surf Mist", text: "Surf Mist" },
-    { value: "White", text: "White" },
-    { value: "White Birch", text: "White Birch" },
-    { value: "Woodland Grey", text: "Woodland Grey" },
+    { value: "Internal", text: "Internal" },
+    { value: "External", text: "External" },
   );
 
   if (data.length > 1) {
@@ -402,22 +448,221 @@ const bindFrameColour = (blindname) => {
   });
 };
 
-const bindMeshType = () => {
+const bindMeshType = (blindname) => {
   const sel = document.getElementById("meshtype");
+  sel.innerHTML = ""; //reset
+
+  if (!blindname) return;
+
+  let data = [];
+  if (blindname.includes("Steel")) {
+    data.push(
+      { value: "Mesh SS316 0.7mm", text: "Mesh SS316 0.7mm" },
+      { value: "Mesh SS316 0.8mm", text: "Mesh SS316 0.8mm" },
+      { value: "Fly Mesh", text: "Fly Mesh" },
+      { value: "Paw Proof", text: "Paw Proof" },
+      { value: "Sandfly", text: "Sandfly" },
+      { value: "Bushfire SS", text: "Bushfire SS" },
+      { value: "Ultra Mesh", text: "Ultra Mesh" },
+    );
+  } else {
+    data.push(
+      { value: "HD Diamond", text: "HD Diamond" },
+      { value: "Fiberglass", text: "Fiberglass" },
+      { value: "Pawproof", text: "Pawproof" },
+      { value: "Stainless Steel", text: "Stainless Steel" },
+      { value: "SS304 0.7mm", text: "SS304 0.7mm" },
+      { value: "SS316 0.8mm", text: "SS316 0.8mm" },
+      { value: "SS316 0.9mm", text: "SS316 0.9mm" },
+      { value: "HD Diamond+Fiberglass", text: "HD Diamond+Fiberglass" },
+      { value: "HD Diamond+Pawproof", text: "HD Diamond+Pawproof" },
+      {
+        value: "HD Diamond+Stainless Steel",
+        text: "HD Diamond+Stainless Steel",
+      },
+    );
+  }
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindFixing = () => {
+  const sel = document.getElementById("fixing");
   sel.innerHTML = ""; //reset
 
   let data = [];
   data.push(
-    { value: "HD Diamond", text: "HD Diamond" },
-    { value: "Fiberglass", text: "Fiberglass" },
-    { value: "Pawproof", text: "Pawproof" },
-    { value: "Stainless Steel", text: "Stainless Steel" },
-    { value: "SS304 0.7mm", text: "SS304 0.7mm" },
-    { value: "SS316 0.8mm", text: "SS316 0.8mm" },
-    { value: "SS316 0.9mm", text: "SS316 0.9mm" },
-    { value: "HD Diamond+Fiberglass", text: "HD Diamond+Fiberglass" },
-    { value: "HD Diamond+Pawproof", text: "HD Diamond+Pawproof" },
-    { value: "HD Diamond+Stainless Steel", text: "HD Diamond+Stainless Steel" },
+    { value: "SF", text: "SF" },
+    { value: "FO", text: "FO" },
+    { value: "SFB", text: "SFB" },
+    { value: "FOB", text: "FOB" },
+    { value: "SFT", text: "SFT" },
+    { value: "SFTA", text: "SFTA" },
+    { value: "FOB", text: "FOB" },
+    { value: "FOT", text: "FOT" },
+    { value: "FOA", text: "FOA" },
+    { value: "A", text: "A" },
+    { value: "B", text: "B" },
+    { value: "SFT", text: "SFT" },
+    { value: "C", text: "C" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindTop = () => {
+  const sel = document.getElementById("top");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "SF", text: "SF" },
+    { value: "FO", text: "FO" },
+    { value: "SFB", text: "SFB" },
+    { value: "FOB", text: "FOB" },
+    { value: "SFT", text: "SFT" },
+    { value: "SFTA", text: "SFTA" },
+    { value: "FOB", text: "FOB" },
+    { value: "FOT", text: "FOT" },
+    { value: "FOA", text: "FOA" },
+    { value: "A", text: "A" },
+    { value: "B", text: "B" },
+    { value: "SFT", text: "SFT" },
+    { value: "C", text: "C" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindHangeType = () => {
+  const sel = document.getElementById("hingetype");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "70 & 90 (mm)", text: "70 & 90 (mm)" },
+    { value: "50 & 70 (mm)", text: "50 & 70 (mm)" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindLockType = () => {
+  const sel = document.getElementById("locktype");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "5 Lever", text: "5 Lever" },
+    { value: "Euro", text: "Euro" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindSideFrame = () => {
+  const sel = document.getElementById("sideframe");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "25 x 25 RHS", text: "25 x 25 RHS" },
+    { value: "40 x 40 RHS", text: "40 x 40 RHS" },
+    { value: "50 x 50 RHS", text: "25 x 25 RHS" },
+    { value: "10 x 25 FB", text: "10 x 25 FB" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindHeadFrame = () => {
+  const sel = document.getElementById("headframe");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "25 x 25 RHS", text: "25 x 25 RHS" },
+    { value: "40 x 40 RHS", text: "40 x 40 RHS" },
+    { value: "50 x 50 RHS", text: "25 x 25 RHS" },
+    { value: "10 x 25 FB", text: "10 x 25 FB" },
   );
 
   if (data.length > 1) {

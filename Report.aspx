@@ -25,14 +25,14 @@
                                 <div class="col-lg-7 col-md-12 col-sm-12">
                                     <asp:DropDownList runat="server" ID="ddlReportType" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlReportType_SelectedIndexChanged">
                                         <asp:ListItem Value="" Text=""></asp:ListItem>
-                                        <asp:ListItem Value="BlindsDaily" Text="BLINDS DAILY"></asp:ListItem>
+                                        <asp:ListItem Value="BlindsDaily" Text="BLINDS DAILY" hidden></asp:ListItem>
                                         <asp:ListItem Value="ShuttersDaily" Text="SHUTTERS DAILY"></asp:ListItem>
                                         <asp:ListItem Value="ShuttersOrder" Text="SHUTTERS ORDERS"></asp:ListItem>
                                         <asp:ListItem Value="ShuttersMonth" Text="SHUTTERS MONTH TO MONTH"></asp:ListItem>
-                                        <asp:ListItem Value="" Text=""></asp:ListItem>
-                                        <asp:ListItem Value="Customer" Text="CUSTOMERS"></asp:ListItem>
-                                        <asp:ListItem Value="Fabric" Text="FABRICS"></asp:ListItem>
-                                        <asp:ListItem Value="Newsletter" Text="NEWSLETTER"></asp:ListItem>
+                                        <asp:ListItem Value="" Text="" hidden></asp:ListItem>
+                                        <asp:ListItem Value="Customer" Text="CUSTOMERS" hidden></asp:ListItem>
+                                        <asp:ListItem Value="Fabric" Text="FABRICS" hidden></asp:ListItem>
+                                        <asp:ListItem Value="Newsletter" Text="NEWSLETTER" hidden></asp:ListItem>
                                     </asp:DropDownList>
                                 </div>
                             </div>
