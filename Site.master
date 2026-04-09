@@ -72,7 +72,7 @@ Inherits="SiteMaster" %>
       .liSize {
         font-size: large;
       }
-      button.dropdown-toggle::after {
+      table.dataTable button.dropdown-toggle::after {
         display: none;
       }
       .rounded-start-pill {

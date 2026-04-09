@@ -514,23 +514,23 @@ Partial Class Order_Venetian
             If msgError.InnerText = "" Then
                 If txtMarkUp.Text = "" Then : txtMarkUp.Text = "0" : End If
 
-                
-                If InStr(blindName, "Aluminium") > 0 Or InStr(blindName, "Timber") > 0 Then
-                    If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
-                        txtControlLength.Text = CInt(txtDrop.Text * (2 / 3))
-                    End If
+                '# yudi's request
+                ' If InStr(blindName, "Aluminium") > 0 Or InStr(blindName, "Timber") > 0 Then
+                '     If txtControlLength.Text = "" Or txtControlLength.Text = "0" Then
+                '         txtControlLength.Text = CInt(txtDrop.Text * (2 / 3))
+                '     End If
 
-                    If  InStr(blindName, "Aluminium") > 0 Then
-                        ddlHoldDown.SelectedValue = ddlHoldDown.SelectedValue
-                        If blindName = "25mm Aluminium" Then
-                            lblBottomHoldDown.Text = "Yes"
-                        End If
-                    End If
-                End If
+                '     If  InStr(blindName, "Aluminium") > 0 Then
+                '         ddlHoldDown.SelectedValue = ddlHoldDown.SelectedValue
+                '         If blindName = "25mm Aluminium" Then
+                '             lblBottomHoldDown.Text = "Yes"
+                '         End If
+                '     End If
+                ' End If
 
-                If InStr(blindName, "Mockwood") > 0 Or InStr(blindName, "Wooden") > 0 Then
-                    txtControlLength.Text = CInt(txtDrop.Text * (2 / 3))
-                End If
+                ' If InStr(blindName, "Mockwood") > 0 Or InStr(blindName, "Wooden") > 0 Then
+                '     txtControlLength.Text = CInt(txtDrop.Text * (2 / 3))
+                ' End If
 
 
 

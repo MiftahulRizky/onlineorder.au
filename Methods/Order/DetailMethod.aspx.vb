@@ -3231,7 +3231,8 @@ Partial Class Methods_Order_DetailMethod
                         CPosition = CPosition.Replace("|", ", ")
                     End If
 
-
+                    Dim CLength As String = thisData.Tables(0).Rows(i).Item("ControlLength").ToString()
+                    If String.IsNullOrEmpty(CLength) Or CLength = "0" Then CLength = "Standard"
 
                     result += trStart
                     result += tdStart & i + 1 & tdEnd
@@ -3245,7 +3246,7 @@ Partial Class Methods_Order_DetailMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BracketOption").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
                     result += tdStart & CPosition & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("ControlLength").ToString() & tdEnd
+                    result += tdStart & CLength & tdEnd
                     result += tdStart & PelmetType & tdEnd
                     result += tdStart & PelmetWidth & tdEnd
                     result += tdStart & PelmetSize & tdEnd

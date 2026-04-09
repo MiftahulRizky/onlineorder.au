@@ -89,7 +89,7 @@
                                     </div>
 
                                     <div class="mb-3 row">
-                                        <label for="widthtop" class="col-lg-3 text-uppercase fw-bold">width top x middle</label>
+                                        <label for="widthtop" class="col-lg-3 text-uppercase fw-bold" id="lblWidth">width top x middle</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="widthtop" id="widthtop" class="form-control " autocomplete="off" placeholder="Width Top...." />
@@ -97,7 +97,7 @@
                                             </div>
                                             <small class="form-hint">* Top</small>
                                         </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="col-lg-4 col-md-12 col-sm-12" id="divWidthMiddle">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="widthmiddle" id="widthmiddle" class="form-control  " autocomplete="off" placeholder="Width Middle ...." />
                                                 <span class="input-group-text ">mm</span>
@@ -106,7 +106,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row">
+                                    <div class="mb-3 row" id="divWidthBotMin">
                                         <label for="widthbottom" class="col-lg-3 text-uppercase fw-bold text-transparent">width bottom x minimum</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
@@ -125,36 +125,142 @@
                                     </div>
 
                                     <div class="mb-3 row">
-                                        <label for="drop" class="col-lg-3 text-uppercase fw-bold text-transparent">height</label>
+                                        <label for="drop" class="col-lg-3 text-uppercase fw-bold text-transparent">drop</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
-                                                <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off" placeholder="Height ...." />
+                                                <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off" placeholder="Drop ...." />
+                                                <!-- <button data-bs-toggle="dropdown" type="button" class="btn dropdown-toggle dropdown-toggle-split"></button>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <a class="dropdown-item" href="#">
+                                                        Action
+                                                    </a>
+                                                    <a class="dropdown-item" href="#">
+                                                        Another action
+                                                    </a>
+                                                </div> -->
                                                 <span class="input-group-text ">mm</span>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="mb-3 row" id="divFrameType">
-                                        <label for="frametype" class="col-lg-3 text-uppercase fw-bold" >frame type</label>
+                                        <label for="frametype" class="col-lg-3 text-uppercase fw-bold" id="lblFrameType">frame type</label>
                                         <div class="col-lg-4">
                                             <select name="frametype" id="frametype" class="form-select"></select>
                                         </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divFrameColour">
-                                        <label for="framecolour" class="col-lg-3 text-uppercase fw-bold" >frame colour</label>
+                                        <label for="framecolour" class="col-lg-3 text-uppercase fw-bold" id="lblFrameColour">frame colour</label>
                                         <div class="col-lg-4">
                                             <select name="framecolour" id="framecolour" class="form-select"></select>
                                         </div>  
                                     </div>
 
+                                    <div class="mb-3 row" id="divFitted">
+                                        <label for="fitted" class="col-lg-3 text-uppercase fw-bold" id="lblFitted">fitted</label>
+                                        <div class="col-lg-4">
+                                            <select name="fitted" id="fitted" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
                                     <div class="mb-3 row" id="divMesh">
-                                        <label for="meshtype" class="col-lg-3 text-uppercase fw-bold" >mesh type</label>
+                                        <label for="meshtype" class="col-lg-3 text-uppercase fw-bold" id="lblMesh">mesh type</label>
                                         <div class="col-lg-4">
                                             <select name="meshtype" id="meshtype" class="form-select"></select>
                                         </div>  
                                     </div>
 
+
+                                    <div class="mb-3 row" id="divFixing">
+                                        <label for="fixing" class="col-lg-3 text-uppercase fw-bold" >fixing</label>
+                                        <div class="col-lg-4">
+                                            <select name="fixing" id="fixing" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divTop">
+                                        <label for="top" class="col-lg-3 text-uppercase fw-bold" >top</label>
+                                        <div class="col-lg-4">
+                                            <select name="top" id="top" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divHingeType">
+                                        <label for="hingetype" class="col-lg-3 text-uppercase fw-bold" >hinge type</label>
+                                        <div class="col-lg-4">
+                                            <select name="hingetype" id="hingetype" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divLockType">
+                                        <label for="locktype" class="col-lg-3 text-uppercase fw-bold" >lock type</label>
+                                        <div class="col-lg-4">
+                                            <select name="locktype" id="locktype" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divLockHandling">
+                                        <label for="lockhanding" class="col-lg-3 text-uppercase fw-bold" >lock handling</label>
+                                        <div class="col-lg-4">
+                                            <select name="lockhanding" id="lockhanding" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divFrameSize">
+                                        <label for="sideframe" class="col-lg-3 text-uppercase fw-bold" >frame size</label>
+                                        <div class="col-lg-4">
+                                            <select name="sideframe" id="sideframe" class="form-select"></select>
+                                            <small class="form-hint">* Side Frame</small>
+                                        </div>  
+                                        <div class="col-lg-4">
+                                            <select name="headframe" id="headframe" class="form-select"></select>
+                                            <small class="form-hint">* Head Frame</small>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divExtended">
+                                        <label for="extframe" class="col-lg-3 text-uppercase fw-bold" >extended</label>
+                                        <div class="col-lg-3">
+                                            <select name="extframe" id="extframe" class="form-select"></select>
+                                            <small class="form-hint">* Frame</small>
+                                        </div>  
+                                        <div class="col-lg-3">
+                                            <div class="input-group">
+                                                <input type="number" min="1" name="extwidth" id="extwidth" class="form-control  " autocomplete="off" placeholder="Ext Width ...." />
+                                                <span class="input-group-text ">mm</span>
+                                            </div>
+                                            <small class="form-hint">* Width</small>
+                                        </div>  
+                                        <div class="col-lg-3">
+                                            <div class="input-group">
+                                                <input type="number" min="1" name="extdrop" id="extdrop" class="form-control  " autocomplete="off" placeholder="Ext Drop ...." />
+                                                <span class="input-group-text ">mm</span>
+                                            </div>
+                                            <small class="form-hint">* Drop</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divSlamBar">
+                                        <label for="slambar" class="col-lg-3 text-uppercase fw-bold" >slam bar</label>
+                                        <div class="col-lg-4">
+                                            <select name="slambar" id="slambar" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divLeverHandleType">
+                                        <label for="levelhandler" class="col-lg-3 text-uppercase fw-bold" >lever handler Type</label>
+                                        <div class="col-lg-4">
+                                            <select name="levelhandler" id="levelhandler" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divLock">
+                                        <label for="lock" class="col-lg-3 text-uppercase fw-bold" >lock</label>
+                                        <div class="col-lg-4">
+                                            <select name="lock" id="lock" class="form-select"></select>
+                                        </div>  
+                                    </div>
 
                                     <div class="mb-3 row" id="divLayoutCode">
                                         <label for="layoutcode" class="col-lg-3 text-uppercase fw-bold" >layout</label>
@@ -235,6 +341,13 @@
                                         <label for="boldpatio" class="col-lg-3 text-uppercase fw-bold" >bold patio lockable</label>
                                         <div class="col-lg-4">
                                             <input type="number" min="1" name="boldpatio" id="boldpatio" class="form-control  " autocomplete="off"/>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divCrossBrace">
+                                        <label for="crossbrace" class="col-lg-3 text-uppercase fw-bold" >cross brace</label>
+                                        <div class="col-lg-4">
+                                            <select name="crossbrace" id="crossbrace" class="form-select"></select>
                                         </div>  
                                     </div>
 

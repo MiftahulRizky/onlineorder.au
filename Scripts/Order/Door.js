@@ -238,8 +238,9 @@ const bindTubes = async (designid, blindid) => {
       if (data.length === 1) {
         select.selectedIndex = 0;
         const blindname = await getItemData(
-          `SELECT Name FROM Blinds WHERE Id = ${blindid}`,
+          `SELECT Name FROM Blinds WHERE Id = '${blindid}'`,
         );
+        console.log(blindname);
         const tubetype = select.value;
         await Promise.all([
           bindMounting(),
@@ -305,10 +306,38 @@ const bindFrameType = (blindname) => {
   if (!blindname) return;
 
   let data = [];
-  data.push(
-    { value: "Door Frame", text: "Door Frame" },
-    { value: "Grille Frame", text: "Grille Frame" },
-  );
+  if (blindname.includes("Steel")) {
+    data.push(
+      { value: "SD 1", text: "SD 1" },
+      { value: "SD 2", text: "SD 2" },
+      { value: "SD 3A", text: "SD 3A" },
+      { value: "SD 4C", text: "SD 4C" },
+      { value: "SD 5B", text: "SD 5B" },
+      { value: "SD 6A1", text: "SD 6A1" },
+      { value: "SD 7C", text: "SD 7C" },
+      { value: "SD 8A1", text: "SD 8A1" },
+      { value: "SD 9B", text: "SD 9B" },
+    );
+    for (let i = 10; i <= 27; i++) {
+      data.push({ value: `SD ${i}`, text: `SD ${i}` });
+    }
+    data.push(
+      { value: "SG 1", text: "SG 1" },
+      { value: "SG 2", text: "SG 2" },
+      { value: "SG 3A", text: "SG 3A" },
+      { value: "SG 4C", text: "SG 4C" },
+      { value: "SG 5", text: "SG 5" },
+      { value: "SG 5A", text: "SG 5A" },
+      { value: "SG 6A1", text: "SG 6A1" },
+      { value: "SG 7C", text: "SG 7C" },
+      { value: "SG 8A1", text: "SG 8A1" },
+    );
+  } else {
+    data.push(
+      { value: "Door Frame", text: "Door Frame" },
+      { value: "Grille Frame", text: "Grille Frame" },
+    );
+  }
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
@@ -702,24 +731,140 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     const divTubeType = document.getElementById("divTubeType");
 
     const divFormDetail = document.getElementById("divFormDetail");
-    const divMounting = document.getElementById("divMounting");
+    const lblWidth = document.getElementById("lblWidth");
+    const divWidthMiddle = document.getElementById("divWidthMiddle");
+    const divWidthBotMin = document.getElementById("divWidthBotMin");
+    const divFrameType = document.getElementById("divFrameType");
+    const lblFrameType = document.getElementById("lblFrameType");
+    const divFrameColour = document.getElementById("divFrameColour");
+    const lblFrameColour = document.getElementById("lblFrameColour");
+    const divFitted = document.getElementById("divFitted");
+    const divMesh = document.getElementById("divMesh");
+    const lblMesh = document.getElementById("lblMesh");
+    const divFixing = document.getElementById("divFixing");
+    const divTop = document.getElementById("divTop");
+    const divHingeType = document.getElementById("divHingeType");
+    const divLockType = document.getElementById("divLockType");
+    const divLockHandling = document.getElementById("divLockHandling");
+    const divFrameSize = document.getElementById("divFrameSize");
+    const divExtended = document.getElementById("divExtended");
+    const divSlamBar = document.getElementById("divSlamBar");
+    const divLeverHandleType = document.getElementById("divLeverHandleType");
+    const divLock = document.getElementById("divLock");
+    const divLayoutCode = document.getElementById("divLayoutCode");
+    const divHandle = document.getElementById("divHandle");
+    const divMidrail = document.getElementById("divMidrail");
+    const divPetDor = document.getElementById("divPetDor");
+    const divTripleLock = document.getElementById("divTripleLock");
+    const divLatchBass = document.getElementById("divLatchBass");
+    const divBugSeal = document.getElementById("divBugSeal");
+    const divDoorCloser = document.getElementById("divDoorCloser");
+    const divBoldPatio = document.getElementById("divBoldPatio");
+    const divCrossBrace = document.getElementById("divCrossBrace");
 
     const divMarkUp = document.getElementById("divMarkUp");
-
     const btnSubmit = document.querySelector("#btnSubmit");
     // return;
     divTubeType.classList.add("d-none");
 
     divFormDetail.classList.add("d-none");
+    lblWidth.innerHTML = "width top x middle";
+    divWidthMiddle.classList.add("d-none");
+    divWidthBotMin.classList.add("d-none");
+    divFrameType.classList.add("d-none");
+    lblFrameType.innerHTML = "frame type";
+    divFrameColour.classList.add("d-none");
+    lblFrameColour.innerHTML = "frame colour";
+    divFitted.classList.add("d-none");
+    divMesh.classList.add("d-none");
+    lblMesh.innerHTML = "mesh type";
+    divFixing.classList.add("d-none");
+    divTop.classList.add("d-none");
+    divHingeType.classList.add("d-none");
+    divLockType.classList.add("d-none");
+    divLockHandling.classList.add("d-none");
+    divFrameSize.classList.add("d-none");
+    divExtended.classList.add("d-none");
+    divSlamBar.classList.add("d-none");
+    divLeverHandleType.classList.add("d-none");
+    divLock.classList.add("d-none");
+    divLayoutCode.classList.add("d-none");
+    divHandle.classList.add("d-none");
+    divMidrail.classList.add("d-none");
+    divPetDor.classList.add("d-none");
+    divTripleLock.classList.add("d-none");
+    divLatchBass.classList.add("d-none");
+    divBugSeal.classList.add("d-none");
+    divDoorCloser.classList.add("d-none");
+    divBoldPatio.classList.add("d-none");
+    divCrossBrace.classList.add("d-none");
 
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
 
     if (!blindtype) return;
+    const blindname = await getItemData(
+      `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
+    );
     divTubeType.classList.remove("d-none");
 
     if (!tubetype) return;
     divFormDetail.classList.remove("d-none");
+    // DOOR
+    if (blindname.includes("Door") && !blindname.includes("Steel")) {
+      lblWidth.innerHTML = "width top x middle";
+      divWidthMiddle.classList.remove("d-none");
+      divWidthBotMin.classList.remove("d-none");
+      divFrameColour.classList.remove("d-none");
+      divMesh.classList.remove("d-none");
+      divLayoutCode.classList.remove("d-none");
+      divHandle.classList.remove("d-none");
+      divMidrail.classList.remove("d-none");
+      divPetDor.classList.remove("d-none");
+      divTripleLock.classList.remove("d-none");
+      divLatchBass.classList.remove("d-none");
+      divBugSeal.classList.remove("d-none");
+      divDoorCloser.classList.remove("d-none");
+      divBoldPatio.classList.remove("d-none");
+    }
+
+    if (blindname.includes("Grile") && !blindname.includes("Steel")) {
+      lblWidth.innerHTML = "width";
+      divFrameType.classList.remove("d-none");
+      divFrameColour.classList.remove("d-none");
+      divMesh.classList.remove("d-none");
+      divMidrail.classList.remove("d-none");
+    }
+
+    if (blindname.includes("Flyscreen")) {
+      lblWidth.innerHTML = "width";
+      divFrameColour.classList.remove("d-none");
+      divMesh.classList.remove("d-none");
+      divCrossBrace.classList.remove("d-none");
+    }
+
+    if (blindname.includes("Steel")) {
+      lblWidth.innerHTML = "width top x middle";
+      divWidthMiddle.classList.remove("d-none");
+      divWidthBotMin.classList.remove("d-none");
+      divFrameType.classList.remove("d-none");
+      lblFrameType.innerHTML = "type";
+      divFrameColour.classList.remove("d-none");
+      lblFrameColour.innerHTML = "colour";
+      divFitted.classList.remove("d-none");
+      divMesh.classList.remove("d-none");
+      lblMesh.innerHTML = "mesh";
+      divFixing.classList.remove("d-none");
+      divTop.classList.remove("d-none");
+      divHingeType.classList.remove("d-none");
+      divLockType.classList.remove("d-none");
+      divLockHandling.classList.remove("d-none");
+      divFrameSize.classList.remove("d-none");
+      divExtended.classList.remove("d-none");
+      divSlamBar.classList.remove("d-none");
+      divLeverHandleType.classList.remove("d-none");
+      divLock.classList.remove("d-none");
+    }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
 
