@@ -14,6 +14,61 @@ Partial Class Methods_Order_DoorMethod
     Shared orderCfg As New OrderConfig()
     Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
+    Public Class ParamSubmit
+        '#Submit OrderHeader
+        Public Property blindtype As String
+        Public Property tubetype As String
+        Public Property qty As String
+        Public Property room As String
+        Public Property mounting As String
+        Public Property widthtop As String
+        Public Property widthmiddle As String
+        Public Property widthbottom As String
+        Public Property widthmin As String
+        Public Property drop As String
+        Public Property frametype As String
+        Public Property framecolour As String
+        Public Property fitted As String
+        Public Property meshtype As String
+        Public Property fixing As String
+        Public Property top As String
+        Public Property hingetype As String
+        Public Property locktype As String
+        Public Property lockhandling As String
+        Public Property sideframe As String
+        Public Property headframe As String
+        Public Property extframe As String
+        Public Property extwidth As String
+        Public Property extdrop As String
+        Public Property slambar As String
+        Public Property levelhandler As String
+        Public Property lock As String
+        Public Property layoutcode As String
+        Public Property handleposition As String
+        Public Property handlemeasure As String
+        Public Property handleheight As String
+        Public Property midrailposition As String
+        Public Property midrailrequest As String
+        Public Property petdoortype As String
+        Public Property petdoorposition As String
+        Public Property triplelock As String
+        Public Property latchbass As String
+        Public Property bugseal As String
+        Public Property doorcloser As String
+        Public Property boldpatio As String
+        Public Property crossbrace As String
+        Public Property notes As String
+        Public Property markup As String
+        
+
+        '#aditional param
+        Public Property headerid As String
+        Public Property itemaction As String
+        Public Property itemid As String
+        Public Property designid As String
+        Public Property loginid As String
+    End Class
+
     '#--- Kelas Output WebMethod ---#
     Public Class ErrorDetail
         Public Property message As String
@@ -83,5 +138,293 @@ Partial Class Methods_Order_DoorMethod
             Return New With {.error = ex.Message}
         End Try
     End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function Submit(ByVal data As ParamSubmit) As Object
+        Try
+            Dim msg As String = "200"
+            Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.blindtype))
+            Dim qty As Integer
+            If String.IsNullOrEmpty(data.qty) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "qty type is required !", .field = "qty"}}
+            End If
+            If Not Integer.TryParse(data.qty, qty) OrElse qty <= 0 Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "please check your qty !", .field = "qty"}}
+            End If
+
+            If Not String.IsNullOrEmpty(data.room) Then
+                If InStr(data.room, "&") > 0 Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "character [&] is not allowed !", .field = "room"}}
+                End If
+            End If
+
+            If String.IsNullOrEmpty(data.mounting) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "opening is required !", .field = "mounting"}}
+            End If
+
+            Dim LblWidth As String = "width"
+            If InStr(BlindName, "Door") > 0 Then
+                LblWidth = "width top"
+            End If
+            Dim widthtop As Integer
+            Dim widthmiddle As Integer
+            Dim widthbottom As Integer
+            Dim widthmin As Integer
+            If String.IsNullOrEmpty(data.widthtop) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = String.Format("{0} is required !", LblWidth), .field = "widthtop"}}
+            End If
+            If Not Integer.TryParse(data.widthtop, widthtop) OrElse widthtop <= 0 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = String.Format("{0} be a positive integer !", LblWidth), .field = "widthtop"}}
+            End If
+
+            If InStr(BlindName, "Door") > 0 Then
+                If String.IsNullOrEmpty(data.widthmiddle) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "width middle  is required !", .field = "widthmiddle"}}
+                End If
+                If Not Integer.TryParse(data.widthmiddle, widthmiddle) OrElse widthmiddle <= 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width middle must be a positive integer !", .field = "widthmiddle"}}
+                End If
+
+                If String.IsNullOrEmpty(data.widthbottom) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "width bottom is required !", .field = "widthbottom"}}
+                End If
+                If Not Integer.TryParse(data.widthbottom, widthbottom) OrElse widthbottom <= 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width bottom must be a positive integer !", .field = "widthbottom"}}
+                End If 
+
+                If String.IsNullOrEmpty(data.widthmin) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "width minimum is required !", .field = "widthmin"}}
+                End If
+                If Not Integer.TryParse(data.widthmin, widthmin) OrElse widthmin <= 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width minimum must be a positive integer !", .field = "widthmin"}}
+                End If  
+            End If
+
+            Dim drop As Integer
+            If String.IsNullOrEmpty(data.drop) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop is required !", .field = "drop"}}
+            End If
+            If Not Integer.TryParse(data.drop, drop) OrElse drop <= 0 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be a positive integer !", .field = "drop"}}
+            End If
+
+            Dim LblFrameType As String = "frame type"
+            If InStr(BlindName, "Steel") > 0 Then LblFrameType = "type"
+            If InStr(BlindName, "Grile") > 0 Or InStr(BlindName, "Steel") > 0 Then
+                If String.IsNullOrEmpty(data.frametype) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = String.Format("{0} is required !", LblFrameType), .field = "frametype"}}
+                End If
+            End If
+
+            If String.IsNullOrEmpty(data.framecolour) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "frame colour is required !", .field = "framecolour"}}
+            End If  
+            
+            If InStr(BlindName, "Steel") > 0 Then
+                If String.IsNullOrEmpty(data.fitted) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "fitted is required !", .field = "fitted"}}
+                End If  
+            End If
+
+            If String.IsNullOrEmpty(data.meshtype) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mesh type is required !", .field = "meshtype"}}
+            End If
+
+            If InStr(BlindName, "Steel") > 0 Then
+                If String.IsNullOrEmpty(data.fixing) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "fixing is required !", .field = "fixing"}}
+                End If
+
+                If String.IsNullOrEmpty(data.top) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "top is required !", .field = "top"}}
+                End If
+
+                If String.IsNullOrEmpty(data.hingetype) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "hinge type is required !", .field = "hingetype"}}
+                End If
+
+                If String.IsNullOrEmpty(data.locktype) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "lock type is required !", .field = "locktype"}}
+                End If
+
+                If String.IsNullOrEmpty(data.lockhandling) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "lock handling is required !", .field = "lockhandling"}}
+                End If
+
+                If String.IsNullOrEmpty(data.sideframe) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "side frame is required !", .field = "sideframe"}}
+                End If
+
+                If String.IsNullOrEmpty(data.headframe) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "head frame is required !", .field = "headframe"}}
+                End If
+
+                If String.IsNullOrEmpty(data.extframe) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "extended frame is required !", .field = "extframe"}}
+                End If
+
+                If String.IsNullOrEmpty(data.extwidth) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "extended width is required !", .field = "extwidth"}}
+                End If
+
+                If String.IsNullOrEmpty(data.extdrop) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "extended drop is required !", .field = "extdrop"}}
+                End If
+
+                If String.IsNullOrEmpty(data.slambar) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "slam bar is required !", .field = "slambar"}}
+                End If
+
+                If String.IsNullOrEmpty(data.levelhandler) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "level handler is required !", .field = "levelhandler"}}
+                End If
+
+                If String.IsNullOrEmpty(data.lock) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "lock is required !", .field = "lock"}}
+                End If
+            End If
+
+            If InStr(BlindName, "Door") > 0 AND InStr(BlindName, "Steel") = 0 Then
+                If String.IsNullOrEmpty(data.layoutcode) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "layout code is required !", .field = "layoutcode"}}
+                End If  
+
+                If String.IsNullOrEmpty(data.handleposition) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "handle position is required !", .field = "handleposition"}}
+                End If 
+
+                If String.IsNullOrEmpty(data.handlemeasure) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "handle measure is required !", .field = "handlemeasure"}}
+                End If 
+
+                If String.IsNullOrEmpty(data.handleheight) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "handle height is required !", .field = "handleheight"}}
+                End If
+            End If
+
+            If (InStr(BlindName, "Door") > 0 Or InStr(BlindName, "Grile") > 0) AND InStr(BlindName, "Steel") = 0 Then
+                If String.IsNullOrEmpty(data.midrailposition) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "midrail position is required !", .field = "midrailposition"}}
+                End If  
+
+                If String.IsNullOrEmpty(data.midrailrequest) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "midrail request is required !", .field = "midrailrequest"}}
+                End If 
+            End If
+
+            If InStr(BlindName, "Door") > 0 AND InStr(BlindName, "Steel") = 0 Then
+                ' If String.IsNullOrEmpty(data.petdoortype) Then
+                '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "pet door type is required !", .field = "petdoortype"}}
+                ' End If
+
+                If Not String.IsNullOrEmpty(data.petdoortype) And String.IsNullOrEmpty(data.petdoorposition) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "pet door position is required !", .field = "petdoorposition"}}
+                End If
+
+                If String.IsNullOrEmpty(data.triplelock) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "triple lock is required !", .field = "triplelock"}}
+                End If
+
+                If String.IsNullOrEmpty(data.latchbass) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "latch bass is required !", .field = "latchbass"}}
+                End If
+
+                If String.IsNullOrEmpty(data.bugseal) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "bugseal is required !", .field = "bugseal"}}
+                End If
+
+                If String.IsNullOrEmpty(data.doorcloser) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "door closer is required !", .field = "doorcloser"}}
+                End If
+
+                If String.IsNullOrEmpty(data.boldpatio) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "bold patio is required !", .field = "boldpatio"}}
+                End If
+            End If
+
+            If BlindName = "Flyscreen" Then
+                If String.IsNullOrEmpty(data.crossbrace) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "cross brace is required !", .field = "crossbrace"}}
+                End If
+            End If
+
+
+            If Not String.IsNullOrEmpty(data.notes) Then
+                If InStr(data.notes, "&") > 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must not contain [&] character !",.field = "notes"}}
+                End If
+
+                If data.notes.Trim().Length > 1000 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must be less than 1000 characters !",.field = "notes"}}
+                End If
+            End If
+
+            Dim markup As Integer
+            If Not String.IsNullOrEmpty(data.markup) Then
+                If Not Integer.TryParse(data.markup, markup) OrElse markup < 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check your markup !",.field = "markup"}}
+                End If
+            End If
+
+            If String.IsNullOrEmpty(data.markup) Then
+                data.markup = "0"
+            End If
+
+            Dim SoeId As String = publicCfg.GetSoeKitId(data.tubetype)
+            Dim DesignName As String = publicCfg.GetDesignName(data.designid)
+            Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
+            Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
+
+            Dim PriceGroupName As String = "Door"
+            Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
+            If PriceGroupId = "" Then
+                Throw New Exception("Something went wrong !")
+            End If
+
+            If BlindName = "Flyscreen" Then
+                data.widthmiddle = ""
+                widthmiddle = ""
+                data.widthbottom = ""
+                widthbottom = ""
+                data.widthmin = ""
+                widthmin = ""
+
+                data.frametype = ""
+                data.fitted = ""
+                data.fixing = ""
+                data.top = ""
+                data.hingetype = ""
+                data.locktype = ""
+                data.lockhandling = ""
+                data.sideframe = ""
+                data.headframe = ""
+                data.extframe = ""
+                data.extwidth = ""
+                data.extdrop = ""
+                data.slambar = ""
+                data.levelhandler = ""
+                data.lock = ""
+                data.layoutcode = ""
+                data.handleposition = ""
+                data.handlemeasure = ""
+                data.handleheight = ""
+                data.midrailposition = ""
+                data.midrailrequest = ""
+                data.petdoortype = ""
+                data.petdoorposition = ""
+                data.triplelock = ""
+                data.latchbass = ""
+                data.bugseal = ""
+                data.doorcloser = ""
+                data.boldpatio = ""
+            End If
+
+            Return New SuccessResponse With {.success = msg}
+        Catch ex As Exception
+            Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
+        End Try
+    End Function 
+
 
 End Class

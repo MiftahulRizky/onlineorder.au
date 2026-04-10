@@ -92,14 +92,14 @@
                                         <label for="widthtop" class="col-lg-3 text-uppercase fw-bold" id="lblWidth">width top x middle</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
-                                                <input type="number" min="1" name="widthtop" id="widthtop" class="form-control " autocomplete="off" placeholder="Width Top...." />
+                                                <input type="number" min="1" name="widthtop" id="widthtop" class="form-control " autocomplete="off" />
                                                 <span class="input-group-text ">mm</span>
                                             </div>
-                                            <small class="form-hint">* Top</small>
+                                            <small class="form-hint" id="hintWidthTop">* Top</small>
                                         </div>
                                         <div class="col-lg-4 col-md-12 col-sm-12" id="divWidthMiddle">
                                             <div class="input-group">
-                                                <input type="number" min="1" name="widthmiddle" id="widthmiddle" class="form-control  " autocomplete="off" placeholder="Width Middle ...." />
+                                                <input type="number" min="1" name="widthmiddle" id="widthmiddle" class="form-control  " autocomplete="off"/>
                                                 <span class="input-group-text ">mm</span>
                                             </div>
                                             <small class="form-hint">* Middle</small>
@@ -110,14 +110,14 @@
                                         <label for="widthbottom" class="col-lg-3 text-uppercase fw-bold text-transparent">width bottom x minimum</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
-                                                <input type="number" min="1" name="widthbottom" id="widthbottom" class="form-control  " autocomplete="off" placeholder="Width Bottom ...." />
+                                                <input type="number" min="1" name="widthbottom" id="widthbottom" class="form-control  " autocomplete="off"  />
                                                 <span class="input-group-text ">mm</span>
                                             </div>
                                             <small class="form-hint">* Bottom</small>
                                         </div>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
-                                                <input type="number" min="1" name="widthmin" id="widthmin" class="form-control  " autocomplete="off" placeholder="Width Minimum ...." />
+                                                <input type="number" min="1" name="widthmin" id="widthmin" class="form-control  " autocomplete="off"  />
                                                 <span class="input-group-text ">mm</span>
                                             </div>
                                             <small class="form-hint">* Minimum</small>
@@ -128,7 +128,7 @@
                                         <label for="drop" class="col-lg-3 text-uppercase fw-bold text-transparent">drop</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
-                                                <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off" placeholder="Drop ...." />
+                                                <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off" />
                                                 <!-- <button data-bs-toggle="dropdown" type="button" class="btn dropdown-toggle dropdown-toggle-split"></button>
                                                 <div class="dropdown-menu dropdown-menu-end">
                                                     <a class="dropdown-item" href="#">
@@ -201,9 +201,9 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divLockHandling">
-                                        <label for="lockhanding" class="col-lg-3 text-uppercase fw-bold" >lock handling</label>
+                                        <label for="lockhandling" class="col-lg-3 text-uppercase fw-bold" >lock handling</label>
                                         <div class="col-lg-4">
-                                            <select name="lockhanding" id="lockhanding" class="form-select"></select>
+                                            <select name="lockhandling" id="lockhandling" class="form-select"></select>
                                         </div>  
                                     </div>
 

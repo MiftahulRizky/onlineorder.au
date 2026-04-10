@@ -30,20 +30,38 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const tubetype = e.target.value;
       await Promise.all([
         bindMounting(),
+        bindFrameType(blindname),
         bindFrameColour(blindname),
-        bindMeshType(),
+        bindFitted(),
+        bindMeshType(blindname),
+        bindFixing(),
+        bindTop(),
+        bindHingeType(),
+        bindLockType(),
+        bindLockHandling(),
+        bindSideFrame(),
+        bindHeadFrame(),
+        bindExtFrame(),
+        bindSlamBar(),
+        bindLeverHandlerType(),
+        bindLock(),
         bindLayout(),
         bindHandlePosition(),
         bindHandleMeasure(),
         bindMidrailPosition(),
         bindPetDoorType(),
-        bindPetDoorPosition(),
         bindTripleLock(),
         bindLatchBass(),
         bindBugseal(),
         bindDoorCloser(),
+        bindCrossBrace(),
       ]);
-      await handlerElementVisibility(blindtype, tubetype);
+      await handlerElementVisibility(blindid, tubetype);
+    }
+
+    if (e.target.id === "petdoortype") {
+      const petdoortype = e.target.value;
+      bindPetDoorPosition(petdoortype);
     }
   });
   el.addEventListener("input", (e) => {
@@ -56,6 +74,17 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         `${currentLength}/${maxLength}`;
     }
   });
+});
+
+document.querySelector("#btnSubmit").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+
+  // handlerSubmit(e.target.form, e.target.id);
+  handlerSubmit(e.target.id);
 });
 
 // button cancel
@@ -247,16 +276,27 @@ const bindTubes = async (designid, blindid) => {
           bindFrameColour(blindname),
           bindFitted(),
           bindMeshType(blindname),
+          bindFixing(),
+          bindTop(),
+          bindHingeType(),
+          bindLockType(),
+          bindLockHandling(),
+          bindSideFrame(),
+          bindHeadFrame(),
+          bindExtFrame(),
+          bindSlamBar(),
+          bindLeverHandlerType(),
+          bindLock(),
           bindLayout(),
           bindHandlePosition(),
           bindHandleMeasure(),
           bindMidrailPosition(),
           bindPetDoorType(),
-          bindPetDoorPosition(),
           bindTripleLock(),
           bindLatchBass(),
           bindBugseal(),
           bindDoorCloser(),
+          bindCrossBrace(),
         ]);
         await handlerElementVisibility(blindid, tubetype);
       }
@@ -573,7 +613,7 @@ const bindTop = () => {
   });
 };
 
-const bindHangeType = () => {
+const bindHingeType = () => {
   const sel = document.getElementById("hingetype");
   sel.innerHTML = ""; //reset
 
@@ -608,6 +648,29 @@ const bindLockType = () => {
     { value: "5 Lever", text: "5 Lever" },
     { value: "Euro", text: "Euro" },
   );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindLockHandling = () => {
+  const sel = document.getElementById("lockhandling");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push({ value: "LH", text: "LH" }, { value: "RH", text: "RH" });
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
@@ -663,6 +726,122 @@ const bindHeadFrame = () => {
     { value: "40 x 40 RHS", text: "40 x 40 RHS" },
     { value: "50 x 50 RHS", text: "25 x 25 RHS" },
     { value: "10 x 25 FB", text: "10 x 25 FB" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindExtFrame = () => {
+  const sel = document.getElementById("extframe");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "None", text: "None" },
+    { value: "Custom", text: "Custom" },
+    { value: "25 x 5 FB", text: "25 x 5 FB" },
+    { value: "37 x 5 FB", text: "37 x 5 FB" },
+    { value: "50 x 5 FB", text: "50 x 5 FB" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindSlamBar = () => {
+  const sel = document.getElementById("slambar");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "32 x 5", text: "32 x 5" },
+    { value: "40 x 5", text: "40 x 5" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindLeverHandlerType = () => {
+  const sel = document.getElementById("levelhandler");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "7301 (5L)", text: "7301 (5L)" },
+    { value: "7701 (5L)", text: "7701 (5L)" },
+    { value: "7301 (EU)", text: "7301 (EU)" },
+    { value: "7701 (EU)", text: "7701 (EU)" },
+    { value: "778205 (0)", text: "778205 (0)" },
+    { value: "778200 (0)", text: "778200 (0)" },
+    { value: "738205 (0)", text: "738205 (0)" },
+    { value: "738200 (0)", text: "738200 (0)" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindLock = () => {
+  const sel = document.getElementById("lock");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "(L) JM560A", text: "(L) JM560A" },
+    { value: "(E) JMC60A", text: "(E) JMC60A" },
+    { value: "(L) JM29B", text: "(L) JM29B" },
+    { value: "(E) JMC29B", text: "(E) JMC29B" },
+    { value: "(LK) 3572", text: "(LK) 3572" },
   );
 
   if (data.length > 1) {
@@ -832,9 +1011,11 @@ const bindPetDoorType = () => {
   });
 };
 
-const bindPetDoorPosition = () => {
+const bindPetDoorPosition = (petdoortype) => {
   const sel = document.getElementById("petdoorposition");
   sel.innerHTML = ""; //reset
+
+  if (!petdoortype) return;
 
   let data = [];
   data.push(
@@ -969,6 +1150,32 @@ const bindDoorCloser = () => {
     sel.add(option);
   });
 };
+
+const bindCrossBrace = () => {
+  const sel = document.getElementById("crossbrace");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "Centre of Horizontal", text: "Centre of Horizontal" },
+    { value: "Centre of Vertical", text: "Centre of Vertical" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const handlerElementVisibility = async (blindtype, tubetype, item) => {
   try {
@@ -977,6 +1184,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
 
     const divFormDetail = document.getElementById("divFormDetail");
     const lblWidth = document.getElementById("lblWidth");
+    const hintWidthTop = document.getElementById("hintWidthTop");
     const divWidthMiddle = document.getElementById("divWidthMiddle");
     const divWidthBotMin = document.getElementById("divWidthBotMin");
     const divFrameType = document.getElementById("divFrameType");
@@ -1014,6 +1222,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
 
     divFormDetail.classList.add("d-none");
     lblWidth.innerHTML = "width top x middle";
+    hintWidthTop.classList.add("d-none");
     divWidthMiddle.classList.add("d-none");
     divWidthBotMin.classList.add("d-none");
     divFrameType.classList.add("d-none");
@@ -1058,6 +1267,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     // DOOR
     if (blindname.includes("Door") && !blindname.includes("Steel")) {
       lblWidth.innerHTML = "width top x middle";
+      hintWidthTop.classList.remove("d-none");
       divWidthMiddle.classList.remove("d-none");
       divWidthBotMin.classList.remove("d-none");
       divFrameColour.classList.remove("d-none");
@@ -1125,6 +1335,110 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       msg = "Please contact our IT team at support@onlineorder.au";
     }
     isError(msg);
+  }
+};
+
+const handlerSubmit = async (button) => {
+  try {
+    // return alert(button);
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = [
+      "blindtype",
+      "tubetype",
+      "qty",
+      "room",
+      "mounting",
+      "widthtop",
+      "widthmiddle",
+      "widthbottom",
+      "widthmin",
+      "drop",
+      "frametype",
+      "framecolour",
+      "fitted",
+      "meshtype",
+      "fixing",
+      "top",
+      "hingetype",
+      "locktype",
+      "lockhandling",
+      "sideframe",
+      "headframe",
+      "extframe",
+      "extwidth",
+      "extdrop",
+      "slambar",
+      "levelhandler",
+      "lock",
+      "layoutcode",
+      "handleposition",
+      "handlemeasure",
+      "handleheight",
+      "midrailposition",
+      "midrailrequest",
+      "petdoortype",
+      "petdoorposition",
+      "triplelock",
+      "latchbass",
+      "bugseal",
+      "doorcloser",
+      "boldpatio",
+      "crossbrace",
+      "notes",
+      "markup",
+    ];
+
+    const formData = {
+      headerid: HEADERID,
+      itemaction: ITEMACTION,
+      itemid: ITEMID,
+      designid: DESIGNID,
+      loginid: LOGINID,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.getElementById(field).value;
+    });
+
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/Submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success);
+      // window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Submit";
   }
 };
 // ----------------------------------------------|| Other Functions ||---------------------------------------

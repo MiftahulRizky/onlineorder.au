@@ -248,6 +248,10 @@ Partial Class Methods_Order_VerticalBlindMethod
         End Try
     End Function
 
+    Private Shared Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
+    End Function
+
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Submit(ByVal data As ParamSubmit) As Object
@@ -269,7 +273,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                 End If
             End If
 
-            If Not BlindName = "Slat Only" And String.IsNullOrEmpty(data.mounting) Then
+            If Not InArray(BlindName, "Complete", "Track Only") And String.IsNullOrEmpty(data.mounting) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
             End If
 
