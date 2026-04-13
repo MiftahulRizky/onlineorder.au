@@ -22,22 +22,15 @@
                             </div>
 
                             <div class="card-body">
-                                <br />
-                                <br />
-                                <br />
-                                <br />
-                                <br />
-                                <br />
-                                <br />
-                                <br />
-                                <br />
-                                <br />
-                                <br />
-                                <br />
-                                <br />
-                                <br />
-                                <br />
-                                <br />
+                                <div class="ratio ratio-16x9">
+                                    <iframe 
+                                    id="pdfFrame"
+                                    src="/File/newslatters.pdf#toolbar=0&navpanes=0&scrollbar=1"
+                                    allowfullscreen
+                                    height="100%"
+                                    style="border: none;">
+                                    </iframe>
+                                </div>
                             </div>
 
                             <div class="card-footer text-end"></div>
@@ -50,5 +43,10 @@
             document.addEventListener("DOMContentLoaded", () => {
                 loaderFadeOut();
             })
+
+            const reloadPDF = () => {
+                const iframe = document.getElementById('pdfFrame');
+                iframe.src = iframe.src;
+            }
         </script>
     </asp:Content>
