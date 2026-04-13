@@ -47,7 +47,7 @@ Partial Class Order_Method
         Dim fabricchange As String = data.fabricchange
 
         If type = "BlindType" Then
-            Dim dataSet As DataSet = orderCfg.GetListData("SELECT Id, UPPER(Name) AS NameText FROM Blinds WHERE DesignId='" + designtype + "' AND Active=1 ORDER BY Name ASC")
+            Dim dataSet As DataSet = orderCfg.GetListData("SELECT Id, UPPER(Name) AS NameText FROM Blinds WHERE DesignId='" + designtype + "' AND Company='Loop' AND Active=1 ORDER BY Name ASC")
             If dataSet.Tables.Count > 0 AndAlso dataSet.Tables(0).Rows.Count > 0 Then
                 For Each row As DataRow In dataSet.Tables(0).Rows
                     result.Add(New With {.Value = row("Id").ToString(), .Text = row("NameText").ToString()})
