@@ -56,7 +56,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindDoorCloser(),
         bindCrossBrace(),
       ]);
-      await handlerElementVisibility(blindid, tubetype);
+      await handlerElementVisibility(blindtype, tubetype);
     }
 
     if (e.target.id === "petdoortype") {
@@ -1263,6 +1263,13 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     divTubeType.classList.remove("d-none");
 
     if (!tubetype) return;
+    const tubename = await getItemData(
+      `SELECT TubeType FROM hardwareKits WHERE Id = '${tubetype}'`,
+    );
+    if (tubename == "N/A") {
+      divTubeType.classList.add("d-none");
+    }
+
     divFormDetail.classList.remove("d-none");
     // DOOR
     if (blindname.includes("Door") && !blindname.includes("Steel")) {

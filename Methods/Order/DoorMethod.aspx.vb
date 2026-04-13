@@ -420,6 +420,78 @@ Partial Class Methods_Order_DoorMethod
                 data.boldpatio = ""
             End If
 
+            If InStr(BlindName, "Door") > 0 AND InStr(BlindName, "Steel") = 0 Then
+                data.frametype = ""
+                data.fitted = ""
+                data.fixing = ""
+                data.top = ""
+                data.hingetype = ""
+                data.locktype = ""
+                data.lockhandling = ""
+                data.sideframe = ""
+                data.headframe = ""
+                data.extframe = ""
+                data.extwidth = ""
+                data.extdrop = ""
+                data.slambar = ""
+                data.levelhandler = ""
+                data.lock = ""
+                data.crossbrace = ""
+            End If
+
+            If InStr(BlindName, "Grile") > 0 AND InStr(BlindName, "Steel") = 0 Then
+                data.widthmiddle = ""
+                widthmiddle = ""
+                data.widthbottom = ""
+                widthbottom = ""
+                data.widthmin = ""
+                widthmin = ""
+
+                data.fitted = ""
+                data.fixing = ""
+                data.top = ""
+                data.hingetype = ""
+                data.locktype = ""
+                data.lockhandling = ""
+                data.sideframe = ""
+                data.headframe = ""
+                data.extframe = ""
+                data.extwidth = ""
+                data.extdrop = ""
+                data.slambar = ""
+                data.levelhandler = ""
+                data.lock = ""
+                data.layoutcode = ""
+                data.handleposition = ""
+                data.handlemeasure = ""
+                data.handleheight = ""
+                data.petdoortype = ""
+                data.petdoorposition = ""
+                data.triplelock = ""
+                data.latchbass = ""
+                data.bugseal = ""
+                data.doorcloser = ""
+                data.boldpatio = ""
+                data.crossbrace = ""
+            End If
+
+            If InStr(BlindName, "Steel") > 0 Then
+                data.layoutcode = ""
+                data.handleposition = ""
+                data.handlemeasure = ""
+                data.handleheight = ""
+                data.midrailposition = ""
+                data.midrailrequest = ""
+                data.petdoortype = ""
+                data.petdoorposition = ""
+                data.triplelock = ""
+                data.latchbass = ""
+                data.bugseal = ""
+                data.doorcloser = ""
+                data.boldpatio = ""
+                data.crossbrace = ""
+            End If
+
             Return New SuccessResponse With {.success = msg}
         Catch ex As Exception
             Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}

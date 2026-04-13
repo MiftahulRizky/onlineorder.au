@@ -214,7 +214,7 @@ if (btnInfo) {
               (blindName == "Cassette" && tubetype == "Motorised")
             ) {
               text =
-                " RTS - Wired Motors <br/> WS – Battery RTS Motors <br/> WS – Switch Motors";
+                " RTS - Wired Motors <br/> WF – Battery RTS Motors <br/> WS – Switch Motors";
             }
             break;
           case "btnInfoQty":
@@ -2174,7 +2174,7 @@ const bindExtras = (blindname, controltype, motorstyle) => {
     }
   }
 
-  if (controltype.includes("Alpha")) {
+  if (controltype.includes("WF")) {
     data.push({
       value: "Lead Ex 3M ALDC Charger",
       text: "Lead Ex 3M ALDC Charger",
