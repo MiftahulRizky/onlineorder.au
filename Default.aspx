@@ -22,14 +22,29 @@
                             </div>
 
                             <div class="card-body">
-                                <div class="ratio ratio-16x9">
-                                   <iframe 
-                                    src="/File/newslatters.pdf#toolbar=0&navpanes=0&view=FitH"
-                                    width="100%" 
-                                    height="100%" 
-                                    style="border: none;">
-                                    </iframe>
+
+                                <div id="carouselExampleFade" class="carousel slide carousel-fade">
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active">
+                                        <img src="/Content/static/homebanner.JPG" class="d-block w-100" alt="...">
+                                        </div>
+                                        <!-- <div class="carousel-item">
+                                        <img src="..." class="d-block w-100" alt="...">
+                                        </div>
+                                        <div class="carousel-item">
+                                        <img src="..." class="d-block w-100" alt="...">
+                                        </div> -->
+                                    </div>
+                                    <!-- <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button> -->
                                 </div>
+                                
                             </div>
 
                             <div class="card-footer text-end"></div>
@@ -43,9 +58,6 @@
                 loaderFadeOut();
             })
 
-            const reloadPDF = () => {
-                const iframe = document.getElementById('pdfFrame');
-                iframe.src = iframe.src;
-            }
+         
         </script>
     </asp:Content>

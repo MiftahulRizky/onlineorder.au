@@ -384,11 +384,11 @@ Partial Class Methods_Order_DoorMethod
 
             If BlindName = "Flyscreen" Then
                 data.widthmiddle = ""
-                widthmiddle = ""
+                widthmiddle = 0
                 data.widthbottom = ""
-                widthbottom = ""
+                widthbottom = 0
                 data.widthmin = ""
-                widthmin = ""
+                widthmin = 0
 
                 data.frametype = ""
                 data.fitted = ""
@@ -441,11 +441,11 @@ Partial Class Methods_Order_DoorMethod
 
             If InStr(BlindName, "Grile") > 0 AND InStr(BlindName, "Steel") = 0 Then
                 data.widthmiddle = ""
-                widthmiddle = ""
+                widthmiddle = 0
                 data.widthbottom = ""
-                widthbottom = ""
+                widthbottom = 0
                 data.widthmin = ""
-                widthmin = ""
+                widthmin = 0
 
                 data.fitted = ""
                 data.fixing = ""
@@ -490,6 +490,45 @@ Partial Class Methods_Order_DoorMethod
                 data.doorcloser = ""
                 data.boldpatio = ""
                 data.crossbrace = ""
+            End If
+
+
+            If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
+                Dim ItemId As String = publicCfg.CreateOrderItemId()
+
+                 Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, SlatSize, SlatQty, Width, [Drop], StackPosition, ControlPosition, TrackColour, ChainLength, WandColour, WandLength, BracketOption, BracketColour, HangerType, BottomHoldDown, InsertInTrack, Sloper, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @SlatSize, @SlatQty, @Width, @Drop, @StackPosition, @ControlPosition, @TrackColour, @ChainLength, @WandColour, @WandLength, @BracketOption, @BracketColour, @HangerType, @BottomHoldDown, @InsertInTrack, @Sloper, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                        myCmd.Parameters.AddWithValue("@Id", ItemId)
+                        myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
+                        myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
+                        myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.tubetype), DBNull.Value, UCase(data.tubetype).ToString()))
+                        myCmd.Parameters.AddWithValue("@SoeKitId", If(String.IsNullOrEmpty(SoeId), DBNull.Value, SoeId))
+                        myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(PriceGroupId), DBNull.Value, PriceGroupId))
+                        myCmd.Parameters.AddWithValue("@Qty", qty)
+                        myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
+                        myCmd.Parameters.AddWithValue("@Width", widthtop)
+                        myCmd.Parameters.AddWithValue("@Drop", drop)
+                        myCmd.Parameters.AddWithValue("@FrameType", data.frametype)
+                        myCmd.Parameters.AddWithValue("@FrameColour", data.framecolour)
+                        myCmd.Parameters.AddWithValue("@Notes", data.notes)
+                        myCmd.Parameters.AddWithValue("@MarkUp", markup)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+
+                msg = "Item added successfully !"
+            End If
+
+            If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
+                Dim ItemId As String = data.itemid
+
+
+                msg = "Item updated successfully !"
             End If
 
             Return New SuccessResponse With {.success = msg}
