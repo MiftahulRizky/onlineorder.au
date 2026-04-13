@@ -23,11 +23,10 @@
 
                             <div class="card-body">
                                 <div class="ratio ratio-16x9">
-                                    <iframe 
-                                    id="pdfFrame"
-                                    src="/File/newslatters.pdf#toolbar=0&navpanes=0&scrollbar=1"
-                                    allowfullscreen
-                                    height="100%"
+                                   <iframe 
+                                    src="/File/newslatters.pdf#toolbar=0&navpanes=0&view=FitH"
+                                    width="100%" 
+                                    height="100%" 
                                     style="border: none;">
                                     </iframe>
                                 </div>
