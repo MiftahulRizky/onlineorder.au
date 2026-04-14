@@ -1287,6 +1287,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     const divMarkUp = document.getElementById("divMarkUp");
     const btnSubmit = document.querySelector("#btnSubmit");
     // return;
+    lblItemId.classList.add("d-none");
     divTubeType.classList.add("d-none");
 
     divFormDetail.classList.add("d-none");
@@ -1324,6 +1325,10 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
 
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
+
+    if (["Administrator"].includes(ROLENAME)) {
+      lblItemId.classList.remove("d-none");
+    }
 
     if (!blindtype) return;
     const blindname = await getItemData(
@@ -1531,8 +1536,22 @@ const handlerSetElementValues = (itemData) => {
     widthmin: "WidthB",
     drop: "Drop",
     frametype: "FrameType",
+    fitted: "Fitting",
     framecolour: "FrameColour",
     meshtype: "MeshType",
+    fixing: "SemiInsideMount",
+    top: "LayoutSpecial",
+    hingetype: "HangerType",
+    locktype: "TiltrodType",
+    lockhandling: "TiltrodSplit",
+    sideframe: "FrameLeft",
+    headframe: "FrameRight",
+    extframe: "FrameTop",
+    extwidth: "PanelQty",
+    extdrop: "TrackQty",
+    slambar: "DoorCutOut",
+    levelhandler: "SpecialShape",
+    lock: "TemplateProvided",
     layoutcode: "Layout",
     handleposition: "TrackType",
     handlemeasure: "TrackColour",
