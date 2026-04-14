@@ -1328,6 +1328,14 @@ const handlerSetElementValues = (itemData) => {
       }
     }
 
+    if (["inserttrack", "sloper"].includes(id)) {
+      if (["0", "False"].includes(value)) {
+        el.value = "0";
+      } else {
+        el.value = "1";
+      }
+    }
+
     // jika nilainya "0" → kosong
     if (el.value === "0") el.value = "";
   });

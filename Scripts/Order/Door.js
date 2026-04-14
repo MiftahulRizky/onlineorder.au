@@ -1176,6 +1176,75 @@ const bindCrossBrace = () => {
     sel.add(option);
   });
 };
+
+const bindItemOrders = async (itemid) => {
+  try {
+    if (!itemid) return;
+
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid }),
+    });
+
+    if (!res.ok) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d;
+
+    if (!data || data.length === 0) {
+      throw isError("No data returned from server : bindItemOrders");
+    }
+
+    for (const item of data) {
+      await bindBlinds(item.DesignId);
+      await bindTubes(item.DesignId, item.BlindId);
+      await Promise.all([
+        bindMounting(),
+        bindFrameType(item.BlindName),
+        bindFrameColour(item.BlindName),
+        bindFitted(),
+        bindMeshType(item.BlindName),
+        bindFixing(),
+        bindTop(),
+        bindHingeType(),
+        bindLockType(),
+        bindLockHandling(),
+        bindSideFrame(),
+        bindHeadFrame(),
+        bindExtFrame(),
+        bindSlamBar(),
+        bindLeverHandlerType(),
+        bindLock(),
+        bindLayout(),
+        bindHandlePosition(),
+        bindHandleMeasure(),
+        bindMidrailPosition(),
+        bindPetDoorType(),
+        bindTripleLock(),
+        bindLatchBass(),
+        bindBugseal(),
+        bindDoorCloser(),
+        bindCrossBrace(),
+        handlerSetElementValues(item),
+      ]);
+      await handlerElementVisibility(item.BlindId, item.KitId, item);
+    }
+
+    return true; // ✅ success
+  } catch (error) {
+    console.error("bindItemOrder error:", error);
+    throw error;
+  }
+};
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const handlerElementVisibility = async (blindtype, tubetype, item) => {
   try {
@@ -1436,7 +1505,7 @@ const handlerSubmit = async (button) => {
       }
     } else {
       await isSuccess(dataResult.success);
-      // window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
     }
   } catch (error) {
     var msg = error.message;
@@ -1447,6 +1516,45 @@ const handlerSubmit = async (button) => {
   } finally {
     document.getElementById(button).innerHTML = "Submit";
   }
+};
+
+const handlerSetElementValues = (itemData) => {
+  const mapping = {
+    blindtype: "BlindId",
+    tubetype: "KitId",
+    qty: "Qty",
+    room: "Location",
+    mounting: "Mounting",
+    widthtop: "Width",
+    widthmiddle: "WidthMiddle",
+    widthbottom: "WidthBottom",
+    widthmin: "WidthB",
+    drop: "Drop",
+    frametype: "FrameType",
+    framecolour: "FrameColour",
+    meshtype: "MeshType",
+    midrailposition: "MidrailCritical",
+    midrailrequest: "MidrailHeight1",
+    notes: "Notes",
+    markup: "MarkUp",
+  };
+
+  // Set nilai ke input sesuai mapping
+  Object.entries(mapping).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) {
+      console.warn(`Elemen '${id}' tidak ditemukan.`);
+      return;
+    }
+
+    let value = itemData[key];
+    if (id === "markup" && value === 0) value = "";
+
+    el.value = value ?? ""; // fallback ke string kosong
+
+    // jika nilainya "0" → kosong
+    if (el.value === "0") el.value = "";
+  });
 };
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const doorPageLoaded = async () => {
@@ -1479,7 +1587,7 @@ const doorPageLoaded = async () => {
     await handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    // await bindItemOrders(ITEMID);
+    await bindItemOrders(ITEMID);
     loaderFadeOut();
   }
 };

@@ -3564,7 +3564,7 @@ Partial Class Methods_Order_DetailMethod
         Try
             Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Vertical Blinds' AND BlindName='Track Only' AND Active=1 ORDER BY Id, BlindNo ASC")
             If Not thisData.Tables(0).Rows.Count = 0 Then
-                Dim tdNotes As String = "<td colspan='18' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
+                Dim tdNotes As String = "<td colspan='19' style='margin-left:50px;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;word-wrap:break-word;'>"
                 result += spanStart & "VERTICAL TRACK ONLY" & spanEnd
 
                 result += tableStart
@@ -3603,10 +3603,10 @@ Partial Class Methods_Order_DetailMethod
 
                     Dim insertInTrack As String = "No"
                     Dim sloper As String = "No"
-                    If Not thisData.Tables(0).Rows(i).Item("InsertInTrack").ToString() = "" Then
+                    If Not thisData.Tables(0).Rows(i).Item("InsertInTrack").ToString() = "False" OR thisData.Tables(0).Rows(i).Item("InsertInTrack").ToString() = "0" Then
                         insertInTrack = "Yes"
                     End If
-                    If Not thisData.Tables(0).Rows(i).Item("Sloper").ToString() = "" Then
+                    If Not thisData.Tables(0).Rows(i).Item("Sloper").ToString() = "False" OR thisData.Tables(0).Rows(i).Item("Sloper").ToString() = "0" Then
                         sloper = "Yes"
                     End If
 

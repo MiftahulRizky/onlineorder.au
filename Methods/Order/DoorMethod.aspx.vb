@@ -139,6 +139,33 @@ Partial Class Methods_Order_DoorMethod
         End Try
     End Function
 
+     <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindItemOrder(ByVal itemid As String) As Object
+        Try
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE Id = '{0}'", itemid))
+
+            Dim data As DataSet = DirectCast(datas, DataSet)
+
+            Dim resultList As New List(Of Dictionary(Of String, String))()
+
+            If data IsNot Nothing AndAlso data.Tables.Count > 0 Then
+                For Each row As DataRow In data.Tables(0).Rows
+                    Dim dict As New Dictionary(Of String, String)()
+                    For Each col As DataColumn In data.Tables(0).Columns
+                        dict(col.ColumnName) = row(col).ToString()
+                    Next
+                    resultList.Add(dict)
+                Next
+            End If
+
+            Return resultList
+        Catch ex As Exception
+            ' Tangani error agar bisa dikenali di JavaScript
+            Return New With {.error = True, .message = ex.Message}
+        End Try
+    End Function
+
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Submit(ByVal data As ParamSubmit) As Object
@@ -496,8 +523,63 @@ Partial Class Methods_Order_DoorMethod
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
 
-                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, SlatSize, SlatQty, Width, [Drop], StackPosition, ControlPosition, TrackColour, ChainLength, WandColour, WandLength, BracketOption, BracketColour, HangerType, BottomHoldDown, InsertInTrack, Sloper, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @SlatSize, @SlatQty, @Width, @Drop, @StackPosition, @ControlPosition, @TrackColour, @ChainLength, @WandColour, @WandLength, @BracketOption, @BracketColour, @HangerType, @BottomHoldDown, @InsertInTrack, @Sloper, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, WidthMiddle, WidthBottom, WidthB, [Drop], FrameType, FrameColour, MeshType, Layout, TrackType, TrackColour, TrackLength, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @WidthMiddle, @WidthBottom, @WidthB, @Drop, @FrameType, @FrameColour, @MeshType, @Layout,  @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                        myCmd.Parameters.AddWithValue("@Id", ItemId)
+                        myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
+                        myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
+                        myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.tubetype), DBNull.Value, UCase(data.tubetype).ToString()))
+                        myCmd.Parameters.AddWithValue("@SoeKitId", If(String.IsNullOrEmpty(SoeId), DBNull.Value, SoeId))
+                        myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(PriceGroupId), DBNull.Value, PriceGroupId))
+                        myCmd.Parameters.AddWithValue("@Qty", qty)
+                        myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
+                        myCmd.Parameters.AddWithValue("@Width", widthtop)
+                        myCmd.Parameters.AddWithValue("@WidthMiddle", widthmiddle)
+                        myCmd.Parameters.AddWithValue("@WidthBottom", widthbottom)
+                        myCmd.Parameters.AddWithValue("@WidthB", widthmin)
+                        myCmd.Parameters.AddWithValue("@Drop", drop)
+                        myCmd.Parameters.AddWithValue("@FrameType", data.frametype)
+                        myCmd.Parameters.AddWithValue("@FrameColour", data.framecolour)
+                        myCmd.Parameters.AddWithValue("@MeshType", data.meshtype)
+                        myCmd.Parameters.AddWithValue("@Layout", data.layoutcode)
+                        myCmd.Parameters.AddWithValue("@TrackType", data.handleposition)
+                        myCmd.Parameters.AddWithValue("@TrackColour", data.handlemeasure)
+                        myCmd.Parameters.AddWithValue("@TrackLength", data.handleheight)
+                        myCmd.Parameters.AddWithValue("@Buildout", data.petdoortype)
+                        myCmd.Parameters.AddWithValue("@BuildoutPosition", data.petdoorposition)
+                        myCmd.Parameters.AddWithValue("@JoinedPanels", data.triplelock)
+                        myCmd.Parameters.AddWithValue("@ReverseHinged", data.latchbass)
+                        myCmd.Parameters.AddWithValue("@PelmetFlat", data.bugseal)
+                        myCmd.Parameters.AddWithValue("@ExtraFascia", data.doorcloser)
+                        myCmd.Parameters.AddWithValue("@HingesLoose", data.boldpatio)
+                        myCmd.Parameters.AddWithValue("@MidrailCritical", data.midrailposition)
+                        myCmd.Parameters.AddWithValue("@MidrailHeight1", data.midrailrequest)
+                        myCmd.Parameters.AddWithValue("@Notes", data.notes)
+                        myCmd.Parameters.AddWithValue("@MarkUp", markup)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+
+                publicCfg.ResetPriceDetail(ItemId)
+                publicCfg.HitungHarga(data.headerid, ItemId)
+                publicCfg.HitungSurcharge(data.headerid, ItemId)
+
+                Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Add Item Order"}
+                orderCfg.Log_Orders(dataLog)
+
+                msg = "Item added successfully !"
+            End If
+
+            If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
+                Dim ItemId As String = data.itemid
+
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, FrameType=@FrameType, FrameColour=@FrameColour, MeshType=@MeshType, MidrailCritical=@MidrailCritical, MidrailHeight1=@MidrailHeight1, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -512,6 +594,9 @@ Partial Class Methods_Order_DoorMethod
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@FrameType", data.frametype)
                         myCmd.Parameters.AddWithValue("@FrameColour", data.framecolour)
+                        myCmd.Parameters.AddWithValue("@MeshType", data.meshtype)
+                        myCmd.Parameters.AddWithValue("@MidrailCritical", data.midrailposition)
+                        myCmd.Parameters.AddWithValue("@MidrailHeight1", data.midrailrequest)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
                         myCmd.Connection = thisConn
@@ -521,12 +606,12 @@ Partial Class Methods_Order_DoorMethod
                     End Using
                 End Using
 
-                msg = "Item added successfully !"
-            End If
+                publicCfg.ResetPriceDetail(ItemId)
+                publicCfg.HitungHarga(data.headerid, ItemId)
+                publicCfg.HitungSurcharge(data.headerid, ItemId)
 
-            If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
-                Dim ItemId As String = data.itemid
-
+                Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Update Item Order"}
+                orderCfg.Log_Orders(dataLog)
 
                 msg = "Item updated successfully !"
             End If
