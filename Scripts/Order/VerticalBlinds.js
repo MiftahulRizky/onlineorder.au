@@ -530,6 +530,8 @@ const bindFabricLength = async (designid, fabrictype) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
+        const fabriclength = select.value;
+        await bindFabricColours(designid, fabrictype, fabriclength);
       }
     }
   } catch (err) {
