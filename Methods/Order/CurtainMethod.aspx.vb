@@ -106,4 +106,27 @@ Partial Class Methods_Order_CurtainMethod
         End Try
     End Function
 
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindFabricColour(ByVal designid As String, ByVal fabrictype As String) As Object
+        Try
+            Dim MyQuery As String = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId='{0}' AND Type='{1}' AND Active='1'  ORDER BY Name ASC", designid, fabrictype)
+            Dim datas As DataSet = publicCfg.GetListData(MyQuery)
+            Dim list As New List(Of Dictionary(Of String, String))()
+            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
+                For Each row As DataRow In datas.Tables(0).Rows
+                    Dim result As New Dictionary(Of String, String) From {
+                        {"value", row("Id").ToString()},
+                        {"text", row("Colour").ToString()}
+                    }
+                    list.Add(result)
+                Next
+            End If
+            Return list
+        Catch ex As Exception
+            ' Return sebagai objek error agar bisa ditangani di sisi client
+            Return New With {.error = ex.Message}
+        End Try
+    End Function
+
 End Class

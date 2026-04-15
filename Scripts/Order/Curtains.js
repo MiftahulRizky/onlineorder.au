@@ -50,16 +50,20 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     //   await handlerElementVisibility(blindtype, tubetype, controltype);
     // }
 
-    // if (e.target.id === "fabrictype") {
-    //   const fabrictype = e.target.value;
-    //   await bindFabricLength(DESIGNID, fabrictype);
-    // }
+    if (e.target.id === "fabrictype") {
+      const fabrictype = e.target.value;
+      await bindFabricColours(DESIGNID, fabrictype);
+    }
 
-    // if (e.target.id === "fabriclength") {
-    //   const fabrictype = document.querySelector("#fabrictype").value;
-    //   const fabriclength = e.target.value;
-    //   await bindFabricColours(DESIGNID, fabrictype, fabriclength);
-    // }
+    if (e.target.id === "tracktype") {
+      const divReturnLength = document.getElementById("divReturnLength");
+      divReturnLength.classList.add("d-none");
+      const tracktype = e.target.value;
+      if (tracktype) {
+        divReturnLength.classList.remove("d-none");
+      }
+      await Promise.all([bindTrackColour(tracktype), bindTrackDraw(tracktype)]);
+    }
   });
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
@@ -71,6 +75,17 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         `${currentLength}/${maxLength}`;
     }
   });
+});
+
+document.querySelector("#btnSubmit").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+
+  // handlerSubmit(e.target.form, e.target.id);
+  handlerSubmit(e.target.id);
 });
 
 document.querySelector("#btnCancel").addEventListener("click", (e) => {
@@ -340,11 +355,75 @@ const bindFabrics = async (designid) => {
   }
 };
 
+const bindFabricColours = async (designid, fabrictype) => {
+  const select = document.getElementById("fabriccolour");
+  select.innerHTML = "";
+
+  if (!designid || !fabrictype) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindFabricColour`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        designid,
+        fabrictype,
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindFabricLength");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
 const bindMounting = () => {
   const sel = document.getElementById("mounting");
   sel.innerHTML = ""; //reset
-
-  if (!tubetype) return;
 
   let data = [];
   data.push(
@@ -372,8 +451,6 @@ const bindMounting = () => {
 const bindCurtainHeading = () => {
   const sel = document.getElementById("curtainheading");
   sel.innerHTML = ""; //reset
-
-  if (!tubetype) return;
 
   let data = [];
   data.push(
@@ -404,8 +481,6 @@ const bindTrackType = () => {
   const sel = document.getElementById("tracktype");
   sel.innerHTML = ""; //reset
 
-  if (!tubetype) return;
-
   let data = [];
   data.push(
     { value: "Styletrack", text: "Styletrack" },
@@ -428,11 +503,11 @@ const bindTrackType = () => {
   });
 };
 
-const bindTracColour = () => {
+const bindTrackColour = (tracktype) => {
   const sel = document.getElementById("trackcolour");
   sel.innerHTML = ""; //reset
 
-  if (!tubetype) return;
+  if (!tracktype) return;
 
   let data = [];
   data.push(
@@ -458,11 +533,11 @@ const bindTracColour = () => {
   });
 };
 
-const bindTracDraw = () => {
+const bindTrackDraw = (tracktype) => {
   const sel = document.getElementById("trackdraw");
   sel.innerHTML = ""; //reset
 
-  if (!tubetype) return;
+  if (!tracktype) return;
 
   let data = [];
   data.push(
@@ -489,8 +564,6 @@ const bindTracDraw = () => {
 const bindStack = () => {
   const sel = document.getElementById("stackposition");
   sel.innerHTML = ""; //reset
-
-  if (!tubetype) return;
 
   let data = [];
   data.push(
@@ -520,8 +593,6 @@ const bindBottom = () => {
   const sel = document.getElementById("bottom");
   sel.innerHTML = ""; //reset
 
-  if (!tubetype) return;
-
   let data = [];
   data.push(
     { value: "Standard", text: "Standard" },
@@ -547,8 +618,6 @@ const bindBottom = () => {
 const bindTie = () => {
   const sel = document.getElementById("tie");
   sel.innerHTML = ""; //reset
-
-  if (!tubetype) return;
 
   let data = [];
   data.push(
@@ -661,6 +730,87 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       msg = "Please contact our IT team at support@onlineorder.au";
     }
     isError(msg);
+  }
+};
+
+const handlerSubmit = async (button) => {
+  try {
+    // return alert(button);
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = [
+      "blindtype",
+      "tubetype",
+      "qty",
+      "room",
+      "mounting",
+      "width",
+      "drop",
+      "curtainheading",
+      "fabrictype",
+      "fabriccolour",
+      "tracktype",
+      "trackcolour",
+      "trackdraw",
+      "stackposition",
+      "returnleft",
+      "returnright",
+      "bottom",
+      "tie",
+      "notes",
+      "markup",
+    ];
+
+    const formData = {
+      headerid: HEADERID,
+      itemaction: ITEMACTION,
+      itemid: ITEMID,
+      designid: DESIGNID,
+      loginid: LOGINID,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.getElementById(field).value;
+    });
+
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/Submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success);
+      // window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Submit";
   }
 };
 // ----------------------------------------------------------- || Other Funtions ||------------------------------------------------------------

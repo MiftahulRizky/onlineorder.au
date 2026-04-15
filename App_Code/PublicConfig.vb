@@ -1238,7 +1238,7 @@ Public Class PublicConfig
         Dim Type As String = CStr(ListParam(2))
         Dim Qty As Integer = CInt(ListParam(3))
         Dim Desc As String = CStr(ListParam(4))
-        Dim Cost As Integer = CStr(ListParam(5))
+        Dim Cost As Decimal = CStr(ListParam(5))
         Dim Discount As Decimal = CDec(ListParam(6))
         Dim CustomDiscount As Decimal = CDec(ListParam(7))
  

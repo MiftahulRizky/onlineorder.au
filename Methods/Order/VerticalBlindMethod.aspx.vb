@@ -508,7 +508,6 @@ Partial Class Methods_Order_VerticalBlindMethod
                 End If
             End If
 
-            data.slatqty = ""
 
             If BlindName = "Track Only" Then
                 data.fabriccolour = ""
