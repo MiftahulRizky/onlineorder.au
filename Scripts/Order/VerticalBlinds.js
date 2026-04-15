@@ -1,6 +1,6 @@
 ﻿document.addEventListener("DOMContentLoaded", () => {
   if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
-    console.log("RollerBlinds.js loaded successfully");
+    console.log("Vertical.js loaded successfully");
     console.log("ROLENAME: " + ROLENAME);
     console.log("LEVELNAME: " + LEVELNAME);
     console.log("ITEMACTION: " + ITEMACTION);

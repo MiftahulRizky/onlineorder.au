@@ -274,7 +274,7 @@ Partial Class Methods_Order_VerticalBlindMethod
             End If
 
             If Not InArray(BlindName, "Complete", "Track Only") And String.IsNullOrEmpty(data.mounting) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
+                ' Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
             End If
 
             Dim width As Integer
