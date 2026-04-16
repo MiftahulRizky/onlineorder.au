@@ -863,6 +863,13 @@ Partial Class Methods_Order_DetailMethod
                             Product = String.Format("{0} {1} ({2}) {3}", KitName, MeshType, FrameColour, Size)
                         End If
 
+                        If DesignName = "Curtain" Then
+                            Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
+                            If BlindName = "Track Only" Then
+                                Product = String.Format("{0} ({1}mm)", KitName, Width)
+                            End If
+                        End If
+
                         '#----------------|| Production ||----------------#
                         Dim Production As String = "Sunlight"
                         If InStr(DesignName, "Global") > 0 Then

@@ -168,6 +168,34 @@ Partial Class Methods_Order_CurtainMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindItemOrder(ByVal itemid As String) As Object
+        Try
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE Id = '{0}'", itemid))
+
+            Dim data As DataSet = DirectCast(datas, DataSet)
+
+            Dim resultList As New List(Of Dictionary(Of String, String))()
+
+            If data IsNot Nothing AndAlso data.Tables.Count > 0 Then
+                For Each row As DataRow In data.Tables(0).Rows
+                    Dim dict As New Dictionary(Of String, String)()
+                    For Each col As DataColumn In data.Tables(0).Columns
+                        dict(col.ColumnName) = row(col).ToString()
+                    Next
+                    resultList.Add(dict)
+                Next
+            End If
+
+            Return resultList
+        Catch ex As Exception
+            ' Tangani error agar bisa dikenali di JavaScript
+            Return New With {.error = True, .message = ex.Message}
+        End Try
+    End Function
+
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Submit(ByVal data As ParamSubmit) As Object
         Try
             Dim msg As String = "200"
@@ -308,6 +336,9 @@ Partial Class Methods_Order_CurtainMethod
 
             Dim FabricGroup As String = publicCfg.GetFabricGroup(data.fabriccolour)
             Dim PriceGroupName As String = String.Format("{0} - {1}", BlindName, FabricGroup)
+            If BlindName = "Track Only" Then
+                PriceGroupName = String.Format("Curtain - {0}", BlindName)
+            End If
 
             Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
             If PriceGroupId = "" Then
@@ -381,6 +412,46 @@ Partial Class Methods_Order_CurtainMethod
 
             If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
                 Dim ItemId As String = data.itemid
+
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId,PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, MaterialChain=@MaterialChain, Width=@Width, [Drop]=@Drop, TrackType=@TrackType, TrackColour=@TrackColour, Cleat=@Cleat, StackPosition=@StackPosition, PelmetReturnSize=@PelmetReturnSize, PelmetReturnSize2=@PelmetReturnSize2, BottomHoldDown=@BottomHoldDown, ChildSafe=@ChildSafe, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
+                        myCmd.Parameters.AddWithValue("@Id", ItemId)
+                        myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
+                        myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
+                        myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.tubetype), DBNull.Value, UCase(data.tubetype).ToString()))
+                        myCmd.Parameters.AddWithValue("@SoeKitId", If(String.IsNullOrEmpty(SoeId), DBNull.Value, SoeId))
+                        myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
+                        myCmd.Parameters.AddWithValue("@FabricId", If(String.IsNullOrEmpty(data.fabriccolour), DBNull.Value, UCase(data.fabriccolour).ToString()))
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(PriceGroupId), DBNull.Value, PriceGroupId))
+                        myCmd.Parameters.AddWithValue("@Qty", qty)
+                        myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
+                        myCmd.Parameters.AddWithValue("@MaterialChain", data.curtainheading)
+                        myCmd.Parameters.AddWithValue("@Width", width)
+                        myCmd.Parameters.AddWithValue("@Drop", drop)
+                        myCmd.Parameters.AddWithValue("@TrackType", data.tracktype)
+                        myCmd.Parameters.AddWithValue("@TrackColour", data.trackcolour)
+                        myCmd.Parameters.AddWithValue("@Cleat", data.trackdraw)
+                        myCmd.Parameters.AddWithValue("@StackPosition", data.stackposition)
+                        myCmd.Parameters.AddWithValue("@PelmetReturnSize", returnleft)
+                        myCmd.Parameters.AddWithValue("@PelmetReturnSize2", returnright)
+                        myCmd.Parameters.AddWithValue("@BottomHoldDown", data.bottom)
+                        myCmd.Parameters.AddWithValue("@ChildSafe", data.tie)
+                        myCmd.Parameters.AddWithValue("@Notes", data.notes)
+                        myCmd.Parameters.AddWithValue("@MarkUp", markup)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+
+                publicCfg.ResetPriceDetail(ItemId)
+                publicCfg.HitungHarga(data.headerid, ItemId)
+                publicCfg.HitungSurcharge(data.headerid, ItemId)
+
+                Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Update Item Order"}
+                orderCfg.Log_Orders(dataLog)
 
                 msg = "Item updated successfully !"
             End If

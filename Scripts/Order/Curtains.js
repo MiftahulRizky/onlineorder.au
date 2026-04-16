@@ -642,6 +642,59 @@ const bindTie = () => {
     sel.add(option);
   });
 };
+
+const bindItemOrders = async (itemid) => {
+  try {
+    if (!itemid) return;
+
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid }),
+    });
+
+    if (!res.ok) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d;
+
+    if (!data || data.length === 0) {
+      throw isError("No data returned from server : bindItemOrders");
+    }
+
+    for (const item of data) {
+      await bindBlinds(item.DesignId);
+      await bindTubes(item.DesignId, item.BlindId);
+      await bindFabrics(item.DesignId);
+      await bindFabricColours(item.DesignId, item.FabricType);
+      await Promise.all([
+        bindMounting(),
+        bindCurtainHeading(),
+        bindTrackType(),
+        bindTrackColour(item.TrackType),
+        bindTrackDraw(item.TrackType),
+        bindStack(),
+        bindBottom(),
+        bindTie(),
+        handlerSetElementValues(item),
+      ]);
+      await handlerElementVisibility(item.BlindId, item.KitId, item);
+    }
+
+    return true; // ✅ success
+  } catch (error) {
+    console.error("bindItemOrder error:", error);
+    throw error;
+  }
+};
 // ----------------------------------------------------------- || Handler Funtions ||----------------------------------------------------------
 const handlerElementVisibility = async (blindtype, tubetype, item) => {
   try {
@@ -815,6 +868,48 @@ const handlerSubmit = async (button) => {
     document.getElementById(button).innerHTML = "Submit";
   }
 };
+
+const handlerSetElementValues = (itemData) => {
+  const mapping = {
+    blindtype: "BlindId",
+    tubetype: "KitId",
+    qty: "Qty",
+    room: "Location",
+    mounting: "Mounting",
+    curtainheading: "MaterialChain",
+    width: "Width",
+    drop: "Drop",
+    fabrictype: "FabricType",
+    fabriccolour: "FabricId",
+    tracktype: "TrackType",
+    trackcolour: "TrackColour",
+    trackdraw: "Cleat",
+    stackposition: "StackPosition",
+    returnleft: "PelmetReturnSize",
+    returnright: "PelmetReturnSize2",
+    bottom: "BottomHoldDown",
+    tie: "ChildSafe",
+    notes: "Notes",
+    markup: "MarkUp",
+  };
+
+  // Set nilai ke input sesuai mapping
+  Object.entries(mapping).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) {
+      console.warn(`Elemen '${id}' tidak ditemukan.`);
+      return;
+    }
+
+    let value = itemData[key];
+    if (id === "markup" && value === 0) value = "";
+
+    el.value = value ?? ""; // fallback ke string kosong
+
+    // jika nilainya "0" → kosong
+    if (el.value === "0") el.value = "";
+  });
+};
 // ----------------------------------------------------------- || Other Funtions ||------------------------------------------------------------
 const curtainPageLoaded = async () => {
   if (!HEADERID) {
@@ -846,7 +941,7 @@ const curtainPageLoaded = async () => {
     await handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    // await bindItemOrders(ITEMID);
+    await bindItemOrders(ITEMID);
     loaderFadeOut();
   }
 };
