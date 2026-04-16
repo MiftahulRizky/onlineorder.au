@@ -95,7 +95,7 @@
                                 <div class="mb-6 row">
                                     <label class="col-lg-3 col-form-label">MOUNTING</label>
                                     <div class="col-lg-3 col-md-12 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlMounting" CssClass="form-select">
+                                        <asp:DropDownList runat="server" ID="ddlMounting" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlMounting_SelectedIndexChanged">
                                             <asp:ListItem Value="" Text=""></asp:ListItem>
                                             <asp:ListItem Value="Face Fit" Text="FACE FIT"></asp:ListItem>
                                             <asp:ListItem Value="Make Size" Text="MAKE SIZE"></asp:ListItem>
@@ -183,16 +183,7 @@
                                     <div class="mb-3 row">
                                         <label class="col-lg-3 col-form-label">PELMET TYPE</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <asp:DropDownList runat="server" ID="ddlPelmetType" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlPelmetType_SelectedIndexChanged">
-                                                <asp:ListItem Value="No Return" Text="NO RETURN"></asp:ListItem>
-                                                <asp:ListItem Value="With Return" Text="WITH RETURN"></asp:ListItem>
-                                                <asp:ListItem Value="Bay Left" Text="BAY LEFT"></asp:ListItem>
-                                                <asp:ListItem Value="Bay Right" Text="BAY RIGHT"></asp:ListItem>
-                                                <asp:ListItem Value="Main Bay" Text="MAIN BAY"></asp:ListItem>
-                                                <asp:ListItem Value="Common" Text="COMMON"></asp:ListItem>
-                                                <asp:ListItem Value="Single Left Return" Text="SINGLE LEFT RETURN"></asp:ListItem>
-                                                <asp:ListItem Value="Single Right Return" Text="SINGLE RIGHT RETURN"></asp:ListItem>
-                                            </asp:DropDownList>
+                                            <asp:DropDownList runat="server" ID="ddlPelmetType" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlPelmetType_SelectedIndexChanged"></asp:DropDownList>
                                         </div>
                                     </div>
     

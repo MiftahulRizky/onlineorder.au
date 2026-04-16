@@ -125,6 +125,13 @@ Partial Class Order_Venetian
         Call BindComponentForm(ddlColour.SelectedValue)
     End Sub
 
+    Protected Sub ddlMounting_SelectedIndexChanged(sender As Object, e As EventArgs)
+        Call BackColor()
+
+        Call BindDataPelmet(ddlBlindType.SelectedValue, ddlMounting.SelectedValue)
+        Call BindComponentForm(ddlColour.SelectedValue)
+    End Sub
+
     Protected Sub ddlPelmetType_SelectedIndexChanged(sender As Object, e As EventArgs)
         Call BackColor()
 
@@ -783,7 +790,6 @@ Partial Class Order_Venetian
                 End If
 
                 If InStr(blindName, "Mockwood") > 0 Or InStr(blindName, "Wooden") > 0 Then
-                    divBracket.Visible = True
                     divControl.Visible = False
                     divPelmetSize.Visible = False
                     divControlMock.Visible = True
@@ -950,6 +956,47 @@ Partial Class Order_Venetian
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
                 publicCfg.MailError(Session("LoginId"), Page.Title, "BindDataBracket", ex.ToString())
+            End If
+        End Try
+    End Sub
+
+    Private Sub BindDataPelmet(blindid As String, mounting As String)
+        ddlPelmetType.Items.Clear()
+        Try
+            Dim blindName As String = publicCfg.GetBlindName(blindid)
+            If InStr(blindName, "Mockwood") > 0 OR InStr(blindName, "Wooden") > 0 Then
+                If mounting = "Face Fit" Then
+                    ddlPelmetType.Items.Add(New ListItem("WITH RETURN", "With Return"))
+                Else If mounting = "Reveal Fit" Then
+                    ddlPelmetType.Items.Add(New ListItem("NO RETURN", "No Return"))
+                Else
+                    ddlPelmetType.Items.Add(New ListItem("BAY LEFT", "Bay Left"))
+                    ddlPelmetType.Items.Add(New ListItem("BAY RIGHT", "Bay Right"))
+                    ddlPelmetType.Items.Add(New ListItem("MAIN BAY", "Main Bay"))
+                    ddlPelmetType.Items.Add(New ListItem("COMMON", "Common"))
+                    ddlPelmetType.Items.Add(New ListItem("SINGLE LEFT RETURN", "Single Left Return"))
+                    ddlPelmetType.Items.Add(New ListItem("SINGLE RIGHT RETURN", "Single Right Return"))
+                End If
+            Else
+                ddlPelmetType.Items.Add(New ListItem("WITH RETURN", "With Return"))
+                ddlPelmetType.Items.Add(New ListItem("NO RETURN", "No Return"))
+                ddlPelmetType.Items.Add(New ListItem("BAY LEFT", "Bay Left"))
+                ddlPelmetType.Items.Add(New ListItem("BAY RIGHT", "Bay Right"))
+                ddlPelmetType.Items.Add(New ListItem("MAIN BAY", "Main Bay"))
+                ddlPelmetType.Items.Add(New ListItem("COMMON", "Common"))
+                ddlPelmetType.Items.Add(New ListItem("SINGLE LEFT RETURN", "Single Left Return"))
+                ddlPelmetType.Items.Add(New ListItem("SINGLE RIGHT RETURN", "Single Right Return"))
+            End If
+
+
+            If ddlPelmetType.Items.Count > 0 Then
+                ddlPelmetType.Items.Insert(0, New ListItem("", ""))
+            End If
+        Catch ex As Exception
+            Call MessageError(True, ex.ToString())
+            If Not Session("RoleName") = "Administrator" Then
+                Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindDataPelmet", ex.ToString())
             End If
         End Try
     End Sub
