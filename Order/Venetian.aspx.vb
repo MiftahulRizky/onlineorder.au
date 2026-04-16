@@ -699,6 +699,7 @@ Partial Class Order_Venetian
             Dim blindId As String = myData.Tables(0).Rows(0).Item("BlindId").ToString()
             Dim style As String = myData.Tables(0).Rows(0).Item("ControlType").ToString()
             Dim ControlPosition As String = myData.Tables(0).Rows(0).Item("ControlPosition").ToString()
+            Dim Mounting As String = myData.Tables(0).Rows(0).Item("Mounting").ToString()
             Dim blindName As String = myData.Tables(0).Rows(0).Item("BlindName").ToString()
             If ControlPosition.Contains("|") Then
                 Dim ControlPositionParts As String() = ControlPosition.Split("|"c)
@@ -712,6 +713,7 @@ Partial Class Order_Venetian
             Call BindDataStyle(blindId)
             Call BindDataColour(blindId, style)
             Call BindHoldDown(blindName)
+            Call BindDataPelmet(blindId, Mounting)
             Call BindDataBracket(blindId)
 
             ddlBlindType.SelectedValue = blindId : ddlBlindType.Enabled = False
