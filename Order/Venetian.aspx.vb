@@ -771,8 +771,8 @@ Partial Class Order_Venetian
             If Not ddlBlindType.SelectedValue = "" Then
                 blindName = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
 
-                divBracket.Visible = True
                 If InStr(blindName, "Aluminium") > 0 Then
+                    divBracket.Visible = True
                     divBotomHoldDown.Visible = True
                 End If
                 
@@ -783,6 +783,7 @@ Partial Class Order_Venetian
                 End If
 
                 If InStr(blindName, "Mockwood") > 0 Or InStr(blindName, "Wooden") > 0 Then
+                    divBracket.Visible = True
                     divControl.Visible = False
                     divPelmetSize.Visible = False
                     divControlMock.Visible = True
