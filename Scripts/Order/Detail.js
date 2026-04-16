@@ -261,7 +261,14 @@ document.querySelectorAll("#modalAddItem .form-select").forEach((e) => {
         `SELECT Name FROM Designs WHERE Id = '${designid}'`,
       );
 
-      if (["Roller Blinds"].includes(designname)) {
+      if (
+        [
+          "Roller Blinds",
+          "Panel Glides",
+          "Roman Blinds",
+          "Vertical Blinds",
+        ].includes(designname)
+      ) {
         let env = "";
         if (["Customer"].includes(ROLENAME)) {
           env = "AND Description = 'Environment : Production'";
@@ -599,6 +606,7 @@ const submitSelectProduct = async (
       },
       body: JSON.stringify({
         id: "",
+        rolename: ROLENAME,
         headerid: headerid,
         ordertype: ordertype,
         action: action,
@@ -2744,7 +2752,14 @@ const bindProduction = async (designname) => {
   if (!designname) return;
 
   let data = [{ value: "Sunlight", text: "Sunlight" }];
-  if (["Roller Blinds"].includes(designname)) {
+  if (
+    [
+      "Roller Blinds",
+      "Panel Glides",
+      "Roman Blinds",
+      "Vertical Blinds",
+    ].includes(designname)
+  ) {
     let env = "";
     if (["Customer"].includes(ROLENAME)) {
       env = "AND Description = 'Environment : Production'";

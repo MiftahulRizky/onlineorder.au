@@ -232,7 +232,7 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod(EnableSession:=True)>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function SetSessionOpenPageInputItem(ByVal id As String, ByVal headerid As String, ByVal ordertype As String, ByVal action As String, ByVal designid As String, ByVal production As String) As Object
+    Public Shared Function SetSessionOpenPageInputItem(ByVal id As String, ByVal rolename As String, ByVal headerid As String, ByVal ordertype As String, ByVal action As String, ByVal designid As String, ByVal production As String) As Object
         Try
             If String.isNullOrEmpty(headerid) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "this order is missing !", .field = "#modalAddItem #designid"}}
@@ -249,16 +249,28 @@ Partial Class Methods_Order_DetailMethod
 
             Dim DesignName As String = publicCfg.GetDesignName(designid)
             Dim page As String = publicCfg.GetDesignPage(designId)
-            If DesignName = "Roller Blinds" Then
-                If String.isNullOrEmpty(production) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "production is required !", .field = "#modalAddItem #production"}}
+            If InArray(DesignName, "Roller Blinds", "Panel Glides", "Roman Blinds", "Vertical Blinds") Then
+
+                Dim Env As String =""
+                If rolename = "Customer" Then
+                    Env = "AND Description = 'Environment : Production'"
                 End If
-                If Not String.isNullOrEmpty(production) AND production = "Global" Then
-                    Dim Name As String = String.Format("{0} {1}", production, DesignName)
-                    page = publicCfg.GetItemData(String.Format("SELECT Page FROM Designs WHERE Name = '{0}'", Name))
-                    designid = publicCfg.GetItemData(String.Format("SELECT Id FROM Designs WHERE Name = '{0}'", Name))
+                if InArray(rolename, "PPIC & DE", "Manager", "Customer Service") Then
+                    Env = "AND Description IN ('Environment : Production', 'Environment : Testing')"
                 End If
-            Else
+
+                Dim GlobalDesigns As String = publicCfg.GetItemData(String.Format("SELECT Id FROM Designs WHERE Name = 'Global {0}' {1} AND Active = 1", DesignName, Env))
+                IF Not String.IsNullOrEmpty(GlobalDesigns) Then
+                    If String.isNullOrEmpty(production) Then
+                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = "production is required !", .field = "#modalAddItem #production"}}
+                    End If
+                    If Not String.isNullOrEmpty(production) AND production = "Global" Then
+                        Dim Name As String = String.Format("{0} {1}", production, DesignName)
+                        page = publicCfg.GetItemData(String.Format("SELECT Page FROM Designs WHERE Name = '{0}'", Name))
+                        designid = publicCfg.GetItemData(String.Format("SELECT Id FROM Designs WHERE Name = '{0}'", Name))
+                    End If
+                End IF
+
             End If
             
             ' Throw New Exception("page: " & page)
