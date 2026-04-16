@@ -479,6 +479,8 @@ const bindCurtainHeading = () => {
 
 const bindTrackType = () => {
   const sel = document.getElementById("tracktype");
+  document.getElementById("trackcolour").innerHTML = "";
+  document.getElementById("trackdraw").innerHTML = "";
   sel.innerHTML = ""; //reset
 
   let data = [];
@@ -801,7 +803,7 @@ const handlerSubmit = async (button) => {
       }
     } else {
       await isSuccess(dataResult.success);
-      // window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
     }
   } catch (error) {
     var msg = error.message;

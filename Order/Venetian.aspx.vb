@@ -771,8 +771,8 @@ Partial Class Order_Venetian
             If Not ddlBlindType.SelectedValue = "" Then
                 blindName = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
 
+                divBracket.Visible = True
                 If InStr(blindName, "Aluminium") > 0 Then
-                    divBracket.Visible = True
                     divBotomHoldDown.Visible = True
                 End If
                 
