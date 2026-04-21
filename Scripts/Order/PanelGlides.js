@@ -15,7 +15,7 @@ $(document).ready(function () {
 $("#btnCancel").on(
   "click",
   () =>
-    (window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`)
+    (window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`),
 );
 
 // BUTTON SUBMIT

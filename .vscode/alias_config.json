@@ -26,7 +26,13 @@
     "Panorama.aspx": "Shutters",
     "Panorama.aspx.vb": "Shutters",
     "PanoramaParts.aspx": "Shutters",
-    "PanoramaParts.aspx.vb": "Shutters"
+    "PanoramaParts.aspx.vb": "Shutters",
+    "PanelGlides.aspx": "Global",
+    "PanelGlides.aspx.vb": "Global",
+    "Global": {
+      "PanelGlides.aspx": "Sunlight",
+      "PanelGlides.aspx.vb": "Sunlight"
+    }
   },
   "Setting": {
     "Access": "Shutters",
@@ -46,7 +52,21 @@
       "Evolve.js": "Shutters",
       "EvolveParts.js": "Shutters",
       "Panorama.js": "Shutters",
-      "PanoramaParts.js": "Shutters"
+      "PanoramaParts.js": "Shutters",
+      "PanelGlides.js": "Global",
+      "Global": {
+        "PanelGlides.js": "Sunlight"
+      }
+    }
+  },
+  "Methods": {
+    "Order": {
+      "PanelGlideMethod.aspx": "Global",
+      "PanelGlideMethod.aspx.vb": "Global",
+      "Global": {
+        "PanelGlideMethod.aspx": "Sunlight",
+        "PanelGlideMethod.aspx.vb": "Sunlight"
+      }
     }
   }
 }

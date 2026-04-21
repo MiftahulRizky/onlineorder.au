@@ -854,8 +854,9 @@ Partial Class Methods_Order_DetailMethod
                             End If
                         End If
 
-                        If InArray(DesignName, "Panel Glides", "Roman Blinds", "Lumen") Then
+                        If InArray(DesignName, "Panel Glides", "Global Panel Glides", "Roman Blinds", "Lumen") Then
                             Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
+                            If InStr(DesignName, "Global") > 0 Then Product = String.Format("Global - {0} #{1} {2}", KitName, FabricType, Size)
                         End If
 
                         If DesignName = "Cellular Blinds" Then

@@ -148,7 +148,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindname = blindtype.options[blindtype.selectedIndex].dataset.name;
       const brackettype = document.getElementById("brackettype").value;
       const trim = e.target.value;
-      bindRailType(brackettype, trim);
+      await bindRailType(brackettype, trim);
 
       if (blindname == "Skin Only" && trim == "1F") {
         divBottomRail.classList.remove("d-none");
@@ -168,7 +168,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const railtype = e.target.value;
       const trim = document.getElementById("trim").value;
 
-      bindRailColour(brackettype, railtype, trim);
+      await bindRailColour(brackettype, railtype, trim);
     }
   });
   el.addEventListener("input", (e) => {
@@ -1916,7 +1916,8 @@ const bindRailType = async (brackettype, trim) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
-        // bindControls(DESIGNID, select.value);
+        const railtype = select.value;
+        await bindRailColour(brackettype, railtype, trim);
       }
     }
   } catch (err) {
@@ -2243,7 +2244,10 @@ const bindItemOrders = async (itemid) => {
       );
       await bindFabrics(item.DesignId);
       await bindFabricColours(item.DesignId, item.FabricType);
-      if (item.BlindName == "Motorised") {
+      if (
+        item.BlindName == "Motorised" ||
+        (item.BlindName == "Cassette" && item.TubeType == "Motorised")
+      ) {
         await Promise.all([
           bindMotorStyle(item.ControlType),
           bindMotorRemote(item.ControlType),
