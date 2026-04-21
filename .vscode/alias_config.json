@@ -27,11 +27,11 @@
     "Panorama.aspx.vb": "Shutters",
     "PanoramaParts.aspx": "Shutters",
     "PanoramaParts.aspx.vb": "Shutters",
-    "PanelGlides.aspx": "Global",
-    "PanelGlides.aspx.vb": "Global",
+    "PanelGlides.aspx": "Sunlight",
+    "PanelGlides.aspx.vb": "Sunlight",
     "Global": {
-      "PanelGlides.aspx": "Sunlight",
-      "PanelGlides.aspx.vb": "Sunlight"
+      "PanelGlides.aspx": "Global",
+      "PanelGlides.aspx.vb": "Global"
     }
   },
   "Setting": {
@@ -64,8 +64,8 @@
       "PanelGlideMethod.aspx": "Global",
       "PanelGlideMethod.aspx.vb": "Global",
       "Global": {
-        "PanelGlideMethod.aspx": "Sunlight",
-        "PanelGlideMethod.aspx.vb": "Sunlight"
+        "PanelGlideMethod.aspx": "Global",
+        "PanelGlideMethod.aspx.vb": "Global"
       }
     }
   }

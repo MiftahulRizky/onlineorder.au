@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Global Panel Glides Order" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="PanelGlides.aspx.vb" Inherits="Order_PanelGlides" MaintainScrollPositionOnPostback="true" Debug="true" %>
+﻿<%@ Page Title="Panel Glides Order" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="PanelGlides.aspx.vb" Inherits="Order_PanelGlides" MaintainScrollPositionOnPostback="true" Debug="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
 
@@ -20,21 +20,22 @@
         <div class="container-xl" id="pageContent">
 
             <div class="row mb-3">
-                <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="col-lg-7 col-md-7 col-sm-8">
                     <div class="card">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-lg-6">
-                                    <div class=" row mb-2">
-                                        <label class="col-lg-3">ORDER NUMBER</label>
-                                        <div class="col-lg-1 ">:</div>
-                                        <div class="col-lg-8 " id="divOrderNo">. . . . .</div>
-                                    </div>
-                                    <div class=" row">
-                                        <label class="col-lg-3">REFERENCE </label>
-                                        <div class="col-lg-1 ">:</div>
-                                        <div class="col-lg-8 " id="divOrderCust">. . . . .</div>
-                                    </div>
+                                <div class="col-4 col-lg-4 col-md-4">
+                                    <label class="form-label text-secondary text-uppercase">Order #</label>
+                                    <label class="form-label" id="lblOrder">-</label>
+                                    <label class="form-label" id="lblItemId">-</label>
+                                </div>
+                                <div class="col-4 col-lg-4 col-md-4">
+                                    <label class="form-label text-secondary text-uppercase">Order Number</label>
+                                    <label class="form-label" id="lblOrderNumber">-</label>
+                                </div>
+                                <div class="col-4 col-lg-4 col-md-4">
+                                    <label class="form-label text-secondary text-uppercase">Order Name</label>
+                                    <label class="form-label" id="lblOrderName">-</label>
                                 </div>
                             </div>
                         </div>
@@ -233,9 +234,8 @@
                         </div>
 
                         <div class="card-footer text-end">
-                            <button type="button" id="btnSubmit" class="btn btn-primary "></button>
-                            <a href="javascript:void(0);" id="btnCancel"  class="btn btn-danger " >
-                                <i class="fa-solid fa-rotate-left me-2"></i> Cancel
+                            <button type="button" id="btnSubmit" class="btn btn-primary ">Submit</button>
+                            <a href="javascript:void(0);" id="btnCancel"  class="btn btn-danger " >Cancel
                             </a>
                         </div>
                     </div>
@@ -263,7 +263,8 @@
 
 
     <script type="text/javascript">
-        let DESIGNIDORI = '3191CB8E-9A39-4BAE-BB71-95032D5E87F1';
+        // Sunlight
+        let DESIGNIDORI = 'AC917815-434A-4FD2-BE06-C39319863D5B';
         let HEADERID = '<%=Session("headerId")%>'
         let ORDERTYPE = '<%= Session("orderType") %>';
         let ITEMACTION = '<%= Session("itemAction") %>';
@@ -271,6 +272,7 @@
         let ITEMID = '<%= Session("itemId") %>';
         let LOGINID = '<%= Session("LoginId") %>';
         let ROLENAME = '<%= Session("RoleName") %>';
+        let LEVELNAME = '<%= Session("LevelName") %>';
         let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
         let URIMETHOD = "/Methods/Order/PanelGlideMethod.aspx"
         

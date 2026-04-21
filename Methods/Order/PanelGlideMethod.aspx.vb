@@ -11,28 +11,85 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
 
     Shared publicCfg As New PublicConfig()
     Shared orderCfg As New OrderConfig()
+    Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
+
+
+    Public Class FormData
+        Public Property blindtype As String
+        Public Property colourtype As String
+        Public Property qty As String
+        Public Property room As String
+        Public Property mounting As String
+        Public Property fabrictype As String
+        Public Property fabriccolour As String
+        Public Property width As String
+        Public Property drop As String
+        Public Property layoutcode As String
+        Public Property nopanel As String
+        Public Property tracktype As String
+        Public Property trackcolour As String
+        Public Property wandposition As String
+        Public Property wandlength As String
+        Public Property wandcolour As String
+        Public Property bottomrail As String
+        Public Property batten As String
+        Public Property battencolour As String
+        Public Property fitting As String
+        Public Property notes As String
+        Public Property markup As String
+
+        Public Property headerid As String
+        Public Property itemaction As String
+        Public Property itemid As String
+        Public Property designid As String
+        Public Property loginid As String
+    End Class
+
+    Public Class ErrorDetail
+        Public Property message As String
+        Public Property field As String
+    End Class
+
+    Public Class ErrorResponse
+        Public Property [error] As ErrorDetail
+    End Class
+
+    Public Class SuccessResponse
+        Public Property success As String
+    End Class
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function GetDesignType(ByVal designid As String) As Object
-        Dim designName As String = publicCfg.GetDesignName(designid)
-        Dim result As New Dictionary(Of String, String) From {
-            {"designName", designName}
-        }
-        Return result
+    Public Shared Function GetItemData(ByVal query As String) As Object
+        Try
+            Dim Item As String = publicCfg.GetItemData(query)
+            Return Item
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message ' biar kelihatan errornya
+        End Try
     End Function
 
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function GetHeaderData(ByVal headerid As String) As Object
-        Dim orderno As String = publicCfg.GetOrderNo(headerid)
-        Dim ordercust As String = publicCfg.GetOrderCust(headerid)
-        Dim result As New Dictionary(Of String, String) From {
-            {"orderNo", orderno},
-            {"orderCust", ordercust}
-        }
-        Return result
-    End Function
+    ' <WebMethod()>
+    ' <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    ' Public Shared Function GetDesignType(ByVal designid As String) As Object
+    '     Dim designName As String = publicCfg.GetDesignName(designid)
+    '     Dim result As New Dictionary(Of String, String) From {
+    '         {"designName", designName}
+    '     }
+    '     Return result
+    ' End Function
+
+    ' <WebMethod()>
+    ' <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    ' Public Shared Function GetHeaderData(ByVal headerid As String) As Object
+    '     Dim orderno As String = publicCfg.GetOrderNo(headerid)
+    '     Dim ordercust As String = publicCfg.GetOrderCust(headerid)
+    '     Dim result As New Dictionary(Of String, String) From {
+    '         {"orderNo", orderno},
+    '         {"orderCust", ordercust}
+    '     }
+    '     Return result
+    ' End Function
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
@@ -81,14 +138,9 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindFabricType(ByVal designid As String, ByVal blindname As String) As Object
-        Try
-            Dim type2 As String = "(PG Sewless Plantation)"
-            If blindname = "Plain" Then
-                type2 = "(PG Plain)"
-            End If
-            
-            Dim datas As DataSet = publicCfg.GetListData("SELECT Type FROM Fabrics WHERE DesignId='" + designid + "' AND Type LIKE '%"+type2+"%' AND Active='1' GROUP BY Type ORDER BY Type ASC")
+    Public Shared Function BindFabricType(ByVal designid As String) As Object
+        Try           
+            Dim datas As DataSet = publicCfg.GetListData("SELECT Type FROM Fabrics WHERE DesignId='" + designid + "' AND Active='1' GROUP BY Type ORDER BY Type ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -129,7 +181,6 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
     End Function
 
 
-    '#------------------------||BindItemOrder||------------------------#
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindItemOrder(ByVal itemid As String) As Object
@@ -159,354 +210,136 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
     End Function
 
 
-    '#-----------------------------------------------------------------------
-    '# SUBMIT FUNCTION
-    '#-----------------------------------------------------------------------
-
-    '#----------------------------|| INISIASI FIELD ||-----------------------#
-    Public Class FormData
-        Public Property blindtype As String
-        Public Property colourtype As String
-        Public Property qty As String
-        Public Property room As String
-        Public Property mounting As String
-        Public Property fabrictype As String
-        Public Property fabriccolour As String
-        Public Property width As String
-        Public Property drop As String
-        Public Property layoutcode As String
-        Public Property nopanel As String
-        Public Property tracktype As String
-        Public Property trackcolour As String
-        Public Property wandposition As String
-        Public Property wandlength As String
-        Public Property wandcolour As String
-        Public Property bottomrail As String
-        Public Property batten As String
-        Public Property battencolour As String
-        Public Property fitting As String
-        Public Property notes As String
-        Public Property markup As String
-        Public Property headerid As String
-        Public Property itemaction As String
-        Public Property itemid As String
-        Public Property designid As String
-        Public Property loginid As String
-    End Class
-
-    '#----------------------------|| DEFIND CLASS RESPONSE ||-----------------------#
-    Public Class ErrorDetail
-        Public Property message As String
-        Public Property field As String
-    End Class
-
-    Public Class ErrorResponse
-        Public Property [error] As ErrorDetail
-    End Class
-
-    Public Class SuccessResponse
-        Public Property success As String
-    End Class
+    
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function SubmitForm(ByVal data As FormData) As Object
+    Public Shared Function Submit(ByVal data As FormData) As Object
         Try
-            '#-------------------------|| SET VALIDATE RULES ||-----------------------#
-            '#-------------------------|| blindtype ||-----------------------#
-            If String.IsNullOrEmpty(data.blindtype) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "type is required !",
-                        .field = "blindtype"
-                    }
-                }
-            End If
-
-            '#-----------------------|| colourtype ||-----------------------#
-            If String.IsNullOrEmpty(data.colourtype) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "colour is required !",
-                        .field = "colourtype"
-                    }
-                }
-            End If
-
-            Dim blindName As String = publicCfg.GetItemData("SELECT Name FROM Blinds WHERE Id = '" + data.blindtype + "'")
-
-            '#-----------------------|| qty ||-----------------------#
+            Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.blindtype))
             Dim qty As Integer
             If String.IsNullOrEmpty(data.qty) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "qty is required !",
-                        .field = "qty"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "qty is required !", .field = "qty"}}
             End If
             If Not Integer.TryParse(data.qty, qty) OrElse qty <= 0 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "qty must be a positive integer !",
-                        .field = "qty"
-                    }
-                }
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "qty must be a positive integer !",.field = "qty"}}
             End If
             If qty > 5 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "qty must be less than or equal to 5 !",
-                        .field = "qty"
-                    }
-                }
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "qty must be less than or equal to 5 !",.field = "qty"}}
             End If
 
-            '#-----------------------|| room ||-----------------------#
             If String.IsNullOrEmpty(data.room) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "room to install is required !",
-                        .field = "room"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "room to install is required !", .field = "room"}}
             End If
 
-            '#-----------------------|| mounting ||-----------------------#
             If String.IsNullOrEmpty(data.mounting) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "mounting is required !",
-                        .field = "mounting"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
             End If
 
 
-            '#-----------------------|| width ||-----------------------#
             Dim width As Integer
             If String.IsNullOrEmpty(data.width) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "width is required !",
-                        .field = "width"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "width is required !", .field = "width" }}
             End If
             If Not Integer.TryParse(data.width, width) OrElse width <= 0 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "width must be a positive integer !",
-                        .field = "width"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "width must be a positive integer !", .field = "width"}}
             End If
             If width > 6000 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "width must be less than or equal to 6000 !",
-                        .field = "width"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "width must be less than or equal to 6000 !", .field = "width" }}
             End If
-            '#-----------------------|| drop ||-----------------------#
+
             Dim drop As Integer
             If String.IsNullOrEmpty(data.drop) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "drop is required !",
-                        .field = "drop"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop is required !", .field = "drop" }}
             End If
             If Not Integer.TryParse(data.drop, drop) OrElse drop <= 0 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "drop must be a positive integer !",
-                        .field = "drop"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop must be a positive integer !", .field = "drop"}}
             End If
-
             If drop > 3000 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "drop must be less than or equal to 3000 !",
-                        .field = "drop"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop must be less than or equal to 3000 !", .field = "drop" }}
             End If
 
-            '#-----------------------|| fabrictype ||-----------------------#
             If String.IsNullOrEmpty(data.fabrictype) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "fabric type is required !",
-                        .field = "fabrictype"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "fabric type is required !", .field = "fabrictype"}}
             End If
 
-            '#-----------------------|| fabriccolour ||-----------------------#
             If String.IsNullOrEmpty(data.fabriccolour) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "fabric colour is required !",
-                        .field = "fabriccolour"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
             End If
 
-            '#-----------------------|| layoutcode ||-----------------------#
             If String.IsNullOrEmpty(data.layoutcode) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "layout code is required !",
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "layout code is required !",
                         .field = "layoutcode"
                     }
                 }
             End If
 
-            '#-----------------------|| nopanel ||-----------------------#
             If String.IsNullOrEmpty(data.nopanel) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "no of panel is required !",
-                        .field = "nopanel"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "no of panel is required !", .field = "nopanel"}}
             End If
 
-            '#-----------------------|| tracktype ||-----------------------#
             If String.IsNullOrEmpty(data.tracktype) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "track type is required !",
-                        .field = "tracktype"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "track type is required !", .field = "tracktype"}}
             End If
 
-            '#-----------------------|| trackcolour ||-----------------------#
             If String.IsNullOrEmpty(data.trackcolour) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "track colour is required !",
-                        .field = "trackcolour"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "track colour is required !", .field = "trackcolour"}}
             End If
 
-            '#-----------------------|| wandposition ||-----------------------#
             If String.IsNullOrEmpty(data.wandposition) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "wand position is required !",
-                        .field = "wandposition"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "wand position is required !", .field = "wandposition"}}
             End If
 
-            '#-----------------------|| wandlength ||-----------------------#
             Dim wandlength As Integer
             If String.IsNullOrEmpty(data.wandlength) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "wand length is required !",
-                        .field = "wandlength"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "wand length is required !", .field = "wandlength"}}
             End If
              If Not Integer.TryParse(data.wandlength, wandlength) OrElse wandlength <= 0 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "wand length must be a positive integer !",
-                        .field = "wandlength"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "wand length must be a positive integer !", .field = "wandlength" }}
             End If
 
-            '#-----------------------|| wandcolour ||-----------------------#
             If String.IsNullOrEmpty(data.wandcolour) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "wand colour is required !",
-                        .field = "wandcolour"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "wand colour is required !", .field = "wandcolour"}}
             End If
 
-            '#-----------------------|| bottomrail ||-----------------------#
             If String.IsNullOrEmpty(data.bottomrail) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "bottom rail is required !",
-                        .field = "bottomrail"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "bottom rail is required !", .field = "bottomrail"}}
             End If
 
-            '#-----------------------|| batten ||-----------------------#
             If String.IsNullOrEmpty(data.batten) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "batten is required !",
-                        .field = "batten"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "batten is required !", .field = "batten"}}
             End If
 
-            '#-----------------------|| battencolour ||-----------------------#
             If data.batten = "Yes" Then
                 If String.IsNullOrEmpty(data.battencolour) Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = "batten colour is required !",
-                            .field = "battencolour"
-                        }
-                    }
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "batten colour is required !", .field = "battencolour"}}
                 End If
             End If
 
-            '#-----------------------|| fitting ||-----------------------#
             If String.IsNullOrEmpty(data.fitting) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "fitting is required !",
-                        .field = "fitting"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "fitting is required !", .field = "fitting"}}
             End If
 
-            '#--------------------------|| notes ||--------------------------#
             If Not String.IsNullOrEmpty(data.notes) Then
                 If data.notes.Trim().Length > 1000 Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = "notes must be less than 1000 characters !",
-                            .field = "notes"
-                        }
-                    }
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "notes must be less than 1000 characters !", .field = "notes"}}
                 End If
             End If
 
-             '#--------------------------|| notes ||--------------------------#
             Dim markup As Integer
             If Not String.IsNullOrEmpty(data.markup) Then
                 If Not Integer.TryParse(data.markup, markup) OrElse markup < 0 Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = "please check your markup !",
-                            .field = "markup"
-                        }
-                    }
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "please check your markup !", .field = "markup"}}
                 End If
+            End If
+
+            If String.IsNullOrEmpty(data.markup) Then
+                data.markup = "0"
             End If
 
 
             '#------------------------------------------------|| Prepare Submit ||-------------------------------------------------#
             '#-----------------------------------|| Set default values before submission ||----------------------------------------#
-            Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
             
             Dim numOfWand As Integer = 1
             If data.layoutcode = "E" Or data.layoutcode = "F" Then
@@ -518,18 +351,21 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 findBattenColour = ""
             End If
 
-            Dim soeKitId As String = publicCfg.GetItemData("SELECT SoeId FROM HardwareKits WHERE Id = '" + data.colourtype + "'")
-            Dim fabricData As DataSet = publicCfg.GetListData("SELECT * FROM Fabrics WHERE Id = '" + data.fabriccolour + "'")
+            Dim SoeKitId As String = publicCfg.GetItemData("SELECT SoeId FROM HardwareKits WHERE Id = '" + data.colourtype + "'")
+            Dim FabricData As DataSet = publicCfg.GetListData("SELECT * FROM Fabrics WHERE Id = '" + data.fabriccolour + "'")
             
-            Dim fabricId As String = fabricData.Tables(0).Rows(0).Item("Id").ToString()
-            Dim fabricGroupName As String = fabricData.Tables(0).Rows(0).Item("Group").ToString()
+            Dim FabricId As String = FabricData.Tables(0).Rows(0).Item("Id").ToString()
+            Dim FabricGroupName As String = FabricData.Tables(0).Rows(0).Item("Group").ToString()
 
-            Dim peiceGroupName As String = "Panel Glide - " & fabricGroupName
-            Dim priceGroupId As String = publicCfg.GetPriceGroupId(data.designId,peiceGroupName)
+            Dim PriceGroupName As String = String.Format("Panel Glide - {0} #{1}", FabricGroupName, data.tracktype)
+            Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designId, PriceGroupName)
+            If String.IsNullOrEmpty(PriceGroupId) Then
+                Throw New Exception("Something went wrong !")
+            End If
 
-            Dim designName As String = publicCfg.GetDesignName(data.designId)
-            Dim exactName As String = designName & " - " & blindName
-            Dim exactId As String = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
+            Dim DesignName As String = publicCfg.GetDesignName(data.designId)
+            Dim ExactName As String = DesignName & " - " & BlindName
+            Dim ExactId As String = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + ExactName + "'")
 
           
             '#-----------------------|| SUBMIT VALIDATE ||-----------------------#
@@ -542,9 +378,9 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
-                        myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
-                        myCmd.Parameters.AddWithValue("@ExactId", exactId)
-                        myCmd.Parameters.AddWithValue("@FabricId", fabricId)
+                        myCmd.Parameters.AddWithValue("@SoeKitId", SoeKitId)
+                        myCmd.Parameters.AddWithValue("@ExactId", ExactId)
+                        myCmd.Parameters.AddWithValue("@FabricId", FabricId)
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
@@ -593,9 +429,9 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
-                        myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
-                        myCmd.Parameters.AddWithValue("@ExactId", exactId)
-                        myCmd.Parameters.AddWithValue("@FabricId", fabricId)
+                        myCmd.Parameters.AddWithValue("@SoeKitId", SoeKitId)
+                        myCmd.Parameters.AddWithValue("@ExactId", ExactId)
+                        myCmd.Parameters.AddWithValue("@FabricId", FabricId)
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)

@@ -14,36 +14,25 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function GetItemData(ByVal query As String) As Object
-        Try
-            Dim Item As String = publicCfg.GetItemData(query)
-            Return Item
-        Catch ex As Exception
-            Return "ERROR: " & ex.Message ' biar kelihatan errornya
-        End Try
+    Public Shared Function GetDesignType(ByVal designid As String) As Object
+        Dim designName As String = publicCfg.GetDesignName(designid)
+        Dim result As New Dictionary(Of String, String) From {
+            {"designName", designName}
+        }
+        Return result
     End Function
 
-    ' <WebMethod()>
-    ' <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    ' Public Shared Function GetDesignType(ByVal designid As String) As Object
-    '     Dim designName As String = publicCfg.GetDesignName(designid)
-    '     Dim result As New Dictionary(Of String, String) From {
-    '         {"designName", designName}
-    '     }
-    '     Return result
-    ' End Function
-
-    ' <WebMethod()>
-    ' <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    ' Public Shared Function GetHeaderData(ByVal headerid As String) As Object
-    '     Dim orderno As String = publicCfg.GetOrderNo(headerid)
-    '     Dim ordercust As String = publicCfg.GetOrderCust(headerid)
-    '     Dim result As New Dictionary(Of String, String) From {
-    '         {"orderNo", orderno},
-    '         {"orderCust", ordercust}
-    '     }
-    '     Return result
-    ' End Function
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function GetHeaderData(ByVal headerid As String) As Object
+        Dim orderno As String = publicCfg.GetOrderNo(headerid)
+        Dim ordercust As String = publicCfg.GetOrderCust(headerid)
+        Dim result As New Dictionary(Of String, String) From {
+            {"orderNo", orderno},
+            {"orderCust", ordercust}
+        }
+        Return result
+    End Function
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
@@ -92,9 +81,14 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindFabricType(ByVal designid As String) As Object
-        Try           
-            Dim datas As DataSet = publicCfg.GetListData("SELECT Type FROM Fabrics WHERE DesignId='" + designid + "' AND Active='1' GROUP BY Type ORDER BY Type ASC")
+    Public Shared Function BindFabricType(ByVal designid As String, ByVal blindname As String) As Object
+        Try
+            Dim type2 As String = "(PG Sewless Plantation)"
+            If blindname = "Plain" Then
+                type2 = "(PG Plain)"
+            End If
+            
+            Dim datas As DataSet = publicCfg.GetListData("SELECT Type FROM Fabrics WHERE DesignId='" + designid + "' AND Type LIKE '%"+type2+"%' AND Active='1' GROUP BY Type ORDER BY Type ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
@@ -135,34 +129,34 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
     End Function
 
 
-    ' '#------------------------||BindItemOrder||------------------------#
-    ' <WebMethod()>
-    ' <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    ' Public Shared Function BindItemOrder(ByVal itemid As String) As Object
-    '     Try
-    '         ' Gunakan parameterized query (idealnya pakai SqlParameter, ini simulasi fungsi GetListData Anda)
-    '         Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE Id = '" + itemid + "'")
+    '#------------------------||BindItemOrder||------------------------#
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindItemOrder(ByVal itemid As String) As Object
+        Try
+            ' Gunakan parameterized query (idealnya pakai SqlParameter, ini simulasi fungsi GetListData Anda)
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE Id = '" + itemid + "'")
 
-    '         Dim data As DataSet = DirectCast(datas, DataSet)
+            Dim data As DataSet = DirectCast(datas, DataSet)
 
-    '         Dim resultList As New List(Of Dictionary(Of String, String))()
+            Dim resultList As New List(Of Dictionary(Of String, String))()
 
-    '         If data IsNot Nothing AndAlso data.Tables.Count > 0 Then
-    '             For Each row As DataRow In data.Tables(0).Rows
-    '                 Dim dict As New Dictionary(Of String, String)()
-    '                 For Each col As DataColumn In data.Tables(0).Columns
-    '                     dict(col.ColumnName) = row(col).ToString()
-    '                 Next
-    '                 resultList.Add(dict)
-    '             Next
-    '         End If
+            If data IsNot Nothing AndAlso data.Tables.Count > 0 Then
+                For Each row As DataRow In data.Tables(0).Rows
+                    Dim dict As New Dictionary(Of String, String)()
+                    For Each col As DataColumn In data.Tables(0).Columns
+                        dict(col.ColumnName) = row(col).ToString()
+                    Next
+                    resultList.Add(dict)
+                Next
+            End If
 
-    '         Return resultList
-    '     Catch ex As Exception
-    '         ' Tangani error agar bisa dikenali di JavaScript
-    '         Return New With {.error = True, .message = ex.Message}
-    '     End Try
-    ' End Function
+            Return resultList
+        Catch ex As Exception
+            ' Tangani error agar bisa dikenali di JavaScript
+            Return New With {.error = True, .message = ex.Message}
+        End Try
+    End Function
 
 
     '#-----------------------------------------------------------------------
@@ -532,9 +526,6 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
 
             Dim peiceGroupName As String = "Panel Glide - " & fabricGroupName
             Dim priceGroupId As String = publicCfg.GetPriceGroupId(data.designId,peiceGroupName)
-            If String.IsNullOrEmpty(priceGroupId) Then
-                Throw New Exception("Something went wrong !")
-            End If
 
             Dim designName As String = publicCfg.GetDesignName(data.designId)
             Dim exactName As String = designName & " - " & blindName
