@@ -35,6 +35,10 @@ Partial Class Console_ReminderOrderDraft
                 Dim CreatedBy As String = SafeGet(row, "CreatedBy")
                 Dim CreatedDate As String = SafeGet(row, "CreatedDate")
 
+                If OrderNumber.ToLower().Contains("test") Or OrderName.ToLower().Contains("test") Then
+                     Continue For
+                End If
+
                 Dim ThisTime As DateTime
                 If DateTime.TryParse(CreatedDate, ThisTime) Then
                     Dim CurrentDate As DateTime = DateTime.Now
