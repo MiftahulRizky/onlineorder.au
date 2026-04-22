@@ -216,9 +216,9 @@ Partial Class Methods_Order_CreateMethod
 
             Dim FinalDelivery As String = data.delivery
             Dim CustomerDelivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM Customers WHERE Id = '{0}'", data.customer))
-            If data.ordertype = "Blinds" Or data.ordertype = "Door" Or data.ordertype = "Window" Then
+            If InArray(data.ordertype, "Blinds", "Door", "Window", "Door and Window") Then
 
-                If String.IsNullOrEmpty(data.delivery) AND String.IsNullOrEmpty(CustomerDelivery) AND Not data.ordertype = "Door" Then
+                If String.IsNullOrEmpty(data.delivery) AND String.IsNullOrEmpty(CustomerDelivery) AND Not InArray(data.ordertype, "Door", "Window", "Door and Window") Then
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "delivery is required !", .field = "delivery"}}
                 End If
 
@@ -251,7 +251,7 @@ Partial Class Methods_Order_CreateMethod
             Dim url As String = "/"
             '#insert
             If String.IsNullOrEmpty(data.id) Then
-                IF InArray(data.ordertype, "Blinds", "Door", "Window")  Then
+                IF InArray(data.ordertype, "Blinds", "Door", "Window", "Door and Window")  Then
                     Dim id As String = publicCfg.CreateOrderHeaderId()
                     Using thisConn As New SqlConnection(myConn)
                         Using myCmd As New SqlCommand("INSERT INTO OrderHeaders (Id, UserId, StoreId, OrderNo, OrderCust, Delivery, OrderType, Note, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, CreatedDate, Active) VALUES (@Id, @UserId, @StoreId, LTRIM(RTRIM(@OrderNo)), LTRIM(RTRIM(@OrderCust)), @Delivery, @OrderType, @Note, 'Yes', 0, 0, 0,  'Draft', GETDATE(), 1)", thisConn)
@@ -310,7 +310,7 @@ Partial Class Methods_Order_CreateMethod
 
             '#update
             If Not String.IsNullOrEmpty(data.id) Then
-                IF InArray(data.ordertype, "Blinds","Door","Window") Then
+                IF InArray(data.ordertype, "Blinds","Door","Window", "Door and Window") Then
                     Dim id As String = data.id
                     Using thisConn As New SqlConnection(myConn)
                         Using myCmd As New SqlCommand("UPDATE OrderHeaders SET UserId=@UserId, StoreId=@StoreId, OrderNo=LTRIM(RTRIM(@OrderNo)), OrderCust=LTRIM(RTRIM(@OrderCust)), Delivery=@Delivery, Note=@Note, Active=1 WHERE Id=@Id", thisConn)

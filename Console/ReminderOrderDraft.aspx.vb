@@ -35,7 +35,7 @@ Partial Class Console_ReminderOrderDraft
                 Dim CreatedBy As String = SafeGet(row, "CreatedBy")
                 Dim CreatedDate As String = SafeGet(row, "CreatedDate")
 
-                If OrderNumber.ToLower().Contains("test") Or OrderName.ToLower().Contains("test") Then
+                If OrderNumber.ToLower().Contains("test") Or OrderNumber.ToLower().Contains("tes") Or OrderName.ToLower().Contains("test") Or OrderName.ToLower().Contains("tes") Then
                      Continue For
                 End If
 

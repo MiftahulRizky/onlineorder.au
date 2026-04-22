@@ -13,6 +13,7 @@
             Call BackColor()
 
             Call BindDataCompany()
+            Call BindDataProductType()
         End If
     End Sub
 
@@ -78,11 +79,27 @@
         End Try
     End Sub
 
+    Private Sub BindDataProductType()
+        ddlType.Items.Clear()
+        Try
+            ddlType.DataSource = publicCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM ProductType ORDER BY Name ASC")
+            ddlType.DataTextField = "NameText"
+            ddlType.DataValueField = "Name"
+            ddlType.DataBind()
+            If ddlType.Items.Count > 0 Then
+                ddlType.Items.Insert(0, New ListItem("", ""))
+            End If
+        Catch ex As Exception
+            Call MessageError(True, ex.ToString())
+        End Try
+    End Sub
+
     Private Sub BackColor()
         Call MessageError(False, String.Empty)
 
         txtName.CssClass ="form-control "
         ddlCompany.CssClass ="form-select "
+        ddlType.CssClass ="form-select "
         txtPage.CssClass ="form-control "
         txtDescription.CssClass ="form-control"
         ddlActive.CssClass ="form-select "

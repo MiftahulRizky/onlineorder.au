@@ -46,13 +46,7 @@
                             <div class="mb-3 row">
                                 <label class="col-lg-3 col-form-label required">PRODUCT TYPE</label>
                                 <div class="col-lg-2 col-md-12 col-sm-12">
-                                    <asp:DropDownList runat="server" ID="ddlType" CssClass="form-select">
-                                        <asp:ListItem Value="Blinds" Text="BLINDS"></asp:ListItem>
-                                        <asp:ListItem Value="Panorama" Text="PANORAMA"></asp:ListItem>
-                                        <asp:ListItem Value="Evolve" Text="EVOLVE"></asp:ListItem>
-                                        <asp:ListItem Value="Door" Text="DOOR"></asp:ListItem>
-                                        <asp:ListItem Value="Window" Text="WINDOW"></asp:ListItem>
-                                    </asp:DropDownList>
+                                    <asp:DropDownList runat="server" ID="ddlType" CssClass="form-select"></asp:DropDownList>
                                 </div>
                             </div>
 
