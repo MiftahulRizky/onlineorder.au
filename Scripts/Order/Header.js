@@ -83,7 +83,10 @@ document.querySelector("#btn-cancel").addEventListener("click", (e) => {
     window.location.href = "/order";
   }
 
-  if (ACTION == "edit" && ["blinds", "door", "window"].includes(ORDERTYPE)) {
+  if (
+    ACTION == "edit" &&
+    ["blinds", "door", "window", "door and window"].includes(ORDERTYPE)
+  ) {
     window.location.href = `/order/detail?param=${ID}&ordertype=${ORDERTYPE.toLowerCase()}`;
   }
 
@@ -798,7 +801,7 @@ const visibleElementForm = async (ordertype, customer) => {
     if (!ordertype) return; //throw new Error(ordertype);
     formDetail.removeAttribute("hidden");
 
-    if (["Blinds", "Door", "Window"].includes(ordertype)) {
+    if (["Blinds", "Door", "Window", "Door and Window"].includes(ordertype)) {
       if (
         [
           "Administrator",
@@ -812,7 +815,10 @@ const visibleElementForm = async (ordertype, customer) => {
       const customerDelivery = await getItemData(
         `SELECT Delivery FROM Customers WHERE Id = '${customerEl.value}'`,
       );
-      if (!customerDelivery && ordertype !== "Door") {
+      if (
+        !customerDelivery &&
+        !["Door", "Door and Window"].includes(ordertype)
+      ) {
         divDelivery.removeAttribute("hidden");
       }
     }

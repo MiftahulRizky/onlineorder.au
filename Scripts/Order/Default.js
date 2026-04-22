@@ -105,7 +105,7 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const id = e.target.dataset.id;
     const type = e.target.dataset.type;
     // handlerOpenDetailOrder(id);
-    if (["Blinds", "Door", "Window"].includes(type)) {
+    if (["Blinds", "Door", "Window", "Door and Window"].includes(type)) {
       window.location.href = `/order/detail?param=${id}&ordertype=${type.toLowerCase()}`;
     } else if (["Panorama", "Evolve"].includes(type)) {
       window.location.href = `/order/shutters/detail?param=${id}&ordertype=${type.toLowerCase()}`;
