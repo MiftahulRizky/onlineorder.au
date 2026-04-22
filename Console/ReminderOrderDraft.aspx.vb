@@ -69,7 +69,7 @@ Partial Class Console_ReminderOrderDraft
                         dump.AppendLine("</div>")
                     End If
 
-                    If DaysDiff > 10 Then
+                    If DaysDiff > 90 Then
                         Dim ResponseDelete As String = DeleteOrderDraft(Id, OrderType)
                         Dim statusColor As String = If(ResponseDelete = "200", "green", "red")
                         Dim statusText As String =  If(ResponseDelete = "200", "Success", "Failed")
