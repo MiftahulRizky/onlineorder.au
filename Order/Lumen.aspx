@@ -130,21 +130,13 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row" id="divRailColour">
-                                        <label for="railcolour" class="col-lg-3 text-uppercase fw-bold">rail colour</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="railcolour" id="railcolour" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
-
                                     <div class="mb-3 row" id="divControlPosition">
-                                        <label for="controlposition" class="col-lg-3 text-uppercase fw-bold" id="lblControlPosition">control position</label>
+                                        <label for="controlposition" class="col-lg-3 text-uppercase fw-bold" id="lblControlPosition">control side</label>
                                         <div class="col-lg-4">
                                             <select type="text" name="controlposition" id="controlposition" class="form-select">
                                                 <option value=""></option>
-                                                <option value="Left">LEFT</option>
-                                                <option value="Right">RIGHT</option>
+                                                <option value="LHC">LHC</option>
+                                                <option value="RHC">RHC</option>
                                             </select>
                                         </div>  
                                     </div>
@@ -164,9 +156,47 @@
                                         </div>
                                     </div>
 
+                                    <div id="divMotor">
+                                        <div class="mb-3 row" id="divMotorOptions">
+                                            <label for="motoroption" class="col-lg-3 text-uppercase fw-bold">motor options</label>
+                                            <div class="col-lg-4">
+                                                <select type="text" name="motoroption" id="motoroption" class="form-select"></select>
+                                            </div>  
+                                        </div>
+                                        <div class="mb-3 row" id="divRemoteOptions">
+                                            <label for="remoteoption" class="col-lg-3 text-uppercase fw-bold">remote options</label>
+                                            <div class="col-lg-4">
+                                                <select type="text" name="remoteoption" id="remoteoption" class="form-select"></select>
+                                            </div>  
+                                        </div>
+                                        <div class="mb-3 row" id="divChargerOptions">
+                                            <label for="chargeroption" class="col-lg-3 text-uppercase fw-bold">charger options</label>
+                                            <div class="col-lg-4">
+                                                <select type="text" name="chargeroption" id="chargeroption" class="form-select"></select>
+                                            </div>  
+                                        </div>
+                                        <div class="mb-3 row" id="diCassette">
+                                            <label for="cassettetype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">cassette</label>
+                                            <div class="col-lg-4 col-md-12 col-sm-12">
+                                                <select name="cassettetype" id="cassettetype" class="form-select "></select>
+                                                <small class="form-hint">* Type</small>
+                                            </div>
+                                            <div class="col-lg-4 col-md-12 col-sm-12">
+                                                <select name="cassettecolour" id="cassettecolour" class="form-select " ></select>
+                                                <small class="form-hint">* Colour</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divRailColour">
+                                        <label for="railcolour" class="col-lg-3 text-uppercase fw-bold">rail colour</label>
+                                        <div class="col-lg-4">
+                                            <select type="text" name="railcolour" id="railcolour" class="form-select"></select>
+                                        </div>  
+                                    </div>
                                     
-                                    <div class="mb-3 row" id="divSide">
-                                        <label for="side" class="col-lg-3 text-uppercase fw-bold" >side by side</label>
+                                    <div class="mb-3 row" id="divButting">
+                                        <label for="side" class="col-lg-3 text-uppercase fw-bold" >Butting Blind</label>
                                         <div class="col-lg-4">
                                             <select type="text" name="side" id="side" class="form-select">
                                                 <option value=""></option>

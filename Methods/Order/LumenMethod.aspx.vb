@@ -28,6 +28,11 @@ Partial Class Methods_Order_LumenMethod
         Public Property controlposition As String
         Public Property chaincolour As String
         Public Property chainlength As String
+        Public Property motoroption As String
+        Public Property remoteoption As String
+        Public Property chargeroption As String
+        Public Property cassettetype As String
+        Public Property cassettecolour As String
         Public Property side As String
         Public Property notes As String
         Public Property markup As String
@@ -95,7 +100,7 @@ Partial Class Methods_Order_LumenMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindControlType(ByVal designid As String, ByVal blindid As String) As Object
         Try
-            Dim MyQuery As String = String.Format("SELECT *, UPPER(ControlType) AS ControlText FROM HardwareKits WHERE DesignId='{0}' AND BlindId = '{1}' ORDER BY Name ASC", designid, UCase(blindid).ToString())
+            Dim MyQuery As String = String.Format("SELECT *, UPPER(ControlType) AS ControlText FROM HardwareKits WHERE DesignId='{0}' AND BlindId = '{1}' AND Active=1 ORDER BY Name ASC", designid, UCase(blindid).ToString())
             Dim datas As DataSet = publicCfg.GetListData(MyQuery)
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
@@ -188,6 +193,10 @@ Partial Class Methods_Order_LumenMethod
         End Try
     End Function
 
+    Private Shared Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
+    End Function
+
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Submit(ByVal data As ParamSubmit) As Object
@@ -259,22 +268,42 @@ Partial Class Methods_Order_LumenMethod
                 End If
             End IF
 
-            If String.IsNullOrEmpty(data.railcolour) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "rail colour is required !", .field = "railcolour"}}
-            End If
-
             If String.IsNullOrEmpty(data.controlposition) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "control position is required !", .field = "controlposition"}}
             End If
 
             Dim ControlType As String = publicCfg.GetItemData(String.Format("SELECT ControlType FROM HardwareKits WHERE Id = '{0}'", data.controltype))
-            If String.IsNullOrEmpty(data.chaincolour) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = String.Format("{0} colour is required !", controltype), .field = "chaincolour"}}
-            End If
-            If ControlType = "Cord" Then
-                If String.IsNullOrEmpty(data.chainlength) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "cord length is required !", .field = "chainlength"}}
+            If InArray(ControlType, "Chain", "Cord") Then
+                If String.IsNullOrEmpty(data.chaincolour) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = String.Format("{0} colour is required !", controltype), .field = "chaincolour"}}
                 End If
+                If ControlType = "Cord" Then
+                    If String.IsNullOrEmpty(data.chainlength) Then
+                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = "cord length is required !", .field = "chainlength"}}
+                    End If
+                End If
+            End If
+
+            If ControlType = "Motorised" Then
+                If String.IsNullOrEmpty(data.motoroption) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "motor option is required !", .field = "motoroption"}}
+                End If
+                If String.IsNullOrEmpty(data.remoteoption) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "remote option is required !", .field = "remoteoption"}}
+                End If
+                If String.IsNullOrEmpty(data.chargeroption) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "charger option is required !", .field = "chargeroption"}}
+                End If
+                If String.IsNullOrEmpty(data.cassettetype) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "cassette type is required !", .field = "cassettetype"}}
+                End If
+                If String.IsNullOrEmpty(data.cassettecolour) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "cassette colour is required !", .field = "cassettecolour"}}
+                End If
+            End IF
+
+            If String.IsNullOrEmpty(data.railcolour) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "rail colour is required !", .field = "railcolour"}}
             End If
 
             If Not String.IsNullOrEmpty(data.notes) Then
@@ -360,7 +389,7 @@ Partial Class Methods_Order_LumenMethod
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], SwipelColour, ControlPosition, ChainLength, CordColour, CordLength, SideBySide, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @SwipelColour, @ControlPosition, @ChainLength, @CordColour, @CordLength, @SideBySide, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], SwipelColour, ControlPosition, ChainLength, CordColour, CordLength, MotorStyle, MotorRemote, MotorCharger, TrackType, TrackColour, SideBySide, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @SwipelColour, @ControlPosition, @ChainLength, @CordColour, @CordLength, @MotorStyle, @MotorRemote, @MotorCharger, @TrackType, @TrackColour, @SideBySide, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -380,6 +409,11 @@ Partial Class Methods_Order_LumenMethod
                         myCmd.Parameters.AddWithValue("@ChainLength", CLength)
                         myCmd.Parameters.AddWithValue("@CordColour", data.chaincolour)
                         myCmd.Parameters.AddWithValue("@CordLength", data.chainlength)
+                        myCmd.Parameters.AddWithValue("@MotorStyle", data.motoroption)
+                        myCmd.Parameters.AddWithValue("@MotorRemote", data.remoteoption)
+                        myCmd.Parameters.AddWithValue("@MotorCharger", data.chargeroption)
+                        myCmd.Parameters.AddWithValue("@TrackType", data.cassettetype)
+                        myCmd.Parameters.AddWithValue("@TrackColour", data.cassettecolour)
                         myCmd.Parameters.AddWithValue("@SideBySide", data.side)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
@@ -406,7 +440,7 @@ Partial Class Methods_Order_LumenMethod
 
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, SwipelColour=@SwipelColour, ControlPosition=@ControlPosition, ChainLength=@ChainLength, CordColour=@CordColour, CordLength=@CordLength, SideBySide=@SideBySide, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, SwipelColour=@SwipelColour, ControlPosition=@ControlPosition, ChainLength=@ChainLength, CordColour=@CordColour, CordLength=@CordLength, MotorStyle=@MotorStyle, MotorRemote=@MotorRemote, MotorCharger=@MotorCharger, TrackType=@TrackType, TrackColour=@TrackColour, SideBySide=@SideBySide, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -426,6 +460,11 @@ Partial Class Methods_Order_LumenMethod
                         myCmd.Parameters.AddWithValue("@ChainLength", CLength)
                         myCmd.Parameters.AddWithValue("@CordColour", data.chaincolour)
                         myCmd.Parameters.AddWithValue("@CordLength", data.chainlength)
+                        myCmd.Parameters.AddWithValue("@MotorStyle", data.motoroption)
+                        myCmd.Parameters.AddWithValue("@MotorRemote", data.remoteoption)
+                        myCmd.Parameters.AddWithValue("@MotorCharger", data.chargeroption)
+                        myCmd.Parameters.AddWithValue("@TrackType", data.cassettetype)
+                        myCmd.Parameters.AddWithValue("@TrackColour", data.cassettecolour)
                         myCmd.Parameters.AddWithValue("@SideBySide", data.side)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)

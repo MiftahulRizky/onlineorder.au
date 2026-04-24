@@ -29,13 +29,25 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const controltype = e.target.value;
       const controlname = e.target.selectedOptions[0].dataset.name;
       await bindFabrics(DESIGNID);
-      await Promise.all([bindRailColour(), bindChainColour(controlname)]);
+      await Promise.all([
+        bindRailColour(),
+        bindChainColour(controlname),
+        bindMotorOptions(),
+        bindRemoteOptions(),
+        bindChargerOptions(),
+        bindCassetteType(),
+      ]);
       await handlerElementVisibility(blindtype, controltype);
     }
 
     if (e.target.id === "fabrictype") {
       const fabrictype = e.target.value;
       await bindFabricColours(DESIGNID, fabrictype);
+    }
+
+    if (e.target.id === "cassettetype") {
+      const cassettetype = e.target.value;
+      await bindCassetteColour(cassettetype);
     }
   });
   el.addEventListener("input", (e) => {
@@ -437,7 +449,8 @@ const bindRailColour = () => {
   data.push(
     { value: "Black", text: "Black" },
     { value: "Ivory", text: "Ivory" },
-    { value: "Silver", text: "Silver" },
+    { value: "Silver Regular", text: "Silver Regular" },
+    { value: "Silver Large", text: "Silver Large" },
     { value: "White", text: "White" },
   );
 
@@ -465,15 +478,156 @@ const bindChainColour = (controltype) => {
 
   let data = [];
   data.push(
+    { value: "Beige", text: "Beige" },
     { value: "Black", text: "Black" },
+    { value: "Brown", text: "Brown" },
     { value: "Ivory", text: "Ivory" },
-    { value: "Silver", text: "Silver" },
+    { value: "Rope", text: "Rope" },
+    { value: "Silver Grey", text: "Silver Grey" },
     { value: "White", text: "White" },
   );
 
   if (controltype === "Chain") {
     data.push({ value: "Stainless Steel", text: "Stainless Steel" });
   }
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindMotorOptions = () => {
+  const sel = document.getElementById("motoroption");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push({
+    value: "Sonesse 30 Wirefree Battery",
+    text: "Sonesse 30 Wirefree Battery",
+  });
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindRemoteOptions = () => {
+  const sel = document.getElementById("remoteoption");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "4 Channel Remote", text: "4 Channel Remote" },
+    { value: "No Remote", text: "No Remote" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindChargerOptions = () => {
+  const sel = document.getElementById("chargeroption");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "Charger", text: "Charger" },
+    { value: "No Charger", text: "No Charger" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindCassetteType = () => {
+  const sel = document.getElementById("cassettetype");
+  document.getElementById("cassettecolour").innerHTML = "";
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "Single Cassette", text: "Single Cassette" },
+    { value: "Common Cassette", text: "Common Cassette" },
+    { value: "Single Cassette Large", text: "Single Cassette Large" },
+    { value: "Common Cassette Large", text: "Common Cassette Large" },
+    { value: "No Casstte (Common)", text: "No Casstte (Common)" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindCassetteColour = (cassettetype) => {
+  const sel = document.getElementById("cassettecolour");
+  sel.innerHTML = ""; //reset
+
+  if (!cassettetype) return;
+
+  let data = [];
+  data.push(
+    { value: "Black", text: "Black" },
+    { value: "Ivory", text: "Ivory" },
+    { value: "Silver Grey", text: "Silver Grey" },
+    { value: "White", text: "White" },
+  );
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
@@ -526,6 +680,11 @@ const bindItemOrders = async (itemid) => {
       await Promise.all([
         bindRailColour(),
         bindChainColour(item.ControlType),
+        bindMotorOptions(),
+        bindRemoteOptions(),
+        bindChargerOptions(),
+        bindCassetteType(),
+        bindCassetteColour(item.TrackType),
         handlerSetElementValues(item),
       ]);
       await handlerElementVisibility(item.BlindId, item.KitId, item);
@@ -552,11 +711,12 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
     const divControlPosition = document.getElementById("divControlPosition");
     const lblChain = document.getElementById("lblChain");
     const divChain = document.getElementById("divChain");
-    const divSide = document.getElementById("divSide");
+    const divMotor = document.getElementById("divMotor");
+    const divButtinge = document.getElementById("divButtinge");
     const divMarkUp = document.getElementById("divMarkUp");
 
     const btnSubmit = document.querySelector("#btnSubmit");
-
+    // return;
     if (!["Administrator"].includes(ROLENAME)) {
       lblItemId.classList.add("d-none");
     }
@@ -571,8 +731,9 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
     // divRailColour.classList.add("d-none");
     // divControlPosition.classList.add("d-none");
     lblChain.innerHTML = "chain colour x length";
-    // divChain.classList.add("d-none");
-    // divSide.classList.add("d-none");
+    divChain.classList.add("d-none");
+    divMotor.classList.add("d-none");
+    // divButtinge.classList.add("d-none");
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
 
@@ -586,8 +747,14 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
 
     divFormDetail.classList.remove("d-none");
 
-    if (controlname == "Cord") {
-      lblChain.innerHTML = "cord colour x length";
+    if (["Cord", "Chain"].includes(controlname)) {
+      lblChain.innerHTML = `${controlname} colour x length`;
+      divChain.classList.remove("d-none");
+    }
+
+    if (["Motorised"].includes(controlname)) {
+      divChain.classList.add("d-none");
+      divMotor.classList.remove("d-none");
     }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
@@ -626,6 +793,11 @@ const handlerSubmit = async (button) => {
       "controlposition",
       "chaincolour",
       "chainlength",
+      "motoroption",
+      "remoteoption",
+      "chargeroption",
+      "cassettetype",
+      "cassettecolour",
       "side",
       "notes",
       "markup",
@@ -701,6 +873,11 @@ const handlerSetElementValues = (itemData) => {
     chainlength: "ChainLength",
     chaincolour: "CordColour",
     chainlength: "CordLength",
+    motoroption: "MotorStyle",
+    remoteoption: "MotorRemote",
+    chargeroption: "MotorCharger",
+    cassettetype: "TrackType",
+    cassettecolour: "TrackColour",
     side: "SideBySide",
     notes: "Notes",
     markup: "MarkUp",
