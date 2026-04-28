@@ -1742,7 +1742,7 @@ Partial Class Methods_Order_DetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function ReloadPricing(ByVal headerid As String) As Object
         Try
-            Dim msg As String = "Reload pricing successfully."
+            Dim msg As String = "Reload pricing."
             Dim url As String = ""
             Dim rolename As String = HttpContext.Current.Session("rolename").ToString()
 
@@ -1827,6 +1827,8 @@ Partial Class Methods_Order_DetailMethod
                     publicCfg.HitungHarga(headerid, itemId)
                     publicCfg.HitungSurcharge(headerid, itemId)
                 End If
+
+                msg = "Reload pricing has been updated successfully."
             Next
 
             Return New SuccessResponse With {

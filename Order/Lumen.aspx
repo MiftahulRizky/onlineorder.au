@@ -176,6 +176,7 @@
                                             </div>  
                                         </div>
                                     </div>
+
                                     <div class="mb-3 row" id="divHeadbox">
                                         <label for="headboxtype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">headbox</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
@@ -186,6 +187,16 @@
                                             <select name="headboxcolour" id="headboxcolour" class="form-select " ></select>
                                             <small class="form-hint">* Colour</small>
                                         </div>
+                                    </div>
+
+                                     <div class="mb-3 row" id="divInsert">
+                                        <label for="insert" class="col-lg-3 text-uppercase fw-bold" >Fabric Insert</label>
+                                        <div class="col-lg-4">
+                                            <select type="text" name="insert" id="insert" class="form-select">
+                                                <option value=""></option>
+                                                <option value="Yes">YES</option>
+                                            </select>
+                                        </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divRailColour">

@@ -33,6 +33,7 @@ Partial Class Methods_Order_LumenMethod
         Public Property chargeroption As String
         Public Property headboxtype As String
         Public Property headboxcolour As String
+        Public Property insert As String
         Public Property side As String
         Public Property notes As String
         Public Property markup As String
@@ -402,7 +403,7 @@ Partial Class Methods_Order_LumenMethod
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], SwipelColour, ControlPosition, ChainLength, CordColour, CordLength, MotorStyle, MotorRemote, MotorCharger, TrackType, TrackColour, SideBySide, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @SwipelColour, @ControlPosition, @ChainLength, @CordColour, @CordLength, @MotorStyle, @MotorRemote, @MotorCharger, @TrackType, @TrackColour, @SideBySide, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], SwipelColour, ControlPosition, ChainLength, CordColour, CordLength, MotorStyle, MotorRemote, MotorCharger, TrackType, TrackColour, Fitting, SideBySide, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @SwipelColour, @ControlPosition, @ChainLength, @CordColour, @CordLength, @MotorStyle, @MotorRemote, @MotorCharger, @TrackType, @TrackColour, @Fitting, @SideBySide, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -427,6 +428,7 @@ Partial Class Methods_Order_LumenMethod
                         myCmd.Parameters.AddWithValue("@MotorCharger", data.chargeroption)
                         myCmd.Parameters.AddWithValue("@TrackType", data.headboxtype)
                         myCmd.Parameters.AddWithValue("@TrackColour", data.headboxcolour)
+                        myCmd.Parameters.AddWithValue("@Fitting", data.insert)
                         myCmd.Parameters.AddWithValue("@SideBySide", data.side)
                         myCmd.Parameters.AddWithValue("@SquareMetre", squareMetre)
                         myCmd.Parameters.AddWithValue("@LinearMetre", linearMetre)
@@ -455,7 +457,7 @@ Partial Class Methods_Order_LumenMethod
 
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, SwipelColour=@SwipelColour, ControlPosition=@ControlPosition, ChainLength=@ChainLength, CordColour=@CordColour, CordLength=@CordLength, MotorStyle=@MotorStyle, MotorRemote=@MotorRemote, MotorCharger=@MotorCharger, TrackType=@TrackType, TrackColour=@TrackColour, SideBySide=@SideBySide, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, SwipelColour=@SwipelColour, ControlPosition=@ControlPosition, ChainLength=@ChainLength, CordColour=@CordColour, CordLength=@CordLength, MotorStyle=@MotorStyle, MotorRemote=@MotorRemote, MotorCharger=@MotorCharger, TrackType=@TrackType, TrackColour=@TrackColour, Fitting=@Fitting, SideBySide=@SideBySide, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -480,6 +482,7 @@ Partial Class Methods_Order_LumenMethod
                         myCmd.Parameters.AddWithValue("@MotorCharger", data.chargeroption)
                         myCmd.Parameters.AddWithValue("@TrackType", data.headboxtype)
                         myCmd.Parameters.AddWithValue("@TrackColour", data.headboxcolour)
+                        myCmd.Parameters.AddWithValue("@Fitting", data.insert)
                         myCmd.Parameters.AddWithValue("@SideBySide", data.side)
                         myCmd.Parameters.AddWithValue("@SquareMetre", squareMetre)
                         myCmd.Parameters.AddWithValue("@LinearMetre", linearMetre)
