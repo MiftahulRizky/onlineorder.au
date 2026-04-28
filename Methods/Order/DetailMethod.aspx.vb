@@ -2520,6 +2520,10 @@ Partial Class Methods_Order_DetailMethod
             result += Print_CellularGalaxy(headerid)
             result += Print_CellularPotrait(headerid)
 
+            'LUMEN
+            result += Print_LumenChain(headerid)
+            result += Print_LumenMotorised(headerid)
+
             'PANEL GLIDES
             result += Print_PanelGlides(headerid)
 
@@ -3000,6 +3004,160 @@ Partial Class Methods_Order_DetailMethod
             End If
         Catch ex As Exception
             result = "ERROR CREATE PDF CELLORA POTAIT"
+        End Try
+        Return result
+    End Function
+
+    Private Shared Function Print_LumenChain(HeaderId As String) As String
+        Dim result As String = String.Empty
+
+        Try
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Lumen' AND ControlType='Chain' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='12' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
+                result += spanStart & "LUMEN BLIND CHAINED" & spanEnd
+                result += tableStart
+
+                result += trStart
+                result += thStart & "No" & thEnd
+                result += thStart & "ID" & thEnd
+                result += thStart & "Qty" & thEnd
+                result += thStart & "Product" & thEnd
+                result += thStart & "Location" & thEnd
+                result += thStart & "Mounting" & thEnd
+                result += thStart & "Width" & thEnd
+                result += thStart & "Drop" & thEnd
+                result += thStart & "Fabric" & thEnd
+                result += thStart & "Side" & thEnd
+                result += thStart & "Chained" & thEnd
+                result += thStart & "Headbox" & thEnd
+                result += thStart & "Bottom Rail Colour" & thEnd
+                result += thStart & "Butting Blind" & thEnd
+                result += trEnd
+
+                
+                
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+
+                    Dim ChainLength As String = thisData.Tables(0).Rows(i).Item("ChainLength").ToString()
+                    Dim ChainColour As String = thisData.Tables(0).Rows(i).Item("ChainColour").ToString()
+                    Dim Chainded As String = String.Format("{0} - {1}", ChainLength, ChainColour)
+    
+                    Dim TrackType As String = thisData.Tables(0).Rows(i).Item("TrackType").ToString()
+                    Dim TrackColour As String = thisData.Tables(0).Rows(i).Item("TrackColour").ToString()
+                    Dim Headbox As String = String.Format("{0} - {1}", TrackType, TrackColour)
+
+
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
+                    result += tdStart & Chainded & tdEnd
+                    result += tdStart & Headbox & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("SwipelColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("SideBySide").ToString() & tdEnd
+                    result += trEnd
+
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result = "ERROR CREATE PDF LUMEN CHAIN"
+        End Try
+        Return result
+    End Function
+
+    Private Shared Function Print_LumenMotorised(HeaderId As String) As String
+        Dim result As String = String.Empty
+
+        Try
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Lumen' AND ControlType='Motorised' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='12' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
+                result += spanStart & "LUMEN BLIND MOTORISED" & spanEnd
+                result += tableStart
+
+                result += trStart
+                result += thStart & "No" & thEnd
+                result += thStart & "ID" & thEnd
+                result += thStart & "Qty" & thEnd
+                result += thStart & "Product" & thEnd
+                result += thStart & "Location" & thEnd
+                result += thStart & "Mounting" & thEnd
+                result += thStart & "Width" & thEnd
+                result += thStart & "Drop" & thEnd
+                result += thStart & "Fabric" & thEnd
+                result += thStart & "Side" & thEnd
+                result += thStart & "Motor Option" & thEnd
+                result += thStart & "Remote Option" & thEnd
+                result += thStart & "Charger Option" & thEnd
+                result += thStart & "Headbox" & thEnd
+                result += thStart & "Bottom Rail Colour" & thEnd
+                result += thStart & "Butting Blind" & thEnd
+                result += trEnd
+
+                
+                
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+
+                    Dim ChainLength As String = thisData.Tables(0).Rows(i).Item("ChainLength").ToString()
+                    Dim ChainColour As String = thisData.Tables(0).Rows(i).Item("ChainColour").ToString()
+                    Dim Chainded As String = String.Format("{0} - {1}", ChainLength, ChainColour)
+    
+                    Dim TrackType As String = thisData.Tables(0).Rows(i).Item("TrackType").ToString()
+                    Dim TrackColour As String = thisData.Tables(0).Rows(i).Item("TrackColour").ToString()
+                    Dim Headbox As String = String.Format("{0} - {1}", TrackType, TrackColour)
+
+
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("MotorStyle").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("MotorRemote").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("MotorCharger").ToString() & tdEnd
+                    result += tdStart & Headbox & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("SwipelColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("SideBySide").ToString() & tdEnd
+                    result += trEnd
+
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result = "ERROR CREATE PDF LUMEN CHAIN"
         End Try
         Return result
     End Function
@@ -4700,6 +4858,7 @@ Partial Class Methods_Order_DetailMethod
         Dim separted As String = " | "
         Dim totalAluminium As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Aluminium Blinds' AND Active=1")
         Dim totalCellular As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Cellular Blinds' AND Active=1")
+        Dim totalLumen As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Lumen' AND Active=1")
         Dim totalPG As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Panel Glides' AND Active=1")
         Dim totalVenetian As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Venetian Blinds' AND Active=1")
         Dim totalRoller As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roller Blinds' AND Active=1")
@@ -4710,6 +4869,7 @@ Partial Class Methods_Order_DetailMethod
 
         If totalAluminium = "" Then : totalAluminium = "-" : End If
         If totalCellular = "" Then : totalCellular = "-" : End If
+        If totalLumen = "" Then : totalLumen = "-" : End If
         If totalPG = "" Then : totalPG = "-" : End If
         If totalVenetian = "" Then : totalVenetian = "-" : End If
         If totalRoller = "" Then : totalRoller = "-" : End If
@@ -4720,6 +4880,7 @@ Partial Class Methods_Order_DetailMethod
 
         Dim aluminiumblinds As String = "<b>Aluminium Blinds: " & totalAluminium & "</b>"
         Dim celloraBlinds As String = "<b>Cellular Blinds: " & totalCellular & "</b>"
+        Dim lumen As String = "<b>Lumen : " & totalLumen & "</b>"
         Dim panelGlides As String = "<b>Panel Glides: " & totalPG & "</b>"
         Dim venetianblinds As String = "<b>Venetian Blinds:  " & totalVenetian & "</b>"
         Dim rollerblinds As String = "<b>Roller Blinds: " & totalRoller & "</b>"
@@ -4728,7 +4889,7 @@ Partial Class Methods_Order_DetailMethod
         Dim verishades As String = "<b>Veri Shades: " & totalVerishades & "</b>"
         Dim verticalblinds As String = "<b>Vertical Blinds: " & totalVertical & "</b>"
 
-        result = celloraBlinds & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & rollerglobalblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
+        result = celloraBlinds & separted & lumen & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & rollerglobalblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
         Return result
     End Function
 

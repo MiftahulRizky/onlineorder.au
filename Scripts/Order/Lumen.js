@@ -449,8 +449,7 @@ const bindRailColour = () => {
   data.push(
     { value: "Black", text: "Black" },
     { value: "Ivory", text: "Ivory" },
-    { value: "Silver Regular", text: "Silver Regular" },
-    { value: "Silver Large", text: "Silver Large" },
+    { value: "Silver", text: "Silver" },
     { value: "White", text: "White" },
   );
 
