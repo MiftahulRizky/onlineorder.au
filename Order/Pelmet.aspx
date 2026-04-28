@@ -130,79 +130,23 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row" id="divControlPosition">
-                                        <label for="controlposition" class="col-lg-3 text-uppercase fw-bold" id="lblControlPosition">control side</label>
+                                    <div class="mb-3 row" id="divPelmetOver">
+                                        <label for="pelmetover" class="col-lg-3 text-uppercase fw-bold">pelmet over</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="controlposition" id="controlposition" class="form-select">
-                                                <option value=""></option>
-                                                <option value="LHC">LHC</option>
-                                                <option value="RHC">RHC</option>
-                                            </select>
+                                            <select type="text" name="pelmetover" id="pelmetover" class="form-select"></select>
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divChain">
-                                        <label for="chaincolour" class="col-lg-3 text-uppercase fw-bold" id="lblChain">chain colour x length</label>
+                                    <div class="mb-3 row" id="divReturn">
+                                        <label for="returnposition" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">returns</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <select name="chaincolour" id="chaincolour" class="form-select "></select>
-                                            <small class="form-hint">* Colour</small>
-                                        </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="chainlength" id="chainlength" class="form-control ">
-                                                <span class="input-group-text ">mm</span>
-                                            </div>
-                                            <small class="form-hint">* Length</small>
-                                        </div>
-                                    </div>
-
-                                    <div id="divMotor">
-                                        <div class="mb-3 row" id="divMotorOptions">
-                                            <label for="motoroption" class="col-lg-3 text-uppercase fw-bold">motor options</label>
-                                            <div class="col-lg-4">
-                                                <select type="text" name="motoroption" id="motoroption" class="form-select"></select>
-                                            </div>  
-                                        </div>
-                                        <div class="mb-3 row" id="divRemoteOptions">
-                                            <label for="remoteoption" class="col-lg-3 text-uppercase fw-bold">remote options</label>
-                                            <div class="col-lg-4">
-                                                <select type="text" name="remoteoption" id="remoteoption" class="form-select"></select>
-                                            </div>  
-                                        </div>
-                                        <div class="mb-3 row" id="divChargerOptions">
-                                            <label for="chargeroption" class="col-lg-3 text-uppercase fw-bold">charger options</label>
-                                            <div class="col-lg-4">
-                                                <select type="text" name="chargeroption" id="chargeroption" class="form-select"></select>
-                                            </div>  
-                                        </div>
-                                    </div>
-                                    <div class="mb-3 row" id="divHeadbox">
-                                        <label for="headboxtype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">headbox</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <select name="headboxtype" id="headboxtype" class="form-select "></select>
-                                            <small class="form-hint">* Type</small>
+                                            <select name="returnposition" id="returnposition" class="form-select "></select>
+                                            <small class="form-hint">* Position</small>
                                         </div>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <select name="headboxcolour" id="headboxcolour" class="form-select " ></select>
-                                            <small class="form-hint">* Colour</small>
+                                            <input type="number" min="1" name="returnsize" id="returnsize" class="form-control  " autocomplete="off" />
+                                            <small class="form-hint">* Size</small>
                                         </div>
-                                    </div>
-
-                                    <div class="mb-3 row" id="divRailColour">
-                                        <label for="railcolour" class="col-lg-3 text-uppercase fw-bold">bottom rail colour</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="railcolour" id="railcolour" class="form-select"></select>
-                                        </div>  
-                                    </div>
-                                    
-                                    <div class="mb-3 row" id="divButting">
-                                        <label for="side" class="col-lg-3 text-uppercase fw-bold" >Butting Blind</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="side" id="side" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Yes">YES</option>
-                                            </select>
-                                        </div>  
                                     </div>
 
                                     <div class="mb-3 row" >
