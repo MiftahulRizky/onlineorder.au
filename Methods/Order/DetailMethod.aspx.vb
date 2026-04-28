@@ -3033,6 +3033,7 @@ Partial Class Methods_Order_DetailMethod
                 result += thStart & "Side" & thEnd
                 result += thStart & "Chained" & thEnd
                 result += thStart & "Headbox" & thEnd
+                result += thStart & "Insert" & thEnd
                 result += thStart & "Bottom Rail Colour" & thEnd
                 result += thStart & "Butting Blind" & thEnd
                 result += trEnd
@@ -3063,6 +3064,7 @@ Partial Class Methods_Order_DetailMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
                     result += tdStart & Chainded & tdEnd
                     result += tdStart & Headbox & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Fitting").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("SwipelColour").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("SideBySide").ToString() & tdEnd
                     result += trEnd
@@ -3110,6 +3112,7 @@ Partial Class Methods_Order_DetailMethod
                 result += thStart & "Remote Option" & thEnd
                 result += thStart & "Charger Option" & thEnd
                 result += thStart & "Headbox" & thEnd
+                result += thStart & "Insert" & thEnd
                 result += thStart & "Bottom Rail Colour" & thEnd
                 result += thStart & "Butting Blind" & thEnd
                 result += trEnd
@@ -3142,6 +3145,7 @@ Partial Class Methods_Order_DetailMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("MotorRemote").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("MotorCharger").ToString() & tdEnd
                     result += tdStart & Headbox & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Fitting").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("SwipelColour").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("SideBySide").ToString() & tdEnd
                     result += trEnd
