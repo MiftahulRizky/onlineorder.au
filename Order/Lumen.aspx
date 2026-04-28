@@ -175,21 +175,21 @@
                                                 <select type="text" name="chargeroption" id="chargeroption" class="form-select"></select>
                                             </div>  
                                         </div>
-                                        <div class="mb-3 row" id="diCassette">
-                                            <label for="cassettetype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">cassette</label>
-                                            <div class="col-lg-4 col-md-12 col-sm-12">
-                                                <select name="cassettetype" id="cassettetype" class="form-select "></select>
-                                                <small class="form-hint">* Type</small>
-                                            </div>
-                                            <div class="col-lg-4 col-md-12 col-sm-12">
-                                                <select name="cassettecolour" id="cassettecolour" class="form-select " ></select>
-                                                <small class="form-hint">* Colour</small>
-                                            </div>
+                                    </div>
+                                    <div class="mb-3 row" id="divHeadbox">
+                                        <label for="headboxtype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">headbox</label>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <select name="headboxtype" id="headboxtype" class="form-select "></select>
+                                            <small class="form-hint">* Type</small>
+                                        </div>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <select name="headboxcolour" id="headboxcolour" class="form-select " ></select>
+                                            <small class="form-hint">* Colour</small>
                                         </div>
                                     </div>
 
                                     <div class="mb-3 row" id="divRailColour">
-                                        <label for="railcolour" class="col-lg-3 text-uppercase fw-bold">rail colour</label>
+                                        <label for="railcolour" class="col-lg-3 text-uppercase fw-bold">bottom rail colour</label>
                                         <div class="col-lg-4">
                                             <select type="text" name="railcolour" id="railcolour" class="form-select"></select>
                                         </div>  

@@ -31,8 +31,8 @@ Partial Class Methods_Order_LumenMethod
         Public Property motoroption As String
         Public Property remoteoption As String
         Public Property chargeroption As String
-        Public Property cassettetype As String
-        Public Property cassettecolour As String
+        Public Property headboxtype As String
+        Public Property headboxcolour As String
         Public Property side As String
         Public Property notes As String
         Public Property markup As String
@@ -294,11 +294,11 @@ Partial Class Methods_Order_LumenMethod
                 If String.IsNullOrEmpty(data.chargeroption) Then
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "charger option is required !", .field = "chargeroption"}}
                 End If
-                If String.IsNullOrEmpty(data.cassettetype) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "cassette type is required !", .field = "cassettetype"}}
+                If String.IsNullOrEmpty(data.headboxtype) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "cassette type is required !", .field = "headboxtype"}}
                 End If
-                If String.IsNullOrEmpty(data.cassettecolour) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "cassette colour is required !", .field = "cassettecolour"}}
+                If String.IsNullOrEmpty(data.headboxcolour) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "cassette colour is required !", .field = "headboxcolour"}}
                 End If
             End IF
 
@@ -412,8 +412,8 @@ Partial Class Methods_Order_LumenMethod
                         myCmd.Parameters.AddWithValue("@MotorStyle", data.motoroption)
                         myCmd.Parameters.AddWithValue("@MotorRemote", data.remoteoption)
                         myCmd.Parameters.AddWithValue("@MotorCharger", data.chargeroption)
-                        myCmd.Parameters.AddWithValue("@TrackType", data.cassettetype)
-                        myCmd.Parameters.AddWithValue("@TrackColour", data.cassettecolour)
+                        myCmd.Parameters.AddWithValue("@TrackType", data.headboxtype)
+                        myCmd.Parameters.AddWithValue("@TrackColour", data.headboxcolour)
                         myCmd.Parameters.AddWithValue("@SideBySide", data.side)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
@@ -463,8 +463,8 @@ Partial Class Methods_Order_LumenMethod
                         myCmd.Parameters.AddWithValue("@MotorStyle", data.motoroption)
                         myCmd.Parameters.AddWithValue("@MotorRemote", data.remoteoption)
                         myCmd.Parameters.AddWithValue("@MotorCharger", data.chargeroption)
-                        myCmd.Parameters.AddWithValue("@TrackType", data.cassettetype)
-                        myCmd.Parameters.AddWithValue("@TrackColour", data.cassettecolour)
+                        myCmd.Parameters.AddWithValue("@TrackType", data.headboxtype)
+                        myCmd.Parameters.AddWithValue("@TrackColour", data.headboxcolour)
                         myCmd.Parameters.AddWithValue("@SideBySide", data.side)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)

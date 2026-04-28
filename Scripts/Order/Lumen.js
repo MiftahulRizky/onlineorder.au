@@ -35,7 +35,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindMotorOptions(),
         bindRemoteOptions(),
         bindChargerOptions(),
-        bindCassetteType(),
+        bindHeadboxType(controlname),
       ]);
       await handlerElementVisibility(blindtype, controltype);
     }
@@ -45,9 +45,9 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       await bindFabricColours(DESIGNID, fabrictype);
     }
 
-    if (e.target.id === "cassettetype") {
-      const cassettetype = e.target.value;
-      await bindCassetteColour(cassettetype);
+    if (e.target.id === "headboxtype") {
+      const headboxtype = e.target.value;
+      await bindHeadboxColour(headboxtype);
     }
   });
   el.addEventListener("input", (e) => {
@@ -478,13 +478,10 @@ const bindChainColour = (controltype) => {
 
   let data = [];
   data.push(
-    { value: "Beige", text: "Beige" },
-    { value: "Black", text: "Black" },
-    { value: "Brown", text: "Brown" },
-    { value: "Ivory", text: "Ivory" },
-    { value: "Rope", text: "Rope" },
-    { value: "Silver Grey", text: "Silver Grey" },
     { value: "White", text: "White" },
+    { value: "Ivory", text: "Ivory" },
+    { value: "Black", text: "Black" },
+    { value: "Grey", text: "Grey" },
   );
 
   if (controltype === "Chain") {
@@ -585,19 +582,18 @@ const bindChargerOptions = () => {
   });
 };
 
-const bindCassetteType = () => {
-  const sel = document.getElementById("cassettetype");
-  document.getElementById("cassettecolour").innerHTML = "";
+const bindHeadboxType = (controlname) => {
+  const sel = document.getElementById("headboxtype");
+  document.getElementById("headboxcolour").innerHTML = "";
   sel.innerHTML = ""; //reset
 
+  if (!controlname) return;
+
   let data = [];
-  data.push(
-    { value: "Single Cassette", text: "Single Cassette" },
-    { value: "Common Cassette", text: "Common Cassette" },
-    { value: "Single Cassette Large", text: "Single Cassette Large" },
-    { value: "Common Cassette Large", text: "Common Cassette Large" },
-    { value: "No Casstte (Common)", text: "No Casstte (Common)" },
-  );
+  if (controlname === "Chain") {
+    data.push({ value: "Standard", text: "Standard" });
+  }
+  data.push({ value: "Large", text: "Large" });
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
@@ -615,19 +611,28 @@ const bindCassetteType = () => {
   });
 };
 
-const bindCassetteColour = (cassettetype) => {
-  const sel = document.getElementById("cassettecolour");
+const bindHeadboxColour = (headboxtype) => {
+  const sel = document.getElementById("headboxcolour");
   sel.innerHTML = ""; //reset
 
-  if (!cassettetype) return;
+  if (!headboxtype) return;
 
   let data = [];
-  data.push(
-    { value: "Black", text: "Black" },
-    { value: "Ivory", text: "Ivory" },
-    { value: "Silver Grey", text: "Silver Grey" },
-    { value: "White", text: "White" },
-  );
+  if (headboxtype === "Standard") {
+    data.push(
+      { value: "Black", text: "Black" },
+      { value: "Ivory", text: "Ivory" },
+      { value: "Silver Grey", text: "Silver Grey" },
+      { value: "White", text: "White" },
+    );
+  }
+
+  if (headboxtype === "Large") {
+    data.push(
+      { value: "Silver Grey", text: "Silver Grey" },
+      { value: "White", text: "White" },
+    );
+  }
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
@@ -683,8 +688,8 @@ const bindItemOrders = async (itemid) => {
         bindMotorOptions(),
         bindRemoteOptions(),
         bindChargerOptions(),
-        bindCassetteType(),
-        bindCassetteColour(item.TrackType),
+        bindHeadboxType(item.ControlType),
+        bindHeadboxColour(item.TrackType),
         handlerSetElementValues(item),
       ]);
       await handlerElementVisibility(item.BlindId, item.KitId, item);
@@ -796,8 +801,8 @@ const handlerSubmit = async (button) => {
       "motoroption",
       "remoteoption",
       "chargeroption",
-      "cassettetype",
-      "cassettecolour",
+      "headboxtype",
+      "headboxcolour",
       "side",
       "notes",
       "markup",
@@ -876,8 +881,8 @@ const handlerSetElementValues = (itemData) => {
     motoroption: "MotorStyle",
     remoteoption: "MotorRemote",
     chargeroption: "MotorCharger",
-    cassettetype: "TrackType",
-    cassettecolour: "TrackColour",
+    headboxtype: "TrackType",
+    headboxcolour: "TrackColour",
     side: "SideBySide",
     notes: "Notes",
     markup: "MarkUp",
