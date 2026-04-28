@@ -608,6 +608,12 @@ const bindHeadboxType = (controlname) => {
     option.setAttribute("data-name", item.text);
     sel.add(option);
   });
+
+  if (data.length == 1) {
+    sel.selectedIndex = 0;
+    const headboxtype = sel.value;
+    bindHeadboxColour(headboxtype);
+  }
 };
 
 const bindHeadboxColour = (headboxtype) => {
