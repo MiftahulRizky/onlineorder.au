@@ -17,19 +17,30 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   el.addEventListener("change", async (e) => {
     e.target.classList.remove("is-invalid");
 
-    // ---------------------------------||blindtype||---------------------------------
     if (e.target.id === "blindtype") {
       const blindtype = e.target.value;
       await handlerElementVisibility(blindtype);
-      await bindColours(DESIGNID, blindtype);
+      await bindTubes(DESIGNID, blindtype);
     }
 
-    // ---------------------------------||colourtype||---------------------------------
-    if (e.target.id === "colourtype") {
+    if (e.target.id === "tubetype") {
+      const blinds = document.getElementById("blindtype");
+      const blindtype = blinds.value;
+      const blindname = blinds.selectedOptions[0].dataset.name;
+      const tubetype = e.target.value;
+      await Promise.all([bindMounting(), bindMesh(blindname)]);
+      await handlerElementVisibility(blindtype, tubetype);
     }
   });
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "width") {
+      const blinds = document.getElementById("blindtype");
+      const blindname = blinds.selectedOptions[0].dataset.name;
+      const width = e.target.value;
+      bindMesh(blindname, width);
+    }
 
     if (e.target.id === "notes") {
       let maxLength = 1000;
@@ -39,24 +50,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     }
   });
 });
-
-// button submit
-document.querySelector("#btnSubmit").addEventListener("click", (e) => {
-  e.preventDefault();
-
-  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
-    el.classList.remove("is-invalid");
-  });
-
-  // handlerSubmit(e.target.form, e.target.id);
-  handlerSubmit(e.target.id);
-});
-
-// button cancel
-document.querySelector("#btnCancel").addEventListener("click", (e) => {
-  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
-});
-// ==================================================FUNCTION================================================
+// ================================================FUNCTION==================================================
 // ----------------------------------------------|| Binding Functions ||---------------------------------------
 const bindDesigns = async (designid) => {
   try {
@@ -123,12 +117,16 @@ const bindBlinds = async () => {
   if (!DESIGNID) return;
 
   try {
-    const response = await fetch(`${URIMETHOD}/BindBlindType`, {
+    const response = await fetch(`${URIMETHOD}/BindListData`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designid: DESIGNID }),
+      body: JSON.stringify({
+        field: "blindtype",
+        designid: DESIGNID,
+        blindtype: "",
+      }),
     });
 
     if (!response.ok) {
@@ -179,21 +177,22 @@ const bindBlinds = async () => {
   }
 };
 
-const bindColours = async (designid, blindid) => {
-  const select = document.getElementById("colourtype");
+const bindTubes = async (designid, blindtype) => {
+  const select = document.getElementById("tubetype");
   select.innerHTML = "";
 
-  if (!designid || !blindid) return;
+  if (!designid || !blindtype) return;
 
   try {
-    const response = await fetch(`${URIMETHOD}/BindColourType`, {
+    const response = await fetch(`${URIMETHOD}/BindListData`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
       body: JSON.stringify({
+        field: "tubetype",
         designid,
-        blindid,
+        blindtype,
       }),
     });
 
@@ -209,7 +208,7 @@ const bindColours = async (designid, blindid) => {
 
     // validasi apakah ada data
     if (!data) {
-      throw new Error("No data returned from server : bindColours");
+      throw new Error("No data returned from server : bindTubes");
     }
 
     // render ke elemen halaman
@@ -234,25 +233,6 @@ const bindColours = async (designid, blindid) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
-
-        const blindname = await getItemData(
-          ` SELECT Name FROM Blinds WHERE Id = '${blindid}' AND Active=1 `,
-        );
-        if (!blindname) {
-          throw new Error("Blind name not found : bindColours");
-        }
-        await Promise.all([
-          bindMounting(),
-          bindMesh(blindname),
-          bindFrameColour(blindname),
-          bindFrameSize(blindname),
-          bindBrace(),
-          bindAngleType(),
-          bindPortHole(),
-          bindPlunger(),
-          bindSwivalColour(),
-        ]);
-        await handlerElementVisibility(blindid, select.value);
       }
     }
   } catch (err) {
@@ -264,6 +244,7 @@ const bindColours = async (designid, blindid) => {
   }
 };
 
+// ----------------------------------------------|| Binding Functions ||---------------------------------------
 const bindMounting = () => {
   const sel = document.getElementById("mounting");
   sel.innerHTML = ""; //reset
@@ -291,423 +272,90 @@ const bindMounting = () => {
   });
 };
 
-const bindMesh = (blindname) => {
+const bindMesh = (blindname, width) => {
   const sel = document.getElementById("meshtype");
   sel.innerHTML = ""; //reset
 
-  let data = [];
-
-  if (["Flyscreen", "Standard"].includes(blindname)) {
-    data.push(
-      { value: "Fiberglass", text: "Fiberglass" },
-      { value: "Aluminium", text: "Aluminium" },
-      { value: "Stainless Steel", text: "Stainless Steel" },
-      { value: "Pet Mesh", text: "Pet Mesh" },
-    );
-  }
-  if (["Safety"].includes(blindname)) {
-    data.push({ value: "304 SS Mesh", text: "304 SS Mesh" });
-  }
-  if (["Security"].includes(blindname)) {
-    data.push({ value: "316 SS Mesh", text: "316 SS Mesh" });
-  }
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindFrameColour = (blindname) => {
-  const sel = document.getElementById("framecolour");
-  sel.innerHTML = ""; //reset
-
   if (!blindname) return;
 
   let data = [];
 
-  if (blindname == "Flyscreen") {
-    data.push(
-      { value: "Apo Grey", text: "Apo Grey" },
-      { value: "Beige", text: "Beige" },
-      { value: "Birch White", text: "Birch White" },
-      { value: "Black", text: "Black" },
-      { value: "Bronze", text: "Bronze" },
-      { value: "Brown", text: "Brown" },
-      { value: "Charcoal", text: "Charcoal" },
-      { value: "Deep Ocean", text: "Deep Ocean" },
-      { value: "Dune", text: "Dune" },
-      { value: "Hawthorne Green", text: "Hawthorne Green" },
-      { value: "Jasper", text: "Jasper" },
-      { value: "Monument", text: "Monument" },
-      { value: "Notre Dame", text: "Notre Dame" },
-      { value: "Primrose", text: "Primrose" },
-      { value: "Silver", text: "Silver" },
-      { value: "Surf Mist", text: "Surf Mist" },
-      { value: "White", text: "White" },
-      { value: "Woodland Grey", text: "Woodland Grey" },
-    );
-  } else {
-    data.push(
-      { value: "Apo Grey", text: "Apo Grey" },
-      { value: "Beige", text: "Beige" },
-      { value: "Birch White", text: "Birch White" },
-      { value: "Black", text: "Black" },
-      { value: "Bronze", text: "Bronze" },
-      { value: "Brown", text: "Brown" },
-      { value: "Charcoal", text: "Charcoal" },
-      { value: "Deep Ocean", text: "Deep Ocean" },
-      { value: "Dune", text: "Dune" },
-      { value: "Hawthorne Green", text: "Hawthorne Green" },
-      { value: "Jasper", text: "Jasper" },
-      { value: "Monument", text: "Monument" },
-      { value: "Notre Dame", text: "Notre Dame" },
-      { value: "Primrose", text: "Primrose" },
-      { value: "Silver", text: "Silver" },
-      { value: "Surf Mist", text: "Surf Mist" },
-      { value: "White", text: "White" },
-      { value: "Woodland Grey", text: "Woodland Grey" },
-    );
-  }
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindFrameSize = (blindname) => {
-  const sel = document.getElementById("framesize");
-  sel.innerHTML = ""; //reset
-
-  if (!blindname) return;
-
-  let data = [];
-  if (blindname == "Flyscreen") {
-    data.push(
-      { value: "21x9", text: "21x9" },
-      { value: "25x11", text: "25x11" },
-      { value: "35x11 Grille", text: "35x11 Grille" },
-    );
-  } else {
-    data.push({ value: "35x11 Grille", text: "35x11 Grille" });
-  }
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindBrace = () => {
-  const sel = document.getElementById("brace");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-
-  data.push(
-    { value: "Centre of Horizontal", text: "Centre of Horizontal" },
-    { value: "Centre of Vertical", text: "Centre of Vertical" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindAngleType = () => {
-  const sel = document.getElementById("angletype");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-
-  data.push(
-    { value: "12x12mm", text: "12x12mm" },
-    { value: "12x20mm", text: "12x20mm" },
-    { value: "12x25mm", text: "12x25mm" },
-    { value: "20x20mm", text: "20x20mm" },
-    { value: "20x25mm", text: "20x25mm" },
-    { value: "20x40mm", text: "20x40mm" },
-    { value: "25x50mm", text: "25x50mm" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindPortHole = () => {
-  const sel = document.getElementById("porthole");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-
-  data.push(
-    { value: "Supply Loose", text: "Supply Loose" },
-    { value: "Fitted (Diagram)", text: "Fitted (Diagram)" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindPlunger = () => {
-  const sel = document.getElementById("plungerpin");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-
-  data.push(
-    { value: "Metal Loose (4)", text: "Metal Loose (4)" },
-    { value: "Metal Loose (6)", text: "Metal Loose (6)" },
-    { value: "Plain Loose (4)", text: "Plain Loose (4)" },
-    { value: "Plain Loose (6)", text: "Plain Loose (6)" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindSwivalColour = () => {
-  const sel = document.getElementById("swivelcolour");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-
-  data.push(
-    { value: "Black", text: "Black" },
-    { value: "White", text: "White" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindItemOrders = async (itemid) => {
-  try {
-    if (!itemid) return;
-
-    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({ itemid }),
-    });
-
-    if (!res.ok) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? `${res.status} - ${res.statusText}`
-          : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+  if (["Safety Window"].includes(blindname)) {
+    data.push({ value: "Fiberglass", text: "Fiberglass" });
+    if (width && width <= 1000) {
+      data.push({ value: "Stainless Steel", text: "Stainless Steel" });
     }
-
-    const response = await res.json();
-    const data = response.d;
-
-    if (!data || data.length === 0) {
-      throw isError("No data returned from server : bindItemOrders");
-    }
-
-    for (const item of data) {
-      await bindBlinds(item.DesignId);
-      await bindColours(item.DesignId, item.BlindId);
-      await Promise.all([
-        bindMounting(),
-        bindMesh(item.BlindName),
-        bindFrameColour(item.BlindName),
-        bindFrameSize(item.BlindName),
-        bindBrace(),
-        bindAngleType(),
-        bindPortHole(),
-        bindPlunger(),
-        bindSwivalColour(),
-        handlerSetElementValues(item),
-      ]);
-      await handlerElementVisibility(item.BlindId, item.KitId, item);
-    }
-
-    return true; // ✅ success
-  } catch (error) {
-    console.error("bindItemOrder error:", error);
-    throw error;
   }
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
 };
 // ----------------------------------------------|| Handler Functions ||---------------------------------------
-const handlerElementVisibility = async (blindtype, colourtype, item) => {
+const handlerElementVisibility = async (blindtype, tubetype, item) => {
   try {
     const lblItemId = document.getElementById("lblItemId");
-    const divColourType = document.getElementById("divColourType");
-
+    const divTubeType = document.getElementById("divTubeType");
     const divFormDetail = document.getElementById("divFormDetail");
     const divMounting = document.getElementById("divMounting");
     const divMesh = document.getElementById("divMesh");
+    const divFrameType = document.getElementById("divFrameType");
     const divFrameColour = document.getElementById("divFrameColour");
     const divBrace = document.getElementById("divBrace");
-    const divAngle = document.getElementById("divAngle");
-    const divPortHole = document.getElementById("divPortHole");
-    const divPlungerPin = document.getElementById("divPlungerPin");
-    const divSwivalColour = document.getElementById("divSwivalColour");
-    const divSwivalQty = document.getElementById("divSwivalQty");
-    const divSpringQty = document.getElementById("divSpringQty");
-    const divTopPlasticQty = document.getElementById("divTopPlasticQty");
+    const divDualHinges = document.getElementById("divDualHinges");
+    const divInstall = document.getElementById("divInstall");
+    const divCutOut = document.getElementById("divCutOut");
+    const divExtras = document.getElementById("divExtras");
     const divMarkUp = document.getElementById("divMarkUp");
-
     const btnSubmit = document.querySelector("#btnSubmit");
+    // return;
     lblItemId.classList.add("d-none");
-    divColourType.classList.add("d-none");
+    divTubeType.classList.add("d-none");
     divFormDetail.classList.add("d-none");
     divMounting.classList.add("d-none");
     divMesh.classList.add("d-none");
+    divFrameType.classList.add("d-none");
     divFrameColour.classList.add("d-none");
     divBrace.classList.add("d-none");
-    divAngle.classList.add("d-none");
-    divPortHole.classList.add("d-none");
-    divPlungerPin.classList.add("d-none");
-    divSwivalColour.classList.add("d-none");
-    divSwivalQty.classList.add("d-none");
-    divSpringQty.classList.add("d-none");
-    divTopPlasticQty.classList.add("d-none");
+    divDualHinges.classList.add("d-none");
+    divInstall.classList.add("d-none");
+    divCutOut.classList.add("d-none");
+    divExtras.classList.add("d-none");
+    divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
 
     if (!blindtype) return;
     const blindname = await getItemData(
-      `SELECT Name FROM Blinds WHERE Id = '${blindtype}' AND Active=1 `,
+      `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
     );
-    // divColourType.classList.remove("d-none"); // unhide if isset colourtype
+    divTubeType.classList.remove("d-none");
 
-    if (!colourtype) return;
-    const colourname = await getItemData(
-      `SELECT ColourType FROM HardwareKits WHERE Id = '${colourtype}' AND Active=1 `,
+    if (!tubetype) return;
+    const tubename = await getItemData(
+      `SELECT TubeType FROM Hardwarekits WHERE Id = '${tubetype}'`,
     );
-    divColourType.classList.add("d-none");
-    if (!["N/A"].includes(colourname)) {
-      divColourType.classList.remove("d-none");
-    }
-
     divFormDetail.classList.remove("d-none");
 
-    if (blindname === "Flyscreen") {
-      divMounting.classList.remove("d-none");
-      divMesh.classList.remove("d-none");
+    if (["Safety Window"].includes(blindname)) {
+      divFrameType.classList.remove("d-none");
       divFrameColour.classList.remove("d-none");
       divBrace.classList.remove("d-none");
-      divAngle.classList.remove("d-none");
-      divPortHole.classList.remove("d-none");
-      divPlungerPin.classList.remove("d-none");
-      divSwivalColour.classList.remove("d-none");
-      divSwivalQty.classList.remove("d-none");
-      divSpringQty.classList.remove("d-none");
-      divTopPlasticQty.classList.remove("d-none");
-    }
-    if (blindname === "Safety") {
-      divMounting.classList.remove("d-none");
       divMesh.classList.remove("d-none");
-      divFrameColour.classList.remove("d-none");
-      divBrace.classList.remove("d-none");
-      divAngle.classList.remove("d-none");
-    }
-    if (blindname === "Security") {
-      divMounting.classList.remove("d-none");
-      divMesh.classList.remove("d-none");
-      divFrameColour.classList.remove("d-none");
-      divAngle.classList.remove("d-none");
-    }
-    if (blindname === "Standard") {
-      divMounting.classList.remove("d-none");
-      divMesh.classList.remove("d-none");
-      divFrameColour.classList.remove("d-none");
-      divBrace.classList.remove("d-none");
-      divAngle.classList.remove("d-none");
+      divDualHinges.classList.remove("d-none");
+      divInstall.classList.remove("d-none");
+      divCutOut.classList.remove("d-none");
+      divExtras.classList.remove("d-none");
     }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
@@ -727,134 +375,6 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
   }
 };
 
-const handlerSubmit = async (button) => {
-  try {
-    // return alert(button);
-    document.getElementById(button).innerHTML = "Processing...";
-    swalLoadingShow("Please wait while we save the data.");
-    const fields = [
-      "blindtype",
-      "colourtype",
-      "qty",
-      "room",
-      "mounting",
-      "width",
-      "drop",
-      "meshtype",
-      "framecolour",
-      "framesize",
-      "brace",
-      "angletype",
-      "anglelength",
-      "angleqty",
-      "porthole",
-      "plungerpin",
-      "swivelcolour",
-      "swivelqty",
-      "swivelqtyb",
-      "springqty",
-      "topplasticqty",
-      "notes",
-      "markup",
-    ];
-
-    const formData = {
-      headerid: HEADERID,
-      itemaction: ITEMACTION,
-      itemid: ITEMID,
-      designid: DESIGNID,
-      loginid: LOGINID,
-    };
-
-    fields.forEach((field) => {
-      formData[field] = document.getElementById(field).value;
-    });
-
-    // return console.table(formData);
-
-    const response = await fetch(URIMETHOD + "/Submit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({ data: formData }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`${response.status}\n${errorText}`);
-    }
-
-    const result = await response.json();
-    const dataResult = result.d || result;
-
-    if (dataResult.error) {
-      await isWarning(dataResult.error.message?.toUpperCase());
-      const field = document.getElementById(dataResult.error.field);
-      if (field) {
-        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
-        // field.focus();
-        field.classList.add("is-invalid");
-      }
-    } else {
-      await isSuccess(dataResult.success);
-      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
-    }
-  } catch (error) {
-    var msg = error.message;
-    if (ROLENAME !== "Administrator") {
-      msg = "Please contact our IT team at support@onlineorder.au";
-    }
-    isError(msg);
-  } finally {
-    document.getElementById(button).innerHTML = "Submit";
-  }
-};
-
-const handlerSetElementValues = (itemData) => {
-  const mapping = {
-    blindtype: "BlindId",
-    colourtype: "KitId",
-    qty: "Qty",
-    room: "Location",
-    mounting: "Mounting",
-    width: "Width",
-    drop: "Drop",
-    meshtype: "MeshType",
-    framecolour: "FrameColour",
-    framesize: "FrameType",
-    brace: "Brace",
-    angletype: "AngleType",
-    anglelength: "AngleLength",
-    angleqty: "AngleQty",
-    porthole: "PortHole",
-    plungerpin: "PlungerPin",
-    swivelcolour: "SwipelColour",
-    swivelqty: "SwipelQty",
-    swivelqtyb: "SwipelQtyB",
-    springqty: "SpringQty",
-    topplasticqty: "TopPlasticQty",
-    notes: "Notes",
-    markup: "MarkUp",
-  };
-
-  // Set nilai ke input sesuai mapping
-  Object.entries(mapping).forEach(([id, key]) => {
-    const el = document.getElementById(id);
-    if (!el) {
-      console.warn(`Elemen '${id}' tidak ditemukan.`);
-      return;
-    }
-
-    let value = itemData[key];
-    if (id === "markup" && value === 0) value = "";
-
-    el.value = value ?? ""; // fallback ke string kosong
-
-    // jika nilainya "0" → kosong
-    if (el.value === "0") el.value = "";
-  });
-};
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const windowPageLoaded = async () => {
   if (!HEADERID) {
@@ -886,7 +406,7 @@ const windowPageLoaded = async () => {
     handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    await bindItemOrders(ITEMID);
+    // await bindItemOrders(ITEMID);
     loaderFadeOut();
   }
 };

@@ -128,7 +128,7 @@ Partial Class Methods_Order_VerticalBlindMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindControlType(ByVal designid As String, ByVal blindid As String, ByVal tubetype As String) As Object
         Try
-            Dim MyQuery As String = String.Format("SELECT *, UPPER(ControlType) AS ControlText FROM HardwareKits WHERE DesignId='{0}' AND BlindId = '{1}' AND TubeType='{2}' ORDER BY Name ASC", designid, UCase(blindid).ToString(), tubetype)
+            Dim MyQuery As String = String.Format("SELECT *, UPPER(ControlType) AS ControlText FROM HardwareKits WHERE DesignId='{0}' AND BlindId = '{1}' AND TubeType='{2}' AND Active=1 ORDER BY Name ASC", designid, UCase(blindid).ToString(), tubetype)
             Dim datas As DataSet = publicCfg.GetListData(MyQuery)
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then

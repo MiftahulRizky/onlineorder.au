@@ -244,7 +244,7 @@
                 <asp:ControlParameter ControlID="lblId" Name="Id" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtNameEdit" Name="Name" PropertyName="Text" />
                 <asp:ControlParameter ControlID="txtDescriptionEdit" Name="Description" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlActiveEdit" Name="Active" PropertyName="SelectedItem.Value" />
+                <asp:ControlParameter ControlID="ddlActive" Name="Active" PropertyName="SelectedItem.Value" />
             </UpdateParameters>
         </asp:SqlDataSource>
 

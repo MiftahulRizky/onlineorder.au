@@ -57,10 +57,10 @@
                                     </div>  
                                 </div>
 
-                                <div class="mb-3 row" id="divTubeType">
-                                    <label for="tubetype" class="col-lg-3 text-uppercase fw-bold" id="lblTubeType">product type</label>
+                                <div class="mb-3 row" id="divColourType">
+                                    <label for="colourtype" class="col-lg-3 text-uppercase fw-bold" id="lblColourType">window product</label>
                                     <div class="col-lg-4">
-                                        <select type="text" name="tubetype" id="tubetype" class="form-select"></select>
+                                        <select type="text" name="colourtype" id="colourtype" class="form-select"></select>
                                     </div>  
                                 </div>
 
@@ -113,53 +113,94 @@
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" >
-                                        <label for="frametype" class="col-lg-3 text-uppercase fw-bold" >frame</label>
-                                        <div class="col-lg-4" id="divFrameType">
-                                            <select name="frametype" id="frametype" class="form-select"></select>
-                                            <small class="form-hint">* Type</small>
-                                        </div>  
-                                        <div class="col-lg-4" id="divFrameColour">
+                                    <div class="mb-3 row" id="divFrameColour">
+                                        <label for="framecolour" class="col-lg-3 text-uppercase fw-bold" >frame colour</label>
+                                        <div class="col-lg-4">
                                             <select name="framecolour" id="framecolour" class="form-select"></select>
-                                            <small class="form-hint">* Colour</small>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divFrameSize">
+                                        <label for="framesize" class="col-lg-3 text-uppercase fw-bold" >frame size</label>
+                                        <div class="col-lg-4">
+                                            <select name="framesize" id="framesize" class="form-select"></select>
                                         </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divBrace">
-                                        <label for="brace" class="col-lg-3 text-uppercase fw-bold" >brace</label>
+                                        <label for="brace" class="col-lg-3 text-uppercase fw-bold" >brace /  joiner height</label>
                                         <div class="col-lg-4">
                                             <select name="brace" id="brace" class="form-select"></select>
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divDualHinges">
-                                        <label for="dualhinges" class="col-lg-3 text-uppercase fw-bold" >two hinges</label>
+                                    <div class="mb-3 row" id="divAngle">
+                                        <label for="angletype" class="col-lg-3 text-uppercase fw-bold">angle type x Length x qty</label>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                            <select name="angletype" id="angletype" class="form-select"></select>
+                                            <small class="form-hint">* Type</small>
+                                        </div>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                            <div class="input-group">
+                                                <input type="number" min="1" name="anglelength" id="anglelength" class="form-control  " autocomplete="off"/>
+                                                <span class="input-group-text ">mm</span>
+                                            </div>
+                                            <small class="form-hint">* Length</small>
+                                        </div>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                            <input type="number" min="1" name="angleqty" id="angleqty" class="form-control  " autocomplete="off"/>
+                                            <small class="form-hint">* Qty</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divPortHole">
+                                        <label for="porthole" class="col-lg-3 text-uppercase fw-bold" >screen port hole</label>
                                         <div class="col-lg-4">
-                                            <select name="dualhinges" id="dualhinges" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Yes">Yes</option>
-                                            </select>
+                                            <select name="porthole" id="porthole" class="form-select"></select>
                                         </div>  
                                     </div>
 
-                                     <div class="mb-3 row" id="divInstall">
-                                        <label for="install" class="col-lg-3 text-uppercase fw-bold" >Installation</label>
+                                    <div class="mb-3 row" id="divPlungerPin">
+                                        <label for="plungerpin" class="col-lg-3 text-uppercase fw-bold" >plunger pin</label>
                                         <div class="col-lg-4">
-                                            <select name="install" id="install" class="form-select"></select>
+                                            <select name="plungerpin" id="plungerpin" class="form-select"></select>
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divCutOut">
-                                        <label for="cutout" class="col-lg-3 text-uppercase fw-bold" >cut out</label>
+                                    <div class="mb-3 row" id="divSwivalColour">
+                                        <label for="swivelcolour" class="col-lg-3 text-uppercase fw-bold" >swivel clip colour</label>
                                         <div class="col-lg-4">
-                                           <input type="number" id="cutout" name="cutout" min="1" class="form-control ">
+                                            <select name="swivelcolour" id="swivelcolour" class="form-select"></select>
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divExtras">
-                                        <label for="extras" class="col-lg-3 text-uppercase fw-bold" >Extras</label>
+                                    <div class="mb-3 row" id="divSwivalQty">
+                                        <label for="swivelqty" class="col-lg-3 text-uppercase fw-bold">swivel clip qty</label>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <div class="input-group">
+                                                <span class="input-group-text ">1.6MM</span>
+                                                <input type="number" min="1" name="swivelqty" id="swivelqty" class="form-control " autocomplete="off" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <div class="input-group">
+                                                <span class="input-group-text ">11MM</span>
+                                                <input type="number" min="1" name="swivelqtyb" id="swivelqtyb" class="form-control  " autocomplete="off"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divSpringQty">
+                                        <label for="springqty" class="col-lg-3 text-uppercase fw-bold" >spring clip qty</label>
                                         <div class="col-lg-4">
-                                           <input type="number" id="extras" name="extras" min="1" class="form-control ">
+                                           <input type="number" id="springqty" name="springqty" min="1" class="form-control ">
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divTopPlasticQty">
+                                        <label for="topplasticqty" class="col-lg-3 text-uppercase fw-bold" >top clip plastic qty</label>
+                                        <div class="col-lg-4">
+                                           <input type="number" id="topplasticqty" name="topplasticqty" min="1" class="form-control ">
                                         </div>  
                                     </div>
 
