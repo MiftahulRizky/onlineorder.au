@@ -945,6 +945,10 @@ const handlerSetElementValues = (itemData) => {
           }
         }
       }
+
+      if (id === "chainlength" && ITEMACTION === "NextItem") {
+        el.value = "";
+      }
     }
 
     // jika nilainya "0" → kosong
