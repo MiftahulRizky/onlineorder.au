@@ -113,6 +113,27 @@
                                         </div>  
                                     </div>
 
+                                    <div class="mb-3 row" id="divSlidingType">
+                                        <label for="slidingtype" class="col-lg-3 text-uppercase fw-bold" >sliding type</label>
+                                        <div class="col-lg-4">
+                                            <select name="slidingtype" id="slidingtype" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divStacking">
+                                        <label for="stacking" class="col-lg-3 text-uppercase fw-bold" >stacking</label>
+                                        <div class="col-lg-4">
+                                            <select name="stacking" id="stacking" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divTrackless">
+                                        <label for="trackless" class="col-lg-3 text-uppercase fw-bold" >trackless door</label>
+                                        <div class="col-lg-4">
+                                            <select name="trackless" id="trackless" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
                                     <div class="mb-3 row" id="divFrame">
                                         <label for="frametype" class="col-lg-3 text-uppercase fw-bold" >frame</label>
                                         <div class="col-lg-4" id="divFrameType">
@@ -142,10 +163,17 @@
                                         </div>  
                                     </div>
 
-                                     <div class="mb-3 row" id="divInstall">
+                                    <div class="mb-3 row" id="divInstall">
                                         <label for="install" class="col-lg-3 text-uppercase fw-bold" >Installation</label>
                                         <div class="col-lg-4">
                                             <select name="install" id="install" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divFitting">
+                                        <label for="fitting" class="col-lg-3 text-uppercase fw-bold" >fitting/options</label>
+                                        <div class="col-lg-4">
+                                            <select name="fitting" id="fitting" class="form-select"></select>
                                         </div>  
                                     </div>
 
@@ -153,6 +181,20 @@
                                         <label for="remove" class="col-lg-3 text-uppercase fw-bold" >remove product</label>
                                         <div class="col-lg-4">
                                            <select name="remove" id="remove" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divHandle">
+                                        <label for="handle" class="col-lg-3 text-uppercase fw-bold" >handle</label>
+                                        <div class="col-lg-4">
+                                           <select name="handle" id="handle" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divPullCord">
+                                        <label for="pullcord" class="col-lg-3 text-uppercase fw-bold" >Pullcord</label>
+                                        <div class="col-lg-4">
+                                           <select name="pullcord" id="pullcord" class="form-select"></select>
                                         </div>  
                                     </div>
 

@@ -28,24 +28,38 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindtype = blinds.value;
       const blindname = blinds.selectedOptions[0].dataset.name;
       const tubetype = e.target.value;
+      const tubename = e.target.selectedOptions[0].dataset.name;
       await Promise.all([
         bindMounting(),
         bindMesh(blindname),
-        bindFrameType(blindname),
+        bindSlidingType(blindname),
+        bindStacking(blindname),
+        bindTrackless(blindname),
+        bindFrameType(blindname, tubename),
         bindBrace(blindname),
         bindInstall(blindname),
+        bindFitting(blindname),
         bindRemove(blindname),
+        bindHandle(blindname),
+        bindPullCord(blindname),
         bindCutOut(blindname),
-        bindExtras(blindname),
+        bindExtras(blindname, tubename),
       ]);
+      if (["Retractable Flyscreen Pleated"].includes(tubename)) {
+        await Promise.all([
+          bindFrameColour(blindname, tubename, "colour only"),
+        ]);
+      }
       await handlerElementVisibility(blindtype, tubetype);
     }
 
     if (e.target.id === "frametype") {
       const blinds = document.getElementById("blindtype");
       const blindname = blinds.selectedOptions[0].dataset.name;
+      const tubes = document.getElementById("tubetype");
+      const tubename = tubes.selectedOptions[0].dataset.name;
       const frametype = e.target.value;
-      bindFrameColour(blindname, frametype);
+      bindFrameColour(blindname, tubename, frametype);
     }
   });
   el.addEventListener("input", (e) => {
@@ -253,17 +267,29 @@ const bindTubes = async (designid, blindtype) => {
           `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
         );
         const tubetype = select.value;
+        const tubename = select.selectedOptions[0].dataset.name;
 
         await Promise.all([
           bindMounting(),
           bindMesh(blindname),
-          bindFrameType(blindname),
+          bindSlidingType(blindname),
+          bindStacking(blindname),
+          bindTrackless(blindname),
+          bindFrameType(blindname, tubename),
           bindBrace(blindname),
           bindInstall(blindname),
+          bindFitting(blindname),
           bindRemove(blindname),
+          bindHandle(blindname),
+          bindPullCord(blindname),
           bindCutOut(blindname),
-          bindExtras(blindname),
+          bindExtras(blindname, tubename),
         ]);
+        if (["Retractable Flyscreen Pleated"].includes(tubename)) {
+          await Promise.all([
+            bindFrameColour(blindname, tubename, "colour only"),
+          ]);
+        }
         await handlerElementVisibility(blindtype, tubetype);
       }
     }
@@ -310,13 +336,28 @@ const bindMesh = (blindname, width) => {
   if (!blindname) return;
 
   let data = [];
+  let list = [];
 
   if (["Safety Window"].includes(blindname)) {
-    data.push({ value: "Fiberglass", text: "Fiberglass" });
+    list = ["Fiberglass"];
     if (width && width <= 1000) {
-      data.push({ value: "Stainless Steel", text: "Stainless Steel" });
+      list = ["Fiberglass", "Stainless Steel"];
     }
   }
+
+  if (["Basic Window"].includes(blindname)) {
+    list = [
+      "Fibreglass Mesh",
+      "Alum (std)",
+      "Stainless (1000)",
+      "Stainless (1300)",
+      "Pawproof",
+    ];
+  }
+
+  list.forEach((ls) => {
+    data.push({ value: ls, text: ls });
+  });
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
@@ -334,21 +375,22 @@ const bindMesh = (blindname, width) => {
   });
 };
 
-const bindFrameType = (blindname) => {
-  const sel = document.getElementById("frametype");
-  document.getElementById("framecolour").innerHTML = "";
+const bindSlidingType = (blindname) => {
+  const sel = document.getElementById("slidingtype");
   sel.innerHTML = ""; //reset
 
   if (!blindname) return;
 
   let data = [];
-  if (["Safety Window", "Security Window"].includes(blindname)) {
-    const list = ["Door Frame", "Grille Frame"];
+  let list = [];
 
-    list.forEach((ls) => {
-      data.push({ value: ls, text: ls });
-    });
+  if (["Basic Window"].includes(blindname)) {
+    list = ["Single Sliding Pleated", "Double Sliding Pleated"];
   }
+
+  list.forEach((ls) => {
+    data.push({ value: ls, text: ls });
+  });
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
@@ -366,11 +408,120 @@ const bindFrameType = (blindname) => {
   });
 };
 
-const bindFrameColour = (blindname, frametype) => {
+const bindStacking = (blindname) => {
+  const sel = document.getElementById("stacking");
+  sel.innerHTML = ""; //reset
+
+  if (!blindname) return;
+
+  let data = [];
+  let list = [];
+
+  if (["Basic Window"].includes(blindname)) {
+    list = ["Stacking - Right", "Stacking - Left", "Stacking - Split"];
+  }
+
+  list.forEach((ls) => {
+    data.push({ value: ls, text: ls });
+  });
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindTrackless = (blindname) => {
+  const sel = document.getElementById("trackless");
+  sel.innerHTML = ""; //reset
+
+  if (!blindname) return;
+
+  let data = [];
+  let list = [];
+
+  if (["Basic Window"].includes(blindname)) {
+    list = ["Trackless - No"];
+  }
+
+  list.forEach((ls) => {
+    data.push({ value: ls, text: ls });
+  });
+
+  if (data.length > 0) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindFrameType = (blindname, tubename) => {
+  const sel = document.getElementById("frametype");
+  document.getElementById("framecolour").innerHTML = "";
+  sel.innerHTML = ""; //reset
+
+  if (!blindname || !tubename) return;
+
+  let data = [];
+  let list = [];
+
+  if (["Safety Window", "Security Window"].includes(blindname)) {
+    list = ["Door Frame", "Grille Frame"];
+  }
+
+  if (["Basic Window"].includes(blindname)) {
+    if (["Flyscreens"].includes(tubename)) {
+      list = ["21x9 Frame", "25x11 Frame", "Grill Frame"];
+    }
+    if (["Retractable Flyscreen Roll-Up Down"].includes(tubename)) {
+      list = ["Door", "Window"];
+    }
+  }
+
+  list.forEach((ls) => {
+    data.push({ value: ls, text: ls });
+  });
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindFrameColour = (blindname, tubename, frametype) => {
   const sel = document.getElementById("framecolour");
   sel.innerHTML = ""; //reset
 
-  if ((!blindname, !frametype)) return;
+  if (!blindname || !tubename || !frametype) return;
 
   let data = [];
   let list = [];
@@ -413,6 +564,43 @@ const bindFrameColour = (blindname, frametype) => {
     ];
   }
 
+  if (["Basic Window"].includes(blindname)) {
+    if (["Flyscreens"].includes(tubename)) {
+      list = [
+        "Apo Grey",
+        "Black",
+        "Bronze",
+        "Brown",
+        "Charcoal",
+        "Dune",
+        "Monument",
+        "Powder Coating",
+        "Primrose",
+        "Silver (Anodised)",
+        "Stone Beige",
+        "Surf Mist",
+        "TBA",
+        "White",
+        "White Birch",
+        "Woodland Grey",
+      ];
+    }
+    if (["Retractable Flyscreen Roll-Up Down"].includes(tubename)) {
+      list = ["White", "Black", "Powder Coating"];
+    }
+    if (["Retractable Flyscreen Pleated"].includes(tubename)) {
+      list = [
+        "White",
+        "Black",
+        "Clear Anodised",
+        "Powder Coating",
+        "White Birch",
+        "Primrose",
+        "Monument",
+      ];
+    }
+  }
+
   list.forEach((ls) => {
     data.push({ value: ls, text: ls });
   });
@@ -442,6 +630,18 @@ const bindBrace = (blindname) => {
   let data = [];
   let list = [];
 
+  if (["Basic Window"].includes(blindname)) {
+    list = [
+      "Horizontal Centre Brace",
+      "Horizontal Centre Brace",
+      "Vertical Centre Brace",
+      "Vertical Centre Brace",
+      "Horizontal Brace/s Specify",
+      "Horizontal Brace/ Specify",
+      "Vertical Brace/ Specify",
+      "Vertical Brace/ Specify",
+    ];
+  }
   if (["Safety Window"].includes(blindname)) {
     list = [
       "Horizontal Centre Brace",
@@ -489,16 +689,50 @@ const bindInstall = (blindname) => {
   if (!blindname) return;
 
   let data = [];
+  let list = [];
 
-  if (["Safety Window"].includes(blindname)) {
-    const list = ["Installation", "Pick Up"];
-
-    list.forEach((ls) => {
-      data.push({ value: ls, text: ls });
-    });
+  if (["Basic Window", "Safety Window"].includes(blindname)) {
+    list = ["Installation", "Pick Up"];
   }
 
+  list.forEach((ls) => {
+    data.push({ value: ls, text: ls });
+  });
+
   if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindFitting = (blindname) => {
+  const sel = document.getElementById("fitting");
+  sel.innerHTML = ""; //reset
+
+  if (!blindname) return;
+
+  let data = [];
+  let list = [];
+
+  if (["Basic Window"].includes(blindname)) {
+    list = ["Screen Port / Trap Door"];
+  }
+
+  list.forEach((ls) => {
+    data.push({ value: ls, text: ls });
+  });
+
+  if (data.length > 0) {
     const defaultOption = document.createElement("option");
     defaultOption.text = "";
     defaultOption.value = "";
@@ -529,6 +763,72 @@ const bindRemove = (blindname) => {
       data.push({ value: ls, text: ls });
     });
   }
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindHandle = (blindname) => {
+  const sel = document.getElementById("handle");
+  sel.innerHTML = ""; //reset
+
+  if (!blindname) return;
+
+  let data = [];
+  let list = [];
+
+  if (["Basic Window"].includes(blindname)) {
+    list = ["Handle - Front", "Handle - Back", "Handle - Dual"];
+  }
+
+  list.forEach((ls) => {
+    data.push({ value: ls, text: ls });
+  });
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindPullCord = (blindname) => {
+  const sel = document.getElementById("pullcord");
+  sel.innerHTML = ""; //reset
+
+  if (!blindname) return;
+
+  let data = [];
+  let list = [];
+
+  if (["Basic Window"].includes(blindname)) {
+    list = ["Pullcord - Yes", "Pullcord - No"];
+  }
+
+  list.forEach((ls) => {
+    data.push({ value: ls, text: ls });
+  });
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
@@ -588,7 +888,7 @@ const bindCutOut = (blindname) => {
   });
 };
 
-const bindExtras = (blindname) => {
+const bindExtras = (blindname, tubename) => {
   const sel = document.getElementById("extras");
   sel.innerHTML = ""; //reset
 
@@ -758,6 +1058,242 @@ const bindExtras = (blindname) => {
     ];
   }
 
+  if (["Basic Window"].includes(blindname)) {
+    if (["Flyscreens"].includes(tubename)) {
+      list = [
+        "Flyscreen Plunger Pins",
+        "Flyscreen Top Clips",
+        "Flyscreen Turn Buttons",
+        "Single Sliding Track Top",
+        "Single Sliding Track Bottom",
+        "Double Sliding Track Top",
+        "Double Sliding Track Bottom",
+        "Flyscreen Beading",
+        "Bugseal Additional Hinged",
+        "Chain Winder Lockable",
+        "Powdercoating Minimum Flyscreens",
+        "Door Track U Frame 20mm sides x 25mm wide",
+        "Angle 12 x 12mm",
+        "Angle 12 x 20mm",
+        "Angle 12 x 25mm",
+        "Angle 20 x 40mm",
+        "Angle 25 x 20mm",
+        "Angle 50 x 25mm",
+        "Whitco Winder Strip",
+        "Patio Bolt",
+        "Miscellaneous",
+        "Timber Frame 19 x 7mm Finished",
+        "Timber Frame 19 x 13mm Finished",
+        "Timber Frames 19 x 19 Finished",
+        "Timber Frames 19 x 30mm Finished",
+        "Timber Frames 19 x 41mm Finished",
+        "Timber Frames 19 x 66mm Finished",
+        "Timber Frames 19 x 91mm Finished",
+        "Timber Frame 30 x 7mm Finished",
+        "Timber Frame 30 x 13mm Finished",
+        "Timber Frames 30 x 19mm Finished",
+        "Timber Frames 30 x 30mm Finished",
+        "Timber Frames 30 x 41 Finished",
+        "Timber Frames 30 x 66mm Finished",
+        "Timber Frames 30 x 91mm Finished",
+        "Timber Frame 41 x 7mm Finished",
+        "Timber Frame 41 x 13mm Finished",
+        "Timber Frames 41 x 19mm Finished",
+        "Timber Frames 41 x 30mm Finished",
+        "Timber Frames 41 x 41 Finished",
+        "Timber Frames 41 x 66mm Finished",
+        "Timber Frames 41 x 91mm Finished",
+        "Timber Frame 66 x 7mm Finished",
+        "Timber Frames 66 x 13 Finished",
+        "Timber Frames 66 x 19mm Finished",
+        "Timber Frames 66 x 30mm Finished",
+        "Timber Frames 66 x 41mm Finished",
+        "Timber Frames 66 x 91mm Finished",
+        "Timber Frame 91 x 7mm Finished",
+        "Timber Frames 91 x 13mm Finished",
+        "Timber Frames 91 x 19mm Finished",
+        "Timber Frames 91 x 30mm Finished",
+        "Timber Frames 91 x 41mm Finished",
+        "Timber Frames 91 x 66mm Finished",
+        "Timber Frames 91 x 91mm Finished",
+      ];
+    }
+
+    if (["Retractable Flyscreen Pleated"].includes(tubename)) {
+      list = [
+        "Angle 12 x 12mm",
+        "Doggie Door - Perspex 190mm x 260mm",
+        "Doggie Door - Perspex 260mm x 400mm",
+        "Angle 25 x 70",
+        "Angle 12 x 20mm",
+        "Angle 12 x 25mm",
+        "Angle 20 x 40mm",
+        "Angle 25 x 20mm",
+        "Angle 50 x 25mm",
+        "Casement Bolt",
+        "Chain Winder Lockable",
+        "Door Frame (Infill for Sliding Door Receiver)",
+        "Door Interlock HD10 (LRG 2)",
+        "Door Interlock HD2 (FLAT 3)",
+        "Door Interlock HD3 (SML 1)",
+        "Door Interlock HD9 Type F (4)",
+        "Door Posts 19 x 19 (for frame work)",
+        "Door Posts 25 x 25 (for frame work)",
+        "Door Posts 50 x 50 (for frame work)",
+        "Door Track Powdercoating (in addition to std track price)",
+        "Door Track J",
+        "Door Track P",
+        "Door Track ST4",
+        "Door Track W",
+        "Double Sliding Track Bottom",
+        "Double Sliding Track Top",
+        "Efi Non Specific",
+        "Fit Flyscreen Track per pair",
+        "Fit Tim/Alum per piece",
+        "Grill Frame for Infill",
+        "H Channel in Door to add 30mm to width or drop",
+        "Lock Barrel supply only",
+        "Lock Barrell Installed",
+        "Miscellaneous",
+        "Miscellaneous Timber",
+        "Patio Bolt",
+        "Posts 50mm x 50mm",
+        "Powder Coating Minimum",
+        "Single Sliding Track Bottom",
+        "Single Sliding Track Top",
+        "Square Tube 20x20",
+        "Stop Bead Additional",
+        "Timber Frame 19 x 13mm Finished",
+        "Timber Frame 19 x 7mm Finished",
+        "Timber Frame 30 x 13mm Finished",
+        "Timber Frame 30 x 7mm Finished",
+        "Timber Frame 41 x 13mm Finished",
+        "Timber Frame 41 x 7mm Finished",
+        "Timber Frame 66 x 7mm Finished",
+        "Timber Frame 91 x 7mm Finished",
+        "Timber Frames 19 x 19 Finished",
+        "Timber Frames 19 x 30mm Finished",
+        "Timber Frames 19 x 41mm Finished",
+        "Timber Frames 19 x 66mm Finished",
+        "Timber Frames 19 x 91mm Finished",
+        "Timber Frames 30 x 19mm Finished",
+        "Timber Frames 30 x 30mm Finished",
+        "Timber Frames 30 x 41 Finished",
+        "Timber Frames 30 x 66mm Finished",
+        "Timber Frames 30 x 91mm Finished",
+        "Timber Frames 41 x 19mm Finished",
+        "Timber Frames 41 x 30mm Finished",
+        "Timber Frames 41 x 41 Finished",
+        "Timber Frames 41 x 66mm Finished",
+        "Timber Frames 41 x 91mm Finished",
+        "Timber Frames 66 x 13 Finished",
+        "Timber Frames 66 x 19mm Finished",
+        "Timber Frames 66 x 30mm Finished",
+        "Timber Frames 66 x 41mm Finished",
+        "Timber Frames 66 x 91mm Finished",
+        "Timber Frames 91 x 13mm Finished",
+        "Timber Frames 91 x 19mm Finished",
+        "Timber Frames 91 x 30mm Finished",
+        "Timber Frames 91 x 41mm Finished",
+        "Timber Frames 91 x 66mm Finished",
+        "Timber Frames 91 x 91mm Finished",
+        "Track",
+        "Track Jamb Adaptor Long",
+        "Track Jamb Adaptor Short",
+        "U Frame 20 mm sides x 25 mm wide",
+        "Whitco Winder Strip",
+        "Window Lock",
+      ];
+    }
+
+    if (["Retractable Flyscreen Roll-Up Down"].includes(tubename)) {
+      list = [
+        "Angle 12 x 12mm",
+        "Doggie Door - Perspex 190mm x 260mm",
+        "Doggie Door - Perspex 260mm x 400mm",
+        "Angle 25 x 70",
+        "Angle 12 x 20mm",
+        "Angle 12 x 25mm",
+        "Angle 20 x 40mm",
+        "Angle 25 x 20mm",
+        "Angle 50 x 25mm",
+        "Casement Bolt",
+        "Chain Winder Lockable",
+        "Door Frame (Infill for Sliding Door Receiver)",
+        "Door Interlock HD10 (LRG 2)",
+        "Door Interlock HD2 (FLAT 3)",
+        "Door Interlock HD3 (SML 1)",
+        "Door Interlock HD9 Type F (4)",
+        "Door Posts 19 x 19 (for frame work)",
+        "Door Posts 25 x 25 (for frame work)",
+        "Door Posts 50 x 50 (for frame work)",
+        "Door Track Powdercoating (in addition to std track price)",
+        "Door Track J",
+        "Door Track P",
+        "Door Track ST4",
+        "Door Track W",
+        "Double Sliding Track Bottom",
+        "Double Sliding Track Top",
+        "Efi Non Specific",
+        "Fit Flyscreen Track per pair",
+        "Fit Tim/Alum per piece",
+        "Grill Frame for Infill",
+        "H Channel in Door to add 30mm to width or drop",
+        "Lock Barrel supply only",
+        "Lock Barrell Installed",
+        "Miscellaneous",
+        "Miscellaneous Timber",
+        "Patio Bolt",
+        "Posts 50mm x 50mm",
+        "Powder Coating Minimum",
+        "Single Sliding Track Bottom",
+        "Single Sliding Track Top",
+        "Square Tube 20x20",
+        "Stop Bead Additional",
+        "Timber Frame 19 x 13mm Finished",
+        "Timber Frame 19 x 7mm Finished",
+        "Timber Frame 30 x 13mm Finished",
+        "Timber Frame 30 x 7mm Finished",
+        "Timber Frame 41 x 13mm Finished",
+        "Timber Frame 41 x 7mm Finished",
+        "Timber Frame 66 x 7mm Finished",
+        "Timber Frame 91 x 7mm Finished",
+        "Timber Frames 19 x 19 Finished",
+        "Timber Frames 19 x 30mm Finished",
+        "Timber Frames 19 x 41mm Finished",
+        "Timber Frames 19 x 66mm Finished",
+        "Timber Frames 19 x 91mm Finished",
+        "Timber Frames 30 x 19mm Finished",
+        "Timber Frames 30 x 30mm Finished",
+        "Timber Frames 30 x 41 Finished",
+        "Timber Frames 30 x 66mm Finished",
+        "Timber Frames 30 x 91mm Finished",
+        "Timber Frames 41 x 19mm Finished",
+        "Timber Frames 41 x 30mm Finished",
+        "Timber Frames 41 x 41 Finished",
+        "Timber Frames 41 x 66mm Finished",
+        "Timber Frames 41 x 91mm Finished",
+        "Timber Frames 66 x 13 Finished",
+        "Timber Frames 66 x 19mm Finished",
+        "Timber Frames 66 x 30mm Finished",
+        "Timber Frames 66 x 41mm Finished",
+        "Timber Frames 66 x 91mm Finished",
+        "Timber Frames 91 x 13mm Finished",
+        "Timber Frames 91 x 19mm Finished",
+        "Timber Frames 91 x 30mm Finished",
+        "Timber Frames 91 x 41mm Finished",
+        "Timber Frames 91 x 66mm Finished",
+        "Timber Frames 91 x 91mm Finished",
+        "Track",
+        "Track Jamb Adaptor Long",
+        "Track Jamb Adaptor Short",
+        "U Frame 20 mm sides x 25 mm wide",
+        "Whitco Winder Strip",
+        "Window Lock",
+      ];
+    }
+  }
+
   list.forEach((ls) => {
     data.push({ value: ls, text: ls });
   });
@@ -785,12 +1321,18 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     const divFormDetail = document.getElementById("divFormDetail");
     const divMounting = document.getElementById("divMounting");
     const divMesh = document.getElementById("divMesh");
+    const divSlidingType = document.getElementById("divSlidingType");
+    const divStacking = document.getElementById("divStacking");
+    const divTrackless = document.getElementById("divTrackless");
     const divFrameType = document.getElementById("divFrameType");
     const divFrameColour = document.getElementById("divFrameColour");
     const divBrace = document.getElementById("divBrace");
     const divDualHinges = document.getElementById("divDualHinges");
     const divInstall = document.getElementById("divInstall");
+    const divFitting = document.getElementById("divFitting");
     const divRemove = document.getElementById("divRemove");
+    const divHandle = document.getElementById("divHandle");
+    const divPullCord = document.getElementById("divPullCord");
     const divCutOut = document.getElementById("divCutOut");
     const divExtras = document.getElementById("divExtras");
     const divMarkUp = document.getElementById("divMarkUp");
@@ -801,12 +1343,18 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     divFormDetail.classList.add("d-none");
     divMounting.classList.add("d-none");
     divMesh.classList.add("d-none");
+    divSlidingType.classList.add("d-none");
+    divStacking.classList.add("d-none");
+    divTrackless.classList.add("d-none");
     divFrameType.classList.add("d-none");
     divFrameColour.classList.add("d-none");
     divBrace.classList.add("d-none");
     divDualHinges.classList.add("d-none");
     divInstall.classList.add("d-none");
+    divFitting.classList.add("d-none");
     divRemove.classList.add("d-none");
+    divHandle.classList.add("d-none");
+    divPullCord.classList.add("d-none");
     divCutOut.classList.add("d-none");
     divExtras.classList.add("d-none");
     divMarkUp.classList.add("d-none");
@@ -828,7 +1376,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       divFrameType.classList.remove("d-none");
       divFrameColour.classList.remove("d-none");
       divBrace.classList.remove("d-none");
-      if (["Heavy Duty Diamond"].includes(blindname)) {
+      if (["Heavy Duty Diamond"].includes(tubename)) {
         divMesh.classList.remove("d-none");
       }
       divDualHinges.classList.remove("d-none");
@@ -847,8 +1395,27 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     }
 
     if (["Basic Window"].includes(blindname)) {
-      divFrameType.classList.remove("d-none");
-      divFrameColour.classList.remove("d-none");
+      if (["Flyscreens"].includes(tubename)) {
+        divFrameType.classList.remove("d-none");
+        divFrameColour.classList.remove("d-none");
+        divMesh.classList.remove("d-none");
+        divBrace.classList.remove("d-none");
+        divInstall.classList.remove("d-none");
+        divFitting.classList.remove("d-none");
+        divExtras.classList.remove("d-none");
+      }
+      if (["Retractable Flyscreen Pleated"].includes(tubename)) {
+        divSlidingType.classList.remove("d-none");
+        divStacking.classList.remove("d-none");
+        divTrackless.classList.remove("d-none");
+        divFrameColour.classList.remove("d-none");
+      }
+      if (["Retractable Flyscreen Roll-Up Down"].includes(tubename)) {
+        divFrameType.classList.remove("d-none");
+        divFrameColour.classList.remove("d-none");
+        divHandle.classList.remove("d-none");
+        divPullCord.classList.remove("d-none");
+      }
       divExtras.classList.remove("d-none");
     }
 
