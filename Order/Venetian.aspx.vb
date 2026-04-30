@@ -976,6 +976,7 @@ Partial Class Order_Venetian
                     ddlPelmetType.Items.Add(New ListItem("BAY RIGHT", "Bay Right"))
                     ddlPelmetType.Items.Add(New ListItem("MAIN BAY", "Main Bay"))
                     ddlPelmetType.Items.Add(New ListItem("COMMON", "Common"))
+                    ddlPelmetType.Items.Add(New ListItem("SINGLE", "Single"))
                     ddlPelmetType.Items.Add(New ListItem("SINGLE LEFT RETURN", "Single Left Return"))
                     ddlPelmetType.Items.Add(New ListItem("SINGLE RIGHT RETURN", "Single Right Return"))
                 End If

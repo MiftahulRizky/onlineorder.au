@@ -113,7 +113,7 @@
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" >
+                                    <div class="mb-3 row" id="divFrame">
                                         <label for="frametype" class="col-lg-3 text-uppercase fw-bold" >frame</label>
                                         <div class="col-lg-4" id="divFrameType">
                                             <select name="frametype" id="frametype" class="form-select"></select>
@@ -137,7 +137,7 @@
                                         <div class="col-lg-4">
                                             <select name="dualhinges" id="dualhinges" class="form-select">
                                                 <option value=""></option>
-                                                <option value="Yes">Yes</option>
+                                                <option value="Yes">YES</option>
                                             </select>
                                         </div>  
                                     </div>
@@ -149,17 +149,25 @@
                                         </div>  
                                     </div>
 
+                                    <div class="mb-3 row" id="divRemove">
+                                        <label for="remove" class="col-lg-3 text-uppercase fw-bold" >remove product</label>
+                                        <div class="col-lg-4">
+                                           <select name="remove" id="remove" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
                                     <div class="mb-3 row" id="divCutOut">
                                         <label for="cutout" class="col-lg-3 text-uppercase fw-bold" >cut out</label>
                                         <div class="col-lg-4">
-                                           <input type="number" id="cutout" name="cutout" min="1" class="form-control ">
+                                           <select name="cutout" id="cutout" class="form-select"></select>
                                         </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divExtras">
                                         <label for="extras" class="col-lg-3 text-uppercase fw-bold" >Extras</label>
                                         <div class="col-lg-4">
-                                           <input type="number" id="extras" name="extras" min="1" class="form-control ">
+                                           <select name="extras" id="extras" class="form-select"></select>
+                                           
                                         </div>  
                                     </div>
 
