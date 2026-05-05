@@ -24,7 +24,7 @@
                                 <div class="col-4 col-lg-4 col-md-4">
                                     <label class="form-label text-secondary text-uppercase">Order #</label>
                                     <label class="form-label" id="lblOrder">-</label>
-                                    <label class="form-label" id="lblItemId">-</label>
+                                    <label class="form-label" id="lblItemId" hidden>-</label>
                                 </div>
                                 <div class="col-4 col-lg-4 col-md-4">
                                     <label class="form-label text-secondary text-uppercase">Order Number</label>
@@ -99,7 +99,7 @@
                                         </div>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
-                                                <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off" placeholder="Drop ...." />
+                                                <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off" placeholder="Height ...." />
                                                 <span class="input-group-text ">mm</span>
                                             </div>
                                             <small class="form-hint">* Height</small>

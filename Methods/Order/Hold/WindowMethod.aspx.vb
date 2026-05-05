@@ -13,7 +13,7 @@ Partial Class Methods_Order_WindowMethod
     Shared orderCfg As New OrderConfig()
     Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
-     Public Class ParamSubmit
+    Public Class ParamSubmit
         '#Submit OrderHeader
         Public Property blindtype As String
         Public Property colourtype As String

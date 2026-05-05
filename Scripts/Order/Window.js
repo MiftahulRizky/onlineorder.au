@@ -29,9 +29,10 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindname = blinds.selectedOptions[0].dataset.name;
       const tubetype = e.target.value;
       const tubename = e.target.selectedOptions[0].dataset.name;
+      const width = document.getElementById("width").value;
       await Promise.all([
         bindMounting(),
-        bindMesh(blindname),
+        bindMesh(blindname, width),
         bindSlidingType(blindname),
         bindStacking(blindname),
         bindTrackless(blindname),
@@ -79,6 +80,21 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         `${currentLength}/${maxLength}`;
     }
   });
+});
+
+document.querySelector("#btnSubmit").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+
+  // handlerSubmit(e.target.form, e.target.id);
+  handlerSubmit(e.target.id);
+});
+
+document.querySelector("#btnCancel").addEventListener("click", (e) => {
+  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
 });
 // ================================================FUNCTION==================================================
 // ----------------------------------------------|| Binding Functions ||---------------------------------------
@@ -268,10 +284,11 @@ const bindTubes = async (designid, blindtype) => {
         );
         const tubetype = select.value;
         const tubename = select.selectedOptions[0].dataset.name;
+        const width = document.getElementById("width").value;
 
         await Promise.all([
           bindMounting(),
-          bindMesh(blindname),
+          bindMesh(blindname, width),
           bindSlidingType(blindname),
           bindStacking(blindname),
           bindTrackless(blindname),
@@ -1313,6 +1330,69 @@ const bindExtras = (blindname, tubename) => {
     sel.add(option);
   });
 };
+
+const bindItemOrders = async (itemid) => {
+  try {
+    if (!itemid) return;
+
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid }),
+    });
+
+    if (!res.ok) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d;
+
+    if (!data || data.length === 0) {
+      throw isError("No data returned from server : bindItemOrders");
+    }
+
+    for (const item of data) {
+      await bindBlinds(item.DesignId);
+      await bindTubes(item.DesignId, item.BlindId);
+      await Promise.all([
+        bindMounting(),
+        bindMesh(item.BlindName, item.Width),
+        bindSlidingType(item.BlindName),
+        bindStacking(item.BlindName),
+        bindTrackless(item.BlindName),
+        bindFrameType(item.BlindName, item.TubeType),
+        bindFrameColour(item.BlindName, item.TubeType, item.FrameType),
+        bindBrace(item.BlindName),
+        bindInstall(item.BlindName),
+        bindFitting(item.BlindName),
+        bindRemove(item.BlindName),
+        bindHandle(item.BlindName),
+        bindPullCord(item.BlindName),
+        bindCutOut(item.BlindName),
+        bindExtras(item.BlindName, item.TubeType),
+      ]);
+      if (["Retractable Flyscreen Pleated"].includes(item.TubeType)) {
+        await Promise.all([
+          bindFrameColour(item.BlindName, item.TubeType, "colour only"),
+        ]);
+      }
+      await Promise.all([handlerSetElementValues(item)]);
+      await handlerElementVisibility(item.BlindId, item.KitId, item);
+    }
+
+    return true; // ✅ success
+  } catch (error) {
+    console.error("bindItemOrder error:", error);
+    throw error;
+  }
+};
 // ----------------------------------------------|| Handler Functions ||---------------------------------------
 const handlerElementVisibility = async (blindtype, tubetype, item) => {
   try {
@@ -1436,6 +1516,136 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
   }
 };
 
+const handlerSubmit = async (button) => {
+  try {
+    // return alert(button);
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = [
+      "blindtype",
+      "tubetype",
+      "qty",
+      "room",
+      "mounting",
+      "width",
+      "drop",
+      "meshtype",
+      "slidingtype",
+      "stacking",
+      "trackless",
+      "frametype",
+      "framecolour",
+      "brace",
+      "dualhinges",
+      "install",
+      "fitting",
+      "remove",
+      "handle",
+      "pullcord",
+      "cutout",
+      "extras",
+      "notes",
+      "markup",
+    ];
+
+    const formData = {
+      headerid: HEADERID,
+      itemaction: ITEMACTION,
+      itemid: ITEMID,
+      designid: DESIGNID,
+      loginid: LOGINID,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.getElementById(field).value;
+    });
+
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/Submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success);
+      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Submit";
+  }
+};
+
+const handlerSetElementValues = (itemData) => {
+  const mapping = {
+    blindtype: "BlindId",
+    tubetype: "KitId",
+    qty: "Qty",
+    room: "Location",
+    mounting: "Mounting",
+    width: "Width",
+    drop: "Drop",
+    meshtype: "MeshType",
+    slidingtype: "BottomTrackType",
+    stacking: "StackPosition",
+    trackless: "TilterPosition",
+    frametype: "FrameType",
+    framecolour: "FrameColour",
+    brace: "Brace",
+    dualhinges: "BracketOption",
+    install: "BracketCover",
+    fitting: "Fitting",
+    remove: "BracketExtension",
+    handle: "PortHole",
+    pullcord: "PlungerPin",
+    cutout: "FlatType",
+    extras: "AdditionalMotor",
+    notes: "Notes",
+    markup: "MarkUp",
+  };
+
+  // Set nilai ke input sesuai mapping
+  Object.entries(mapping).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) {
+      console.warn(`Elemen '${id}' tidak ditemukan.`);
+      return;
+    }
+
+    let value = itemData[key];
+    if (id === "markup" && value === 0) value = "";
+
+    el.value = value ?? ""; // fallback ke string kosong
+
+    // jika nilainya "0" → kosong
+    if (el.value === "0") el.value = "";
+  });
+};
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const windowPageLoaded = async () => {
   if (!HEADERID) {
@@ -1467,7 +1677,7 @@ const windowPageLoaded = async () => {
     handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    // await bindItemOrders(ITEMID);
+    await bindItemOrders(ITEMID);
     loaderFadeOut();
   }
 };
