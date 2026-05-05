@@ -322,7 +322,7 @@
     </div>
 
     <script type="text/javascript">
-        let DESIGNIDORI = "B556E35C-CEAC-40F8-A6CF-156601BD57DA";
+        let DESIGNIDORI = "B71CD2B3-E64A-4D47-B974-51CBEBD2C578";
         let HEADERID = '<%=Session("headerId")%>';
         let ORDERTYPE = '<%= Session("orderType") %>';
         let ITEMACTION = '<%= Session("itemAction") %>';
@@ -333,9 +333,9 @@
         let ROLENAME = '<%= Session("RoleName") %>';
         let LEVELNAME = '<%= Session("LevelName") %>';
         let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
-        let URIMETHOD = "/Methods/Order/VerticalBlindMethod.aspx";
+        let URIMETHOD = "/Methods/Order/Global/VerticalBlindMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/VerticalBlinds.js?<%= DateTime.Now.Ticks %>"></script>
+    <script type="text/javascript" src="/Scripts/Order/Global/VerticalBlinds.js?<%= DateTime.Now.Ticks %>"></script>
 </asp:Content>
 

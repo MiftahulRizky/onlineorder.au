@@ -151,6 +151,7 @@ Partial Class Methods_Order_VerticalBlindMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindFabricType(ByVal designid As String) As Object
         Try
+            designid = "B556E35C-CEAC-40F8-A6CF-156601BD57DA"
             Dim MyQuery As String = String.Format("SELECT Type FROM Fabrics WHERE DesignId='{0}' AND Active='1' GROUP BY Type ORDER BY Type ASC", designid)
             Dim datas As DataSet = publicCfg.GetListData(MyQuery)
             Dim list As New List(Of Dictionary(Of String, String))()
@@ -174,6 +175,7 @@ Partial Class Methods_Order_VerticalBlindMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindFabricLength(ByVal designid As String, ByVal tubetype As String, ByVal fabrictype As String) As Object
         Try
+            designid = "B556E35C-CEAC-40F8-A6CF-156601BD57DA"
             Dim Width As String = ""
             If tubetype = "Louvolite" Then
                 Width = "AND Width IN ('89', '127')"
@@ -202,6 +204,7 @@ Partial Class Methods_Order_VerticalBlindMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindFabricColour(ByVal designid As String, ByVal fabrictype As String, ByVal fabriclength As String) As Object
         Try
+            designid = "B556E35C-CEAC-40F8-A6CF-156601BD57DA"
             Dim MyQuery As String = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId='{0}' AND Type='{1}' AND Width='{2}' AND Active='1'  ORDER BY Name ASC", designid, fabrictype, fabriclength)
             Dim datas As DataSet = publicCfg.GetListData(MyQuery)
             Dim list As New List(Of Dictionary(Of String, String))()
