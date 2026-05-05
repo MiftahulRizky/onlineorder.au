@@ -261,9 +261,9 @@ Partial Class Methods_Order_WindowMethod
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "install is required !",.field = "install"}}
                 End If
 
-                If String.IsNullOrEmpty(data.fitting) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fitting is required !",.field = "fitting"}}
-                End If
+                ' If String.IsNullOrEmpty(data.fitting) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fitting is required !",.field = "fitting"}}
+                ' End If
             End If
 
             If InArray(TubeName, "Retractable Flyscreen Roll-Up Down") Then
@@ -336,7 +336,7 @@ Partial Class Methods_Order_WindowMethod
                 data.cutout = ""
             End If
 
-            If TubeName = "Retractable Flyscreen Pleated" Then
+            If TubeName = "Retractable Flyscreen Roll-Up Down" Then
                 data.meshtype = ""
                 data.slidingtype = ""
                 data.stacking = ""

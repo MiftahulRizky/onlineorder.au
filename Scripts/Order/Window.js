@@ -650,12 +650,8 @@ const bindBrace = (blindname) => {
   if (["Basic Window"].includes(blindname)) {
     list = [
       "Horizontal Centre Brace",
-      "Horizontal Centre Brace",
-      "Vertical Centre Brace",
       "Vertical Centre Brace",
       "Horizontal Brace/s Specify",
-      "Horizontal Brace/ Specify",
-      "Vertical Brace/ Specify",
       "Vertical Brace/ Specify",
     ];
   }
