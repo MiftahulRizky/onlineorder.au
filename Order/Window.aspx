@@ -136,20 +136,32 @@
 
                                     <div class="mb-3 row" id="divFrame">
                                         <label for="frametype" class="col-lg-3 text-uppercase fw-bold" >frame</label>
-                                        <div class="col-lg-4" id="divFrameType">
+                                        <div class="col-lg-3" id="divFrameType">
                                             <select name="frametype" id="frametype" class="form-select"></select>
                                             <small class="form-hint">* Type</small>
                                         </div>  
-                                        <div class="col-lg-4" id="divFrameColour">
+                                        <div class="col-lg-3" id="divFrameColour">
                                             <select name="framecolour" id="framecolour" class="form-select"></select>
                                             <small class="form-hint">* Colour</small>
+                                        </div>  
+                                        <div class="col-lg-3" id="divCustomFrameColour">
+                                            <input type="text" name="customframecolour" id="customframecolour" class="form-control" autocomplete="off" placeholder="Custom ....">
+                                            <small class="form-hint">* Custom Colour</small>
                                         </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divBrace">
                                         <label for="brace" class="col-lg-3 text-uppercase fw-bold" >brace</label>
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-4" id="">
                                             <select name="brace" id="brace" class="form-select"></select>
+                                            <small class="form-hint">* Type</small>
+                                        </div>  
+                                        <div class="col-lg-4" id="">
+                                            <div class="input-group">
+                                                <input type="number" min="1" name="bracelength" id="bracelength" class="form-control  " autocomplete="off"  />
+                                                <span class="input-group-text ">mm</span>
+                                            </div>
+                                            <small class="form-hint">* Length</small>
                                         </div>  
                                     </div>
 

@@ -59,9 +59,9 @@
                                 </div>
 
                                 <div class="mb-3 row" id="divColourType">
-                                    <label for="controltype" class="col-lg-3 text-uppercase fw-bold">colour type</label>
+                                    <label for="colourtype" class="col-lg-3 text-uppercase fw-bold">colour type</label>
                                     <div class="col-lg-4">
-                                        <select type="text" name="controltype" id="controltype" class="form-select"></select>
+                                        <select type="text" name="colourtype" id="colourtype" class="form-select"></select>
                                     </div>  
                                 </div>
 

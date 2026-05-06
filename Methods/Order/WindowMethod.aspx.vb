@@ -27,7 +27,9 @@ Partial Class Methods_Order_WindowMethod
         Public Property trackless As String
         Public Property frametype As String
         Public Property framecolour As String
+        Public Property customframecolour As String
         Public Property brace As String
+        Public Property bracelength As String
         Public Property dualhinges As String
         Public Property install As String
         Public Property fitting As String
@@ -228,9 +230,24 @@ Partial Class Methods_Order_WindowMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "frame colour is required !",.field = "framecolour"}}
             End If
 
+            If Not String.IsNullOrEmpty(data.framecolour) Then
+                If data.framecolour = "Powder Coating" And String.IsNullOrEmpty(data.customframecolour) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "custom frame colour is required !",.field = "customframecolour"}}
+                End If
+            End If
+            
+            Dim bracelength As Integer
             If InArray(TubeName, "Flyscreens", "Heavy Duty Diamond", "Ultra Barrier", "Ultra Guard") Then
                 If String.IsNullOrEmpty(data.brace) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "brace is required !",.field = "brace"}}
+                End If
+
+                If String.IsNullOrEmpty(data.bracelength) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "brace length is required !",.field = "bracelength"}}
+                End If
+
+                If Not Integer.TryParse(data.bracelength, bracelength) OrElse bracelength <= 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "brace length must be a positive integer !",.field = "bracelength"}}
                 End If
             End If
 
@@ -327,6 +344,7 @@ Partial Class Methods_Order_WindowMethod
                 data.meshtype = ""
                 data.frametype = ""
                 data.brace = ""
+                data.bracelength = ""
                 data.dualhinges = ""
                 data.install = ""
                 data.fitting = ""
@@ -342,6 +360,7 @@ Partial Class Methods_Order_WindowMethod
                 data.stacking = ""
                 data.trackless = ""
                 data.brace = ""
+                data.bracelength = ""
                 data.dualhinges = ""
                 data.install = ""
                 data.fitting = ""
@@ -378,9 +397,9 @@ Partial Class Methods_Order_WindowMethod
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
 
-                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], MeshType, BottomTrackType, StackPosition, TilterPosition, FrameType, FrameColour, Brace, BracketOption, BracketCover, Fitting, BracketExtension, PortHole, PlungerPin, FlatType, AdditionalMotor, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
+                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], MeshType, BottomTrackType, StackPosition, TilterPosition, FrameType, FrameColour, FrameLeft, Brace, TrackLength, BracketOption, BracketCover, Fitting, BracketExtension, PortHole, PlungerPin, FlatType, AdditionalMotor, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
 
-                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @MeshType, @BottomTrackType, @StackPosition, @TilterPosition, @FrameType, @FrameColour,  @Brace, @BracketOption, @BracketCover, @Fitting, @BracketExtension, @PortHole, @PlungerPin, @FlatType, @AdditionalMotor, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
+                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @MeshType, @BottomTrackType, @StackPosition, @TilterPosition, @FrameType, @FrameColour, @FrameLeft,  @Brace, @TrackLength, @BracketOption, @BracketCover, @Fitting, @BracketExtension, @PortHole, @PlungerPin, @FlatType, @AdditionalMotor, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand(String.Format("INSERT INTO OrderDetails({0}) VALUES ({1})", Field, Values), thisConn)
@@ -402,7 +421,9 @@ Partial Class Methods_Order_WindowMethod
                         myCmd.Parameters.AddWithValue("@TilterPosition", data.trackless)
                         myCmd.Parameters.AddWithValue("@FrameType", data.frametype)
                         myCmd.Parameters.AddWithValue("@FrameColour", data.framecolour)
+                        myCmd.Parameters.AddWithValue("@FrameLeft", data.customframecolour)
                         myCmd.Parameters.AddWithValue("@Brace", data.brace)
+                        myCmd.Parameters.AddWithValue("@TrackLength", data.bracelength)
                         myCmd.Parameters.AddWithValue("@BracketOption", data.dualhinges)
                         myCmd.Parameters.AddWithValue("@BracketCover", data.install)
                         myCmd.Parameters.AddWithValue("@Fitting", data.fitting)
@@ -438,7 +459,7 @@ Partial Class Methods_Order_WindowMethod
 
                 Dim ItemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@width, [Drop]=@Drop, MeshType=@MeshType, BottomTrackType=@BottomTrackType, StackPosition=@StackPosition, TilterPosition=@TilterPosition, FrameType=@FrameType, FrameColour=@FrameColour, Brace=@Brace, BracketOption=@BracketOption, BracketCover=@BracketCover, Fitting=@Fitting, BracketExtension=@BracketExtension, PortHole=@PortHole, PlungerPin=@PlungerPin, FlatType=@FlatType, AdditionalMotor=@AdditionalMotor, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@width, [Drop]=@Drop, MeshType=@MeshType, BottomTrackType=@BottomTrackType, StackPosition=@StackPosition, TilterPosition=@TilterPosition, FrameType=@FrameType, FrameColour=@FrameColour, FrameLeft=@FrameLeft, Brace=@Brace, TrackLength=@TrackLength, BracketOption=@BracketOption, BracketCover=@BracketCover, Fitting=@Fitting, BracketExtension=@BracketExtension, PortHole=@PortHole, PlungerPin=@PlungerPin, FlatType=@FlatType, AdditionalMotor=@AdditionalMotor, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -457,7 +478,9 @@ Partial Class Methods_Order_WindowMethod
                         myCmd.Parameters.AddWithValue("@TilterPosition", data.trackless)
                         myCmd.Parameters.AddWithValue("@FrameType", data.frametype)
                         myCmd.Parameters.AddWithValue("@FrameColour", data.framecolour)
+                        myCmd.Parameters.AddWithValue("@FrameLeft", data.customframecolour)
                         myCmd.Parameters.AddWithValue("@Brace", data.brace)
+                        myCmd.Parameters.AddWithValue("@TrackLength", data.bracelength)
                         myCmd.Parameters.AddWithValue("@BracketOption", data.dualhinges)
                         myCmd.Parameters.AddWithValue("@BracketCover", data.install)
                         myCmd.Parameters.AddWithValue("@Fitting", data.fitting)

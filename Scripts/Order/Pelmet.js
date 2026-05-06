@@ -13,6 +13,35 @@
 });
 // ===============================================================EVENTS========================================================================
 
+document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+  el.addEventListener("change", async (e) => {
+    e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "blindtype") {
+      const blindtype = e.target.value;
+      await handlerElementVisibility(blindtype);
+      await binColours(DESIGNID, blindtype);
+    }
+
+    // if (e.target.id === "tubetype") {
+    //   const blindtype = document.getElementById("blindtype").value;
+    //   const tubetype = e.target.value;
+    //   await handlerElementVisibility(blindtype, tubetype);
+    //   await bindControls(DESIGNID, blindtype, tubetype);
+    // }
+  });
+  el.addEventListener("input", (e) => {
+    e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "notes") {
+      let maxLength = 1000;
+      let currentLength = e.target.value.length;
+      document.querySelector("#notescount").textContent =
+        `${currentLength}/${maxLength}`;
+    }
+  });
+});
+
 document.querySelector("#btnCancel").addEventListener("click", (e) => {
   window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
 });
@@ -76,6 +105,136 @@ const bindFormAction = (itemaction) => {
   cardTitle.innerText = actionMap[itemaction] || "";
 };
 
+const bindBlinds = async () => {
+  const select = document.getElementById("blindtype");
+  select.innerHTML = "";
+
+  if (!DESIGNID) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindListData`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        field: "blindtype",
+        designid: DESIGNID,
+        blindtype: "",
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindBlinds");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 0) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const binColours = async (designid, blindtype) => {
+  const select = document.getElementById("colourtype");
+  select.innerHTML = "";
+
+  if (!designid || !blindtype) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindListData`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ filed: "colourtype", designid, blindtype }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : binColours");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
 // ----------------------------------------------------------- || Other Funtions ||------------------------------------------------------------
 const pelmetPageLoaded = async () => {
   if (!HEADERID) {
@@ -103,7 +262,7 @@ const pelmetPageLoaded = async () => {
   bindFormAction(ITEMACTION);
 
   if (ITEMACTION === "AddItem") {
-    // await bindBlinds(DESIGNID);
+    await bindBlinds(DESIGNID);
     // await handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {

@@ -62,6 +62,16 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const frametype = e.target.value;
       bindFrameColour(blindname, tubename, frametype);
     }
+    if (e.target.id === "framecolour") {
+      const framecolour = e.target.value;
+      const divCustomFrameColour = document.getElementById(
+        "divCustomFrameColour",
+      );
+      divCustomFrameColour.classList.add("d-none");
+      if (["Powder Coating"].includes(framecolour)) {
+        divCustomFrameColour.classList.remove("d-none");
+      }
+    }
   });
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
@@ -1402,6 +1412,9 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     const divTrackless = document.getElementById("divTrackless");
     const divFrameType = document.getElementById("divFrameType");
     const divFrameColour = document.getElementById("divFrameColour");
+    const divCustomFrameColour = document.getElementById(
+      "divCustomFrameColour",
+    );
     const divBrace = document.getElementById("divBrace");
     const divDualHinges = document.getElementById("divDualHinges");
     const divInstall = document.getElementById("divInstall");
@@ -1424,6 +1437,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     divTrackless.classList.add("d-none");
     divFrameType.classList.add("d-none");
     divFrameColour.classList.add("d-none");
+    divCustomFrameColour.classList.add("d-none");
     divBrace.classList.add("d-none");
     divDualHinges.classList.add("d-none");
     divInstall.classList.add("d-none");
@@ -1495,6 +1509,12 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       divExtras.classList.remove("d-none");
     }
 
+    if (item) {
+      if (["Powder Coating"].includes(item.FrameColour)) {
+        divCustomFrameColour.classList.remove("d-none");
+      }
+    }
+
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
 
     if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
@@ -1531,7 +1551,9 @@ const handlerSubmit = async (button) => {
       "trackless",
       "frametype",
       "framecolour",
+      "customframecolour",
       "brace",
+      "bracelength",
       "dualhinges",
       "install",
       "fitting",
@@ -1612,7 +1634,9 @@ const handlerSetElementValues = (itemData) => {
     trackless: "TilterPosition",
     frametype: "FrameType",
     framecolour: "FrameColour",
+    customframecolour: "FrameLeft",
     brace: "Brace",
+    bracelength: "TrackLength",
     dualhinges: "BracketOption",
     install: "BracketCover",
     fitting: "Fitting",

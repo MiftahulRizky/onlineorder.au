@@ -40,4 +40,50 @@ Partial Class Methods_Order_PelmetMethod
         End Try
     End Function
 
+     <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindListData(ByVal field As String, ByVal designid As String, ByVal blindtype As String) As Object
+        Try
+            Dim query As String = ""
+            Dim resultList As New List(Of Dictionary(Of String, String))()
+
+            Select Case field.ToLower()
+                Case "blindtype"
+                    query = String.Format("SELECT Id, Name FROM Blinds WHERE DesignId='{0}' AND Active=1 ORDER BY Name ASC", designid)
+                    Return GetFormattedData(query, "Id", "Name")
+
+                Case "colourtype"
+                    query = String.Format("SELECT Id, ColourType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId = '{1}' AND Active=1 ORDER BY Name ASC", designid, UCase(blindtype).ToString())
+                    Return GetFormattedData(query, "Id", "ColourType")
+
+                Case Else
+                    Return New With {.error = "Invalid field"}
+            End Select
+
+        Catch ex As Exception
+            Return New With {.error = ex.Message}
+        End Try
+    End Function
+
+    Private Shared Function GetFormattedData(query As String, valueField As String, textField As String) As Object
+        Dim list As New List(Of Dictionary(Of String, String))()
+
+        Dim datas As DataSet = publicCfg.GetListData(query)
+
+        If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
+            For Each row As DataRow In datas.Tables(0).Rows
+                list.Add(New Dictionary(Of String, String) From {
+                    {"value", row(valueField).ToString()},
+                    {"text", row(textField).ToString()}
+                })
+            Next
+        End If
+
+        Return list
+    End Function
+
+    Private Shared Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
+    End Function
+
 End Class

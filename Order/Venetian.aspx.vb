@@ -975,7 +975,7 @@ Partial Class Order_Venetian
                     ddlPelmetType.Items.Add(New ListItem("BAY LEFT", "Bay Left"))
                     ddlPelmetType.Items.Add(New ListItem("BAY RIGHT", "Bay Right"))
                     ddlPelmetType.Items.Add(New ListItem("MAIN BAY", "Main Bay"))
-                    ddlPelmetType.Items.Add(New ListItem("COMMON", "Common"))
+                    ddlPelmetType.Items.Add(New ListItem("COMMON (1 PELMET COVER 2 OR 3 BLINDS)", "Common (1 Pelmet Cover 2 or 3 blinds)"))
                     ddlPelmetType.Items.Add(New ListItem("SINGLE", "Single"))
                     ddlPelmetType.Items.Add(New ListItem("SINGLE LEFT RETURN", "Single Left Return"))
                     ddlPelmetType.Items.Add(New ListItem("SINGLE RIGHT RETURN", "Single Right Return"))
@@ -986,7 +986,7 @@ Partial Class Order_Venetian
                 ddlPelmetType.Items.Add(New ListItem("BAY LEFT", "Bay Left"))
                 ddlPelmetType.Items.Add(New ListItem("BAY RIGHT", "Bay Right"))
                 ddlPelmetType.Items.Add(New ListItem("MAIN BAY", "Main Bay"))
-                ddlPelmetType.Items.Add(New ListItem("COMMON", "Common"))
+                ddlPelmetType.Items.Add(New ListItem("COMMON (1 PELMET COVER 2 OR 3 BLINDS)", "Common (1 Pelmet Cover 2 or 3 blinds)"))
                 ddlPelmetType.Items.Add(New ListItem("SINGLE LEFT RETURN", "Single Left Return"))
                 ddlPelmetType.Items.Add(New ListItem("SINGLE RIGHT RETURN", "Single Right Return"))
             End If
