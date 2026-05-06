@@ -29,6 +29,11 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     //   await handlerElementVisibility(blindtype, tubetype);
     //   await bindControls(DESIGNID, blindtype, tubetype);
     // }
+
+    if (e.target.id === "fabrictype") {
+      const fabrictype = e.target.value;
+      await bindFabricColours(DESIGNID, fabrictype);
+    }
   });
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
@@ -40,6 +45,17 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         `${currentLength}/${maxLength}`;
     }
   });
+});
+
+document.querySelector("#btnSubmit").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+
+  // handlerSubmit(e.target.form, e.target.id);
+  handlerSubmit(e.target.id);
 });
 
 document.querySelector("#btnCancel").addEventListener("click", (e) => {
@@ -105,11 +121,11 @@ const bindFormAction = (itemaction) => {
   cardTitle.innerText = actionMap[itemaction] || "";
 };
 
-const bindBlinds = async () => {
+const bindBlinds = async (designid) => {
   const select = document.getElementById("blindtype");
   select.innerHTML = "";
 
-  if (!DESIGNID) return;
+  if (!designid) return;
 
   try {
     const response = await fetch(`${URIMETHOD}/BindListData`, {
@@ -118,9 +134,10 @@ const bindBlinds = async () => {
         "Content-Type": "application/json; charset=utf-8",
       },
       body: JSON.stringify({
-        field: "blindtype",
-        designid: DESIGNID,
-        blindtype: "",
+        data: {
+          field: "blindtype",
+          designid,
+        },
       }),
     });
 
@@ -184,7 +201,13 @@ const binColours = async (designid, blindtype) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ filed: "colourtype", designid, blindtype }),
+      body: JSON.stringify({
+        data: {
+          field: "colourtype",
+          designid,
+          blindtype,
+        },
+      }),
     });
 
     if (!response.ok) {
@@ -224,6 +247,10 @@ const binColours = async (designid, blindtype) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
+        const colourtype = select.value;
+        await bindFabrics(designid);
+        await Promise.all([bindPelmet(), bindReturnPosition()]);
+        await handlerElementVisibility(blindtype, colourtype);
       }
     }
   } catch (err) {
@@ -235,6 +262,408 @@ const binColours = async (designid, blindtype) => {
   }
 };
 
+const bindFabrics = async (designid) => {
+  const select = document.getElementById("fabrictype");
+  document.getElementById("fabriccolour").innerHTML = "";
+  select.innerHTML = "";
+
+  if (!designid) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindListData`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        data: {
+          field: "fabrictype",
+          designid,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindFabrics");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const bindFabricColours = async (designid, fabrictype) => {
+  const select = document.getElementById("fabriccolour");
+  select.innerHTML = "";
+
+  if (!designid || !fabrictype) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindListData`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        data: {
+          field: "fabriccolour",
+          designid,
+          fabrictype,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindFabricLength");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const bindPelmet = () => {
+  const sel = document.getElementById("pelmetover");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  let list = [];
+
+  list = [
+    "40mm Vertical Track",
+    "28mm Tiltrak",
+    "Single Roller",
+    "Double Roller",
+    "Panel Glide",
+  ];
+
+  list.forEach((ls) => {
+    data.push({ value: ls, text: ls });
+  });
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindReturnPosition = () => {
+  const sel = document.getElementById("returnposition");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  let list = [];
+
+  list = ["No", "L & R", "Left Only", "Right Only"];
+
+  list.forEach((ls) => {
+    data.push({ value: ls, text: ls });
+  });
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindItemOrders = async (itemid) => {
+  try {
+    if (!itemid) return;
+
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid }),
+    });
+
+    if (!res.ok) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d;
+
+    if (!data || data.length === 0) {
+      throw isError("No data returned from server : bindItemOrders");
+    }
+
+    for (const item of data) {
+      await bindBlinds(item.DesignId);
+      await binColours(item.DesignId, item.BlindId);
+      await bindFabrics(item.DesignId);
+      await bindFabricColours(item.DesignId, item.FabricType);
+
+      await Promise.all([
+        bindPelmet(),
+        bindReturnPosition(),
+        handlerSetElementValues(item),
+      ]);
+
+      await handlerElementVisibility(item.BlindId, item.KitId, item);
+    }
+
+    return true; // ✅ success
+  } catch (error) {
+    console.error("bindItemOrder error:", error);
+    throw error;
+  }
+};
+// ----------------------------------------------------------- || Handler Funtions ||----------------------------------------------------------
+const handlerElementVisibility = async (blindtype, colourtype, item) => {
+  try {
+    const lblItemId = document.getElementById("lblItemId");
+    const divColourType = document.getElementById("divColourType");
+    const divFormDetail = document.getElementById("divFormDetail");
+
+    const divMarkUp = document.getElementById("divMarkUp");
+    const btnSubmit = document.querySelector("#btnSubmit");
+    // return;
+    divColourType.classList.add("d-none");
+    divFormDetail.classList.add("d-none");
+
+    divMarkUp.classList.add("d-none");
+    btnSubmit.classList.add("d-none");
+
+    if (!blindtype) return;
+    const blindname = await getItemData(
+      `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
+    );
+    divColourType.classList.remove("d-none");
+
+    if (!colourtype) return;
+    divFormDetail.classList.remove("d-none");
+
+    if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
+
+    if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
+      btnSubmit.classList.remove("d-none");
+    } else if (ITEMACTION === "ViewItem") {
+      btnSubmit.classList.remove("d-none");
+      if (ROLENAME !== "Administrator") btnSubmit.classList.add("d-none");
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  }
+};
+
+const handlerSubmit = async (button) => {
+  try {
+    // return alert(button);
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = [
+      "blindtype",
+      "colourtype",
+      "qty",
+      "room",
+      "mounting",
+      "width",
+      "drop",
+      "fabrictype",
+      "fabriccolour",
+      "pelmetover",
+      "returnposition",
+      "returnsize",
+      "notes",
+      "markup",
+    ];
+
+    const formData = {
+      headerid: HEADERID,
+      itemaction: ITEMACTION,
+      itemid: ITEMID,
+      designid: DESIGNID,
+      loginid: LOGINID,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.getElementById(field).value;
+    });
+
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/Submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success);
+      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Submit";
+  }
+};
+
+const handlerSetElementValues = (itemData) => {
+  const mapping = {
+    blindtype: "BlindId",
+    colourtype: "KitId",
+    qty: "Qty",
+    room: "Location",
+    mounting: "Mounting",
+    width: "Width",
+    drop: "Drop",
+    fabrictype: "FabricType",
+    fabriccolour: "FabricId",
+    pelmetover: "PelmetType",
+    returnposition: "PelmetReturn",
+    returnsize: "PelmetReturnSize",
+    notes: "Notes",
+    markup: "MarkUp",
+  };
+
+  // Set nilai ke input sesuai mapping
+  Object.entries(mapping).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) {
+      console.warn(`Elemen '${id}' tidak ditemukan.`);
+      return;
+    }
+
+    let value = itemData[key];
+    if (id === "markup" && value === 0) value = "";
+
+    el.value = value ?? "";
+
+    // jika nilainya "0" → kosong
+    if (el.value === "0") el.value = "";
+  });
+};
 // ----------------------------------------------------------- || Other Funtions ||------------------------------------------------------------
 const pelmetPageLoaded = async () => {
   if (!HEADERID) {
@@ -263,10 +692,10 @@ const pelmetPageLoaded = async () => {
 
   if (ITEMACTION === "AddItem") {
     await bindBlinds(DESIGNID);
-    // await handlerElementVisibility();
+    await handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    // await bindItemOrders(ITEMID);
+    await bindItemOrders(ITEMID);
     loaderFadeOut();
   }
 };

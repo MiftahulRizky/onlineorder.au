@@ -257,7 +257,6 @@ Partial Class Methods_Order_VerticalBlindMethod
     Public Shared Function Submit(ByVal data As ParamSubmit) As Object
         Try
             Dim msg As String = "200"
-
             Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.blindtype))
             Dim qty As Integer
             If String.IsNullOrEmpty(data.qty) Then
