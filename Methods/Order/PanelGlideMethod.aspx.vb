@@ -306,9 +306,9 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "bottom rail is required !", .field = "bottomrail"}}
             End If
 
-            If String.IsNullOrEmpty(data.batten) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "batten is required !", .field = "batten"}}
-            End If
+            ' If String.IsNullOrEmpty(data.batten) Then
+            '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "batten is required !", .field = "batten"}}
+            ' End If
 
             If data.batten = "Yes" Then
                 If String.IsNullOrEmpty(data.battencolour) Then
@@ -316,9 +316,9 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 End If
             End If
 
-            If String.IsNullOrEmpty(data.fitting) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "fitting is required !", .field = "fitting"}}
-            End If
+            ' If String.IsNullOrEmpty(data.fitting) Then
+            '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "fitting is required !", .field = "fitting"}}
+            ' End If
 
             If Not String.IsNullOrEmpty(data.notes) Then
                 If data.notes.Trim().Length > 1000 Then

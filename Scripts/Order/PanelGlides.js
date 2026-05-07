@@ -42,6 +42,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindTrackType(),
         bindWandPosition(),
         bindWandColour(),
+        bindBottomRail(),
         bindBattenColour(),
       ]);
       await handlerElementVisibility(blindtype, colourtype);
@@ -267,12 +268,22 @@ const bindColours = async (designid, blindid) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
-        // const blindname =
-        //   document.getElementById("blindtype").selectedOptions[0].dataset.name;
-        // await Promise.all([
-        //   handlerElementVisibility(blindname, brackettype, select.value),
-        // ]);
-        // await bindControls(designid, blindid, brackettype, select.value);
+        const blindname = await getItemData(
+          `SELECT Name FROM Blinds WHERE Id = '${blindid}'`,
+        );
+        const colourtype = select.value;
+        await Promise.all([bindMounting()]);
+        await bindFabrics(designid);
+        await Promise.all([
+          bindLayoutCode(),
+          bindNoPanel(),
+          bindTrackType(),
+          bindWandPosition(),
+          bindWandColour(),
+          bindBottomRail(),
+          bindBattenColour(),
+        ]);
+        await handlerElementVisibility(blindid, colourtype);
       }
     }
   } catch (err) {
@@ -639,6 +650,41 @@ const bindBattenColour = () => {
   });
 };
 
+const bindBottomRail = () => {
+  const sel = document.getElementById("bottomrail");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  let list = [];
+
+  list = [
+    "Standard (Plain Pocket)",
+    "Small Flat Rail",
+    "Large Flat Rail",
+    "Fabric Inserted Rail",
+    "Oval Rail",
+  ];
+
+  list.forEach((ls) => {
+    data.push({ value: ls, text: ls });
+  });
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
 const bindItemOrders = async (itemid) => {
   try {
     if (!itemid) return;
@@ -672,19 +718,6 @@ const bindItemOrders = async (itemid) => {
       await Promise.all([bindMounting()]);
       await bindFabrics(item.DesignId);
       await bindFabricColours(item.DesignId, item.FabricType);
-      // await bindFabricColours(item.DesignId, item.FabricType, item.FabricWidth);
-      // await Promise.all([
-      //   bindSlatSize(),
-      //   bindTrackColour(item.TubeType),
-      //   bindStackPosition(),
-      //   bindChains(),
-      //   bindWandLength(),
-      //   bindWandColour(item.TubeType, item.WandLength),
-      //   bindBracketType(),
-      //   bindBracketColour(item.TubeType),
-      //   bindHanger(item.BlindName, item.TubeType),
-      //   bindBottom(),
-      // ]);
       await Promise.all([
         bindLayoutCode(),
         bindNoPanel(),
@@ -692,6 +725,7 @@ const bindItemOrders = async (itemid) => {
         bindTrackColour(item.TrackType),
         bindWandPosition(),
         bindWandColour(),
+        bindBottomRail(),
         bindBattenColour(),
         handlerSetElementValues(item),
       ]);
@@ -729,6 +763,12 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     divColourType.classList.remove("d-none");
 
     if (!colourtype) return;
+    const colourname = await getItemData(
+      `SELECT ColourType FROM HardwareKits WHERE Id = '${colourtype}'`,
+    );
+    if (colourname == "N/A") {
+      divColourType.classList.add("d-none");
+    }
     divFormDetail.classList.remove("d-none");
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
