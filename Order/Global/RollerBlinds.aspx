@@ -276,19 +276,19 @@
                                     <div class="mb-3 row" id="divTrim">
                                         <label for="trim" class="col-lg-3 text-uppercase fw-bold" >trim</label>
                                         <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <select type="text" name="trim" id="trim" class="form-select"></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoTrim">
-                                                    <i class="ti ti-info-square-rounded fs-2"></i>
-                                                </button>
-                                            </div>
+                                            <select type="text" name="trim" id="trim" class="form-select"></select>
                                         </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divBottomRail">
                                         <label for="railtype" class="col-lg-3 text-uppercase fw-bold" id="lblBotomRail">bottom rail type x colour</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <select name="railtype" id="railtype" class="form-select "></select>
+                                            <div class="input-group">
+                                                <select name="railtype" id="railtype" class="form-select "></select>
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoTrim">
+                                                    <i class="ti ti-info-square-rounded fs-2"></i>
+                                                </button>
+                                            </div>
                                             <small class="form-hint">* Type</small>
                                         </div>
                                         <div class="col-lg-4 col-md-12 col-sm-12" id="divRailColour">

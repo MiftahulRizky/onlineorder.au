@@ -138,11 +138,13 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     // ---------------------------------||trim||---------------------------------
     if (e.target.id === "trim") {
       const divBottomRail = document.getElementById("divBottomRail");
+      const btnInfoTrim = document.getElementById("btnInfoTrim");
       const divAccessory = document.getElementById("divAccessory");
       const lblBotomRail = document.getElementById("lblBotomRail");
       const divRailColour = document.getElementById("divRailColour");
 
       divBottomRail.classList.add("d-none");
+      btnInfoTrim.classList.add("d-none");
       divAccessory.classList.add("d-none");
       divRailColour.classList.add("d-none");
       lblBotomRail.innerHTM = "bottom rail type x colour";
@@ -168,6 +170,9 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         if (trim == "Bottom Rail") {
           lblBotomRail.innerHTML = "bottom rail type x colour";
           divRailColour.classList.remove("d-none");
+        }
+        if (trim == "Decorative") {
+          btnInfoTrim.classList.remove("d-none");
         }
         divBottomRail.classList.remove("d-none");
         divAccessory.classList.remove("d-none");
@@ -348,6 +353,7 @@ const handlerElementVisibility = async (
     const divChain = document.getElementById("divChain");
     const divBottomRail = document.getElementById("divBottomRail");
     const lblBotomRail = document.getElementById("lblBotomRail");
+    const btnInfoTrim = document.getElementById("btnInfoTrim");
     const divRailColour = document.getElementById("divRailColour");
     const divTubeSize = document.getElementById("divTubeSize");
     const divAdditional = document.getElementById("divAdditional");
@@ -387,6 +393,7 @@ const handlerElementVisibility = async (
     divChain.classList.add("d-none");
     divBottomRail.classList.add("d-none");
     lblBotomRail.innerHTML = "bottom rail type x colour";
+    btnInfoTrim.classList.add("d-none");
     divRailColour.classList.add("d-none");
     divTubeSize.classList.add("d-none");
     divAdditional.classList.add("d-none");
@@ -759,6 +766,9 @@ const handlerElementVisibility = async (
         if (item.Trim == "Bottom Rail") {
           lblBotomRail.innerHTML = "bottom rail type x colour";
           divRailColour.classList.remove("d-none");
+        }
+        if (item.Trim == "Decorative") {
+          btnInfoTrim.classList.remove("d-none");
         }
       }
     }

@@ -61,7 +61,7 @@
                                 </div>  
                             </div>
 
-                            <div class="mb-3 row" id="divColourType">
+                            <div class="mb-3 row" id="divColourType" hidden>
                                 <label for="colourtype" class="col-lg-3 text-uppercase fw-bold">colour</label>
                                 <div class="col-lg-5">
                                     <select type="text" name="colourtype" id="colourtype" class="form-control "></select>
