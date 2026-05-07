@@ -4126,14 +4126,18 @@ Partial Class Methods_Order_DetailMethod
                 result += trEnd
 
                 For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    Dim BlindNo As String = thisData.Tables(0).Rows(i).Item("BlindNo").ToString()
                     Dim bracketType As String = thisData.Tables(0).Rows(i).Item("BracketType").ToString()
                     Dim kitName As String = thisData.Tables(0).Rows(i).Item("KitName").ToString()
+                    Dim MotorStyle As String = thisData.Tables(0).Rows(i).Item("MotorStyle").ToString()
+                    Dim MotorRemote As String = thisData.Tables(0).Rows(i).Item("MotorRemote").ToString()
+                    Dim MotorCharger As String = thisData.Tables(0).Rows(i).Item("MotorCharger").ToString()
 
                     If bracketType = "Double" Or bracketType = "Linked 2 Blinds (Dep)" Or bracketType = "Linked 2 Blinds (Ind)" Then
-                        Dim blindNo As String = thisData.Tables(0).Rows(i).Item("BlindNo").ToString()
+                        ' Dim blindNo As String = thisData.Tables(0).Rows(i).Item("BlindNo").ToString()
                         Dim uniqueId As String = thisData.Tables(0).Rows(i).Item("UniqueId").ToString()
 
-                        If blindNo = "Blind 1" Then
+                        If BlindNo = "Blind 1" Then
                             Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + uniqueId + "' AND Active = 1")
 
                             If Not getConnectedId = "" Then
@@ -4142,7 +4146,7 @@ Partial Class Methods_Order_DetailMethod
                             End If
                         End If
 
-                        If blindNo = "Blind 2" Then
+                        If BlindNo = "Blind 2" Then
                             Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + uniqueId + "' AND Active = 1")
 
                             If Not getConnectedId = "" Then
@@ -4154,10 +4158,10 @@ Partial Class Methods_Order_DetailMethod
 
 
                     If bracketType = "Linked 3 Blinds (Dep)" Or bracketType = "Linked 3 Blinds (Ind)" Then
-                        Dim blindNo As String = thisData.Tables(0).Rows(i).Item("BlindNo").ToString()
+                        ' Dim blindNo As String = thisData.Tables(0).Rows(i).Item("BlindNo").ToString()
                         Dim uniqueId As String = thisData.Tables(0).Rows(i).Item("UniqueId").ToString()
 
-                        If blindNo = "Blind 1" Then
+                        If BlindNo = "Blind 1" Then
                             Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + uniqueId + "' AND Active = 1")
                             Dim getConnectedId2 As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + uniqueId + "' AND Active = 1")
 
@@ -4170,7 +4174,7 @@ Partial Class Methods_Order_DetailMethod
                             kitName += "<span style='font-size:6px;color:red;'>" & "* LINKED WITH ITEM ID : " & getConnectedId & id2 & "</span>"
                         End If
 
-                        If blindNo = "Blind 2" Then
+                        If BlindNo = "Blind 2" Then
                             Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + uniqueId + "' AND Active = 1")
                             Dim getConnectedId2 As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + uniqueId + "' AND Active = 1")
 
@@ -4183,7 +4187,7 @@ Partial Class Methods_Order_DetailMethod
                             kitName += "<span style='font-size:6px;color:red;'>" & "* LINKED WITH ITEM ID : " & getConnectedId & id2 & "</span>"
                         End If
 
-                        If blindNo = "Blind 3" Then
+                        If BlindNo = "Blind 3" Then
                             Dim getConnectedId As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + uniqueId + "' AND Active = 1")
                             Dim getConnectedId2 As String = GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + uniqueId + "' AND Active = 1")
 
@@ -4195,6 +4199,12 @@ Partial Class Methods_Order_DetailMethod
                             kitName += "<br />"
                             kitName += "<span style='font-size:6px;color:red;'>" & "* LINKED WITH ITEM ID : " & getConnectedId & id2 & "</span>"
                         End If
+                    End If
+
+                    If Not BlindNo = "Blind 1" Then
+                        MotorStyle = ""
+                        MotorRemote = ""
+                        MotorCharger = ""
                     End If
 
                     result += trStart
@@ -4209,9 +4219,9 @@ Partial Class Methods_Order_DetailMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("RollDirection").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("MotorStyle").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("MotorRemote").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("MotorCharger").ToString() & tdEnd
+                    result += tdStart & MotorStyle & tdEnd
+                    result += tdStart & MotorRemote & tdEnd
+                    result += tdStart & MotorCharger & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Connector").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Trim").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomName").ToString() & tdEnd
