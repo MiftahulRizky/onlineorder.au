@@ -10,6 +10,7 @@
     console.log("URIMETHOD: " + URIMETHOD);
   }
   windowPageLoaded();
+  let extrasState = [];
 });
 
 // ==================================================EVENTS==================================================
@@ -916,6 +917,10 @@ const bindExtras = (blindname, tubename) => {
   sel.innerHTML = ""; //reset
 
   if (!blindname) return;
+  if (tomExtras) {
+    tomExtras.destroy();
+    tomExtras = null;
+  }
 
   let data = [];
   let list = [];
@@ -1084,61 +1089,61 @@ const bindExtras = (blindname, tubename) => {
   if (["Basic Window"].includes(blindname)) {
     if (["Flyscreens"].includes(tubename)) {
       list = [
-        "Flyscreen Plunger Pins",
-        "Flyscreen Top Clips",
-        "Flyscreen Turn Buttons",
-        // "Single Sliding Track Top",
-        // "Single Sliding Track Bottom",
-        // "Double Sliding Track Top",
-        // "Double Sliding Track Bottom",
-        "Flyscreen Beading",
-        "Bugseal Additional Hinged",
-        "Chain Winder Lockable",
-        "Powdercoating Minimum Flyscreens",
-        "Door Track U Frame 20mm sides x 25mm wide",
-        // "Angle 12 x 12mm",
-        // "Angle 12 x 20mm",
-        // "Angle 12 x 25mm",
-        // "Angle 20 x 40mm",
-        // "Angle 25 x 20mm",
-        // "Angle 50 x 25mm",
-        "Whitco Winder Strip",
-        "Patio Bolt",
-        "Miscellaneous",
-        // "Timber Frame 19 x 7mm Finished",
-        // "Timber Frame 19 x 13mm Finished",
-        // "Timber Frames 19 x 19 Finished",
-        // "Timber Frames 19 x 30mm Finished",
-        // "Timber Frames 19 x 41mm Finished",
-        // "Timber Frames 19 x 66mm Finished",
-        // "Timber Frames 19 x 91mm Finished",
-        // "Timber Frame 30 x 7mm Finished",
-        // "Timber Frame 30 x 13mm Finished",
-        // "Timber Frames 30 x 19mm Finished",
-        // "Timber Frames 30 x 30mm Finished",
-        // "Timber Frames 30 x 41 Finished",
-        // "Timber Frames 30 x 66mm Finished",
-        // "Timber Frames 30 x 91mm Finished",
-        // "Timber Frame 41 x 7mm Finished",
-        // "Timber Frame 41 x 13mm Finished",
-        // "Timber Frames 41 x 19mm Finished",
-        // "Timber Frames 41 x 30mm Finished",
-        // "Timber Frames 41 x 41 Finished",
-        // "Timber Frames 41 x 66mm Finished",
-        // "Timber Frames 41 x 91mm Finished",
-        // "Timber Frame 66 x 7mm Finished",
-        // "Timber Frames 66 x 13 Finished",
-        // "Timber Frames 66 x 19mm Finished",
-        // "Timber Frames 66 x 30mm Finished",
-        // "Timber Frames 66 x 41mm Finished",
-        // "Timber Frames 66 x 91mm Finished",
-        // "Timber Frame 91 x 7mm Finished",
-        // "Timber Frames 91 x 13mm Finished",
-        // "Timber Frames 91 x 19mm Finished",
-        // "Timber Frames 91 x 30mm Finished",
-        // "Timber Frames 91 x 41mm Finished",
-        // "Timber Frames 91 x 66mm Finished",
-        // "Timber Frames 91 x 91mm Finished",
+        { name: "Flyscreen Plunger Pins", unit: "Qty" },
+        { name: "Flyscreen Top Clips", unit: "Qty" },
+        { name: "Flyscreen Turn Buttons", unit: "Qty" },
+        { name: "Single Sliding Track Top", unit: "mm" },
+        { name: "Single Sliding Track Bottom", unit: "mm" },
+        { name: "Double Sliding Track Top", unit: "mm" },
+        { name: "Double Sliding Track Bottom", unit: "mm" },
+        { name: "Flyscreen Beading", unit: "mm" },
+        { name: "Bugseal Additional Hinged", unit: "mm" },
+        { name: "Chain Winder Lockable", unit: "Qty" },
+        { name: "Powdercoating Minimum Flyscreens", unit: "Qty" },
+        { name: "Door Track U Frame 20mm sidesx 25mm wide", unit: "mm" },
+        { name: "Angle 12 x 12mm", unit: "mm" },
+        { name: "Angle 12 x 20mm", unit: "mm" },
+        { name: "Angle 12 x 25mm", unit: "mm" },
+        { name: "Angle 20 x 40mm", unit: "mm" },
+        { name: "Angle 25 x 20mm", unit: "mm" },
+        { name: "Angle 50 x 25mm", unit: "mm" },
+        { name: "Whitco Winder Strip", unit: "Qty" },
+        { name: "Patio Bolt", unit: "Qty" },
+        { name: "Miscellaneous", unit: "Qty" },
+        { name: "Timber Frame 19 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 19 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 19 Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frame 66 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 13 Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
       ];
     }
 
@@ -1318,7 +1323,11 @@ const bindExtras = (blindname, tubename) => {
   }
 
   list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
+    data.push({
+      value: ls.name,
+      text: ls.name,
+      unit: ls.unit,
+    });
   });
 
   if (data.length > 1) {
@@ -1333,8 +1342,34 @@ const bindExtras = (blindname, tubename) => {
     option.value = item.value;
     option.text = item.text.toUpperCase();
     option.setAttribute("data-name", item.text);
+    option.setAttribute("data-unit", item.unit);
     sel.add(option);
   });
+
+  sel.addEventListener("change", function () {
+    const selected = Array.from(this.selectedOptions).map((x) => x.value);
+
+    // 1. HAPUS ITEM YANG DI UNSELECT
+    extrasState = extrasState.filter((x) => selected.includes(x.name));
+
+    // 2. TAMBAH ITEM BARU
+    selected.forEach((name) => {
+      if (!extrasState.find((x) => x.name === name)) {
+        const option = this.querySelector(`option[value="${name}"]`);
+
+        extrasState.push({
+          name: name,
+          unit: option?.dataset?.unit || "Qty",
+          value: "",
+        });
+      }
+    });
+
+    // 3. RENDER ULANG (INI YANG MENCEGAH RESET)
+    renderExtras();
+  });
+
+  initTomSelect();
 };
 
 const bindItemOrders = async (itemid) => {
@@ -1574,7 +1609,28 @@ const handlerSubmit = async (button) => {
       loginid: LOGINID,
     };
 
+    const extras = [];
+
+    document.querySelectorAll(".extra-row").forEach((row) => {
+      const name = row.querySelector("input[readonly]").value;
+      const value = row.querySelector(".extra-value").value;
+      const unit = row
+        .querySelector(".extra-value")
+        .getAttribute("placeholder")
+        .replace("Enter ", "");
+
+      extras.push({
+        name: name,
+        unit: unit,
+        value: value,
+      });
+    });
+
+    formData["extras"] = JSON.stringify(extras);
+
     fields.forEach((field) => {
+      if (field === "extras") return; // skip
+
       formData[field] = document.getElementById(field).value;
     });
 
@@ -1644,27 +1700,78 @@ const handlerSetElementValues = (itemData) => {
     handle: "PortHole",
     pullcord: "PlungerPin",
     cutout: "FlatType",
-    extras: "AdditionalMotor",
     notes: "Notes",
     markup: "MarkUp",
   };
 
-  // Set nilai ke input sesuai mapping
+  // 1. set normal fields
   Object.entries(mapping).forEach(([id, key]) => {
     const el = document.getElementById(id);
-    if (!el) {
-      console.warn(`Elemen '${id}' tidak ditemukan.`);
-      return;
-    }
+    if (!el) return;
 
     let value = itemData[key];
+
     if (id === "markup" && value === 0) value = "";
 
-    el.value = value ?? ""; // fallback ke string kosong
+    el.value = value ?? "";
 
-    // jika nilainya "0" → kosong
     if (el.value === "0") el.value = "";
   });
+
+  // ===============================
+  // 2. HANDLE EXTRAS (INI TARUH DI SINI)
+  // ===============================
+
+  let extrasData = [];
+
+  try {
+    extrasData = itemData.AdditionalMotor
+      ? JSON.parse(itemData.AdditionalMotor)
+      : [];
+    extrasState = extrasData;
+  } catch (e) {
+    console.error("Invalid extras JSON", e);
+    extrasData = [];
+  }
+
+  // 3. SET TOM SELECT VALUE
+  const extrasSelect = document.getElementById("extras");
+
+  if (extrasSelect && extrasSelect.tomselect) {
+    extrasSelect.tomselect.setValue(extrasData.map((x) => x.name));
+  }
+
+  // 4. REBUILD DYNAMIC ROWS
+  const container = document.getElementById("extrasContainer");
+
+  if (container) {
+    container.innerHTML = "";
+
+    extrasData.forEach((item) => {
+      container.innerHTML += `
+        <div class="row mb-2 extra-row">
+
+            <div class="col-7">
+                <input type="text"
+                       class="form-control"
+                       value="${item.name}"
+                       readonly />
+            </div>
+
+            <div class="col-5">
+                <div class="input-group">
+                  <input type="number"
+                        class="form-control extra-value"
+                        value="${item.value || ""}"
+                        placeholder="Enter ${item.unit}" />
+                  <span class="input-group-text ">${item.unit}</span>
+                </div>
+            </div>
+
+        </div>
+      `;
+    });
+  }
 };
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const windowPageLoaded = async () => {
@@ -1716,4 +1823,51 @@ const getItemData = async (query) => {
     console.error(err);
     isError(err);
   }
+};
+
+let tomExtras = null;
+
+const initTomSelect = () => {
+  if (tomExtras) {
+    tomExtras.destroy();
+  }
+
+  tomExtras = new TomSelect("#extras", {
+    // plugins: ["remove_button"],
+    // placeholder: "Select Extras",
+    maxItems: null,
+    create: false,
+  });
+};
+
+const renderExtras = () => {
+  const container = document.getElementById("extrasContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  extrasState.forEach((item) => {
+    container.innerHTML += `
+      <div class="row mb-2 extra-row">
+
+          <div class="col-7">
+              <input type="text"
+                     class="form-control"
+                     value="${item.name}"
+                     readonly />
+          </div>
+
+          <div class="col-5">
+              <div class="input-group">
+                <input type="number"
+                      class="form-control extra-value"
+                      value="${item.value || ""}"
+                      placeholder="Enter ${item.unit}" />
+                <span class="input-group-text">${item.unit}</span>
+              </div>
+          </div>
+
+      </div>
+    `;
+  });
 };

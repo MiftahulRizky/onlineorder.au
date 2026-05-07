@@ -6,6 +6,7 @@ Imports System.Data.SqlClient
 Imports System.Guid
 Imports System.Collections.Generic
 Imports System.Linq
+Imports Newtonsoft.Json
 Partial Class Methods_Order_WindowMethod
     Inherits System.Web.UI.Page
 
@@ -13,7 +14,7 @@ Partial Class Methods_Order_WindowMethod
     Shared orderCfg As New OrderConfig()
     Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
-     Public Class ParamSubmit
+    Public Class ParamSubmit
         Public Property blindtype As String
         Public Property tubetype As String
         Public Property qty As String
@@ -49,6 +50,12 @@ Partial Class Methods_Order_WindowMethod
         Public Property loginid As String
         Public Property blindno As String
         Public Property uniqueid As String
+    End Class
+
+    Public Class ExtraItem
+        Public Property name As String
+        Public Property unit As String
+        Public Property value As String
     End Class
 
     '#--- Kelas Output WebMethod ---#
@@ -302,6 +309,45 @@ Partial Class Methods_Order_WindowMethod
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must be less than 1000 characters !",.field = "notes"}}
                 End If
             End If
+
+            If String.IsNullOrWhiteSpace(data.extras) OrElse data.extras = "[]" Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "extras is required !",.field = "extras"}}
+            End If
+
+            Dim extrasList As List(Of ExtraItem)
+            Try
+                extrasList = JsonConvert.DeserializeObject(Of List(Of ExtraItem))(data.extras)
+            Catch ex As Exception
+                Return New ErrorResponse With {
+                    .error = New ErrorDetail With {
+                        .message = "Invalid extras format",
+                        .field = "extras"
+                    }
+                }
+            End Try
+
+            For Each item In extrasList
+                If String.IsNullOrEmpty(item.value) Then
+                    Return New ErrorResponse With {
+                        .error = New ErrorDetail With {
+                            .message = item.name & " (" & item.unit & ") is required",
+                            .field = "extras"
+                        }
+                    }
+                End If
+
+                If item.unit = "mm" Then
+                    Dim num As Decimal
+                    If Not Decimal.TryParse(item.value, num) Then
+                        Return New ErrorResponse With {
+                            .error = New ErrorDetail With {
+                                .message = item.name & " must be numeric",
+                                .field = "extras"
+                            }
+                        }
+                    End If
+                End If
+            Next
 
             Dim markup As Integer
             If Not String.IsNullOrEmpty(data.markup) Then

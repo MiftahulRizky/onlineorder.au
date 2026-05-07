@@ -217,75 +217,11 @@
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divTimber">
-                                        <label for="timberframe" class="col-lg-3 text-uppercase fw-bold" >timber</label>
-                                        <div class="col-lg-4" id="">
-                                            <select name="timberframe" id="timberframe" class="form-select"></select>
-                                            <small class="form-hint">* Frame</small>
-                                        </div>  
-                                        <div class="col-lg-4" id="">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="timberlength" id="timberlength" class="form-control  " autocomplete="off"  />
-                                                <span class="input-group-text ">mm</span>
-                                            </div>
-                                            <small class="form-hint">* Length</small>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divAngle">
-                                        <label for="angletype" class="col-lg-3 text-uppercase fw-bold">angle</label>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="angletype" id="angletype" class="form-select"></select>
-                                            <small class="form-hint">* Type</small>
-                                        </div>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="anglelength" id="anglelength" class="form-control  " autocomplete="off"/>
-                                                <span class="input-group-text ">mm</span>
-                                            </div>
-                                            <small class="form-hint">* Length</small>
-                                        </div>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <input type="number" min="1" name="angleqty" id="angleqty" class="form-control  " autocomplete="off"/>
-                                            <small class="form-hint">* Qty</small>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3 row" id="divTrackTop">
-                                        <label for="tracktop" class="col-lg-3 text-uppercase fw-bold" >track top</label>
-                                        <div class="col-lg-4" id="">
-                                            <select name="tracktop" id="tracktop" class="form-select"></select>
-                                            <small class="form-hint">* Type</small>
-                                        </div>  
-                                        <div class="col-lg-4" id="">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="tracktoplength" id="tracktoplength" class="form-control  " autocomplete="off"  />
-                                                <span class="input-group-text ">mm</span>
-                                            </div>
-                                            <small class="form-hint">* Length</small>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divTrackBot">
-                                        <label for="trackbot" class="col-lg-3 text-uppercase fw-bold" >track bottom</label>
-                                        <div class="col-lg-4" id="">
-                                            <select name="trackbot" id="trackbot" class="form-select"></select>
-                                            <small class="form-hint">* Type</small>
-                                        </div>  
-                                        <div class="col-lg-4" id="">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="trackbotlength" id="trackbotlength" class="form-control  " autocomplete="off"  />
-                                                <span class="input-group-text ">mm</span>
-                                            </div>
-                                            <small class="form-hint">* Length</small>
-                                        </div>  
-                                    </div>
-
                                     <div class="mb-3 row" id="divExtras">
                                         <label for="extras" class="col-lg-3 text-uppercase fw-bold" >Extras</label>
-                                        <div class="col-lg-4">
-                                           <select name="extras" id="extras" class="form-select"></select>
-                                           
+                                        <div class="col-lg-8">
+                                           <select name="extras" id="extras" class="form-select" multiple></select>
+                                           <div id="extrasContainer" class="mt-3"></div>
                                         </div>  
                                     </div>
 
