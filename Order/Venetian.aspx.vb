@@ -99,6 +99,7 @@ Partial Class Order_Venetian
         Dim blindName As String = publicCfg.GetBlindName(ddlBlindType.SelectedValue)
         Call BindHoldDown(blindName)
         Call BindDataBracket(ddlBlindType.SelectedValue)
+        Call BindMounting(ddlBlindType.SelectedValue)
 
         Call BindComponentForm(ddlColour.SelectedValue)
     End Sub
@@ -715,6 +716,7 @@ Partial Class Order_Venetian
             Call BindHoldDown(blindName)
             Call BindDataPelmet(blindId, Mounting)
             Call BindDataBracket(blindId)
+            Call BindMounting(blindId)
 
             ddlBlindType.SelectedValue = blindId : ddlBlindType.Enabled = False
             ddlStyle.SelectedValue = style
@@ -904,6 +906,31 @@ Partial Class Order_Venetian
             If Not Session("RoleName") = "Administrator" Then
                 Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
                 publicCfg.MailError(Session("LoginId"), Page.Title, "BindDataColour", ex.ToString())
+            End If
+        End Try
+    End Sub
+
+    Private Sub BindMounting(blindId As String)
+        ddlMounting.Items.Clear()
+        Try
+            Dim blindName As String = publicCfg.GetBlindName(blindId)
+            If InStr(blindName, "Timber") > 0 Then 
+                ddlMounting.Items.Add(New ListItem("FACE FIT", "Face Fit"))
+                ddlMounting.Items.Add(New ListItem("REVEAL FIT", "Reveal Fit"))
+            Else
+                ddlMounting.Items.Add(New ListItem("FACE FIT", "Face Fit"))
+                ddlMounting.Items.Add(New ListItem("MAKE SIZE", "Make Size"))
+                ddlMounting.Items.Add(New ListItem("REVEAL FIT", "Reveal Fit"))
+            End If
+
+            If ddlMounting.Items.Count > 1 Then
+                ddlMounting.Items.Insert(0, New ListItem("", ""))
+            End If
+        Catch ex As Exception
+            Call MessageError(True, ex.ToString())
+            If Not Session("RoleName") = "Administrator" Then
+                Call MessageError(True, "Please contact our IT team at support@onlineorder.au")
+                publicCfg.MailError(Session("LoginId"), Page.Title, "BindMounting", ex.ToString())
             End If
         End Try
     End Sub

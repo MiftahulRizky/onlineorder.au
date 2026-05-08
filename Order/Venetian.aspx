@@ -95,12 +95,7 @@
                                 <div class="mb-6 row">
                                     <label class="col-lg-3 col-form-label">MOUNTING</label>
                                     <div class="col-lg-3 col-md-12 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlMounting" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlMounting_SelectedIndexChanged">
-                                            <asp:ListItem Value="" Text=""></asp:ListItem>
-                                            <asp:ListItem Value="Face Fit" Text="FACE FIT"></asp:ListItem>
-                                            <asp:ListItem Value="Make Size" Text="MAKE SIZE" hidden></asp:ListItem>
-                                            <asp:ListItem Value="Reveal Fit" Text="REVEAL FIT"></asp:ListItem>
-                                        </asp:DropDownList>
+                                        <asp:DropDownList runat="server" ID="ddlMounting" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlMounting_SelectedIndexChanged"></asp:DropDownList>
                                     </div>
                                 </div>
 
