@@ -267,7 +267,9 @@
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="chainlength" id="chainlength" class="form-control ">
-                                                <span class="input-group-text ">mm</span>
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoChain">
+                                                    <i class="ti ti-info-square-rounded fs-2"></i>
+                                                </button>
                                             </div>
                                             <small class="form-hint">* Length</small>
                                         </div>
@@ -304,7 +306,7 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <select type="text" name="tubesize" id="tubesize" class="form-select"></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoTubeSize" hidden>
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoTubeSize">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>

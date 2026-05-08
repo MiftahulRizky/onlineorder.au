@@ -249,9 +249,13 @@ if (btnInfo) {
           case "btnInfoTrim":
             text = "Trim";
             break;
+          case "btnInfoChain":
+            text =
+              "If you enter 0 or leave blank, the system will automatically apply the factory default (standard chain length)";
+            break;
           case "btnInfoTubeSize":
             text =
-              "Our standard tube size <br /><br /> 1. If the width or drop are below 2400 then the tube size uses 40 <br /> 2. If the width or drop are more than 2400 then the tube size uses 45 <br /> 3. If the width or drop are more than 2600 then the tube size uses 45H";
+              "≤ 1810 mm width → 38 mm tube <br /> > 1810 mm width → 45 mm tube <br /> ≥ 6 m² area → 49 mm tube ";
             break;
         }
 
@@ -534,7 +538,7 @@ const handlerElementVisibility = async (
       }
       divTubeSize.classList.remove("d-none");
       divChildSafe.classList.remove("d-none");
-      divAccessory.classList.remove("d-none");
+      // divAccessory.classList.remove("d-none");
     }
 
     if (item) {
