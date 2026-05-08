@@ -2055,15 +2055,9 @@ const bindChildSafe = () => {
 
   let data = [];
 
-  data.push(
-    { value: "Clear Loop (Standard)", text: "Clear Loop (Standard)" },
-    { value: "Black - Deluxe", text: "Black - Deluxe" },
-    { value: "Grey - Deluxe", text: "Grey - Deluxe" },
-    { value: "Birch White - Deluxe", text: "Birch White - Deluxe" },
-    { value: "White - Deluxe", text: "White - Deluxe" },
-  );
+  data.push({ value: "Clear Loop (Standard)", text: "Clear Loop (Standard)" });
 
-  if (data.length > 1) {
+  if (data.length > 0) {
     const defaultOption = document.createElement("option");
     defaultOption.text = "";
     defaultOption.value = "";
