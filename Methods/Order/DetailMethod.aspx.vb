@@ -10329,26 +10329,37 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & currentData("ControlPosition6").ToString() & tdDetEnd
             result+= trDetEnd
 
-            '#CLength
+            '#MotorStyle
             result+= trDetStart
-                result+= tdTitleStart & "Chain Length" & tdDetEnd
-                result+= tdDetStart & currentData("CLength1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CLength5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CLength6").ToString() & tdDetEnd
+                result+= tdTitleStart & "Motor Type" & tdDetEnd
+                result+= tdDetStart & currentData("MotorStyle1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorStyle2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorStyle3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorStyle4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorStyle5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("MotorStyle6").ToString() & tdDetEnd
             result+= trDetEnd
 
-            '#ChainColour
+            '#MotorRemote
             result+= trDetStart
-                result+= tdTitleStart & "Chain Colour" & tdDetEnd
-                result+= tdDetStart & currentData("ChainColour1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainColour2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainColour3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainColour4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainColour5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("ChainColour6").ToString() & tdDetEnd
+                result+= tdTitleStart & "Motor Remote" & tdDetEnd
+                result+= tdDetStart & currentData("MotorRemote1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorRemote2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorRemote3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorRemote4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorRemote5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("MotorRemote6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#MotorCharger
+            result+= trDetStart
+                result+= tdTitleStart & "Charger Option" & tdDetEnd
+                result+= tdDetStart & currentData("MotorCharger1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorCharger2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorCharger3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorCharger4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("MotorCharger5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("MotorCharger6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#TrackType
@@ -10429,7 +10440,7 @@ Partial Class Methods_Order_DetailMethod
             result+= trDetEnd
 
         '     '#Line Blank
-            result+= BlankLineEachRow(15)
+            result+= BlankLineEachRow(12)
 
         result+= tableDetEnd
 

@@ -463,7 +463,7 @@ Partial Class Scripts_Setting_Surcharges_SurchargeMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindDesignType() As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Designs WHERE Company='SP' ORDER BY Name ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Designs WHERE Company IN ('SP', 'SG') ORDER BY Name ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows

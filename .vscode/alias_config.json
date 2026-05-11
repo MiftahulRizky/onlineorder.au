@@ -53,7 +53,6 @@
       "EvolveParts.js": "Shutters",
       "Panorama.js": "Shutters",
       "PanoramaParts.js": "Shutters",
-      "PanelGlides.js": "Global",
       "Global": {
         "PanelGlides.js": "Sunlight"
       }
@@ -61,8 +60,6 @@
   },
   "Methods": {
     "Order": {
-      "PanelGlideMethod.aspx": "Global",
-      "PanelGlideMethod.aspx.vb": "Global",
       "Global": {
         "PanelGlideMethod.aspx": "Global",
         "PanelGlideMethod.aspx.vb": "Global"

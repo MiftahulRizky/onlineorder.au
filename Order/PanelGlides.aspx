@@ -92,15 +92,15 @@
                                 </div>
 
                                 <div class="mb-3 row">
-                                    <label for="width" class="col-lg-3 text-uppercase fw-bold">width x drop</label>
-                                    <div class="col-lg-4 col-md-12 col-sm-12">
-                                    <div class="input-group">
-                                        <input type="number" min="1" name="width" id="width" class="form-control " autocomplete="off" placeholder="Width ...." />
-                                        <span class="input-group-text ">mm</span>
-                                    </div>
+                                    <label for="width" class="col-lg-3 text-uppercase fw-bold" id="lblWidthDrop">width x drop</label>
+                                    <div class="col-lg-4 col-md-12 col-sm-12" id="divWidth">
+                                        <div class="input-group">
+                                            <input type="number" min="1" name="width" id="width" class="form-control " autocomplete="off" placeholder="Width ...." />
+                                            <span class="input-group-text ">mm</span>
+                                        </div>
                                         <small class="form-hint">* Width</small>
                                     </div>
-                                    <div class="col-lg-4 col-md-12 col-sm-12">
+                                    <div class="col-lg-4 col-md-12 col-sm-12" id="divDrop">
                                         <div class="input-group">
                                             <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off" placeholder="Drop ...." />
                                             <span class="input-group-text ">mm</span>
@@ -109,7 +109,7 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-3 row">
+                                <div class="mb-3 row" id="divFabric">
                                     <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold">fabric type x colour</label>
                                     <div class="col-lg-4 col-md-12 col-sm-12">
                                         <select name="fabrictype" id="fabrictype" class="form-control "></select>

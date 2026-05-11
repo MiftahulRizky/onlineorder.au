@@ -743,15 +743,38 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
   try {
     const lblItemId = document.getElementById("lblItemId");
     const divColourType = document.getElementById("divColourType");
-
     const divFormDetail = document.getElementById("divFormDetail");
+    const lblWidthDrop = document.getElementById("lblWidthDrop");
+    const divWidth = document.getElementById("divWidth");
+    const divDrop = document.getElementById("divDrop");
+    const divFabric = document.getElementById("divFabric");
+    const divLayoutCode = document.getElementById("divLayoutCode");
+    const divNoPanel = document.getElementById("divNoPanel");
+    const divTrack = document.getElementById("divTrack");
+    const divWandPosition = document.getElementById("divWandPosition");
+    const divWand = document.getElementById("divWand");
+    const divBottomRail = document.getElementById("divBottomRail");
+    const divBatten = document.getElementById("divBatten");
     const divBattenColour = document.getElementById("divBattenColour");
+    const divFitting = document.getElementById("divFitting");
 
     const divMarkUp = document.getElementById("divMarkUp");
     const btnSubmit = document.querySelector("#btnSubmit");
     // return;
     lblItemId.classList.add("d-none");
     divColourType.classList.add("d-none");
+    lblWidthDrop.innerHTML = "width x drop";
+    divWidth.classList.add("d-none");
+    divDrop.classList.add("d-none");
+    divFabric.classList.add("d-none");
+    divLayoutCode.classList.add("d-none");
+    divNoPanel.classList.add("d-none");
+    divTrack.classList.add("d-none");
+    divWandPosition.classList.add("d-none");
+    divWand.classList.add("d-none");
+    divBottomRail.classList.add("d-none");
+    divBatten.classList.add("d-none");
+    divFitting.classList.add("d-none");
 
     divFormDetail.classList.add("d-none");
     divBattenColour.classList.add("d-none");
@@ -760,6 +783,9 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     btnSubmit.classList.add("d-none");
 
     if (!blindtype) return;
+    const blindname = await getItemData(
+      `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
+    );
     divColourType.classList.remove("d-none");
 
     if (!colourtype) return;
@@ -770,6 +796,21 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
       divColourType.classList.add("d-none");
     }
     divFormDetail.classList.remove("d-none");
+
+    if (["Completed"].includes(blindname)) {
+      lblWidthDrop.innerHTML = "width x drop";
+      divWidth.classList.remove("d-none");
+      divDrop.classList.remove("d-none");
+      divFabric.classList.remove("d-none");
+      divLayoutCode.classList.remove("d-none");
+      divNoPanel.classList.remove("d-none");
+      divTrack.classList.remove("d-none");
+      divWandPosition.classList.remove("d-none");
+      divWand.classList.remove("d-none");
+      divBottomRail.classList.remove("d-none");
+      divBatten.classList.remove("d-none");
+      divFitting.classList.remove("d-none");
+    }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
 
