@@ -2533,6 +2533,9 @@ Partial Class Methods_Order_DetailMethod
             'PANEL GLIDES
             result += Print_PanelGlides(headerid)
 
+            'PANEL GLIDES
+            result += Print_GlobalPanelGlides(headerid)
+
             'ROMAN BLINDS
             result += Print_RomanBlinds(headerid)
 
@@ -3197,9 +3200,9 @@ Partial Class Methods_Order_DetailMethod
                 result += thStartColSpan2 & "Track" & thEnd
                 result += thStartColSpan3 & "Wand" & thEnd
                 result += thStartRowSpan2 & "Bottom Rail" & thEnd
-                result += thStartRowSpan2 & "Batten" & thEnd
-                result += thStartRowSpan2 & "Batten Colour" & thEnd
-                result += thStartRowSpan2 & "Fitting" & thEnd
+                ' result += thStartRowSpan2 & "Batten" & thEnd
+                ' result += thStartRowSpan2 & "Batten Colour" & thEnd
+                ' result += thStartRowSpan2 & "Fitting" & thEnd
                 result += trEnd
 
                 result += trStart
@@ -3230,9 +3233,9 @@ Partial Class Methods_Order_DetailMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("WandLength").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("WandColour").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("Batten").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("BattenColour").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("Fitting").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("Batten").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("BattenColour").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("Fitting").ToString() & tdEnd
                     result += trEnd
 
 
@@ -4910,6 +4913,88 @@ Partial Class Methods_Order_DetailMethod
         Dim verticalblinds As String = "<b>Vertical Blinds: " & totalVertical & "</b>"
 
         result = celloraBlinds & separted & lumen & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & rollerglobalblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
+        Return result
+    End Function
+
+    Private Shared Function Print_GlobalPanelGlides(HeaderId As String) As String
+        Dim result As String = String.Empty
+
+        Try
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Global Panel Glides' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='19' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
+                result += spanStart & "GLOBAL PANEL GLIDES" & spanEnd
+                result += tableStart
+
+                result += trStart
+                result += thStartRowSpan2 & "No" & thEnd
+                result += thStartRowSpan2 & "ID" & thEnd
+                result += thStartRowSpan2 & "Qty" & thEnd
+                result += thStartRowSpan2 & "Product" & thEnd
+                result += thStartRowSpan2 & "Location" & thEnd
+                result += thStartRowSpan2 & "Mounting" & thEnd
+                result += thStartRowSpan2 & "Fabric" & thEnd
+                result += thStartRowSpan2 & "Width" & thEnd
+                result += thStartRowSpan2 & "Drop" & thEnd
+                result += thStartRowSpan2 & "Layout" & thEnd
+                result += thStartRowSpan2 & "No Panel" & thEnd
+                result += thStartColSpan2 & "Track" & thEnd
+                result += thStartColSpan3 & "Wand" & thEnd
+                result += thStartRowSpan2 & "Bottom Rail" & thEnd
+                result += thStartRowSpan2 & "Batten" & thEnd
+                result += thStartRowSpan2 & "Batten Colour" & thEnd
+                result += thStartRowSpan2 & "Fitting" & thEnd
+                result += trEnd
+
+                result += trStart
+                result += thStart & "Type" & thEnd
+                result += thStart & "Colour" & thEnd
+                result += thStart & "Position" & thEnd
+                result += thStart & "Length" & thEnd
+                result += thStart & "Colour" & thEnd
+                result += trEnd
+
+
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Layout").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("NumOfPanel").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("TrackType").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("TrackColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("WandPosition").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("WandLength").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("WandColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Batten").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BattenColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Fitting").ToString() & tdEnd
+                    result += trEnd
+
+
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result = "ERROR CREATE PDF GLOBAL PANEL GLIDES"
+        End Try
         Return result
     End Function
 
@@ -10748,38 +10833,38 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & currentData("BottomHoldDown6").ToString() & tdDetEnd
             result+= trDetEnd
 
-            '#Batten
-            result+= trDetStart
-                result+= tdTitleStart & "Batten Code" & tdDetEnd
-                result+= tdDetStart & currentData("Batten1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Batten2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Batten3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Batten4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Batten5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("Batten6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#Batten
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Batten Code" & tdDetEnd
+            '     result+= tdDetStart & currentData("Batten1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Batten2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Batten3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Batten4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Batten5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("Batten6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#BattenColour
-            result+= trDetStart
-                result+= tdTitleStart & "Batten Colour" & tdDetEnd
-                result+= tdDetStart & currentData("BattenColour1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BattenColour2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BattenColour3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BattenColour4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BattenColour5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("BattenColour6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#BattenColour
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Batten Colour" & tdDetEnd
+            '     result+= tdDetStart & currentData("BattenColour1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("BattenColour2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("BattenColour3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("BattenColour4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("BattenColour5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("BattenColour6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#Fitting
-            result+= trDetStart
-                result+= tdTitleStart & "Fitting" & tdDetEnd
-                result+= tdDetStart & currentData("Fitting1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Fitting2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Fitting3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Fitting4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Fitting5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("Fitting6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#Fitting
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Fitting" & tdDetEnd
+            '     result+= tdDetStart & currentData("Fitting1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Fitting2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Fitting3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Fitting4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Fitting5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("Fitting6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
             '#Location
             result+= trDetStart
