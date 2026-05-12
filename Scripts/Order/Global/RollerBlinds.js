@@ -255,7 +255,7 @@ if (btnInfo) {
             break;
           case "btnInfoTubeSize":
             text =
-              "If blind width ≤ 1810 mm : use 38 mm tube. <br /> > If blind width > 1810 mm width : use 45 mm tube. <br /> If blind area ≥ 6 m² : use 49 mm tube. ";
+              "If blind width ≤ 1810 mm : use 38 mm tube. <br /> If blind width > 1810 mm width : use 45 mm tube. <br /> If blind area ≥ 6 m² : use 49 mm tube. ";
             break;
         }
 
