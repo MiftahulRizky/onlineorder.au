@@ -857,6 +857,10 @@ Partial Class Methods_Order_DetailMethod
                         If InArray(DesignName, "Panel Glides", "Global Panel Glides", "Roman Blinds", "Lumen") Then
                             Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
                             If InStr(DesignName, "Global") > 0 Then Product = String.Format("Global - {0} #{1} {2}", KitName, FabricType, Size)
+
+                            If BlindName = "Track Only" Then
+                                Product = String.Format("{0} (Width : {1}mm)", KitName, Width)
+                            End If
                         End If
 
                         If DesignName = "Cellular Blinds" Then
@@ -8621,7 +8625,7 @@ Partial Class Methods_Order_DetailMethod
                 End Select
 
             Case "Panel Glides"
-                ReportType = currentData("BlindName").ToString()
+                ReportType = "Panel Glides" 'String.Format("PG - {0}", currentData("BlindName").ToString())
                 ReportIcon = String.Format("PG <br/><span style='font-size: 15px;'>{0}</span>", currentData("BlindName").ToString())
                 
             Case "Global Panel Glides"
@@ -10576,7 +10580,7 @@ Partial Class Methods_Order_DetailMethod
             currentData("ColourType6").ToString()
         }
         For i As Integer = 0 To ct.Length - 1
-            If Not String.IsNullOrEmpty(ct(i).ToString()) Then
+            If Not String.IsNullOrEmpty(ct(i).ToString()) AND Not ct(i).ToString() = "N/A" Then
                 ct(i) = ct(i)
             Else
                 ct(i) = ""
@@ -10649,12 +10653,12 @@ Partial Class Methods_Order_DetailMethod
             '#VenetianType
             result+= trDetStart
                 result+= tdTitleStart & "Type" & tdDetEnd
-                result+= tdDetStart & boldStart & fs11Start & bt(0) & If(Not String.IsNullOrEmpty(ct(0)), " (" & ct(0) & ")", "") & fsEnd & boldEnd & tdDetEnd
-                result+= tdDetStart & boldStart & fs11Start & bt(1) & If(Not String.IsNullOrEmpty(ct(1)), " (" & ct(1) & ")", "") & fsEnd & boldEnd & tdDetEnd
-                result+= tdDetStart & boldStart & fs11Start & bt(2) & If(Not String.IsNullOrEmpty(ct(2)), " (" & ct(2) & ")", "") & fsEnd & boldEnd & tdDetEnd
-                result+= tdDetStart & boldStart & fs11Start & bt(3) & If(Not String.IsNullOrEmpty(ct(3)), " (" & ct(3) & ")", "") & fsEnd & boldEnd & tdDetEnd
-                result+= tdDetStart & boldStart & fs11Start & bt(4) & If(Not String.IsNullOrEmpty(ct(4)), " (" & ct(4) & ")", "") & fsEnd & boldEnd & tdDetEnd
-                result+= tdDetRight & boldStart & fs11Start & bt(5) & If(Not String.IsNullOrEmpty(ct(5)), " (" & ct(5) & ")", "") & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & bt(0) & If(Not String.IsNullOrEmpty(ct(0)), " (" & ct(0) & ")", "") & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & bt(1) & If(Not String.IsNullOrEmpty(ct(1)), " (" & ct(1) & ")", "") & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & bt(2) & If(Not String.IsNullOrEmpty(ct(2)), " (" & ct(2) & ")", "") & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & bt(3) & If(Not String.IsNullOrEmpty(ct(3)), " (" & ct(3) & ")", "") & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & bt(4) & If(Not String.IsNullOrEmpty(ct(4)), " (" & ct(4) & ")", "") & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & bt(5) & If(Not String.IsNullOrEmpty(ct(5)), " (" & ct(5) & ")", "") & boldEnd & tdDetEnd
             result+= trDetEnd
 
             '#FabricType

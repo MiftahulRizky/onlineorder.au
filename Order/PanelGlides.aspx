@@ -189,7 +189,7 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-3 row" id="divBattenColour">
+                                <div class="mb-3 row" id="divBattenColour" hidden>
                                     <label for="battencolour" class="col-lg-3 text-uppercase fw-bold">batten colour</label>
                                     <div class="col-lg-4">
                                         <select name="battencolour" id="battencolour" class="form-control "></select>

@@ -754,8 +754,8 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     const divWandPosition = document.getElementById("divWandPosition");
     const divWand = document.getElementById("divWand");
     const divBottomRail = document.getElementById("divBottomRail");
-    const divBatten = document.getElementById("divBatten");
-    const divBattenColour = document.getElementById("divBattenColour");
+    // const divBatten = document.getElementById("divBatten");
+    // const divBattenColour = document.getElementById("divBattenColour");
     const divFitting = document.getElementById("divFitting");
 
     const divMarkUp = document.getElementById("divMarkUp");
@@ -773,11 +773,11 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     divWandPosition.classList.add("d-none");
     divWand.classList.add("d-none");
     divBottomRail.classList.add("d-none");
-    divBatten.classList.add("d-none");
+    // divBatten.classList.add("d-none");
+    // divBattenColour.classList.add("d-none");
     divFitting.classList.add("d-none");
 
     divFormDetail.classList.add("d-none");
-    divBattenColour.classList.add("d-none");
 
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
@@ -798,7 +798,6 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     divFormDetail.classList.remove("d-none");
 
     if (["Completed"].includes(blindname)) {
-      lblWidthDrop.innerHTML = "width x drop";
       divWidth.classList.remove("d-none");
       divDrop.classList.remove("d-none");
       divFabric.classList.remove("d-none");
@@ -808,8 +807,26 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
       divWandPosition.classList.remove("d-none");
       divWand.classList.remove("d-none");
       divBottomRail.classList.remove("d-none");
-      divBatten.classList.remove("d-none");
       divFitting.classList.remove("d-none");
+    }
+
+    if (["Panel Only"].includes(blindname)) {
+      divWidth.classList.remove("d-none");
+      divDrop.classList.remove("d-none");
+      divFabric.classList.remove("d-none");
+      divLayoutCode.classList.remove("d-none");
+      divNoPanel.classList.remove("d-none");
+      divBottomRail.classList.remove("d-none");
+    }
+
+    if (["Track Only"].includes(blindname)) {
+      lblWidthDrop.innerHTML = "width";
+      divWidth.classList.remove("d-none");
+      divLayoutCode.classList.remove("d-none");
+      divNoPanel.classList.remove("d-none");
+      divTrack.classList.remove("d-none");
+      divWandPosition.classList.remove("d-none");
+      divWand.classList.remove("d-none");
     }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
