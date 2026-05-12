@@ -593,6 +593,7 @@ const bindHeadboxType = (controlname) => {
     data.push({ value: "Standard", text: "Standard" });
   }
   data.push({ value: "Large", text: "Large" });
+  data.push({ value: "Flat", text: "Flat" });
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
@@ -637,6 +638,10 @@ const bindHeadboxColour = (headboxtype) => {
       { value: "Silver Grey", text: "Silver Grey" },
       { value: "White", text: "White" },
     );
+  }
+
+  if (headboxtype === "Flat") {
+    data.push({ value: "White", text: "White" });
   }
 
   if (data.length > 1) {
