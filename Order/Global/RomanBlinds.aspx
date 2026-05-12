@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Roman Blinds Order" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="RomanBlinds.aspx.vb" Inherits="Order_RomanBlinds" MaintainScrollPositionOnPostback="true" Debug="true"%>
+﻿<%@ Page Title="Global Roman Blinds Order" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="RomanBlinds.aspx.vb" Inherits="Order_RomanBlinds" MaintainScrollPositionOnPostback="true" Debug="true"%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
     
@@ -247,7 +247,7 @@
 
 
     <script type="text/javascript">
-        let DESIGNIDORI = 'D43E3E8E-4A46-437D-9AE1-5F1EBDCBEE74';
+        let DESIGNIDORI = '7120F117-F60A-4EC8-B092-4E44C8386B37';
         let HEADERID = '<%=Session("headerId")%>'
         let ORDERTYPE = '<%= Session("orderType") %>';
         let ITEMACTION = '<%= Session("itemAction") %>';
@@ -256,9 +256,9 @@
         let LOGINID = '<%= Session("LoginId") %>';
         let ROLENAME = '<%= Session("RoleName") %>';
         let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
-        let URIMETHOD = "/Methods/Order/RomanBlindMethod.aspx"
+        let URIMETHOD = "/Methods/Order/Global/RomanBlindMethod.aspx"
         
     </script>
-    <script src="/Scripts/Order/RomanBlinds.js?<%= DateTime.Now.Ticks %>"></script>
+    <script src="/Scripts/Order/Global/RomanBlinds.js?<%= DateTime.Now.Ticks %>"></script>
 </asp:Content>
 
