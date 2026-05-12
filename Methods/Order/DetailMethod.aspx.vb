@@ -838,13 +838,9 @@ Partial Class Methods_Order_DetailMethod
                                 Product = "Roller Skin Only (+Tube Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
                             End If
 
-                            If DesignName = "Global Roller Blinds" Then
-                                Product = String.Format("Global - {0}", Product)
-                            End If
-
                         End If
 
-                        If DesignName = "Vari Shades" Or DesignName = "Vertical Blinds" Then
+                        If InArray(DesignName, "Vari Shades", "Vertical Blinds", "Global Vertical Blinds") Then
                             Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
                             If BlindName = "Slat Only" Then
                                 Product = String.Format("{0} #{1} (Drop : {2}mm)", KitName, FabricType, Drop)
@@ -856,8 +852,6 @@ Partial Class Methods_Order_DetailMethod
 
                         If InArray(DesignName, "Panel Glides", "Global Panel Glides", "Roman Blinds", "Lumen") Then
                             Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
-                            If InStr(DesignName, "Global") > 0 Then Product = String.Format("Global - {0} #{1} {2}", KitName, FabricType, Size)
-
                             If BlindName = "Track Only" Then
                                 Product = String.Format("{0} (Width : {1}mm)", KitName, Width)
                             End If
@@ -886,6 +880,11 @@ Partial Class Methods_Order_DetailMethod
                                 Product = String.Format("{0} ({1}mm)", KitName, Width)
                             End If
                         End If
+
+                        '#Final Product Name
+                        If InStr(DesignName, "Global") > 0 Then
+                            Product = String.Format("Global - {0}", Product)
+                        End IF
 
                         '#----------------|| Production ||----------------#
                         Dim Production As String = "Sunlight"
