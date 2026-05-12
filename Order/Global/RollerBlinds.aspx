@@ -414,13 +414,38 @@
     <!-- Modal Infro Trim -->
     <div class="modal fade" id="modalInfoTrim" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalInfoTrimLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content ">
+            <div class="modal-content modal-dialog-centered">
                 <div class="modal-header">
                     <h1 class="modal-title" id="modalInfoTrimLabel">Information</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
                     <img src="\Content\static\product\roller\global-trim.PNG" alt="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Infro Trim -->
+    <div class="modal fade" id="modalInfoTube" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalInfoTubeLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="modalInfoTubeLabel">Information</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body h3">
+                    <span>Standard tube size :</span> <br>
+                    1. If blind width ≤ 1810 mm : use 38 mm tube. <br>
+                    2. If blind width > 1810 mm width : use 45 mm tube. <br>
+                    3. If blind area ≥ 6 m² : use 49 mm tube. <br> <br>
+                    
+                    <span>Note :</span> <br>
+                    1. Upgrading to a larger tube size than the factory standard incurs a surcharge. <br>
+                    2. For blinds with width ≤ 1010 mm and drop > 1700 mm, some sizes may experience cupping. This is a natural characteristic of the fabric and not a manufacturing fault. The factory will upgrade to a 45 mm tube if necessary.
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

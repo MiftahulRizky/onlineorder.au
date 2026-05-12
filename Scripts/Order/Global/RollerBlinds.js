@@ -254,17 +254,25 @@ if (btnInfo) {
               "If you enter 0 or leave blank, the system will automatically apply the factory default (standard chain length)";
             break;
           case "btnInfoTubeSize":
-            text =
-              "If blind width ≤ 1810 mm : use 38 mm tube. <br /> If blind width > 1810 mm width : use 45 mm tube. <br /> If blind area ≥ 6 m² : use 49 mm tube. ";
+            text = "TubeSize";
             break;
         }
 
-        if (text && text !== "Trim") {
+        if (text && !["Trim", "TubeSize"].includes(text)) {
           isInfo(text);
         }
 
-        if (text == "Trim") {
-          handlerShowBSModal("modalInfoTrim");
+        switch (text) {
+          case "Trim":
+            handlerShowBSModal("modalInfoTrim");
+            break;
+
+          case "TubeSize":
+            handlerShowBSModal("modalInfoTube");
+            break;
+
+          default:
+            break;
         }
       } catch (error) {
         var msg = error.message;

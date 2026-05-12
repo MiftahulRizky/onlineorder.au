@@ -1166,6 +1166,11 @@ Public Class PublicConfig
                             Dim priceGroupId As String = GetItemData("SELECT Id FROM PricesGroup WHERE Name ='" + charge + "'")    
                             queryCharge = String.Format("SELECT TOP 1 [Cost] FROM CassetteExtra WHERE [PriceGroupId] = '{0}' AND Width >= '{1}' AND [Cost] > 0 ORDER BY [Drop], Width, [Cost] ASC", UCase(priceGroupId).ToString(), width)
                         End If
+                        
+                        If InArray(charge, "GR Upgrade TubeSize") Then 
+                            Dim priceGroupId As String = GetItemData("SELECT Id FROM PricesGroup WHERE Name ='Gear Reduction - Upgrade Tube'")    
+                            queryCharge = String.Format("SELECT TOP 1 [Cost] FROM CassetteExtra WHERE [PriceGroupId] = '{0}' AND Width >= '{1}' AND [Drop] >='{2}' ORDER BY [Drop], Width, [Cost] ASC", UCase(priceGroupId).ToString(), width, drop)
+                        End If
 
                         If InStr(charge, "Long Length") > 0 Then
                             If delivery = "Delivery" Then
@@ -1196,7 +1201,7 @@ Public Class PublicConfig
                         End If
 
 
-                        Dim realCharge As Decimal = thisCharge
+                        
                         
                         Dim checkDiscount As DataSet = GetListData("SELECT * FROM CustomDiscounts WHERE DesignId='" + UCase(designId).ToString() + "' AND BlindId='" + blindId + "' AND BlindNo = '" + blindNo + "' AND Type='" + type + "' AND Active=1 ORDER BY Id ASC")
                         Dim customDiscount As Decimal = 0.00
@@ -1210,18 +1215,22 @@ Public Class PublicConfig
                             End If
                         End If
 
-                        Dim ListParam As New List(Of Object) From {
-                            headerId,
-                            itemId,
-                            type,
-                            qty,
-                            description,
-                            realCharge,
-                            customDiscount,
-                            0
-                        }
-                        ' Call PriceDetail(headerId, itemId, type, qty, description, realCharge, thisCharge, 0, customDiscount)
-                        Call PriceDetail(ListParam)
+                        Dim realCharge As Decimal = thisCharge
+
+                        If thisCharge > 0 Then
+                            Dim ListParam As New List(Of Object) From {
+                                headerId,
+                                itemId,
+                                type,
+                                qty,
+                                description,
+                                realCharge,
+                                customDiscount,
+                                0
+                            }
+                            ' Call PriceDetail(headerId, itemId, type, qty, description, realCharge, thisCharge, 0, customDiscount)
+                            Call PriceDetail(ListParam)
+                        End If
                     End If
                     surcharge = surcharge + thisCharge
                 Next
@@ -1264,6 +1273,10 @@ Public Class PublicConfig
             End Using
         End Using
     End Sub
+
+     Private Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
+    End Function
 
     ' Private Sub ResetLongLength(HeaderId As String, ItemId As String)
     '     Using thisConn As SqlConnection = New SqlConnection(myConn)
