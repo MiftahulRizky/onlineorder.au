@@ -90,6 +90,42 @@ document.querySelector("#btnSubmit").addEventListener("click", (e) => {
   handlerSubmit(e.target.id);
 });
 
+const btnInfo = document.querySelectorAll(".btn-information");
+if (btnInfo) {
+  btnInfo.forEach((el) => {
+    el.addEventListener("click", (e) => {
+      try {
+        let text = "";
+        let id = e.currentTarget.id;
+
+        switch (id) {
+          case "btnInfoLayout":
+            text = "Layout";
+            break;
+        }
+
+        if (text && !["Layout"].includes(text)) {
+          isInfo(text);
+        }
+
+        switch (text) {
+          case "Layout":
+            handlerShowBSModal("modalInfoLayout");
+            break;
+
+          default:
+            break;
+        }
+      } catch (error) {
+        var msg = error.message;
+        if (ROLENAME != "Administrator") {
+          msg = "Please contact our IT team at support@onlineorder.au";
+        }
+      }
+    });
+  });
+}
+
 document.querySelector("#btnCancel").addEventListener("click", (e) => {
   window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
 });
@@ -814,7 +850,7 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
       divWidth.classList.remove("d-none");
       divDrop.classList.remove("d-none");
       divFabric.classList.remove("d-none");
-      divLayoutCode.classList.remove("d-none");
+      // divLayoutCode.classList.remove("d-none");
       divNoPanel.classList.remove("d-none");
       divBottomRail.classList.remove("d-none");
     }
@@ -823,7 +859,7 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
       lblWidthDrop.innerHTML = "width";
       divWidth.classList.remove("d-none");
       divLayoutCode.classList.remove("d-none");
-      divNoPanel.classList.remove("d-none");
+      // divNoPanel.classList.remove("d-none");
       divTrack.classList.remove("d-none");
       divWandPosition.classList.remove("d-none");
       divWand.classList.remove("d-none");
@@ -1028,4 +1064,25 @@ const getItemData = async (query) => {
     console.error(err);
     isError(err);
   }
+};
+
+const handlerHideBSModal = (id) => {
+  var modalEl = document.getElementById(id);
+  var modalInstance = bootstrap.Modal.getInstance(modalEl);
+
+  if (modalInstance) {
+    modalInstance.hide();
+  } else {
+    // Jika modal belum pernah di-show dan belum punya instance, buat dan langsung hide
+    modalInstance = new bootstrap.Modal(modalEl);
+    modalInstance.hide();
+  }
+};
+
+// HANDLER SHOW BOOTSTRAP MODAL
+const handlerShowBSModal = (params) => {
+  var myModal = new bootstrap.Modal(document.getElementById(params), {
+    keyboard: false,
+  });
+  myModal.show();
 };

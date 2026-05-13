@@ -33,8 +33,8 @@ Partial Class Methods_Order_PelmetMethod
         Public Property fabrictype As String
         Public Property fabriccolour As String
         Public Property pelmetover As String
-        Public Property returnposition As String
-        Public Property returnsize As String
+        Public Property leftreturn As String
+        Public Property rightreturn As String
         Public Property notes As String
         Public Property markup As String
         
@@ -219,13 +219,13 @@ Partial Class Methods_Order_PelmetMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "pelmet over is required !",.field = "pelmetover"}}
             End If
 
-            If String.IsNullOrEmpty(data.returnposition) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "return position is required !",.field = "returnposition"}}
-            End If
+            ' If String.IsNullOrEmpty(data.returnposition) Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "return position is required !",.field = "returnposition"}}
+            ' End If
 
-            If String.IsNullOrEmpty(data.returnsize) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "return size is required !",.field = "returnsize"}}
-            End If
+            ' If String.IsNullOrEmpty(data.returnsize) Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "return size is required !",.field = "returnsize"}}
+            ' End If
 
             If Not String.IsNullOrEmpty(data.notes) Then
                 If InStr(data.notes, "&") > 0 Then
@@ -255,7 +255,7 @@ Partial Class Methods_Order_PelmetMethod
 
             Dim FabricGroup As String = publicCfg.GetFabricGroup(data.fabriccolour)
             FabricGroup = "Group 1"
-            Dim PriceGroupName As String = String.Format("{0} - {1}", BlindName, FabricGroup)
+            Dim PriceGroupName As String = String.Format("Pelmet - {0}",FabricGroup) 'String.Format("{0} - {1}", BlindName, FabricGroup)
             Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
             If PriceGroupId = "" Then
                 Throw New Exception("Something went wrong !")
@@ -263,9 +263,9 @@ Partial Class Methods_Order_PelmetMethod
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
-                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], PelmetType, PelmetReturn, PelmetReturnSize, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
+                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], PelmetType, PelmetReturnSize, PelmetReturnSize2, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
 
-                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @PelmetType, @PelmetReturn, @PelmetReturnSize, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
+                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @PelmetType, @PelmetReturnSize, @PelmetReturnSize2, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand(String.Format("INSERT INTO OrderDetails({0}) VALUES ({1})", Field, Values), thisConn)
@@ -283,8 +283,8 @@ Partial Class Methods_Order_PelmetMethod
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@PelmetType", data.pelmetover)
-                        myCmd.Parameters.AddWithValue("@PelmetReturn", data.returnposition)
-                        myCmd.Parameters.AddWithValue("@PelmetReturnSize", data.returnsize)
+                        myCmd.Parameters.AddWithValue("@PelmetReturnSize", data.leftreturn)
+                        myCmd.Parameters.AddWithValue("@PelmetReturnSize2", data.rightreturn)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
                         myCmd.Connection = thisConn
@@ -309,7 +309,7 @@ Partial Class Methods_Order_PelmetMethod
 
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, PelmetType=@PelmetType, PelmetReturn=@PelmetReturn, PelmetReturnSize=@PelmetReturnSize, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, PelmetType=@PelmetType, PelmetReturnSize=@PelmetReturnSize, PelmetReturnSize2=@PelmetReturnSize2, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -324,8 +324,8 @@ Partial Class Methods_Order_PelmetMethod
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@PelmetType", data.pelmetover)
-                        myCmd.Parameters.AddWithValue("@PelmetReturn", data.returnposition)
-                        myCmd.Parameters.AddWithValue("@PelmetReturnSize", data.returnsize)
+                        myCmd.Parameters.AddWithValue("@PelmetReturnSize", data.leftreturn)
+                        myCmd.Parameters.AddWithValue("@PelmetReturnSize2", data.rightreturn)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
                         myCmd.Connection = thisConn

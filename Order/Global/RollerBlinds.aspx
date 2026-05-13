@@ -413,8 +413,8 @@
 
     <!-- Modal Infro Trim -->
     <div class="modal fade" id="modalInfoTrim" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalInfoTrimLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content ">
                 <div class="modal-header">
                     <h1 class="modal-title" id="modalInfoTrimLabel">Information</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

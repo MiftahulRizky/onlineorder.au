@@ -126,7 +126,7 @@ Partial Class Methods_Order_RomanBlindMethod
     Public Shared Function BindFabricType(ByVal designid As String, ByVal blindname As String, ByVal controlname As String) As Object
         Try
             Dim des As String = ""
-
+            designid = "7120F117-F60A-4EC8-B092-4E44C8386B37"
             Select Case blindname
                 Case "Classic"
                     If controlname = "Cord" Then
@@ -177,6 +177,7 @@ Partial Class Methods_Order_RomanBlindMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindFabricColour(ByVal designid As String, ByVal fabrictype As String) As Object
         Try
+            designid = "7120F117-F60A-4EC8-B092-4E44C8386B37"
             Dim datas As DataSet = publicCfg.GetListData("SELECT Id, Colour FROM Fabrics WHERE DesignId='" + designid + "' AND Active='1' AND Type='" + fabrictype + "' ORDER BY Name ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then

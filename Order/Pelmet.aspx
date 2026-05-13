@@ -138,14 +138,20 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divReturn">
-                                        <label for="returnposition" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">returns</label>
+                                        <label for="leftreturn" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">hand returns</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <select name="returnposition" id="returnposition" class="form-select "></select>
-                                            <small class="form-hint">* Position</small>
+                                            <div class="input-group">
+                                                <input type="number" min="1" name="leftreturn" id="leftreturn" class="form-control  " autocomplete="off" />
+                                                <span class="input-group-text ">mm</span>
+                                            </div>
+                                            <small class="form-hint">* Left</small>
                                         </div>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <input type="number" min="1" name="returnsize" id="returnsize" class="form-control  " autocomplete="off" />
-                                            <small class="form-hint">* Size</small>
+                                            <div class="input-group">
+                                                <input type="number" min="1" name="rightreturn" id="rightreturn" class="form-control  " autocomplete="off" />
+                                                <span class="input-group-text ">mm</span>
+                                            </div>
+                                            <small class="form-hint">* Right</small>
                                         </div>
                                     </div>
 

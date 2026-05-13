@@ -23,12 +23,13 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       await binColours(DESIGNID, blindtype);
     }
 
-    // if (e.target.id === "tubetype") {
-    //   const blindtype = document.getElementById("blindtype").value;
-    //   const tubetype = e.target.value;
-    //   await handlerElementVisibility(blindtype, tubetype);
-    //   await bindControls(DESIGNID, blindtype, tubetype);
-    // }
+    if (e.target.id === "colourtype") {
+      const blindtype = document.getElementById("blindtype").value;
+      const colourtype = e.target.value;
+      await bindFabrics(DESIGNID);
+      await Promise.all([bindPelmet()]);
+      await handlerElementVisibility(blindtype, colourtype);
+    }
 
     if (e.target.id === "fabrictype") {
       const fabrictype = e.target.value;
@@ -249,7 +250,7 @@ const binColours = async (designid, blindtype) => {
         select.selectedIndex = 0;
         const colourtype = select.value;
         await bindFabrics(designid);
-        await Promise.all([bindPelmet(), bindReturnPosition()]);
+        await Promise.all([bindPelmet()]);
         await handlerElementVisibility(blindtype, colourtype);
       }
     }
@@ -407,13 +408,7 @@ const bindPelmet = () => {
   let data = [];
   let list = [];
 
-  list = [
-    "40mm Vertical Track",
-    "28mm Tiltrak",
-    "Single Roller",
-    "Double Roller",
-    "Panel Glide",
-  ];
+  list = ["Verticals", "Single Holland", "Double Holland", "Other"];
 
   list.forEach((ls) => {
     data.push({ value: ls, text: ls });
@@ -435,34 +430,34 @@ const bindPelmet = () => {
   });
 };
 
-const bindReturnPosition = () => {
-  const sel = document.getElementById("returnposition");
-  sel.innerHTML = ""; //reset
+// const bindReturnPosition = () => {
+//   const sel = document.getElementById("returnposition");
+//   sel.innerHTML = ""; //reset
 
-  let data = [];
-  let list = [];
+//   let data = [];
+//   let list = [];
 
-  list = ["No", "L & R", "Left Only", "Right Only"];
+//   list = ["No", "L & R", "Left Only", "Right Only"];
 
-  list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
-  });
+//   list.forEach((ls) => {
+//     data.push({ value: ls, text: ls });
+//   });
 
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
+//   if (data.length > 1) {
+//     const defaultOption = document.createElement("option");
+//     defaultOption.text = "";
+//     defaultOption.value = "";
+//     sel.add(defaultOption);
+//   }
 
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
+//   data.forEach((item) => {
+//     const option = document.createElement("option");
+//     option.value = item.value;
+//     option.text = item.text.toUpperCase();
+//     option.setAttribute("data-name", item.text);
+//     sel.add(option);
+//   });
+// };
 
 const bindItemOrders = async (itemid) => {
   try {
@@ -497,11 +492,7 @@ const bindItemOrders = async (itemid) => {
       await bindFabrics(item.DesignId);
       await bindFabricColours(item.DesignId, item.FabricType);
 
-      await Promise.all([
-        bindPelmet(),
-        bindReturnPosition(),
-        handlerSetElementValues(item),
-      ]);
+      await Promise.all([bindPelmet(), handlerSetElementValues(item)]);
 
       await handlerElementVisibility(item.BlindId, item.KitId, item);
     }
@@ -570,8 +561,8 @@ const handlerSubmit = async (button) => {
       "fabrictype",
       "fabriccolour",
       "pelmetover",
-      "returnposition",
-      "returnsize",
+      "leftreturn",
+      "rightreturn",
       "notes",
       "markup",
     ];
@@ -641,8 +632,8 @@ const handlerSetElementValues = (itemData) => {
     fabrictype: "FabricType",
     fabriccolour: "FabricId",
     pelmetover: "PelmetType",
-    returnposition: "PelmetReturn",
-    returnsize: "PelmetReturnSize",
+    leftreturn: "PelmetReturnSize",
+    rightreturn: "PelmetReturnSize2",
     notes: "Notes",
     markup: "MarkUp",
   };

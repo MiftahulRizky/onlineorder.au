@@ -275,12 +275,17 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 End If
             End If
 
-            If String.IsNullOrEmpty(data.layoutcode) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "layout code is required !", .field = "layoutcode"}}
+            IF InArray(BlindName, "Completed", "Track Only") Then
+                If String.IsNullOrEmpty(data.layoutcode) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "layout code is required !", .field = "layoutcode"}}
+                End If
             End If
+            
 
-            If String.IsNullOrEmpty(data.nopanel) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "no of panel is required !", .field = "nopanel"}}
+            IF InArray(BlindName, "Completed", "Panel Only") Then
+                If String.IsNullOrEmpty(data.nopanel) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "no of panel is required !", .field = "nopanel"}}
+                End If
             End If
 
             IF InArray(BlindName, "Completed", "Track Only") Then
@@ -362,6 +367,7 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
             End If
 
             IF BlindName = "Panel Only" Then
+                data.layoutcode = ""
                 data.tracktype = ""
                 data.trackcolour = ""
                 data.wandposition = ""
@@ -374,6 +380,7 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 drop = 0
                 data.fabrictype = ""
                 data.fabriccolour = ""
+                data.nopanel = ""
                 data.bottomrail = ""
             End If
 
