@@ -874,10 +874,13 @@ Partial Class Methods_Order_DetailMethod
                             Product = String.Format("{0} {1} ({2}) {3}", KitName, MeshType, FrameColour, Size)
                         End If
 
-                        If DesignName = "Curtain" Then
+                        If InArray(DesignName, "Curtain", "Pelmet") Then
                             Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
                             If BlindName = "Track Only" Then
                                 Product = String.Format("{0} ({1}mm)", KitName, Width)
+                            End If
+                            If BlindName = "Fashade Pelmet" Then
+                                Product = String.Format("{0} {1})", KitName, Size)
                             End If
                         End If
 

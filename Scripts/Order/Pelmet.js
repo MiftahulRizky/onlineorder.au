@@ -24,10 +24,12 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     }
 
     if (e.target.id === "colourtype") {
-      const blindtype = document.getElementById("blindtype").value;
+      const blinds = document.getElementById("blindtype");
+      const blindtype = blinds.value;
+      const blindname = blinds.selectedOptions[0].dataset.name;
       const colourtype = e.target.value;
       await bindFabrics(DESIGNID);
-      await Promise.all([bindPelmet()]);
+      await Promise.all([bindPelmet(blindname)]);
       await handlerElementVisibility(blindtype, colourtype);
     }
 
@@ -248,9 +250,12 @@ const binColours = async (designid, blindtype) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
+        const blindname = await getItemData(
+          `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
+        );
         const colourtype = select.value;
         await bindFabrics(designid);
-        await Promise.all([bindPelmet()]);
+        await Promise.all([bindPelmet(blindname)]);
         await handlerElementVisibility(blindtype, colourtype);
       }
     }
@@ -401,14 +406,21 @@ const bindFabricColours = async (designid, fabrictype) => {
   }
 };
 
-const bindPelmet = () => {
+const bindPelmet = (blindname) => {
   const sel = document.getElementById("pelmetover");
   sel.innerHTML = ""; //reset
 
+  if (!blindname) return;
+
   let data = [];
   let list = [];
+  if (["Fashade Pelmet"].includes(blindname)) {
+    list = ["Verticals", "Single Holland", "Double Holland", "Other"];
+  }
 
-  list = ["Verticals", "Single Holland", "Double Holland", "Other"];
+  if (["Uniline Pelmet"].includes(blindname)) {
+    list = ["Holland", "Vertical"];
+  }
 
   list.forEach((ls) => {
     data.push({ value: ls, text: ls });
@@ -492,7 +504,10 @@ const bindItemOrders = async (itemid) => {
       await bindFabrics(item.DesignId);
       await bindFabricColours(item.DesignId, item.FabricType);
 
-      await Promise.all([bindPelmet(), handlerSetElementValues(item)]);
+      await Promise.all([
+        bindPelmet(item.BlindName),
+        handlerSetElementValues(item),
+      ]);
 
       await handlerElementVisibility(item.BlindId, item.KitId, item);
     }
@@ -509,12 +524,18 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     const lblItemId = document.getElementById("lblItemId");
     const divColourType = document.getElementById("divColourType");
     const divFormDetail = document.getElementById("divFormDetail");
+    const divFabric = document.getElementById("divFabric");
+    const divPelmetOver = document.getElementById("divPelmetOver");
+    const divReturn = document.getElementById("divReturn");
 
     const divMarkUp = document.getElementById("divMarkUp");
     const btnSubmit = document.querySelector("#btnSubmit");
     // return;
     divColourType.classList.add("d-none");
     divFormDetail.classList.add("d-none");
+    divFabric.classList.add("d-none");
+    divPelmetOver.classList.add("d-none");
+    divReturn.classList.add("d-none");
 
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
@@ -527,6 +548,17 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
 
     if (!colourtype) return;
     divFormDetail.classList.remove("d-none");
+
+    if (["Fashade Pelmet"].includes(blindname)) {
+      divPelmetOver.classList.remove("d-none");
+      divReturn.classList.remove("d-none");
+    }
+
+    if (["Uniline Pelmet"].includes(blindname)) {
+      divFabric.classList.remove("d-none");
+      divPelmetOver.classList.remove("d-none");
+      divReturn.classList.remove("d-none");
+    }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
 

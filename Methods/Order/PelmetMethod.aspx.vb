@@ -207,12 +207,14 @@ Partial Class Methods_Order_PelmetMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3200 !",.field = "drop"}}
             End If
 
-            If String.IsNullOrEmpty(data.fabrictype) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
-            End If
-            
-            If String.IsNullOrEmpty(data.fabriccolour) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
+            IF BlindName = "Uniline Pelmet" Then
+                If String.IsNullOrEmpty(data.fabrictype) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
+                End If
+                
+                If String.IsNullOrEmpty(data.fabriccolour) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
+                End If
             End If
 
             If String.IsNullOrEmpty(data.pelmetover) Then
@@ -255,7 +257,10 @@ Partial Class Methods_Order_PelmetMethod
 
             Dim FabricGroup As String = publicCfg.GetFabricGroup(data.fabriccolour)
             FabricGroup = "Group 1"
-            Dim PriceGroupName As String = String.Format("Pelmet - {0}",FabricGroup) 'String.Format("{0} - {1}", BlindName, FabricGroup)
+            Dim PriceGroupName As String = "Fashade Pelmet" 'String.Format("{0} - {1}", BlindName, FabricGroup)
+            If BlindName = "Uniline Pelmet" Then
+                PriceGroupName = String.Format("{0} - {1}", BlindName, FabricGroup)
+            End If
             Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
             If PriceGroupId = "" Then
                 Throw New Exception("Something went wrong !")
