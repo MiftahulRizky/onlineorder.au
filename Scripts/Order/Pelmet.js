@@ -310,7 +310,7 @@ const bindFabrics = async (designid) => {
 
       if (data.length > 1) {
         const defaultOption = document.createElement("option");
-        defaultOption.text = "";
+        defaultOption.text = "NO FABRIC";
         defaultOption.value = "";
         select.add(defaultOption);
       }

@@ -89,13 +89,13 @@ Partial Class Methods_Order_PelmetMethod
                     Return GetFormattedData(query, "Id", "ColourType")
 
                 Case "fabrictype"
-                    data.designid = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
-                    query = String.Format("SELECT Type FROM Fabrics WHERE DesignId='{0}' AND Active='1' GROUP BY Type ORDER BY Type ASC", data.designid)
+                    ' data.designid = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
+                    query = String.Format("SELECT Type FROM Fabrics WHERE DesignId IN ('B556E35C-CEAC-40F8-A6CF-156601BD57DA', '50CE8EDF-E106-414C-BDE3-D7AA8F8046D2') AND Active='1' GROUP BY Type ORDER BY Type ASC", data.designid)
                     Return GetFormattedData(query, "Type", "Type")
 
                 Case "fabriccolour"
-                    data.designid = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
-                    query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId='{0}' AND Type='{1}' AND Active='1'  ORDER BY Name ASC", data.designid, data.fabrictype)
+                    ' data.designid = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
+                    query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId IN ('B556E35C-CEAC-40F8-A6CF-156601BD57DA', '50CE8EDF-E106-414C-BDE3-D7AA8F8046D2') AND Type='{1}' AND Active='1'  ORDER BY Name ASC", data.designid, data.fabrictype)
                     Return GetFormattedData(query, "Id", "Colour")
 
                 Case Else
@@ -208,12 +208,14 @@ Partial Class Methods_Order_PelmetMethod
             ' End If
 
             IF BlindName = "Uniline Pelmet" Then
-                If String.IsNullOrEmpty(data.fabrictype) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
-                End If
+                ' If String.IsNullOrEmpty(data.fabrictype) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
+                ' End If
                 
-                If String.IsNullOrEmpty(data.fabriccolour) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
+                If Not String.IsNullOrEmpty(data.fabrictype) Then
+                    If String.IsNullOrEmpty(data.fabriccolour) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
+                    End If
                 End If
             End If
 
@@ -259,10 +261,12 @@ Partial Class Methods_Order_PelmetMethod
             Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
 
             Dim FabricGroup As String = publicCfg.GetFabricGroup(data.fabriccolour)
-            FabricGroup = "Group 1"
-            Dim PriceGroupName As String = "Fashade Pelmet" 'String.Format("{0} - {1}", BlindName, FabricGroup)
-            If BlindName = "Uniline Pelmet" Then
-                PriceGroupName = String.Format("{0} - {1}", BlindName, FabricGroup)
+            If String.IsNullOrEmpty(data.fabriccolour) Then
+                FabricGroup = "No Fabric"
+            End If
+            Dim PriceGroupName As String = String.Format("{0} {1} - {2}", BlindName, data.pelmetover, FabricGroup)
+            If BlindName = "Fashade Pelmet" Then
+                PriceGroupName = String.Format("{0} - {1}", BlindName, data.mounting)
             End If
             Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
             If PriceGroupId = "" Then

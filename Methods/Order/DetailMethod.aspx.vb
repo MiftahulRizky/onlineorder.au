@@ -881,6 +881,7 @@ Partial Class Methods_Order_DetailMethod
                             End If
 
                             If BlindName = "Uniline Pelmet" Then
+                                IF String.IsNullOrEmpty(FabricType) Then FabricType = "No Fabric"
                                 Product = String.Format("{0} #{1} (Width:{2}mm)", KitName, FabricType, Width)
                             End If
 
