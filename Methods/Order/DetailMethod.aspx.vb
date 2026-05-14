@@ -879,8 +879,13 @@ Partial Class Methods_Order_DetailMethod
                             If BlindName = "Track Only" Then
                                 Product = String.Format("{0} ({1}mm)", KitName, Width)
                             End If
+
+                            If BlindName = "Uniline Pelmet" Then
+                                Product = String.Format("{0} #{1} (Width:{2}mm)", KitName, FabricType, Width)
+                            End If
+
                             If BlindName = "Fashade Pelmet" Then
-                                Product = String.Format("{0} {1})", KitName, Size)
+                                Product = String.Format("{0} (Width:{1}mm)", KitName, Width)
                             End If
                         End If
 

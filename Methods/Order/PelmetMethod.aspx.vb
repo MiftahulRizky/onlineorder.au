@@ -194,18 +194,18 @@ Partial Class Methods_Order_PelmetMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 6000 !",.field = "width"}}
             End If
 
-            If String.IsNullOrEmpty(data.drop) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop is required !",.field = "drop"}}
-            End If
-            If Not Integer.TryParse(data.drop, drop) OrElse drop <= 0 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be a positive integer !",.field = "drop"}}
-            End If
-            If drop < 150 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be greater than or equal to 150 !",.field = "drop"}}
-            End If
-            If drop > 3200 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3200 !",.field = "drop"}}
-            End If
+            ' If String.IsNullOrEmpty(data.drop) Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop is required !",.field = "drop"}}
+            ' End If
+            ' If Not Integer.TryParse(data.drop, drop) OrElse drop <= 0 Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be a positive integer !",.field = "drop"}}
+            ' End If
+            ' If drop < 150 Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be greater than or equal to 150 !",.field = "drop"}}
+            ' End If
+            ' If drop > 3200 Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3200 !",.field = "drop"}}
+            ' End If
 
             IF BlindName = "Uniline Pelmet" Then
                 If String.IsNullOrEmpty(data.fabrictype) Then
@@ -249,6 +249,9 @@ Partial Class Methods_Order_PelmetMethod
             If String.IsNullOrEmpty(data.markup) Then
                 data.markup = "0"
             End If
+
+            data.drop =""
+            drop = 0
 
             Dim SoeId As String = publicCfg.GetSoeKitId(data.colourtype)
             Dim DesignName As String = publicCfg.GetDesignName(data.designid)

@@ -524,6 +524,9 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     const lblItemId = document.getElementById("lblItemId");
     const divColourType = document.getElementById("divColourType");
     const divFormDetail = document.getElementById("divFormDetail");
+    const lblWd = document.getElementById("lblWd");
+    const divWidth = document.getElementById("divWidth");
+    const divDrop = document.getElementById("divDrop");
     const divFabric = document.getElementById("divFabric");
     const divPelmetOver = document.getElementById("divPelmetOver");
     const divReturn = document.getElementById("divReturn");
@@ -533,6 +536,9 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     // return;
     divColourType.classList.add("d-none");
     divFormDetail.classList.add("d-none");
+    lblWd.innerHTML = "width x drop";
+    divWidth.classList.add("d-none");
+    divDrop.classList.add("d-none");
     divFabric.classList.add("d-none");
     divPelmetOver.classList.add("d-none");
     divReturn.classList.add("d-none");
@@ -550,11 +556,15 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     divFormDetail.classList.remove("d-none");
 
     if (["Fashade Pelmet"].includes(blindname)) {
+      lblWd.innerHTML = "width";
+      divWidth.classList.remove("d-none");
       divPelmetOver.classList.remove("d-none");
       divReturn.classList.remove("d-none");
     }
 
     if (["Uniline Pelmet"].includes(blindname)) {
+      lblWd.innerHTML = "width";
+      divWidth.classList.remove("d-none");
       divFabric.classList.remove("d-none");
       divPelmetOver.classList.remove("d-none");
       divReturn.classList.remove("d-none");
