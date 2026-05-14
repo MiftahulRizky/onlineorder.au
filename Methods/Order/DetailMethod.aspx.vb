@@ -543,7 +543,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, Qty, Location, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, MeshType, Matrix, Charge, Markup, FabricGroups")
+                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PelmetType, MeshType, Matrix, Charge, Markup, FabricGroups")
                 sqlBuilder.AppendLine("FROM view_details")
                 sqlBuilder.AppendLine("WHERE Active=@Active AND HeaderId=@HeaderId")
 
@@ -622,6 +622,7 @@ Partial Class Methods_Order_DetailMethod
                         Dim DesignId As String = reader("DesignId").ToString()
                         Dim Qty As String = reader("Qty").ToString()
                         Dim Location As String = reader("Location").ToString()
+                        Dim Mounting As String = reader("Mounting").ToString()
                         Dim DesignName As String = reader("DesignName").ToString()
                         Dim BlindName As String = reader("BlindName").ToString()
                         Dim KitName As String = reader("KitName").ToString()
@@ -633,6 +634,7 @@ Partial Class Methods_Order_DetailMethod
                         Dim Width As String = reader("Width").ToString()
                         Dim Drop As String = reader("Drop").ToString()
                         Dim FrameColour As String = reader("FrameColour").ToString()
+                        Dim PelmetType As String = reader("PelmetType").ToString()
                         Dim MeshType As String = reader("MeshType").ToString()
                         Dim Matrix As String = reader("Matrix").ToString()
                         Dim Charge As String = reader("Charge").ToString()
@@ -882,11 +884,11 @@ Partial Class Methods_Order_DetailMethod
 
                             If BlindName = "Uniline Pelmet" Then
                                 IF String.IsNullOrEmpty(FabricType) Then FabricType = "No Fabric"
-                                Product = String.Format("{0} #{1} (Width:{2}mm)", KitName, FabricType, Width)
+                                Product = String.Format("{0} {1} #{2} (Width:{3}mm)", KitName, PelmetType, FabricType, Width)
                             End If
 
                             If BlindName = "Fashade Pelmet" Then
-                                Product = String.Format("{0} (Width:{1}mm)", KitName, Width)
+                                Product = String.Format("{0} {1} (Width:{2}mm)", KitName, Mounting, Width)
                             End If
                         End If
 
