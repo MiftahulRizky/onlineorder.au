@@ -839,8 +839,11 @@ Public Class PublicConfig
         End If
 
         If Not thisData.Tables(0).Rows.Count = 0 Then
-            Dim discount As Integer = thisData.Tables(0).Rows(0).Item("Discount").ToString()
-            result = Matrix * (discount / 100)
+            Dim DiscountBlindId As String = thisData.Tables(0).Rows(0).Item("BlindId").ToString()
+            Dim Discount As Integer = thisData.Tables(0).Rows(0).Item("Discount").ToString()
+            If BlindId = DiscountBlindId Then
+                result = Matrix * (Discount / 100)
+            End If
         End If
         Return result
     End Function

@@ -662,7 +662,7 @@ Inherits="SiteMaster" %>
                         </span>
                       </a>
                       <div class="dropdown-menu">
-                        <a class="dropdown-item" href="~/reportproduct/" runat="server" hidden>
+                        <a class="dropdown-item" href="~/reportproduct/" runat="server">
                           Products
                         </a>
                         <a class="dropdown-item" href="~/report/" runat="server">
