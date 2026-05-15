@@ -117,6 +117,12 @@
                                         </div>
                                     </div>
 
+                                    <div class="mb-3 row" id="divPelmetOver">
+                                        <label for="pelmetover" class="col-lg-3 text-uppercase fw-bold">pelmet over</label>
+                                        <div class="col-lg-4">
+                                            <select type="text" name="pelmetover" id="pelmetover" class="form-select"></select>
+                                        </div>  
+                                    </div>
 
                                     <div class="mb-3 row" id="divFabric">
                                         <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">fabric type x colour</label>
@@ -128,13 +134,6 @@
                                             <select name="fabriccolour" id="fabriccolour" class="form-select " ></select>
                                             <small class="form-hint">* Colour</small>
                                         </div>
-                                    </div>
-
-                                    <div class="mb-3 row" id="divPelmetOver">
-                                        <label for="pelmetover" class="col-lg-3 text-uppercase fw-bold">pelmet over</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="pelmetover" id="pelmetover" class="form-select"></select>
-                                        </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divReturn">

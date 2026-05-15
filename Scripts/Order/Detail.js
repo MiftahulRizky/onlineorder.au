@@ -465,6 +465,8 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnEditPricingItem") {
     const id = e.target.dataset.id;
     const cost = e.target.dataset.cost || "0.00";
+    const designid = e.target.dataset.designid;
+    const blindid = e.target.dataset.blindid;
 
     document
       .querySelectorAll("#modalEditPricingItem .form-control")
@@ -475,6 +477,8 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
 
     document.querySelector("#modalEditPricingItem #id").value = id;
     document.querySelector("#modalEditPricingItem #cost").value = cost;
+    document.querySelector("#modalEditPricingItem #designid").value = designid;
+    document.querySelector("#modalEditPricingItem #blindid").value = blindid;
     // handlerEditPricingItem(id);
     handlerShowBSModal("modalEditPricingItem");
   }
@@ -812,9 +816,13 @@ const submitEditPricing = async () => {
     "#modalEditPricingItem #submitEditPricingItem",
   );
 
-  const fields = ["id", "cost", "newcost"];
+  const fields = ["id", "cost", "newcost", "designid", "blindid"];
 
-  const Params = { username: USERNAME, headerid: HEADERID };
+  const Params = {
+    username: USERNAME,
+    headerid: HEADERID,
+    customerid: document.querySelector("#spanRetailerId").innerHTML,
+  };
 
   fields.forEach((field) => {
     const el = document.querySelector(`#modalEditPricingItem #${field}`);
@@ -2959,7 +2967,7 @@ const dropdownActionButton = (row, createdby) => {
   }
 
   // HIDE BUTTON EDIT PRICING
-  let hideEditPricing = "hidden";
+  let hideEditPricing = ""; //"hidden";
   if (row.Group === "POA") {
     hideEditPricing = "";
   }
@@ -3004,7 +3012,7 @@ const dropdownActionButton = (row, createdby) => {
           </li>
           <div ${hideDivider} class="dropdown-divider"></div>
           <li ${hideEditPricing}>
-            <a class="dropdown-item " href="javascript:void(0);" id="btnEditPricingItem" data-id="${row.Id}" data-cost="${row.RealCost}">
+            <a class="dropdown-item " href="javascript:void(0);" id="btnEditPricingItem" data-id="${row.Id}" data-cost="${row.RealCost}" data-designid="${row.DesignId}" data-blindid="${row.BlindId}">
               <i class="ti ti-pencil-dollar text-success fs-1 me-1 opacity-50"></i>Edit Pricing
             </a>
           </li>

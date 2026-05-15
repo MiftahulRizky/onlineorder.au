@@ -84,6 +84,7 @@ Partial Class Methods_Order_DetailMethod
         Public Property Id As String 
         Public Property HeaderId As String 
         Public Property DesignId As String 
+        Public Property BlindId As String 
         Public Property DesignName As String 
         Public Property Qty As String 
         Public Property Location As String 
@@ -195,6 +196,9 @@ Partial Class Methods_Order_DetailMethod
 
         Public Property username As String
         Public Property headerid As String
+        Public Property designid As String
+        Public Property blindid As String
+        Public Property customerid As String
     End Class
 
 
@@ -543,7 +547,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PelmetType, MeshType, Matrix, Charge, Markup, FabricGroups")
+                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, BlindId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PelmetType, MeshType, Matrix, Charge, Markup, FabricGroups")
                 sqlBuilder.AppendLine("FROM view_details")
                 sqlBuilder.AppendLine("WHERE Active=@Active AND HeaderId=@HeaderId")
 
@@ -620,6 +624,7 @@ Partial Class Methods_Order_DetailMethod
                         Dim Id As String = reader("Id").ToString()
                         Dim HeaderId As String = reader("HeaderId").ToString()
                         Dim DesignId As String = reader("DesignId").ToString()
+                        Dim BlindId As String = reader("BlindId").ToString()
                         Dim Qty As String = reader("Qty").ToString()
                         Dim Location As String = reader("Location").ToString()
                         Dim Mounting As String = reader("Mounting").ToString()
@@ -979,6 +984,7 @@ Partial Class Methods_Order_DetailMethod
                             .CustomerContactId = CustomerContactId,
                             .StatusHeader = StatusHeader,
                             .DesignId = DesignId,
+                            .BlindId = BlindId,
                             .DesignName = DesignName,
                             .Qty = Qty,
                             .Location = Location,
@@ -1710,13 +1716,22 @@ Partial Class Methods_Order_DetailMethod
 
             If Not String.IsNullOrEmpty(data.id) Then
                 Dim qty As Integer = publicCfg.GetItemData(String.Format("SELECT Qty FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", data.headerid, data.id))
-              
-                Dim Res As String = UpdateOverridePricing(data.id, cost, newcost)
+               
+
+                Dim ListParamDiscount As New List(Of Object) From {
+                    data.customerid,
+                    "",
+                    newcost,
+                    data.designid,
+                    data.blindid
+                }
+                Dim Discount As Decimal = publicCfg.HitungDiscount(ListParamDiscount)
+                Dim Res As String = UpdateOverridePricing(data.id, newcost, Discount)
                 IF Not Res = "200" Then
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = Res, .field = "#cost" }}
                 End If
 
-                Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix'", data.headerid, data.id))
+                Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost - Discount) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix'", data.headerid, data.id))
                 publicCfg.UpdateMatrix(UCase(data.id).ToString(), qty, Matrix)
 
 
@@ -1732,13 +1747,14 @@ Partial Class Methods_Order_DetailMethod
     End Function
 
 
-    Private Shared Function UpdateOverridePricing(id As String, cost As Decimal, poa As Decimal) As String
+    Private Shared Function UpdateOverridePricing(id As String, poa As Decimal, disc As Decimal) As String
         Try
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET Cost=@Cost, Poa=@Poa WHERE ItemId=@Id AND Type='Matrix'", thisConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET Cost=@Cost, Poa=@Poa, Discount=@Discount WHERE ItemId=@Id AND Type='Matrix'", thisConn)
                     myCmd.Parameters.AddWithValue("@Id", UCase(id).ToString())
                     myCmd.Parameters.AddWithValue("@Cost", poa)
                     myCmd.Parameters.AddWithValue("@Poa", poa)
+                    myCmd.Parameters.AddWithValue("@Discount", disc)
                     myCmd.Connection = thisConn
                     thisConn.Open()
                     myCmd.ExecuteNonQuery()
@@ -1766,6 +1782,7 @@ Partial Class Methods_Order_DetailMethod
             End If
 
             Dim status As String = headerData.Tables(0).Rows(0)("Status").ToString()
+            Dim customerid As String = headerData.Tables(0).Rows(0)("StoreId").ToString()
             If rolename <> "Administrator" AndAlso status <> "Draft" Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Permission denied : not administrator."}}
             End If
@@ -1775,7 +1792,7 @@ Partial Class Methods_Order_DetailMethod
             End If
 
             ' Ambil semua detail sekaligus
-            Dim query As String = "SELECT Id, BlindName, BracketType, TubeType, ControlType, FabricId, FabricIdB, DesignId, DesignName, BottomHoldDown, FabricGroups FROM view_details WHERE HeaderId='" & headerid & "' AND Active='1' ORDER BY Id, BlindNo, DesignName ASC"
+            Dim query As String = "SELECT Id, Mounting, BlindName, BracketType, TubeType, ControlType, FabricId, FabricIdB, DesignId, BlindId, DesignName, BottomHoldDown, PelmetType FROM view_details WHERE HeaderId='" & headerid & "' AND Active='1' ORDER BY Id, BlindNo, DesignName ASC"
             Dim detailData As DataSet = publicCfg.GetListData(query)
 
             If detailData.Tables(0).Rows.Count < 1 Then
@@ -1784,6 +1801,7 @@ Partial Class Methods_Order_DetailMethod
 
             For Each row As DataRow In detailData.Tables(0).Rows
                 Dim itemId = row("Id").ToString()
+                Dim Mounting = row("Mounting").ToString()
                 Dim blindName = row("BlindName").ToString()
                 Dim bracketType = row("BracketType").ToString()
                 Dim controlType = row("ControlType").ToString()
@@ -1791,13 +1809,25 @@ Partial Class Methods_Order_DetailMethod
                 Dim fabricId = row("FabricId").ToString()
                 Dim fabricIdB = row("FabricIdB").ToString()
                 Dim designId = row("DesignId").ToString()
+                Dim blindId = row("BlindId").ToString()
                 Dim designName = row("DesignName").ToString()
                 Dim bottomHold = row("BottomHoldDown").ToString()
-                Dim fabricGroups = row("FabricGroups").ToString()
+                Dim PelmetType = row("PelmetType").ToString()
 
                 Dim fabricGroup = publicCfg.GetFabricGroup(fabricId)
-
-                Dim priceGroupName = GetPriceGroupName(designName, blindName, bracketType, controlType, tubeType, bottomHold, fabricGroup)
+                Dim ListParam As New List(Of Object) From {
+                    designName,
+                    blindName,
+                    bracketType,
+                    controlType,
+                    tubeType,
+                    bottomHold,
+                    fabricGroup,
+                    PelmetType,
+                    Mounting,
+                    headerid
+                }
+                Dim priceGroupName = GetPriceGroupName(ListParam) 'GetPriceGroupName(designName, blindName, bracketType, controlType, tubeType, bottomHold, fabricGroup)
                 If Not String.IsNullOrEmpty(priceGroupName) Then
                     Dim priceGroupId = publicCfg.GetPriceGroupId(designId, priceGroupName)
                     If Not String.IsNullOrEmpty(priceGroupId) Then
@@ -1807,7 +1837,19 @@ Partial Class Methods_Order_DetailMethod
 
                 IF Not fabricIdB = "" Then
                     Dim fabricGroupB = publicCfg.GetFabricGroup(fabricIdB)
-                    Dim priceGroupNameB = GetPriceGroupName(designName, blindName, bracketType, controlType, tubeType, bottomHold, fabricGroupB)
+                    Dim ListParamB As New List(Of Object) From {
+                        designName,
+                        blindName,
+                        bracketType,
+                        controlType,
+                        tubeType,
+                        bottomHold,
+                        fabricGroupB,
+                        PelmetType,
+                        Mounting,
+                        headerid
+                    }
+                    Dim priceGroupNameB = GetPriceGroupName(ListParamB) 'GetPriceGroupName(designName, blindName, bracketType, controlType, tubeType, bottomHold, fabricGroupB)
                     If Not String.IsNullOrEmpty(priceGroupNameB) Then
                         Dim priceGroupIdB = publicCfg.GetPriceGroupId(designId, priceGroupNameB)
                         If Not String.IsNullOrEmpty(priceGroupIdB) Then
@@ -1816,7 +1858,7 @@ Partial Class Methods_Order_DetailMethod
                     End If
                 End If
 
-                IF fabricGroup = "POA" Then
+                IF fabricGroup = "POA" OR InStr(priceGroupName, "POA") > 1 Then
                     Dim Prices As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix'", headerid, itemId))
                     If Prices.Tables(0).Rows.Count > 0 Then
                         Dim Qty As Integer = Convert.ToInt32(Prices.Tables(0).Rows(0)("Qty"))
@@ -1828,12 +1870,20 @@ Partial Class Methods_Order_DetailMethod
                         publicCfg.HitungHarga(headerid, itemId)
                         publicCfg.HitungSurcharge(headerid, itemId)
 
-                        Dim Res As String = UpdateOverridePricing(itemId, Cost, Poa)
+                        Dim ListParamDiscount As New List(Of Object) From {
+                            customerid,
+                            "",
+                            Poa,
+                            designId,
+                            blindId
+                        }
+                        Dim Discount As Decimal = publicCfg.HitungDiscount(ListParamDiscount)
+                        Dim Res As String = UpdateOverridePricing(itemId, Poa, Discount)
                         IF Not Res = "200" Then
                             Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res}}
                         End If
 
-                        Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix' ", headerid, itemId))
+                        Dim Matrix As Decimal = publicCfg.GetItemData(String.Format("SELECT SUM(Cost - Discount) As Matrix FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix' ", headerid, itemId))
                         publicCfg.UpdateMatrix(UCase(itemId).ToString(), Qty, Matrix)
                     End If
                 Else
@@ -1990,7 +2040,18 @@ Partial Class Methods_Order_DetailMethod
 
 
     ' # Fungsi bantu untuk menentukan PriceGroupName
-    Private Shared Function GetPriceGroupName(dname As String, bname As String, brackettype As String, controltype As String, tube As String, bottomHold As String, fabricGroup As String) As String
+    ' Private Shared Function GetPriceGroupName(dname As String, bname As String, brackettype As String, controltype As String, tube As String, bottomHold As String, fabricGroup As String) As String
+    Private Shared Function GetPriceGroupName(ListParam As List(Of Object)) As String
+        Dim dname As String = CStr(ListParam(0))
+        Dim bname As String = CStr(ListParam(1))
+        Dim brackettype As String = CStr(ListParam(2))
+        Dim controltype As String = CStr(ListParam(3))
+        Dim tube As String = CStr(ListParam(4))
+        Dim bottomHold As String = CStr(ListParam(5))
+        Dim fabricGroup As String = CStr(ListParam(6))
+        Dim pelmetOver As String = CStr(ListParam(7))
+        Dim mounting As String = CStr(ListParam(8))
+        Dim headerid As String = CStr(ListParam(9))
         Select Case dname
             Case "Cellular Blinds"
                 
@@ -2022,6 +2083,22 @@ Partial Class Methods_Order_DetailMethod
                 If bname = "Track Only" Then Return bname & " - " & tube
                 If bname = "Slat Only" AndAlso bottomHold = "Top Hanger Only" Then Return bname & " With Hanger - " & fabricGroup
                 Return bname & " - " & fabricGroup
+
+            Case "Pelmet"
+                Dim Delivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM OrderHeaders WHERE Id = '{0}'", headerid))
+                If Delivery = "Delivery" then
+                    Return "Pelmet Delivery - POA"
+                End If
+
+                If String.IsNullOrEmpty(fabricGroup) Then fabricGroup = "No Fabric"
+                If bname = "Uniline Pelmet" Then
+                    Return String.Format("{0} {1} - {2}", bname, pelmetOver, fabricGroup)
+                End If
+
+                If bname = "Fashade Pelmet" Then
+                    Return String.Format("{0} - {1}", bname, mounting)
+                End If
+
             Case Else
                 Return ""
         End Select

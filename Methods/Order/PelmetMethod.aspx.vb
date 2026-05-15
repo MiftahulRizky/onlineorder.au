@@ -18,6 +18,7 @@ Partial Class Methods_Order_PelmetMethod
         Public Property designid As String
         Public Property blindtype As String
         Public Property fabrictype As String
+        Public Property pelmet As String
     End Class
 
     Public Class ParamSubmit
@@ -89,13 +90,20 @@ Partial Class Methods_Order_PelmetMethod
                     Return GetFormattedData(query, "Id", "ColourType")
 
                 Case "fabrictype"
-                    ' data.designid = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
-                    query = String.Format("SELECT Type FROM Fabrics WHERE DesignId IN ('B556E35C-CEAC-40F8-A6CF-156601BD57DA', '50CE8EDF-E106-414C-BDE3-D7AA8F8046D2') AND Active='1' GROUP BY Type ORDER BY Type ASC", data.designid)
+
+                    data.designid = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
+                    If data.pelmet = "Vertical" Then
+                        data.designid = "B556E35C-CEAC-40F8-A6CF-156601BD57DA"
+                    End If
+                    query = String.Format("SELECT Type FROM Fabrics WHERE DesignId = '{0}' AND Active='1' GROUP BY Type ORDER BY Type ASC", data.designid)
                     Return GetFormattedData(query, "Type", "Type")
 
                 Case "fabriccolour"
-                    ' data.designid = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
-                    query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId IN ('B556E35C-CEAC-40F8-A6CF-156601BD57DA', '50CE8EDF-E106-414C-BDE3-D7AA8F8046D2') AND Type='{1}' AND Active='1'  ORDER BY Name ASC", data.designid, data.fabrictype)
+                    data.designid = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
+                    If data.pelmet = "Vertical" Then
+                        data.designid = "B556E35C-CEAC-40F8-A6CF-156601BD57DA"
+                    End If
+                    query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId = '{0}' AND Type='{1}' AND Active='1'  ORDER BY Name ASC", data.designid, data.fabrictype)
                     Return GetFormattedData(query, "Id", "Colour")
 
                 Case Else
@@ -207,6 +215,10 @@ Partial Class Methods_Order_PelmetMethod
             '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3200 !",.field = "drop"}}
             ' End If
 
+            If String.IsNullOrEmpty(data.pelmetover) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "pelmet over is required !",.field = "pelmetover"}}
+            End If
+
             IF BlindName = "Uniline Pelmet" Then
                 ' If String.IsNullOrEmpty(data.fabrictype) Then
                 '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
@@ -219,9 +231,7 @@ Partial Class Methods_Order_PelmetMethod
                 End If
             End If
 
-            If String.IsNullOrEmpty(data.pelmetover) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "pelmet over is required !",.field = "pelmetover"}}
-            End If
+          
 
             ' If String.IsNullOrEmpty(data.returnposition) Then
             '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "return position is required !",.field = "returnposition"}}
@@ -264,10 +274,17 @@ Partial Class Methods_Order_PelmetMethod
             If String.IsNullOrEmpty(data.fabriccolour) Then
                 FabricGroup = "No Fabric"
             End If
+
             Dim PriceGroupName As String = String.Format("{0} {1} - {2}", BlindName, data.pelmetover, FabricGroup)
             If BlindName = "Fashade Pelmet" Then
                 PriceGroupName = String.Format("{0} - {1}", BlindName, data.mounting)
             End If
+
+            Dim Delivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM OrderHeaders WHERE Id = '{0}'", data.headerid))
+            If Delivery = "Delivery" then
+                PriceGroupName = "Pelmet Delivery - POA"
+            End If
+
             Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
             If PriceGroupId = "" Then
                 Throw New Exception("Something went wrong !")

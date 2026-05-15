@@ -544,6 +544,8 @@
                                 <input type="text" class="form-control" id="cost" name="cost" readonly>
                             </div>
                             <input type="text" class="form-control" id="id" name="id" readonly hidden>
+                            <input type="text" class="form-control" id="designid" name="designid" readonly hidden>
+                            <input type="text" class="form-control" id="blindid" name="blindid" readonly hidden>
                         </div>
                         <div class="col-8 col-lg-8 col-md-8">
                             <label for="" class="form-label">Override Price</label>

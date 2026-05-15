@@ -28,14 +28,21 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindtype = blinds.value;
       const blindname = blinds.selectedOptions[0].dataset.name;
       const colourtype = e.target.value;
-      await bindFabrics(DESIGNID);
+      const pelmet = document.getElementById("pelmetover").value;
+      await bindFabrics(DESIGNID, pelmet);
       await Promise.all([bindPelmet(blindname)]);
       await handlerElementVisibility(blindtype, colourtype);
     }
 
+    if (e.target.id === "pelmetover") {
+      const pelmet = e.target.value;
+      await bindFabrics(DESIGNID, pelmet);
+    }
+
     if (e.target.id === "fabrictype") {
       const fabrictype = e.target.value;
-      await bindFabricColours(DESIGNID, fabrictype);
+      const pelmet = document.getElementById("pelmetover").value;
+      await bindFabricColours(DESIGNID, fabrictype, pelmet);
     }
   });
   el.addEventListener("input", (e) => {
@@ -254,7 +261,8 @@ const binColours = async (designid, blindtype) => {
           `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
         );
         const colourtype = select.value;
-        await bindFabrics(designid);
+        const pelmet = document.getElementById("pelmetover").value;
+        await bindFabrics(designid, pelmet);
         await Promise.all([bindPelmet(blindname)]);
         await handlerElementVisibility(blindtype, colourtype);
       }
@@ -268,12 +276,12 @@ const binColours = async (designid, blindtype) => {
   }
 };
 
-const bindFabrics = async (designid) => {
+const bindFabrics = async (designid, pelmet) => {
   const select = document.getElementById("fabrictype");
   document.getElementById("fabriccolour").innerHTML = "";
   select.innerHTML = "";
 
-  if (!designid) return;
+  if (!designid || !pelmet) return;
 
   try {
     const response = await fetch(`${URIMETHOD}/BindListData`, {
@@ -285,6 +293,7 @@ const bindFabrics = async (designid) => {
         data: {
           field: "fabrictype",
           designid,
+          pelmet,
         },
       }),
     });
@@ -501,8 +510,8 @@ const bindItemOrders = async (itemid) => {
     for (const item of data) {
       await bindBlinds(item.DesignId);
       await binColours(item.DesignId, item.BlindId);
-      await bindFabrics(item.DesignId);
-      await bindFabricColours(item.DesignId, item.FabricType);
+      await bindFabrics(item.DesignId, item.PelmetType);
+      await bindFabricColours(item.DesignId, item.FabricType, item.PelmetType);
 
       await Promise.all([
         bindPelmet(item.BlindName),
