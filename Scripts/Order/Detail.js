@@ -2967,8 +2967,8 @@ const dropdownActionButton = (row, createdby) => {
   }
 
   // HIDE BUTTON EDIT PRICING
-  let hideEditPricing = ""; //"hidden";
-  if (row.Group === "POA") {
+  let hideEditPricing = "hidden";
+  if (row.Group === "POA" || row.PriceGroupName.includes("POA")) {
     hideEditPricing = "";
   }
 

@@ -95,6 +95,7 @@ Partial Class Methods_Order_DetailMethod
         Public Property Cost As String 
         Public Property MarkUp As String 
         Public Property Group As String 
+        Public Property PriceGroupName As String 
     End Class
     '#---------------------------------------|| /Server side Order Detail Class || ---------------------------------------#
 
@@ -547,7 +548,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, BlindId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PelmetType, MeshType, Matrix, Charge, Markup, FabricGroups")
+                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, BlindId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PelmetType, MeshType, Matrix, Charge, Markup, FabricGroups, PriceGroupName")
                 sqlBuilder.AppendLine("FROM view_details")
                 sqlBuilder.AppendLine("WHERE Active=@Active AND HeaderId=@HeaderId")
 
@@ -645,6 +646,7 @@ Partial Class Methods_Order_DetailMethod
                         Dim Charge As String = reader("Charge").ToString()
                         Dim MarkUp As String = reader("MarkUp").ToString()
                         Dim FabricGroups As String = reader("FabricGroups").ToString()
+                        Dim PriceGroupName As String = reader("PriceGroupName").ToString()
 
 
                         '#-------------------|| Cost ||-------------------#
@@ -995,7 +997,8 @@ Partial Class Methods_Order_DetailMethod
                             .RealCost = RealCost,
                             .Cost =  FindCost,
                             .MarkUp = FindMarkUp,
-                            .Group = FabricGroups
+                            .Group = FabricGroups,
+                            .PriceGroupName = PriceGroupName
                         }
                         resultList.Add(row)
                         noCounter += 1
