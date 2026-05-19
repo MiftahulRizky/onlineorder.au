@@ -340,7 +340,7 @@
                                     <i class="ti ti-clipboard-plus fs-2 me-2 opacity-50"></i> Add Item
                                 </a>
                                 <a href="javascript:void(0);" id="btnAddService" class="btn btn-primary ">
-                                    <i class="ti ti-cube-plus fs-2 me-2 opacity-50"></i> Add Service
+                                    <i class="ti ti-cube-plus fs-2 me-2 opacity-50"></i> Add Surcharge
                                 </a>
                             </div>
                         </div>
@@ -466,7 +466,7 @@
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title" id="modalAddServiceLabel">Add new service</h1>
+                    <h1 class="modal-title" id="modalAddServiceLabel">Add new surcharge</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">

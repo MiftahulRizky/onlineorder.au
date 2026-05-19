@@ -688,7 +688,7 @@ Partial Class Methods_Order_DetailMethod
                                 Product = String.Format("{0} {1}", KitName, States)
                             End IF
 
-                            Product = String.Format("Service - {0}", Product)
+                            Product = String.Format("Surcharge - {0}", Product)
                         End If
 
                         If DesignName = "Aluminium Blinds" Or DesignName = "Venetian Blinds" Then

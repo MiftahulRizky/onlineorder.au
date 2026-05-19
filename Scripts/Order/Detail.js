@@ -224,7 +224,7 @@ document.querySelector("#btnAddService").addEventListener("click", () => {
   const lblType = document.getElementById("lblType");
   const modalLabel = document.getElementById("modalAddServiceLabel");
 
-  modalLabel.innerHTML = "Add New Service";
+  modalLabel.innerHTML = "Add New Surcharge";
   divType.setAttribute("hidden", true);
   lblType.innerHTML = "Catgory Type";
 
