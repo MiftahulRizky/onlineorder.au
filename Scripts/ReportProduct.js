@@ -20,6 +20,17 @@ document
       e.target.classList.remove("is-invalid");
     });
   });
+
+document.querySelector("#btnFind").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+
+  // handlerSubmit(e.target.form, e.target.id);
+  handlerFind(e.target.id);
+});
 // =================================================FUNCTION================================================
 // --------------------------------------------||Binding Function||-----------------------------------------
 const binFindBy = () => {
@@ -100,8 +111,8 @@ const bindFined = async (findby) => {
 
       if (data.length > 1) {
         const defaultOption = document.createElement("option");
-        defaultOption.text = "ALL";
-        defaultOption.value = "";
+        defaultOption.text = "ALL " + findby.toUpperCase();
+        defaultOption.value = "all";
         select.add(defaultOption);
       }
 
@@ -127,7 +138,64 @@ const bindFined = async (findby) => {
   }
 };
 
+// --------------------------------------------||Handler Function||---------------------------------------
+const handlerFind = async (button) => {
+  try {
+    // return alert(button);
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = ["findby", "fined", "fromdate", "todate"];
+
+    const formData = { rolename: ROLENAME };
+
+    fields.forEach((field) => {
+      formData[field] = document.getElementById(field).value;
+    });
+
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/FindReport", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success.message);
+      window.open(dataResult.success.dir, "_blank");
+      // window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Show";
+  }
+};
+// --------------------------------------------||Other Function||-----------------------------------------
 const reportProductPageLoaded = async () => {
   await Promise.all([binFindBy(), bindDate()]);
+
   await loaderFadeOut();
 };
