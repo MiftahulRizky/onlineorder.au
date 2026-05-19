@@ -1539,8 +1539,8 @@ Partial Class Methods_Order_DetailMethod
                 End If
             End If
 
-            IF blindName = "Interim Levy Surcharge" Then
-                PriceGroupName = "Interim Levy Surcharge"
+            IF InArray(blindName, "Interim Levy Surcharge", "Fashade Pelmet Delivery") Then
+                PriceGroupName = blindName
             End If
 
             Dim priceGroupId As String = publicCfg.GetPriceGroupId("6C0B3347-9730-45CA-905C-5EF682CD06EA", priceGroupName)
@@ -1867,7 +1867,7 @@ Partial Class Methods_Order_DetailMethod
                 End If
 
 
-                IF fabricGroup = "POA" OR InStr(priceGroupName, "POA") > 1 OR (InStr(priceGroupName, "Uniline Pelmet") > 1 AND OrderDelivery = "Delivery") Then
+                IF fabricGroup = "POA" OR InStr(priceGroupName, "POA") > 0 OR (InStr(priceGroupName, "Uniline Pelmet") > 0 AND OrderDelivery = "Delivery") Then
                     Dim Prices As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix'", headerid, itemId))
                     If Prices.Tables(0).Rows.Count > 0 Then
                         Dim Qty As Integer = Convert.ToInt32(Prices.Tables(0).Rows(0)("Qty"))
