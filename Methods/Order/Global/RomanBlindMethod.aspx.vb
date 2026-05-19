@@ -281,14 +281,14 @@ Partial Class Methods_Order_RomanBlindMethod
             End If
 
             '#-----------------------|| room ||-----------------------#
-            If String.IsNullOrEmpty(data.room) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "room to install is required !",
-                        .field = "room"
-                    }
-                }
-            End If
+            ' If String.IsNullOrEmpty(data.room) Then
+            '     Return New ErrorResponse With {
+            '         .error = New ErrorDetail With {
+            '             .message = "room to install is required !",
+            '             .field = "room"
+            '         }
+            '     }
+            ' End If
 
             '#-----------------------|| mounting ||-----------------------#
             If String.IsNullOrEmpty(data.mounting) Then

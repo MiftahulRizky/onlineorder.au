@@ -346,7 +346,7 @@ const bindFabrics = async (designid, pelmet) => {
   }
 };
 
-const bindFabricColours = async (designid, fabrictype) => {
+const bindFabricColours = async (designid, fabrictype, pelmet) => {
   const select = document.getElementById("fabriccolour");
   select.innerHTML = "";
 
@@ -363,6 +363,7 @@ const bindFabricColours = async (designid, fabrictype) => {
           field: "fabriccolour",
           designid,
           fabrictype,
+          pelmet,
         },
       }),
     });

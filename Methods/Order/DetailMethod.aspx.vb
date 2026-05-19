@@ -95,6 +95,7 @@ Partial Class Methods_Order_DetailMethod
         Public Property Cost As String 
         Public Property MarkUp As String 
         Public Property Group As String 
+        Public Property OrderDelivery As String 
         Public Property PriceGroupName As String 
     End Class
     '#---------------------------------------|| /Server side Order Detail Class || ---------------------------------------#
@@ -548,7 +549,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, BlindId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PelmetType, MeshType, Matrix, Charge, Markup, FabricGroups, PriceGroupName")
+                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, BlindId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PelmetType, MeshType, Matrix, Charge, Markup, FabricGroups, OrderDelivery, PriceGroupName")
                 sqlBuilder.AppendLine("FROM view_details")
                 sqlBuilder.AppendLine("WHERE Active=@Active AND HeaderId=@HeaderId")
 
@@ -646,6 +647,7 @@ Partial Class Methods_Order_DetailMethod
                         Dim Charge As String = reader("Charge").ToString()
                         Dim MarkUp As String = reader("MarkUp").ToString()
                         Dim FabricGroups As String = reader("FabricGroups").ToString()
+                        Dim OrderDelivery As String = reader("OrderDelivery").ToString()
                         Dim PriceGroupName As String = reader("PriceGroupName").ToString()
 
 
@@ -998,6 +1000,7 @@ Partial Class Methods_Order_DetailMethod
                             .Cost =  FindCost,
                             .MarkUp = FindMarkUp,
                             .Group = FabricGroups,
+                            .OrderDelivery = OrderDelivery,
                             .PriceGroupName = PriceGroupName
                         }
                         resultList.Add(row)
@@ -1795,7 +1798,7 @@ Partial Class Methods_Order_DetailMethod
             End If
 
             ' Ambil semua detail sekaligus
-            Dim query As String = "SELECT Id, Mounting, BlindName, BracketType, TubeType, ControlType, FabricId, FabricIdB, DesignId, BlindId, DesignName, BottomHoldDown, PelmetType FROM view_details WHERE HeaderId='" & headerid & "' AND Active='1' ORDER BY Id, BlindNo, DesignName ASC"
+            Dim query As String = "SELECT Id, Mounting, BlindName, BracketType, TubeType, ControlType, FabricId, FabricIdB, DesignId, BlindId, DesignName, BottomHoldDown, PelmetType, OrderDelivery FROM view_details WHERE HeaderId='" & headerid & "' AND Active='1' ORDER BY Id, BlindNo, DesignName ASC"
             Dim detailData As DataSet = publicCfg.GetListData(query)
 
             If detailData.Tables(0).Rows.Count < 1 Then
@@ -1816,6 +1819,7 @@ Partial Class Methods_Order_DetailMethod
                 Dim designName = row("DesignName").ToString()
                 Dim bottomHold = row("BottomHoldDown").ToString()
                 Dim PelmetType = row("PelmetType").ToString()
+                Dim OrderDelivery = row("OrderDelivery").ToString()
 
                 Dim fabricGroup = publicCfg.GetFabricGroup(fabricId)
                 Dim ListParam As New List(Of Object) From {
@@ -1861,7 +1865,7 @@ Partial Class Methods_Order_DetailMethod
                     End If
                 End If
 
-                IF fabricGroup = "POA" OR InStr(priceGroupName, "POA") > 1 Then
+                IF fabricGroup = "POA" OR InStr(priceGroupName, "POA") > 1 OR (InStr(priceGroupName, "Uniline Pelmet") > 1 AND OrderDelivery = "Delivery") Then
                     Dim Prices As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix'", headerid, itemId))
                     If Prices.Tables(0).Rows.Count > 0 Then
                         Dim Qty As Integer = Convert.ToInt32(Prices.Tables(0).Rows(0)("Qty"))
@@ -2088,10 +2092,10 @@ Partial Class Methods_Order_DetailMethod
                 Return bname & " - " & fabricGroup
 
             Case "Pelmet"
-                Dim Delivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM OrderHeaders WHERE Id = '{0}'", headerid))
-                If Delivery = "Delivery" then
-                    Return "Pelmet Delivery - POA"
-                End If
+                ' Dim Delivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM OrderHeaders WHERE Id = '{0}'", headerid))
+                ' If Delivery = "Delivery" AND bname = "Uniline Pelmet" then
+                '     Return String.Format("{0} {1} - {2} POA", bname, pelmetOver, fabricGroup)
+                ' End If
 
                 If String.IsNullOrEmpty(fabricGroup) Then fabricGroup = "No Fabric"
                 If bname = "Uniline Pelmet" Then

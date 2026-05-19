@@ -103,7 +103,7 @@ Partial Class Methods_Order_PelmetMethod
                     If data.pelmet = "Vertical" Then
                         data.designid = "B556E35C-CEAC-40F8-A6CF-156601BD57DA"
                     End If
-                    query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId = '{0}' AND Type='{1}' AND Active='1'  ORDER BY Name ASC", data.designid, data.fabrictype)
+                    query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId = '{0}' AND Type='{1}' AND Width='127' AND Active='1'  ORDER BY Name ASC", data.designid, data.fabrictype)
                     Return GetFormattedData(query, "Id", "Colour")
 
                 Case Else
@@ -275,19 +275,24 @@ Partial Class Methods_Order_PelmetMethod
                 FabricGroup = "No Fabric"
             End If
 
+            '#Uniline Pelmet PU
             Dim PriceGroupName As String = String.Format("{0} {1} - {2}", BlindName, data.pelmetover, FabricGroup)
             If BlindName = "Fashade Pelmet" Then
+                '#Fashade Pelmet All
                 PriceGroupName = String.Format("{0} - {1}", BlindName, data.mounting)
             End If
 
-            Dim Delivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM OrderHeaders WHERE Id = '{0}'", data.headerid))
-            If Delivery = "Delivery" then
-                PriceGroupName = "Pelmet Delivery - POA"
-            End If
+            ' Dim Delivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM OrderHeaders WHERE Id = '{0}'", data.headerid))
+            ' If Delivery = "Delivery" AND BlindName = "Uniline Pelmet" then
+            '     '#Uniline Pelmet Delivery + POA
+            '     PriceGroupName = String.Format("{0} {1} - {2} POA", BlindName, data.pelmetover, FabricGroup)
+            ' End If
 
             Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
             If PriceGroupId = "" Then
-                Throw New Exception("Something went wrong !")
+                ' Throw New Exception("Something went wrong !")
+                '#Pelmet - POA
+                PriceGroupId = "94793E41-2115-494C-944F-7E07EFE8F24A"
             End If
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
