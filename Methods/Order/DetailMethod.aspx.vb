@@ -974,7 +974,7 @@ Partial Class Methods_Order_DetailMethod
 
                         Dim FindCost As String = Cost
                         Dim RealCost As String = publicCfg.GetItemData(String.Format("SELECT FORMAT(Cost, 'N2', 'en-US') AS FormatRealCost FROM OrderDetailsPrice WHERE Type ='Matrix' And HeaderId = '{0}' And ItemId = '{1}'", HeaderId, Id))
-                        If FabricGroups = "POA" Then
+                        If FabricGroups = "POA" OR InStr(PriceGroupName, "POA") > 0 OR (InStr(PriceGroupName, "Uniline Pelmet") > 0 AND OrderDelivery = "Delivery") Then
                             Dim realCostValue As Decimal
                             If Decimal.TryParse(RealCost, realCostValue) AndAlso realCostValue = 0D Then
                                 FindCost = "<span class='badge bg-orange-lt'>POA</span>"
