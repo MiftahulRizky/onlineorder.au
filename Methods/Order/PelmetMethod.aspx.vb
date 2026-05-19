@@ -100,10 +100,12 @@ Partial Class Methods_Order_PelmetMethod
 
                 Case "fabriccolour"
                     data.designid = "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2"
+                    Dim byWidth As String = ""
                     If data.pelmet = "Vertical" Then
                         data.designid = "B556E35C-CEAC-40F8-A6CF-156601BD57DA"
+                        byWidth = "AND Width='127'"
                     End If
-                    query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId = '{0}' AND Type='{1}' AND Width='127' AND Active='1'  ORDER BY Name ASC", data.designid, data.fabrictype)
+                    query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId = '{0}' AND Type='{1}' {2} AND Active='1'  ORDER BY Name ASC", data.designid, data.fabrictype, byWidth)
                     Return GetFormattedData(query, "Id", "Colour")
 
                 Case Else

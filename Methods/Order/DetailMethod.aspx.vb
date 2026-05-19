@@ -1821,6 +1821,7 @@ Partial Class Methods_Order_DetailMethod
                 Dim PelmetType = row("PelmetType").ToString()
                 Dim OrderDelivery = row("OrderDelivery").ToString()
 
+
                 Dim fabricGroup = publicCfg.GetFabricGroup(fabricId)
                 Dim ListParam As New List(Of Object) From {
                     designName,
@@ -1864,6 +1865,8 @@ Partial Class Methods_Order_DetailMethod
                         End If
                     End If
                 End If
+
+                Throw new Exception(priceGroupName)
 
                 IF fabricGroup = "POA" OR InStr(priceGroupName, "POA") > 1 OR (InStr(priceGroupName, "Uniline Pelmet") > 1 AND OrderDelivery = "Delivery") Then
                     Dim Prices As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix'", headerid, itemId))
