@@ -340,7 +340,7 @@
                                     <i class="ti ti-clipboard-plus fs-2 me-2 opacity-50"></i> Add Item
                                 </a>
                                 <a href="javascript:void(0);" id="btnAddService" class="btn btn-primary ">
-                                    <i class="ti ti-cube-plus fs-2 me-2 opacity-50"></i> Add Surcharge
+                                    <i class="ti ti-database-dollar fs-2 me-2 opacity-50"></i> Add Surcharge
                                 </a>
                             </div>
                         </div>
