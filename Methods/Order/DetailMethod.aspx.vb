@@ -1802,7 +1802,7 @@ Partial Class Methods_Order_DetailMethod
             End If
 
             ' Ambil semua detail sekaligus
-            Dim query As String = "SELECT Id, Mounting, BlindName, BracketType, TubeType, ControlType, FabricId, FabricIdB, DesignId, BlindId, DesignName, BottomHoldDown, PelmetType, OrderDelivery FROM view_details WHERE HeaderId='" & headerid & "' AND Active='1' ORDER BY Id, BlindNo, DesignName ASC"
+            Dim query As String = "SELECT Id, Mounting, KitName, BlindName, BracketType, TubeType, ControlType, FabricId, FabricIdB, DesignId, BlindId, DesignName, BottomHoldDown, PelmetType, OrderDelivery FROM view_details WHERE HeaderId='" & headerid & "' AND Active='1' ORDER BY Id, BlindNo, DesignName ASC"
             Dim detailData As DataSet = publicCfg.GetListData(query)
 
             If detailData.Tables(0).Rows.Count < 1 Then
@@ -1812,6 +1812,7 @@ Partial Class Methods_Order_DetailMethod
             For Each row As DataRow In detailData.Tables(0).Rows
                 Dim itemId = row("Id").ToString()
                 Dim Mounting = row("Mounting").ToString()
+                Dim kitName = row("KitName").ToString()
                 Dim blindName = row("BlindName").ToString()
                 Dim bracketType = row("BracketType").ToString()
                 Dim controlType = row("ControlType").ToString()
@@ -1837,7 +1838,8 @@ Partial Class Methods_Order_DetailMethod
                     fabricGroup,
                     PelmetType,
                     Mounting,
-                    headerid
+                    headerid,
+                    KitName
                 }
                 Dim priceGroupName = GetPriceGroupName(ListParam) 'GetPriceGroupName(designName, blindName, bracketType, controlType, tubeType, bottomHold, fabricGroup)
                 If Not String.IsNullOrEmpty(priceGroupName) Then
@@ -1859,7 +1861,8 @@ Partial Class Methods_Order_DetailMethod
                         fabricGroupB,
                         PelmetType,
                         Mounting,
-                        headerid
+                        headerid,
+                        KitName
                     }
                     Dim priceGroupNameB = GetPriceGroupName(ListParamB) 'GetPriceGroupName(designName, blindName, bracketType, controlType, tubeType, bottomHold, fabricGroupB)
                     If Not String.IsNullOrEmpty(priceGroupNameB) Then
@@ -2065,37 +2068,59 @@ Partial Class Methods_Order_DetailMethod
         Dim pelmetOver As String = CStr(ListParam(7))
         Dim mounting As String = CStr(ListParam(8))
         Dim headerid As String = CStr(ListParam(9))
+        Dim kitname As String = CStr(ListParam(10))
         Select Case dname
-            Case "Cellular Blinds"
-                
-                If bname = "Galaxy" Then
-                    Return bname & " " & brackettype & " - " & fabricGroup
+            Case "Additional"
+                If bname = "Long Length Surcharge" Then
+                     If InStr(kitName, "Delivery") > 0 Then
+                        Return "Long Length Delivery"
+                    Else
+                        Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id='{0}'", headerid))
+                        Dim CustomerStates As String = publicCfg.GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId='{0}' AND [Primary]=1", CustomerId))
+                        If CustomerStates = "NSW" Then
+                            Return String.Format("{0} NSW", kitname)
+                        End If
+                        If CustomerStates = "VIC" Or CustomerStates = "QLD" Then
+                            Return String.Format("{0} NSW", kitname)
+                        End If
+                    End If
+                End IF
+
+                IF InArray(bname, "Interim Levy Surcharge", "Fashade Pelmet Delivery") Then
+                    Return bname
                 End If
 
-                Return bname & " " & controltype & " - " & fabricGroup
+                If bname = "Uniline Pelmet Delivery" Then
+                    Return "Uniline Pelmet Delivery - POA"
+                End If
+            Case "Cellular Blinds"
+                If bname = "Galaxy" Then
+                    Return String.Format("{0} {1} - {2}", bname, brackettype, fabricGroup)
+                End If
+                Return String.Format("{0} {1} - {2}", bname, controltype, fabricGroup) 
 
             Case "Panel Glides"
-                Return "Panel Glide - " & fabricGroup
+                Return String.Format("Panel Glide - {0}", fabricGroup)
 
             Case "Roller Blinds"
-                If bname = "Skin Only" Then Return "Roller Skin Only - " & fabricGroup
-                Return "Roller Blind - " & fabricGroup
+                If bname = "Skin Only" Then Return String.Format("Roller Skin Only - {0}", fabricGroup)
+                Return String.Format("Roller Blind - {0}", fabricGroup)
 
             Case "Roman Blinds"
-                Return "Roman Blind - " & fabricGroup
+                Return String.Format("Roman Blind - {0}", fabricGroup)
 
             Case "Venetian Blinds", "Aluminium Blinds"
                 Return bname
 
             Case "Veri Shades"
-                If bname = "Single" Then Return "Veri Shades - " & fabricGroup
-                If bname = "Slat Only" Then Return bname & " - " & fabricGroup
+                If bname = "Single" Then Return String.Format("Veri Shades - {0}", fabricGroup)
+                If bname = "Slat Only" Then Return String.Format("{0} - {1}", bname, fabricGroup)
                 Return bname
 
             Case "Vertical Blinds"
-                If bname = "Track Only" Then Return bname & " - " & tube
-                If bname = "Slat Only" AndAlso bottomHold = "Top Hanger Only" Then Return bname & " With Hanger - " & fabricGroup
-                Return bname & " - " & fabricGroup
+                If bname = "Track Only" Then Return String.Format("{0} - {1}", bname,tube)
+                If bname = "Slat Only" AndAlso bottomHold = "Top Hanger Only" Then Return String.Format("{0} With Hanger - {1}", bname, fabricGroup)
+                Return String.Format("{0} - {1}", bname, fabricGroup)
 
             Case "Pelmet"
                 ' Dim Delivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM OrderHeaders WHERE Id = '{0}'", headerid))
