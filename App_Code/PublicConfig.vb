@@ -1011,7 +1011,7 @@ Public Class PublicConfig
                 '#---------------------Create Description---------------------#
                 Dim description As String = kitName & " " & size
 
-                If designName = "Additional" Then
+                If InArray(designName, "Additional") Then
                     description = kitName
                     If blindName = "Long Length Surcharge" Then
                         Dim CustomerId As String = GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id = '{0}'", HeaderId))
@@ -1020,28 +1020,32 @@ Public Class PublicConfig
                     End If
                 End If
 
-                If designName = "Roller Blinds" Then
+                If InArray(designName, "Roller Blinds") Then
                     description = "Roller #" & fabricType & " " & size
                 End If
 
-                If designName = "Veri Shades" Or designName = "Vertical Track Only" Then
+                If InArray(designName, "Veri Shades", "Vertical Track Only") Then
                     description = kitName & " #" & fabricType
-                    If blindName = "Veri Shades Track Only" Or blindName = "Vertical Track Only" Then
+                    If InArray(blindName, "Veri Shades Track Only", "Vertical Track Only") Then
                         description = kitName
                     End If
                 End If
 
-                If designName = "Cellular Blinds" Then
+                If InArray(designName, "Cellular Blinds") Then
                     description = String.Format("{0} {1} {2} {3}", blindName, controlType, fabricType, size)
 
-                    If blindName = "Galaxy" Then
+                    If InArray(blindName, "Galaxy") Then
                         description = String.Format("{0} ({1}) {2} #{3} {4}", blindName, bracketType, controlType, fabricType, size) 
                     End If
 
-                    If blindName = "Potrait" Then 
+                    If InArray(blindName, "Potrait") Then 
                         description = String.Format("{0} {1} #{2} {3}", blindName, bracketType, fabricType, size)
                     End If
                 End If
+
+                If InArray(designName, "Pelmet") Then
+                    description = String.Format("{0} (Width : {1}mm)", kitName, width)
+                End IF
 
                 '#---------------------Insert Order Detail Price---------------------#
                 Dim ListParam As New List(Of Object) From {

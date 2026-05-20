@@ -247,7 +247,7 @@ Partial Class Methods_ReportProductMethod
 
             If findby = "customer" Then
                 ' Return "200"
-                Dim CustomerData As DataSet = publicCfg.GetListData("SELECT * FROM Customers WHERE Id NOT IN ('ADMIN', 'ADMINLOOP') AND Name NOT LIKE '%DO NOT USE%' AND Active=1 ORDER BY Name ASC")
+                Dim CustomerData As DataSet = publicCfg.GetListData(String.Format("SELECT StoreId As CustomerId, StoreName As CustomerName FROM view_headers WHERE Active = 1 AND Status NOT IN ('Canceled', 'Draft', 'Pending Price Approval') AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') GROUP BY StoreId, StoreName ORDER BY CustomerName ASC", fromdate, todate))
                 If Not CustomerData.Tables(0).Rows.Count = 0 Then
                     result += spanStart & "Report By Customers" & spanEnd
                     result += tableStart
@@ -263,7 +263,7 @@ Partial Class Methods_ReportProductMethod
                     result += trEnd
 
                     For i As Integer = 0 To CustomerData.Tables(0).Rows.Count - 1
-                        Dim CustomerName As String = CustomerData.Tables(0).Rows(i).Item("Name").ToString
+                        Dim CustomerName As String = CustomerData.Tables(0).Rows(i).Item("CustomerName").ToString
                         Dim tdProduct As String = String.Format("<td rowspan='18' style='text-align:center;height:auto;font-size:8px;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>")
 
                         result += trStart

@@ -974,7 +974,7 @@ Partial Class Methods_Order_DetailMethod
 
                         Dim FindCost As String = Cost
                         Dim RealCost As String = publicCfg.GetItemData(String.Format("SELECT FORMAT(Cost, 'N2', 'en-US') AS FormatRealCost FROM OrderDetailsPrice WHERE Type ='Matrix' And HeaderId = '{0}' And ItemId = '{1}'", HeaderId, Id))
-                        If FabricGroups = "POA" OR InStr(PriceGroupName, "POA") > 0 OR (InStr(PriceGroupName, "Uniline Pelmet") > 0 AND OrderDelivery = "Delivery") Then
+                        If FabricGroups = "POA" OR InStr(PriceGroupName, "POA") > 0 Then
                             Dim realCostValue As Decimal
                             If Decimal.TryParse(RealCost, realCostValue) AndAlso realCostValue = 0D Then
                                 FindCost = "<span class='badge bg-orange-lt'>POA</span>"
@@ -1543,6 +1543,10 @@ Partial Class Methods_Order_DetailMethod
                 PriceGroupName = blindName
             End If
 
+            If blindName = "Uniline Pelmet Delivery" Then
+                PriceGroupName = "Uniline Pelmet Delivery - POA"
+            End If
+
             Dim priceGroupId As String = publicCfg.GetPriceGroupId("6C0B3347-9730-45CA-905C-5EF682CD06EA", priceGroupName)
 
             If String.IsNullOrEmpty(priceGroupId) Then
@@ -1867,7 +1871,7 @@ Partial Class Methods_Order_DetailMethod
                 End If
 
 
-                IF fabricGroup = "POA" OR InStr(priceGroupName, "POA") > 0 OR (InStr(priceGroupName, "Uniline Pelmet") > 0 AND OrderDelivery = "Delivery") Then
+                IF fabricGroup = "POA" OR InStr(priceGroupName, "POA") > 0 Then
                     Dim Prices As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId={0} AND ItemId={1} AND Type='Matrix'", headerid, itemId))
                     If Prices.Tables(0).Rows.Count > 0 Then
                         Dim Qty As Integer = Convert.ToInt32(Prices.Tables(0).Rows(0)("Qty"))
