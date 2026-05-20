@@ -78,7 +78,7 @@ Partial Class Methods_ReportProductMethod
             Select Case data.field.ToLower()
                 Case "fined"
                     If data.findby = "product" Then
-                        query = String.Format("SELECT Id, Name FROM Designs WHERE Active=1 AND Company <> 'LOOP' AND Description = 'Environment : Production' ORDER BY Name ASC")
+                        query = String.Format("SELECT Id, Name FROM Designs WHERE Active=1 AND Company <> 'LOOP' AND Description IN ('Environment : Production', 'Environment : Testing') ORDER BY Name ASC")
                     End If
 
                     If data.findby = "customer" Then
@@ -213,12 +213,12 @@ Partial Class Methods_ReportProductMethod
                     bydesign = String.Format("AND Id = '{0}'",fined)
                 End If
                 
-                Dim Title As String = String.Format("Report By Product On {0} / {1}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"), Convert.ToDateTime(todate).ToString("dd MMM yyyy"))
+                Dim Title As String = String.Format("{0} / {1}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"), Convert.ToDateTime(todate).ToString("dd MMM yyyy"))
                 If fromdate = todate Then
-                    Title = String.Format("Report By Product On {0}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"))
+                    Title = String.Format("On {0}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"))
                 End IF
 
-                Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT*FROM Designs WHERE Active=1 AND Company <> 'LOOP' AND Description = 'Environment : Production' {0} ORDER BY Name ASC", bydesign))
+                Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT*FROM Designs WHERE Active=1 AND Company <> 'LOOP' AND Description IN ('Environment : Production', 'Environment : Testing') {0} ORDER BY Name ASC", bydesign))
                 Dim ProductCount As Integer = ProductData.Tables(0).Rows.Count
                 If Not ProductCount = 0 Then
                     result += spanStart & Title & spanEnd
@@ -247,19 +247,34 @@ Partial Class Methods_ReportProductMethod
 
             If findby = "customer" Then
                 ' Return "200"
-                Dim CustomerData As DataSet = publicCfg.GetListData(String.Format("SELECT StoreId As CustomerId, StoreName As CustomerName FROM view_headers WHERE Active = 1 AND Status NOT IN ('Canceled', 'Draft', 'Pending Price Approval') AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') GROUP BY StoreId, StoreName ORDER BY CustomerName ASC", fromdate, todate))
+                Dim Title As String = String.Format("{0} / {1}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"), Convert.ToDateTime(todate).ToString("dd MMM yyyy"))
+                If fromdate = todate Then
+                    Title = String.Format("On ", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"))
+                End IF
+
+                Dim byCustomer As String = String.Format("AND StoreId = '{0}'", fined)
+                If fined = "all" Then
+                    byCustomer = ""
+                End If
+                Dim CustomerData As DataSet = publicCfg.GetListData(String.Format("SELECT StoreId As CustomerId, StoreName As CustomerName FROM view_headers WHERE Active = 1 AND Status NOT IN ('Canceled', 'Draft', 'Pending Price Approval') AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') {2} GROUP BY StoreId, StoreName ORDER BY CustomerName ASC", fromdate, todate, byCustomer))
+
+                Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT Id, Name FROM Designs WHERE Active=1 AND Company <> 'LOOP' AND Description IN ('Environment : Production', 'Environment : Testing') ORDER BY Name ASC"))
+                Dim ProductDataCount As Integer = ProductData.Tables(0).Rows.Count
                 If Not CustomerData.Tables(0).Rows.Count = 0 Then
-                    result += spanStart & "Report By Customers" & spanEnd
+                    Dim thProduct As String = String.Format("<th colspan='{0}' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;'>", ProductDataCount)
+                    result += spanStart & Title & spanEnd
                     result += tableStart
                     result += trStart
                     result += thStartRowSpan2 & "No" & thEnd
                     result += thStartRowSpan2 & "Customers" & thEnd
-                    result += thStartColSpan2 & "Products" & thEnd
+                    result += thProduct & "Products" & thEnd
                     result += trEnd
 
                     result += trStart
-                    result += thStart & "Name" & thEnd
-                    result += thStart & "Qty" & thEnd
+                    For h As Integer = 0 To ProductDataCount - 1
+                        Dim Name As String = ProductData.Tables(0).Rows(h).Item("Name").ToString()
+                        result += thStart & Name & thEnd
+                    Next
                     result += trEnd
 
                     For i As Integer = 0 To CustomerData.Tables(0).Rows.Count - 1
@@ -269,8 +284,11 @@ Partial Class Methods_ReportProductMethod
                         result += trStart
                         result += tdStart & i + 1 & tdEnd
                         result += tdStart & CustomerName & tdEnd
-                        result += tdStart & "Product Name" & tdEnd
-                        result += tdStart & "0" & tdEnd
+                        For k As Integer = 0 To ProductDataCount - 1
+                            Dim DesignId As String = ProductData.Tables(0).Rows(k).Item("Id").ToString()
+                            Dim Qty As String = publicCfg.GetItemData(String.Format("SELECT SUM(Qty) FROM view_details WHERE DesignId='{0}' AND Active = 1 AND Status NOT IN ('Canceled', 'Draft', 'Pending Price Approval') AND SubmittedDate >= '{1}' AND SubmittedDate < DATEADD(DAY, 1, '{2}') AND CustomerName = '{3}'", DesignId, fromdate, todate, CustomerName))
+                            result += tdStart & If(Qty = "", "0", Qty) & tdEnd
+                        Next
                         result += trEnd
                     Next
                     result += tableEnd
