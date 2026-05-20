@@ -202,7 +202,7 @@ Partial Class Methods_ReportProductMethod
 
     Private Shared Function CreatePDFReport(findby As String, fined As String, fromdate As String, todate As String) As String
         Try
-            Dim result As String = String.Empty
+            Dim result As String = ""
             Dim directory As String = HttpContext.Current.Server.MapPath("~/file/report")
             Dim filename As String = ""
             Dim Query As String = ""
@@ -210,7 +210,7 @@ Partial Class Methods_ReportProductMethod
             If findby = "product" Then
                 Dim bydesign As String = ""
                 If Not fined = "all" Then
-                    bydesign = String.Format("AND Id = '{0}'",fined)
+                    bydesign = String.Format("AND DesignId = '{0}'",fined)
                 End If
                 
                 Dim Title As String = String.Format("{0} / {1}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"), Convert.ToDateTime(todate).ToString("dd MMM yyyy"))
@@ -218,27 +218,32 @@ Partial Class Methods_ReportProductMethod
                     Title = String.Format("On {0}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"))
                 End IF
 
-                Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT*FROM Designs WHERE Active=1 AND Company <> 'LOOP' AND Description IN ('Environment : Production', 'Environment : Testing') {0} ORDER BY Name ASC", bydesign))
+                Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT DesignId, DesignName, SUM(Qty) As Qty FROM view_details WHERE Active = 1 AND Status NOT IN ('Canceled', 'Draft', 'Pending Price Approval') AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') {2} GROUP BY DesignId, DesignName ORDER BY DesignName ASC ", fromdate, todate, bydesign))
                 Dim ProductCount As Integer = ProductData.Tables(0).Rows.Count
+
+                result += spanStart & Title & spanEnd
+                result += tableStart
+                result += trStart
+                result += thStart & "No" & thEnd
+                result += thStart & "Products" & thEnd
+                result += thStart & "Qty" & thEnd
+                result += trEnd
                 If Not ProductCount = 0 Then
-                    result += spanStart & Title & spanEnd
-                    result += tableStart
-                    result += trStart
-                    result += thStart & "No" & thEnd
-                    result += thStart & "Products" & thEnd
-                    result += thStart & "Qty" & thEnd
-                    result += trEnd
 
                     For i As Integer = 0 To ProductCount - 1
-                        Dim ProductId As String = ProductData.Tables(0).Rows(i).Item("Id").ToString()
-                        Dim ProductName As String = ProductData.Tables(0).Rows(i).Item("Name").ToString()
-                        Dim Qty As String = publicCfg.GetItemData(String.Format("SELECT SUM(Qty) FROM view_details WHERE DesignId='{0}' AND Active = 1 AND Status NOT IN ('Canceled', 'Draft', 'Pending Price Approval') AND SubmittedDate >= '{1}' AND SubmittedDate < DATEADD(DAY, 1, '{2}')", ProductId, fromdate, todate))
+                        Dim ProductName As String = ProductData.Tables(0).Rows(i).Item("DesignName").ToString()
+                        Dim Qty As String = ProductData.Tables(0).Rows(i).Item("Qty").ToString()
                         result += trStart
                         result += tdStart & (i + 1) & tdEnd
                         result += tdStart & ProductName & tdEnd
                         result += tdStart & If(Qty = "", "0", Qty) & tdEnd
                         result += trEnd
                     Next
+                    result += tableEnd
+                Else
+                    result += trStart
+                    result += tdStartColSpan3 & "Data Not Found :(" & tdEnd
+                    result += trEnd
                     result += tableEnd
                 End If
 
@@ -260,26 +265,27 @@ Partial Class Methods_ReportProductMethod
 
                 Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT Id, Name FROM Designs WHERE Active=1 AND Company <> 'LOOP' AND Description IN ('Environment : Production', 'Environment : Testing') ORDER BY Name ASC"))
                 Dim ProductDataCount As Integer = ProductData.Tables(0).Rows.Count
-                If Not CustomerData.Tables(0).Rows.Count = 0 Then
-                    Dim thProduct As String = String.Format("<th colspan='{0}' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;'>", ProductDataCount)
-                    result += spanStart & Title & spanEnd
-                    result += tableStart
-                    result += trStart
-                    result += thStartRowSpan2 & "No" & thEnd
-                    result += thStartRowSpan2 & "Customers" & thEnd
-                    result += thProduct & "Products" & thEnd
-                    result += trEnd
 
-                    result += trStart
-                    For h As Integer = 0 To ProductDataCount - 1
-                        Dim Name As String = ProductData.Tables(0).Rows(h).Item("Name").ToString()
-                        result += thStart & Name & thEnd
-                    Next
-                    result += trEnd
+
+                Dim thProduct As String = String.Format("<th colspan='{0}' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;'>", ProductDataCount)
+                result += spanStart & Title & spanEnd
+                result += tableStart
+                result += trStart
+                result += thStartRowSpan2 & "No" & thEnd
+                result += thStartRowSpan2 & "Customers" & thEnd
+                result += thProduct & "Products" & thEnd
+                result += trEnd
+
+                result += trStart
+                For h As Integer = 0 To ProductDataCount - 1
+                    Dim Name As String = ProductData.Tables(0).Rows(h).Item("Name").ToString()
+                    result += thStart & Name & thEnd
+                Next
+                result += trEnd
+                If Not CustomerData.Tables(0).Rows.Count = 0 Then
 
                     For i As Integer = 0 To CustomerData.Tables(0).Rows.Count - 1
                         Dim CustomerName As String = CustomerData.Tables(0).Rows(i).Item("CustomerName").ToString
-                        Dim tdProduct As String = String.Format("<td rowspan='18' style='text-align:center;height:auto;font-size:8px;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>")
 
                         result += trStart
                         result += tdStart & i + 1 & tdEnd
@@ -292,7 +298,15 @@ Partial Class Methods_ReportProductMethod
                         result += trEnd
                     Next
                     result += tableEnd
+                
+                Else
 
+                    Dim tdProduct As String = String.Format("<td colspan='{0}' style='text-align:center;height:auto;font-size:8px;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>", ProductDataCount+2)
+
+                    result += trStart
+                    result += tdProduct & "Data Not Found :(" & tdEnd
+                    result += trEnd
+                    result += tableEnd
 
                 End If
 
