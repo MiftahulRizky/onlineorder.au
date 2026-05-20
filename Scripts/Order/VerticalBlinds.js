@@ -659,6 +659,7 @@ const bindTrackColour = (tubetype) => {
     );
   }
   if (tubetype === "Louvolite") {
+    data.push({ value: "Birch White", text: "Birch White" });
     data.push({ value: "White", text: "White" });
   }
 
