@@ -731,7 +731,7 @@ const bindInstall = (blindname) => {
   let list = [];
 
   if (["Basic Window", "Safety Window"].includes(blindname)) {
-    list = ["Installation", "Pick Up"];
+    list = ["Pick Up"];
   }
 
   list.forEach((ls) => {
@@ -1604,7 +1604,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
         divMesh.classList.remove("d-none");
       }
       divDualHinges.classList.remove("d-none");
-      // divInstall.classList.remove("d-none");
+      divInstall.classList.remove("d-none");
       divCutOut.classList.remove("d-none");
       divExtras.classList.remove("d-none");
     }
@@ -1624,7 +1624,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
         divFrameColour.classList.remove("d-none");
         divMesh.classList.remove("d-none");
         divBrace.classList.remove("d-none");
-        // divInstall.classList.remove("d-none");
+        divInstall.classList.remove("d-none");
         divFitting.classList.remove("d-none");
         divExtras.classList.remove("d-none");
       }
