@@ -62,6 +62,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const frametype = e.target.value;
       bindFrameColour(blindname, tubename, frametype);
     }
+
     if (e.target.id === "framecolour") {
       const framecolour = e.target.value;
       const divCustomFrameColour = document.getElementById(
@@ -70,6 +71,20 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       divCustomFrameColour.classList.add("d-none");
       if (["Powder Coating"].includes(framecolour)) {
         divCustomFrameColour.classList.remove("d-none");
+      }
+    }
+
+    if (e.target.id === "brace") {
+      const divBraceLength = document.getElementById("divBraceLength");
+      document.getElementById("bracelength").value = "";
+      divBraceLength.classList.add("d-none");
+      const brace = e.target.value;
+      if (
+        !["Horizontal Centre Brace", "Vertical Centre Brace", ""].includes(
+          brace,
+        )
+      ) {
+        divBraceLength.classList.remove("d-none");
       }
     }
   });
@@ -512,15 +527,15 @@ const bindFrameType = (blindname, tubename) => {
   let list = [];
 
   if (["Safety Window", "Security Window"].includes(blindname)) {
-    list = ["Door Frame", "Grille Frame"];
+    list = ["Grille Frame", "Door Frame"];
   }
 
   if (["Basic Window"].includes(blindname)) {
     if (["Flyscreens"].includes(tubename)) {
-      list = ["21x9 Frame", "25x11 Frame", "Grill Frame"];
+      list = ["21x9 Frame", "25x11 Frame", "35x11 Frame"];
     }
     if (["Retractable Flyscreen Roll-Up Down"].includes(tubename)) {
-      list = ["Door", "Window"];
+      list = ["Window"];
     }
   }
 
@@ -528,7 +543,7 @@ const bindFrameType = (blindname, tubename) => {
     data.push({ value: ls, text: ls });
   });
 
-  if (data.length > 1) {
+  if (data.length > 0) {
     const defaultOption = document.createElement("option");
     defaultOption.text = "";
     defaultOption.value = "";
@@ -566,7 +581,7 @@ const bindFrameColour = (blindname, tubename, frametype) => {
       "Powder Coating",
       "Primrose",
       "Silver (Anodised)",
-      "Stone Beige",
+      "Beige",
       "Surf Mist",
       "White",
       "White Birch",
@@ -580,13 +595,12 @@ const bindFrameColour = (blindname, tubename, frametype) => {
       "Apo Grey",
       "Custom Black",
       "Charcoal Satin",
-      "Dune",
       "Monument Matt",
       "Primrose",
-      "Silver Anodised",
-      "Stone Beige",
       "Surf Mist",
+      "Paperbark",
       "Pearl White",
+      "White Birch",
       "Woodland Grey",
     ];
   }
@@ -595,16 +609,20 @@ const bindFrameColour = (blindname, tubename, frametype) => {
     if (["Flyscreens"].includes(tubename)) {
       list = [
         "Apo Grey",
+        "Beige",
         "Black",
         "Bronze",
         "Brown",
         "Charcoal",
+        "Deep Ocean",
         "Dune",
+        "Hawthorne Green",
+        "Jasper",
         "Monument",
+        "Notre Dame",
         "Powder Coating",
         "Primrose",
         "Silver (Anodised)",
-        "Stone Beige",
         "Surf Mist",
         "TBA",
         "White",
@@ -668,10 +686,8 @@ const bindBrace = (blindname) => {
   if (["Safety Window"].includes(blindname)) {
     list = [
       "Horizontal Centre Brace",
-      "Vertical Centre",
       "Vertical Centre Brace",
       "Vertical Brace Specify",
-      "Vertical Specify",
       "Horizontal Brace Specify",
     ];
   }
@@ -780,7 +796,7 @@ const bindRemove = (blindname) => {
   let data = [];
 
   if (["Security Window"].includes(blindname)) {
-    const list = ["No Removal", "Removal Only", "Removal and Disposal"];
+    const list = ["Removal Only", "Removal and Disposal"];
 
     list.forEach((ls) => {
       data.push({ value: ls, text: ls });
@@ -869,30 +885,50 @@ const bindPullCord = (blindname) => {
   });
 };
 
+let cutoutState = [];
 const bindCutOut = (blindname) => {
   const sel = document.getElementById("cutout");
   sel.innerHTML = ""; //reset
 
   if (!blindname) return;
+  if (tomCutout) {
+    tomCutout.destroy();
+    tomCutout = null;
+  }
 
   let data = [];
   let list = [];
 
   if (["Safety Window", "Security Window"].includes(blindname)) {
+    // list = [
+    //   "Cutout Side 1",
+    //   "Cutout Width 1",
+    //   "Bottom Cutout 1",
+    //   "Top Cutout 1",
+    //   "Cutout Side 2",
+    //   "Bottom Cutout 2",
+    //   "Cutout Width 2",
+    //   "Top Cutout 2",
+    // ];
+
     list = [
-      "Cutout Side 1",
-      "Cutout Width 1",
-      "Bottom Cutout 1",
-      "Top Cutout 1",
-      "Cutout Side 2",
-      "Bottom Cutout 2",
-      "Cutout Width 2",
-      "Top Cutout 2",
+      { name: "Cutout Side 1", unit: "mm" },
+      { name: "Cutout Width 1", unit: "mm" },
+      { name: "Bottom Cutout 1", unit: "mm" },
+      { name: "Top Cutout 1", unit: "mm" },
+      { name: "Cutout Side 2", unit: "mm" },
+      { name: "Bottom Cutout 2", unit: "mm" },
+      { name: "Cutout Width 2", unit: "mm" },
+      { name: "Top Cutout 2", unit: "mm" },
     ];
   }
 
   list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
+    data.push({
+      value: ls.name,
+      text: ls.name,
+      unit: ls.unit,
+    });
   });
 
   if (data.length > 1) {
@@ -907,8 +943,34 @@ const bindCutOut = (blindname) => {
     option.value = item.value;
     option.text = item.text.toUpperCase();
     option.setAttribute("data-name", item.text);
+    option.setAttribute("data-unit", item.unit);
     sel.add(option);
   });
+
+  sel.addEventListener("change", function () {
+    const selected = Array.from(this.selectedOptions).map((x) => x.value);
+
+    // 1. HAPUS ITEM YANG DI UNSELECT
+    cutoutState = cutoutState.filter((x) => selected.includes(x.name));
+
+    // 2. TAMBAH ITEM BARU
+    selected.forEach((name) => {
+      if (!cutoutState.find((x) => x.name === name)) {
+        const option = this.querySelector(`option[value="${name}"]`);
+
+        cutoutState.push({
+          name: name,
+          unit: option?.dataset?.unit || "Qty",
+          value: "",
+        });
+      }
+    });
+
+    // 3. RENDER ULANG (INI YANG MENCEGAH RESET)
+    renderCutOut();
+  });
+
+  initTomSelect();
 };
 
 let extrasState = [];
@@ -1486,6 +1548,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       "divCustomFrameColour",
     );
     const divBrace = document.getElementById("divBrace");
+    const divBraceLength = document.getElementById("divBraceLength");
     const divDualHinges = document.getElementById("divDualHinges");
     const divInstall = document.getElementById("divInstall");
     const divFitting = document.getElementById("divFitting");
@@ -1509,6 +1572,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     divFrameColour.classList.add("d-none");
     divCustomFrameColour.classList.add("d-none");
     divBrace.classList.add("d-none");
+    divBraceLength.classList.add("d-none");
     divDualHinges.classList.add("d-none");
     divInstall.classList.add("d-none");
     divFitting.classList.add("d-none");
@@ -1540,7 +1604,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
         divMesh.classList.remove("d-none");
       }
       divDualHinges.classList.remove("d-none");
-      divInstall.classList.remove("d-none");
+      // divInstall.classList.remove("d-none");
       divCutOut.classList.remove("d-none");
       divExtras.classList.remove("d-none");
     }
@@ -1560,7 +1624,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
         divFrameColour.classList.remove("d-none");
         divMesh.classList.remove("d-none");
         divBrace.classList.remove("d-none");
-        divInstall.classList.remove("d-none");
+        // divInstall.classList.remove("d-none");
         divFitting.classList.remove("d-none");
         divExtras.classList.remove("d-none");
       }
@@ -1582,6 +1646,13 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     if (item) {
       if (["Powder Coating"].includes(item.FrameColour)) {
         divCustomFrameColour.classList.remove("d-none");
+      }
+      if (
+        !["Horizontal Centre Brace", "Vertical Centre Brace", ""].includes(
+          item.Brace,
+        )
+      ) {
+        divBraceLength.classList.remove("d-none");
       }
     }
 
@@ -1645,7 +1716,6 @@ const handlerSubmit = async (button) => {
     };
 
     const extras = [];
-
     document.querySelectorAll(".extra-row").forEach((row) => {
       const name = row.querySelector("input[readonly]").value;
       const value = row.querySelector(".extra-value").value;
@@ -1661,10 +1731,28 @@ const handlerSubmit = async (button) => {
       });
     });
 
+    const cutout = [];
+    document.querySelectorAll(".cutout-row").forEach((row) => {
+      const name = row.querySelector("input[readonly]").value;
+      const value = row.querySelector(".cutout-value").value;
+      const unit = row
+        .querySelector(".cutout-value")
+        .getAttribute("placeholder")
+        .replace("Enter ", "");
+
+      cutout.push({
+        name: name,
+        unit: unit,
+        value: value,
+      });
+    });
+
     formData["extras"] = JSON.stringify(extras);
+    formData["cutout"] = JSON.stringify(cutout);
 
     fields.forEach((field) => {
       if (field === "extras") return; // skip
+      if (field === "cutout") return; // skip
 
       formData[field] = document.getElementById(field).value;
     });
@@ -1758,32 +1846,69 @@ const handlerSetElementValues = (itemData) => {
   // ===============================
 
   let extrasData = [];
+  let cutoutData = [];
 
   try {
     extrasData = itemData.AdditionalMotor
       ? JSON.parse(itemData.AdditionalMotor)
       : [];
+
+    cutoutData = itemData.FlatType ? JSON.parse(itemData.FlatType) : [];
   } catch (e) {
-    console.error("Invalid extras JSON", e);
+    console.error("Invalid JSON", e);
     extrasData = [];
+    cutoutData = [];
   }
   extrasState = extrasData;
+  cutoutState = cutoutData;
 
   // 3. SET TOM SELECT VALUE
   const extrasSelect = document.getElementById("extras");
-
+  const cutoutSelect = document.getElementById("cutout");
   if (extrasSelect && extrasSelect.tomselect) {
     extrasSelect.tomselect.setValue(extrasData.map((x) => x.name));
   }
+  if (cutoutSelect && cutoutSelect.tomselect) {
+    cutoutSelect.tomselect.setValue(cutoutData.map((x) => x.name));
+  }
 
   // 4. REBUILD DYNAMIC ROWS
-  const container = document.getElementById("extrasContainer");
-
-  if (container) {
-    container.innerHTML = "";
+  const extrasContainer = document.getElementById("extrasContainer");
+  const cutoutContainer = document.getElementById("cutoutContainer");
+  if (extrasContainer) {
+    extrasContainer.innerHTML = "";
 
     extrasData.forEach((item) => {
-      container.innerHTML += `
+      extrasContainer.innerHTML += `
+        <div class="row mb-2 extra-row">
+
+            <div class="col-7">
+                <input type="text"
+                       class="form-control"
+                       value="${item.name}"
+                       readonly />
+            </div>
+
+            <div class="col-5">
+                <div class="input-group">
+                  <input type="number"
+                        class="form-control extra-value"
+                        value="${item.value || ""}"
+                        placeholder="Enter ${item.unit}" />
+                  <span class="input-group-text ">${item.unit}</span>
+                </div>
+            </div>
+
+        </div>
+      `;
+    });
+  }
+
+  if (cutoutContainer) {
+    cutoutContainer.innerHTML = "";
+
+    cutoutData.forEach((item) => {
+      cutoutContainer.innerHTML += `
         <div class="row mb-2 extra-row">
 
             <div class="col-7">
@@ -1861,13 +1986,23 @@ const getItemData = async (query) => {
 };
 
 let tomExtras = null;
-
+let tomCutout = null;
 const initTomSelect = () => {
   if (tomExtras) {
     tomExtras.destroy();
   }
+  if (tomCutout) {
+    tomCutout.destroy();
+  }
 
   tomExtras = new TomSelect("#extras", {
+    // plugins: ["remove_button"],
+    // placeholder: "Select Extras",
+    maxItems: null,
+    create: false,
+  });
+
+  tomCutout = new TomSelect("#cutout", {
     // plugins: ["remove_button"],
     // placeholder: "Select Extras",
     maxItems: null,
@@ -1896,6 +2031,38 @@ const renderExtras = () => {
               <div class="input-group">
                 <input type="number"
                       class="form-control extra-value"
+                      value="${item.value || ""}"
+                      placeholder="Enter ${item.unit}" />
+                <span class="input-group-text">${item.unit}</span>
+              </div>
+          </div>
+
+      </div>
+    `;
+  });
+};
+
+const renderCutOut = () => {
+  const container = document.getElementById("cutoutContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  cutoutState.forEach((item) => {
+    container.innerHTML += `
+      <div class="row mb-2 cutout-row">
+
+          <div class="col-7">
+              <input type="text"
+                     class="form-control"
+                     value="${item.name}"
+                     readonly />
+          </div>
+
+          <div class="col-5">
+              <div class="input-group">
+                <input type="number"
+                      class="form-control cutout-value"
                       value="${item.value || ""}"
                       placeholder="Enter ${item.unit}" />
                 <span class="input-group-text">${item.unit}</span>

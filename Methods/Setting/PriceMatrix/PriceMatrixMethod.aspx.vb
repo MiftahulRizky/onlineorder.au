@@ -113,7 +113,7 @@ Partial Class Methods_SettingPage_PriceMatrix_PriceMatrixMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindDesignType() As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Designs WHERE Type IN ('Additional', 'Blinds', 'Door', 'Window') ORDER BY Name ASC")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Designs WHERE Type IN ('Additional', 'Blinds', 'Door and Window') ORDER BY Name ASC")
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows

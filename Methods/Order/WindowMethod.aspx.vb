@@ -245,39 +245,65 @@ Partial Class Methods_Order_WindowMethod
             
             Dim bracelength As Integer
             If InArray(TubeName, "Flyscreens", "Heavy Duty Diamond", "Ultra Barrier", "Ultra Guard") Then
-                If String.IsNullOrEmpty(data.brace) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "brace is required !",.field = "brace"}}
-                End If
+              
+                ' If String.IsNullOrEmpty(data.brace) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "brace is required !",.field = "brace"}}
+                ' End If
 
-                If String.IsNullOrEmpty(data.bracelength) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "brace length is required !",.field = "bracelength"}}
-                End If
+                If Not InArray(data.brace, "Horizontal Centre Brace", "Vertical Centre Brace") AND Not String.IsNullOrEmpty(data.brace) Then
+                    If String.IsNullOrEmpty(data.bracelength) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "brace length is required !",.field = "bracelength"}}
+                    End If
 
-                If Not Integer.TryParse(data.bracelength, bracelength) OrElse bracelength <= 0 Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "brace length must be a positive integer !",.field = "bracelength"}}
+                    If Not Integer.TryParse(data.bracelength, bracelength) OrElse bracelength <= 0 Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "brace length must be a positive integer !",.field = "bracelength"}}
+                    End If
                 End If
             End If
 
             If InArray(TubeName, "Ultra Guard") Then
-                If String.IsNullOrEmpty(data.remove) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "remove product is required !",.field = "remove"}}
-                End If
+                ' If String.IsNullOrEmpty(data.remove) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "remove product is required !",.field = "remove"}}
+                ' End If
             End If
 
             If InArray(TubeName, "Heavy Duty Diamond", "Ultra Barrier") Then
-                If String.IsNullOrEmpty(data.dualhinges) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "two hinges is required !",.field = "dualhinges"}}
-                End If
+                ' If String.IsNullOrEmpty(data.dualhinges) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "two hinges is required !",.field = "dualhinges"}}
+                ' End If
                 
                 If String.IsNullOrEmpty(data.install) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "installation is required !",.field = "install"}}
                 End If
             End If
 
+            Dim CutOutList As List(Of ExtraItem)
             If InArray(TubeName, "Heavy Duty Diamond", "Ultra Barrier", "Ultra Guard") Then
-                If String.IsNullOrEmpty(data.cutout) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cut out is required !",.field = "cutout"}}
-                End If
+                ' If String.IsNullOrEmpty(data.cutout) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cut out is required !",.field = "cutout"}}
+                ' End If
+
+                If Not String.IsNullOrWhiteSpace(data.cutout) OrElse data.cutout = "[]" Then
+                    Try
+                        CutOutList = JsonConvert.DeserializeObject(Of List(Of ExtraItem))(data.cutout)
+                    Catch ex As Exception
+                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = "Invalid cutout format", .field = "cutout"}}
+                    End Try
+
+                    For Each item In CutOutList
+                        If String.IsNullOrEmpty(item.value) Then
+                            Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " (" & item.unit & ") is required", .field = "cutout"}}
+                        End If
+
+                        If item.unit = "mm" Then
+                            Dim num As Decimal
+                            If Not Decimal.TryParse(item.value, num) Then
+                                Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " must be numeric", .field = "cutout"}}
+                            End If
+                        End If
+                    Next
+                End IF
+
             End If
 
             If InArray(TubeName, "Flyscreens") Then
@@ -310,44 +336,31 @@ Partial Class Methods_Order_WindowMethod
                 End If
             End If
 
-            If String.IsNullOrWhiteSpace(data.extras) OrElse data.extras = "[]" Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "extras is required !",.field = "extras"}}
-            End If
+            ' If String.IsNullOrWhiteSpace(data.extras) OrElse data.extras = "[]" Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "extras is required !",.field = "extras"}}
+            ' End If
 
-            Dim extrasList As List(Of ExtraItem)
-            Try
-                extrasList = JsonConvert.DeserializeObject(Of List(Of ExtraItem))(data.extras)
-            Catch ex As Exception
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "Invalid extras format",
-                        .field = "extras"
-                    }
-                }
-            End Try
+            Dim ExtrasList As List(Of ExtraItem)
+            If Not String.IsNullOrWhiteSpace(data.extras) OrElse data.extras = "[]" Then
+                Try
+                    ExtrasList = JsonConvert.DeserializeObject(Of List(Of ExtraItem))(data.extras)
+                Catch ex As Exception
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "Invalid extras format", .field = "extras"}}
+                End Try
 
-            For Each item In extrasList
-                If String.IsNullOrEmpty(item.value) Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = item.name & " (" & item.unit & ") is required",
-                            .field = "extras"
-                        }
-                    }
-                End If
-
-                If item.unit = "mm" Then
-                    Dim num As Decimal
-                    If Not Decimal.TryParse(item.value, num) Then
-                        Return New ErrorResponse With {
-                            .error = New ErrorDetail With {
-                                .message = item.name & " must be numeric",
-                                .field = "extras"
-                            }
-                        }
+                For Each item In ExtrasList
+                    If String.IsNullOrEmpty(item.value) Then
+                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " (" & item.unit & ") is required", .field = "extras"}}
                     End If
-                End If
-            Next
+
+                    If item.unit = "mm" Then
+                        Dim num As Decimal
+                        If Not Decimal.TryParse(item.value, num) Then
+                            Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " must be numeric", .field = "extras"}}
+                        End If
+                    End If
+                Next
+            End If
 
             Dim markup As Integer
             If Not String.IsNullOrEmpty(data.markup) Then
@@ -439,6 +452,10 @@ Partial Class Methods_Order_WindowMethod
                 data.handle = ""
                 data.pullcord = ""
             End if
+
+            If InArray(data.brace, "Horizontal Centre Brace", "Vertical Centre Brace") Then
+                data.bracelength = ""
+            End If
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()

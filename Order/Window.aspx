@@ -156,7 +156,7 @@
                                             <select name="brace" id="brace" class="form-select"></select>
                                             <small class="form-hint">* Type</small>
                                         </div>  
-                                        <div class="col-lg-4" id="">
+                                        <div class="col-lg-4" id="divBraceLength">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="bracelength" id="bracelength" class="form-control  " autocomplete="off"  />
                                                 <span class="input-group-text ">mm</span>
@@ -212,8 +212,9 @@
 
                                     <div class="mb-3 row" id="divCutOut">
                                         <label for="cutout" class="col-lg-3 text-uppercase fw-bold" >cut out</label>
-                                        <div class="col-lg-4">
-                                           <select name="cutout" id="cutout" class="form-select"></select>
+                                        <div class="col-lg-8">
+                                           <select name="cutout" id="cutout" class="form-select" multiple></select>
+                                           <div id="cutoutContainer" class="mt-3"></div>
                                         </div>  
                                     </div>
 
