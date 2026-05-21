@@ -208,40 +208,133 @@ Partial Class Methods_ReportProductMethod
             Dim filename As String = ""
             Dim Query As String = ""
 
+            ' If findby = "product" Then
+            '     Dim bydesign As String = ""
+            '     If Not fined = "all" Then
+            '         bydesign = String.Format("AND DesignId = '{0}'",fined)
+            '     End If
+                
+            '     Dim Title As String = String.Format("{0} / {1}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"), Convert.ToDateTime(todate).ToString("dd MMM yyyy"))
+            '     If fromdate = todate Then
+            '         Title = String.Format("On {0}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"))
+            '     End IF
+
+            '     Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT DesignId, DesignName, SUM(Qty) As Qty FROM view_details WHERE Active = 1 AND Status = '{3}' AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') {2} GROUP BY DesignId, DesignName ORDER BY DesignName ASC ", fromdate, todate, bydesign, status))
+            '     Dim ProductCount As Integer = ProductData.Tables(0).Rows.Count
+
+            '     result += spanStart & Title & spanEnd
+            '     result += tableStart
+            '     result += trStart
+            '     result += thStart & "No" & thEnd
+            '     result += thStart & "Products" & thEnd
+            '     result += thStart & "Qty" & thEnd
+            '     result += trEnd
+            '     If Not ProductCount = 0 Then
+
+            '         For i As Integer = 0 To ProductCount - 1
+            '             Dim ProductName As String = ProductData.Tables(0).Rows(i).Item("DesignName").ToString()
+            '             Dim Qty As String = ProductData.Tables(0).Rows(i).Item("Qty").ToString()
+            '             result += trStart
+            '             result += tdStart & (i + 1) & tdEnd
+            '             result += tdStart & ProductName & tdEnd
+            '             result += tdStart & If(Qty = "", "0", Qty) & tdEnd
+            '             result += trEnd
+            '         Next
+            '         result += tableEnd
+            '     Else
+            '         result += trStart
+            '         result += tdStartColSpan3 & "Data Not Found :(" & tdEnd
+            '         result += trEnd
+            '         result += tableEnd
+            '     End If
+
+            '     filename = "Report By Products.pdf"
+            ' End If
+
             If findby = "product" Then
                 Dim bydesign As String = ""
                 If Not fined = "all" Then
-                    bydesign = String.Format("AND DesignId = '{0}'",fined)
+                    bydesign = String.Format("AND DesignId = '{0}'", fined)
                 End If
                 
                 Dim Title As String = String.Format("{0} / {1}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"), Convert.ToDateTime(todate).ToString("dd MMM yyyy"))
                 If fromdate = todate Then
                     Title = String.Format("On {0}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"))
-                End IF
+                End If
 
-                Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT DesignId, DesignName, SUM(Qty) As Qty FROM view_details WHERE Active = 1 AND Status = '{3}' AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') {2} GROUP BY DesignId, DesignName ORDER BY DesignName ASC ", fromdate, todate, bydesign, status))
+                ' --- PERUBAHAN SQL: Tambahkan MonthNum, MonthName, dan YearNum ---
+                ' Menggunakan Datename(month, ...) untuk mengambil nama bulan (Januari, February, dll)
+                Dim sql As String = "SELECT " &
+                                    "  MONTH(SubmittedDate) As MonthNum, " &
+                                    "  YEAR(SubmittedDate) As YearNum, " &
+                                    "  DATENAME(MONTH, SubmittedDate) As MonthName, " &
+                                    "  DesignId, DesignName, SUM(Qty) As Qty " &
+                                    "FROM view_details " &
+                                    "WHERE Active = 1 AND Status = '{3}' " &
+                                    "  AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') {2} " &
+                                    "GROUP BY YEAR(SubmittedDate), MONTH(SubmittedDate), DATENAME(MONTH, SubmittedDate), DesignId, DesignName " &
+                                    "ORDER BY YearNum ASC, MonthNum ASC, DesignName ASC"
+
+                Dim ProductData As DataSet = publicCfg.GetListData(String.Format(sql, fromdate, todate, bydesign, status))
                 Dim ProductCount As Integer = ProductData.Tables(0).Rows.Count
 
                 result += spanStart & Title & spanEnd
-                result += tableStart
-                result += trStart
-                result += thStart & "No" & thEnd
-                result += thStart & "Products" & thEnd
-                result += thStart & "Qty" & thEnd
-                result += trEnd
+
                 If Not ProductCount = 0 Then
+                    Dim currentMonthYear As String = ""
+                    Dim isTableOpen As Boolean = False
+                    Dim nomorUrut As Integer = 1
 
                     For i As Integer = 0 To ProductCount - 1
-                        Dim ProductName As String = ProductData.Tables(0).Rows(i).Item("DesignName").ToString()
-                        Dim Qty As String = ProductData.Tables(0).Rows(i).Item("Qty").ToString()
+                        Dim row As DataRow = ProductData.Tables(0).Rows(i)
+                        
+                        ' Ambil nama bulan dan tahun (Contoh: "January 2026")
+                        Dim rowMonthYear As String = row("MonthName").ToString() & " " & row("YearNum").ToString()
+                        Dim ProductName As String = row("DesignName").ToString()
+                        Dim Qty As String = row("Qty").ToString()
+
+                        ' --- LOGIK PECAH BULAN ---
+                        ' Jika berganti bulan, tutup tabel lama (jika ada) dan buat judul bulan baru beserta Header Tabelnya
+                        If rowMonthYear <> currentMonthYear Then
+                            if isTableOpen Then
+                                result += tableEnd ' Tutup tabel bulan sebelumnya
+                                result += "<br/>"  ' Kasih jarak antar bulan
+                            End If
+
+                            currentMonthYear = rowMonthYear
+                            nomorUrut = 1 ' Reset nomor urut jadi 1 lagi di bulan baru
+                            
+                            ' Tulis Nama Bulan
+                            result += String.Format("<h3>{0}</h3>", currentMonthYear)
+                            
+                            ' Buka Tabel Baru dan Header-nya
+                            result += tableStart
+                            result += trStart
+                            result += thStart & "No" & thEnd
+                            result += thStart & "Products" & thEnd
+                            result += thStart & "Qty" & thEnd
+                            result += trEnd
+                            isTableOpen = True
+                        End If
+
+                        ' Isi Baris Data
                         result += trStart
-                        result += tdStart & (i + 1) & tdEnd
+                        result += tdStart & nomorUrut & tdEnd
                         result += tdStart & ProductName & tdEnd
                         result += tdStart & If(Qty = "", "0", Qty) & tdEnd
                         result += trEnd
+                        
+                        nomorUrut += 1
                     Next
-                    result += tableEnd
+
+                    ' Jangan lupa tutup tabel terakhir setelah loop selesai
+                    If isTableOpen Then
+                        result += tableEnd
+                    End If
+
                 Else
+                    ' Jika sama sekali tidak ada data dari rentang tgl tersebut
+                    result += tableStart
                     result += trStart
                     result += tdStartColSpan3 & "Data Not Found :(" & tdEnd
                     result += trEnd
