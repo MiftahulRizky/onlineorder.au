@@ -305,7 +305,7 @@ Partial Class Methods_ReportProductMethod
                             nomorUrut = 1 ' Reset nomor urut jadi 1 lagi di bulan baru
                             
                             ' Tulis Nama Bulan
-                            result += String.Format("<h3>{0}</h3>", currentMonthYear)
+                            result += String.Format("<h4>{0}</h4>", currentMonthYear)
                             
                             ' Buka Tabel Baru dan Header-nya
                             result += tableStart
