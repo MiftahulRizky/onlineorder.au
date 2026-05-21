@@ -33,7 +33,7 @@ document.querySelector("#btnFind").addEventListener("click", (e) => {
 });
 // =================================================FUNCTION================================================
 // --------------------------------------------||Binding Function||-----------------------------------------
-const binFindBy = () => {
+const bindFindBy = () => {
   const sel = document.getElementById("findby");
   sel.innerHTML = ""; //reset
 
@@ -52,6 +52,35 @@ const binFindBy = () => {
     defaultOption.value = "";
     sel.add(defaultOption);
   }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindStatus = () => {
+  const sel = document.getElementById("status");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  let list = [];
+
+  list = ["New Order", "In Production"];
+
+  list.forEach((ls) => {
+    data.push({ value: ls, text: ls });
+  });
+
+  // if (data.length > 1) {
+  //   const defaultOption = document.createElement("option");
+  //   defaultOption.text = "";
+  //   defaultOption.value = "";
+  //   sel.add(defaultOption);
+  // }
 
   data.forEach((item) => {
     const option = document.createElement("option");
@@ -144,7 +173,7 @@ const handlerFind = async (button) => {
     // return alert(button);
     document.getElementById(button).innerHTML = "Processing...";
     swalLoadingShow("Please wait while we save the data.");
-    const fields = ["findby", "fined", "fromdate", "todate"];
+    const fields = ["findby", "fined", "status", "fromdate", "todate"];
 
     const formData = { rolename: ROLENAME };
 
@@ -195,7 +224,7 @@ const handlerFind = async (button) => {
 };
 // --------------------------------------------||Other Function||-----------------------------------------
 const reportProductPageLoaded = async () => {
-  await Promise.all([binFindBy(), bindDate()]);
+  await Promise.all([bindFindBy(), bindStatus(), bindDate()]);
 
   await loaderFadeOut();
 };

@@ -25,26 +25,31 @@
                         </div>
                         <form action="javascript:void(0)" method="post" id="formSubmit">
                             <div class="card-body row">
-                            <div class="col-lg-12 mb-3">
+                                <div class="col-lg-12 mb-3">
                                     <label for="findby" class="form-label">Find By</label>
                                     <select class="form-select" id="findby" name="findby">
                                     </select>
-                            </div>
-                            <div class="col-lg-12 mb-2">
+                                </div>
+                                <div class="col-lg-12 mb-2">
                                     <label for="fined" class="form-label text-capitalize" id="finedLabel">Fined</label>
                                     <select class="form-select" id="fined" name="fined">
                                     </select>
-                            </div>
+                                </div>
+                                <div class="col-lg-12 mb-2">
+                                    <label for="status" class="form-label text-capitalize" >Status</label>
+                                    <select class="form-select" id="status" name="status">
+                                    </select>
+                                </div>
 
-                            <div class="col-lg-6 mb-2">
+                                <div class="col-lg-6 mb-2">
                                     <label for="fromdate" class="form-label ">From</label>
                                     <input type="date" class="form-control" id="fromdate" name="fromdate">
-                            </div>
+                                </div>
 
-                            <div class="col-lg-6 mb-2">
+                                <div class="col-lg-6 mb-2">
                                     <label for="todate" class="form-label">To</label>
                                     <input type="date" class="form-control" id="todate" name="todate">
-                            </div>
+                                </div>
                             </div>
                             <div class="card-footer text-center">
                                 <button type="submit" class="btn btn-primary" id="btnFind">Show</button>

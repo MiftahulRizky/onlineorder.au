@@ -36,6 +36,7 @@ Partial Class Methods_ReportProductMethod
         Public Property findby As String
         Public Property fined As String
         Public Property fromdate As String
+        Public Property status As String
         Public Property todate As String
     End Class
 
@@ -155,7 +156,7 @@ Partial Class Methods_ReportProductMethod
                 msg = "Report is successfully prepared. <br> Click <b>OK</b> to open it."
                 dir = "/reportproduct/preview"
 
-                Dim ResPDF As String = CreatePDFReport(data.findby, data.fined, data.fromdate, data.todate)
+                Dim ResPDF As String = CreatePDFReport(data.findby, data.fined, data.status, data.fromdate, data.todate)
                 If Not ResPDF = "200" Then
                     Throw New Exception(ResPDF)
                 End If
@@ -200,7 +201,7 @@ Partial Class Methods_ReportProductMethod
 
 
 
-    Private Shared Function CreatePDFReport(findby As String, fined As String, fromdate As String, todate As String) As String
+    Private Shared Function CreatePDFReport(findby As String, fined As String, status As String, fromdate As String, todate As String) As String
         Try
             Dim result As String = ""
             Dim directory As String = HttpContext.Current.Server.MapPath("~/file/report")
@@ -218,7 +219,7 @@ Partial Class Methods_ReportProductMethod
                     Title = String.Format("On {0}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"))
                 End IF
 
-                Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT DesignId, DesignName, SUM(Qty) As Qty FROM view_details WHERE Active = 1 AND Status NOT IN ('Canceled', 'Draft', 'Pending Price Approval') AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') {2} GROUP BY DesignId, DesignName ORDER BY DesignName ASC ", fromdate, todate, bydesign))
+                Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT DesignId, DesignName, SUM(Qty) As Qty FROM view_details WHERE Active = 1 AND Status = '{3}' AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') {2} GROUP BY DesignId, DesignName ORDER BY DesignName ASC ", fromdate, todate, bydesign, status))
                 Dim ProductCount As Integer = ProductData.Tables(0).Rows.Count
 
                 result += spanStart & Title & spanEnd
@@ -261,7 +262,7 @@ Partial Class Methods_ReportProductMethod
                 If fined = "all" Then
                     byCustomer = ""
                 End If
-                Dim CustomerData As DataSet = publicCfg.GetListData(String.Format("SELECT StoreId As CustomerId, StoreName As CustomerName FROM view_headers WHERE Active = 1 AND Status NOT IN ('Canceled', 'Draft', 'Pending Price Approval') AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') {2} GROUP BY StoreId, StoreName ORDER BY CustomerName ASC", fromdate, todate, byCustomer))
+                Dim CustomerData As DataSet = publicCfg.GetListData(String.Format("SELECT StoreId As CustomerId, StoreName As CustomerName FROM view_headers WHERE Active = 1 AND Status = '{3}' AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') {2} GROUP BY StoreId, StoreName ORDER BY CustomerName ASC", fromdate, todate, byCustomer, status))
 
                 Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT Id, Name FROM Designs WHERE Active=1 AND Company <> 'LOOP' AND Description IN ('Environment : Production', 'Environment : Testing') ORDER BY Name ASC"))
                 Dim ProductDataCount As Integer = ProductData.Tables(0).Rows.Count
