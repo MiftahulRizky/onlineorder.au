@@ -257,9 +257,9 @@ Partial Class Methods_ReportProductMethod
                     bydesign = String.Format("AND DesignId = '{0}'", fined)
                 End If
                 
-                Dim Title As String = String.Format("{0} / {1}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"), Convert.ToDateTime(todate).ToString("dd MMM yyyy"))
+                Dim Title As String = String.Format("{2} - {0} / {1}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"), Convert.ToDateTime(todate).ToString("dd MMM yyyy"), status)
                 If fromdate = todate Then
-                    Title = String.Format("On {0}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"))
+                    Title = String.Format("{1} On {0}", Convert.ToDateTime(fromdate).ToString("dd MMM yyyy"), status)
                 End If
 
                 ' --- PERUBAHAN SQL: Tambahkan MonthNum, MonthName, dan YearNum ---
@@ -270,7 +270,7 @@ Partial Class Methods_ReportProductMethod
                                     "  DATENAME(MONTH, SubmittedDate) As MonthName, " &
                                     "  DesignId, DesignName, SUM(Qty) As Qty " &
                                     "FROM view_details " &
-                                    "WHERE Active = 1 AND Status = '{3}' " &
+                                    "WHERE Active = 1 AND Status = '{3}' AND (OrderNumber COLLATE SQL_Latin1_General_CP1_CI_AS NOT LIKE '%test%' AND OrderName COLLATE SQL_Latin1_General_CP1_CI_AS NOT LIKE '%test%') " &
                                     "  AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') {2} " &
                                     "GROUP BY YEAR(SubmittedDate), MONTH(SubmittedDate), DATENAME(MONTH, SubmittedDate), DesignId, DesignName " &
                                     "ORDER BY YearNum ASC, MonthNum ASC, DesignName ASC"
@@ -355,7 +355,7 @@ Partial Class Methods_ReportProductMethod
                 If fined = "all" Then
                     byCustomer = ""
                 End If
-                Dim CustomerData As DataSet = publicCfg.GetListData(String.Format("SELECT StoreId As CustomerId, StoreName As CustomerName FROM view_headers WHERE Active = 1 AND Status = '{3}' AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') {2} GROUP BY StoreId, StoreName ORDER BY CustomerName ASC", fromdate, todate, byCustomer, status))
+                Dim CustomerData As DataSet = publicCfg.GetListData(String.Format("SELECT StoreId As CustomerId, StoreName As CustomerName FROM view_headers WHERE Active = 1 AND Status = '{3}' AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') AND (OrderNo COLLATE SQL_Latin1_General_CP1_CI_AS NOT LIKE '%test%' AND OrderCust COLLATE SQL_Latin1_General_CP1_CI_AS NOT LIKE '%test%') {2} GROUP BY StoreId, StoreName ORDER BY CustomerName ASC", fromdate, todate, byCustomer, status))
 
                 Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT Id, Name FROM Designs WHERE Active=1 AND Company <> 'LOOP' AND Description IN ('Environment : Production', 'Environment : Testing') ORDER BY Name ASC"))
                 Dim ProductDataCount As Integer = ProductData.Tables(0).Rows.Count
@@ -386,7 +386,7 @@ Partial Class Methods_ReportProductMethod
                         result += tdStart & CustomerName & tdEnd
                         For k As Integer = 0 To ProductDataCount - 1
                             Dim DesignId As String = ProductData.Tables(0).Rows(k).Item("Id").ToString()
-                            Dim Qty As String = publicCfg.GetItemData(String.Format("SELECT SUM(Qty) FROM view_details WHERE DesignId='{0}' AND Active = 1 AND Status NOT IN ('Canceled', 'Draft', 'Pending Price Approval') AND SubmittedDate >= '{1}' AND SubmittedDate < DATEADD(DAY, 1, '{2}') AND CustomerName = '{3}'", DesignId, fromdate, todate, CustomerName))
+                            Dim Qty As String = publicCfg.GetItemData(String.Format("SELECT SUM(Qty) FROM view_details WHERE DesignId='{0}' AND Active = 1 AND Status = '{4}' AND SubmittedDate >= '{1}' AND SubmittedDate < DATEADD(DAY, 1, '{2}') AND CustomerName = '{3}' AND (OrderNumber COLLATE SQL_Latin1_General_CP1_CI_AS NOT LIKE '%test%' AND OrderName COLLATE SQL_Latin1_General_CP1_CI_AS NOT LIKE '%test%') ", DesignId, fromdate, todate, CustomerName, status))
                             result += tdStart & If(Qty = "", "0", Qty) & tdEnd
                         Next
                         result += trEnd
