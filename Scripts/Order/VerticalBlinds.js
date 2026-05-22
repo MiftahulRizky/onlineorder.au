@@ -53,7 +53,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     if (e.target.id === "fabrictype") {
       const fabrictype = e.target.value;
-      await bindFabricLength(DESIGNID, fabrictype);
+      const tubetype = document.getElementById("tubetype").value;
+      await bindFabricLength(DESIGNID, tubetype, fabrictype);
     }
 
     if (e.target.id === "fabriclength") {
@@ -473,7 +474,7 @@ const bindFabrics = async (designid) => {
   }
 };
 
-const bindFabricLength = async (designid, fabrictype) => {
+const bindFabricLength = async (designid, tubetype, fabrictype) => {
   const select = document.getElementById("fabriclength");
   document.getElementById("fabriccolour").innerHTML = "";
   select.innerHTML = "";
@@ -488,7 +489,7 @@ const bindFabricLength = async (designid, fabrictype) => {
       },
       body: JSON.stringify({
         designid,
-        tubetype: document.getElementById("tubetype").value,
+        tubetype,
         fabrictype,
       }),
     });
@@ -983,7 +984,7 @@ const bindItemOrders = async (itemid) => {
       await bindTubes(item.DesignId, item.BlindId);
       await bindControls(item.DesignId, item.BlindId, item.TubeType);
       await bindFabrics(item.DesignId);
-      await bindFabricLength(item.DesignId, item.FabricType);
+      await bindFabricLength(item.DesignId, item.TubeType, item.FabricType);
       await bindFabricColours(item.DesignId, item.FabricType, item.FabricWidth);
       await Promise.all([
         bindSlatSize(),

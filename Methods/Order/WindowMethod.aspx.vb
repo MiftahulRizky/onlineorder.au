@@ -272,9 +272,9 @@ Partial Class Methods_Order_WindowMethod
                 '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "two hinges is required !",.field = "dualhinges"}}
                 ' End If
                 
-                If String.IsNullOrEmpty(data.install) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "installation is required !",.field = "install"}}
-                End If
+                ' If String.IsNullOrEmpty(data.install) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "installation is required !",.field = "install"}}
+                ' End If
             End If
 
             Dim CutOutList As List(Of ExtraItem)
@@ -307,9 +307,9 @@ Partial Class Methods_Order_WindowMethod
             End If
 
             If InArray(TubeName, "Flyscreens") Then
-                If String.IsNullOrEmpty(data.install) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "install is required !",.field = "install"}}
-                End If
+                ' If String.IsNullOrEmpty(data.install) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "install is required !",.field = "install"}}
+                ' End If
 
                 ' If String.IsNullOrEmpty(data.fitting) Then
                 '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fitting is required !",.field = "fitting"}}

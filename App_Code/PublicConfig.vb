@@ -969,6 +969,7 @@ Public Class PublicConfig
                 If designName = "Window" Then
                     width = "0"
                     drop = "0"
+                    delivery = "Pick Up"
                     findMetre = sqm
                 End If
 

@@ -68,6 +68,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const divCustomFrameColour = document.getElementById(
         "divCustomFrameColour",
       );
+      document.getElementById("customframecolour").value = "";
       divCustomFrameColour.classList.add("d-none");
       if (["Powder Coating"].includes(framecolour)) {
         divCustomFrameColour.classList.remove("d-none");
