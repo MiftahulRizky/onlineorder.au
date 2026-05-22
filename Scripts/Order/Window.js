@@ -535,7 +535,7 @@ const bindFrameType = (blindname, tubename) => {
       list = ["21x9 Frame", "25x11 Frame", "35x11 Frame"];
     }
     if (["Retractable Flyscreen Roll-Up Down"].includes(tubename)) {
-      list = ["Window"];
+      list = ["Door", "Window"];
     }
   }
 
@@ -1604,7 +1604,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
         divMesh.classList.remove("d-none");
       }
       divDualHinges.classList.remove("d-none");
-      divInstall.classList.remove("d-none");
+      // divInstall.classList.remove("d-none");
       divCutOut.classList.remove("d-none");
       divExtras.classList.remove("d-none");
     }
@@ -1613,7 +1613,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       divFrameType.classList.remove("d-none");
       divFrameColour.classList.remove("d-none");
       divBrace.classList.remove("d-none");
-      divRemove.classList.remove("d-none");
+      // divRemove.classList.remove("d-none");
       divCutOut.classList.remove("d-none");
       divExtras.classList.remove("d-none");
     }
@@ -1624,7 +1624,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
         divFrameColour.classList.remove("d-none");
         divMesh.classList.remove("d-none");
         divBrace.classList.remove("d-none");
-        divInstall.classList.remove("d-none");
+        // divInstall.classList.remove("d-none");
         divFitting.classList.remove("d-none");
         divExtras.classList.remove("d-none");
       }
