@@ -38,6 +38,13 @@ Partial Class Methods_ReportProductMethod
         Public Property fromdate As String
         Public Property status As String
         Public Property todate As String
+        Public Property rolename As String
+    End Class
+
+    Public Class RowReport
+        Public Property DesignId As String
+        Public Property DesignName As String
+        Public Property Qty As Integer
     End Class
 
     Public Class ErrorResponse
@@ -51,6 +58,7 @@ Partial Class Methods_ReportProductMethod
 
     Public Class SuccessResponse
         Public Property [success] As SuccessDetail
+        Public Property reportData As List(Of RowReport)
     End Class
 
     Public Class SuccessDetail
@@ -117,7 +125,69 @@ Partial Class Methods_ReportProductMethod
         Return list.Contains(value)
     End Function
 
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function MyReport(ByVal data As ParamReport) As Object
+        Try
+            Dim msg As String = "200"
+            Dim dir As String = "/reportproduct/"
+            If String.IsNullOrEmpty(data.findby) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "findby is required !", .field = "findby"}}
+            End If
 
+            If String.IsNullOrEmpty(data.fined) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "fined is required !", .field = "fined"}}
+            End If
+
+            If String.IsNullOrEmpty(data.fromdate) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "fromdate is required !", .field = "fromdate"}}
+            End If
+
+            If String.IsNullOrEmpty(data.todate) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "todate is required !", .field = "todate"}}
+            End If
+
+            Dim parsedFromDate As DateTime
+            Dim parsedToDate As DateTime
+            If DateTime.TryParse(data.fromdate, parsedFromDate) AndAlso DateTime.TryParse(data.todate, parsedToDate) Then
+                If parsedFromDate > parsedToDate Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "from date cannot be later than todate !", .field = "fromdate"}}
+                End If
+            Else
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Invalid date format !", .field = "date"}}
+            End If
+
+            
+            Dim query As String = String.Format("SELECT DesignId, DesignName, SUM(Qty) As Qty FROM view_details WHERE Active = 1 AND Status='{0}' AND (OrderNumber COLLATE SQL_Latin1_General_CP1_CI_AS NOT LIKE '%test%' AND OrderName COLLATE SQL_Latin1_General_CP1_CI_AS NOT LIKE '%test%') AND SubmittedDate >= '{1}' AND SubmittedDate < DATEADD(DAY, 1, '{2}') GROUP BY DesignId, DesignName ORDER BY DesignName ASC", data.status, data.fromdate, data.todate)
+            
+            Dim ProductData As DataSet = publicCfg.GetListData(query)
+            
+            Dim listReport As New List(Of RowReport)()
+            
+            If ProductData IsNot New DataSet() AndAlso ProductData.Tables.Count > 0 Then
+                For Each row As DataRow In ProductData.Tables(0).Rows
+                    listReport.Add(New RowReport() With {
+                        .DesignId = row("DesignId").ToString(),
+                        .DesignName = row("DesignName").ToString(),
+                        .Qty = If(IsDBNull(row("Qty")), 0, Convert.ToInt32(row("Qty")))
+                    })
+                Next
+            End If
+
+            Return New SuccessResponse With {
+                .success = New SuccessDetail With {
+                    .message = "Data loaded successfully",
+                    .dir = "U"
+                },
+                .reportData = listReport
+            }
+
+        Catch ex As Exception
+            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ex.Message, .field = ""}}
+        End Try
+    End Function
+
+    
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function FindReport(ByVal data As ParamReport) As Object

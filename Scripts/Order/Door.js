@@ -1,6 +1,6 @@
 ﻿document.addEventListener("DOMContentLoaded", () => {
   if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
-    console.log("Window.js loaded successfully");
+    console.log("Dooe.js loaded successfully");
     console.log("ROLENAME: " + ROLENAME);
     console.log("LEVELNAME: " + LEVELNAME);
     console.log("ITEMACTION: " + ITEMACTION);
@@ -11,8 +11,7 @@
   }
   doorPageLoaded();
 });
-
-// ==================================================EVENTS==================================================
+// ===============================================================EVENTS========================================================================
 document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   el.addEventListener("change", async (e) => {
     e.target.classList.remove("is-invalid");
@@ -24,48 +23,100 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     }
 
     if (e.target.id === "tubetype") {
-      const blind = document.getElementById("blindtype");
-      const blindtype = blind.value;
-      const blindname = blind.selectedOptions[0].dataset.name;
+      const blinds = document.getElementById("blindtype");
+      const blindtype = blinds.value;
       const tubetype = e.target.value;
-      await Promise.all([
-        bindMounting(),
-        bindFrameType(blindname),
-        bindFrameColour(blindname),
-        bindFitted(),
-        bindMeshType(blindname),
-        bindFixing(),
-        bindTop(),
-        bindHingeType(),
-        bindLockType(),
-        bindLockHandling(),
-        bindSideFrame(),
-        bindHeadFrame(),
-        bindExtFrame(),
-        bindSlamBar(),
-        bindLeverHandlerType(),
-        bindLock(),
-        bindLayout(),
-        bindHandlePosition(),
-        bindHandleMeasure(),
-        bindMidrailPosition(),
-        bindPetDoorType(),
-        bindTripleLock(),
-        bindLatchBass(),
-        bindBugseal(),
-        bindDoorCloser(),
-        bindCrossBrace(),
-      ]);
       await handlerElementVisibility(blindtype, tubetype);
+      await bindControls(DESIGNID, blindtype, tubetype);
+    }
+
+    if (e.target.id === "controltype") {
+      const blinds = document.getElementById("blindtype");
+      const blindtype = blinds.value;
+      const blindname = blinds.selectedOptions[0].dataset.name;
+      const tubetype = document.getElementById("tubetype").value;
+      const controltype = e.target.value;
+      const controlname = e.target.selectedOptions[0].dataset.name;
+      const width = document.getElementById("width").value;
+      const frametype = document.getElementById("frametype").value;
+      await handlerElementVisibility(blindtype, tubetype, controltype);
+      await Promise.all([
+        bindSliding(),
+        bindStacking(),
+        bindTrackless(),
+        bindFrameType(blindname, controlname, width),
+        bindMesh(blindname, controlname, frametype),
+        bindHandleSide(blindname, controlname, frametype),
+        bindLock(blindname, controlname, frametype),
+        bindMidrail(blindname, controlname, frametype),
+        bindBugseal(blindname, controlname, frametype),
+        bindCloser(blindname, controlname, frametype),
+        bindHalf(blindname, controlname, frametype),
+        bindInstall(blindname, controlname, frametype),
+        bindFixing(blindname, controlname, frametype),
+        bindFitted(blindname, controlname, frametype),
+        bindRemoval(blindname, controlname, frametype),
+        bindPetDoorType(blindname, controlname, frametype),
+        bindHalf(blindname, controlname, frametype),
+        bindInterlock(blindname, controlname, frametype),
+        bindExtras(blindname, controlname),
+      ]);
+    }
+
+    if (e.target.id === "frametype") {
+      const blinds = document.getElementById("blindtype");
+      const blindname = blinds.selectedOptions[0].dataset.name;
+      const controls = document.getElementById("controltype");
+      const controlname = controls.selectedOptions[0].dataset.name;
+      const frametype = e.target.value;
+      Promise.all([
+        bindFrameColour(blindname, controlname),
+        bindMesh(blindname, controlname, frametype),
+        bindHandleSide(blindname, controlname, frametype),
+        bindMidrail(blindname, controlname, frametype),
+      ]);
+
+      const divMesh = document.getElementById("divMesh");
+      const divMidrail = document.getElementById("divMidrail");
+      divMesh.classList.remove("d-none");
+      divMidrail.classList.remove("d-none");
+      if (["Ultra Barrier Screen Door"].includes(frametype)) {
+        divMesh.classList.add("d-none");
+      }
+      if (["Heavy Duty Diamond"].includes(frametype)) {
+        divMidrail.classList.add("d-none");
+      }
+    }
+
+    if (e.target.id === "handleside") {
+      const blinds = document.getElementById("blindtype");
+      const blindname = blinds.selectedOptions[0].dataset.name;
+      const controls = document.getElementById("controltype");
+      const controlname = controls.selectedOptions[0].dataset.name;
+      const frametype = document.getElementById("frametype").value;
+      bindHandleHeight(blindname, controlname, frametype);
     }
 
     if (e.target.id === "petdoortype") {
-      const petdoortype = e.target.value;
-      bindPetDoorPosition(petdoortype);
+      const blinds = document.getElementById("blindtype");
+      const blindname = blinds.selectedOptions[0].dataset.name;
+      const controls = document.getElementById("controltype");
+      const controlname = controls.selectedOptions[0].dataset.name;
+      const frametype = document.getElementById("frametype").value;
+      bindPetDoorPosition(blindname, controlname, frametype);
     }
   });
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "width") {
+      const blinds = document.getElementById("blindtype");
+      const blindname = blinds.selectedOptions[0].dataset.name;
+      const controls = document.getElementById("controltype");
+      const controlname = controls.selectedOptions[0].dataset.name;
+      const width = e.target.value;
+      bindFrameType(blindname, controlname, width);
+    }
 
     if (e.target.id === "notes") {
       let maxLength = 1000;
@@ -76,22 +127,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   });
 });
 
-document.querySelector("#btnSubmit").addEventListener("click", (e) => {
-  e.preventDefault();
-
-  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
-    el.classList.remove("is-invalid");
-  });
-
-  // handlerSubmit(e.target.form, e.target.id);
-  handlerSubmit(e.target.id);
-});
-
-// button cancel
-document.querySelector("#btnCancel").addEventListener("click", (e) => {
-  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
-});
-// =================================================FUNCTIONS================================================
+// ============================================================FUNCTIONS========================================================================
 // ----------------------------------------------|| Binding Functions ||---------------------------------------
 const bindDesigns = async (designid) => {
   try {
@@ -158,12 +194,17 @@ const bindBlinds = async () => {
   if (!DESIGNID) return;
 
   try {
-    const response = await fetch(`${URIMETHOD}/BindBlindType`, {
+    const response = await fetch(`${URIMETHOD}/BindListData`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designid: DESIGNID }),
+      body: JSON.stringify({
+        data: {
+          field: "blindtype",
+          designid: DESIGNID,
+        },
+      }),
     });
 
     if (!response.ok) {
@@ -185,7 +226,7 @@ const bindBlinds = async () => {
     if (Array.isArray(data)) {
       select.innerHTML = ""; //reset
 
-      if (data.length > 1) {
+      if (data.length > 0) {
         const defaultOption = document.createElement("option");
         defaultOption.text = "";
         defaultOption.value = "";
@@ -202,7 +243,7 @@ const bindBlinds = async () => {
       });
 
       if (data.length === 1) {
-        select.selectedIndex = 0;
+        // select.selectedIndex = 0;
       }
     }
   } catch (err) {
@@ -214,19 +255,25 @@ const bindBlinds = async () => {
   }
 };
 
-const bindTubes = async (designid, blindid) => {
+const bindTubes = async (designid, blindtype) => {
   const select = document.getElementById("tubetype");
   select.innerHTML = "";
 
-  if (!designid || !blindid) return;
+  if (!designid || !blindtype) return;
 
   try {
-    const response = await fetch(`${URIMETHOD}/BindTubeType`, {
+    const response = await fetch(`${URIMETHOD}/BindListData`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designid, blindid }),
+      body: JSON.stringify({
+        data: {
+          field: "tubetype",
+          designid,
+          blindtype,
+        },
+      }),
     });
 
     if (!response.ok) {
@@ -266,39 +313,9 @@ const bindTubes = async (designid, blindid) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
-        const blindname = await getItemData(
-          `SELECT Name FROM Blinds WHERE Id = '${blindid}'`,
-        );
-        const tubetype = select.value;
-        await Promise.all([
-          bindMounting(),
-          bindFrameType(blindname),
-          bindFrameColour(blindname),
-          bindFitted(),
-          bindMeshType(blindname),
-          bindFixing(),
-          bindTop(),
-          bindHingeType(),
-          bindLockType(),
-          bindLockHandling(),
-          bindSideFrame(),
-          bindHeadFrame(),
-          bindExtFrame(),
-          bindSlamBar(),
-          bindLeverHandlerType(),
-          bindLock(),
-          bindLayout(),
-          bindHandlePosition(),
-          bindHandleMeasure(),
-          bindMidrailPosition(),
-          bindPetDoorType(),
-          bindTripleLock(),
-          bindLatchBass(),
-          bindBugseal(),
-          bindDoorCloser(),
-          bindCrossBrace(),
-        ]);
-        await handlerElementVisibility(blindid, tubetype);
+        const tubetype = select.options[select.selectedIndex].value;
+        await handlerElementVisibility(blindtype, tubetype);
+        await bindControls(designid, blindtype, tubetype);
       }
     }
   } catch (err) {
@@ -310,1096 +327,850 @@ const bindTubes = async (designid, blindid) => {
   }
 };
 
-const bindMounting = () => {
-  const sel = document.getElementById("mounting");
-  sel.innerHTML = ""; //reset
+const bindControls = async (designid, blindtype, tubetype) => {
+  const select = document.getElementById("controltype");
+  select.innerHTML = "";
 
-  let data = [];
-  data.push(
-    { value: "In", text: "In" },
-    { value: "Out", text: "Out" },
-    { value: "Make Size", text: "Make Size" },
-    { value: "Inswing", text: "Inswing" },
-    { value: "Opening Size", text: "Opening Size" },
-  );
+  if (!designid || !blindtype || !tubetype) return;
 
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindFrameType = (blindname) => {
-  const sel = document.getElementById("frametype");
-  sel.innerHTML = ""; //reset
-
-  if (!blindname) return;
-
-  let data = [];
-  if (blindname.includes("Steel")) {
-    data.push(
-      { value: "SD 1", text: "SD 1" },
-      { value: "SD 2", text: "SD 2" },
-      { value: "SD 3A", text: "SD 3A" },
-      { value: "SD 4C", text: "SD 4C" },
-      { value: "SD 5B", text: "SD 5B" },
-      { value: "SD 6A1", text: "SD 6A1" },
-      { value: "SD 7C", text: "SD 7C" },
-      { value: "SD 8A1", text: "SD 8A1" },
-      { value: "SD 9B", text: "SD 9B" },
-    );
-    for (let i = 10; i <= 27; i++) {
-      data.push({ value: `SD ${i}`, text: `SD ${i}` });
-    }
-    data.push(
-      { value: "SG 1", text: "SG 1" },
-      { value: "SG 2", text: "SG 2" },
-      { value: "SG 3A", text: "SG 3A" },
-      { value: "SG 4C", text: "SG 4C" },
-      { value: "SG 5", text: "SG 5" },
-      { value: "SG 5A", text: "SG 5A" },
-      { value: "SG 6A1", text: "SG 6A1" },
-      { value: "SG 7C", text: "SG 7C" },
-      { value: "SG 8A1", text: "SG 8A1" },
-    );
-  } else {
-    data.push(
-      { value: "Door Frame", text: "Door Frame" },
-      { value: "Grille Frame", text: "Grille Frame" },
-    );
-  }
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindFrameColour = (blindname) => {
-  const sel = document.getElementById("framecolour");
-  sel.innerHTML = ""; //reset
-
-  if (!blindname) return;
-
-  let data = [];
-  if (blindname.includes("Steel")) {
-    data.push(
-      { value: "Brown", text: "Brown" },
-      { value: "Birch White", text: "Birch White" },
-      { value: "Black", text: "Black" },
-      { value: "Apo Grey", text: "Apo Grey" },
-      { value: "Charcoal", text: "Charcoal" },
-      { value: "Classic Cream", text: "Classic Cream" },
-      { value: "Flame Red", text: "Flame Red" },
-      { value: "Iron Stone", text: "Iron Stone" },
-      { value: "Magnoli", text: "Magnoli" },
-      { value: "Monument", text: "Monument" },
-      { value: "Primrose", text: "Primrose" },
-      { value: "Stone Beige", text: "Stone Beige" },
-      { value: "Timberland", text: "Timberland" },
-      { value: "White", text: "White" },
-      { value: "Woodland Grey", text: "Woodland Grey" },
-    );
-  } else {
-    data.push(
-      { value: "Bronze", text: "Bronze" },
-      { value: "Apo Grey", text: "Apo Grey" },
-      { value: "Black", text: "Black" },
-      { value: "Bronze Anodized", text: "Bronze Anodized" },
-      { value: "Brown", text: "Brown" },
-      { value: "Charcoal", text: "Charcoal" },
-      { value: "Claret", text: "Claret" },
-      { value: "Deep Ocean", text: "Deep Ocean" },
-      { value: "Dune", text: "Dune" },
-      { value: "Hawthorne Green", text: "Hawthorne Green" },
-      { value: "Mist Green", text: "Mist Green" },
-      { value: "Monument", text: "Monument" },
-      { value: "Notre Dame", text: "Notre Dame" },
-      { value: "Paperbank", text: "Paperbank" },
-      { value: "Primrose", text: "Primrose" },
-      { value: "Silver/Clear Anodize", text: "Silver/Clear Anodize" },
-      { value: "Stone Beige", text: "Stone Beige" },
-      { value: "Surf Mist", text: "Surf Mist" },
-      { value: "White", text: "White" },
-      { value: "White Birch", text: "White Birch" },
-      { value: "Woodland Grey", text: "Woodland Grey" },
-    );
-  }
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindFitted = () => {
-  const sel = document.getElementById("fitted");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "Internal", text: "Internal" },
-    { value: "External", text: "External" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindMeshType = (blindname) => {
-  const sel = document.getElementById("meshtype");
-  sel.innerHTML = ""; //reset
-
-  if (!blindname) return;
-
-  let data = [];
-  if (blindname.includes("Steel")) {
-    data.push(
-      { value: "Mesh SS316 0.7mm", text: "Mesh SS316 0.7mm" },
-      { value: "Mesh SS316 0.8mm", text: "Mesh SS316 0.8mm" },
-      { value: "Fly Mesh", text: "Fly Mesh" },
-      { value: "Paw Proof", text: "Paw Proof" },
-      { value: "Sandfly", text: "Sandfly" },
-      { value: "Bushfire SS", text: "Bushfire SS" },
-      { value: "Ultra Mesh", text: "Ultra Mesh" },
-    );
-  } else {
-    data.push(
-      { value: "HD Diamond", text: "HD Diamond" },
-      { value: "Fiberglass", text: "Fiberglass" },
-      { value: "Pawproof", text: "Pawproof" },
-      { value: "Stainless Steel", text: "Stainless Steel" },
-      { value: "SS304 0.7mm", text: "SS304 0.7mm" },
-      { value: "SS316 0.8mm", text: "SS316 0.8mm" },
-      { value: "SS316 0.9mm", text: "SS316 0.9mm" },
-      { value: "HD Diamond+Fiberglass", text: "HD Diamond+Fiberglass" },
-      { value: "HD Diamond+Pawproof", text: "HD Diamond+Pawproof" },
-      {
-        value: "HD Diamond+Stainless Steel",
-        text: "HD Diamond+Stainless Steel",
-      },
-    );
-  }
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindFixing = () => {
-  const sel = document.getElementById("fixing");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "SF", text: "SF" },
-    { value: "FO", text: "FO" },
-    { value: "SFB", text: "SFB" },
-    { value: "FOB", text: "FOB" },
-    { value: "SFT", text: "SFT" },
-    { value: "SFTA", text: "SFTA" },
-    { value: "FOB", text: "FOB" },
-    { value: "FOT", text: "FOT" },
-    { value: "FOA", text: "FOA" },
-    { value: "A", text: "A" },
-    { value: "B", text: "B" },
-    { value: "SFT", text: "SFT" },
-    { value: "C", text: "C" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindTop = () => {
-  const sel = document.getElementById("top");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "SF", text: "SF" },
-    { value: "FO", text: "FO" },
-    { value: "SFB", text: "SFB" },
-    { value: "FOB", text: "FOB" },
-    { value: "SFT", text: "SFT" },
-    { value: "SFTA", text: "SFTA" },
-    { value: "FOB", text: "FOB" },
-    { value: "FOT", text: "FOT" },
-    { value: "FOA", text: "FOA" },
-    { value: "A", text: "A" },
-    { value: "B", text: "B" },
-    { value: "SFT", text: "SFT" },
-    { value: "C", text: "C" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindHingeType = () => {
-  const sel = document.getElementById("hingetype");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "70 & 90 (mm)", text: "70 & 90 (mm)" },
-    { value: "50 & 70 (mm)", text: "50 & 70 (mm)" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindLockType = () => {
-  const sel = document.getElementById("locktype");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "5 Lever", text: "5 Lever" },
-    { value: "Euro", text: "Euro" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindLockHandling = () => {
-  const sel = document.getElementById("lockhandling");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push({ value: "LH", text: "LH" }, { value: "RH", text: "RH" });
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindSideFrame = () => {
-  const sel = document.getElementById("sideframe");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "25 x 25 RHS", text: "25 x 25 RHS" },
-    { value: "40 x 40 RHS", text: "40 x 40 RHS" },
-    { value: "50 x 50 RHS", text: "25 x 25 RHS" },
-    { value: "10 x 25 FB", text: "10 x 25 FB" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindHeadFrame = () => {
-  const sel = document.getElementById("headframe");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "25 x 25 RHS", text: "25 x 25 RHS" },
-    { value: "40 x 40 RHS", text: "40 x 40 RHS" },
-    { value: "50 x 50 RHS", text: "25 x 25 RHS" },
-    { value: "10 x 25 FB", text: "10 x 25 FB" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindExtFrame = () => {
-  const sel = document.getElementById("extframe");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "None", text: "None" },
-    { value: "Custom", text: "Custom" },
-    { value: "25 x 5 FB", text: "25 x 5 FB" },
-    { value: "37 x 5 FB", text: "37 x 5 FB" },
-    { value: "50 x 5 FB", text: "50 x 5 FB" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindSlamBar = () => {
-  const sel = document.getElementById("slambar");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "32 x 5", text: "32 x 5" },
-    { value: "40 x 5", text: "40 x 5" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindLeverHandlerType = () => {
-  const sel = document.getElementById("levelhandler");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "7301 (5L)", text: "7301 (5L)" },
-    { value: "7701 (5L)", text: "7701 (5L)" },
-    { value: "7301 (EU)", text: "7301 (EU)" },
-    { value: "7701 (EU)", text: "7701 (EU)" },
-    { value: "778205 (0)", text: "778205 (0)" },
-    { value: "778200 (0)", text: "778200 (0)" },
-    { value: "738205 (0)", text: "738205 (0)" },
-    { value: "738200 (0)", text: "738200 (0)" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindLock = () => {
-  const sel = document.getElementById("lock");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "(L) JM560A", text: "(L) JM560A" },
-    { value: "(E) JMC60A", text: "(E) JMC60A" },
-    { value: "(L) JM29B", text: "(L) JM29B" },
-    { value: "(E) JMC29B", text: "(E) JMC29B" },
-    { value: "(LK) 3572", text: "(LK) 3572" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindLayout = () => {
-  const sel = document.getElementById("layoutcode");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "L", text: "L" },
-    { value: "R", text: "R" },
-    { value: "L-RA", text: "L-RA" },
-    { value: "A-LR", text: "A-LR" },
-    { value: "AL", text: "AL" },
-    { value: "RA", text: "RA" },
-    { value: "RA-L", text: "RA-L" },
-    { value: "R-AL", text: "R-AL" },
-    { value: "ALL", text: "ALL" },
-    { value: "RRA", text: "RRA" },
-    { value: "FRA", text: "FRA" },
-    { value: "ALF", text: "ALF" },
-    { value: "RRRA", text: "RRRA" },
-    { value: "ALLL", text: "ALLL" },
-    { value: "FRRA", text: "FRRA" },
-    { value: "ALLF", text: "ALLF" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindHandlePosition = () => {
-  const sel = document.getElementById("handleposition");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "Left", text: "Left" },
-    { value: "Right", text: "Right" },
-    { value: "No Handle", text: "No Handle" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindHandleMeasure = () => {
-  const sel = document.getElementById("handlemeasure");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "Lock Height", text: "Lock Height" },
-    { value: "Centre of Handle", text: "Centre of Handle" },
-    { value: "Bottom of Tongue", text: "Bottom of Tongue" },
-    { value: "Centre of Tongue", text: "Centre of Tongue" },
-    { value: "Bottom of Lock body", text: "Bottom of Lock body" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindMidrailPosition = () => {
-  const sel = document.getElementById("midrailposition");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "By Request", text: "By Request" },
-    { value: "Centre of Vertical", text: "Centre of Vertical" },
-    { value: "No Midrail", text: "No Midrail" },
-    { value: "Centre of Horizontal", text: "Centre of Horizontal" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindPetDoorType = () => {
-  const sel = document.getElementById("petdoortype");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "Small 190x240", text: "Small 190x240" },
-    { value: "Medium 255x305", text: "Medium 255x305" },
-    { value: "Large 260x400", text: "Large 260x400" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindPetDoorPosition = (petdoortype) => {
-  const sel = document.getElementById("petdoorposition");
-  sel.innerHTML = ""; //reset
-
-  if (!petdoortype) return;
-
-  let data = [];
-  data.push(
-    { value: "Left", text: "Left" },
-    { value: "Centre", text: "Centre" },
-    { value: "Right", text: "Right" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindTripleLock = () => {
-  const sel = document.getElementById("triplelock");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push({ value: "No", text: "No" }, { value: "Yes", text: "Yes" });
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindLatchBass = () => {
-  const sel = document.getElementById("latchbass");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "Outer Pull", text: "Outer Pull" },
-    { value: "Bass Standard", text: "Bass Standard" },
-    { value: "Bass Hinged", text: "Bass Hinged" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindBugseal = () => {
-  const sel = document.getElementById("bugseal");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "No", text: "No" },
-    { value: "Yes", text: "Yes" },
-    { value: "Yes (Long Fur)", text: "Yes (Long Fur)" },
-    { value: "Yes (Short Fur)", text: "Yes (Short Fur)" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindDoorCloser = () => {
-  const sel = document.getElementById("doorcloser");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "No", text: "No" },
-    { value: "Black", text: "Black" },
-    { value: "Primrose", text: "Primrose" },
-    { value: "White", text: "White" },
-    { value: "White Birch", text: "White Birch" },
-    { value: "Bronze Anodize", text: "Bronze Anodize" },
-    { value: "Silver/Clear Anodize", text: "Silver/Clear Anodize" },
-    { value: "Stone Beige", text: "Stone Beige" },
-    { value: "Apo Grey", text: "Apo Grey" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindCrossBrace = () => {
-  const sel = document.getElementById("crossbrace");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-  data.push(
-    { value: "Centre of Horizontal", text: "Centre of Horizontal" },
-    { value: "Centre of Vertical", text: "Centre of Vertical" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
-};
-
-const bindItemOrders = async (itemid) => {
   try {
-    if (!itemid) return;
-
-    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+    const response = await fetch(`${URIMETHOD}/BindListData`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ itemid }),
+      body: JSON.stringify({
+        data: {
+          field: "controltype",
+          designid,
+          blindtype,
+          tubetype,
+        },
+      }),
     });
 
-    if (!res.ok) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? `${res.status} - ${res.statusText}`
-          : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
     }
 
-    const response = await res.json();
-    const data = response.d;
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
 
-    if (!data || data.length === 0) {
-      throw isError("No data returned from server : bindItemOrders");
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindTubes");
     }
 
-    for (const item of data) {
-      await bindBlinds(item.DesignId);
-      await bindTubes(item.DesignId, item.BlindId);
-      await Promise.all([
-        bindMounting(),
-        bindFrameType(item.BlindName),
-        bindFrameColour(item.BlindName),
-        bindFitted(),
-        bindMeshType(item.BlindName),
-        bindFixing(),
-        bindTop(),
-        bindHingeType(),
-        bindLockType(),
-        bindLockHandling(),
-        bindSideFrame(),
-        bindHeadFrame(),
-        bindExtFrame(),
-        bindSlamBar(),
-        bindLeverHandlerType(),
-        bindLock(),
-        bindLayout(),
-        bindHandlePosition(),
-        bindHandleMeasure(),
-        bindMidrailPosition(),
-        bindPetDoorType(),
-        bindTripleLock(),
-        bindLatchBass(),
-        bindBugseal(),
-        bindDoorCloser(),
-        bindCrossBrace(),
-        handlerSetElementValues(item),
-      ]);
-      await handlerElementVisibility(item.BlindId, item.KitId, item);
-    }
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
 
-    return true; // ✅ success
-  } catch (error) {
-    console.error("bindItemOrder error:", error);
-    throw error;
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+        const controltype = select.options[select.selectedIndex].value;
+        await handlerElementVisibility(blindtype, tubetype, controltype);
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
   }
 };
-// ----------------------------------------------|| Other Functions ||---------------------------------------
-const handlerElementVisibility = async (blindtype, tubetype, item) => {
+
+const bindSliding = () => {
+  generateOption("sliding", [
+    "Single Sliding Pleated",
+    "Double Sliding Pleated",
+  ]);
+};
+
+const bindStacking = () => {
+  generateOption("stacking", [
+    "Stacking - Right",
+    "Stacking - Left",
+    "Stacking - Split",
+  ]);
+};
+
+const bindTrackless = () => {
+  generateOption("trackless", ["Trackless - No"]);
+};
+
+const bindFrameType = (blindname, controlname, width) => {
+  document.getElementById("framecolour").innerHTML = "";
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+      data.push("Heavy Duty Diamond", "Ultra Barrier Screen Door");
+      if (width >= 865) {
+        data.push("Screen Door (up to 865mm)");
+      }
+
+      if (width >= 1035) {
+        data.push("Screen Door (up to 1035mm)");
+      }
+
+      if (width >= 1315) {
+        data.push("Screen Door (up to 1315mm & more)");
+      }
+    }
+  }
+
+  generateOption("frametype", data);
+};
+
+const bindFrameColour = (blindname, controlname) => {
+  if (!blindname) return;
+  let data = [];
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+      data.push(
+        "Powder Coating",
+        "TBA",
+        "Apo Grey",
+        "Black",
+        "Bronze",
+        "Brown",
+        "Charcoal",
+        "Dune",
+        "Hawthorn Green",
+        "Monument",
+        "Paperbark",
+        "Primrose",
+        "Silver",
+        "Stone Beige",
+        "Surf Mist",
+        "White",
+        "White Birch",
+        "Woodland Grey",
+      );
+    }
+  }
+  generateOption("framecolour", data);
+};
+
+const bindMesh = (blindname, controlname, frametype) => {
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+      data.push(
+        "Fibreglass Mesh",
+        "Sunlight Security Mesh",
+        "Alum (Std)",
+        "Pawproof (1000)",
+        "Pawproof (1520)",
+        "Stainless (1000)",
+        "Stainless (1300)",
+      );
+
+      if (!frametype.includes("Screen Door (up to")) {
+        data.push(
+          "Ultra Barrier Mesh (1010x2110)",
+          "Ultra Barrier Mesh (1010x2500)",
+          "Ultra Barrier Mesh (1310x2110)",
+          "Ultra Barrier Mesh (1310x2500)",
+          "Ultra Barrier Mesh (865x2110)",
+          "Ultra Barrier Mesh (865x2500)",
+        );
+      }
+    }
+  }
+  generateOption("meshtype", data);
+};
+
+const bindHandleSide = (blindname, controlname, frametype) => {
+  document.getElementById("handleheight").innerHTML = "";
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Sliding Door"].includes(controlname)) {
+      data.push(
+        "Left",
+        "Right",
+        "Left - Reciever",
+        "Right - Reciever",
+        "Stacker (Left Slide)",
+        "Stacker (Right Slide)",
+      );
+    }
+    if (["Hinged Door"].includes(controlname)) {
+      data.push(
+        "Left",
+        "Right",
+        "Left - Reciever",
+        "Right - Reciever",
+        "Sidelight",
+      );
+    }
+  }
+  generateOption("handleside", data);
+};
+
+const bindHandleHeight = (blindname, controlname, frametype) => {
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Sliding Door"].includes(controlname)) {
+      data.push("Lock Height", "Handle Height to Centre", "Specify");
+
+      if (frametype.includes("Screen Door (up to")) {
+        data.push("Bass Latch", "Batman Morticeed SNIB");
+      }
+    }
+    if (["Hinged Door"].includes(controlname)) {
+      data.push(
+        "Lock Height",
+        "To Centre of Handle",
+        "To Bottom of Tongue",
+        "To Centre of Tongue",
+        "Specify",
+      );
+
+      if (frametype.includes("Screen Door (up to")) {
+        data.push("Tulip A Latch");
+      }
+    }
+  }
+  generateOption("handleheight", data);
+};
+
+const bindLock = (blindname, controlname, frametype) => {
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Hinged Door"].includes(controlname)) {
+      data.push(
+        "Black",
+        "Bronze",
+        "Brown",
+        "Hawthorne Green",
+        "Primrose",
+        "Stone Beige",
+        "White",
+        "White Birch",
+      );
+    }
+  }
+  generateOption("lockcolour", data);
+};
+
+const bindMidrail = (blindname, controlname, frametype) => {
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Sliding Door"].includes(controlname)) {
+      data.push(
+        "No Midrail",
+        "Standard Midrail to Centre",
+        "Standard Mid Rail Specify",
+      );
+
+      if (!frametype.includes("Screen Door (up to")) {
+        data.push(
+          "Ultra Barrier Mid Rail to Centre",
+          "Ultra Barrier Mid Rail Specify",
+        );
+      }
+    }
+    if (["Hinged Door"].includes(controlname)) {
+      data.push(
+        "No Midrail",
+        "Vista Mid Rail Specify",
+        "Vista Mid Rail to Centre",
+      );
+
+      if (frametype.includes("Screen Door (up to")) {
+        data.push("Standard Mid rail Specify", "Standard Midrail to Centre");
+      }
+    }
+  }
+  generateOption("midrail", data);
+};
+
+const bindBugseal = (blindname, controlname, frametype) => {
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+      data.push("No Bug Seal", "Bug Seal - Thin", "Bug Seal - Wide");
+    }
+  }
+  generateOption("bugseal", data);
+};
+
+const bindCloser = (blindname, controlname, frametype) => {
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Hinged Door"].includes(controlname)) {
+      data.push(
+        "No Closer",
+        "Closer - Black",
+        "Closer - Bronze",
+        "Closer - Brown",
+        "Closer - Green",
+        "Closer - Primrose",
+        "Closer - Stone Beige",
+        "Closer - White",
+        "Closer - White Birch",
+      );
+    }
+  }
+  generateOption("closer", data);
+};
+
+const bindInstall = (blindname, controlname, frametype) => {
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+      data.push(
+        "Installation Safety Door",
+        "Installation Screen Door",
+        "Pick up",
+      );
+    }
+  }
+  generateOption("install", data);
+};
+
+const bindFixing = (blindname, controlname, frametype) => {
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Hinged Door"].includes(controlname)) {
+      data.push("Timber", "Concrete", "Steel", "Aluminium", "Not Specified");
+    }
+  }
+  generateOption("fixing", data);
+};
+
+const bindFitted = (blindname, controlname, frametype) => {
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Hinged Door"].includes(controlname)) {
+      data.push(
+        "Standard Fit",
+        "Standard Fit (C)",
+        "Standard Fit 3 PT (C)",
+        "Standard Fit 3 PT (T)",
+        "Supply Only",
+      );
+    }
+  }
+  generateOption("fitted", data);
+};
+
+const bindRemoval = (blindname, controlname, frametype) => {
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Hinged Door"].includes(controlname)) {
+      data.push("No Removal", "Removal Only", "Removal and Disposal");
+    }
+  }
+  generateOption("remove", data);
+};
+
+const bindPetDoorType = (blindname, controlname, frametype) => {
+  document.getElementById("petdoorposition").innerHTML = "";
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Sliding Door"].includes(controlname)) {
+      data.push(
+        "Pet Dr Large - Stone beige",
+        "Pet Dr Medium - Stone Beige",
+        "Pet Dr Small - Black",
+        "Pet Dr Small - Stone Beige",
+        "Pet Dr Small - Bronze",
+        "Pet Dr Small - Brown",
+        "Pet Dr Small - Primrose",
+        "Pet Dr Small - White",
+        "Pet Dr Medium - Black",
+        "Pet Dr Medium - Bronze",
+        "Pet Dr Medium - Brown",
+        "Pet Dr Medium - Primrose",
+        "Pet Dr Medium - White",
+        "Pet Dr Large - Black",
+        "Pet Dr Large - Bronze",
+        "Pet Dr Large - Brown",
+        "Pet Dr Large - Primrose",
+        "Pet Dr Large - White",
+      );
+    }
+    if (["Hinged Door"].includes(controlname)) {
+      data.push(
+        "Pet Dr Small - Black",
+        "Pet Dr Small - Bronze",
+        "Pet Dr Small - Brown",
+        "Pet Dr Small - Primrose",
+        "Pet Dr Small - White",
+        "Pet Dr Medium - Black",
+        "Pet Dr Medium - Bronze",
+        "Pet Dr Medium - Brown",
+        "Pet Dr Medium - Primrose",
+        "Pet Dr Medium - Stone Beige",
+        "Pet Dr Medium - White",
+        "Pet Dr Large - Black",
+        "Pet Dr Large - Bronze",
+        "Pet Dr Large - Brown",
+        "Pet Dr Large - Primrose",
+        "Pet Dr Large - White",
+      );
+    }
+  }
+  generateOption("petdoortype", data);
+};
+
+const bindPetDoorPosition = (blindname, controlname, frametype) => {
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+      data.push("Left", "Centre", "Right", "Specify");
+    }
+  }
+  generateOption("petdoorposition", data);
+};
+
+const bindHalf = (blindname, controlname, frametype) => {
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+      data.push(
+        "Black - 1/2 Panel",
+        "Bronze - 1/2 Panel",
+        "Brown - 1/2 Panel",
+        "Hawthorn Green - 1/2 Panel",
+        "Primrose - 1/2 Panel",
+        "Silver - 1/2 Panel",
+        "Stone Beige - 1/2 Panel",
+        "White - 1/2 Panel",
+        "White Birch - 1/2 Panel",
+      );
+    }
+  }
+  generateOption("half", data);
+};
+
+const bindInterlock = (blindname, controlname, frametype) => {
+  if (!blindname) return;
+  let data = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Sliding Door"].includes(controlname)) {
+      data.push(
+        "Door Interlock Large (2)",
+        "Door Interlock Flat (3)",
+        "Door Interlock Small (1)",
+        "Door Interlock F (4)",
+        "Triple lock Slider Charge (Fitted in Factory)",
+      );
+    }
+    if (["Hinged Door"].includes(controlname)) {
+      data.push(
+        "Hinges X 3",
+        "Hinges x 4",
+        "Stop Bead Additional",
+        "Track Jamb Adaptor Long",
+        "Track Jamb Adaptor Short",
+        "Safety Door Deadlock - Without Barrel - Supply Only",
+        "Safety Door Deadlock With Barrel (Supply Only)",
+        "Triple Lock Hinged Charge",
+      );
+    }
+  }
+  generateOption("interlock", data);
+};
+
+let extrasState = [];
+const bindExtras = (blindname, controlname) => {
+  const sel = document.getElementById("extras");
+  sel.innerHTML = ""; //reset
+
+  if (!blindname) return;
+  if (tomExtras) {
+    tomExtras.destroy();
+    tomExtras = null;
+  }
+
+  let data = [];
+  let list = [];
+
+  if (["Basic Door", "Safety Door"].includes(blindname)) {
+    if (["Sliding Door"].includes(controlname)) {
+      list = [
+        { name: "Angle 25 x 70", unit: "mm" },
+        { name: "Bugseal Additional Sliding", unit: "mm" },
+        { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
+        { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
+        { name: "Door Posts 50 x 25 (for frame work)", unit: "mm" },
+        {
+          name: "Safety Door Deadlock - Without Barrel - Supply Only",
+          unit: "Qty",
+        },
+        { name: "Safety Door Deadlock With Barrel (Supply Only)", unit: "Qty" },
+        { name: "Grill Frame for Infill", unit: "mm" },
+        { name: "H Channel in Door to add 30mm to width or drop", unit: "Qty" },
+        { name: "U Frame 20mm sides x 25 wide", unit: "mm" },
+        { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
+        { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
+        { name: "Stop Bead Additional", unit: "Qty" },
+        { name: "Door Track H ST4", unit: "mm" },
+        { name: "Door Track J HD1", unit: "mm" },
+        { name: "Door Track P- ST11", unit: "mm" },
+        { name: "Door Track W- ST8", unit: "mm" },
+        {
+          name: "Door Track Powdercoating (in addition to std track price)",
+          unit: "mm",
+        },
+        { name: "Powder Coating Minimum", unit: "Qty" },
+        { name: "Angle 12 x 12mm", unit: "mm" },
+        { name: "Angle 12 x 20mm", unit: "mm" },
+        { name: "Angle 12 x 25mm", unit: "mm" },
+        { name: "Angle 20 x 40mm", unit: "mm" },
+        { name: "Angle 25 x 20mm", unit: "mm" },
+        { name: "Angle 50 x 25mm", unit: "mm" },
+        { name: "Lock Barrell Installed", unit: "Qty" },
+        { name: "Lock Barrel supply only", unit: "Qty" },
+        { name: "Lock Barrel supplied by customer", unit: "Qty" },
+        { name: "Patio Bolt", unit: "Qty" },
+        { name: "Miscellaneous Doors", unit: "Qty" },
+        { name: "Miscellaneous", unit: "Qty" },
+        { name: "Miscellaneous Timber", unit: "Qty" },
+        { name: "Timber Frame 19 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 19 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 19 Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frame 66 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 13 Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
+      ];
+    }
+    if (["Hinged Door"].includes(controlname)) {
+      list = [
+        { name: "Angle 25 x 70", unit: "mm" },
+        { name: "Bugseal Additional Sliding", unit: "mm" },
+        { name: "Bugseal Additional Hinged", unit: "mm" },
+        { name: "Door Closer", unit: "mm" },
+        { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
+        {
+          name: "Safety Door Deadlock - Without Barrel - Supply Only",
+          unit: "Qty",
+        },
+        { name: "Safety Door Deadlock With Barrel (Supply Only)", unit: "Qty" },
+        { name: "H Channel in Door to add 30mm to width or drop", unit: "Qty" },
+        { name: "Grill Frame for Infill", unit: "mm" },
+        { name: "Stop Bead Additional", unit: "Qty" },
+        { name: "Powder Coating Minimum", unit: "Qty" },
+        { name: "Angle 12 x 12mm", unit: "mm" },
+        { name: "Angle 12 x 20mm", unit: "mm" },
+        { name: "Angle 12 x 25mm", unit: "mm" },
+        { name: "Angle 20 x 40mm", unit: "mm" },
+        { name: "Angle 25 x 20mm", unit: "mm" },
+        { name: "Angle 50 x 25mm", unit: "mm" },
+        { name: "Lock Barrell Installed", unit: "Qty" },
+        { name: "Lock Barrel (Customer to Supply)", unit: "Qty" },
+        { name: "Lock Barrel supply only", unit: "Qty" },
+        { name: "Patio Bolt", unit: "Qty" },
+        { name: "Miscellaneous", unit: "Qty" },
+        { name: "Timber Frame 19 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 19 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 19 Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frame 66 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 13 Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
+      ];
+    }
+  }
+
+  list.forEach((ls) => {
+    data.push({
+      value: ls.name,
+      text: ls.name,
+      unit: ls.unit,
+    });
+  });
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    option.setAttribute("data-unit", item.unit);
+    sel.add(option);
+  });
+
+  sel.addEventListener("change", function () {
+    const selected = Array.from(this.selectedOptions).map((x) => x.value);
+
+    // 1. HAPUS ITEM YANG DI UNSELECT
+    extrasState = extrasState.filter((x) => selected.includes(x.name));
+
+    // 2. TAMBAH ITEM BARU
+    selected.forEach((name) => {
+      if (!extrasState.find((x) => x.name === name)) {
+        const option = this.querySelector(`option[value="${name}"]`);
+
+        extrasState.push({
+          name: name,
+          unit: option?.dataset?.unit || "Qty",
+          value: "",
+        });
+      }
+    });
+
+    // 3. RENDER ULANG (INI YANG MENCEGAH RESET)
+    renderExtras();
+  });
+
+  initTomSelect();
+};
+// ----------------------------------------------|| Handler Functions ||---------------------------------------
+const handlerElementVisibility = async (
+  blindtype,
+  tubetype,
+  controltype,
+  item,
+) => {
   try {
     const lblItemId = document.getElementById("lblItemId");
     const divTubeType = document.getElementById("divTubeType");
-
+    const divControlType = document.getElementById("divControlType");
     const divFormDetail = document.getElementById("divFormDetail");
-    const lblWidth = document.getElementById("lblWidth");
-    const hintWidthTop = document.getElementById("hintWidthTop");
-    const divWidthMiddle = document.getElementById("divWidthMiddle");
-    const divWidthBotMin = document.getElementById("divWidthBotMin");
+    const divMounting = document.getElementById("divMounting");
+    const divSliding = document.getElementById("divSliding");
+    const divStacking = document.getElementById("divStacking");
+    const divTrackless = document.getElementById("divTrackless");
+    const lblFrame = document.getElementById("lblFrame");
     const divFrameType = document.getElementById("divFrameType");
-    const lblFrameType = document.getElementById("lblFrameType");
     const divFrameColour = document.getElementById("divFrameColour");
-    const lblFrameColour = document.getElementById("lblFrameColour");
-    const divFitted = document.getElementById("divFitted");
     const divMesh = document.getElementById("divMesh");
-    const lblMesh = document.getElementById("lblMesh");
-    const divFixing = document.getElementById("divFixing");
-    const divTop = document.getElementById("divTop");
-    const divHingeType = document.getElementById("divHingeType");
-    const divLockType = document.getElementById("divLockType");
-    const divLockHandling = document.getElementById("divLockHandling");
-    const divFrameSize = document.getElementById("divFrameSize");
-    const divExtended = document.getElementById("divExtended");
-    const divSlamBar = document.getElementById("divSlamBar");
-    const divLeverHandleType = document.getElementById("divLeverHandleType");
-    const divLock = document.getElementById("divLock");
-    const divLayoutCode = document.getElementById("divLayoutCode");
     const divHandle = document.getElementById("divHandle");
+    const divInswing = document.getElementById("divInswing");
+    const divLockColour = document.getElementById("divLockColour");
+    const divKeyed = document.getElementById("divKeyed");
     const divMidrail = document.getElementById("divMidrail");
+    const divBugseal = document.getElementById("divBugseal");
+    const divCloser = document.getElementById("divCloser");
+    const lblCloser = document.getElementById("lblCloser");
+    const divInstall = document.getElementById("divInstall");
+    const divFixing = document.getElementById("divFixing");
+    const divFitted = document.getElementById("divFitted");
+    const divRemove = document.getElementById("divRemove");
     const divPetDor = document.getElementById("divPetDor");
-    const divTripleLock = document.getElementById("divTripleLock");
-    const divLatchBass = document.getElementById("divLatchBass");
-    const divBugSeal = document.getElementById("divBugSeal");
-    const divDoorCloser = document.getElementById("divDoorCloser");
-    const divBoldPatio = document.getElementById("divBoldPatio");
-    const divCrossBrace = document.getElementById("divCrossBrace");
-
+    const divHalf = document.getElementById("divHalf");
+    const divInterlock = document.getElementById("divInterlock");
+    const lblInterlock = document.getElementById("lblInterlock");
+    const divExtras = document.getElementById("divExtras");
     const divMarkUp = document.getElementById("divMarkUp");
     const btnSubmit = document.querySelector("#btnSubmit");
     // return;
     lblItemId.classList.add("d-none");
     divTubeType.classList.add("d-none");
-
+    divControlType.classList.add("d-none");
     divFormDetail.classList.add("d-none");
-    lblWidth.innerHTML = "width top x middle";
-    hintWidthTop.classList.add("d-none");
-    divWidthMiddle.classList.add("d-none");
-    divWidthBotMin.classList.add("d-none");
+    divMounting.classList.add("d-none");
+    divSliding.classList.add("d-none");
+    divStacking.classList.add("d-none");
+    divTrackless.classList.add("d-none");
+    lblFrame.innerHTML = "Grille";
     divFrameType.classList.add("d-none");
-    lblFrameType.innerHTML = "frame type";
     divFrameColour.classList.add("d-none");
-    lblFrameColour.innerHTML = "frame colour";
-    divFitted.classList.add("d-none");
     divMesh.classList.add("d-none");
-    lblMesh.innerHTML = "mesh type";
-    divFixing.classList.add("d-none");
-    divTop.classList.add("d-none");
-    divHingeType.classList.add("d-none");
-    divLockType.classList.add("d-none");
-    divLockHandling.classList.add("d-none");
-    divFrameSize.classList.add("d-none");
-    divExtended.classList.add("d-none");
-    divSlamBar.classList.add("d-none");
-    divLeverHandleType.classList.add("d-none");
-    divLock.classList.add("d-none");
-    divLayoutCode.classList.add("d-none");
     divHandle.classList.add("d-none");
+    divInswing.classList.add("d-none");
+    divLockColour.classList.add("d-none");
+    divKeyed.classList.add("d-none");
     divMidrail.classList.add("d-none");
+    divBugseal.classList.add("d-none");
+    divCloser.classList.add("d-none");
+    lblCloser.innerHTML = "Closer";
+    divInstall.classList.add("d-none");
+    divFixing.classList.add("d-none");
+    divFitted.classList.add("d-none");
+    divRemove.classList.add("d-none");
     divPetDor.classList.add("d-none");
-    divTripleLock.classList.add("d-none");
-    divLatchBass.classList.add("d-none");
-    divBugSeal.classList.add("d-none");
-    divDoorCloser.classList.add("d-none");
-    divBoldPatio.classList.add("d-none");
-    divCrossBrace.classList.add("d-none");
-
+    divHalf.classList.add("d-none");
+    divInterlock.classList.add("d-none");
+    lblInterlock.innerHTML = "interlocks and options";
+    divExtras.classList.add("d-none");
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
 
-    if (["Administrator"].includes(ROLENAME)) {
-      lblItemId.classList.remove("d-none");
-    }
-
     if (!blindtype) return;
-    const blindname = await getItemData(
-      `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
-    );
     divTubeType.classList.remove("d-none");
+    const blindname = await getItemData(
+      `SELECT Name FROM Blinds WHERE Id='${blindtype}'`,
+    );
 
     if (!tubetype) return;
-    const tubename = await getItemData(
-      `SELECT TubeType FROM hardwareKits WHERE Id = '${tubetype}'`,
+    divControlType.classList.remove("d-none");
+
+    if (!controltype) return;
+    divFormDetail.classList.remove("d-none");
+    const controlname = await getItemData(
+      `SELECT ControlType FROM HardwareKits WHERE Id='${controltype}'`,
     );
-    if (tubename == "N/A") {
-      divTubeType.classList.add("d-none");
+
+    if (controlname == "N/A") {
+      divControlType.classList.add("d-none");
     }
 
-    divFormDetail.classList.remove("d-none");
-    // DOOR
-    if (blindname.includes("Door") && !blindname.includes("Steel")) {
-      lblWidth.innerHTML = "width top x middle";
-      hintWidthTop.classList.remove("d-none");
-      divWidthMiddle.classList.remove("d-none");
-      divWidthBotMin.classList.remove("d-none");
+    if (["Flydoor", "Heavy Duty Diamond", "Ultra Barrier"].includes(tubetype)) {
+      divFrameType.classList.remove("d-none");
       divFrameColour.classList.remove("d-none");
       divMesh.classList.remove("d-none");
-      divLayoutCode.classList.remove("d-none");
       divHandle.classList.remove("d-none");
+      divKeyed.classList.remove("d-none");
       divMidrail.classList.remove("d-none");
       divPetDor.classList.remove("d-none");
-      divTripleLock.classList.remove("d-none");
-      divLatchBass.classList.remove("d-none");
-      divBugSeal.classList.remove("d-none");
-      divDoorCloser.classList.remove("d-none");
-      divBoldPatio.classList.remove("d-none");
+      divBugseal.classList.remove("d-none");
+      divHalf.classList.remove("d-none");
+      divInstall.classList.remove("d-none");
+      divInterlock.classList.remove("d-none");
+      divExtras.classList.remove("d-none");
+
+      if (["Hinged Door"].includes(controlname)) {
+        lblInterlock.innerHTML = "Adaptors and options";
+        divInswing.classList.remove("d-none");
+        divLockColour.classList.remove("d-none");
+        divCloser.classList.remove("d-none");
+        divFixing.classList.remove("d-none");
+        divFitted.classList.remove("d-none");
+        divRemove.classList.remove("d-none");
+      }
     }
 
-    if (blindname.includes("Grile") && !blindname.includes("Steel")) {
-      lblWidth.innerHTML = "width";
-      divFrameType.classList.remove("d-none");
+    if (["Ultra Guard"].includes(tubetype)) {
+      lblFrame.innerHTML = "Frame Colour";
       divFrameColour.classList.remove("d-none");
-      divMesh.classList.remove("d-none");
+      divHandle.classList.remove("d-none");
+      divKeyed.classList.remove("d-none");
       divMidrail.classList.remove("d-none");
+      divBugseal.classList.remove("d-none");
+      lblInterlock.innerHTML = "Interlocks";
+      divInterlock.classList.remove("d-none");
+      divExtras.classList.remove("d-none");
+
+      if (["Hinged Door"].includes(controlname)) {
+        lblInterlock.innerHTML = "Adaptors";
+        divCloser.classList.remove("d-none");
+        lblCloser.innerHTML = "Door Closure";
+      }
     }
 
-    if (blindname.includes("Flyscreen")) {
-      lblWidth.innerHTML = "width";
+    if (["Retractable Pleated"].includes(tubetype)) {
+      divSliding.classList.remove("d-none");
+      divStacking.classList.remove("d-none");
+      divTrackless.classList.remove("d-none");
+      lblFrame.innerHTML = "Frame Colour";
       divFrameColour.classList.remove("d-none");
-      divMesh.classList.remove("d-none");
-      divCrossBrace.classList.remove("d-none");
-    }
-
-    if (blindname.includes("Steel")) {
-      lblWidth.innerHTML = "width top x middle";
-      divWidthMiddle.classList.remove("d-none");
-      divWidthBotMin.classList.remove("d-none");
-      divFrameType.classList.remove("d-none");
-      lblFrameType.innerHTML = "type";
-      divFrameColour.classList.remove("d-none");
-      lblFrameColour.innerHTML = "colour";
-      divFitted.classList.remove("d-none");
-      divMesh.classList.remove("d-none");
-      lblMesh.innerHTML = "mesh";
-      divFixing.classList.remove("d-none");
-      divTop.classList.remove("d-none");
-      divHingeType.classList.remove("d-none");
-      divLockType.classList.remove("d-none");
-      divLockHandling.classList.remove("d-none");
-      divFrameSize.classList.remove("d-none");
-      divExtended.classList.remove("d-none");
-      divSlamBar.classList.remove("d-none");
-      divLeverHandleType.classList.remove("d-none");
-      divLock.classList.remove("d-none");
+      divExtras.classList.remove("d-none");
     }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
@@ -1411,182 +1182,14 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       if (ROLENAME !== "Administrator") btnSubmit.classList.add("d-none");
     }
   } catch (error) {
-    var msg = error.message;
-    if (ROLENAME !== "Administrator") {
-      msg = "Please contact our IT team at support@onlineorder.au";
-    }
+    const msg =
+      ROLENAME === "Administrator"
+        ? error.message
+        : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
   }
 };
 
-const handlerSubmit = async (button) => {
-  try {
-    // return alert(button);
-    document.getElementById(button).innerHTML = "Processing...";
-    swalLoadingShow("Please wait while we save the data.");
-    const fields = [
-      "blindtype",
-      "tubetype",
-      "qty",
-      "room",
-      "mounting",
-      "widthtop",
-      "widthmiddle",
-      "widthbottom",
-      "widthmin",
-      "drop",
-      "frametype",
-      "framecolour",
-      "fitted",
-      "meshtype",
-      "fixing",
-      "top",
-      "hingetype",
-      "locktype",
-      "lockhandling",
-      "sideframe",
-      "headframe",
-      "extframe",
-      "extwidth",
-      "extdrop",
-      "slambar",
-      "levelhandler",
-      "lock",
-      "layoutcode",
-      "handleposition",
-      "handlemeasure",
-      "handleheight",
-      "midrailposition",
-      "midrailrequest",
-      "petdoortype",
-      "petdoorposition",
-      "triplelock",
-      "latchbass",
-      "bugseal",
-      "doorcloser",
-      "boldpatio",
-      "crossbrace",
-      "notes",
-      "markup",
-    ];
-
-    const formData = {
-      headerid: HEADERID,
-      itemaction: ITEMACTION,
-      itemid: ITEMID,
-      designid: DESIGNID,
-      loginid: LOGINID,
-    };
-
-    fields.forEach((field) => {
-      formData[field] = document.getElementById(field).value;
-    });
-
-    // return console.table(formData);
-
-    const response = await fetch(URIMETHOD + "/Submit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({ data: formData }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`${response.status}\n${errorText}`);
-    }
-
-    const result = await response.json();
-    const dataResult = result.d || result;
-
-    if (dataResult.error) {
-      await isWarning(dataResult.error.message?.toUpperCase());
-      const field = document.getElementById(dataResult.error.field);
-      if (field) {
-        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
-        // field.focus();
-        field.classList.add("is-invalid");
-      }
-    } else {
-      await isSuccess(dataResult.success);
-      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
-    }
-  } catch (error) {
-    var msg = error.message;
-    if (ROLENAME !== "Administrator") {
-      msg = "Please contact our IT team at support@onlineorder.au";
-    }
-    isError(msg);
-  } finally {
-    document.getElementById(button).innerHTML = "Submit";
-  }
-};
-
-const handlerSetElementValues = (itemData) => {
-  const mapping = {
-    blindtype: "BlindId",
-    tubetype: "KitId",
-    qty: "Qty",
-    room: "Location",
-    mounting: "Mounting",
-    widthtop: "Width",
-    widthmiddle: "WidthMiddle",
-    widthbottom: "WidthBottom",
-    widthmin: "WidthB",
-    drop: "Drop",
-    frametype: "FrameType",
-    fitted: "Fitting",
-    framecolour: "FrameColour",
-    meshtype: "MeshType",
-    fixing: "SemiInsideMount",
-    top: "LayoutSpecial",
-    hingetype: "HangerType",
-    locktype: "TiltrodType",
-    lockhandling: "TiltrodSplit",
-    sideframe: "FrameLeft",
-    headframe: "FrameRight",
-    extframe: "FrameTop",
-    extwidth: "PanelQty",
-    extdrop: "TrackQty",
-    slambar: "DoorCutOut",
-    levelhandler: "SpecialShape",
-    lock: "TemplateProvided",
-    layoutcode: "Layout",
-    handleposition: "TrackType",
-    handlemeasure: "TrackColour",
-    handleheight: "TrackLength",
-    midrailposition: "MidrailCritical",
-    midrailrequest: "MidrailHeight1",
-    petdoortype: "Buildout",
-    petdoorposition: "BuildoutPosition",
-    triplelock: "JoinedPanels",
-    latchbass: "ReverseHinged",
-    bugseal: "PelmetFlat",
-    doorcloser: "ExtraFascia",
-    boldpatio: "HingesLoose",
-    crossbrace: "ChildSafe",
-    notes: "Notes",
-    markup: "MarkUp",
-  };
-
-  // Set nilai ke input sesuai mapping
-  Object.entries(mapping).forEach(([id, key]) => {
-    const el = document.getElementById(id);
-    if (!el) {
-      console.warn(`Elemen '${id}' tidak ditemukan.`);
-      return;
-    }
-
-    let value = itemData[key];
-    if (id === "markup" && value === 0) value = "";
-
-    el.value = value ?? ""; // fallback ke string kosong
-
-    // jika nilainya "0" → kosong
-    if (el.value === "0") el.value = "";
-  });
-};
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const doorPageLoaded = async () => {
   if (!HEADERID) {
@@ -1615,10 +1218,10 @@ const doorPageLoaded = async () => {
 
   if (ITEMACTION === "AddItem") {
     await bindBlinds(DESIGNID);
-    await handlerElementVisibility();
+    handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    await bindItemOrders(ITEMID);
+    // await bindItemOrders(ITEMID);
     loaderFadeOut();
   }
 };
@@ -1637,4 +1240,75 @@ const getItemData = async (query) => {
     console.error(err);
     isError(err);
   }
+};
+
+const generateOption = (elementId, list = []) => {
+  const sel = document.getElementById(elementId);
+  if (!sel) return;
+  sel.innerHTML = ""; // reset
+
+  let validateLength = 1;
+  switch (elementId) {
+    case "trackless":
+      validateLength = 0;
+      break;
+  }
+
+  // default option kalau lebih dari 1 data
+  if (list.length > validateLength) {
+    const defaultOption = new Option("", "");
+    sel.add(defaultOption);
+  }
+
+  list.forEach((item) => {
+    const option = new Option(item.toUpperCase(), item);
+    option.setAttribute("data-name", item);
+    sel.add(option);
+  });
+};
+
+let tomExtras = null;
+const initTomSelect = () => {
+  if (tomExtras) {
+    tomExtras.destroy();
+  }
+
+  tomExtras = new TomSelect("#extras", {
+    // plugins: ["remove_button"],
+    // placeholder: "Select Extras",
+    maxItems: null,
+    create: false,
+  });
+};
+
+const renderExtras = () => {
+  const container = document.getElementById("extrasContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  extrasState.forEach((item) => {
+    container.innerHTML += `
+      <div class="row mb-2 extra-row">
+
+          <div class="col-7">
+              <input type="text"
+                     class="form-control"
+                     value="${item.name}"
+                     readonly />
+          </div>
+
+          <div class="col-5">
+              <div class="input-group">
+                <input type="number"
+                      class="form-control extra-value"
+                      value="${item.value || ""}"
+                      placeholder="Enter ${item.unit}" />
+                <span class="input-group-text">${item.unit}</span>
+              </div>
+          </div>
+
+      </div>
+    `;
+  });
 };

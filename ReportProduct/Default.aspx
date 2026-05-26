@@ -59,7 +59,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-8 col-md-8 col-sm-8" hidden>
+                <div class="col-lg-8 col-md-8 col-sm-8">
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Result</h3>
@@ -70,8 +70,8 @@
                                     <thead class="fs-3 fw-bold">
                                         <tr>
                                             <th class="text-center">#</th>
-                                            <th class="h3 text-center">Cistomers</th>
-                                            <th class="h3">Products</th>
+                                            <th class="h3 text-center">Product</th>
+                                            <th class="h3">Qty</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>

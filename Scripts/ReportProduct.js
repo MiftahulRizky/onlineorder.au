@@ -30,6 +30,7 @@ document.querySelector("#btnFind").addEventListener("click", (e) => {
 
   // handlerSubmit(e.target.form, e.target.id);
   handlerFind(e.target.id);
+  // handlerFindReport(e.target.id);
 });
 // =================================================FUNCTION================================================
 // --------------------------------------------||Binding Function||-----------------------------------------
@@ -222,9 +223,128 @@ const handlerFind = async (button) => {
     document.getElementById(button).innerHTML = "Show";
   }
 };
+
+// Variabel global untuk menyimpan instance datatable agar bisa di-reset/refresh
+let dataTableInstance = null;
+
+const handlerFindReport = async (button) => {
+  try {
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+
+    const fields = ["findby", "fined", "status", "fromdate", "todate"];
+    const formData = { rolename: ROLENAME };
+
+    fields.forEach((field) => {
+      formData[field] = document.getElementById(field).value;
+    });
+
+    console.table(formData);
+
+    // 1. Panggil WebMethod menggunakan Fetch API
+    const response = await fetch(`${URIMETHOD}/MyReport`, {
+      // <--- Ganti NamaHalamanAnda.aspx sesuai file Anda
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const res = await response.json();
+    const result = res.d; // ASP.NET membungkus return value di dalam properti .d
+
+    // 2. Cek Jika Mengembalikan Error dari Server (Validasi Server-Side Gagal)
+    if (result.error) {
+      const err = result.error;
+
+      await isWarning(err.message?.toUpperCase());
+      if (err.field) {
+        const inputEl = document.getElementById(err.field);
+        if (inputEl) {
+          inputEl.classList.add("is-invalid");
+        }
+      }
+    }
+
+    // 3. Jika Sukses, Render atau Segarkan jQuery DataTables dengan Object Array dari Server
+    if (result.success) {
+      const dataBagiTabel = result.reportData || [];
+
+      // Jika sebelumnya tabel sudah pernah di-inisialisasi, kita hancurkan dulu (destroy) agar tidak bentrok
+      if ($.fn.DataTable.isDataTable("#reportServerSide")) {
+        $("#reportServerSide").DataTable().clear().destroy();
+      }
+
+      // Inisialisasi ulang DataTables dengan data object array terbaru
+      dataTableInstance = $("#reportServerSide").DataTable({
+        data: dataBagiTabel,
+        language: {
+          search: "",
+          lengthMenu: "_MENU_",
+        },
+        initComplete: () => {
+          stylingColumnSearchAndPaging("#reportServerSide");
+        },
+        columns: [
+          {
+            data: null,
+            width: "10%",
+            className: "text-center",
+            render: function (data, type, row, meta) {
+              return meta.row + 1;
+            },
+          },
+          { data: "DesignName", width: "80%" },
+          { data: "Qty", width: "10%" },
+        ],
+        order: [[0, "asc"]],
+        pageLength: 50,
+        responsive: true,
+      });
+
+      // Opsional: Tampilkan alert sukses dari sweetalert
+      // swalSuccessShow(result.success.message);
+      Swal.close();
+    }
+  } catch (error) {
+    let msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg); // Memanggil fungsi penampil error Anda
+  } finally {
+    document.getElementById(button).innerHTML = "Show";
+    // swal.close(); // Menutup loading sweetalert
+  }
+};
 // --------------------------------------------||Other Function||-----------------------------------------
 const reportProductPageLoaded = async () => {
   await Promise.all([bindFindBy(), bindStatus(), bindDate()]);
 
   await loaderFadeOut();
+};
+
+const stylingColumnSearchAndPaging = (params) => {
+  const input = $(params + "_filter input");
+  input
+    .addClass("form-control form-control-sm")
+    .attr("placeholder", "🔍 Type here to search...")
+    .css({
+      width: "250px",
+      height: "40px",
+      fontSize: "15px",
+      display: "inline-block",
+    });
+
+  const lengthSelect = $(params + "_length select");
+  lengthSelect.addClass("form-select form-select-sm").css({
+    width: "65px",
+    fontSize: "15px",
+    height: "40px",
+  });
 };

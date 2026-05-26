@@ -57,6 +57,7 @@ Inherits="SiteMaster" %>
       rel="stylesheet"
       href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"
     />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowgroup/1.4.1/css/rowgroup.dataTables.min.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -165,7 +166,10 @@ Inherits="SiteMaster" %>
             Path="https://cdn.jsdelivr.net/npm/sweetalert2@11"
           />
           <asp:ScriptReference
-            Path="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"
+          Path="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"
+          />
+          <asp:ScriptReference
+            Path="https://cdn.datatables.net/rowgroup/1.4.1/js/dataTables.rowGroup.min.js"
           />
           <asp:ScriptReference
             Path="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"

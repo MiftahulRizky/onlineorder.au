@@ -24,11 +24,11 @@
                                 <div class="col-4 col-lg-4 col-md-4">
                                     <label class="form-label text-secondary text-uppercase">Order #</label>
                                     <label class="form-label" id="lblOrder">-</label>
-                                    <label class="form-label" id="lblItemId">-</label>
+                                    <label class="form-label" id="lblItemId" hidden>-</label>
                                 </div>
                                 <div class="col-4 col-lg-4 col-md-4">
                                     <label class="form-label text-secondary text-uppercase">Order Number</label>
-                                    <label class="form-label" id="lblOrderNumber">-</label>
+                                    <label class="form-label" id="lblOrderNumber" >-</label>
                                 </div>
                                 <div class="col-4 col-lg-4 col-md-4">
                                     <label class="form-label text-secondary text-uppercase">Order Name</label>
@@ -58,9 +58,16 @@
                                 </div>
 
                                 <div class="mb-3 row" id="divTubeType">
-                                    <label for="tubetype" class="col-lg-3 text-uppercase fw-bold" id="lblColourType">door product</label>
+                                    <label for="tubetype" class="col-lg-3 text-uppercase fw-bold" id="">door product</label>
                                     <div class="col-lg-4">
                                         <select type="text" name="tubetype" id="tubetype" class="form-select"></select>
+                                    </div>  
+                                </div>
+
+                                <div class="mb-3 row" id="divControlType">
+                                    <label for="controltype" class="col-lg-3 text-uppercase fw-bold" id="">mechanism</label>
+                                    <div class="col-lg-4">
+                                        <select type="text" name="controltype" id="controltype" class="form-select"></select>
                                     </div>  
                                 </div>
 
@@ -89,88 +96,132 @@
                                     </div>
 
                                     <div class="mb-3 row">
-                                        <label for="widthtop" class="col-lg-3 text-uppercase fw-bold" id="lblWidth">width top x middle</label>
+                                        <label for="width" class="col-lg-3 text-uppercase fw-bold" id="lblWidth">width x height</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
-                                                <input type="number" min="1" name="widthtop" id="widthtop" class="form-control " autocomplete="off" />
+                                                <input type="number" min="1" name="width" id="width" class="form-control " autocomplete="off" />
                                                 <span class="input-group-text ">mm</span>
                                             </div>
-                                            <small class="form-hint" id="hintWidthTop">* Top</small>
+                                            <small class="form-hint" id="hintWidthTop">* Width</small>
                                         </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12" id="divWidthMiddle">
+                                        <div class="col-lg-4 col-md-12 col-sm-12" id="">
                                             <div class="input-group">
-                                                <input type="number" min="1" name="widthmiddle" id="widthmiddle" class="form-control  " autocomplete="off"/>
+                                                <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off"/>
                                                 <span class="input-group-text ">mm</span>
                                             </div>
-                                            <small class="form-hint">* Middle</small>
+                                            <small class="form-hint">* Height</small>
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row" id="divWidthBotMin">
-                                        <label for="widthbottom" class="col-lg-3 text-uppercase fw-bold text-transparent">width bottom x minimum</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="widthbottom" id="widthbottom" class="form-control  " autocomplete="off"  />
-                                                <span class="input-group-text ">mm</span>
-                                            </div>
-                                            <small class="form-hint">* Bottom</small>
-                                        </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="widthmin" id="widthmin" class="form-control  " autocomplete="off"  />
-                                                <span class="input-group-text ">mm</span>
-                                            </div>
-                                            <small class="form-hint">* Minimum</small>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3 row">
-                                        <label for="drop" class="col-lg-3 text-uppercase fw-bold text-transparent">drop</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off" />
-                                                <!-- <button data-bs-toggle="dropdown" type="button" class="btn dropdown-toggle dropdown-toggle-split"></button>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    <a class="dropdown-item" href="#">
-                                                        Action
-                                                    </a>
-                                                    <a class="dropdown-item" href="#">
-                                                        Another action
-                                                    </a>
-                                                </div> -->
-                                                <span class="input-group-text ">mm</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3 row" id="divFrameType">
-                                        <label for="frametype" class="col-lg-3 text-uppercase fw-bold" id="lblFrameType">frame type</label>
+                                    <div class="mb-3 row" id="divSliding">
+                                        <label for="sliding" class="col-lg-3 text-uppercase fw-bold" >Sliding</label>
                                         <div class="col-lg-4">
+                                            <select name="sliding" id="sliding" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divStacking">
+                                        <label for="stacking" class="col-lg-3 text-uppercase fw-bold" >Stacking</label>
+                                        <div class="col-lg-4">
+                                            <select name="stacking" id="stacking" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divTrackless">
+                                        <label for="trackless" class="col-lg-3 text-uppercase fw-bold" >Trackless Door</label>
+                                        <div class="col-lg-4">
+                                            <select name="trackless" id="trackless" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" >
+                                        <label for="frametype" class="col-lg-3 text-uppercase fw-bold" id="lblFrame">grille</label>
+                                        <div class="col-lg-4" id="divFrameType">
                                             <select name="frametype" id="frametype" class="form-select"></select>
+                                            <small class="form-hint">* Type</small>
                                         </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divFrameColour">
-                                        <label for="framecolour" class="col-lg-3 text-uppercase fw-bold" id="lblFrameColour">frame colour</label>
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-4" id="divFrameColour">
                                             <select name="framecolour" id="framecolour" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divFitted">
-                                        <label for="fitted" class="col-lg-3 text-uppercase fw-bold" id="lblFitted">fitted</label>
-                                        <div class="col-lg-4">
-                                            <select name="fitted" id="fitted" class="form-select"></select>
+                                            <small class="form-hint">* Colour</small>
                                         </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divMesh">
-                                        <label for="meshtype" class="col-lg-3 text-uppercase fw-bold" id="lblMesh">mesh type</label>
+                                        <label for="meshtype" class="col-lg-3 text-uppercase fw-bold" id="lblMesh">mesh</label>
                                         <div class="col-lg-4">
                                             <select name="meshtype" id="meshtype" class="form-select"></select>
                                         </div>  
                                     </div>
 
+
+                                   <div class="mb-3 row" id="divHandle">
+                                        <label for="handleside" class="col-lg-3 text-uppercase fw-bold">handle</label>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <select name="handleside" id="handleside" class="form-select"></select>
+                                            <small class="form-hint">* Side</small>
+                                        </div>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <select name="handleheight" id="handleheight" class="form-select"></select>
+                                            <small class="form-hint">* Height</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divInswing">
+                                        <label for="inswing" class="col-lg-3 text-uppercase fw-bold" >inswing hinges</label>
+                                        <div class="col-lg-4">
+                                            <select name="inswing" id="inswing" class="form-select">
+                                                <option value=""></option>
+                                                <option value="Yes">YES</option>
+                                            </select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divLockColour">
+                                        <label for="lockcolour" class="col-lg-3 text-uppercase fw-bold" >lock colour</label>
+                                        <div class="col-lg-4">
+                                            <select name="lockcolour" id="lockcolour" class="form-select"></select>
+                                        </div>  
+                                    </div>
+                                    
+                                    <div class="mb-3 row" id="divKeyed">
+                                        <label for="keyed" class="col-lg-3 text-uppercase fw-bold" >keyed alike</label>
+                                        <div class="col-lg-4">
+                                            <select name="keyed" id="keyed" class="form-select">
+                                                <option value=""></option>
+                                                <option value="Yes">YES</option>
+                                            </select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divMidrail">
+                                        <label for="midrail" class="col-lg-3 text-uppercase fw-bold" >Mid Rail</label>
+                                        <div class="col-lg-4">
+                                            <select name="midrail" id="midrail" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                   
+
+                                    <div class="mb-3 row" id="divBugseal">
+                                        <label for="bugseal" class="col-lg-3 text-uppercase fw-bold" >bug seals</label>
+                                        <div class="col-lg-4">
+                                            <select name="bugseal" id="bugseal" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divCloser">
+                                        <label for="closer" class="col-lg-3 text-uppercase fw-bold" id="lblCloser">closer</label>
+                                        <div class="col-lg-4">
+                                            <select name="closer" id="closer" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divInstall">
+                                        <label for="install" class="col-lg-3 text-uppercase fw-bold" >installation</label>
+                                        <div class="col-lg-4">
+                                            <select name="install" id="install" class="form-select"></select>
+                                        </div>  
+                                    </div>
 
                                     <div class="mb-3 row" id="divFixing">
                                         <label for="fixing" class="col-lg-3 text-uppercase fw-bold" >fixing</label>
@@ -179,178 +230,53 @@
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divTop">
-                                        <label for="top" class="col-lg-3 text-uppercase fw-bold" >top</label>
+                                    <div class="mb-3 row" id="divFitted">
+                                        <label for="fitted" class="col-lg-3 text-uppercase fw-bold" >fitted</label>
                                         <div class="col-lg-4">
-                                            <select name="top" id="top" class="form-select"></select>
+                                            <select name="fitted" id="fitted" class="form-select"></select>
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divHingeType">
-                                        <label for="hingetype" class="col-lg-3 text-uppercase fw-bold" >hinge type</label>
+                                    <div class="mb-3 row" id="divRemove">
+                                        <label for="remove" class="col-lg-3 text-uppercase fw-bold" >remove product</label>
                                         <div class="col-lg-4">
-                                            <select name="hingetype" id="hingetype" class="form-select"></select>
+                                            <select name="remove" id="remove" class="form-select"></select>
                                         </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divLockType">
-                                        <label for="locktype" class="col-lg-3 text-uppercase fw-bold" >lock type</label>
-                                        <div class="col-lg-4">
-                                            <select name="locktype" id="locktype" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divLockHandling">
-                                        <label for="lockhandling" class="col-lg-3 text-uppercase fw-bold" >lock handling</label>
-                                        <div class="col-lg-4">
-                                            <select name="lockhandling" id="lockhandling" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divFrameSize">
-                                        <label for="sideframe" class="col-lg-3 text-uppercase fw-bold" >frame size</label>
-                                        <div class="col-lg-4">
-                                            <select name="sideframe" id="sideframe" class="form-select"></select>
-                                            <small class="form-hint">* Side Frame</small>
-                                        </div>  
-                                        <div class="col-lg-4">
-                                            <select name="headframe" id="headframe" class="form-select"></select>
-                                            <small class="form-hint">* Head Frame</small>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divExtended">
-                                        <label for="extframe" class="col-lg-3 text-uppercase fw-bold" >extended</label>
-                                        <div class="col-lg-3">
-                                            <select name="extframe" id="extframe" class="form-select"></select>
-                                            <small class="form-hint">* Frame</small>
-                                        </div>  
-                                        <div class="col-lg-3">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="extwidth" id="extwidth" class="form-control  " autocomplete="off" placeholder="Ext Width ...." />
-                                                <span class="input-group-text ">mm</span>
-                                            </div>
-                                            <small class="form-hint">* Width</small>
-                                        </div>  
-                                        <div class="col-lg-3">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="extdrop" id="extdrop" class="form-control  " autocomplete="off" placeholder="Ext Drop ...." />
-                                                <span class="input-group-text ">mm</span>
-                                            </div>
-                                            <small class="form-hint">* Drop</small>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3 row" id="divSlamBar">
-                                        <label for="slambar" class="col-lg-3 text-uppercase fw-bold" >slam bar</label>
-                                        <div class="col-lg-4">
-                                            <select name="slambar" id="slambar" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divLeverHandleType">
-                                        <label for="levelhandler" class="col-lg-3 text-uppercase fw-bold" >lever handler Type</label>
-                                        <div class="col-lg-4">
-                                            <select name="levelhandler" id="levelhandler" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divLock">
-                                        <label for="lock" class="col-lg-3 text-uppercase fw-bold" >lock</label>
-                                        <div class="col-lg-4">
-                                            <select name="lock" id="lock" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divLayoutCode">
-                                        <label for="layoutcode" class="col-lg-3 text-uppercase fw-bold" >layout</label>
-                                        <div class="col-lg-4">
-                                            <select name="layoutcode" id="layoutcode" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divHandle">
-                                        <label for="handleposition" class="col-lg-3 text-uppercase fw-bold">handle</label>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="handleposition" id="handleposition" class="form-select"></select>
-                                            <small class="form-hint">* Position</small>
-                                        </div>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="handlemeasure" id="handlemeasure" class="form-select"></select>
-                                            <small class="form-hint">* Measure</small>
-                                        </div>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <input type="number" min="1" name="handleheight" id="handleheight" class="form-control  " autocomplete="off"/>
-                                            <small class="form-hint">* Height</small>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3 row" id="divMidrail">
-                                        <label for="midrailposition" class="col-lg-3 text-uppercase fw-bold">midrail</label>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="midrailposition" id="midrailposition" class="form-select"></select>
-                                            <small class="form-hint">* Position</small>
-                                        </div>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <input type="number" min="1" name="midrailrequest" id="midrailrequest" class="form-control  " autocomplete="off"/>
-                                            <small class="form-hint">* Request</small>
-                                        </div>
                                     </div>
 
                                     <div class="mb-3 row" id="divPetDor">
                                         <label for="petdoortype" class="col-lg-3 text-uppercase fw-bold">Pet Dor</label>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
                                             <select name="petdoortype" id="petdoortype" class="form-select"></select>
                                             <small class="form-hint">* Type</small>
                                         </div>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
                                             <select name="petdoorposition" id="petdoorposition" class="form-select"></select>
                                             <small class="form-hint">* Posotion</small>
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row" id="divTripleLock">
-                                        <label for="triplelock" class="col-lg-3 text-uppercase fw-bold" >Triple Lock</label>
+                                    <div class="mb-3 row" id="divHalf">
+                                        <label for="half" class="col-lg-3 text-uppercase fw-bold" >half panel</label>
                                         <div class="col-lg-4">
-                                            <select name="triplelock" id="triplelock" class="form-select"></select>
+                                            <select name="half" id="half" class="form-select"></select>
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divLatchBass">
-                                        <label for="latchbass" class="col-lg-3 text-uppercase fw-bold" >Latch Bass</label>
+                                    <div class="mb-3 row" id="divInterlock">
+                                        <label for="interlock" class="col-lg-3 text-uppercase fw-bold" id="lblInterlock">interlocks and options</label>
                                         <div class="col-lg-4">
-                                            <select name="latchbass" id="latchbass" class="form-select"></select>
+                                            <select name="interlock" id="interlock" class="form-select"></select>
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divBugSeal">
-                                        <label for="bugseal" class="col-lg-3 text-uppercase fw-bold" >bugseal aluminium</label>
-                                        <div class="col-lg-4">
-                                            <select name="bugseal" id="bugseal" class="form-select"></select>
+                                    <div class="mb-3 row" id="divExtras">
+                                        <label for="extras" class="col-lg-3 text-uppercase fw-bold" >extras</label>
+                                        <div class="col-lg-8">
+                                            <select name="extras" id="extras" class="form-select" multiple></select>
+                                            <div id="extrasContainer" class="mt-3"></div>
                                         </div>  
                                     </div>
-
-                                    <div class="mb-3 row" id="divDoorCloser">
-                                        <label for="doorcloser" class="col-lg-3 text-uppercase fw-bold" >door closer</label>
-                                        <div class="col-lg-4">
-                                            <select name="doorcloser" id="doorcloser" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divBoldPatio">
-                                        <label for="boldpatio" class="col-lg-3 text-uppercase fw-bold" >bold patio lockable</label>
-                                        <div class="col-lg-4">
-                                            <input type="number" min="1" name="boldpatio" id="boldpatio" class="form-control  " autocomplete="off"/>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divCrossBrace">
-                                        <label for="crossbrace" class="col-lg-3 text-uppercase fw-bold" >cross brace</label>
-                                        <div class="col-lg-4">
-                                            <select name="crossbrace" id="crossbrace" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
 
                                     <div class="mb-3 row" >
                                         <label for="notes" class="col-lg-3 text-uppercase fw-bold">special information</label>
