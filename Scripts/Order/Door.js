@@ -61,6 +61,9 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindInterlock(blindname, controlname, frametype),
         bindExtras(blindname, controlname),
       ]);
+      if (["Security Door"].includes(blindname)) {
+        await Promise.all(bindFrameColour(blindname, controlname));
+      }
     }
 
     if (e.target.id === "frametype") {
@@ -94,7 +97,11 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const controls = document.getElementById("controltype");
       const controlname = controls.selectedOptions[0].dataset.name;
       const frametype = document.getElementById("frametype").value;
-      bindHandleHeight(blindname, controlname, frametype);
+      const handleside = e.target.value;
+      document.getElementById("handleheight").innerHTML = "";
+      if (handleside) {
+        bindHandleHeight(blindname, controlname, frametype);
+      }
     }
 
     if (e.target.id === "petdoortype") {
@@ -116,6 +123,12 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const controlname = controls.selectedOptions[0].dataset.name;
       const width = e.target.value;
       bindFrameType(blindname, controlname, width);
+      if (
+        ["Security Door"].includes(blindname) ||
+        ["N/A"].includes(controlname)
+      ) {
+        bindFrameColour(blindname, controlname);
+      }
     }
 
     if (e.target.id === "notes") {
@@ -127,6 +140,20 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   });
 });
 
+document.querySelector("#btnSubmit").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+
+  // handlerSubmit(e.target.form, e.target.id);
+  handlerSubmit(e.target.id);
+});
+
+document.querySelector("#btnCancel").addEventListener("click", (e) => {
+  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+});
 // ============================================================FUNCTIONS========================================================================
 // ----------------------------------------------|| Binding Functions ||---------------------------------------
 const bindDesigns = async (designid) => {
@@ -386,8 +413,41 @@ const bindControls = async (designid, blindtype, tubetype) => {
 
       if (data.length === 1) {
         select.selectedIndex = 0;
+        const blindname = await getItemData(
+          `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
+        );
         const controltype = select.options[select.selectedIndex].value;
+        const controlname = select.options[select.selectedIndex].dataset.name;
+        const width = document.getElementById("width").value;
+        const frametype = document.getElementById("frametype").value;
         await handlerElementVisibility(blindtype, tubetype, controltype);
+        await Promise.all([
+          bindSliding(),
+          bindStacking(),
+          bindTrackless(),
+          bindFrameType(blindname, controlname, width),
+          bindMesh(blindname, controlname, frametype),
+          bindHandleSide(blindname, controlname, frametype),
+          bindLock(blindname, controlname, frametype),
+          bindMidrail(blindname, controlname, frametype),
+          bindBugseal(blindname, controlname, frametype),
+          bindCloser(blindname, controlname, frametype),
+          bindHalf(blindname, controlname, frametype),
+          bindInstall(blindname, controlname, frametype),
+          bindFixing(blindname, controlname, frametype),
+          bindFitted(blindname, controlname, frametype),
+          bindRemoval(blindname, controlname, frametype),
+          bindPetDoorType(blindname, controlname, frametype),
+          bindHalf(blindname, controlname, frametype),
+          bindInterlock(blindname, controlname, frametype),
+          bindExtras(blindname, controlname),
+        ]);
+        if (
+          ["Security Door"].includes(blindname) ||
+          ["N/A"].includes(controlname)
+        ) {
+          await Promise.all([bindFrameColour(blindname, controlname)]);
+        }
       }
     }
   } catch (err) {
@@ -469,6 +529,38 @@ const bindFrameColour = (blindname, controlname) => {
         "Woodland Grey",
       );
     }
+
+    if (["N/A"].includes(controlname)) {
+      data.push(
+        "White",
+        "Black",
+        "Clear Anodised",
+        "Powder Coating",
+        "White Birch",
+        "Primrose",
+        "Monument",
+      );
+    }
+  }
+
+  if (["Security Door"].includes(blindname)) {
+    if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+      data.push(
+        "Apo Grey",
+        "Custom Black",
+        "Charcoal Satin",
+        "Dune",
+        "Monument Matt",
+        "Powder Coating",
+        "Primrose",
+        "Surfmist",
+        "Silver",
+        "White",
+        "Stone Beige",
+        "White Birch",
+        "Woodland Grey",
+      );
+    }
   }
   generateOption("framecolour", data);
 };
@@ -530,6 +622,22 @@ const bindHandleSide = (blindname, controlname, frametype) => {
       );
     }
   }
+
+  if (["Security Door"].includes(blindname)) {
+    if (["Sliding Door"].includes(controlname)) {
+      data.push(
+        "Left",
+        "Right",
+        "Left - Reciever",
+        "Right - Reciever",
+        "Stacker (Left Slide)",
+        "Stacker (Right Slide)",
+      );
+    }
+    if (["Hinged Door"].includes(controlname)) {
+      data.push("Left", "Right", "Left - Reciever", "Right - Reciever");
+    }
+  }
   generateOption("handleside", data);
 };
 
@@ -557,6 +665,21 @@ const bindHandleHeight = (blindname, controlname, frametype) => {
       if (frametype.includes("Screen Door (up to")) {
         data.push("Tulip A Latch");
       }
+    }
+  }
+
+  if (["Security Door"].includes(blindname)) {
+    if (["Sliding Door"].includes(controlname)) {
+      data.push("Lock Height", "Handle Height to Centre", "Specify");
+    }
+    if (["Hinged Door"].includes(controlname)) {
+      data.push(
+        "Lock Height",
+        "Centre of Handle",
+        "Bot of Tongue",
+        "Centre of Tongue",
+        "Specify",
+      );
     }
   }
   generateOption("handleheight", data);
@@ -614,6 +737,15 @@ const bindMidrail = (blindname, controlname, frametype) => {
       }
     }
   }
+
+  if (["Security Door"].includes(blindname)) {
+    if (["Sliding Door"].includes(controlname)) {
+      data.push("No Midrail", "Specify", "Midrail to Centre");
+    }
+    if (["Hinged Door"].includes(controlname)) {
+      data.push("Midrail to Centre", "No Midrail", "Specify");
+    }
+  }
   generateOption("midrail", data);
 };
 
@@ -621,7 +753,7 @@ const bindBugseal = (blindname, controlname, frametype) => {
   if (!blindname) return;
   let data = [];
 
-  if (["Basic Door", "Safety Door"].includes(blindname)) {
+  if (["Basic Door", "Safety Door", "Security Door"].includes(blindname)) {
     if (["Sliding Door", "Hinged Door"].includes(controlname)) {
       data.push("No Bug Seal", "Bug Seal - Thin", "Bug Seal - Wide");
     }
@@ -633,7 +765,7 @@ const bindCloser = (blindname, controlname, frametype) => {
   if (!blindname) return;
   let data = [];
 
-  if (["Basic Door", "Safety Door"].includes(blindname)) {
+  if (["Basic Door", "Safety Door", "Security Door"].includes(blindname)) {
     if (["Hinged Door"].includes(controlname)) {
       data.push(
         "No Closer",
@@ -822,6 +954,24 @@ const bindInterlock = (blindname, controlname, frametype) => {
       );
     }
   }
+
+  if (["Security Door"].includes(blindname)) {
+    if (["Sliding Door"].includes(controlname)) {
+      data.push(
+        "Door Interlock Large (2)",
+        "Door Interlock Flat (3)",
+        "Door Interlock Small (1)",
+        "Door Interlock F (4)",
+      );
+    }
+    if (["Hinged Door"].includes(controlname)) {
+      data.push(
+        "Stop Bead Additional",
+        "Track Jamb Adaptor Long",
+        "Track Jamb Adaptor Short",
+      );
+    }
+  }
   generateOption("interlock", data);
 };
 
@@ -908,6 +1058,214 @@ const bindExtras = (blindname, controlname) => {
         { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
         { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
         { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
+      ];
+    }
+
+    if (["Hinged Door"].includes(controlname)) {
+      list = [
+        { name: "Angle 12 x 12mm", unit: "mm" },
+        { name: "Angle 12 x 25mm", unit: "mm" },
+        { name: "Angle 25 x 20mm", unit: "mm" },
+        { name: "Angle 50 x 25mm", unit: "mm" },
+        { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
+        { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
+        { name: "Grill Frame for Infill", unit: "mm" },
+        { name: "Lock Barrel Supplied by customer", unit: "Qty" },
+        { name: "Lock Barrel supply only", unit: "Qty" },
+        { name: "Lock Barrell Installed", unit: "Qty" },
+        { name: "Powder Coating Minimum", unit: "Qty" },
+        { name: "Angle 12 x 20mm", unit: "mm" },
+        { name: "Angle 20 x 40mm", unit: "mm" },
+        { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
+        { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
+        { name: "Miscellaneous", unit: "Qty" },
+        { name: "Patio Bolt", unit: "Qty" },
+        { name: "Timber Frame 19 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frame 19 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 66 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 19 Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 13 Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
+      ];
+    }
+
+    if (["N/A"].includes(controlname)) {
+      list = [
+        { name: "Angle 12 x 12mm", unit: "mm" },
+        { name: "Doggie Door - Perspex 190mm x 260mm", unit: "Qty" },
+        { name: "Doggie Door - Perspex 260mm x 400mm", unit: "Qty" },
+        { name: "Angle 25 x 70", unit: "mm" },
+        { name: "Angle 12 x 20mm", unit: "mm" },
+        { name: "Angle 12 x 25mm", unit: "mm" },
+        { name: "Angle 20 x 40mm", unit: "mm" },
+        { name: "Angle 25 x 20mm", unit: "mm" },
+        { name: "Angle 50 x 25mm", unit: "mm" },
+        { name: "Casement Bolt", unit: "Qty" },
+        { name: "Chain Winder Lockable", unit: "Qty" },
+        { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
+        { name: "Door Interlock HD10 (LRG 2)", unit: "Qty" },
+        { name: "Door Interlock HD2 (FLAT 3)", unit: "Qty" },
+        { name: "Door Interlock HD3(SML 1)", unit: "Qty" },
+        { name: "Door Interlock HD9 Type F (4)", unit: "Qty" },
+        { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
+        { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
+        { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
+        {
+          name: "Door Track Powdercoating (in addition to std track price)",
+          unit: "mm",
+        },
+        { name: "Door Track J", unit: "mm" },
+        { name: "Door Track P", unit: "mm" },
+        { name: "Door Track ST4", unit: "mm" },
+        { name: "Door Track W", unit: "mm" },
+        { name: "Double Sliding Track Bottom", unit: "mm" },
+        { name: "Double Sliding Track Top", unit: "mm" },
+        { name: "Efi Non Specific", unit: "Qty" },
+        { name: "Fit Flyscreen Track per pair", unit: "Qty" },
+        { name: "Fit Tim/Alum per piece", unit: "Qty" },
+        { name: "Grill Frame for Infill", unit: "mm" },
+        { name: "H Channel in Door to add 30mm to width or drop", unit: "Qty" },
+        { name: "Lock Barrel supply only", unit: "Qty" },
+        { name: "Lock Barrell Installed", unit: "Qty" },
+        { name: "Miscellaneous", unit: "Qty" },
+        { name: "Miscellaneous Timber", unit: "Qty" },
+        { name: "Patio Bolt", unit: "Qty" },
+        { name: "Posts 50mm x 50mm", unit: "mm" },
+        { name: "Powder Coating Minimum", unit: "Qty" },
+        { name: "Single Sliding Track Bottom", unit: "mm" },
+        { name: "Single Sliding Track Top", unit: "mm" },
+        { name: "Square Tube 20x20", unit: "mm" },
+        { name: "Stop Bead Additional", unit: "Qty" },
+        { name: "Timber Frame 19 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frame 19 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 66 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 19 Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 13 Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
+        { name: "Track", unit: "mm" },
+        { name: "Track Jamb Adaptor Long", unit: "mm" },
+        { name: "Track Jamb Adaptor Short", unit: "mm" },
+        { name: "U Frame 20 mm sides x 25 mm wide", unit: "mm" },
+        { name: "Whitco Winder Strip", unit: "Qty" },
+        { name: "Window Lock", unit: "Qty" },
+      ];
+    }
+  }
+
+  if (["Security Door"].includes(blindname)) {
+    if (["Sliding Door"].includes(controlname)) {
+      list = [
+        { name: "Angle 12 x 12mm", unit: "mm" },
+        { name: "Angle 12 x 20mm", unit: "mm" },
+        { name: "Angle 12 x 25mm", unit: "mm" },
+        { name: "Angle 20 x 40mm", unit: "mm" },
+        { name: "Angle 25 x 20mm", unit: "mm" },
+        { name: "Angle 25 x 70", unit: "mm" },
+        { name: "Angle 25 x 75mm", unit: "mm" },
+        { name: "Angle 40 x 40mm", unit: "mm" },
+        { name: "Angle 50 x 25mm", unit: "mm" },
+        { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
+        { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
+        { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
+        { name: "Door Posts 50 x 25 (for frame work)", unit: "mm" },
+        { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
+        { name: "Door Track J HD1", unit: "mm" },
+        { name: "Door Track P ST11", unit: "mm" },
+        { name: "Door Track U Frame 20mm sidesx 25mm wide", unit: "mm" },
+        { name: "Door Track W ST8", unit: "mm" },
+        { name: "Miscellaneous", unit: "Qty" },
+        { name: "Powder Coating Minimum", unit: "Qty" },
+        { name: "Stop Bead Additional", unit: "Qty" },
+        { name: "Timber Frame 19 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frame 19 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 66 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 19 Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 13 Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
         { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
         { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
         { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
@@ -1029,6 +1387,80 @@ const bindExtras = (blindname, controlname) => {
   });
 
   initTomSelect();
+};
+
+const bindItemOrders = async (itemid) => {
+  try {
+    if (!itemid) return;
+
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid }),
+    });
+
+    if (!res.ok) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d;
+
+    if (!data || data.length === 0) {
+      throw isError("No data returned from server : bindItemOrders");
+    }
+
+    for (const item of data) {
+      await bindBlinds(item.DesignId);
+      await bindTubes(item.DesignId, item.BlindId);
+      await bindControls(item.DesignId, item.BlindId, item.TubeType);
+      await handlerElementVisibility(
+        item.BlindId,
+        item.TubeType,
+        item.KitId,
+        item,
+      );
+      await Promise.all([
+        bindSliding(),
+        bindStacking(),
+        bindTrackless(),
+        bindFrameType(item.BlindName, item.ControlType, item.Width),
+        bindFrameColour(item.BlindName, item.ControlType),
+        bindMesh(item.BlindName, item.ControlType, item.FrameType),
+        bindHandleSide(item.BlindName, item.ControlType, item.FrameType),
+        bindHandleHeight(item.BlindName, item.ControlType, item.FrameType),
+        bindLock(item.BlindName, item.ControlType, item.FrameType),
+        bindMidrail(item.BlindName, item.ControlType, item.FrameType),
+        bindBugseal(item.BlindName, item.ControlType, item.FrameType),
+        bindCloser(item.BlindName, item.ControlType, item.FrameType),
+        bindHalf(item.BlindName, item.ControlType, item.FrameType),
+        bindInstall(item.BlindName, item.ControlType, item.FrameType),
+        bindFixing(item.BlindName, item.ControlType, item.FrameType),
+        bindFitted(item.BlindName, item.ControlType, item.FrameType),
+        bindRemoval(item.BlindName, item.ControlType, item.FrameType),
+        bindPetDoorType(item.BlindName, item.ControlType, item.FrameType),
+        bindPetDoorPosition(item.BlindName, item.ControlType, item.FrameType),
+        bindHalf(item.BlindName, item.ControlType, item.FrameType),
+        bindInterlock(item.BlindName, item.ControlType, item.FrameType),
+        bindExtras(item.BlindName, item.ControlType),
+      ]);
+      if (["Security Door"].includes(item.BlindName)) {
+        await Promise.all(bindFrameColour(item.BlindName, item.ControlType));
+      }
+      await Promise.all([handlerSetElementValues(item)]);
+    }
+
+    return true; // ✅ success
+  } catch (error) {
+    console.error("bindItemOrder error:", error);
+    throw error;
+  }
 };
 // ----------------------------------------------|| Handler Functions ||---------------------------------------
 const handlerElementVisibility = async (
@@ -1173,6 +1605,15 @@ const handlerElementVisibility = async (
       divExtras.classList.remove("d-none");
     }
 
+    if (item) {
+      if (["Ultra Barrier Screen Door"].includes(item.FrameType)) {
+        divMesh.classList.add("d-none");
+      }
+      if (["Heavy Duty Diamond"].includes(item.FrameType)) {
+        divMidrail.classList.add("d-none");
+      }
+    }
+
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
 
     if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
@@ -1190,6 +1631,224 @@ const handlerElementVisibility = async (
   }
 };
 
+const handlerSubmit = async (button) => {
+  try {
+    // return alert(button);
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = [
+      "blindtype",
+      "tubetype",
+      "controltype",
+      "qty",
+      "room",
+      "mounting",
+      "width",
+      "drop",
+      "sliding",
+      "stacking",
+      "trackless",
+      "frametype",
+      "framecolour",
+      "meshtype",
+      "handleside",
+      "handleheight",
+      "inswing",
+      "lockcolour",
+      "keyed",
+      "midrail",
+      "bugseal",
+      "closer",
+      "install",
+      "fixing",
+      "fitted",
+      "remove",
+      "petdoortype",
+      "petdoorposition",
+      "half",
+      "interlock",
+      "extras",
+      "notes",
+      "markup",
+    ];
+
+    const formData = {
+      headerid: HEADERID,
+      itemaction: ITEMACTION,
+      itemid: ITEMID,
+      designid: DESIGNID,
+      loginid: LOGINID,
+    };
+
+    const extras = [];
+    document.querySelectorAll(".extra-row").forEach((row) => {
+      const name = row.querySelector("input[readonly]").value;
+      const value = row.querySelector(".extra-value").value;
+      const unit = row
+        .querySelector(".extra-value")
+        .getAttribute("placeholder")
+        .replace("Enter ", "");
+
+      extras.push({
+        name: name,
+        unit: unit,
+        value: value,
+      });
+    });
+
+    formData["extras"] = JSON.stringify(extras);
+
+    fields.forEach((field) => {
+      if (field === "extras") return; // skip
+
+      formData[field] = document.getElementById(field).value;
+    });
+
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/Submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success);
+      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Submit";
+  }
+};
+
+const handlerSetElementValues = (itemData) => {
+  const mapping = {
+    blindtype: "BlindId",
+    tubetype: "TubeType",
+    controltype: "KitId",
+    qty: "Qty",
+    room: "Location",
+    mounting: "Mounting",
+    width: "Width",
+    drop: "Drop",
+    sliding: "BottomTrackType",
+    stacking: "StackPosition",
+    trackless: "TilterPosition",
+    frametype: "FrameType",
+    framecolour: "FrameColour",
+    // customframecolour: "FrameLeft",
+    meshtype: "MeshType",
+    handleside: "Brace",
+    handleheight: "BracketOption",
+    inswing: "PortHole",
+    lockcolour: "PlungerPin",
+    keyed: "Batten",
+    midrail: "MidrailCritical",
+    bugseal: "FlatType",
+    closer: "ChildSafe",
+    install: "BracketCover",
+    fixing: "Fitting",
+    fitted: "Cleat",
+    remove: "BracketExtension",
+    petdoortype: "TrackType",
+    petdoorposition: "TrackColour",
+    half: "AcornPlasticColour",
+    interlock: "Accessory",
+    notes: "Notes",
+    markup: "MarkUp",
+  };
+
+  // 1. set normal fields
+  Object.entries(mapping).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    let value = itemData[key];
+
+    if (id === "markup" && value === 0) value = "";
+
+    el.value = value ?? "";
+
+    if (el.value === "0") el.value = "";
+  });
+
+  // ===============================
+  // 2. HANDLE EXTRAS (INI TARUH DI SINI)
+  // ===============================
+
+  let extrasData = [];
+
+  try {
+    extrasData = itemData.AdditionalMotor
+      ? JSON.parse(itemData.AdditionalMotor)
+      : [];
+  } catch (e) {
+    console.error("Invalid JSON", e);
+    extrasData = [];
+  }
+  extrasState = extrasData;
+
+  // 3. SET TOM SELECT VALUE
+  const extrasSelect = document.getElementById("extras");
+  if (extrasSelect && extrasSelect.tomselect) {
+    extrasSelect.tomselect.setValue(extrasData.map((x) => x.name));
+  }
+
+  // 4. REBUILD DYNAMIC ROWS
+  const extrasContainer = document.getElementById("extrasContainer");
+  if (extrasContainer) {
+    extrasContainer.innerHTML = "";
+
+    extrasData.forEach((item) => {
+      extrasContainer.innerHTML += `
+        <div class="row mb-2 extra-row">
+
+            <div class="col-7">
+                <input type="text"
+                       class="form-control"
+                       value="${item.name}"
+                       readonly />
+            </div>
+
+            <div class="col-5">
+                <div class="input-group">
+                  <input type="number"
+                        class="form-control extra-value"
+                        value="${item.value || ""}"
+                        placeholder="Enter ${item.unit}" />
+                  <span class="input-group-text ">${item.unit}</span>
+                </div>
+            </div>
+
+        </div>
+      `;
+    });
+  }
+};
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const doorPageLoaded = async () => {
   if (!HEADERID) {
@@ -1221,7 +1880,7 @@ const doorPageLoaded = async () => {
     handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    // await bindItemOrders(ITEMID);
+    await bindItemOrders(ITEMID);
     loaderFadeOut();
   }
 };

@@ -518,7 +518,7 @@ Partial Class Methods_Order_WindowMethod
             End If
             
 
-             If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
+            If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
 
                 Dim ItemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)

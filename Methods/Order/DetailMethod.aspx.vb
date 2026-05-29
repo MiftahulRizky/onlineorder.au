@@ -549,7 +549,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, BlindId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PelmetType, MeshType, Matrix, Charge, Markup, FabricGroups, OrderDelivery, PriceGroupName")
+                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, BlindId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, TubeType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PelmetType, MeshType, Matrix, Charge, Markup, FabricGroups, OrderDelivery, PriceGroupName")
                 sqlBuilder.AppendLine("FROM view_details")
                 sqlBuilder.AppendLine("WHERE Active=@Active AND HeaderId=@HeaderId")
 
@@ -634,6 +634,7 @@ Partial Class Methods_Order_DetailMethod
                         Dim BlindName As String = reader("BlindName").ToString()
                         Dim KitName As String = reader("KitName").ToString()
                         Dim BracketType As String = reader("BracketType").ToString()
+                        Dim TubeType As String = reader("TubeType").ToString()
                         Dim ControlType As String = reader("ControlType").ToString()
                         Dim FabricType As String = reader("FabricType").ToString()
                         Dim BlindNo As String = reader("BlindNo").ToString()
@@ -883,6 +884,13 @@ Partial Class Methods_Order_DetailMethod
 
                         If DesignName = "Window" Then
                             Product = String.Format("{0} {1} ({2}) {3}", KitName, MeshType, FrameColour, Size)
+                        End If
+
+                        If DesignName = "Door" Then
+                            Product = String.Format("{0} - {1} #{2} {3}", BlindName, TubeType, ControlType, Size)
+                            IF ControlType = "N/A" Then
+                                Product = String.Format("{0} - {1} {2}", BlindName, TubeType, Size)
+                            End IF
                         End If
 
                         If InArray(DesignName, "Curtain", "Pelmet") Then
