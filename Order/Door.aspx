@@ -178,13 +178,20 @@
 
                                    <div class="mb-3 row" id="divHandle">
                                         <label for="handleside" class="col-lg-3 text-uppercase fw-bold">handle</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
                                             <select name="handleside" id="handleside" class="form-select"></select>
                                             <small class="form-hint">* Side</small>
                                         </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="col-lg-3 col-md-12 col-sm-12" id="divHandleHeight">
                                             <select name="handleheight" id="handleheight" class="form-select"></select>
                                             <small class="form-hint">* Height</small>
+                                        </div>
+                                        <div class="col-lg-3 col-md-12 col-sm-12" id="divHandleHeightMM">
+                                             <div class="input-group">
+                                                <input type="number" min="1" name="handleheightmm" id="handleheightmm" class="form-control " autocomplete="off" />
+                                                <span class="input-group-text ">mm</span>
+                                            </div>
+                                            <small class="form-hint">* In mm</small>
                                         </div>
                                     </div>
 

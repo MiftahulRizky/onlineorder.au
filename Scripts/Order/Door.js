@@ -98,9 +98,21 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const controlname = controls.selectedOptions[0].dataset.name;
       const frametype = document.getElementById("frametype").value;
       const handleside = e.target.value;
+      const divHandleHeight = document.getElementById("divHandleHeight");
+      divHandleHeight.classList.add("d-none");
       document.getElementById("handleheight").innerHTML = "";
-      if (handleside) {
-        bindHandleHeight(blindname, controlname, frametype);
+      if (!["Sidelight", ""].includes(handleside)) {
+        divHandleHeight.classList.remove("d-none");
+      }
+      bindHandleHeight(blindname, controlname, frametype);
+    }
+
+    if (e.target.id === "handleheight") {
+      const handleheight = e.target.value;
+      const divHandleHeightMM = document.getElementById("divHandleHeightMM");
+      divHandleHeightMM.classList.add("d-none");
+      if (!["Tulip A Latch", ""].includes(handleheight)) {
+        divHandleHeightMM.classList.remove("d-none");
       }
     }
 
@@ -527,10 +539,9 @@ const bindFrameColour = (blindname, controlname) => {
         "Dune",
         "Hawthorn Green",
         "Monument",
-        "Paperbark",
         "Primrose",
         "Silver",
-        "Stone Beige",
+        "Beige",
         "Surf Mist",
         "White",
         "White Birch",
@@ -583,21 +594,12 @@ const bindMesh = (blindname, controlname, frametype) => {
         "Fibreglass Mesh",
         "Sunlight Security Mesh",
         "Alum (Std)",
-        "Pawproof (1000)",
-        "Pawproof (1520)",
-        "Stainless (1000)",
-        "Stainless (1300)",
+        "Pawproof",
+        "Stainless",
       );
 
       if (!frametype.includes("Screen Door (up to")) {
-        data.push(
-          "Ultra Barrier Mesh (1010x2110)",
-          "Ultra Barrier Mesh (1010x2500)",
-          "Ultra Barrier Mesh (1310x2110)",
-          "Ultra Barrier Mesh (1310x2500)",
-          "Ultra Barrier Mesh (865x2110)",
-          "Ultra Barrier Mesh (865x2500)",
-        );
+        data.push("Ultra Barrier Mesh");
       }
     }
   }
@@ -1464,7 +1466,7 @@ const bindItemOrders = async (itemid) => {
         bindExtras(item.BlindName, item.ControlType),
       ]);
       if (["Security Door"].includes(item.BlindName)) {
-        await Promise.all(bindFrameColour(item.BlindName, item.ControlType));
+        await Promise.all([bindFrameColour(item.BlindName, item.ControlType)]);
       }
       await Promise.all([handlerSetElementValues(item)]);
     }
@@ -1498,6 +1500,8 @@ const handlerElementVisibility = async (
     const divFrameColour = document.getElementById("divFrameColour");
     const divMesh = document.getElementById("divMesh");
     const divHandle = document.getElementById("divHandle");
+    const divHandleHeight = document.getElementById("divHandleHeight");
+    const divHandleHeightMM = document.getElementById("divHandleHeightMM");
     const divInswing = document.getElementById("divInswing");
     const divLockColour = document.getElementById("divLockColour");
     const divKeyed = document.getElementById("divKeyed");
@@ -1532,6 +1536,8 @@ const handlerElementVisibility = async (
     divFrameColour.classList.add("d-none");
     divMesh.classList.add("d-none");
     divHandle.classList.add("d-none");
+    divHandleHeight.classList.add("d-none");
+    divHandleHeightMM.classList.add("d-none");
     divInswing.classList.add("d-none");
     divLockColour.classList.add("d-none");
     divKeyed.classList.add("d-none");
@@ -1630,8 +1636,17 @@ const handlerElementVisibility = async (
       if (["Ultra Barrier Screen Door"].includes(item.FrameType)) {
         divMesh.classList.add("d-none");
       }
+
       if (["Heavy Duty Diamond"].includes(item.FrameType)) {
         divMidrail.classList.add("d-none");
+      }
+
+      if (!["Sidelight", ""].includes(item.Brace)) {
+        divHandleHeight.classList.remove("d-none");
+      }
+
+      if (!["Tulip A Latch", ""].includes(item.BracketOption)) {
+        divHandleHeightMM.classList.remove("d-none");
       }
     }
 
@@ -1665,6 +1680,8 @@ const handlerSubmit = async (button) => {
       "room",
       "mounting",
       "width",
+      "widthmid",
+      "widthbot",
       "drop",
       "sliding",
       "stacking",
@@ -1775,6 +1792,8 @@ const handlerSetElementValues = (itemData) => {
     room: "Location",
     mounting: "Mounting",
     width: "Width",
+    widthmid: "WidthMiddle",
+    widthbot: "WidthBottom",
     drop: "Drop",
     sliding: "BottomTrackType",
     stacking: "StackPosition",
@@ -1930,6 +1949,7 @@ const generateOption = (elementId, list = []) => {
   let validateLength = 1;
   switch (elementId) {
     case "trackless":
+    case "frametype":
       validateLength = 0;
       break;
   }

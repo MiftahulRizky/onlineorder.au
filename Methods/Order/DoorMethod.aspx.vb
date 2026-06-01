@@ -24,6 +24,8 @@ Partial Class Methods_Order_DoorMethod
         Public Property room As String
         Public Property mounting As String
         Public Property width As String
+        Public Property widthmid As String
+        Public Property widthbot As String
         Public Property drop As String
         Public Property sliding As String
         Public Property stacking As String
@@ -198,6 +200,8 @@ Partial Class Methods_Order_DoorMethod
             End If
 
             Dim width As Integer
+            Dim widthmid As Integer
+            Dim widthbot As Integer
             If String.IsNullOrEmpty(data.width) Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width is required !",.field = "width"}}
             End If
@@ -209,6 +213,34 @@ Partial Class Methods_Order_DoorMethod
             End If
             If width > 6000 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 6000 !",.field = "width"}}
+            End If
+
+            If ControlName = "Hinged Door" Then
+                If String.IsNullOrEmpty(data.widthmid) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width middle is required !",.field = "widthmid"}}
+                End If
+                If Not Integer.TryParse(data.widthmid, widthmid) OrElse widthmid <= 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width middle must be a positive integer !",.field = "widthmid"}}
+                End If
+                If widthmid < 150 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width middle must be less than or equal to 150 !",.field = "widthmid"}}
+                End If
+                If widthmid > 6000 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width middle must be less than or equal to 6000 !",.field = "widthmid"}}
+                End If
+
+                If String.IsNullOrEmpty(data.widthbot) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width bottom is required !",.field = "widthbot"}}
+                End If
+                If Not Integer.TryParse(data.widthbot, widthbot) OrElse widthbot <= 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width bottom must be a positive integer !",.field = "widthbot"}}
+                End If
+                If widthbot < 150 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width bottom must be less than or equal to 150 !",.field = "widthbot"}}
+                End If
+                If widthbot > 6000 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width bottom must be less than or equal to 6000 !",.field = "widthbot"}}
+                End If
             End If
 
             Dim drop As Integer
@@ -454,19 +486,24 @@ Partial Class Methods_Order_DoorMethod
                 data.petdoortype = ""
                 data.petdoorposition = ""
                 data.half = ""
-                 If InArray(ControlName, "Sliding Door") Then
+                If InArray(ControlName, "Sliding Door") Then
                     data.closer = ""
                 End IF
             End If
+
+            If InArray(ControlName, "Sliding Door") Then
+                widthmid = 0
+                widthbot = 0
+            End IF
 
             ' Throw New Exception(DesignName)
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
             
-                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], BottomTrackType, StackPosition, TilterPosition, FrameType, FrameColour, MeshType, Brace, BracketOption, PortHole, PlungerPin, Batten, MidrailCritical, FlatType, ChildSafe, BracketCover, Fitting, Cleat, BracketExtension, TrackType, TrackColour, AcornPlasticColour, Accessory, AdditionalMotor, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
+                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, WidthMiddle, WidthBottom, [Drop], BottomTrackType, StackPosition, TilterPosition, FrameType, FrameColour, MeshType, Brace, BracketOption, PortHole, PlungerPin, Batten, MidrailCritical, FlatType, ChildSafe, BracketCover, Fitting, Cleat, BracketExtension, TrackType, TrackColour, AcornPlasticColour, Accessory, AdditionalMotor, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
 
-                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @BottomTrackType, @StackPosition, @TilterPosition, @FrameType, @FrameColour, @MeshType, @Brace, @BracketOption, @PortHole, @PlungerPin, @Batten, @MidrailCritical, @FlatType, @ChildSafe, @BracketCover, @Fitting, @Cleat, @BracketExtension, @TrackType, @TrackColour, @AcornPlasticColour, @Accessory, @AdditionalMotor, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
+                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @WidthMiddle, @WidthBottom, @Drop, @BottomTrackType, @StackPosition, @TilterPosition, @FrameType, @FrameColour, @MeshType, @Brace, @BracketOption, @PortHole, @PlungerPin, @Batten, @MidrailCritical, @FlatType, @ChildSafe, @BracketCover, @Fitting, @Cleat, @BracketExtension, @TrackType, @TrackColour, @AcornPlasticColour, @Accessory, @AdditionalMotor, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand(String.Format("INSERT INTO OrderDetails({0}) VALUES ({1})", Field, Values), thisConn)
@@ -481,6 +518,8 @@ Partial Class Methods_Order_DoorMethod
                         myCmd.Parameters.AddWithValue("@Location", data.room)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
                         myCmd.Parameters.AddWithValue("@Width", width)
+                        myCmd.Parameters.AddWithValue("@WidthMiddle", widthmid)
+                        myCmd.Parameters.AddWithValue("@WidthBottom", widthbot)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@BottomTrackType", data.sliding)
                         myCmd.Parameters.AddWithValue("@StackPosition", data.stacking)
@@ -532,7 +571,7 @@ Partial Class Methods_Order_DoorMethod
 
                 Dim ItemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@width, [Drop]=@Drop, BottomTrackType=@BottomTrackType, StackPosition=@StackPosition, TilterPosition=@TilterPosition, FrameType=@FrameType, FrameColour=@FrameColour, MeshType=@MeshType, Brace=@Brace, BracketOption=@BracketOption, PortHole=@PortHole, PlungerPin=@PlungerPin, Batten=@Batten, MidrailCritical=@MidrailCritical, FlatType=@FlatType, ChildSafe=@ChildSafe, BracketCover=@BracketCover, Fitting=@Fitting, Cleat=@Cleat, BracketExtension=@BracketExtension, TrackType=@TrackType, TrackColour=@TrackColour, AcornPlasticColour=@AcornPlasticColour, Accessory=@Accessory, AdditionalMotor=@AdditionalMotor, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@width, WidthMiddle=@WidthMiddle, WidthBottom=@WidthBottom, [Drop]=@Drop, BottomTrackType=@BottomTrackType, StackPosition=@StackPosition, TilterPosition=@TilterPosition, FrameType=@FrameType, FrameColour=@FrameColour, MeshType=@MeshType, Brace=@Brace, BracketOption=@BracketOption, PortHole=@PortHole, PlungerPin=@PlungerPin, Batten=@Batten, MidrailCritical=@MidrailCritical, FlatType=@FlatType, ChildSafe=@ChildSafe, BracketCover=@BracketCover, Fitting=@Fitting, Cleat=@Cleat, BracketExtension=@BracketExtension, TrackType=@TrackType, TrackColour=@TrackColour, AcornPlasticColour=@AcornPlasticColour, Accessory=@Accessory, AdditionalMotor=@AdditionalMotor, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -544,6 +583,8 @@ Partial Class Methods_Order_DoorMethod
                         myCmd.Parameters.AddWithValue("@Location", data.room)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
                         myCmd.Parameters.AddWithValue("@Width", width)
+                        myCmd.Parameters.AddWithValue("@WidthMiddle", widthmid)
+                        myCmd.Parameters.AddWithValue("@WidthBottom", widthbot)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@BottomTrackType", data.sliding)
                         myCmd.Parameters.AddWithValue("@StackPosition", data.stacking)
