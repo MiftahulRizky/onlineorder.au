@@ -44,7 +44,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindSliding(),
         bindStacking(),
         bindTrackless(),
-        bindFrameType(blindname, controlname, width),
+        bindFrameType(blindname, tubetype, controlname, width),
         bindMesh(blindname, controlname, frametype),
         bindHandleSide(blindname, controlname, frametype),
         bindLock(blindname, controlname, frametype),
@@ -119,10 +119,11 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     if (e.target.id === "width") {
       const blinds = document.getElementById("blindtype");
       const blindname = blinds.selectedOptions[0].dataset.name;
+      const tubetype = document.getElementById("tubetype").value;
       const controls = document.getElementById("controltype");
       const controlname = controls.selectedOptions[0].dataset.name;
       const width = e.target.value;
-      bindFrameType(blindname, controlname, width);
+      bindFrameType(blindname, tubetype, controlname, width);
       if (
         ["Security Door"].includes(blindname) ||
         ["N/A"].includes(controlname)
@@ -425,7 +426,7 @@ const bindControls = async (designid, blindtype, tubetype) => {
           bindSliding(),
           bindStacking(),
           bindTrackless(),
-          bindFrameType(blindname, controlname, width),
+          bindFrameType(blindname, tubetype, controlname, width),
           bindMesh(blindname, controlname, frametype),
           bindHandleSide(blindname, controlname, frametype),
           bindLock(blindname, controlname, frametype),
@@ -478,24 +479,31 @@ const bindTrackless = () => {
   generateOption("trackless", ["Trackless - No"]);
 };
 
-const bindFrameType = (blindname, controlname, width) => {
+const bindFrameType = (blindname, tubetype, controlname, width) => {
   document.getElementById("framecolour").innerHTML = "";
   if (!blindname) return;
   let data = [];
 
   if (["Basic Door", "Safety Door"].includes(blindname)) {
-    if (["Sliding Door", "Hinged Door"].includes(controlname)) {
-      data.push("Heavy Duty Diamond", "Ultra Barrier Screen Door");
-      if (width >= 865) {
-        data.push("Screen Door (up to 865mm)");
+    if (["Flydoor"].includes(tubetype)) {
+      if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+        data.push(
+          "Screen Door (up to 865mm)",
+          "Screen Door (up to 1035mm)",
+          "Screen Door (up to 1315mm & more)",
+        );
       }
+    }
 
-      if (width >= 1035) {
-        data.push("Screen Door (up to 1035mm)");
+    if (["Heavy Duty Diamond"].includes(tubetype)) {
+      if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+        data.push("Heavy Duty Diamond");
       }
+    }
 
-      if (width >= 1315) {
-        data.push("Screen Door (up to 1315mm & more)");
+    if (["Ultra Barrier"].includes(tubetype)) {
+      if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+        data.push("Ultra Barrier Screen Door");
       }
     }
   }
@@ -1430,7 +1438,12 @@ const bindItemOrders = async (itemid) => {
         bindSliding(),
         bindStacking(),
         bindTrackless(),
-        bindFrameType(item.BlindName, item.ControlType, item.Width),
+        bindFrameType(
+          item.BlindName,
+          item.TubeType,
+          item.ControlType,
+          item.Width,
+        ),
         bindFrameColour(item.BlindName, item.ControlType),
         bindMesh(item.BlindName, item.ControlType, item.FrameType),
         bindHandleSide(item.BlindName, item.ControlType, item.FrameType),
@@ -1475,6 +1488,8 @@ const handlerElementVisibility = async (
     const divControlType = document.getElementById("divControlType");
     const divFormDetail = document.getElementById("divFormDetail");
     const divMounting = document.getElementById("divMounting");
+    const divWidthMid = document.getElementById("divWidthMid");
+    const divWidthBot = document.getElementById("divWidthBot");
     const divSliding = document.getElementById("divSliding");
     const divStacking = document.getElementById("divStacking");
     const divTrackless = document.getElementById("divTrackless");
@@ -1507,6 +1522,8 @@ const handlerElementVisibility = async (
     divControlType.classList.add("d-none");
     divFormDetail.classList.add("d-none");
     divMounting.classList.add("d-none");
+    divWidthMid.classList.add("d-none");
+    divWidthBot.classList.add("d-none");
     divSliding.classList.add("d-none");
     divStacking.classList.add("d-none");
     divTrackless.classList.add("d-none");
@@ -1568,6 +1585,8 @@ const handlerElementVisibility = async (
       divExtras.classList.remove("d-none");
 
       if (["Hinged Door"].includes(controlname)) {
+        divWidthMid.classList.remove("d-none");
+        divWidthBot.classList.remove("d-none");
         lblInterlock.innerHTML = "Adaptors and options";
         divInswing.classList.remove("d-none");
         divLockColour.classList.remove("d-none");
@@ -1590,6 +1609,8 @@ const handlerElementVisibility = async (
       divExtras.classList.remove("d-none");
 
       if (["Hinged Door"].includes(controlname)) {
+        divWidthMid.classList.remove("d-none");
+        divWidthBot.classList.remove("d-none");
         lblInterlock.innerHTML = "Adaptors";
         divCloser.classList.remove("d-none");
         lblCloser.innerHTML = "Door Closure";

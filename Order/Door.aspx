@@ -96,7 +96,7 @@
                                     </div>
 
                                     <div class="mb-3 row">
-                                        <label for="width" class="col-lg-3 text-uppercase fw-bold" id="lblWidth">width x height</label>
+                                        <label for="width" class="col-lg-3 text-uppercase fw-bold" id="lblWidth">width</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="width" id="width" class="form-control " autocomplete="off" />
@@ -104,6 +104,28 @@
                                             </div>
                                             <small class="form-hint" id="hintWidthTop">* Width</small>
                                         </div>
+                                        <div class="col-lg-4 col-md-12 col-sm-12" id="divWidthMid">
+                                            <div class="input-group">
+                                                <input type="number" min="1" name="widthmid" id="widthmid" class="form-control " autocomplete="off" />
+                                                <span class="input-group-text ">mm</span>
+                                            </div>
+                                            <small class="form-hint" id="">* Middle</small>
+                                        </div>                                        
+                                    </div>
+
+                                    <div class="mb-3 row" id="divWidthBot">
+                                        <label for="width" class="col-lg-3 text-uppercase fw-bold" id="lblWidthBot"></label>
+                                        <div class="col-lg-4 col-md-12 col-sm-12" >
+                                            <div class="input-group">
+                                                <input type="number" min="1" name="widthbot" id="widthbot" class="form-control " autocomplete="off" />
+                                                <span class="input-group-text ">mm</span>
+                                            </div>
+                                            <small class="form-hint" id="">* Bottom</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row">
+                                        <label for="width" class="col-lg-3 text-uppercase fw-bold" >height</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12" id="">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off"/>
