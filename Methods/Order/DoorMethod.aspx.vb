@@ -302,8 +302,10 @@ Partial Class Methods_Order_DoorMethod
                 If String.IsNullOrEmpty(data.handleside) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "handle side is required !",.field = "handleside"}}
                 End If
-                If String.IsNullOrEmpty(data.handleheight) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "handle height is required !",.field = "handleheight"}}
+                If Not InArray(data.handleside, "Sidelight", "") Then
+                    If String.IsNullOrEmpty(data.handleheight) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "handle height is required !",.field = "handleheight"}}
+                    End If
                 End If
 
                 Dim handleheight As String = InArray(data.handleheight, "Lock Height", "Specify")

@@ -99,7 +99,9 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const frametype = document.getElementById("frametype").value;
       const handleside = e.target.value;
       const divHandleHeight = document.getElementById("divHandleHeight");
+      const divHandleHeightMM = document.getElementById("divHandleHeightMM");
       divHandleHeight.classList.add("d-none");
+      divHandleHeightMM.classList.add("d-none");
       document.getElementById("handleheight").innerHTML = "";
       if (!["Sidelight", ""].includes(handleside)) {
         divHandleHeight.classList.remove("d-none");
