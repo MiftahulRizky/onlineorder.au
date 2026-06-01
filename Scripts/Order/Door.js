@@ -109,10 +109,22 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     if (e.target.id === "handleheight") {
       const handleheight = e.target.value;
+      const controls = document.getElementById("controltype");
+      const controlname = controls.selectedOptions[0].dataset.name;
+
       const divHandleHeightMM = document.getElementById("divHandleHeightMM");
+      document.getElementById("handleheightmm").value = "";
       divHandleHeightMM.classList.add("d-none");
-      if (!["Tulip A Latch", ""].includes(handleheight)) {
-        divHandleHeightMM.classList.remove("d-none");
+      if (["Hinged Door"].includes(controlname)) {
+        if (!["Tulip A Latch", ""].includes(handleheight)) {
+          divHandleHeightMM.classList.remove("d-none");
+        }
+      }
+
+      if (["Sliding Door"].includes(controlname)) {
+        if (["Lock Height", "Specify"].includes(handleheight)) {
+          divHandleHeightMM.classList.remove("d-none");
+        }
       }
     }
 
@@ -123,6 +135,16 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const controlname = controls.selectedOptions[0].dataset.name;
       const frametype = document.getElementById("frametype").value;
       bindPetDoorPosition(blindname, controlname, frametype);
+    }
+
+    if (e.target.id === "petdoorposition") {
+      const petdoorposition = e.target.value;
+      const divPetDorPositionW = document.getElementById("divPetDorPositionW");
+      divPetDorPositionW.classList.add("d-none");
+      document.getElementById("petdoorpositionw").value = "";
+      if (["Specify"].includes(petdoorposition)) {
+        divPetDorPositionW.classList.remove("d-none");
+      }
     }
   });
   el.addEventListener("input", (e) => {
@@ -499,11 +521,7 @@ const bindFrameType = (blindname, tubetype, controlname, width) => {
   if (["Basic Door", "Safety Door"].includes(blindname)) {
     if (["Flydoor"].includes(tubetype)) {
       if (["Sliding Door", "Hinged Door"].includes(controlname)) {
-        data.push(
-          "Screen Door (up to 865mm)",
-          "Screen Door (up to 1035mm)",
-          "Screen Door (up to 1315mm & more)",
-        );
+        data.push("Screen Door");
       }
     }
 
@@ -568,14 +586,12 @@ const bindFrameColour = (blindname, controlname) => {
         "Apo Grey",
         "Custom Black",
         "Charcoal Satin",
-        "Dune",
         "Monument Matt",
+        "Paperbark",
+        "Pearl White",
         "Powder Coating",
         "Primrose",
         "Surfmist",
-        "Silver",
-        "White",
-        "Stone Beige",
         "White Birch",
         "Woodland Grey",
       );
@@ -598,7 +614,7 @@ const bindMesh = (blindname, controlname, frametype) => {
         "Stainless",
       );
 
-      if (!frametype.includes("Screen Door (up to")) {
+      if (!frametype.includes("Screen Door")) {
         data.push("Ultra Barrier Mesh");
       }
     }
@@ -659,7 +675,7 @@ const bindHandleHeight = (blindname, controlname, frametype) => {
     if (["Sliding Door"].includes(controlname)) {
       data.push("Lock Height", "Handle Height to Centre", "Specify");
 
-      if (frametype.includes("Screen Door (up to")) {
+      if (frametype.includes("Screen Door")) {
         data.push("Bass Latch", "Batman Morticeed SNIB");
       }
     }
@@ -672,7 +688,7 @@ const bindHandleHeight = (blindname, controlname, frametype) => {
         "Specify",
       );
 
-      if (frametype.includes("Screen Door (up to")) {
+      if (frametype.includes("Screen Door")) {
         data.push("Tulip A Latch");
       }
     }
@@ -728,7 +744,7 @@ const bindMidrail = (blindname, controlname, frametype) => {
         "Standard Mid Rail Specify",
       );
 
-      if (!frametype.includes("Screen Door (up to")) {
+      if (!frametype.includes("Screen Door")) {
         data.push(
           "Ultra Barrier Mid Rail to Centre",
           "Ultra Barrier Mid Rail Specify",
@@ -742,7 +758,7 @@ const bindMidrail = (blindname, controlname, frametype) => {
         "Vista Mid Rail to Centre",
       );
 
-      if (frametype.includes("Screen Door (up to")) {
+      if (frametype.includes("Screen Door")) {
         data.push("Standard Mid rail Specify", "Standard Midrail to Centre");
       }
     }
@@ -1514,6 +1530,7 @@ const handlerElementVisibility = async (
     const divFitted = document.getElementById("divFitted");
     const divRemove = document.getElementById("divRemove");
     const divPetDor = document.getElementById("divPetDor");
+    const divPetDorPositionW = document.getElementById("divPetDorPositionW");
     const divHalf = document.getElementById("divHalf");
     const divInterlock = document.getElementById("divInterlock");
     const lblInterlock = document.getElementById("lblInterlock");
@@ -1550,6 +1567,7 @@ const handlerElementVisibility = async (
     divFitted.classList.add("d-none");
     divRemove.classList.add("d-none");
     divPetDor.classList.add("d-none");
+    divPetDorPositionW.classList.add("d-none");
     divHalf.classList.add("d-none");
     divInterlock.classList.add("d-none");
     lblInterlock.innerHTML = "interlocks and options";
@@ -1645,8 +1663,20 @@ const handlerElementVisibility = async (
         divHandleHeight.classList.remove("d-none");
       }
 
-      if (!["Tulip A Latch", ""].includes(item.BracketOption)) {
-        divHandleHeightMM.classList.remove("d-none");
+      if (["Hinged Door"].includes(item.ControlType)) {
+        if (!["Tulip A Latch", ""].includes(item.SlatSize)) {
+          divHandleHeightMM.classList.remove("d-none");
+        }
+      }
+
+      if (["Sliding Door"].includes(item.ControlType)) {
+        if (["Lock Height", "Specify"].includes(item.SlatSize)) {
+          divHandleHeightMM.classList.remove("d-none");
+        }
+      }
+
+      if (["Specify"].includes(item.TrackColour)) {
+        divPetDorPositionW.classList.remove("d-none");
       }
     }
 
@@ -1691,6 +1721,7 @@ const handlerSubmit = async (button) => {
       "meshtype",
       "handleside",
       "handleheight",
+      "handleheightmm",
       "inswing",
       "lockcolour",
       "keyed",
@@ -1703,6 +1734,7 @@ const handlerSubmit = async (button) => {
       "remove",
       "petdoortype",
       "petdoorposition",
+      "petdoorpositionw",
       "half",
       "interlock",
       "extras",
@@ -1803,7 +1835,8 @@ const handlerSetElementValues = (itemData) => {
     // customframecolour: "FrameLeft",
     meshtype: "MeshType",
     handleside: "Brace",
-    handleheight: "BracketOption",
+    handleheight: "SlatSize",
+    handleheightmm: "SlatQty",
     inswing: "PortHole",
     lockcolour: "PlungerPin",
     keyed: "Batten",
@@ -1816,6 +1849,7 @@ const handlerSetElementValues = (itemData) => {
     remove: "BracketExtension",
     petdoortype: "TrackType",
     petdoorposition: "TrackColour",
+    petdoorpositionw: "WandPosition",
     half: "AcornPlasticColour",
     interlock: "Accessory",
     notes: "Notes",

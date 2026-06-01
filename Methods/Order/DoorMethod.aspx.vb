@@ -35,6 +35,7 @@ Partial Class Methods_Order_DoorMethod
         Public Property meshtype As String
         Public Property handleside As String
         Public Property handleheight As String
+        Public Property handleheightmm As String
         Public Property inswing As String
         Public Property lockcolour As String
         Public Property keyed As String
@@ -47,6 +48,7 @@ Partial Class Methods_Order_DoorMethod
         Public Property remove As String
         Public Property petdoortype As String
         Public Property petdoorposition As String
+        Public Property petdoorpositionw As String
         Public Property half As String
         Public Property interlock As String
         Public Property extras As String
@@ -295,30 +297,49 @@ Partial Class Methods_Order_DoorMethod
                 End IF
             End IF
 
+            Dim handleheightmm As Integer
             If InArray(BlindName, "Basic Door", "Safety Door", "Security Door") AND NOT InArray(data.tubetype, "Retractable Pleated") Then
                 If String.IsNullOrEmpty(data.handleside) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "handle side is required !",.field = "handleside"}}
                 End If
+                If String.IsNullOrEmpty(data.handleheight) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "handle height is required !",.field = "handleheight"}}
+                End If
 
-                If Not String.IsNullOrEmpty(data.handleside) Then
-                    If String.IsNullOrEmpty(data.handleheight) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "handle height is required !",.field = "handleheight"}}
+                Dim handleheight As String = InArray(data.handleheight, "Lock Height", "Specify")
+                If ControlName = "Hinged Door" Then
+                    handleheight = InArray(data.handleheight, "Lock Height", "To Centre of Handle", "To Bottom of Tongue", "To Centre of Tongue", "Specify")
+                End If
+                If Not String.IsNullOrEmpty(data.handleheight) AND handleheight Then
+                    If String.IsNullOrEmpty(data.handleheightmm) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "handle height in mm is required !",.field = "handleheightmm"}}
+                    End If
+
+                    If Not Integer.TryParse(data.handleheightmm, handleheightmm) OrElse handleheightmm <= 0 Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "height must be a positive integer !",.field = "handleheightmm"}}
+                    End If
+                    If handleheightmm < 150 Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "height must be greater than or equal to 150 !",.field = "handleheightmm"}}
+                    End If
+                    If handleheightmm > 3200 Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "height must be less than or equal to 3200 !",.field = "handleheightmm"}}
                     End If
                 End If
+
                 
                 If InArray(ControlName, "Hinged Door") AND NOT InArray(BlindName, "Security Door") Then
-                    If String.IsNullOrEmpty(data.inswing) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "inswing is required !",.field = "inswing"}}
-                    End If
+                    ' If String.IsNullOrEmpty(data.inswing) Then
+                    '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "inswing is required !",.field = "inswing"}}
+                    ' End If
 
                     If String.IsNullOrEmpty(data.lockcolour) Then
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "lock colour is required !",.field = "lockcolour"}}
                     End If
                 End If
-
-                If String.IsNullOrEmpty(data.keyed) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "keyed is required !",.field = "keyed"}}
-                End If
+                
+                ' If String.IsNullOrEmpty(data.keyed) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "keyed is required !",.field = "keyed"}}
+                ' End If
                 
                 If Not InArray(data.frametype,"Heavy Duty Diamond") OR InArray(BlindName,"Security Door") Then
                     If String.IsNullOrEmpty(data.midrail) Then
@@ -338,9 +359,10 @@ Partial Class Methods_Order_DoorMethod
             End If
 
             If InArray(BlindName, "Basic Door", "Safety Door") AND NOT InArray(data.tubetype, "Retractable Pleated") Then
-                If String.IsNullOrEmpty(data.install) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "install is required !",.field = "install"}}
-                End If
+                
+                ' If String.IsNullOrEmpty(data.install) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "install is required !",.field = "install"}}
+                ' End If
 
                 If InArray(ControlName, "Hinged Door") Then
                     If String.IsNullOrEmpty(data.fixing) Then
@@ -356,9 +378,9 @@ Partial Class Methods_Order_DoorMethod
                     End If
                 End IF
 
-                If String.IsNullOrEmpty(data.petdoortype) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "petdoor type is required !",.field = "petdoortype"}}
-                End If
+                ' If String.IsNullOrEmpty(data.petdoortype) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "petdoor type is required !",.field = "petdoortype"}}
+                ' End If
 
                 If Not String.IsNullOrEmpty(data.petdoortype) Then
                     If String.IsNullOrEmpty(data.petdoorposition) Then
@@ -366,18 +388,24 @@ Partial Class Methods_Order_DoorMethod
                     End If
                 End If
 
-                If String.IsNullOrEmpty(data.half) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "half panel is required !",.field = "half"}}
+                If Not String.IsNullOrEmpty(data.petdoorposition) AND data.petdoorposition = "Specify" Then
+                    If String.IsNullOrEmpty(data.petdoorpositionw) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "petdoor position in write is required !",.field = "petdoorpositionw"}}
+                    End If
                 End If
+
+                ' If String.IsNullOrEmpty(data.half) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "half panel is required !",.field = "half"}}
+                ' End If
             End If
             
             If InArray(BlindName, "Basic Door", "Safety Door", "Security Door") AND NOT InArray(data.tubetype, "Retractable Pleated") Then
                 Dim lblInterlock As String = "interlock"
                 If InArray(ControlName, "Hinged Door") Then lblInterlock = "Adaptors and options"
                 If InArray(BlindName, "Security Door") Then lblInterlock = "Adaptors"
-                If String.IsNullOrEmpty(data.interlock) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = String.Format("{0} is required !", lblInterlock),.field = "interlock"}}
-                End If               
+                ' If String.IsNullOrEmpty(data.interlock) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = String.Format("{0} is required !", lblInterlock),.field = "interlock"}}
+                ' End If               
             End If
 
             Dim ExtrasList As List(Of ExtraItem)
@@ -491,9 +519,23 @@ Partial Class Methods_Order_DoorMethod
                 End IF
             End If
 
+            If InArray(ControlName, "Hinged Door") Then
+                If data.handleheight = "Tulip A Latch" Then
+                    data.handleheightmm = ""
+                    handleheightmm = 0
+                End If
+            End If
+
             If InArray(ControlName, "Sliding Door") Then
+                data.widthmid = ""
+                data.widthbot = ""
                 widthmid = 0
                 widthbot = 0
+
+                If InArray(data.handleheight, "Lock Height", "Specify") Then
+                    data.handleheightmm = ""
+                    handleheightmm = 0
+                End If
             End IF
 
             ' Throw New Exception(DesignName)
@@ -501,9 +543,9 @@ Partial Class Methods_Order_DoorMethod
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
             
-                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, WidthMiddle, WidthBottom, [Drop], BottomTrackType, StackPosition, TilterPosition, FrameType, FrameColour, MeshType, Brace, BracketOption, PortHole, PlungerPin, Batten, MidrailCritical, FlatType, ChildSafe, BracketCover, Fitting, Cleat, BracketExtension, TrackType, TrackColour, AcornPlasticColour, Accessory, AdditionalMotor, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
+                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, WidthMiddle, WidthBottom, [Drop], BottomTrackType, StackPosition, TilterPosition, FrameType, FrameColour, MeshType, Brace, SlatSize, SlatQty, PortHole, PlungerPin, Batten, MidrailCritical, FlatType, ChildSafe, BracketCover, Fitting, Cleat, BracketExtension, TrackType, TrackColour, WandPosition, AcornPlasticColour, Accessory, AdditionalMotor, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
 
-                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @WidthMiddle, @WidthBottom, @Drop, @BottomTrackType, @StackPosition, @TilterPosition, @FrameType, @FrameColour, @MeshType, @Brace, @BracketOption, @PortHole, @PlungerPin, @Batten, @MidrailCritical, @FlatType, @ChildSafe, @BracketCover, @Fitting, @Cleat, @BracketExtension, @TrackType, @TrackColour, @AcornPlasticColour, @Accessory, @AdditionalMotor, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
+                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @WidthMiddle, @WidthBottom, @Drop, @BottomTrackType, @StackPosition, @TilterPosition, @FrameType, @FrameColour, @MeshType, @Brace, @SlatSize, @SlatQty, @PortHole, @PlungerPin, @Batten, @MidrailCritical, @FlatType, @ChildSafe, @BracketCover, @Fitting, @Cleat, @BracketExtension, @TrackType, @TrackColour, @WandPosition, @AcornPlasticColour, @Accessory, @AdditionalMotor, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand(String.Format("INSERT INTO OrderDetails({0}) VALUES ({1})", Field, Values), thisConn)
@@ -529,7 +571,8 @@ Partial Class Methods_Order_DoorMethod
                         ' myCmd.Parameters.AddWithValue("@FrameLeft", data.customframecolour)
                         myCmd.Parameters.AddWithValue("@MeshType", data.meshtype)
                         myCmd.Parameters.AddWithValue("@Brace", data.handleside)
-                        myCmd.Parameters.AddWithValue("@BracketOption", data.handleheight)
+                        myCmd.Parameters.AddWithValue("@SlatSize", data.handleheight)
+                        myCmd.Parameters.AddWithValue("@SlatQty", data.handleheightmm)
                         myCmd.Parameters.AddWithValue("@PortHole", data.inswing)
                         myCmd.Parameters.AddWithValue("@PlungerPin", data.lockcolour)
                         myCmd.Parameters.AddWithValue("@Batten", data.keyed)
@@ -542,6 +585,7 @@ Partial Class Methods_Order_DoorMethod
                         myCmd.Parameters.AddWithValue("@BracketExtension", data.remove)
                         myCmd.Parameters.AddWithValue("@TrackType", data.petdoortype)
                         myCmd.Parameters.AddWithValue("@TrackColour", data.petdoorposition)
+                        myCmd.Parameters.AddWithValue("@WandPosition", data.petdoorpositionw)
                         myCmd.Parameters.AddWithValue("@AcornPlasticColour", data.half)
                         myCmd.Parameters.AddWithValue("@Accessory", data.interlock)
                         myCmd.Parameters.AddWithValue("@AdditionalMotor", data.extras)
@@ -571,7 +615,7 @@ Partial Class Methods_Order_DoorMethod
 
                 Dim ItemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@width, WidthMiddle=@WidthMiddle, WidthBottom=@WidthBottom, [Drop]=@Drop, BottomTrackType=@BottomTrackType, StackPosition=@StackPosition, TilterPosition=@TilterPosition, FrameType=@FrameType, FrameColour=@FrameColour, MeshType=@MeshType, Brace=@Brace, BracketOption=@BracketOption, PortHole=@PortHole, PlungerPin=@PlungerPin, Batten=@Batten, MidrailCritical=@MidrailCritical, FlatType=@FlatType, ChildSafe=@ChildSafe, BracketCover=@BracketCover, Fitting=@Fitting, Cleat=@Cleat, BracketExtension=@BracketExtension, TrackType=@TrackType, TrackColour=@TrackColour, AcornPlasticColour=@AcornPlasticColour, Accessory=@Accessory, AdditionalMotor=@AdditionalMotor, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@width, WidthMiddle=@WidthMiddle, WidthBottom=@WidthBottom, [Drop]=@Drop, BottomTrackType=@BottomTrackType, StackPosition=@StackPosition, TilterPosition=@TilterPosition, FrameType=@FrameType, FrameColour=@FrameColour, MeshType=@MeshType, Brace=@Brace, SlatSize=@SlatSize, SlatQty=@SlatQty, PortHole=@PortHole, PlungerPin=@PlungerPin, Batten=@Batten, MidrailCritical=@MidrailCritical, FlatType=@FlatType, ChildSafe=@ChildSafe, BracketCover=@BracketCover, Fitting=@Fitting, Cleat=@Cleat, BracketExtension=@BracketExtension, TrackType=@TrackType, TrackColour=@TrackColour, WandPosition=@WandPosition, AcornPlasticColour=@AcornPlasticColour, Accessory=@Accessory, AdditionalMotor=@AdditionalMotor, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -594,7 +638,8 @@ Partial Class Methods_Order_DoorMethod
                         ' myCmd.Parameters.AddWithValue("@FrameLeft", data.customframecolour)
                         myCmd.Parameters.AddWithValue("@MeshType", data.meshtype)
                         myCmd.Parameters.AddWithValue("@Brace", data.handleside)
-                        myCmd.Parameters.AddWithValue("@BracketOption", data.handleheight)
+                        myCmd.Parameters.AddWithValue("@SlatSize", data.handleheight)
+                        myCmd.Parameters.AddWithValue("@SlatQty", data.handleheightmm)
                         myCmd.Parameters.AddWithValue("@PortHole", data.inswing)
                         myCmd.Parameters.AddWithValue("@PlungerPin", data.lockcolour)
                         myCmd.Parameters.AddWithValue("@Batten", data.keyed)
@@ -607,6 +652,7 @@ Partial Class Methods_Order_DoorMethod
                         myCmd.Parameters.AddWithValue("@BracketExtension", data.remove)
                         myCmd.Parameters.AddWithValue("@TrackType", data.petdoortype)
                         myCmd.Parameters.AddWithValue("@TrackColour", data.petdoorposition)
+                        myCmd.Parameters.AddWithValue("@WandPosition", data.petdoorpositionw)
                         myCmd.Parameters.AddWithValue("@AcornPlasticColour", data.half)
                         myCmd.Parameters.AddWithValue("@Accessory", data.interlock)
                         myCmd.Parameters.AddWithValue("@AdditionalMotor", data.extras)

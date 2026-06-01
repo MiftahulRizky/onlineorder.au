@@ -275,13 +275,17 @@
 
                                     <div class="mb-3 row" id="divPetDor">
                                         <label for="petdoortype" class="col-lg-3 text-uppercase fw-bold">Pet Dor</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
                                             <select name="petdoortype" id="petdoortype" class="form-select"></select>
                                             <small class="form-hint">* Type</small>
                                         </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
                                             <select name="petdoorposition" id="petdoorposition" class="form-select"></select>
                                             <small class="form-hint">* Posotion</small>
+                                        </div>
+                                        <div class="col-lg-3 col-md-12 col-sm-12" id="divPetDorPositionW">
+                                            <input type="text" name="petdoorpositionw" id="petdoorpositionw" class="form-control " autocomplete="off" />
+                                            <small class="form-hint">* Write</small>
                                         </div>
                                     </div>
 
