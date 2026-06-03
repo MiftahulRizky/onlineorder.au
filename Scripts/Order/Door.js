@@ -59,21 +59,22 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindPetDoorType(blindname, controlname, frametype),
         bindHalf(blindname, controlname, frametype),
         bindInterlock(blindname, controlname, frametype),
-        bindExtras(blindname, controlname),
+        bindExtras(blindname, tubetype, controlname),
       ]);
       if (["Security Door"].includes(blindname)) {
-        await Promise.all(bindFrameColour(blindname, controlname));
+        await Promise.all([bindFrameColour(blindname, tubetype, controlname)]);
       }
     }
 
     if (e.target.id === "frametype") {
       const blinds = document.getElementById("blindtype");
       const blindname = blinds.selectedOptions[0].dataset.name;
+      const tubetype = document.getElementById("tubetype").value;
       const controls = document.getElementById("controltype");
       const controlname = controls.selectedOptions[0].dataset.name;
       const frametype = e.target.value;
       Promise.all([
-        bindFrameColour(blindname, controlname),
+        bindFrameColour(blindname, tubetype, controlname),
         bindMesh(blindname, controlname, frametype),
         bindHandleSide(blindname, controlname, frametype),
         bindMidrail(blindname, controlname, frametype),
@@ -164,7 +165,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         ["Security Door"].includes(blindname) ||
         ["N/A"].includes(controlname)
       ) {
-        bindFrameColour(blindname, controlname);
+        bindFrameColour(blindname, tubetype, controlname);
       }
     }
 
@@ -477,13 +478,15 @@ const bindControls = async (designid, blindtype, tubetype) => {
           bindPetDoorType(blindname, controlname, frametype),
           bindHalf(blindname, controlname, frametype),
           bindInterlock(blindname, controlname, frametype),
-          bindExtras(blindname, controlname),
+          bindExtras(blindname, tubetype, controlname),
         ]);
         if (
           ["Security Door"].includes(blindname) ||
           ["N/A"].includes(controlname)
         ) {
-          await Promise.all([bindFrameColour(blindname, controlname)]);
+          await Promise.all([
+            bindFrameColour(blindname, tubetype, controlname),
+          ]);
         }
       }
     }
@@ -543,7 +546,7 @@ const bindFrameType = (blindname, tubetype, controlname, width) => {
   generateOption("frametype", data);
 };
 
-const bindFrameColour = (blindname, controlname) => {
+const bindFrameColour = (blindname, tubetype, controlname) => {
   if (!blindname) return;
   let data = [];
   if (["Basic Door", "Safety Door"].includes(blindname)) {
@@ -583,20 +586,64 @@ const bindFrameColour = (blindname, controlname) => {
   }
 
   if (["Security Door"].includes(blindname)) {
-    if (["Sliding Door", "Hinged Door"].includes(controlname)) {
-      data.push(
-        "Apo Grey",
-        "Custom Black",
-        "Charcoal Satin",
-        "Monument Matt",
-        "Paperbark",
-        "Pearl White",
-        "Powder Coating",
-        "Primrose",
-        "Surfmist",
-        "White Birch",
-        "Woodland Grey",
-      );
+    if (["Ultra Guard"].includes(tubetype)) {
+      if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+        data.push(
+          "Apo Grey",
+          "Custom Black",
+          "Charcoal Satin",
+          "Monument Matt",
+          "Paperbark",
+          "Pearl White",
+          "Powder Coating",
+          "Primrose",
+          "Surfmist",
+          "White Birch",
+          "Woodland Grey",
+        );
+      }
+    }
+
+    if (["Ultra Wedge"].includes(tubetype)) {
+      if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+        data.push(
+          "Powder Coating",
+          "TBC",
+          "Apo Grey",
+          "Beige",
+          "Bicrh White",
+          "Black",
+          "Chharcoal",
+          "Monument",
+          "Primrose",
+          "Silver",
+          "Surfmist",
+          "White",
+          "Woodland Grey",
+        );
+      }
+    }
+
+    if (["SSS"].includes(tubetype)) {
+      if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+        data.push(
+          "Powder Coating",
+          "TBC",
+          "Apo Grey",
+          "Bronze",
+          "Brown",
+          "Charcoal",
+          "Clear Anodised",
+          "Dune",
+          "Mist Green",
+          "Pebble",
+          "Primrose",
+          "Stone Beige",
+          "White Birch",
+          "Woodland Grey",
+          "Paperbark",
+        );
+      }
     }
   }
   generateOption("framecolour", data);
@@ -1004,22 +1051,14 @@ const bindInterlock = (blindname, controlname, frametype) => {
 };
 
 let extrasState = [];
-const bindExtras = (blindname, controlname) => {
-  const sel = document.getElementById("extras");
-  sel.innerHTML = ""; //reset
-
+const extrasRef = { current: null };
+const bindExtras = (blindname, tubetype, controlname) => {
   if (!blindname) return;
-  if (tomExtras) {
-    tomExtras.destroy();
-    tomExtras = null;
-  }
-
-  let data = [];
   let list = [];
 
   if (["Basic Door", "Safety Door"].includes(blindname)) {
     if (["Sliding Door"].includes(controlname)) {
-      list = [
+      list.push(
         { name: "Angle 25 x 70", unit: "mm" },
         { name: "Bugseal Additional Sliding", unit: "mm" },
         { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
@@ -1092,11 +1131,11 @@ const bindExtras = (blindname, controlname) => {
         { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
         { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
         { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
-      ];
+      );
     }
 
     if (["Hinged Door"].includes(controlname)) {
-      list = [
+      list.push(
         { name: "Angle 12 x 12mm", unit: "mm" },
         { name: "Angle 12 x 25mm", unit: "mm" },
         { name: "Angle 25 x 20mm", unit: "mm" },
@@ -1148,11 +1187,11 @@ const bindExtras = (blindname, controlname) => {
         { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
         { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
         { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
-      ];
+      );
     }
 
     if (["N/A"].includes(controlname)) {
-      list = [
+      list.push(
         { name: "Angle 12 x 12mm", unit: "mm" },
         { name: "Doggie Door - Perspex 190mm x 260mm", unit: "Qty" },
         { name: "Doggie Door - Perspex 260mm x 400mm", unit: "Qty" },
@@ -1238,183 +1277,257 @@ const bindExtras = (blindname, controlname) => {
         { name: "U Frame 20 mm sides x 25 mm wide", unit: "mm" },
         { name: "Whitco Winder Strip", unit: "Qty" },
         { name: "Window Lock", unit: "Qty" },
-      ];
+      );
     }
   }
 
   if (["Security Door"].includes(blindname)) {
-    if (["Sliding Door"].includes(controlname)) {
-      list = [
-        { name: "Angle 12 x 12mm", unit: "mm" },
-        { name: "Angle 12 x 20mm", unit: "mm" },
-        { name: "Angle 12 x 25mm", unit: "mm" },
-        { name: "Angle 20 x 40mm", unit: "mm" },
-        { name: "Angle 25 x 20mm", unit: "mm" },
-        { name: "Angle 25 x 70", unit: "mm" },
-        { name: "Angle 25 x 75mm", unit: "mm" },
-        { name: "Angle 40 x 40mm", unit: "mm" },
-        { name: "Angle 50 x 25mm", unit: "mm" },
-        { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
-        { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
-        { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
-        { name: "Door Posts 50 x 25 (for frame work)", unit: "mm" },
-        { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
-        { name: "Door Track J HD1", unit: "mm" },
-        { name: "Door Track P ST11", unit: "mm" },
-        { name: "Door Track U Frame 20mm sidesx 25mm wide", unit: "mm" },
-        { name: "Door Track W ST8", unit: "mm" },
-        { name: "Miscellaneous", unit: "Qty" },
-        { name: "Powder Coating Minimum", unit: "Qty" },
-        { name: "Stop Bead Additional", unit: "Qty" },
-        { name: "Timber Frame 19 x 13mm Finished", unit: "mm" },
-        { name: "Timber Frame 19 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frame 30 x 13mm Finished", unit: "mm" },
-        { name: "Timber Frame 30 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frame 41 x 13mm Finished", unit: "mm" },
-        { name: "Timber Frame 41 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frame 66 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 19 Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 41mm Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 66mm Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 91mm Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 19mm Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 41 Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 66mm Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 91mm Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 19mm Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 41 Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 66mm Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 91mm Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 13 Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 19mm Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
-      ];
-    }
-    if (["Hinged Door"].includes(controlname)) {
-      list = [
-        { name: "Angle 25 x 70", unit: "mm" },
-        { name: "Bugseal Additional Sliding", unit: "mm" },
-        { name: "Bugseal Additional Hinged", unit: "mm" },
-        { name: "Door Closer", unit: "mm" },
-        { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
-        {
-          name: "Safety Door Deadlock - Without Barrel - Supply Only",
-          unit: "Qty",
-        },
-        { name: "Safety Door Deadlock With Barrel (Supply Only)", unit: "Qty" },
-        { name: "H Channel in Door to add 30mm to width or drop", unit: "Qty" },
-        { name: "Grill Frame for Infill", unit: "mm" },
-        { name: "Stop Bead Additional", unit: "Qty" },
-        { name: "Powder Coating Minimum", unit: "Qty" },
-        { name: "Angle 12 x 12mm", unit: "mm" },
-        { name: "Angle 12 x 20mm", unit: "mm" },
-        { name: "Angle 12 x 25mm", unit: "mm" },
-        { name: "Angle 20 x 40mm", unit: "mm" },
-        { name: "Angle 25 x 20mm", unit: "mm" },
-        { name: "Angle 50 x 25mm", unit: "mm" },
-        { name: "Lock Barrell Installed", unit: "Qty" },
-        { name: "Lock Barrel (Customer to Supply)", unit: "Qty" },
-        { name: "Lock Barrel supply only", unit: "Qty" },
-        { name: "Patio Bolt", unit: "Qty" },
-        { name: "Miscellaneous", unit: "Qty" },
-        { name: "Timber Frame 19 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frame 19 x 13mm Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 19 Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 41mm Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 66mm Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 91mm Finished", unit: "mm" },
-        { name: "Timber Frame 30 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frame 30 x 13mm Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 19mm Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 41 Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 66mm Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 91mm Finished", unit: "mm" },
-        { name: "Timber Frame 41 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frame 41 x 13mm Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 19mm Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 41 Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 66mm Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 91mm Finished", unit: "mm" },
-        { name: "Timber Frame 66 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 13 Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 19mm Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
-        { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
-      ];
-    }
-  }
-
-  list.forEach((ls) => {
-    data.push({
-      value: ls.name,
-      text: ls.name,
-      unit: ls.unit,
-    });
-  });
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    option.setAttribute("data-unit", item.unit);
-    sel.add(option);
-  });
-
-  sel.addEventListener("change", function () {
-    const selected = Array.from(this.selectedOptions).map((x) => x.value);
-
-    // 1. HAPUS ITEM YANG DI UNSELECT
-    extrasState = extrasState.filter((x) => selected.includes(x.name));
-
-    // 2. TAMBAH ITEM BARU
-    selected.forEach((name) => {
-      if (!extrasState.find((x) => x.name === name)) {
-        const option = this.querySelector(`option[value="${name}"]`);
-
-        extrasState.push({
-          name: name,
-          unit: option?.dataset?.unit || "Qty",
-          value: "",
-        });
+    if (["Ultra Guard"].includes(tubetype)) {
+      if (["Sliding Door"].includes(controlname)) {
+        list.push(
+          { name: "Angle 12 x 12mm", unit: "mm" },
+          { name: "Angle 12 x 20mm", unit: "mm" },
+          { name: "Angle 12 x 25mm", unit: "mm" },
+          { name: "Angle 20 x 40mm", unit: "mm" },
+          { name: "Angle 25 x 20mm", unit: "mm" },
+          { name: "Angle 25 x 70", unit: "mm" },
+          { name: "Angle 25 x 75mm", unit: "mm" },
+          { name: "Angle 40 x 40mm", unit: "mm" },
+          { name: "Angle 50 x 25mm", unit: "mm" },
+          { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
+          { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
+          { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
+          { name: "Door Posts 50 x 25 (for frame work)", unit: "mm" },
+          { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
+          { name: "Door Track J HD1", unit: "mm" },
+          { name: "Door Track P ST11", unit: "mm" },
+          { name: "Door Track U Frame 20mm sidesx 25mm wide", unit: "mm" },
+          { name: "Door Track W ST8", unit: "mm" },
+          { name: "Miscellaneous", unit: "Qty" },
+          { name: "Powder Coating Minimum", unit: "Qty" },
+          { name: "Stop Bead Additional", unit: "Qty" },
+          { name: "Timber Frame 19 x 13mm Finished", unit: "mm" },
+          { name: "Timber Frame 19 x 7mm Finished", unit: "mm" },
+          { name: "Timber Frame 30 x 13mm Finished", unit: "mm" },
+          { name: "Timber Frame 30 x 7mm Finished", unit: "mm" },
+          { name: "Timber Frame 41 x 13mm Finished", unit: "mm" },
+          { name: "Timber Frame 41 x 7mm Finished", unit: "mm" },
+          { name: "Timber Frame 66 x 7mm Finished", unit: "mm" },
+          { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
+          { name: "Timber Frames 19 x 19 Finished", unit: "mm" },
+          { name: "Timber Frames 19 x 30mm Finished", unit: "mm" },
+          { name: "Timber Frames 19 x 41mm Finished", unit: "mm" },
+          { name: "Timber Frames 19 x 66mm Finished", unit: "mm" },
+          { name: "Timber Frames 19 x 91mm Finished", unit: "mm" },
+          { name: "Timber Frames 30 x 19mm Finished", unit: "mm" },
+          { name: "Timber Frames 30 x 30mm Finished", unit: "mm" },
+          { name: "Timber Frames 30 x 41 Finished", unit: "mm" },
+          { name: "Timber Frames 30 x 66mm Finished", unit: "mm" },
+          { name: "Timber Frames 30 x 91mm Finished", unit: "mm" },
+          { name: "Timber Frames 41 x 19mm Finished", unit: "mm" },
+          { name: "Timber Frames 41 x 30mm Finished", unit: "mm" },
+          { name: "Timber Frames 41 x 41 Finished", unit: "mm" },
+          { name: "Timber Frames 41 x 66mm Finished", unit: "mm" },
+          { name: "Timber Frames 41 x 91mm Finished", unit: "mm" },
+          { name: "Timber Frames 66 x 13 Finished", unit: "mm" },
+          { name: "Timber Frames 66 x 19mm Finished", unit: "mm" },
+          { name: "Timber Frames 66 x 30mm Finished", unit: "mm" },
+          { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
+          { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
+          { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
+          { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
+          { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
+          { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
+          { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
+          { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
+        );
       }
-    });
 
-    // 3. RENDER ULANG (INI YANG MENCEGAH RESET)
-    renderExtras();
+      if (["Hinged Door"].includes(controlname)) {
+        list.push(
+          { name: "Angle 25 x 70", unit: "mm" },
+          { name: "Bugseal Additional Sliding", unit: "mm" },
+          { name: "Bugseal Additional Hinged", unit: "mm" },
+          { name: "Door Closer", unit: "mm" },
+          { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
+          {
+            name: "Safety Door Deadlock - Without Barrel - Supply Only",
+            unit: "Qty",
+          },
+          {
+            name: "Safety Door Deadlock With Barrel (Supply Only)",
+            unit: "Qty",
+          },
+          {
+            name: "H Channel in Door to add 30mm to width or drop",
+            unit: "Qty",
+          },
+          { name: "Grill Frame for Infill", unit: "mm" },
+          { name: "Stop Bead Additional", unit: "Qty" },
+          { name: "Powder Coating Minimum", unit: "Qty" },
+          { name: "Angle 12 x 12mm", unit: "mm" },
+          { name: "Angle 12 x 20mm", unit: "mm" },
+          { name: "Angle 12 x 25mm", unit: "mm" },
+          { name: "Angle 20 x 40mm", unit: "mm" },
+          { name: "Angle 25 x 20mm", unit: "mm" },
+          { name: "Angle 50 x 25mm", unit: "mm" },
+          { name: "Lock Barrell Installed", unit: "Qty" },
+          { name: "Lock Barrel (Customer to Supply)", unit: "Qty" },
+          { name: "Lock Barrel supply only", unit: "Qty" },
+          { name: "Patio Bolt", unit: "Qty" },
+          { name: "Miscellaneous", unit: "Qty" },
+          { name: "Timber Frame 19 x 7mm Finished", unit: "mm" },
+          { name: "Timber Frame 19 x 13mm Finished", unit: "mm" },
+          { name: "Timber Frames 19 x 19 Finished", unit: "mm" },
+          { name: "Timber Frames 19 x 30mm Finished", unit: "mm" },
+          { name: "Timber Frames 19 x 41mm Finished", unit: "mm" },
+          { name: "Timber Frames 19 x 66mm Finished", unit: "mm" },
+          { name: "Timber Frames 19 x 91mm Finished", unit: "mm" },
+          { name: "Timber Frame 30 x 7mm Finished", unit: "mm" },
+          { name: "Timber Frame 30 x 13mm Finished", unit: "mm" },
+          { name: "Timber Frames 30 x 19mm Finished", unit: "mm" },
+          { name: "Timber Frames 30 x 30mm Finished", unit: "mm" },
+          { name: "Timber Frames 30 x 41 Finished", unit: "mm" },
+          { name: "Timber Frames 30 x 66mm Finished", unit: "mm" },
+          { name: "Timber Frames 30 x 91mm Finished", unit: "mm" },
+          { name: "Timber Frame 41 x 7mm Finished", unit: "mm" },
+          { name: "Timber Frame 41 x 13mm Finished", unit: "mm" },
+          { name: "Timber Frames 41 x 19mm Finished", unit: "mm" },
+          { name: "Timber Frames 41 x 30mm Finished", unit: "mm" },
+          { name: "Timber Frames 41 x 41 Finished", unit: "mm" },
+          { name: "Timber Frames 41 x 66mm Finished", unit: "mm" },
+          { name: "Timber Frames 41 x 91mm Finished", unit: "mm" },
+          { name: "Timber Frame 66 x 7mm Finished", unit: "mm" },
+          { name: "Timber Frames 66 x 13 Finished", unit: "mm" },
+          { name: "Timber Frames 66 x 19mm Finished", unit: "mm" },
+          { name: "Timber Frames 66 x 30mm Finished", unit: "mm" },
+          { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
+          { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
+          { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
+          { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
+          { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
+          { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
+          { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
+          { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
+          { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
+        );
+      }
+    }
+
+    if (["Ultra Wedge"].includes(tubetype)) {
+      if (["Sliding Door"].includes(controlname)) {
+        list.push(
+          { name: "Angle 12 x 12mm", unit: "mm" },
+          { name: "Angle 12 x 20mm", unit: "mm" },
+          { name: "Angle 12 x 25mm", unit: "mm" },
+          { name: "Angle 20 x 40mm", unit: "mm" },
+          { name: "Angle 25 x 20mm", unit: "mm" },
+          { name: "Angle 25 x 70", unit: "mm" },
+          { name: "Angle 25 x 75mm", unit: "mm" },
+          { name: "Angle 40 x 40mm", unit: "mm" },
+          { name: "Angle 50 x 25mm", unit: "mm" },
+          { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
+          { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
+          { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
+          { name: "Door Posts 50 x 25 (for frame work)", unit: "mm" },
+          { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
+          { name: "Door Track J HD1", unit: "mm" },
+          { name: "Door Track P ST11", unit: "mm" },
+          { name: "Door Track U Frame 20mm sidesx 25mm wide", unit: "mm" },
+          { name: "Door Track W ST8", unit: "mm" },
+          { name: "Miscellaneous", unit: "Qty" },
+          { name: "Powder Coating Minimum", unit: "Qty" },
+          { name: "Stop Bead Additional", unit: "Qty" },
+        );
+      }
+
+      if (["Hinged Door"].includes(controlname)) {
+        list.push(
+          { name: "Angle 12 x 12mm", unit: "mm" },
+          { name: "Angle 12 x 25mm", unit: "mm" },
+          { name: "Angle 25 x 20mm", unit: "mm" },
+          { name: "Angle 50 x 25mm", unit: "mm" },
+          { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
+          { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
+          { name: "Grill Frame for Infill", unit: "mm" },
+          { name: "Lock Barrel Supplied by customer", unit: "Qty" },
+          { name: "Lock Barrel supply only", unit: "Qty" },
+          { name: "Lock Barrell Installed", unit: "Qty" },
+          { name: "Powder Coating Minimum", unit: "Qty" },
+          { name: "Angle 12 x 20mm", unit: "mm" },
+          { name: "Angle 20 x 40mm", unit: "mm" },
+          { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
+          { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
+          { name: "Miscellaneous", unit: "Qty" },
+          { name: "Patio Bolt", unit: "Qty" },
+        );
+      }
+    }
+
+    if (["SSS"].includes(tubetype)) {
+      if (["Sliding Door"].includes(controlname)) {
+        list.push(
+          { name: "Angle 12 x 12mm", unit: "mm" },
+          { name: "Angle 12 x 20mm", unit: "mm" },
+          { name: "Angle 12 x 25mm", unit: "mm" },
+          { name: "Angle 20 x 40mm", unit: "mm" },
+          { name: "Angle 25 x 20mm", unit: "mm" },
+          { name: "Angle 25 x 70", unit: "mm" },
+          { name: "Angle 25 x 75mm", unit: "mm" },
+          { name: "Angle 40 x 40mm", unit: "mm" },
+          { name: "Angle 50 x 25mm", unit: "mm" },
+          { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
+          { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
+          { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
+          { name: "Door Posts 50 x 25 (for frame work)", unit: "mm" },
+          { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
+          { name: "Door Track J HD1", unit: "mm" },
+          { name: "Door Track P ST11", unit: "mm" },
+          { name: "Door Track U Frame 20mm sidesx 25mm wide", unit: "mm" },
+          { name: "Door Track W ST8", unit: "mm" },
+          { name: "Miscellaneous", unit: "Qty" },
+          { name: "Powder Coating Minimum", unit: "Qty" },
+          { name: "Stop Bead Additional", unit: "Qty" },
+        );
+      }
+
+      if (["Hinged Door"].includes(controlname)) {
+        list.push(
+          { name: "Angle 12 x 12mm", unit: "mm" },
+          { name: "Angle 12 x 25mm", unit: "mm" },
+          { name: "Angle 25 x 20mm", unit: "mm" },
+          { name: "Angle 50 x 25mm", unit: "mm" },
+          { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
+          { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
+          { name: "Grill Frame for Infill", unit: "mm" },
+          { name: "Lock Barrel Supplied by customer", unit: "Qty" },
+          { name: "Lock Barrel supply only", unit: "Qty" },
+          { name: "Lock Barrell Installed", unit: "Qty" },
+          { name: "Powder Coating Minimum", unit: "Qty" },
+          { name: "Angle 12 x 20mm", unit: "mm" },
+          { name: "Angle 20 x 40mm", unit: "mm" },
+          { name: "Door Frame (Infill for Sliding Door Receiver)", unit: "mm" },
+          { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
+          { name: "Miscellaneous", unit: "Qty" },
+          { name: "Patio Bolt", unit: "Qty" },
+        );
+      }
+    }
+  }
+
+  applyToSelect({
+    selector: "#extras",
+    list,
+    getState: () => extrasState,
+    setState: (val) => (extrasState = val),
+    render: (state) =>
+      renderDynamic({
+        containerId: "extrasContainer",
+        state,
+        setState: (val) => (extrasState = val),
+      }),
+    instanceRef: extrasRef,
   });
-
-  initTomSelect();
 };
 
 const bindItemOrders = async (itemid) => {
@@ -1464,7 +1577,7 @@ const bindItemOrders = async (itemid) => {
           item.ControlType,
           item.Width,
         ),
-        bindFrameColour(item.BlindName, item.ControlType),
+        bindFrameColour(item.BlindName, item.TubeType, item.ControlType),
         bindMesh(item.BlindName, item.ControlType, item.FrameType),
         bindHandleSide(item.BlindName, item.ControlType, item.FrameType),
         bindHandleHeight(item.BlindName, item.ControlType, item.FrameType),
@@ -1481,10 +1594,12 @@ const bindItemOrders = async (itemid) => {
         bindPetDoorPosition(item.BlindName, item.ControlType, item.FrameType),
         bindHalf(item.BlindName, item.ControlType, item.FrameType),
         bindInterlock(item.BlindName, item.ControlType, item.FrameType),
-        bindExtras(item.BlindName, item.ControlType),
+        bindExtras(item.BlindName, item.TubeType, item.ControlType),
       ]);
       if (["Security Door"].includes(item.BlindName)) {
-        await Promise.all([bindFrameColour(item.BlindName, item.ControlType)]);
+        await Promise.all([
+          bindFrameColour(item.BlindName, item.TubeType, item.ControlType),
+        ]);
       }
       await Promise.all([handlerSetElementValues(item)]);
     }
@@ -1623,7 +1738,7 @@ const handlerElementVisibility = async (
       }
     }
 
-    if (["Ultra Guard"].includes(tubetype)) {
+    if (["Ultra Guard", "Ultra Wedge", "SSS"].includes(tubetype)) {
       lblFrame.innerHTML = "Frame Colour";
       divFrameColour.classList.remove("d-none");
       divHandle.classList.remove("d-none");
@@ -1744,6 +1859,8 @@ const handlerSubmit = async (button) => {
       "markup",
     ];
 
+    console.log("extrasState:", extrasState);
+
     const formData = {
       headerid: HEADERID,
       itemaction: ITEMACTION,
@@ -1752,23 +1869,7 @@ const handlerSubmit = async (button) => {
       loginid: LOGINID,
     };
 
-    const extras = [];
-    document.querySelectorAll(".extra-row").forEach((row) => {
-      const name = row.querySelector("input[readonly]").value;
-      const value = row.querySelector(".extra-value").value;
-      const unit = row
-        .querySelector(".extra-value")
-        .getAttribute("placeholder")
-        .replace("Enter ", "");
-
-      extras.push({
-        name: name,
-        unit: unit,
-        value: value,
-      });
-    });
-
-    formData["extras"] = JSON.stringify(extras);
+    formData["extras"] = JSON.stringify(extrasState || []);
 
     fields.forEach((field) => {
       if (field === "extras") return; // skip
@@ -1872,58 +1973,61 @@ const handlerSetElementValues = (itemData) => {
     if (el.value === "0") el.value = "";
   });
 
-  // ===============================
-  // 2. HANDLE EXTRAS (INI TARUH DI SINI)
-  // ===============================
+  const applyDynamicFromData = ({
+    jsonString,
+    setState,
+    selectId,
+    containerId,
+  }) => {
+    let data = [];
 
-  let extrasData = [];
+    try {
+      data = jsonString ? JSON.parse(jsonString) : [];
+    } catch (e) {
+      console.error("Invalid JSON", e);
+      data = [];
+    }
 
-  try {
-    extrasData = itemData.AdditionalMotor
-      ? JSON.parse(itemData.AdditionalMotor)
-      : [];
-  } catch (e) {
-    console.error("Invalid JSON", e);
-    extrasData = [];
-  }
-  extrasState = extrasData;
+    // set state
+    setState(data);
 
-  // 3. SET TOM SELECT VALUE
-  const extrasSelect = document.getElementById("extras");
-  if (extrasSelect && extrasSelect.tomselect) {
-    extrasSelect.tomselect.setValue(extrasData.map((x) => x.name));
-  }
+    const selectEl = document.getElementById(selectId);
+    if (selectEl && selectEl.tomselect) {
+      selectEl.tomselect.setValue(
+        data.map((x) => x.name),
+        true,
+      );
+    }
 
-  // 4. REBUILD DYNAMIC ROWS
-  const extrasContainer = document.getElementById("extrasContainer");
-  if (extrasContainer) {
-    extrasContainer.innerHTML = "";
-
-    extrasData.forEach((item) => {
-      extrasContainer.innerHTML += `
-        <div class="row mb-2 extra-row">
-
-            <div class="col-7">
-                <input type="text"
-                       class="form-control"
-                       value="${item.name}"
-                       readonly />
-            </div>
-
-            <div class="col-5">
-                <div class="input-group">
-                  <input type="number"
-                        class="form-control extra-value"
-                        value="${item.value || ""}"
-                        placeholder="Enter ${item.unit}" />
-                  <span class="input-group-text ">${item.unit}</span>
-                </div>
-            </div>
-
-        </div>
-      `;
+    renderDynamic({
+      containerId: containerId,
+      state: data,
     });
-  }
+  };
+
+  const dynamicFields = [
+    {
+      key: "AdditionalMotor",
+      setState: (val) => (extrasState = val),
+      selectId: "extras",
+      containerId: "extrasContainer",
+    },
+    // {
+    //   key: "FlatType",
+    //   setState: (val) => (cutOutState = val),
+    //   selectId: "cutout",
+    //   containerId: "cutoutContainer",
+    // },
+  ];
+
+  dynamicFields.forEach((field) => {
+    applyDynamicFromData({
+      jsonString: itemData[field.key],
+      setState: field.setState,
+      selectId: field.selectId,
+      containerId: field.containerId,
+    });
+  });
 };
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const doorPageLoaded = async () => {
@@ -1990,6 +2094,9 @@ const generateOption = (elementId, list = []) => {
       break;
   }
 
+  // Short A-Z
+  list.sort();
+
   // default option kalau lebih dari 1 data
   if (list.length > validateLength) {
     const defaultOption = new Option("", "");
@@ -2003,48 +2110,112 @@ const generateOption = (elementId, list = []) => {
   });
 };
 
-let tomExtras = null;
-const initTomSelect = () => {
-  if (tomExtras) {
-    tomExtras.destroy();
+const applyToSelect = ({
+  selector,
+  list,
+  getState,
+  setState,
+  render,
+  instanceRef,
+}) => {
+  const data = list
+    .map((ls) => ({
+      value: ls.name,
+      text: ls.name,
+      unit: ls.unit,
+    }))
+    .sort((a, b) => a.text.localeCompare(b.text));
+
+  if (!instanceRef.current) {
+    instanceRef.current = new TomSelect(selector, {
+      maxItems: null,
+      create: false,
+    });
+
+    instanceRef.current.on("change", (value) => {
+      const selected = value ? (Array.isArray(value) ? value : [value]) : [];
+
+      let currentState = getState();
+
+      let newState = currentState.filter((x) => selected.includes(x.name));
+
+      selected.forEach((name) => {
+        if (!newState.find((x) => x.name === name)) {
+          const option = instanceRef.current.options[name];
+
+          newState.push({
+            name,
+            unit: option?.unit || "Qty",
+            value: "",
+          });
+        }
+      });
+
+      setState(newState);
+      render(newState);
+    });
   }
 
-  tomExtras = new TomSelect("#extras", {
-    // plugins: ["remove_button"],
-    // placeholder: "Select Extras",
-    maxItems: null,
-    create: false,
+  const ts = instanceRef.current;
+
+  ts.clear();
+  ts.clearOptions();
+
+  data.forEach((item) => {
+    ts.addOption({
+      value: item.value,
+      text: item.text.toUpperCase(),
+      unit: item.unit,
+    });
   });
+
+  ts.refreshOptions(false);
+
+  // reset
+  setState([]);
+  render([]);
 };
 
-const renderExtras = () => {
-  const container = document.getElementById("extrasContainer");
+const renderDynamic = ({ containerId, state, setState }) => {
+  const container = document.getElementById(containerId);
   if (!container) return;
 
   container.innerHTML = "";
 
-  extrasState.forEach((item) => {
+  state.forEach((item, index) => {
     container.innerHTML += `
-      <div class="row mb-2 extra-row">
+      <div class="row mb-2 dynamic-row">
 
-          <div class="col-7">
-              <input type="text"
-                     class="form-control"
-                     value="${item.name}"
-                     readonly />
-          </div>
+        <div class="col-7">
+          <input type="text"
+                 class="form-control"
+                 value="${item.name}"
+                 readonly />
+        </div>
 
-          <div class="col-5">
-              <div class="input-group">
-                <input type="number"
-                      class="form-control extra-value"
-                      value="${item.value || ""}"
-                      placeholder="Enter ${item.unit}" />
-                <span class="input-group-text">${item.unit}</span>
-              </div>
+        <div class="col-5">
+          <div class="input-group">
+            <input type="number"
+                   class="form-control dynamic-value"
+                   data-index="${index}"
+                   value="${item.value || ""}"
+                   placeholder="Enter ${item.unit}" />
+            <span class="input-group-text">${item.unit}</span>
           </div>
+        </div>
 
       </div>
     `;
+  });
+
+  container.querySelectorAll(".dynamic-value").forEach((input) => {
+    input.addEventListener("input", (e) => {
+      const index = e.target.dataset.index;
+      const value = e.target.value;
+
+      state[index].value = value;
+
+      setState([...state]); // trigger update
+    });
   });
 };

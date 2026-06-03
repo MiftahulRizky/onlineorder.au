@@ -346,239 +346,104 @@ const bindTubes = async (designid, blindtype) => {
 };
 
 const bindMounting = () => {
-  const sel = document.getElementById("mounting");
-  sel.innerHTML = ""; //reset
-
-  let data = [];
-
-  data.push(
-    { value: "Make Size", text: "Make Size" },
-    { value: "Opening Size", text: "Opening Size" },
-  );
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  generateOption("mounting", ["Make Size", "Opening Size"]);
 };
 
 const bindMesh = (blindname, width) => {
-  const sel = document.getElementById("meshtype");
-  sel.innerHTML = ""; //reset
-
   if (!blindname) return;
-
-  let data = [];
   let list = [];
 
   if (["Safety Window"].includes(blindname)) {
-    list = ["Fiberglass"];
+    list.push("Fiberglass");
     if (width && width <= 1000) {
-      list = ["Fiberglass", "Stainless Steel"];
+      list.push("Stainless Steel");
     }
   }
 
   if (["Basic Window"].includes(blindname)) {
-    list = [
+    list.push(
       "Fibreglass Mesh",
       "Alum (std)",
       "Stainless (1000)",
       "Stainless (1300)",
       "Pawproof",
-    ];
+    );
   }
 
-  list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
-  });
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  generateOption("meshtype", list);
 };
 
 const bindSlidingType = (blindname) => {
-  const sel = document.getElementById("slidingtype");
-  sel.innerHTML = ""; //reset
-
   if (!blindname) return;
 
-  let data = [];
   let list = [];
 
   if (["Basic Window"].includes(blindname)) {
-    list = ["Single Sliding Pleated", "Double Sliding Pleated"];
+    list.push("Single Sliding Pleated", "Double Sliding Pleated");
   }
 
-  list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
-  });
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  generateOption("slidingtype", list);
 };
 
 const bindStacking = (blindname) => {
-  const sel = document.getElementById("stacking");
-  sel.innerHTML = ""; //reset
-
   if (!blindname) return;
-
-  let data = [];
   let list = [];
 
   if (["Basic Window"].includes(blindname)) {
-    list = ["Stacking - Right", "Stacking - Left", "Stacking - Split"];
+    list.push("Stacking - Right", "Stacking - Left", "Stacking - Split");
   }
 
-  list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
-  });
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  generateOption("stacking", list);
 };
 
 const bindTrackless = (blindname) => {
-  const sel = document.getElementById("trackless");
-  sel.innerHTML = ""; //reset
-
   if (!blindname) return;
-
-  let data = [];
   let list = [];
 
   if (["Basic Window"].includes(blindname)) {
-    list = ["Trackless - No"];
+    list.push("Trackless - No");
   }
 
-  list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
-  });
-
-  if (data.length > 0) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  generateOption("trackless", list);
 };
 
 const bindFrameType = (blindname, tubename) => {
-  const sel = document.getElementById("frametype");
   document.getElementById("framecolour").innerHTML = "";
-  sel.innerHTML = ""; //reset
 
   if (!blindname || !tubename) return;
-
-  let data = [];
   let list = [];
 
   if (["Safety Window", "Security Window"].includes(blindname)) {
-    list = ["Grille Frame", "Door Frame"];
+    list.push("Grille Frame", "Door Frame");
   }
 
   if (["Basic Window"].includes(blindname)) {
     if (["Flyscreens"].includes(tubename)) {
-      list = ["21x9 Frame", "25x11 Frame", "35x11 Frame"];
+      list.push("21x9 Frame", "25x11 Frame", "35x11 Frame");
     }
     if (["Retractable Flyscreen Roll-Up Down"].includes(tubename)) {
-      list = ["Door", "Window"];
+      list.push("Door", "Window");
     }
   }
 
-  list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
-  });
-
-  if (data.length > 0) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  generateOption("frametype", list);
 };
 
 const bindFrameColour = (blindname, tubename, frametype) => {
-  const sel = document.getElementById("framecolour");
-  sel.innerHTML = ""; //reset
-
   if (!blindname || !tubename || !frametype) return;
 
-  let data = [];
   let list = [];
 
   if (["Safety Window"].includes(blindname)) {
-    list = [
+    list.push(
       "Monument",
       "Apo Grey",
-      "Paperbark",
       "Black",
       "Bronze",
       "Brown",
       "Charcoal",
       "Dune",
+      "Hawtorn green",
       "Powder Coating",
       "Primrose",
       "Silver (Anodised)",
@@ -587,28 +452,73 @@ const bindFrameColour = (blindname, tubename, frametype) => {
       "White",
       "White Birch",
       "Woodland Grey",
-    ];
+    );
   }
 
   if (["Security Window"].includes(blindname)) {
-    list = [
-      "TBC",
-      "Apo Grey",
-      "Custom Black",
-      "Charcoal Satin",
-      "Monument Matt",
-      "Primrose",
-      "Surf Mist",
-      "Paperbark",
-      "Pearl White",
-      "White Birch",
-      "Woodland Grey",
-    ];
+    if (["Ultra Guard"].includes(tubename)) {
+      list.push(
+        "TBC",
+        "Apo Grey",
+        "Custom Black",
+        "Charcoal Satin",
+        "Monument Matt",
+        "Primrose",
+        "Surf Mist",
+        "Paperbark",
+        "Pearl White",
+        "White Birch",
+        "Woodland Grey",
+      );
+    }
+
+    if (["Ultra Wedge"].includes(tubename)) {
+      list.push(
+        "Powder Coating",
+        "TBC",
+        "Apo Grey",
+        "Bicrh White",
+        "Black",
+        "Chharcoal",
+        "Monument",
+        "Primrose",
+        "Silver",
+        "Surfmist",
+        "White",
+        "Woodland Grey",
+      );
+    }
+
+    if (["SSS"].includes(tubename)) {
+      list.push(
+        "Powder Coating",
+        "TBC",
+        "Apo Grey",
+        "Anotec Off White",
+        "Bronze",
+        "Brown",
+        "Cedar",
+        "Charcoal",
+        "Claret",
+        "Clear Anodised",
+        "Deep Ocean",
+        "Dune",
+        "Hawthorn Green",
+        "Notre Dame",
+        "Primrose",
+        "Stone Beige",
+        "White Birch",
+        "Woodland Grey",
+        "Surmist",
+        "Paperbark",
+        "Jasper",
+      );
+    }
   }
 
   if (["Basic Window"].includes(blindname)) {
     if (["Flyscreens"].includes(tubename)) {
-      list = [
+      list.push(
         "Apo Grey",
         "Beige",
         "Black",
@@ -629,13 +539,13 @@ const bindFrameColour = (blindname, tubename, frametype) => {
         "White",
         "White Birch",
         "Woodland Grey",
-      ];
+      );
     }
     if (["Retractable Flyscreen Roll-Up Down"].includes(tubename)) {
-      list = ["White", "Black", "Powder Coating"];
+      list.push("White", "Black", "Powder Coating");
     }
     if (["Retractable Flyscreen Pleated"].includes(tubename)) {
-      list = [
+      list.push(
         "White",
         "Black",
         "Clear Anodised",
@@ -643,276 +553,103 @@ const bindFrameColour = (blindname, tubename, frametype) => {
         "White Birch",
         "Primrose",
         "Monument",
-      ];
+      );
     }
   }
 
-  list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
-  });
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  generateOption("framecolour", list);
 };
 
 const bindBrace = (blindname) => {
-  const sel = document.getElementById("brace");
-  sel.innerHTML = ""; //reset
-
   if (!blindname) return;
 
-  let data = [];
   let list = [];
 
   if (["Basic Window"].includes(blindname)) {
-    list = [
+    list.push(
       "Horizontal Centre Brace",
       "Vertical Centre Brace",
       "Horizontal Brace/s Specify",
       "Vertical Brace/ Specify",
-    ];
+    );
   }
   if (["Safety Window"].includes(blindname)) {
-    list = [
+    list.push(
       "Horizontal Centre Brace",
       "Vertical Centre Brace",
       "Vertical Brace Specify",
       "Horizontal Brace Specify",
-    ];
+    );
   }
 
   if (["Security Window"].includes(blindname)) {
-    list = [
+    list.push(
       "Horizontal Centre Brace",
       "Vertical Centre Brace",
       "Horizontal Brace Specify",
       "Vertical Brace Specify",
-    ];
+    );
   }
 
-  list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
-  });
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  generateOption("brace", list);
 };
 
 const bindInstall = (blindname) => {
-  const sel = document.getElementById("install");
-  sel.innerHTML = ""; //reset
-
   if (!blindname) return;
-
-  let data = [];
   let list = [];
 
   if (["Basic Window", "Safety Window"].includes(blindname)) {
-    list = ["Pick Up"];
+    list.push("Pick Up");
   }
 
-  list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
-  });
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  generateOption("install", list);
 };
 
 const bindFitting = (blindname) => {
-  const sel = document.getElementById("fitting");
-  sel.innerHTML = ""; //reset
-
   if (!blindname) return;
-
-  let data = [];
   let list = [];
 
   if (["Basic Window"].includes(blindname)) {
-    list = ["Screen Port / Trap Door"];
+    list.push("Screen Port / Trap Door");
   }
 
-  list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
-  });
-
-  if (data.length > 0) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  generateOption("fitting", list);
 };
 
 const bindRemove = (blindname) => {
-  const sel = document.getElementById("remove");
-  sel.innerHTML = ""; //reset
-
   if (!blindname) return;
-
-  let data = [];
-
-  if (["Security Window"].includes(blindname)) {
-    const list = ["Removal Only", "Removal and Disposal"];
-
-    list.forEach((ls) => {
-      data.push({ value: ls, text: ls });
-    });
-  }
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  let list = ["Removal Only", "Removal and Disposal"];
+  generateOption("remove", list);
 };
 
 const bindHandle = (blindname) => {
-  const sel = document.getElementById("handle");
-  sel.innerHTML = ""; //reset
-
   if (!blindname) return;
-
-  let data = [];
   let list = [];
-
   if (["Basic Window"].includes(blindname)) {
-    list = ["Handle - Front", "Handle - Back", "Handle - Dual"];
+    list.push("Handle - Front", "Handle - Back", "Handle - Dual");
   }
 
-  list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
-  });
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  generateOption("handle", list);
 };
 
 const bindPullCord = (blindname) => {
-  const sel = document.getElementById("pullcord");
-  sel.innerHTML = ""; //reset
-
   if (!blindname) return;
-
-  let data = [];
   let list = [];
-
   if (["Basic Window"].includes(blindname)) {
-    list = ["Pullcord - Yes", "Pullcord - No"];
+    list.push("Pullcord - Yes", "Pullcord - No");
   }
 
-  list.forEach((ls) => {
-    data.push({ value: ls, text: ls });
-  });
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  generateOption("pullcord", list);
 };
 
-let cutoutState = [];
+let cutOutState = [];
+const cutOutRef = { current: null };
 const bindCutOut = (blindname) => {
-  const sel = document.getElementById("cutout");
-  sel.innerHTML = ""; //reset
-
   if (!blindname) return;
-  if (tomCutout) {
-    tomCutout.destroy();
-    tomCutout = null;
-  }
-
-  let data = [];
   let list = [];
 
   if (["Safety Window", "Security Window"].includes(blindname)) {
-    // list = [
-    //   "Cutout Side 1",
-    //   "Cutout Width 1",
-    //   "Bottom Cutout 1",
-    //   "Top Cutout 1",
-    //   "Cutout Side 2",
-    //   "Bottom Cutout 2",
-    //   "Cutout Width 2",
-    //   "Top Cutout 2",
-    // ];
-
-    list = [
+    list.push(
       { name: "Cutout Side 1", unit: "mm" },
       { name: "Cutout Width 1", unit: "mm" },
       { name: "Bottom Cutout 1", unit: "mm" },
@@ -921,75 +658,33 @@ const bindCutOut = (blindname) => {
       { name: "Bottom Cutout 2", unit: "mm" },
       { name: "Cutout Width 2", unit: "mm" },
       { name: "Top Cutout 2", unit: "mm" },
-    ];
+    );
   }
 
-  list.forEach((ls) => {
-    data.push({
-      value: ls.name,
-      text: ls.name,
-      unit: ls.unit,
-    });
+  applyToSelect({
+    selector: "#cutout",
+    list,
+    getState: () => cutOutState,
+    setState: (val) => (cutOutState = val),
+    render: (state) =>
+      renderDynamic({
+        containerId: "cutoutContainer",
+        state,
+        setState: (val) => (cutOutState = val),
+      }),
+    instanceRef: cutOutRef,
   });
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    option.setAttribute("data-unit", item.unit);
-    sel.add(option);
-  });
-
-  sel.addEventListener("change", function () {
-    const selected = Array.from(this.selectedOptions).map((x) => x.value);
-
-    // 1. HAPUS ITEM YANG DI UNSELECT
-    cutoutState = cutoutState.filter((x) => selected.includes(x.name));
-
-    // 2. TAMBAH ITEM BARU
-    selected.forEach((name) => {
-      if (!cutoutState.find((x) => x.name === name)) {
-        const option = this.querySelector(`option[value="${name}"]`);
-
-        cutoutState.push({
-          name: name,
-          unit: option?.dataset?.unit || "Qty",
-          value: "",
-        });
-      }
-    });
-
-    // 3. RENDER ULANG (INI YANG MENCEGAH RESET)
-    renderCutOut();
-  });
-
-  initTomSelect();
 };
 
 let extrasState = [];
+const extrasRef = { current: null };
 const bindExtras = (blindname, tubename) => {
-  const sel = document.getElementById("extras");
-  sel.innerHTML = ""; //reset
-
   if (!blindname) return;
-  if (tomExtras) {
-    tomExtras.destroy();
-    tomExtras = null;
-  }
 
-  let data = [];
   let list = [];
 
   if (["Safety Window"].includes(blindname)) {
-    list = [
+    list.push(
       { name: "Angle 12 x 12mm", unit: "mm" },
       { name: "Doggie Door - Perspex 190mm x 260mm", unit: "Qty" },
       { name: "Doggie Door - Perspex 260mm x 400mm", unit: "Qty" },
@@ -1075,93 +770,169 @@ const bindExtras = (blindname, tubename) => {
       { name: "U Frame 20 mm sides x 25 mm wide", unit: "mm" },
       { name: "Whitco Winder Strip", unit: "Qty" },
       { name: "Window Lock", unit: "Qty" },
-    ];
+    );
   }
 
   if (["Security Window"].includes(blindname)) {
-    list = [
-      { name: "Angle 12 x 12mm", unit: "mm" },
-      { name: "Angle 25 x 70", unit: "mm" },
-      { name: "Bugseal Additional Hinged", unit: "mm" },
-      { name: "Doggie Door - Perspex 190mm x 260mm", unit: "Qty" },
-      { name: "Doggie Door - Perspex 260mm x 400mm", unit: "Qty" },
-      { name: "Door Interlock Additional", unit: "mm" },
-      { name: "Patio Bolt", unit: "Qty" },
-      { name: "Angle 12 x 20mm", unit: "mm" },
-      { name: "Angle 20 x 20mm", unit: "mm" },
-      { name: "Angle 20 x 40mm", unit: "mm" },
-      { name: "Angle 25 x 20mm", unit: "mm" },
-      { name: "Angle 50 x 50mm", unit: "mm" },
-      { name: "Chain Winder Lockable", unit: "Qty" },
-      { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
-      { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
-      { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
-      { name: "Door Track H ST4", unit: "mm" },
-      { name: "Door Track J HD1", unit: "mm" },
-      { name: "Door Track P ST11", unit: "mm" },
-      { name: "Door Track U Frame 20mm sidesx 25mm wide", unit: "mm" },
-      { name: "Door Track W ST8", unit: "mm" },
-      { name: "Powder Coating Minimum", unit: "Qty" },
-      { name: "Stop Bead Additional", unit: "Qty" },
-      { name: "Whitco Winder Strip", unit: "Qty" },
+    if (["Ultra Guard"].includes(tubename)) {
+      list.push(
+        { name: "Angle 12 x 12mm", unit: "mm" },
+        { name: "Angle 25 x 70", unit: "mm" },
+        { name: "Bugseal Additional Hinged", unit: "mm" },
+        { name: "Doggie Door - Perspex 190mm x 260mm", unit: "Qty" },
+        { name: "Doggie Door - Perspex 260mm x 400mm", unit: "Qty" },
+        { name: "Door Interlock Additional", unit: "mm" },
+        { name: "Patio Bolt", unit: "Qty" },
+        { name: "Angle 12 x 20mm", unit: "mm" },
+        { name: "Angle 20 x 20mm", unit: "mm" },
+        { name: "Angle 20 x 40mm", unit: "mm" },
+        { name: "Angle 25 x 20mm", unit: "mm" },
+        { name: "Angle 50 x 50mm", unit: "mm" },
+        { name: "Chain Winder Lockable", unit: "Qty" },
+        { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
+        { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
+        { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
+        { name: "Door Track H ST4", unit: "mm" },
+        { name: "Door Track J HD1", unit: "mm" },
+        { name: "Door Track P ST11", unit: "mm" },
+        { name: "Door Track U Frame 20mm sidesx 25mm wide", unit: "mm" },
+        { name: "Door Track W ST8", unit: "mm" },
+        { name: "Powder Coating Minimum", unit: "Qty" },
+        { name: "Stop Bead Additional", unit: "Qty" },
+        { name: "Whitco Winder Strip", unit: "Qty" },
 
-      { name: "Door Interlock Type 1", unit: "mm" },
-      { name: "Door Interlock Type 2", unit: "mm" },
-      { name: "Door Interlock Type 3", unit: "mm" },
-      { name: "Door Interlock Type F", unit: "mm" },
-      { name: "Double Sliding Track", unit: "mm" },
-      { name: "Fit Flyscreen Track per pair", unit: "Qty" },
-      { name: "Miscellaneous", unit: "Qty" },
-      { name: "Miscellaneous Scaffold", unit: "Qty" },
-      { name: "Miscellaneous Security", unit: "Qty" },
-      { name: "Miscellaneous Timber", unit: "Qty" },
-      { name: "Single Sliding Track", unit: "mm" },
+        { name: "Door Interlock Type 1", unit: "mm" },
+        { name: "Door Interlock Type 2", unit: "mm" },
+        { name: "Door Interlock Type 3", unit: "mm" },
+        { name: "Door Interlock Type F", unit: "mm" },
+        { name: "Double Sliding Track", unit: "mm" },
+        { name: "Fit Flyscreen Track per pair", unit: "Qty" },
+        { name: "Miscellaneous", unit: "Qty" },
+        { name: "Miscellaneous Scaffold", unit: "Qty" },
+        { name: "Miscellaneous Security", unit: "Qty" },
+        { name: "Miscellaneous Timber", unit: "Qty" },
+        { name: "Single Sliding Track", unit: "mm" },
 
-      { name: "Timber Frame 19 x 13mm Finished", unit: "mm" },
-      { name: "Timber Frame 19 x 7mm Finished", unit: "mm" },
-      { name: "Timber Frame 30 x 13mm Finished", unit: "mm" },
-      { name: "Timber Frame 30 x 7mm Finished", unit: "mm" },
-      { name: "Timber Frame 41 x 13mm Finished", unit: "mm" },
-      { name: "Timber Frame 41 x 7mm Finished", unit: "mm" },
-      { name: "Timber Frame 66 x 7mm Finished", unit: "mm" },
-      { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 19 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frame 19 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frame 30 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frame 41 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 66 x 7mm Finished", unit: "mm" },
+        { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
 
-      { name: "Timber Frames 19 x 19 Finished", unit: "mm" },
-      { name: "Timber Frames 19 x 30mm Finished", unit: "mm" },
-      { name: "Timber Frames 19 x 41mm Finished", unit: "mm" },
-      { name: "Timber Frames 19 x 66mm Finished", unit: "mm" },
-      { name: "Timber Frames 19 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 19 Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 19 x 91mm Finished", unit: "mm" },
 
-      { name: "Timber Frames 30 x 19mm Finished", unit: "mm" },
-      { name: "Timber Frames 30 x 30mm Finished", unit: "mm" },
-      { name: "Timber Frames 30 x 41 Finished", unit: "mm" },
-      { name: "Timber Frames 30 x 66mm Finished", unit: "mm" },
-      { name: "Timber Frames 30 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 30 x 91mm Finished", unit: "mm" },
 
-      { name: "Timber Frames 41 x 19mm Finished", unit: "mm" },
-      { name: "Timber Frames 41 x 30mm Finished", unit: "mm" },
-      { name: "Timber Frames 41 x 41 Finished", unit: "mm" },
-      { name: "Timber Frames 41 x 66mm Finished", unit: "mm" },
-      { name: "Timber Frames 41 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 41 Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 41 x 91mm Finished", unit: "mm" },
 
-      { name: "Timber Frames 66 x 13 Finished", unit: "mm" },
-      { name: "Timber Frames 66 x 19mm Finished", unit: "mm" },
-      { name: "Timber Frames 66 x 30mm Finished", unit: "mm" },
-      { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
-      { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 13 Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
 
-      { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
-      { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
-      { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
-      { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
-      { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
-      { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
-    ];
+        { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
+        { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
+      );
+    }
+
+    if (["Ultra Wedge"].includes(tubename)) {
+      list.push(
+        { name: "Angle 12 x 12mm", unit: "mm" },
+        { name: "Angle 25 x 70", unit: "mm" },
+        { name: "Bugseal Additional Hinged", unit: "mm" },
+        { name: "Doggie Door - Perspex 190mm x 260mm", unit: "Qty" },
+        { name: "Doggie Door - Perspex 260mm x 400mm", unit: "Qty" },
+        { name: "Door Interlock Additional", unit: "mm" },
+        { name: "Patio Bolt", unit: "Qty" },
+        { name: "Angle 12 x 20mm", unit: "mm" },
+        { name: "Angle 20 x 20mm", unit: "mm" },
+        { name: "Angle 20 x 40mm", unit: "mm" },
+        { name: "Angle 25 x 20mm", unit: "mm" },
+        { name: "Angle 50 x 50mm", unit: "mm" },
+        { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
+        { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
+        { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
+        { name: "Door Track H ST4", unit: "mm" },
+        { name: "Door Track J HD1", unit: "mm" },
+        { name: "Door Track P ST11", unit: "mm" },
+        { name: "Door Track U Frame 20mm sidesx 25mm wide", unit: "mm" },
+        { name: "Door Track W ST8", unit: "mm" },
+        { name: "Powder Coating Minimum", unit: "Qty" },
+        { name: "Stop Bead Additional", unit: "Qty" },
+        { name: "Door Interlock Type 1", unit: "mm" },
+        { name: "Door Interlock Type 2", unit: "mm" },
+        { name: "Door Interlock Type 3", unit: "mm" },
+        { name: "Door Interlock Type F", unit: "mm" },
+        { name: "Double Sliding Track", unit: "mm" },
+        { name: "Miscellaneous", unit: "Qty" },
+        { name: "Miscellaneous Scaffold", unit: "Qty" },
+        { name: "Miscellaneous Security", unit: "Qty" },
+        { name: "Miscellaneous Timber", unit: "Qty" },
+        { name: "Single Sliding Track", unit: "mm" },
+      );
+    }
+
+    if (["SSS"].includes(tubename)) {
+      list.push(
+        { name: "Angle 12 x 12mm", unit: "mm" },
+        { name: "Angle 25 x 70", unit: "mm" },
+        { name: "Bugseal Additional Hinged", unit: "mm" },
+        { name: "Doggie Door - Perspex 190mm x 260mm", unit: "Qty" },
+        { name: "Doggie Door - Perspex 260mm x 400mm", unit: "Qty" },
+        { name: "Door Interlock Additional", unit: "mm" },
+        { name: "Patio Bolt", unit: "Qty" },
+        { name: "Angle 12 x 20mm", unit: "mm" },
+        { name: "Angle 20 x 20mm", unit: "mm" },
+        { name: "Angle 20 x 40mm", unit: "mm" },
+        { name: "Angle 25 x 20mm", unit: "mm" },
+        { name: "Angle 50 x 50mm", unit: "mm" },
+        { name: "Door Posts 19 x 19 (for frame work)", unit: "mm" },
+        { name: "Door Posts 25 x 25 (for frame work)", unit: "mm" },
+        { name: "Door Posts 50 x 50 (for frame work)", unit: "mm" },
+        { name: "Door Track H ST4", unit: "mm" },
+        { name: "Door Track J HD1", unit: "mm" },
+        { name: "Door Track P ST11", unit: "mm" },
+        { name: "Door Track U Frame 20mm sidesx 25mm wide", unit: "mm" },
+        { name: "Door Track W ST8", unit: "mm" },
+        { name: "Powder Coating Minimum", unit: "Qty" },
+        { name: "Stop Bead Additional", unit: "Qty" },
+        { name: "Door Interlock Type 1", unit: "mm" },
+        { name: "Door Interlock Type 2", unit: "mm" },
+        { name: "Door Interlock Type 3", unit: "mm" },
+        { name: "Door Interlock Type F", unit: "mm" },
+        { name: "Double Sliding Track", unit: "mm" },
+        { name: "Miscellaneous", unit: "Qty" },
+        { name: "Miscellaneous Scaffold", unit: "Qty" },
+        { name: "Miscellaneous Security", unit: "Qty" },
+        { name: "Miscellaneous Timber", unit: "Qty" },
+        { name: "Single Sliding Track", unit: "mm" },
+      );
+    }
   }
 
   if (["Basic Window"].includes(blindname)) {
     if (["Flyscreens"].includes(tubename)) {
-      list = [
+      list.push(
         { name: "Flyscreen Plunger Pins", unit: "Qty" },
         { name: "Flyscreen Top Clips", unit: "Qty" },
         { name: "Flyscreen Turn Buttons", unit: "Qty" },
@@ -1170,63 +941,18 @@ const bindExtras = (blindname, tubename) => {
         { name: "Double Sliding Track Top", unit: "mm" },
         { name: "Double Sliding Track Bottom", unit: "mm" },
         { name: "Flyscreen Beading", unit: "mm" },
-        { name: "Bugseal Additional Hinged", unit: "mm" },
-        { name: "Chain Winder Lockable", unit: "Qty" },
-        { name: "Powdercoating Minimum Flyscreens", unit: "Qty" },
-        { name: "Door Track U Frame 20mm sidesx 25mm wide", unit: "mm" },
         { name: "Angle 12 x 12mm", unit: "mm" },
         { name: "Angle 12 x 20mm", unit: "mm" },
         { name: "Angle 12 x 25mm", unit: "mm" },
         { name: "Angle 20 x 40mm", unit: "mm" },
         { name: "Angle 25 x 20mm", unit: "mm" },
         { name: "Angle 50 x 25mm", unit: "mm" },
-        { name: "Whitco Winder Strip", unit: "Qty" },
-        { name: "Patio Bolt", unit: "Qty" },
         { name: "Miscellaneous", unit: "Qty" },
-
-        { name: "Timber Frame 19 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frame 19 x 13mm Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 19 Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 41mm Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 66mm Finished", unit: "mm" },
-        { name: "Timber Frames 19 x 91mm Finished", unit: "mm" },
-
-        { name: "Timber Frame 30 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frame 30 x 13mm Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 19mm Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 41 Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 66mm Finished", unit: "mm" },
-        { name: "Timber Frames 30 x 91mm Finished", unit: "mm" },
-
-        { name: "Timber Frame 41 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frame 41 x 13mm Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 19mm Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 41 Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 66mm Finished", unit: "mm" },
-        { name: "Timber Frames 41 x 91mm Finished", unit: "mm" },
-
-        { name: "Timber Frame 66 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 13 Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 19mm Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 41mm Finished", unit: "mm" },
-        { name: "Timber Frames 66 x 91mm Finished", unit: "mm" },
-
-        { name: "Timber Frame 91 x 7mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 13mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 19mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 30mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 41mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 66mm Finished", unit: "mm" },
-        { name: "Timber Frames 91 x 91mm Finished", unit: "mm" },
-      ];
+      );
     }
 
     if (["Retractable Flyscreen Pleated"].includes(tubename)) {
-      list = [
+      list.push(
         { name: "Angle 12 x 12mm", unit: "mm" },
         { name: "Doggie Door - Perspex 190mm x 260mm", unit: "Qty" },
         { name: "Doggie Door - Perspex 260mm x 400mm", unit: "Qty" },
@@ -1319,11 +1045,11 @@ const bindExtras = (blindname, tubename) => {
         { name: "U Frame 20 mm sides x 25 mm wide", unit: "mm" },
         { name: "Whitco Winder Strip", unit: "Qty" },
         { name: "Window Lock", unit: "Qty" },
-      ];
+      );
     }
 
     if (["Retractable Flyscreen Roll-Up Down"].includes(tubename)) {
-      list = [
+      list.push(
         { name: "Angle 12 x 12mm", unit: "mm" },
         { name: "Doggie Door - Perspex 190mm x 260mm", unit: "Qty" },
         { name: "Doggie Door - Perspex 260mm x 400mm", unit: "Qty" },
@@ -1416,58 +1142,23 @@ const bindExtras = (blindname, tubename) => {
         { name: "U Frame 20 mm sides x 25 mm wide", unit: "mm" },
         { name: "Whitco Winder Strip", unit: "Qty" },
         { name: "Window Lock", unit: "Qty" },
-      ];
+      );
     }
   }
 
-  list.forEach((ls) => {
-    data.push({
-      value: ls.name,
-      text: ls.name,
-      unit: ls.unit,
-    });
+  applyToSelect({
+    selector: "#extras",
+    list,
+    getState: () => extrasState,
+    setState: (val) => (extrasState = val),
+    render: (state) =>
+      renderDynamic({
+        containerId: "extrasContainer",
+        state,
+        setState: (val) => (extrasState = val),
+      }),
+    instanceRef: extrasRef,
   });
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    option.setAttribute("data-unit", item.unit);
-    sel.add(option);
-  });
-
-  sel.addEventListener("change", function () {
-    const selected = Array.from(this.selectedOptions).map((x) => x.value);
-
-    // 1. HAPUS ITEM YANG DI UNSELECT
-    extrasState = extrasState.filter((x) => selected.includes(x.name));
-
-    // 2. TAMBAH ITEM BARU
-    selected.forEach((name) => {
-      if (!extrasState.find((x) => x.name === name)) {
-        const option = this.querySelector(`option[value="${name}"]`);
-
-        extrasState.push({
-          name: name,
-          unit: option?.dataset?.unit || "Qty",
-          value: "",
-        });
-      }
-    });
-
-    // 3. RENDER ULANG (INI YANG MENCEGAH RESET)
-    renderExtras();
-  });
-
-  initTomSelect();
 };
 
 const bindItemOrders = async (itemid) => {
@@ -1708,6 +1399,11 @@ const handlerSubmit = async (button) => {
       "markup",
     ];
 
+    // Sebelum submit
+    console.log("extrasState:", extrasState);
+    console.log("cutOutState:", cutOutState);
+    // return;
+
     const formData = {
       headerid: HEADERID,
       itemaction: ITEMACTION,
@@ -1716,45 +1412,11 @@ const handlerSubmit = async (button) => {
       loginid: LOGINID,
     };
 
-    const extras = [];
-    document.querySelectorAll(".extra-row").forEach((row) => {
-      const name = row.querySelector("input[readonly]").value;
-      const value = row.querySelector(".extra-value").value;
-      const unit = row
-        .querySelector(".extra-value")
-        .getAttribute("placeholder")
-        .replace("Enter ", "");
-
-      extras.push({
-        name: name,
-        unit: unit,
-        value: value,
-      });
-    });
-
-    const cutout = [];
-    document.querySelectorAll(".cutout-row").forEach((row) => {
-      const name = row.querySelector("input[readonly]").value;
-      const value = row.querySelector(".cutout-value").value;
-      const unit = row
-        .querySelector(".cutout-value")
-        .getAttribute("placeholder")
-        .replace("Enter ", "");
-
-      cutout.push({
-        name: name,
-        unit: unit,
-        value: value,
-      });
-    });
-
-    formData["extras"] = JSON.stringify(extras);
-    formData["cutout"] = JSON.stringify(cutout);
+    formData["extras"] = JSON.stringify(extrasState || []);
+    formData["cutout"] = JSON.stringify(cutOutState || []);
 
     fields.forEach((field) => {
-      if (field === "extras") return; // skip
-      if (field === "cutout") return; // skip
-
+      if (field === "extras" || field === "cutout") return; // skip
       formData[field] = document.getElementById(field).value;
     });
 
@@ -1828,7 +1490,9 @@ const handlerSetElementValues = (itemData) => {
     markup: "MarkUp",
   };
 
-  // 1. set normal fields
+  // ===============================
+  // 1. SET NORMAL INPUT
+  // ===============================
   Object.entries(mapping).forEach(([id, key]) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -1836,103 +1500,77 @@ const handlerSetElementValues = (itemData) => {
     let value = itemData[key];
 
     if (id === "markup" && value === 0) value = "";
+    if (value === "0") value = "";
 
     el.value = value ?? "";
-
-    if (el.value === "0") el.value = "";
   });
 
   // ===============================
-  // 2. HANDLE EXTRAS (INI TARUH DI SINI)
+  // 2. HELPER DYNAMIC (GENERIC)
   // ===============================
+  const applyDynamicFromData = ({
+    jsonString,
+    setState,
+    selectId,
+    containerId,
+  }) => {
+    let data = [];
 
-  let extrasData = [];
-  let cutoutData = [];
+    try {
+      data = jsonString ? JSON.parse(jsonString) : [];
+    } catch (e) {
+      console.error("Invalid JSON", e);
+      data = [];
+    }
 
-  try {
-    extrasData = itemData.AdditionalMotor
-      ? JSON.parse(itemData.AdditionalMotor)
-      : [];
+    // set state
+    setState(data);
 
-    cutoutData = itemData.FlatType ? JSON.parse(itemData.FlatType) : [];
-  } catch (e) {
-    console.error("Invalid JSON", e);
-    extrasData = [];
-    cutoutData = [];
-  }
-  extrasState = extrasData;
-  cutoutState = cutoutData;
+    // set TomSelect value (trigger change)
+    const selectEl = document.getElementById(selectId);
+    if (selectEl && selectEl.tomselect) {
+      selectEl.tomselect.setValue(
+        data.map((x) => x.name),
+        true,
+      );
+    }
 
-  // 3. SET TOM SELECT VALUE
-  const extrasSelect = document.getElementById("extras");
-  const cutoutSelect = document.getElementById("cutout");
-  if (extrasSelect && extrasSelect.tomselect) {
-    extrasSelect.tomselect.setValue(extrasData.map((x) => x.name));
-  }
-  if (cutoutSelect && cutoutSelect.tomselect) {
-    cutoutSelect.tomselect.setValue(cutoutData.map((x) => x.name));
-  }
-
-  // 4. REBUILD DYNAMIC ROWS
-  const extrasContainer = document.getElementById("extrasContainer");
-  const cutoutContainer = document.getElementById("cutoutContainer");
-  if (extrasContainer) {
-    extrasContainer.innerHTML = "";
-
-    extrasData.forEach((item) => {
-      extrasContainer.innerHTML += `
-        <div class="row mb-2 extra-row">
-
-            <div class="col-7">
-                <input type="text"
-                       class="form-control"
-                       value="${item.name}"
-                       readonly />
-            </div>
-
-            <div class="col-5">
-                <div class="input-group">
-                  <input type="number"
-                        class="form-control extra-value"
-                        value="${item.value || ""}"
-                        placeholder="Enter ${item.unit}" />
-                  <span class="input-group-text ">${item.unit}</span>
-                </div>
-            </div>
-
-        </div>
-      `;
+    // render ulang (biar pasti sinkron)
+    renderDynamic({
+      containerId: containerId,
+      state: data,
     });
-  }
+  };
 
-  if (cutoutContainer) {
-    cutoutContainer.innerHTML = "";
+  // ===============================
+  // 3. CONFIG SEMUA DYNAMIC FIELD
+  // ===============================
+  const dynamicFields = [
+    {
+      key: "AdditionalMotor",
+      setState: (val) => (extrasState = val),
+      selectId: "extras",
+      containerId: "extrasContainer",
+    },
+    {
+      key: "FlatType",
+      setState: (val) => (cutOutState = val),
+      selectId: "cutout",
+      containerId: "cutoutContainer",
+    },
+  ];
 
-    cutoutData.forEach((item) => {
-      cutoutContainer.innerHTML += `
-        <div class="row mb-2 extra-row">
-
-            <div class="col-7">
-                <input type="text"
-                       class="form-control"
-                       value="${item.name}"
-                       readonly />
-            </div>
-
-            <div class="col-5">
-                <div class="input-group">
-                  <input type="number"
-                        class="form-control extra-value"
-                        value="${item.value || ""}"
-                        placeholder="Enter ${item.unit}" />
-                  <span class="input-group-text ">${item.unit}</span>
-                </div>
-            </div>
-
-        </div>
-      `;
+  // ===============================
+  // 4. APPLY SEMUA DYNAMIC FIELD
+  // ===============================
+  dynamicFields.forEach((field) => {
+    applyDynamicFromData({
+      jsonString: itemData[field.key],
+      setState: field.setState,
+      selectId: field.selectId,
+      containerId: field.containerId,
     });
-  }
+  });
 };
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const windowPageLoaded = async () => {
@@ -1986,91 +1624,141 @@ const getItemData = async (query) => {
   }
 };
 
-let tomExtras = null;
-let tomCutout = null;
-const initTomSelect = () => {
-  if (tomExtras) {
-    tomExtras.destroy();
-  }
-  if (tomCutout) {
-    tomCutout.destroy();
+const generateOption = (elementId, list = []) => {
+  const sel = document.getElementById(elementId);
+  if (!sel) return;
+  sel.innerHTML = ""; // reset
+
+  let validateLength = 1;
+  switch (elementId) {
+    case "trackless":
+    case "frametype":
+      validateLength = 0;
+      break;
   }
 
-  tomExtras = new TomSelect("#extras", {
-    // plugins: ["remove_button"],
-    // placeholder: "Select Extras",
-    maxItems: null,
-    create: false,
-  });
+  // Short A-Z
+  list.sort();
 
-  tomCutout = new TomSelect("#cutout", {
-    // plugins: ["remove_button"],
-    // placeholder: "Select Extras",
-    maxItems: null,
-    create: false,
+  // default option kalau lebih dari 1 data
+  if (list.length > validateLength) {
+    const defaultOption = new Option("", "");
+    sel.add(defaultOption);
+  }
+
+  list.forEach((item) => {
+    const option = new Option(item.toUpperCase(), item);
+    option.setAttribute("data-name", item);
+    sel.add(option);
   });
 };
 
-const renderExtras = () => {
-  const container = document.getElementById("extrasContainer");
+const applyToSelect = ({
+  selector,
+  list,
+  getState,
+  setState,
+  render,
+  instanceRef,
+}) => {
+  const data = list
+    .map((ls) => ({
+      value: ls.name,
+      text: ls.name,
+      unit: ls.unit,
+    }))
+    .sort((a, b) => a.text.localeCompare(b.text));
+
+  if (!instanceRef.current) {
+    instanceRef.current = new TomSelect(selector, {
+      maxItems: null,
+      create: false,
+    });
+
+    instanceRef.current.on("change", (value) => {
+      const selected = value ? (Array.isArray(value) ? value : [value]) : [];
+
+      let currentState = getState();
+
+      let newState = currentState.filter((x) => selected.includes(x.name));
+
+      selected.forEach((name) => {
+        if (!newState.find((x) => x.name === name)) {
+          const option = instanceRef.current.options[name];
+
+          newState.push({
+            name,
+            unit: option?.unit || "Qty",
+            value: "",
+          });
+        }
+      });
+
+      setState(newState);
+      render(newState);
+    });
+  }
+
+  const ts = instanceRef.current;
+
+  ts.clear();
+  ts.clearOptions();
+
+  data.forEach((item) => {
+    ts.addOption({
+      value: item.value,
+      text: item.text.toUpperCase(),
+      unit: item.unit,
+    });
+  });
+
+  ts.refreshOptions(false);
+
+  // reset
+  setState([]);
+  render([]);
+};
+
+const renderDynamic = ({ containerId, state, setState }) => {
+  const container = document.getElementById(containerId);
   if (!container) return;
 
   container.innerHTML = "";
 
-  extrasState.forEach((item) => {
+  state.forEach((item, index) => {
     container.innerHTML += `
-      <div class="row mb-2 extra-row">
+      <div class="row mb-2 dynamic-row">
 
-          <div class="col-7">
-              <input type="text"
-                     class="form-control"
-                     value="${item.name}"
-                     readonly />
-          </div>
+        <div class="col-7">
+          <input type="text"
+                 class="form-control"
+                 value="${item.name}"
+                 readonly />
+        </div>
 
-          <div class="col-5">
-              <div class="input-group">
-                <input type="number"
-                      class="form-control extra-value"
-                      value="${item.value || ""}"
-                      placeholder="Enter ${item.unit}" />
-                <span class="input-group-text">${item.unit}</span>
-              </div>
+        <div class="col-5">
+          <div class="input-group">
+            <input type="number"
+                   class="form-control dynamic-value"
+                   data-index="${index}"
+                   value="${item.value || ""}"
+                   placeholder="Enter ${item.unit}" />
+            <span class="input-group-text">${item.unit}</span>
           </div>
+        </div>
 
       </div>
     `;
   });
-};
 
-const renderCutOut = () => {
-  const container = document.getElementById("cutoutContainer");
-  if (!container) return;
+  container.querySelectorAll(".dynamic-value").forEach((input) => {
+    input.addEventListener("input", (e) => {
+      const index = e.target.dataset.index;
+      const value = e.target.value;
 
-  container.innerHTML = "";
+      state[index].value = value;
 
-  cutoutState.forEach((item) => {
-    container.innerHTML += `
-      <div class="row mb-2 cutout-row">
-
-          <div class="col-7">
-              <input type="text"
-                     class="form-control"
-                     value="${item.name}"
-                     readonly />
-          </div>
-
-          <div class="col-5">
-              <div class="input-group">
-                <input type="number"
-                      class="form-control cutout-value"
-                      value="${item.value || ""}"
-                      placeholder="Enter ${item.unit}" />
-                <span class="input-group-text">${item.unit}</span>
-              </div>
-          </div>
-
-      </div>
-    `;
+      setState([...state]); // trigger update
+    });
   });
 };

@@ -310,7 +310,7 @@ Partial Class Methods_Order_DoorMethod
 
                 Dim handleheight As String = InArray(data.handleheight, "Lock Height", "Specify")
                 If ControlName = "Hinged Door" Then
-                    handleheight = InArray(data.handleheight, "Lock Height", "To Centre of Handle", "To Bottom of Tongue", "To Centre of Tongue", "Specify")
+                    handleheight = InArray(data.handleheight, "Lock Height", "Centre of Handle", "Bot of Tongue", "Centre of Tongue", "To Centre of Handle", "To Bottom of Tongue", "To Centre of Tongue", "Specify")
                 End If
                 If Not String.IsNullOrEmpty(data.handleheight) AND handleheight Then
                     If String.IsNullOrEmpty(data.handleheightmm) Then
