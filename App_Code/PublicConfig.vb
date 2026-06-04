@@ -973,10 +973,8 @@ Public Class PublicConfig
                 End If
 
                 If designName = "Window" Then
-                    If InArray(TubeType, "Retractable Flyscreen Pleated", "Retractable Flyscreen Roll-Up Down", "Heavy Duty Diamond", "SSS") Then
-                        delivery = "Pick Up"
-                    Else
-                        delivery = "Pick Up"
+                    delivery = "Pick Up"
+                    If TubeType = "Flyscreens" Then
                         width = "0"
                         drop = "0"
                         findMetre = sqm

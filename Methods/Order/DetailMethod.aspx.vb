@@ -549,7 +549,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, BlindId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, TubeType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PelmetType, BottomTrackType, MeshType, Matrix, Charge, Markup, FabricGroups, OrderDelivery, PriceGroupName")
+                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, BlindId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, TubeType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PelmetType, BottomTrackType, MeshType, FrameType, Matrix, Charge, Markup, FabricGroups, OrderDelivery, PriceGroupName")
                 sqlBuilder.AppendLine("FROM view_details")
                 sqlBuilder.AppendLine("WHERE Active=@Active AND HeaderId=@HeaderId")
 
@@ -645,6 +645,7 @@ Partial Class Methods_Order_DetailMethod
                         Dim PelmetType As String = reader("PelmetType").ToString()
                         Dim BottomTrackType As String = reader("BottomTrackType").ToString()
                         Dim MeshType As String = reader("MeshType").ToString()
+                        Dim FrameType As String = reader("FrameType").ToString()
                         Dim Matrix As String = reader("Matrix").ToString()
                         Dim Charge As String = reader("Charge").ToString()
                         Dim MarkUp As String = reader("MarkUp").ToString()
@@ -887,7 +888,7 @@ Partial Class Methods_Order_DetailMethod
                             Product = String.Format("{0} - {1} {2} ", BlindName, TubeType, Size)
 
                             If TubeType = "Flyscreens" Then
-                                Product = String.Format("{0} - {1} #{2} {3} ", BlindName, TubeType, MeshType, Size)
+                                Product = String.Format("{0} - {1} #{2} {3} ", BlindName, TubeType, FrameType, Size)
                             End If
 
                             If TubeType = "Retractable Flyscreen Pleated" Then
