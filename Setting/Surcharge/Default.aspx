@@ -87,7 +87,7 @@
                                     <option value="Blind 4">BLIND 4</option>
                                 </select>
                             </div>
-                            <div class="col-lg-12 mb-3">
+                            <div class="col-lg-6 mb-3">
                                 <label for="name" class="form-label text-uppercase">surcharge name</label>
                                 <input type="text" class="form-control" name="name" id="name" placeholder="Surcharge Name ...">
                             </div>
@@ -95,12 +95,13 @@
                                 <label for="fieldname" class="form-label text-uppercase">formula</label>
                                 <select name="fieldname" id="fieldname" class="form-select"></select>
                             </div>
-                            <div class="col-lg-6 mb-1">
-                                <label for="charge" class="form-label text-uppercase">charge</label>
-                                <input type="text" class="form-control" name="charge" id="charge" placeholder="Charge ...">
-                            </div>
                             <div class="col-lg-12 mb-3">
                                 <textarea name="formula" id="formula" class="form-control " rows="6" cols="6" placeholder="Formula ..."></textarea>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <label for="charge" class="form-label text-uppercase">charge</label>
+                                <input type="text" class="form-control" name="charges" id="charges" placeholder="Charge ..." hidden>
+                                <textarea name="charge" id="charge" class="form-control " rows="1" cols="1" placeholder="Formula ..."></textarea>
                             </div>
                             <div class="col-lg-10 mb-3">
                                 <label for="des" class="form-label text-uppercase">description</label>

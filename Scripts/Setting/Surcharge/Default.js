@@ -809,7 +809,17 @@ const bindSurcharges = (designid, blindid, params) => {
         },
       },
       { data: "Formula", width: "35%" },
-      { data: "Charge", width: "10%" },
+      {
+        data: "Charge",
+        width: "10%",
+        render: function (data, type, row) {
+          // Pastikan data tidak null atau undefined sebelum di-cek
+          if (data && data.length > 20) {
+            return data.substring(0, 20) + "...";
+          }
+          return data;
+        },
+      },
       {
         data: null,
         width: "5%",

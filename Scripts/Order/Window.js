@@ -686,7 +686,7 @@ const bindExtras = (blindname, tubename) => {
   if (
     ["Safety Window", "Basic Window", "Security Window"].includes(blindname)
   ) {
-    if (!["SSS"].includes(tubename)) {
+    if (!["SSS"].includes(tubename) && !["Flyscreens"].includes(tubename)) {
       list.push(
         { name: "Closer Hingled", unit: "Qty" },
         { name: "Bug Seal with Short Fur", unit: "mm" },
@@ -726,6 +726,27 @@ const bindExtras = (blindname, tubename) => {
         { name: "J Bead ", unit: "mm" },
         { name: "Packer Hinged - Aluminium 1mm or 2mm", unit: "Qty" },
         { name: "Packer Hinged - Plastic 2mm or 4mm", unit: "Qty" },
+        { name: "Single Sliding Track - Top", unit: "mm" },
+        { name: "Single Sliding Track - Bottom", unit: "mm" },
+        { name: "Double Sliding Track - Top", unit: "mm" },
+        { name: "Double Sliding Track - Bottom", unit: "mm" },
+      );
+    }
+
+    if (["Flyscreens"].includes(tubename)) {
+      list.push(
+        { name: "Flyscreen Plunger Pins", unit: "Qty" },
+        { name: "Flyscreen Top Clips", unit: "Qty" },
+        { name: "Flyscreen Turn Buttons", unit: "Qty" },
+        { name: "Flyscreen Beading", unit: "Qty" },
+        { name: "Angle 12 x 12mm", unit: "mm" },
+        { name: "Angle 12 x 20mm", unit: "mm" },
+        { name: "Angle 12 x 25mm", unit: "mm" },
+        { name: "Angle 20 x 40mm", unit: "mm" },
+        { name: "Angle 25 x 20mm", unit: "mm" },
+        { name: "Angle 50 x 25mm", unit: "mm" },
+        { name: "Miscellaneous", unit: "Qty" },
+        { name: "Pull Tab", unit: "Qty" },
         { name: "Single Sliding Track - Top", unit: "mm" },
         { name: "Single Sliding Track - Bottom", unit: "mm" },
         { name: "Double Sliding Track - Top", unit: "mm" },
