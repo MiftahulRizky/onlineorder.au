@@ -846,6 +846,7 @@ const bindBracketColour = (tubetype) => {
   let data = [];
   if (tubetype === "Louvolite") {
     data.push(
+      { value: "Birch White", text: "Birch White" },
       { value: "Black", text: "Black" },
       { value: "White", text: "White" },
       { value: "Grey", text: "Grey" },

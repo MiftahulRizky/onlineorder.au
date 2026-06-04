@@ -944,6 +944,7 @@ Public Class PublicConfig
             Dim drop As String = thisData.Tables(0).Rows(0).Item("Drop").ToString()
             Dim fabricType As String = thisData.Tables(0).Rows(0).Item("FabricType").ToString()
             Dim fabricTypeB As String = thisData.Tables(0).Rows(0).Item("FabricTypeB").ToString()
+            Dim TubeType As String = thisData.Tables(0).Rows(0).Item("TubeType").ToString()
             Dim controlType As String = thisData.Tables(0).Rows(0).Item("ControlType").ToString()
             Dim SlatQty As String = thisData.Tables(0).Rows(0).Item("SlatQty").ToString()
             Dim doorCutOut As String = thisData.Tables(0).Rows(0).Item("DoorCutOut").ToString()
@@ -966,11 +967,20 @@ Public Class PublicConfig
                     drop = "0"
                     findMetre = sqm
                 End If
-                If designName = "Window" Then
-                    width = "0"
-                    drop = "0"
+
+                If designName = "Door" Then
                     delivery = "Pick Up"
-                    findMetre = sqm
+                End If
+
+                If designName = "Window" Then
+                    If InArray(TubeType, "Retractable Flyscreen Pleated", "Retractable Flyscreen Roll-Up Down", "Heavy Duty Diamond", "SSS") Then
+                        delivery = "Pick Up"
+                    Else
+                        delivery = "Pick Up"
+                        width = "0"
+                        drop = "0"
+                        findMetre = sqm
+                    End If
                 End If
 
                 Dim getMatrix As Decimal = GetGridCost(priceGroupId, delivery, drop, width)
@@ -987,7 +997,9 @@ Public Class PublicConfig
                 End If
 
                 If designName = "Window" Then
-                    getMatrix = getMatrix * Convert.ToDecimal(findMetre)
+                    If Not InArray(TubeType, "SSS") Then
+                        getMatrix = getMatrix * Convert.ToDecimal(findMetre)
+                    End If
                 End If
 
                 '#---------------------Discount For Store Account---------------------#

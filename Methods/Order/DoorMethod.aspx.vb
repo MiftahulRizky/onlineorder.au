@@ -450,8 +450,17 @@ Partial Class Methods_Order_DoorMethod
             Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
 
             Dim PriceGroupName As String = DesignName
-            Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
+            If InArray(BlindName, "Security Door", "Basic Door", "Safety Door") Then
+                Dim Sliding As String = "Single Sliding"
+                If data.sliding = "Double Sliding Pleated" Then Sliding = "Double Sliding"
 
+                PriceGroupName = String.Format("{0} - {1}", BlindName, data.tubetype)
+                If data.tubetype = "Retractable Pleated" Then
+                    PriceGroupName = String.Format("{0} - {1} #{2}", BlindName, data.tubetype, Sliding)
+                End If
+            End If
+
+            Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
             If PriceGroupId = "" Then
                 Throw New Exception("Something went wrong !")
             End If
@@ -481,9 +490,11 @@ Partial Class Methods_Order_DoorMethod
             End If
 
             If InArray(BlindName, "Basic Door", "Safety Door") Then
-                data.sliding = ""
-                data.stacking = ""
-                data.trackless = ""
+                If Not InArray(data.tubetype, "Retractable Pleated") Then
+                    data.sliding = ""
+                    data.stacking = ""
+                    data.trackless = ""
+                End If
                 If data.frametype = "Ultra Barrier Screen Door" Then
                     data.meshtype = ""
                 End If

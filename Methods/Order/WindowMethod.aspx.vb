@@ -378,9 +378,18 @@ Partial Class Methods_Order_WindowMethod
             Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
             Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
 
-            Dim PriceGroupName As String = String.Format("Window - {0}", TubeName)
+            Dim PriceGroupName As String = String.Format("{0} - {1}", BlindName, TubeName)
+            If InArray(BlindName, "Basic Window") Then
+                Dim Sliding As String = "Single Sliding"
+                If data.slidingtype = "Double Sliding Pleated" Then Sliding = "Double Sliding"
+
+                If TubeName = "Retractable Flyscreen Pleated" Then
+                    PriceGroupName = String.Format("{0} - {1} #{2}", BlindName, TubeName, Sliding)
+                End If
+            End If
+
             Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
-        
+            ' Throw new Exception(PriceGroupName)
             If PriceGroupId = "" Then
                 Throw New Exception("Something went wrong !")
             End If
