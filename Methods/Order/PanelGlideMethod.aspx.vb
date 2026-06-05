@@ -355,7 +355,31 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
 
             '#------------------------------------------------|| Prepare Submit ||-------------------------------------------------#
             '#-----------------------------------|| Set default values before submission ||----------------------------------------#
+
+            Dim SoeKitId As String = publicCfg.GetItemData("SELECT SoeId FROM HardwareKits WHERE Id = '" + data.colourtype + "'")
+            Dim FabricGroupName As String = publicCfg.GetItemData("SELECT [Group] FROM Fabrics WHERE Id = '" + data.fabriccolour + "'")
             
+            ' Dim FabricId As String = FabricData.Tables(0).Rows(0).Item("Id").ToString()
+            ' Dim FabricGroupName As String = FabricData.Tables(0).Rows(0).Item("Group").ToString()
+
+            Dim PriceGroupName As String = String.Format("Panel Glide - {0} #{1}", FabricGroupName, data.tracktype)
+            IF BlindName = "Panel Only" Then
+                PriceGroupName = String.Format("{0} - {1}", BlindName, FabricGroupName)
+            End If
+
+            IF BlindName = "Track Only" Then
+                PriceGroupName = String.Format("{0} - {1}", BlindName, data.tracktype)
+            End If
+
+            Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designId, PriceGroupName)
+            If String.IsNullOrEmpty(PriceGroupId) Then
+                Throw New Exception("Something went wrong !")
+            End If
+
+            Dim DesignName As String = publicCfg.GetDesignName(data.designId)
+            Dim ExactName As String = DesignName & " - " & BlindName
+            Dim ExactId As String = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + ExactName + "'")
+
             Dim numOfWand As Integer = 1
             If data.layoutcode = "E" Or data.layoutcode = "F" Then
                 numOfWand = 2
@@ -383,31 +407,6 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 data.nopanel = ""
                 data.bottomrail = ""
             End If
-
-            Dim SoeKitId As String = publicCfg.GetItemData("SELECT SoeId FROM HardwareKits WHERE Id = '" + data.colourtype + "'")
-            Dim FabricGroupName As String = publicCfg.GetItemData("SELECT [Group] FROM Fabrics WHERE Id = '" + data.fabriccolour + "'")
-            
-            ' Dim FabricId As String = FabricData.Tables(0).Rows(0).Item("Id").ToString()
-            ' Dim FabricGroupName As String = FabricData.Tables(0).Rows(0).Item("Group").ToString()
-
-            Dim PriceGroupName As String = String.Format("Panel Glide - {0} #{1}", FabricGroupName, data.tracktype)
-            IF BlindName = "Panel Only" Then
-                ' PriceGroupName = String.Format("Panel Glide - {0}", FabricGroupName)
-                PriceGroupName = "Panel Glide - Panel Only"
-            End If
-
-            IF BlindName = "Track Only" Then
-                PriceGroupName = "Panel Glide - Track Only"
-            End If
-
-            Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designId, PriceGroupName)
-            If String.IsNullOrEmpty(PriceGroupId) Then
-                Throw New Exception("Something went wrong !")
-            End If
-
-            Dim DesignName As String = publicCfg.GetDesignName(data.designId)
-            Dim ExactName As String = DesignName & " - " & BlindName
-            Dim ExactId As String = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + ExactName + "'")
 
           
             '#-----------------------|| SUBMIT VALIDATE ||-----------------------#

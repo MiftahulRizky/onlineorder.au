@@ -39,7 +39,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       await Promise.all([
         bindLayoutCode(),
         bindNoPanel(),
-        bindTrackType(),
+        bindTrackType(blindname),
         bindWandPosition(),
         bindWandColour(),
         bindBottomRail(),
@@ -313,7 +313,7 @@ const bindColours = async (designid, blindid) => {
         await Promise.all([
           bindLayoutCode(),
           bindNoPanel(),
-          bindTrackType(),
+          bindTrackType(blindname),
           bindWandPosition(),
           bindWandColour(),
           bindBottomRail(),
@@ -545,18 +545,22 @@ const bindNoPanel = () => {
   });
 };
 
-const bindTrackType = () => {
+const bindTrackType = (blindname) => {
   const sel = document.getElementById("tracktype");
   document.getElementById("trackcolour").innerHTML = "";
   sel.innerHTML = ""; //reset
+
+  if (!blindname) return;
 
   let data = [];
   data.push(
     { value: "3 Channel Track", text: "3 Channel Track" },
     { value: "4 Channel Track", text: "4 Channel Track" },
     { value: "5 Channel Track", text: "5 Channel Track" },
-    { value: "6 Channel Track", text: "6 Channel Track" },
   );
+  if (~["Track Only"].includes(blindname)) {
+    data.push({ value: "6 Channel Track", text: "6 Channel Track" });
+  }
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
