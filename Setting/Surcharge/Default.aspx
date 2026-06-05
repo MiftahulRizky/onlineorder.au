@@ -101,7 +101,7 @@
                             <div class="col-lg-12 mb-1">
                                 <label for="charge" class="form-label text-uppercase">charge</label>
                                 <input type="text" class="form-control" name="charges" id="charges" placeholder="Charge ..." hidden>
-                                <textarea name="charge" id="charge" class="form-control " rows="1" cols="1" placeholder="Formula ..."></textarea>
+                                <textarea name="charge" id="charge" class="form-control " rows="1" cols="1" placeholder="Charge ..."></textarea>
                             </div>
                             <div class="col-lg-10 mb-3">
                                 <label for="des" class="form-label text-uppercase">description</label>
