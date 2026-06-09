@@ -994,11 +994,6 @@ Public Class PublicConfig
                     getMatrix = getMatrix * Convert.ToDecimal(findMetre)
                 End If
 
-                If designName = "Window" Then
-                    If Not InArray(TubeType, "SSS") Then
-                        getMatrix = getMatrix * Convert.ToDecimal(findMetre)
-                    End If
-                End If
 
                 '#---------------------Discount For Store Account---------------------#
                 Dim ListParamDiscount As New List(Of Object) From {

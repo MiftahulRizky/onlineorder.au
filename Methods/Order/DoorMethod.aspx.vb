@@ -32,6 +32,8 @@ Partial Class Methods_Order_DoorMethod
         Public Property trackless As String
         Public Property frametype As String
         Public Property framecolour As String
+        Public Property coatingtype As String
+        Public Property coatingcolour As String
         Public Property meshtype As String
         Public Property handleside As String
         Public Property handleheight As String
@@ -286,6 +288,15 @@ Partial Class Methods_Order_DoorMethod
                     If String.IsNullOrEmpty(data.framecolour) Then
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = String.Format("{0} is required !", lblFrameColour),.field = "framecolour"}}
                     End If
+                End If
+            End If
+
+            If Not String.IsNullOrEmpty(data.framecolour) Then
+                If data.framecolour = "Powder Coating" And String.IsNullOrEmpty(data.coatingtype) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "coating type is required !",.field = "coatingtype"}}
+                End If
+                If Not String.IsNullOrEmpty(data.coatingtype) AND String.IsNullOrEmpty(data.coatingcolour) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "coating colour is required !",.field = "coatingcolour"}}
                 End If
             End If
 
@@ -551,14 +562,19 @@ Partial Class Methods_Order_DoorMethod
                 End If
             End IF
 
+            If Not data.framecolour = "Powder Coating" Then
+                data.coatingtype = ""
+                data.coatingcolour = ""
+            End If
+
             ' Throw New Exception(DesignName)
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
             
-                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, WidthMiddle, WidthBottom, [Drop], BottomTrackType, StackPosition, TilterPosition, FrameType, FrameColour, MeshType, Brace, SlatSize, SlatQty, PortHole, PlungerPin, Batten, MidrailCritical, FlatType, ChildSafe, BracketCover, Fitting, Cleat, BracketExtension, TrackType, TrackColour, WandPosition, AcornPlasticColour, Accessory, AdditionalMotor, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
+                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, WidthMiddle, WidthBottom, [Drop], BottomTrackType, StackPosition, TilterPosition, FrameType, FrameColour, FrameLeft, FrameRight, MeshType, Brace, SlatSize, SlatQty, PortHole, PlungerPin, Batten, MidrailCritical, FlatType, ChildSafe, BracketCover, Fitting, Cleat, BracketExtension, TrackType, TrackColour, WandPosition, AcornPlasticColour, Accessory, AdditionalMotor, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
 
-                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @WidthMiddle, @WidthBottom, @Drop, @BottomTrackType, @StackPosition, @TilterPosition, @FrameType, @FrameColour, @MeshType, @Brace, @SlatSize, @SlatQty, @PortHole, @PlungerPin, @Batten, @MidrailCritical, @FlatType, @ChildSafe, @BracketCover, @Fitting, @Cleat, @BracketExtension, @TrackType, @TrackColour, @WandPosition, @AcornPlasticColour, @Accessory, @AdditionalMotor, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
+                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @WidthMiddle, @WidthBottom, @Drop, @BottomTrackType, @StackPosition, @TilterPosition, @FrameType, @FrameColour, @FrameLeft, @FrameRight, @MeshType, @Brace, @SlatSize, @SlatQty, @PortHole, @PlungerPin, @Batten, @MidrailCritical, @FlatType, @ChildSafe, @BracketCover, @Fitting, @Cleat, @BracketExtension, @TrackType, @TrackColour, @WandPosition, @AcornPlasticColour, @Accessory, @AdditionalMotor, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand(String.Format("INSERT INTO OrderDetails({0}) VALUES ({1})", Field, Values), thisConn)
@@ -581,7 +597,8 @@ Partial Class Methods_Order_DoorMethod
                         myCmd.Parameters.AddWithValue("@TilterPosition", data.trackless)
                         myCmd.Parameters.AddWithValue("@FrameType", data.frametype)
                         myCmd.Parameters.AddWithValue("@FrameColour", data.framecolour)
-                        ' myCmd.Parameters.AddWithValue("@FrameLeft", data.customframecolour)
+                        myCmd.Parameters.AddWithValue("@FrameLeft", data.coatingtype)
+                        myCmd.Parameters.AddWithValue("@FrameRight", data.coatingcolour)
                         myCmd.Parameters.AddWithValue("@MeshType", data.meshtype)
                         myCmd.Parameters.AddWithValue("@Brace", data.handleside)
                         myCmd.Parameters.AddWithValue("@SlatSize", data.handleheight)
@@ -628,7 +645,7 @@ Partial Class Methods_Order_DoorMethod
 
                 Dim ItemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@width, WidthMiddle=@WidthMiddle, WidthBottom=@WidthBottom, [Drop]=@Drop, BottomTrackType=@BottomTrackType, StackPosition=@StackPosition, TilterPosition=@TilterPosition, FrameType=@FrameType, FrameColour=@FrameColour, MeshType=@MeshType, Brace=@Brace, SlatSize=@SlatSize, SlatQty=@SlatQty, PortHole=@PortHole, PlungerPin=@PlungerPin, Batten=@Batten, MidrailCritical=@MidrailCritical, FlatType=@FlatType, ChildSafe=@ChildSafe, BracketCover=@BracketCover, Fitting=@Fitting, Cleat=@Cleat, BracketExtension=@BracketExtension, TrackType=@TrackType, TrackColour=@TrackColour, WandPosition=@WandPosition, AcornPlasticColour=@AcornPlasticColour, Accessory=@Accessory, AdditionalMotor=@AdditionalMotor, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@width, WidthMiddle=@WidthMiddle, WidthBottom=@WidthBottom, [Drop]=@Drop, BottomTrackType=@BottomTrackType, StackPosition=@StackPosition, TilterPosition=@TilterPosition, FrameType=@FrameType, FrameColour=@FrameColour, FrameLeft=@FrameLeft, FrameRight=@FrameRight, MeshType=@MeshType, Brace=@Brace, SlatSize=@SlatSize, SlatQty=@SlatQty, PortHole=@PortHole, PlungerPin=@PlungerPin, Batten=@Batten, MidrailCritical=@MidrailCritical, FlatType=@FlatType, ChildSafe=@ChildSafe, BracketCover=@BracketCover, Fitting=@Fitting, Cleat=@Cleat, BracketExtension=@BracketExtension, TrackType=@TrackType, TrackColour=@TrackColour, WandPosition=@WandPosition, AcornPlasticColour=@AcornPlasticColour, Accessory=@Accessory, AdditionalMotor=@AdditionalMotor, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -648,7 +665,8 @@ Partial Class Methods_Order_DoorMethod
                         myCmd.Parameters.AddWithValue("@TilterPosition", data.trackless)
                         myCmd.Parameters.AddWithValue("@FrameType", data.frametype)
                         myCmd.Parameters.AddWithValue("@FrameColour", data.framecolour)
-                        ' myCmd.Parameters.AddWithValue("@FrameLeft", data.customframecolour)
+                        myCmd.Parameters.AddWithValue("@FrameLeft", data.coatingtype)
+                        myCmd.Parameters.AddWithValue("@FrameRight", data.coatingcolour)
                         myCmd.Parameters.AddWithValue("@MeshType", data.meshtype)
                         myCmd.Parameters.AddWithValue("@Brace", data.handleside)
                         myCmd.Parameters.AddWithValue("@SlatSize", data.handleheight)

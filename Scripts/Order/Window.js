@@ -65,14 +65,13 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     if (e.target.id === "framecolour") {
       const framecolour = e.target.value;
-      const divCustomFrameColour = document.getElementById(
-        "divCustomFrameColour",
-      );
-      document.getElementById("customframecolour").value = "";
-      divCustomFrameColour.classList.add("d-none");
+      const divCoating = document.getElementById("divCoating");
+      document.getElementById("coatingcolour").value = "";
+      divCoating.classList.add("d-none");
       if (["Powder Coating"].includes(framecolour)) {
-        divCustomFrameColour.classList.remove("d-none");
+        divCoating.classList.remove("d-none");
       }
+      bindCoatingType();
     }
 
     if (e.target.id === "brace") {
@@ -353,21 +352,8 @@ const bindMesh = (blindname, width) => {
   if (!blindname) return;
   let list = [];
 
-  if (["Safety Window"].includes(blindname)) {
-    list.push("Fiberglass");
-    if (width && width <= 1000) {
-      list.push("Stainless Steel");
-    }
-  }
-
-  if (["Basic Window"].includes(blindname)) {
-    list.push(
-      "Fibreglass Mesh",
-      "Alum (std)",
-      "Stainless (1000)",
-      "Stainless (1300)",
-      "Pawproof",
-    );
+  if (["Basic Window, Safety Window"].includes(blindname)) {
+    list.push("Fibreglass", "Aluminium", "Stainless Steel", "Pawproof");
   }
 
   generateOption("meshtype", list);
@@ -558,6 +544,20 @@ const bindFrameColour = (blindname, tubename, frametype) => {
   }
 
   generateOption("framecolour", list);
+};
+
+const bindCoatingType = () => {
+  let data = [];
+
+  data.push(
+    "Dulux Standard / Duralloy / Surreal Effect",
+    "Dulux Precious / D1000 / Duratec Zeus",
+    "Dulux Alphatec",
+    "Dulux Duratec Eternity / Electro",
+    "Dulux Duratec Elements",
+    "Dulux Duratex Intensity",
+  );
+  generateOption("coatingtype", data);
 };
 
 const bindBrace = (blindname) => {
@@ -846,6 +846,7 @@ const bindItemOrders = async (itemid) => {
         bindTrackless(item.BlindName),
         bindFrameType(item.BlindName, item.TubeType),
         bindFrameColour(item.BlindName, item.TubeType, item.FrameType),
+        bindCoatingType(),
         bindBrace(item.BlindName),
         bindInstall(item.BlindName),
         bindFitting(item.BlindName),
@@ -883,9 +884,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     const divTrackless = document.getElementById("divTrackless");
     const divFrameType = document.getElementById("divFrameType");
     const divFrameColour = document.getElementById("divFrameColour");
-    const divCustomFrameColour = document.getElementById(
-      "divCustomFrameColour",
-    );
+    const divCoating = document.getElementById("divCoating");
     const divBrace = document.getElementById("divBrace");
     const divBraceLength = document.getElementById("divBraceLength");
     const divDualHinges = document.getElementById("divDualHinges");
@@ -909,7 +908,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     divTrackless.classList.add("d-none");
     divFrameType.classList.add("d-none");
     divFrameColour.classList.add("d-none");
-    divCustomFrameColour.classList.add("d-none");
+    divCoating.classList.add("d-none");
     divBrace.classList.add("d-none");
     divBraceLength.classList.add("d-none");
     divDualHinges.classList.add("d-none");
@@ -944,7 +943,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       }
       divDualHinges.classList.remove("d-none");
       // divInstall.classList.remove("d-none");
-      divCutOut.classList.remove("d-none");
+      // divCutOut.classList.remove("d-none");
       divExtras.classList.remove("d-none");
     }
 
@@ -953,7 +952,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       divFrameColour.classList.remove("d-none");
       divBrace.classList.remove("d-none");
       // divRemove.classList.remove("d-none");
-      divCutOut.classList.remove("d-none");
+      // divCutOut.classList.remove("d-none");
       divExtras.classList.remove("d-none");
     }
 
@@ -984,7 +983,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
 
     if (item) {
       if (["Powder Coating"].includes(item.FrameColour)) {
-        divCustomFrameColour.classList.remove("d-none");
+        divCoating.classList.remove("d-none");
       }
       if (
         !["Horizontal Centre Brace", "Vertical Centre Brace", ""].includes(
@@ -1031,7 +1030,8 @@ const handlerSubmit = async (button) => {
       "trackless",
       "frametype",
       "framecolour",
-      "customframecolour",
+      "coatingtype",
+      "coatingcolour",
       "brace",
       "bracelength",
       "dualhinges",
@@ -1123,7 +1123,8 @@ const handlerSetElementValues = (itemData) => {
     trackless: "TilterPosition",
     frametype: "FrameType",
     framecolour: "FrameColour",
-    customframecolour: "FrameLeft",
+    coatingtype: "FrameLeft",
+    coatingcolour: "FrameRight",
     brace: "Brace",
     bracelength: "TrackLength",
     dualhinges: "BracketOption",

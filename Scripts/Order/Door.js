@@ -92,6 +92,17 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       }
     }
 
+    if (e.target.id === "framecolour") {
+      const framecolour = e.target.value;
+      const divCoating = document.getElementById("divCoating");
+      divCoating.classList.add("d-none");
+      document.getElementById("coatingcolour").value = "";
+      if (["Powder Coating"].includes(framecolour)) {
+        divCoating.classList.remove("d-none");
+      }
+      bindCoatingType();
+    }
+
     if (e.target.id === "handleside") {
       const blinds = document.getElementById("blindtype");
       const blindname = blinds.selectedOptions[0].dataset.name;
@@ -649,19 +660,27 @@ const bindFrameColour = (blindname, tubetype, controlname) => {
   generateOption("framecolour", data);
 };
 
+const bindCoatingType = () => {
+  let data = [];
+
+  data.push(
+    "Dulux Standard / Duralloy / Surreal Effect",
+    "Dulux Precious / D1000 / Duratec Zeus",
+    "Dulux Alphatec",
+    "Dulux Duratec Eternity / Electro",
+    "Dulux Duratec Elements",
+    "Dulux Duratex Intensity",
+  );
+  generateOption("coatingtype", data);
+};
+
 const bindMesh = (blindname, controlname, frametype) => {
   if (!blindname) return;
   let data = [];
 
   if (["Basic Door", "Safety Door"].includes(blindname)) {
     if (["Sliding Door", "Hinged Door"].includes(controlname)) {
-      data.push(
-        "Fibreglass Mesh",
-        "Sunlight Security Mesh",
-        "Alum (Std)",
-        "Pawproof",
-        "Stainless",
-      );
+      data.push("Fibreglass Mesh", "Alum (Std)", "Pawproof", "Stainless");
 
       if (!frametype.includes("Screen Door")) {
         data.push("Ultra Barrier Mesh");
@@ -1202,6 +1221,7 @@ const bindItemOrders = async (itemid) => {
           item.Width,
         ),
         bindFrameColour(item.BlindName, item.TubeType, item.ControlType),
+        bindCoatingType(),
         bindMesh(item.BlindName, item.ControlType, item.FrameType),
         bindHandleSide(item.BlindName, item.ControlType, item.FrameType),
         bindHandleHeight(item.BlindName, item.ControlType, item.FrameType),
@@ -1255,6 +1275,7 @@ const handlerElementVisibility = async (
     const lblFrame = document.getElementById("lblFrame");
     const divFrameType = document.getElementById("divFrameType");
     const divFrameColour = document.getElementById("divFrameColour");
+    const divCoating = document.getElementById("divCoating");
     const divMesh = document.getElementById("divMesh");
     const divHandle = document.getElementById("divHandle");
     const divHandleHeight = document.getElementById("divHandleHeight");
@@ -1292,6 +1313,7 @@ const handlerElementVisibility = async (
     lblFrame.innerHTML = "Grille";
     divFrameType.classList.add("d-none");
     divFrameColour.classList.add("d-none");
+    divCoating.classList.add("d-none");
     divMesh.classList.add("d-none");
     divHandle.classList.add("d-none");
     divHandleHeight.classList.add("d-none");
@@ -1346,10 +1368,10 @@ const handlerElementVisibility = async (
       divBugseal.classList.remove("d-none");
       divHalf.classList.remove("d-none");
       divInstall.classList.remove("d-none");
-      divInterlock.classList.remove("d-none");
       divExtras.classList.remove("d-none");
 
       if (["Hinged Door"].includes(controlname)) {
+        divInterlock.classList.remove("d-none");
         divWidthMid.classList.remove("d-none");
         divWidthBot.classList.remove("d-none");
         lblInterlock.innerHTML = "Adaptors and options";
@@ -1370,10 +1392,10 @@ const handlerElementVisibility = async (
       divMidrail.classList.remove("d-none");
       divBugseal.classList.remove("d-none");
       lblInterlock.innerHTML = "Interlocks";
-      divInterlock.classList.remove("d-none");
       divExtras.classList.remove("d-none");
 
       if (["Hinged Door"].includes(controlname)) {
+        divInterlock.classList.remove("d-none");
         divWidthMid.classList.remove("d-none");
         divWidthBot.classList.remove("d-none");
         lblInterlock.innerHTML = "Adaptors";
@@ -1398,6 +1420,10 @@ const handlerElementVisibility = async (
 
       if (["Heavy Duty Diamond"].includes(item.FrameType)) {
         divMidrail.classList.add("d-none");
+      }
+
+      if (["Powder Coating"].includes(item.FrameColour)) {
+        divCoating.classList.remove("d-none");
       }
 
       if (!["Sidelight", ""].includes(item.Brace)) {
@@ -1459,6 +1485,8 @@ const handlerSubmit = async (button) => {
       "trackless",
       "frametype",
       "framecolour",
+      "coatingtype",
+      "coatingcolour",
       "meshtype",
       "handleside",
       "handleheight",
@@ -1559,7 +1587,8 @@ const handlerSetElementValues = (itemData) => {
     trackless: "TilterPosition",
     frametype: "FrameType",
     framecolour: "FrameColour",
-    // customframecolour: "FrameLeft",
+    coatingtype: "FrameLeft",
+    coatingcolour: "FrameRight",
     meshtype: "MeshType",
     handleside: "Brace",
     handleheight: "SlatSize",
