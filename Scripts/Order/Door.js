@@ -686,11 +686,8 @@ const bindMesh = (blindname, controlname, frametype) => {
         "Aluminium Mesh",
         "Pawproof Mesh  ",
         "Stainless Steel Mesh",
+        "Ultra Barrier Mesh",
       );
-
-      if (!frametype.includes("Screen Door")) {
-        data.push("Ultra Barrier Mesh");
-      }
     }
   }
   generateOption("meshtype", data);
