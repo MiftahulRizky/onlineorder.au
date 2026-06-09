@@ -681,7 +681,12 @@ const bindMesh = (blindname, controlname, frametype) => {
 
   if (["Basic Door", "Safety Door"].includes(blindname)) {
     if (["Sliding Door", "Hinged Door"].includes(controlname)) {
-      data.push("Fibreglass Mesh", "Pawproof", "Stainless");
+      data.push(
+        "Fibreglass Mesh",
+        "Aluminium Mesh",
+        "Pawproof Mesh  ",
+        "Stainless Steel Mesh",
+      );
 
       if (!frametype.includes("Screen Door")) {
         data.push("Ultra Barrier Mesh");
@@ -1376,21 +1381,21 @@ const handlerElementVisibility = async (
       divMidrail.classList.remove("d-none");
       divPetDor.classList.remove("d-none");
       divBugseal.classList.remove("d-none");
-      divHalf.classList.remove("d-none");
-      divInstall.classList.remove("d-none");
+      // divHalf.classList.remove("d-none");
+      // divInstall.classList.remove("d-none");
       divExtras.classList.remove("d-none");
 
       if (["Hinged Door"].includes(controlname)) {
-        divInterlock.classList.remove("d-none");
+        // divInterlock.classList.remove("d-none");
         divWidthMid.classList.remove("d-none");
         divWidthBot.classList.remove("d-none");
         lblInterlock.innerHTML = "Adaptors and options";
         divInswing.classList.remove("d-none");
         divLockColour.classList.remove("d-none");
         divCloser.classList.remove("d-none");
-        divFixing.classList.remove("d-none");
-        divFitted.classList.remove("d-none");
-        divRemove.classList.remove("d-none");
+        // divFixing.classList.remove("d-none");
+        // divFitted.classList.remove("d-none");
+        // divRemove.classList.remove("d-none");
       }
     }
 
@@ -1405,7 +1410,7 @@ const handlerElementVisibility = async (
       divExtras.classList.remove("d-none");
 
       if (["Hinged Door"].includes(controlname)) {
-        divInterlock.classList.remove("d-none");
+        // divInterlock.classList.remove("d-none");
         divWidthMid.classList.remove("d-none");
         divWidthBot.classList.remove("d-none");
         lblInterlock.innerHTML = "Adaptors";

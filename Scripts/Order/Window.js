@@ -354,7 +354,12 @@ const bindMesh = (blindname, width) => {
   let list = [];
 
   if (["Basic Window", "Safety Window"].includes(blindname)) {
-    list.push("Fibreglass", "Aluminium", "Stainless Steel", "Pawproof");
+    list.push(
+      "Fibreglass Mesh",
+      "Aluminium Mesh",
+      "Pawproof Mesh  ",
+      "Stainless Steel Mesh",
+    );
   }
 
   generateOption("meshtype", list);
@@ -879,7 +884,7 @@ const bindItemOrders = async (itemid) => {
 // ----------------------------------------------|| Handler Functions ||---------------------------------------
 const handlerSetDefaultValues = () => {
   if (ITEMACTION == "AddItem") {
-    document.getElementById("meshtype").value = "Fibreglass";
+    document.getElementById("meshtype").value = "Fibreglass Mesh";
   }
 };
 const handlerElementVisibility = async (blindtype, tubetype, item) => {
