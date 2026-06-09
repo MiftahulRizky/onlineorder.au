@@ -92,12 +92,12 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
 
-    if (e.target.id === "width") {
-      const blinds = document.getElementById("blindtype");
-      const blindname = blinds.selectedOptions[0].dataset.name;
-      const width = e.target.value;
-      bindMesh(blindname, width);
-    }
+    // if (e.target.id === "width") {
+    //   const blinds = document.getElementById("blindtype");
+    //   const blindname = blinds.selectedOptions[0].dataset.name;
+    //   const width = e.target.value;
+    //   bindMesh(blindname, width);
+    // }
 
     if (e.target.id === "notes") {
       let maxLength = 1000;
