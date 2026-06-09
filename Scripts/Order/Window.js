@@ -51,6 +51,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
           bindFrameColour(blindname, tubename, "colour only"),
         ]);
       }
+      await Promise.all([handlerSetDefaultValues()]);
       await handlerElementVisibility(blindtype, tubetype);
     }
 
@@ -715,8 +716,10 @@ const bindExtras = (blindname, tubename) => {
         { name: "Track - H Offset (ST4) - 28mm x 28mm", unit: "mm" },
         { name: "Jamb Adaptor - Standard Leg", unit: "mm" },
         { name: "Jamb Adaptor  - Long Leg", unit: "mm" },
-        { name: "Interlock - Type 4 (Frame piece)", unit: "mm" },
-        { name: "Interlock - Type 1-small, 2-Large, 3-Flat", unit: "mm" },
+        { name: "Interlock Type 1", unit: "mm" },
+        { name: "Interlock Type 2", unit: "mm" },
+        { name: "Interlock Type 3", unit: "mm" },
+        { name: "Interlock Type F", unit: "mm" },
         { name: "Angle - 25 x 50mm", unit: "mm" },
         { name: "Angle - 20 x 40mm", unit: "mm" },
         { name: "Angle - 20 x 25mm", unit: "mm" },
@@ -775,8 +778,10 @@ const bindExtras = (blindname, tubename) => {
         { name: "Track - H Offset (ST4) - 28mm x 28mm", unit: "mm" },
         { name: "Jamb Adaptor - Standard Leg", unit: "mm" },
         { name: "Jamb Adaptor  - Long Leg", unit: "mm" },
-        { name: "Interlock - Type 4 (Frame piece)", unit: "mm" },
-        { name: "Interlock - Type 1-small, 2-Large, 3-Flat", unit: "mm" },
+        { name: "Interlock Type 1", unit: "mm" },
+        { name: "Interlock Type 2", unit: "mm" },
+        { name: "Interlock Type 3", unit: "mm" },
+        { name: "Interlock Type F", unit: "mm" },
         { name: "Angle - 25 x 50mm", unit: "mm" },
         { name: "Angle - 20 x 40mm", unit: "mm" },
         { name: "Angle - 20 x 25mm", unit: "mm" },
@@ -872,6 +877,11 @@ const bindItemOrders = async (itemid) => {
   }
 };
 // ----------------------------------------------|| Handler Functions ||---------------------------------------
+const handlerSetDefaultValues = () => {
+  if (ITEMACTION == "AddItem") {
+    document.getElementById("meshtype").value = "Fibreglass";
+  }
+};
 const handlerElementVisibility = async (blindtype, tubetype, item) => {
   try {
     const lblItemId = document.getElementById("lblItemId");
@@ -941,7 +951,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       if (["Heavy Duty Diamond"].includes(tubename)) {
         divMesh.classList.remove("d-none");
       }
-      divDualHinges.classList.remove("d-none");
+      // divDualHinges.classList.remove("d-none");
       // divInstall.classList.remove("d-none");
       // divCutOut.classList.remove("d-none");
       divExtras.classList.remove("d-none");
