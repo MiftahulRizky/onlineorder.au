@@ -352,7 +352,7 @@ const bindMesh = (blindname, width) => {
   if (!blindname) return;
   let list = [];
 
-  if (["Basic Window, Safety Window"].includes(blindname)) {
+  if (["Basic Window", "Safety Window"].includes(blindname)) {
     list.push("Fibreglass", "Aluminium", "Stainless Steel", "Pawproof");
   }
 
