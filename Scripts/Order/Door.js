@@ -680,7 +680,7 @@ const bindMesh = (blindname, controlname, frametype) => {
 
   if (["Basic Door", "Safety Door"].includes(blindname)) {
     if (["Sliding Door", "Hinged Door"].includes(controlname)) {
-      data.push("Fibreglass Mesh", "Alum (Std)", "Pawproof", "Stainless");
+      data.push("Fibreglass Mesh", "Pawproof", "Stainless");
 
       if (!frametype.includes("Screen Door")) {
         data.push("Ultra Barrier Mesh");
