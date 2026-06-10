@@ -434,11 +434,14 @@ Partial Class Methods_Order_DoorMethod
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " (" & item.unit & ") is required", .field = "extras"}}
                     End If
 
-                    If item.unit = "mm" Then
-                        Dim num As Decimal
-                        If Not Decimal.TryParse(item.value, num) Then
-                            Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " must be numeric", .field = "extras"}}
-                        End If
+                    ' If item.unit = "mm" Then
+                    ' End If
+                    Dim num As Decimal
+                    If Not Decimal.TryParse(item.value, num) Then
+                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " must be numeric", .field = "extras"}}
+                    End If
+                    If num < 1 Then
+                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " must be greater than 0", .field = "extras"}}
                     End If
                 Next
             End If
