@@ -927,6 +927,7 @@ Public Class PublicConfig
     Public Sub HitungHarga(HeaderId As String, ItemId As String)
         Dim delivery As String = GetItemData("SELECT Delivery FROM OrderHeaders WHERE Id='" + HeaderId + "'")
         Dim storeId As String = GetItemData("SELECT StoreId FROM OrderHeaders WHERE Id= '" + HeaderId + "'")
+        Dim OrderType As String = GetItemData("SELECT OrderType FROM OrderHeaders WHERE Id= '" + HeaderId + "'")
 
         Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE Id='" + ItemId + "' AND Active=1 ORDER BY Id ASC")
         If Not thisData.Tables(0).Rows.Count = 0 Then
@@ -946,6 +947,7 @@ Public Class PublicConfig
             Dim fabricTypeB As String = thisData.Tables(0).Rows(0).Item("FabricTypeB").ToString()
             Dim TubeType As String = thisData.Tables(0).Rows(0).Item("TubeType").ToString()
             Dim controlType As String = thisData.Tables(0).Rows(0).Item("ControlType").ToString()
+            Dim FrameColour As String = thisData.Tables(0).Rows(0).Item("FrameColour").ToString()
             Dim SlatQty As String = thisData.Tables(0).Rows(0).Item("SlatQty").ToString()
             Dim doorCutOut As String = thisData.Tables(0).Rows(0).Item("DoorCutOut").ToString()
             Dim sqm As String = thisData.Tables(0).Rows(0).Item("SquareMetre").ToString()
@@ -966,6 +968,10 @@ Public Class PublicConfig
                     width = "0"
                     drop = "0"
                     findMetre = sqm
+                End If
+
+                If designName = "Additional" And OrderType = "Door and Window" Then
+                    delivery = "Pick Up"
                 End If
 
                 If designName = "Door" Then
@@ -1125,6 +1131,18 @@ Public Class PublicConfig
 
             '#---------------------Hitung Total Matrix---------------------#
             finalMatrix = thisMatrix + thisMatrixB
+            If blindName = "Powder Coating" Then
+                Dim ExString As String = GetItemData(String.Format("SELECT SUM(Cost) FROM OrderDetailsPrice WHERE HeaderId='{0}' AND Type ='Charge' AND Description='Powder Coating'", HeaderId))
+                
+                Dim ExDec As Decimal = 0
+                If Decimal.TryParse(ExString, ExDec) Then
+                    If ExDec < finalMatrix Then 
+                        finalMatrix = finalMatrix
+                    Else
+                        finalMatrix = ExDec
+                    End If
+                End If
+            End If
 
             Call UpdateMatrix(ItemId, qty, finalMatrix)
         End If
@@ -1185,24 +1203,40 @@ Public Class PublicConfig
                             queryCharge = String.Format("SELECT TOP 1 [Cost] FROM CassetteExtra WHERE [PriceGroupId] = '{0}' AND Width >= '{1}' AND [Drop] >='{2}' ORDER BY [Drop], Width, [Cost] ASC", UCase(priceGroupId).ToString(), width, drop)
                         End If
 
-                        If InStr(charge, "Long Length") > 0 Then
-                            If delivery = "Delivery" Then
-                                Dim LongLength As DataSet = GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId='{0}' AND Type='Charge' AND Description='Long Length'",headerId))
-                                If LongLength.Tables(0).Rows.Count > 0 Then Exit For
-                                
-                                thisCharge = 14.00
-                            Else
-                                If width >= 2000 AND width <= 3000 Then
-                                    
-                                    thisCharge = 11
-                                End If
-    
-                                If width > 3000 Then
-                                    thisCharge = 12
+                        If InArray(charge, "Retractable Flyscreen") Then
+                            Dim Count As String = "First"
+                            width = "0"
+                            drop = "0"
+                            Dim TotalCoatingStr As String = GetItemData(String.Format("SELECT COUNT(Id) As Total FROM OrderDetailsPrice WHERE HeaderId='{0}' AND Type ='Charge' AND Description='Powder Coating - Retractable Flyscreen'", headerId))
+                            Dim TotalCoating As Integer = 0
+                            If Integer.TryParse(TotalCoatingStr, TotalCoating) Then
+                                If TotalCoating > 0 Then 
+                                    Count = "Second"
                                 End If
                             End If
+                            
+                            Dim priceGroupId As String = GetItemData(String.Format("SELECT Id FROM PricesGroup WHERE Name ='Retractable Flyscreen - {0}'", Count))    
+                            queryCharge = String.Format("SELECT TOP 1 [Cost] FROM CassetteExtra WHERE [PriceGroupId] = '{0}' AND Width >= '{1}' AND [Drop] >='{2}' ORDER BY [Drop], Width, [Cost] ASC", UCase(priceGroupId).ToString(), width, drop)
+                        End If
 
-                        Else
+                        ' If InStr(charge, "Long Length") > 0 Then
+                        '     If delivery = "Delivery" Then
+                        '         Dim LongLength As DataSet = GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId='{0}' AND Type='Charge' AND Description='Long Length'",headerId))
+                        '         If LongLength.Tables(0).Rows.Count > 0 Then Exit For
+                                
+                        '         thisCharge = 14.00
+                        '     Else
+                        '         If width >= 2000 AND width <= 3000 Then
+                                    
+                        '             thisCharge = 11
+                        '         End If
+    
+                        '         If width > 3000 Then
+                        '             thisCharge = 12
+                        '         End If
+                        '     End If
+
+                        ' Else
                             'thisCharge = GetItemData(queryCharge) 'Default Code Result
                             Dim chargeResult As String = GetItemData(queryCharge)
                             Dim chargeValue As Decimal = 0D
@@ -1211,7 +1245,7 @@ Public Class PublicConfig
                             Else
                                 thisCharge = 0D ' Set default jika parsing gagal
                             End If
-                        End If
+                        ' End If
 
 
                         

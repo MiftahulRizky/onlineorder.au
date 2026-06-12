@@ -211,7 +211,7 @@ Partial Class Order_Detail
 
             mailCfg.MailSubmit(lblHeaderId.Text, filePath, fileName)
 
-            Response.Redirect(Request.RawUrl)
+            Response.Redirect(Request.RawUrl, false)
         Catch ex As Exception
             MessageError(True, ex.ToString())
             If Not Session("RoleName") = "Administrator" Then

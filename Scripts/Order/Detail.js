@@ -323,7 +323,7 @@ document
         const divType = document.getElementById("divType");
         const lblType = document.getElementById("lblType");
 
-        if (category == "Long Length Surcharge") {
+        if (["Long Length Surcharge"].includes(category)) {
           lblType.innerHTML = "Type";
         }
       }

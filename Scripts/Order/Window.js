@@ -555,14 +555,7 @@ const bindFrameColour = (blindname, tubename, frametype) => {
 const bindCoatingType = () => {
   let data = [];
 
-  data.push(
-    "Dulux Standard / Duralloy / Surreal Effect",
-    "Dulux Precious / D1000 / Duratec Zeus",
-    "Dulux Alphatec",
-    "Dulux Duratec Eternity / Electro",
-    "Dulux Duratec Elements",
-    "Dulux Duratex Intensity",
-  );
+  data.push("Duralloy Colours");
   generateOption("coatingtype", data);
 };
 
@@ -1072,6 +1065,7 @@ const handlerSubmit = async (button) => {
       itemid: ITEMID,
       designid: DESIGNID,
       loginid: LOGINID,
+      rolename: ROLENAME,
     };
 
     formData["extras"] = JSON.stringify(extrasState || []);

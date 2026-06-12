@@ -98,7 +98,7 @@
                             <div class="col-lg-12 mb-3">
                                 <textarea name="formula" id="formula" class="form-control " rows="6" cols="6" placeholder="Formula ..."></textarea>
                             </div>
-                            <div class="col-lg-12 mb-1">
+                            <div class="col-lg-12 mb-3">
                                 <label for="charge" class="form-label text-uppercase">charge</label>
                                 <input type="text" class="form-control" name="charges" id="charges" placeholder="Charge ..." hidden>
                                 <textarea name="charge" id="charge" class="form-control " rows="1" cols="1" placeholder="Charge ..."></textarea>

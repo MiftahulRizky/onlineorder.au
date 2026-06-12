@@ -994,7 +994,7 @@ Partial Class Methods_Order_DetailMethod
                             End If
                         End If
 
-                        Dim FindCost As String = Cost
+                        Dim FindCost As String =  Cost
                         Dim RealCost As String = publicCfg.GetItemData(String.Format("SELECT FORMAT(Cost, 'N2', 'en-US') AS FormatRealCost FROM OrderDetailsPrice WHERE Type ='Matrix' And HeaderId = '{0}' And ItemId = '{1}'", HeaderId, Id))
                         If FabricGroups = "POA" OR InStr(PriceGroupName, "POA") > 0 Then
                             Dim realCostValue As Decimal
@@ -1567,6 +1567,10 @@ Partial Class Methods_Order_DetailMethod
 
             If blindName = "Uniline Pelmet Delivery" Then
                 PriceGroupName = "Uniline Pelmet Delivery - POA"
+            End If
+
+            If blindName = "Powder Coating" Then
+                PriceGroupName = kitName
             End If
 
             Dim priceGroupId As String = publicCfg.GetPriceGroupId("6C0B3347-9730-45CA-905C-5EF682CD06EA", priceGroupName)

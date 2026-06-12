@@ -51,6 +51,7 @@ Partial Class Methods_Order_WindowMethod
         Public Property loginid As String
         Public Property blindno As String
         Public Property uniqueid As String
+        Public Property rolename As String
     End Class
 
     Public Class ExtraItem
@@ -380,6 +381,9 @@ Partial Class Methods_Order_WindowMethod
                 data.markup = "0"
             End If
 
+            Dim squareMetre As Decimal = Math.Round(width * drop / 1000000, 4)
+            Dim linearMetre As Decimal = Math.Round(width / 1000, 4)
+
             Dim SoeId As String = publicCfg.GetSoeKitId(data.tubetype)
             Dim DesignName As String = publicCfg.GetDesignName(data.designid)
             Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
@@ -394,7 +398,11 @@ Partial Class Methods_Order_WindowMethod
             End If
             
             If TubeName = "Flyscreens" Then
-                PriceGroupName = String.Format("{0} - {1} #{2}", BlindName, TubeName, data.frametype)
+                Dim Size As String = ""
+                If squareMetre > 1.5  AND Not data.frametype = "35x11 Frame" Then
+                    Size = " - Large Screen"
+                End If
+                PriceGroupName = String.Format("{0} - {1} #{2}{3}", BlindName, TubeName, data.frametype, Size)
             End If
 
             Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
@@ -403,8 +411,6 @@ Partial Class Methods_Order_WindowMethod
                 Throw New Exception("Something went wrong !")
             End If
 
-            Dim squareMetre As Decimal = Math.Round(width * drop / 1000000, 4)
-            Dim linearMetre As Decimal = Math.Round(width / 1000, 4)
 
             If TubeName = "Flyscreens" Then
                 data.slidingtype = ""
@@ -602,6 +608,8 @@ Partial Class Methods_Order_WindowMethod
 
             Return New SuccessResponse With {.success = msg}
         Catch ex As Exception
+            Dim msg As String = "Submit:: " & ex.Message
+            If Not data.rolename = "Administrator" Then msg = "Please contact our IT team at support@onlineorder.au"
             Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
         End Try
     End Function
