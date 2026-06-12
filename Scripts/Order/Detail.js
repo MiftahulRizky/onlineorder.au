@@ -323,7 +323,7 @@ document
         const divType = document.getElementById("divType");
         const lblType = document.getElementById("lblType");
 
-        if (["Long Length Surcharge"].includes(category)) {
+        if (["Long Length Surcharge", "Powder Coating"].includes(category)) {
           lblType.innerHTML = "Type";
         }
       }
@@ -2251,7 +2251,9 @@ const visibleFormService = (itemData) => {
   lblType.innerHTML = "Type";
   modalLabel.innerHTML = "Edit Ervice Service";
 
-  if (itemData.BlindName == "Long Length Surcharge") {
+  if (
+    ["Long Length Surcharge", "Powder Coating"].includes(itemData.BlindName)
+  ) {
     divType.removeAttribute("hidden");
   }
 };

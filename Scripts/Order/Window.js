@@ -65,6 +65,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     }
 
     if (e.target.id === "framecolour") {
+      const tubes = document.getElementById("tubetype");
+      const tubename = tubes.selectedOptions[0].dataset.name;
       const framecolour = e.target.value;
       const divCoating = document.getElementById("divCoating");
       document.getElementById("coatingcolour").value = "";
@@ -72,7 +74,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       if (["Powder Coating"].includes(framecolour)) {
         divCoating.classList.remove("d-none");
       }
-      bindCoatingType();
+      bindCoatingType(tubename);
     }
 
     if (e.target.id === "brace") {
@@ -552,10 +554,21 @@ const bindFrameColour = (blindname, tubename, frametype) => {
   generateOption("framecolour", list);
 };
 
-const bindCoatingType = () => {
+const bindCoatingType = (tubename) => {
   let data = [];
 
-  data.push("Duralloy Colours");
+  if (tubename.includes("Retractable Flyscreen")) {
+    data.push("Duralloy Colours");
+  } else {
+    data.push(
+      "Dulux Standard / Duralloy / Surreal Effect",
+      "Dulux Precious / D1000 / Duratec Zeus",
+      "Dulux Alphatec",
+      "Dulux Duratec Eternity / Electro",
+      "Dulux Duratec Elements",
+      "Dulux Duratex Intensity",
+    );
+  }
   generateOption("coatingtype", data);
 };
 
@@ -849,7 +862,7 @@ const bindItemOrders = async (itemid) => {
         bindTrackless(item.BlindName),
         bindFrameType(item.BlindName, item.TubeType),
         bindFrameColour(item.BlindName, item.TubeType, item.FrameType),
-        bindCoatingType(),
+        bindCoatingType(item.TubeType),
         bindBrace(item.BlindName),
         bindInstall(item.BlindName),
         bindFitting(item.BlindName),

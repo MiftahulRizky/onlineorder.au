@@ -1132,7 +1132,7 @@ Public Class PublicConfig
             '#---------------------Hitung Total Matrix---------------------#
             finalMatrix = thisMatrix + thisMatrixB
             If blindName = "Powder Coating" Then
-                Dim ExString As String = GetItemData(String.Format("SELECT SUM(Cost) FROM OrderDetailsPrice WHERE HeaderId='{0}' AND Type ='Charge' AND Description='Powder Coating'", HeaderId))
+                Dim ExString As String = GetItemData(String.Format("SELECT SUM(Cost) FROM OrderDetailsPrice WHERE HeaderId='{0}' AND Type ='Charge' AND Description IN ('Powder Coating', 'Tracking & Interloock')", HeaderId))
                 
                 Dim ExDec As Decimal = 0
                 If Decimal.TryParse(ExString, ExDec) Then
