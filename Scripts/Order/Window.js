@@ -485,7 +485,6 @@ const bindFrameColour = (blindname, tubename, frametype) => {
 
     if (["SSS"].includes(tubename)) {
       list.push(
-        "Powder Coating",
         "TBC",
         "Apo Grey",
         "Anotec Off White",

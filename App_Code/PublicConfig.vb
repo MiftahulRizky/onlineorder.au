@@ -1132,7 +1132,7 @@ Public Class PublicConfig
             '#---------------------Hitung Total Matrix---------------------#
             finalMatrix = thisMatrix + thisMatrixB
             If blindName = "Powder Coating" Then
-                Dim ExString As String = GetItemData(String.Format("SELECT SUM(Cost) FROM OrderDetailsPrice WHERE HeaderId='{0}' AND Type ='Charge' AND Description IN ('Powder Coating', 'Tracking & Interloock')", HeaderId))
+                Dim ExString As String = GetItemData(String.Format("SELECT SUM(Qty*Cost) FROM OrderDetailsPrice WHERE HeaderId='{0}' AND Type ='Charge' AND Description IN ('Powder Coating', 'Tracking & Interloock')", HeaderId))
                 
                 Dim ExDec As Decimal = 0
                 If Decimal.TryParse(ExString, ExDec) Then
@@ -1279,7 +1279,12 @@ Public Class PublicConfig
                             Call PriceDetail(ListParam)
                         End If
                     End If
-                    surcharge = surcharge + thisCharge
+                    
+                    If InArray(description, "Powder Coating", "Tracking & Interloock") Then
+                        surcharge = surcharge + 0 '#bypass agar tidak di jumlahkan ke pricing item
+                    Else
+                        surcharge = surcharge + thisCharge
+                    End If
                 Next
             End If
             Call UpdateCharge(itemId, qty, surcharge)

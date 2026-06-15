@@ -639,7 +639,6 @@ const bindFrameColour = (blindname, tubetype, controlname) => {
     if (["SSS"].includes(tubetype)) {
       if (["Sliding Door", "Hinged Door"].includes(controlname)) {
         data.push(
-          "Powder Coating",
           "TBC",
           "Apo Grey",
           "Bronze",

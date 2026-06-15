@@ -2481,11 +2481,11 @@ Partial Class Methods_Order_DetailMethod
                         End If
 
 
-                        Dim ResutCostB As String = ""
+                        Dim ResultCostB As String = ""
                         Dim ResutDiscountB As String = ""
                         Dim ResutFinalCostB As String = ""
                         IF CInt(reader("DiscountB")) > 0 Then
-                            ResutCostB = FinalCost.ToString("C", New CultureInfo("en-US"))
+                            ResultCostB = FinalCost.ToString("C", New CultureInfo("en-US"))
                             ResutDiscountB = If(Type = "Matrix", DiscountB.ToString("C", New CultureInfo("en-US")), "")
                             ResutFinalCostB = If(Type = "Matrix", FinalCostB.ToString("C", New CultureInfo("en-US")), "")
                         End If
@@ -2498,7 +2498,7 @@ Partial Class Methods_Order_DetailMethod
                             .Qty = Qty,
                             .Description = Description,
                             .Cost = Cost.ToString("C", New CultureInfo("en-US")),
-                            .CostB = ResutCostB,
+                            .CostB = ResultCostB,
                             .DiscountInPercent = Math.Round(DiscountInPercent, 0, MidpointRounding.AwayFromZero),
                             .DiscountInPercentB = Math.Round(DiscountInPercentB, 0, MidpointRounding.AwayFromZero),
                             .Discount = If(CInt(reader("Discount")) > 0, Discount.ToString("C", New CultureInfo("en-US")), ""),

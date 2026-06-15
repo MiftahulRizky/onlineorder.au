@@ -2381,7 +2381,13 @@ const handlerPricingItem = (id) => {
       orderable: false,
       data: null,
       render: (row) => {
-        let Cost = row.Cost;
+        let cs = "";
+        if (
+          ["Powder Coating", "Tracking & Interloock"].includes(row.Description)
+        ) {
+          cs = "text-decoration-line-through";
+        }
+        let Cost = `<span class="${cs}">${row.Cost}</span>`;
         if (row.CostB) {
           Cost += `<br/>${row.CostB}`;
         }
@@ -2422,7 +2428,13 @@ const handlerPricingItem = (id) => {
       orderable: false,
       data: null,
       render: (row) => {
-        let FinalCost = row.FinalCost;
+        let cs = "";
+        if (
+          ["Powder Coating", "Tracking & Interloock"].includes(row.Description)
+        ) {
+          cs = "text-decoration-line-through";
+        }
+        let FinalCost = `<span class="${cs}">${row.FinalCost}</span>`;
         if (row.FinalCostB) {
           FinalCost += `<br/>${row.FinalCostB}`;
         }
