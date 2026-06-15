@@ -5202,7 +5202,7 @@ Partial Class Methods_Order_DetailMethod
         Dim result As String = String.Empty
 
         Try
-            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Roman Blinds' AND Active=1 ORDER BY Id, BlindNo ASC")
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Global Roman Blinds' AND Active=1 ORDER BY Id, BlindNo ASC")
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim tdNotes As String = "<td colspan='18' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
                 result += spanStart & "GLOBAL ROMAN BLINDS" & spanEnd
@@ -5535,6 +5535,7 @@ Partial Class Methods_Order_DetailMethod
         Dim totalRoller As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roller Blinds' AND Active=1")
         Dim totalGlobalRoller As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Global Roller Blinds' AND Active=1")
         Dim totalRoman As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roman Blinds' AND Active=1")
+        Dim totalGlobalRoman As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Global Roman Blinds' AND Active=1")
         Dim totalVerishades As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Veri Shades' AND Active=1")
         Dim totalVertical As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Vertical Blinds' AND Active=1")
 
@@ -5546,6 +5547,7 @@ Partial Class Methods_Order_DetailMethod
         If totalRoller = "" Then : totalRoller = "-" : End If
         If totalGlobalRoller = "" Then : totalGlobalRoller = "-" : End If
         If totalRoman = "" Then : totalRoman = "-" : End If
+        If totalGlobalRoman = "" Then : totalGlobalRoman = "-" : End If
         If totalVerishades = "" Then : totalVerishades = "-" : End If
         If totalVertical = "" Then : totalVertical = "-" : End If
 
@@ -5557,10 +5559,12 @@ Partial Class Methods_Order_DetailMethod
         Dim rollerblinds As String = "<b>Roller Blinds: " & totalRoller & "</b>"
         Dim rollerglobalblinds As String = "<b>Global Roller Blinds: " & totalGlobalRoller & "</b>"
         Dim romanBlinds As String = "<b>Roman Blinds: " & totalRoman & "</b>"
+        Dim romanGlobalBlinds As String = "<b>Global Roman Blinds: " & totalGlobalRoman & "</b>"
         Dim verishades As String = "<b>Veri Shades: " & totalVerishades & "</b>"
         Dim verticalblinds As String = "<b>Vertical Blinds: " & totalVertical & "</b>"
 
-        result = celloraBlinds & separted & lumen & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & rollerglobalblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
+        ' result = celloraBlinds & separted & lumen & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & rollerglobalblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
+        result = String.Format("{0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} | {8} | {9}",celloraBlinds, lumen, panelGlides, venetianblinds, rollerblinds, rollerglobalblinds, romanBlinds, romanGlobalBlinds, verishades, verticalblinds)
         Return result
     End Function
 
