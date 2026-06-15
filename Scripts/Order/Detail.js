@@ -2494,6 +2494,13 @@ const handlerPricingItem = (id) => {
       });
     },
     columns: columnDefs,
+    createdRow: (row, data, dataIndex) => {
+      if (
+        ["Powder Coating", "Tracking & Interloock"].includes(data.Description)
+      ) {
+        $(row).addClass("text-secondary");
+      }
+    },
   });
 };
 
