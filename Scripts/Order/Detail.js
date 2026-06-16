@@ -479,8 +479,8 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     document.querySelector("#modalEditPricingItem #cost").value = cost;
     document.querySelector("#modalEditPricingItem #designid").value = designid;
     document.querySelector("#modalEditPricingItem #blindid").value = blindid;
-    // handlerEditPricingItem(id);
     handlerShowBSModal("modalEditPricingItem");
+    // handlerShowBSModal("modalEditPricingAllItem");
   }
 });
 
@@ -2387,7 +2387,11 @@ const handlerPricingItem = (id) => {
         ) {
           cs = "text-decoration-line-through";
         }
+
         let Cost = `<span class="${cs}">${row.Cost}</span>`;
+        // if (row.Description.includes("POA")) {
+        //   Cost = `<span class="badge bg-warning">${row.Cost}</span>`;
+        // }
         if (row.CostB) {
           Cost += `<br/>${row.CostB}`;
         }

@@ -2470,8 +2470,12 @@ Partial Class Methods_Order_DetailMethod
                             FindCost = Poa
                         End If
 
-                        Dim FinalCost As Decimal = (FindCost - Discount) * Qty
-                        Dim DiscountInPercent As Decimal = (Discount / FindCost) * 100
+                        Dim FinalCost As Decimal = 0.00
+                        Dim DiscountInPercent As Decimal = 0.00
+                        IF FindCost > 0 Then 
+                            FinalCost = (FindCost - Discount) * Qty
+                            DiscountInPercent = (Discount / FindCost) * 100
+                        End If
 
                         Dim FinalCostB As Decimal = 0
                         Dim DiscountInPercentB As Decimal = 0
@@ -2497,14 +2501,14 @@ Partial Class Methods_Order_DetailMethod
                             .ItemId = ItemId,
                             .Qty = Qty,
                             .Description = Description,
-                            .Cost = Cost.ToString("C", New CultureInfo("en-US")),
+                            .Cost = If(InStr(Description, "POA") > 0, "<span class='badge bg-orange-lt'>POA</span>", Cost.ToString("C", New CultureInfo("en-US"))),
                             .CostB = ResultCostB,
                             .DiscountInPercent = Math.Round(DiscountInPercent, 0, MidpointRounding.AwayFromZero),
                             .DiscountInPercentB = Math.Round(DiscountInPercentB, 0, MidpointRounding.AwayFromZero),
                             .Discount = If(CInt(reader("Discount")) > 0, Discount.ToString("C", New CultureInfo("en-US")), ""),
                             .DiscountB = ResutDiscountB,
                             .Poa = If(CInt(reader("Poa")) > 0, Poa.ToString("C", New CultureInfo("en-US")), ""),
-                            .FinalCost = FinalCost.ToString("C", New CultureInfo("en-US")),
+                            .FinalCost = If(InStr(Description, "POA") > 0, "<span class='badge bg-orange-lt'>POA</span>", FinalCost.ToString("C", New CultureInfo("en-US"))),
                             .FinalCostB = ResutFinalCostB
                         }
                         resultList.Add(row)

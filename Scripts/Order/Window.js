@@ -1303,6 +1303,7 @@ const generateOption = (elementId, list = []) => {
     case "trackless":
     case "frametype":
     case "fitting":
+    case "coatingtype":
       validateLength = 0;
       break;
   }

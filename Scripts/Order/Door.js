@@ -587,6 +587,7 @@ const bindFrameColour = (blindname, tubetype, controlname) => {
     if (["N/A"].includes(controlname)) {
       data.push(
         "White",
+        "Brown",
         "Black",
         "Clear Anodised",
         "Powder Coating",
@@ -1080,6 +1081,9 @@ const bindExtras = (blindname, tubetype, controlname) => {
   if (["Basic Door", "Safety Door", "Security Door"].includes(blindname)) {
     if (!["SSS"].includes(tubetype)) {
       if (["Sliding Door", "Hinged Door", "N/A"].includes(controlname)) {
+        if (["Hinged Door"].includes(controlname)) {
+          list.push({ name: "Push to Go", unit: "Qty" });
+        }
         list.push(
           { name: "Closer Hingled", unit: "Qty" },
           { name: "Bug Seal with Short Fur", unit: "mm" },
@@ -1129,6 +1133,9 @@ const bindExtras = (blindname, tubetype, controlname) => {
   if (["Security Door"].includes(blindname)) {
     if (["SSS"].includes(tubetype)) {
       if (["Sliding Door", "Hinged Door"].includes(controlname)) {
+        if (["Hinged Door"].includes(controlname)) {
+          list.push({ name: "Push to Go", unit: "Qty" });
+        }
         list.push(
           { name: "Closer Hingled", unit: "Qty" },
           { name: "Bug Seal with Short Fur", unit: "mm" },

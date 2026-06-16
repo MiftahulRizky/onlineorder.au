@@ -1264,18 +1264,17 @@ Public Class PublicConfig
 
                         Dim realCharge As Decimal = thisCharge
 
-                        If thisCharge > 0 Then
-                            Dim ListParam As New List(Of Object) From {
-                                headerId,
-                                itemId,
-                                type,
-                                qty,
-                                description,
-                                realCharge,
-                                customDiscount,
-                                0
-                            }
-                            ' Call PriceDetail(headerId, itemId, type, qty, description, realCharge, thisCharge, 0, customDiscount)
+                        Dim ListParam As New List(Of Object) From {
+                            headerId,
+                            itemId,
+                            type,
+                            qty,
+                            description,
+                            realCharge,
+                            customDiscount,
+                            0
+                        }
+                        If thisCharge > 0  Or InStr(description, "POA") > 0 Then
                             Call PriceDetail(ListParam)
                         End If
                     End If
