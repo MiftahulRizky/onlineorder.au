@@ -1207,7 +1207,7 @@ Public Class PublicConfig
                             Dim Count As String = "First"
                             width = "0"
                             drop = "0"
-                            Dim TotalCoatingStr As String = GetItemData(String.Format("SELECT COUNT(Id) As Total FROM OrderDetailsPrice WHERE HeaderId='{0}' AND Type ='Charge' AND Description='Powder Coating - Retractable Flyscreen'", headerId))
+                            Dim TotalCoatingStr As String = GetItemData(String.Format("SELECT COUNT(OrderDetailsPrice.Id) As Total FROM OrderDetailsPrice INNER JOIN OrderDetails ON OrderDetailsPrice.ItemId=OrderDetails.id WHERE OrderDetailsPrice.HeaderId='{0}' AND OrderDetailsPrice.Type ='Charge' AND OrderDetailsPrice.Description='Powder Coating - Retractable Flyscreen' AND OrderDetails.Active='1'", headerId))
                             Dim TotalCoating As Integer = 0
                             If Integer.TryParse(TotalCoatingStr, TotalCoating) Then
                                 If TotalCoating > 0 Then 
