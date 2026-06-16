@@ -2498,7 +2498,7 @@ const handlerPricingItem = (id) => {
       if (
         ["Powder Coating", "Tracking & Interloock"].includes(data.Description)
       ) {
-        $(row).addClass("text-secondary");
+        $(row).addClass("opacity-50");
       }
     },
   });
