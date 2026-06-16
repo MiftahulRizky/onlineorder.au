@@ -930,6 +930,7 @@ Public Class PublicConfig
         Dim OrderType As String = GetItemData("SELECT OrderType FROM OrderHeaders WHERE Id= '" + HeaderId + "'")
 
         Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE Id='" + ItemId + "' AND Active=1 ORDER BY Id ASC")
+        Dim CoatingPrice As String = GetItemData(String.Format("SELECT SUM(OrderDetailsPrice.Qty*OrderDetailsPrice.Cost) FROM OrderDetailsPrice INNER JOIN OrderDetails ON OrderDetailsPrice.ItemId=OrderDetails.Id WHERE OrderDetailsPrice.HeaderId='{0}' AND OrderDetailsPrice.Type ='Charge' AND OrderDetailsPrice.Description IN ('Powder Coating', 'Tracking & Interloock') AND OrderDetails.Active='1'", HeaderId))
         If Not thisData.Tables(0).Rows.Count = 0 Then
             Dim designId As String = thisData.Tables(0).Rows(0).Item("DesignId").ToString()
             Dim blindId As String = thisData.Tables(0).Rows(0).Item("BlindId").ToString()
@@ -959,6 +960,7 @@ Public Class PublicConfig
             Dim thisMatrix As Decimal = 0.00
             Dim thisMatrixB As Decimal = 0.00
             Dim finalMatrix As Decimal = 0.00
+
 
             If Not priceGroupId = "" Then
                 Dim Type As String = "Matrix"
@@ -1060,6 +1062,16 @@ Public Class PublicConfig
                 End IF
 
                 '#---------------------Insert Order Detail Price---------------------#
+                If blindName = "Powder Coating" Then
+                    Dim FindMatrix As Decimal = 0
+                    If Decimal.TryParse(CoatingPrice, FindMatrix) Then
+                        If FindMatrix < getMatrix Then 
+                            getMatrix = getMatrix
+                        Else
+                            getMatrix = FindMatrix
+                        End If
+                    End If
+                End If
                 Dim ListParam As New List(Of Object) From {
                     HeaderId,
                     ItemId,
@@ -1132,14 +1144,12 @@ Public Class PublicConfig
             '#---------------------Hitung Total Matrix---------------------#
             finalMatrix = thisMatrix + thisMatrixB
             If blindName = "Powder Coating" Then
-                Dim ExString As String = GetItemData(String.Format("SELECT SUM(OrderDetailsPrice.Qty*OrderDetailsPrice.Cost) FROM OrderDetailsPrice INNER JOIN OrderDetails ON OrderDetailsPrice.ItemId=OrderDetails.Id WHERE OrderDetailsPrice.HeaderId='{0}' AND OrderDetailsPrice.Type ='Charge' AND OrderDetailsPrice.Description IN ('Powder Coating', 'Tracking & Interloock') AND OrderDetails.Active='1'", HeaderId))
-                
-                Dim ExDec As Decimal = 0
-                If Decimal.TryParse(ExString, ExDec) Then
-                    If ExDec < finalMatrix Then 
+                Dim FindMatrix As Decimal = 0
+                If Decimal.TryParse(CoatingPrice, FindMatrix) Then
+                    If FindMatrix < finalMatrix Then 
                         finalMatrix = finalMatrix
                     Else
-                        finalMatrix = ExDec
+                        finalMatrix = FindMatrix
                     End If
                 End If
             End If
