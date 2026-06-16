@@ -2509,7 +2509,7 @@ const handlerPricingItem = (id) => {
         ["Powder Coating", "Tracking & Interloock"].includes(
           data.Description,
         ) ||
-        row.Description.includes("Powder Coating")
+        data.Description.includes("Powder Coating")
       ) {
         $(row).addClass("opacity-50");
       }
