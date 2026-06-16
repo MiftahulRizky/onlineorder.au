@@ -2383,10 +2383,9 @@ const handlerPricingItem = (id) => {
       render: (row) => {
         let cs = "";
         if (
-          ["Powder Coating", "Tracking & Interloock"].includes(
-            row.Description,
-          ) ||
-          row.Description.includes("Powder Coating")
+          (["Tracking & Interloock"].includes(row.Description) ||
+            row.Description.includes("Powder Coating")) &&
+          ["Charge"].includes(row.Type)
         ) {
           cs = "text-decoration-line-through";
         }
@@ -2437,10 +2436,9 @@ const handlerPricingItem = (id) => {
       render: (row) => {
         let cs = "";
         if (
-          ["Powder Coating", "Tracking & Interloock"].includes(
-            row.Description,
-          ) ||
-          row.Description.includes("Powder Coating")
+          (["Tracking & Interloock"].includes(row.Description) ||
+            row.Description.includes("Powder Coating")) &&
+          ["Charge"].includes(row.Type)
         ) {
           cs = "text-decoration-line-through";
         }
@@ -2506,10 +2504,9 @@ const handlerPricingItem = (id) => {
     columns: columnDefs,
     createdRow: (row, data, dataIndex) => {
       if (
-        ["Powder Coating", "Tracking & Interloock"].includes(
-          data.Description,
-        ) ||
-        data.Description.includes("Powder Coating")
+        (["Tracking & Interloock"].includes(data.Description) ||
+          data.Description.includes("Powder Coating")) &&
+        ["Charge"].includes(data.Type)
       ) {
         $(row).addClass("opacity-50");
       }

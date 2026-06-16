@@ -144,6 +144,7 @@ Partial Class Methods_Order_DetailMethod
         Public Property HeaderId As String 
         Public Property ItemId As String 
         Public Property Qty As String 
+        Public Property Type As String 
         Public Property Description As String 
         Public Property Cost As String 
         Public Property CostB As String 
@@ -2500,6 +2501,7 @@ Partial Class Methods_Order_DetailMethod
                             .HeaderId = HeaderId,
                             .ItemId = ItemId,
                             .Qty = Qty,
+                            .Type = Type,
                             .Description = Description,
                             .Cost = If(InStr(Description, "POA") > 0, "<span class='badge bg-orange-lt'>POA</span>", Cost.ToString("C", New CultureInfo("en-US"))),
                             .CostB = ResultCostB,
