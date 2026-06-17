@@ -930,8 +930,8 @@ Public Class PublicConfig
         Dim OrderType As String = GetItemData("SELECT OrderType FROM OrderHeaders WHERE Id= '" + HeaderId + "'")
 
         Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE Id='" + ItemId + "' AND Active=1 ORDER BY Id ASC")
-        Dim CoatingPrice As String = GetItemData(String.Format("SELECT SUM(OrderDetailsPrice.Qty*OrderDetailsPrice.Cost) FROM OrderDetailsPrice INNER JOIN OrderDetails ON OrderDetailsPrice.ItemId=OrderDetails.Id WHERE OrderDetailsPrice.HeaderId='{0}' AND OrderDetailsPrice.Type ='Charge' AND OrderDetailsPrice.Description IN ('Powder Coating', 'Tracking & Interloock') AND OrderDetails.Active='1'", HeaderId))
         If Not thisData.Tables(0).Rows.Count = 0 Then
+            
             Dim designId As String = thisData.Tables(0).Rows(0).Item("DesignId").ToString()
             Dim blindId As String = thisData.Tables(0).Rows(0).Item("BlindId").ToString()
             Dim kitName As String = thisData.Tables(0).Rows(0).Item("KitName").ToString()
@@ -949,11 +949,11 @@ Public Class PublicConfig
             Dim TubeType As String = thisData.Tables(0).Rows(0).Item("TubeType").ToString()
             Dim controlType As String = thisData.Tables(0).Rows(0).Item("ControlType").ToString()
             Dim FrameColour As String = thisData.Tables(0).Rows(0).Item("FrameColour").ToString()
+            Dim FrameLeft As String = thisData.Tables(0).Rows(0).Item("FrameLeft").ToString()
             Dim SlatQty As String = thisData.Tables(0).Rows(0).Item("SlatQty").ToString()
             Dim doorCutOut As String = thisData.Tables(0).Rows(0).Item("DoorCutOut").ToString()
             Dim sqm As String = thisData.Tables(0).Rows(0).Item("SquareMetre").ToString()
             Dim lnm As String = thisData.Tables(0).Rows(0).Item("LinearMetre").ToString()
-
             Dim size As String = "(" & width & " x " & drop & ")"
 
 
@@ -961,7 +961,8 @@ Public Class PublicConfig
             Dim thisMatrixB As Decimal = 0.00
             Dim finalMatrix As Decimal = 0.00
 
-
+            
+            Dim CoatingPrice As String = GetCoatingPrice(HeaderId, kitName)
             If Not priceGroupId = "" Then
                 Dim Type As String = "Matrix"
 
@@ -1065,9 +1066,7 @@ Public Class PublicConfig
                 If blindName = "Powder Coating" Then
                     Dim FindMatrix As Decimal = 0
                     If Decimal.TryParse(CoatingPrice, FindMatrix) Then
-                        If FindMatrix < getMatrix Then 
-                            getMatrix = getMatrix
-                        Else
+                        If FindMatrix > getMatrix Then 
                             getMatrix = FindMatrix
                         End If
                     End If
@@ -1146,9 +1145,7 @@ Public Class PublicConfig
             If blindName = "Powder Coating" Then
                 Dim FindMatrix As Decimal = 0
                 If Decimal.TryParse(CoatingPrice, FindMatrix) Then
-                    If FindMatrix < finalMatrix Then 
-                        finalMatrix = finalMatrix
-                    Else
+                    If FindMatrix > finalMatrix Then 
                         finalMatrix = FindMatrix
                     End If
                 End If
@@ -1335,8 +1332,31 @@ Public Class PublicConfig
         End Using
     End Sub
 
-     Private Function InArray(value As String, ParamArray list() As String) As Boolean
+    Private Function InArray(value As String, ParamArray list() As String) As Boolean
         Return list.Contains(value)
+    End Function
+
+    Private Function GetCoatingPrice(HeaderId As String, Coating As String) As String
+        Dim result As String = String.Empty
+        Dim Desc As String = ""
+
+        If InStr(Coating, "Dulux Standard") > 0 Then
+            Desc = "Dulux Standard / Duralloy / Surreal Effect"
+        Else If InStr(Coating, "Dulux Precious") > 0 Then
+            Desc = "Dulux Precious / D1000 / Duratec Zeus"
+        Else If InStr(Coating, "Dulux Alphatec") > 0 Then
+            Desc = "Dulux Alphatec"
+        Else If InStr(Coating, "Dulux Duratec Eternity") > 0 Then
+            Desc = "Dulux Duratec Eternity / Electro"
+        Else If InStr(Coating, "Dulux Duratec Elements") > 0 Then
+            Desc = "Dulux Duratec Elements"
+        Else If InStr(Coating, "Dulux Duratex Intensity") > 0 Then
+            Desc = "Dulux Duratex Intensity"
+        End If
+       
+        result = GetItemData(String.Format("SELECT SUM(OrderDetailsPrice.Qty*OrderDetailsPrice.Cost) FROM OrderDetailsPrice INNER JOIN OrderDetails ON OrderDetailsPrice.ItemId=OrderDetails.Id WHERE OrderDetailsPrice.HeaderId='{0}' AND OrderDetailsPrice.Type ='Charge' AND OrderDetailsPrice.Description IN ('Powder Coating - {1}', 'Tracking & Interloock') AND OrderDetails.Active='1'", HeaderId, Desc))
+
+        Return result
     End Function
 
     ' Private Sub ResetLongLength(HeaderId As String, ItemId As String)
