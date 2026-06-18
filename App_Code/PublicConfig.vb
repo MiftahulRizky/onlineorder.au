@@ -1210,7 +1210,7 @@ Public Class PublicConfig
                             queryCharge = String.Format("SELECT TOP 1 [Cost] FROM CassetteExtra WHERE [PriceGroupId] = '{0}' AND Width >= '{1}' AND [Drop] >='{2}' ORDER BY [Drop], Width, [Cost] ASC", UCase(priceGroupId).ToString(), width, drop)
                         End If
 
-                        If InArray(charge, "Retractable Flyscreen") Then
+                        If InStr(charge, "Retractable Flyscreen") > 0 Then
                             Dim Count As String = "First"
                             width = "0"
                             drop = "0"
