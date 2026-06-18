@@ -1214,15 +1214,16 @@ Public Class PublicConfig
                             Dim Count As String = "First"
                             width = "0"
                             drop = "0"
-                            Dim TotalCoatingStr As String = GetItemData(String.Format("SELECT COUNT(odp.Id) As Total FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND odp.Description='Powder Coating - Duralloy Colours' AND od.Active='1'", headerId))
-                            Dim TotalCoating As Integer = 0
-                            If Integer.TryParse(TotalCoatingStr, TotalCoating) Then
-                                If TotalCoating > 0 Then 
-                                    Count = "Second"
-                                End If
+                           
+                            Dim CoatingData As DataSet = GetListData(String.Format("SELECT * FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND odp.Description='Powder Coating - Duralloy Colours' AND od.Active='1' AND odp.ItemId <> '{1}' ORDER BY odp.Id ASC", headerId, itemId))
+                            If CoatingData.Tables(0).Rows.Count > 1 Then
+                                For j As Integer = 0 To CoatingData.Tables(0).Rows.Count - 1
+                                    Dim Cost As Decimal = Convert.ToDecimal(CoatingData.Tables(0).Rows(j).Item("Cost").ToString())
+                                    If Cost = 200.00 Then Count = "Second"
+                                Next
                             End If
-                            
-                            Dim priceGroupId As String = GetItemData(String.Format("SELECT Id FROM PricesGroup WHERE Name ='Retractable Flyscreen - {0}'", Count))    
+                            Dim priceGroupId As String = GetItemData(String.Format("SELECT Id FROM PricesGroup WHERE Name ='Retractable Flyscreen - {0}'", Count))
+
                             queryCharge = String.Format("SELECT TOP 1 [Cost] FROM CassetteExtra WHERE [PriceGroupId] = '{0}' AND Width >= '{1}' AND [Drop] >='{2}' ORDER BY [Drop], Width, [Cost] ASC", UCase(priceGroupId).ToString(), width, drop)
                         End If
 

@@ -1328,9 +1328,17 @@ Public Class OrderConfig
                     If designName = "Panorama PVC Shutters" Then
                         Dim sqm As Decimal = Math.Round(width * drop / 1000000, 4)
                         thisGridMatrix = gridMatrix * sqm
-                        If sqm < 1 Then
-                            thisGridMatrix = gridMatrix
-                            descriptionPrice = "Minimum Opening Size Charge (" & priceGroupName & ")"
+                        IF customerId = "LS-A268" Then
+                            '#Orion
+                            If sqm < 0.5 Then
+                                thisGridMatrix = gridMatrix / 2
+                            End If
+                        Else
+                            '#All Customer
+                            If sqm < 1 Then
+                                thisGridMatrix = gridMatrix
+                                descriptionPrice = "Minimum Opening Size Charge (" & priceGroupName & ")"
+                            End If
                         End If
                     End If
 

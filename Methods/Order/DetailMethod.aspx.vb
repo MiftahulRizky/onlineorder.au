@@ -2059,7 +2059,7 @@ Partial Class Methods_Order_DetailMethod
                 '     publicCfg.HitungSurcharge(headerid, itemId)
                 ' End If
 
-                Dim Prices As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId='{0}' AND ItemId='{1}'", headerid, itemId))
+                Dim Prices As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId='{0}' AND ItemId='{1}' ORDER BY CASE WHEN Type = 'Matrix' THEN 1 WHEN Type = 'Charge' THEN 2 WHEN Type = 'Discount' THEN 3 ELSE 4 END", headerid, itemId))
                 If Prices.Tables(0).Rows.Count > 0 Then
                     For Each priceRow As DataRow In Prices.Tables(0).Rows
                         Dim Id As String = priceRow("Id").ToString()
