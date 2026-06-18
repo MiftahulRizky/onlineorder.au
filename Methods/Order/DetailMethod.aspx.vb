@@ -2111,6 +2111,10 @@ Partial Class Methods_Order_DetailMethod
                             publicCfg.HitungSurcharge(headerid, itemId)
                         End If
                     Next
+                Else
+                    publicCfg.ResetPriceDetail(itemId)
+                    publicCfg.HitungHarga(headerid, itemId)
+                    publicCfg.HitungSurcharge(headerid, itemId)
                 End If
             Next
             msg = "Reload pricing has been updated successfully."

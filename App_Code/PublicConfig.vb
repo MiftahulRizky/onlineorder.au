@@ -1214,7 +1214,7 @@ Public Class PublicConfig
                             Dim Count As String = "First"
                             width = "0"
                             drop = "0"
-                            Dim TotalCoatingStr As String = GetItemData(String.Format("SELECT COUNT(OrderDetailsPrice.Id) As Total FROM OrderDetailsPrice INNER JOIN OrderDetails ON OrderDetailsPrice.ItemId=OrderDetails.id WHERE OrderDetailsPrice.HeaderId='{0}' AND OrderDetailsPrice.Type ='Charge' AND OrderDetailsPrice.Description='Powder Coating - Retractable Flyscreen' AND OrderDetails.Active='1'", headerId))
+                            Dim TotalCoatingStr As String = GetItemData(String.Format("SELECT COUNT(odp.Id) As Total FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND odp.Description='Powder Coating - Duralloy Colours' AND od.Active='1'", headerId))
                             Dim TotalCoating As Integer = 0
                             If Integer.TryParse(TotalCoatingStr, TotalCoating) Then
                                 If TotalCoating > 0 Then 
@@ -1342,6 +1342,8 @@ Public Class PublicConfig
 
         If InStr(Coating, "Dulux Standard") > 0 Then
             Desc = "Dulux Standard / Duralloy / Surreal Effect"
+        Else If InStr(Coating, "Duralloy Colours") > 0 Then
+            Desc = "Duralloy Colours"
         Else If InStr(Coating, "Dulux Precious") > 0 Then
             Desc = "Dulux Precious / D1000 / Duratec Zeus"
         Else If InStr(Coating, "Dulux Alphatec") > 0 Then
