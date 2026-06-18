@@ -1354,7 +1354,7 @@ Public Class PublicConfig
             Desc = "Dulux Duratex Intensity"
         End If
        
-        result = GetItemData(String.Format("SELECT SUM(odp.Qty*odp.Cost) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND odp.Description IN ('Powder Coating - {1}', 'Tracking & Interloock') AND od.Active='1'", HeaderId, Desc))
+        result = GetItemData(String.Format("SELECT SUM((odp.Qty*odp.Cost) - (odp.Qty*odp.Discount)) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND odp.Description IN ('Powder Coating - {1}', 'Tracking & Interloock') AND od.Active='1'", HeaderId, Desc))
 
         Return result
     End Function

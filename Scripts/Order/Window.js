@@ -32,7 +32,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const width = document.getElementById("width").value;
       await Promise.all([
         bindMounting(),
-        bindMesh(blindname, width),
+        bindMesh(blindname, tubename, width),
         bindSlidingType(blindname),
         bindStacking(blindname),
         bindTrackless(blindname),
@@ -316,7 +316,7 @@ const bindTubes = async (designid, blindtype) => {
 
         await Promise.all([
           bindMounting(),
-          bindMesh(blindname, width),
+          bindMesh(blindname, tubename, width),
           bindSlidingType(blindname),
           bindStacking(blindname),
           bindTrackless(blindname),
@@ -351,7 +351,7 @@ const bindMounting = () => {
   generateOption("mounting", ["Make Size", "Opening Size"]);
 };
 
-const bindMesh = (blindname, width) => {
+const bindMesh = (blindname, tubename, width) => {
   if (!blindname) return;
   let list = [];
 
@@ -362,6 +362,9 @@ const bindMesh = (blindname, width) => {
       "Pawproof Mesh  ",
       "Stainless Steel Mesh",
     );
+    if (["Heavy Duty Diamond"].includes(tubename)) {
+      list.push("Ultra Barrier Mesh");
+    }
   }
 
   generateOption("meshtype", list);
@@ -855,7 +858,7 @@ const bindItemOrders = async (itemid) => {
       await bindTubes(item.DesignId, item.BlindId);
       await Promise.all([
         bindMounting(),
-        bindMesh(item.BlindName, item.Width),
+        bindMesh(item.BlindName, item.TubeType, item.Width),
         bindSlidingType(item.BlindName),
         bindStacking(item.BlindName),
         bindTrackless(item.BlindName),
