@@ -1286,7 +1286,7 @@ Public Class PublicConfig
                         End If
                     End If
                     
-                    If InArray(description, "Powder Coating", "Tracking & Interloock") Then
+                    If InArray(description, "Tracking & Interloock") OR InStr(description, "Powder Coating") > 0 Then
                         surcharge = surcharge + 0 '#bypass agar tidak di jumlahkan ke pricing item
                     Else
                         surcharge = surcharge + thisCharge
@@ -1354,7 +1354,7 @@ Public Class PublicConfig
             Desc = "Dulux Duratex Intensity"
         End If
        
-        result = GetItemData(String.Format("SELECT SUM(OrderDetailsPrice.Qty*OrderDetailsPrice.Cost) FROM OrderDetailsPrice INNER JOIN OrderDetails ON OrderDetailsPrice.ItemId=OrderDetails.Id WHERE OrderDetailsPrice.HeaderId='{0}' AND OrderDetailsPrice.Type ='Charge' AND OrderDetailsPrice.Description IN ('Powder Coating - {1}', 'Tracking & Interloock') AND OrderDetails.Active='1'", HeaderId, Desc))
+        result = GetItemData(String.Format("SELECT SUM(odp.Qty*odp.Cost) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND odp.Description IN ('Powder Coating - {1}', 'Tracking & Interloock') AND od.Active='1'", HeaderId, Desc))
 
         Return result
     End Function

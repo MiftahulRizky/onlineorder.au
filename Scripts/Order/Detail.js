@@ -394,6 +394,12 @@ document
     submitEditPricing();
   });
 
+document
+  .querySelector("#modalEditPricingAllItem #submitEditPricingAllItem")
+  .addEventListener("click", () => {
+    submitEditAllPricing();
+  });
+
 // ------------------------------------------||tableAjax Event ||------------------------------------
 // BUTTON DETAIL ITEM
 document.querySelector("#tableAjax").addEventListener("click", (e) => {
@@ -464,23 +470,87 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
 document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnEditPricingItem") {
     const id = e.target.dataset.id;
-    const cost = e.target.dataset.cost || "0.00";
-    const designid = e.target.dataset.designid;
-    const blindid = e.target.dataset.blindid;
+    const qty = e.target.dataset.qty;
+    // const cost = e.target.dataset.cost || "0.00";
+    // const designid = e.target.dataset.designid;
+    // const blindid = e.target.dataset.blindid;
 
-    document
-      .querySelectorAll("#modalEditPricingItem .form-control")
-      .forEach((e) => {
-        e.classList.remove("is-invalid");
-        e.value = "";
+    // document
+    //   .querySelectorAll("#modalEditPricingItem .form-control")
+    //   .forEach((e) => {
+    //     e.classList.remove("is-invalid");
+    //     e.value = "";
+    //   });
+
+    // document.querySelector("#modalEditPricingItem #id").value = id;
+    // document.querySelector("#modalEditPricingItem #cost").value = cost;
+    // document.querySelector("#modalEditPricingItem #designid").value = designid;
+    // document.querySelector("#modalEditPricingItem #blindid").value = blindid;
+    // handlerShowBSModal("modalEditPricingItem");
+
+    fetch(`${URIMETHOD}/BindOrderDetailPrice`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ itemid: id }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        const result = res.d;
+
+        if (!result.success) {
+          alert(result.message);
+          return;
+        }
+
+        const data = result.data;
+
+        let html = `
+      <input type="number" min="1" name="itemid" id="itemid" value="${id}" class="form-control " readonly hidden />
+      <input type="number" min="1" name="qty" id="qty" value="${qty}" class="form-control " readonly hidden />
+      <table class="table table-vcenter" width="100%">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Qty</th>
+            <th>Description</th>
+            <th>Cost/Qty</th>
+            <th>POA/Qty</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+        data.forEach((item, index) => {
+          html += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${item.Qty}</td>
+          <td>${item.Description}</td>
+          <td>${item.Cost}</td>
+          <td>
+            <div class="input-group">
+              <input type="text" 
+                value="${item.Poa}" 
+                class="form-control input-poa" 
+                data-id="${item.Id}"
+                placeholder="Example: 10.00" />
+            </div>
+          </td>
+        </tr>
+      `;
+        });
+
+        html += `</tbody></table>`;
+
+        // inject ke modal
+        document.getElementById("modalBody").innerHTML = html;
+
+        // show modal
+        // $("#yourModal").modal("show");
+        handlerShowBSModal("modalEditPricingAllItem");
       });
-
-    document.querySelector("#modalEditPricingItem #id").value = id;
-    document.querySelector("#modalEditPricingItem #cost").value = cost;
-    document.querySelector("#modalEditPricingItem #designid").value = designid;
-    document.querySelector("#modalEditPricingItem #blindid").value = blindid;
-    handlerShowBSModal("modalEditPricingItem");
-    // handlerShowBSModal("modalEditPricingAllItem");
   }
 });
 
@@ -867,6 +937,76 @@ const submitEditPricing = async () => {
         ? "submitEditPricing : " + error.message
         : "Something went wrong, please try again!";
     await isError(msg);
+  } finally {
+    btnSubmit.removeAttribute("disabled");
+    btnSubmit.innerHTML = `<i class="fa-solid fa-cloud-arrow-up me-2"></i> Submit`;
+  }
+};
+
+const submitEditAllPricing = async () => {
+  document
+    .querySelectorAll("#modalEditPricingAllItem .form-control")
+    .forEach((e) => e.classList.remove("is-invalid"));
+
+  const btnSubmit = document.querySelector(
+    "#modalEditPricingAllItem #submitEditPricingAllItem",
+  );
+
+  const poaInputs = document.querySelectorAll(
+    "#modalEditPricingAllItem .input-poa",
+  );
+
+  let detailList = [];
+
+  poaInputs.forEach((input) => {
+    detailList.push({
+      id: input.dataset.id,
+      poa: input.value.replace(",", "."),
+    });
+  });
+
+  let itemid = document.querySelector("#modalEditPricingAllItem #itemid").value;
+  let qty = document.querySelector("#modalEditPricingAllItem #qty").value;
+
+  const Params = {
+    loginid: LOGINID,
+    username: USERNAME,
+    rolename: ROLENAME,
+    headerid: HEADERID,
+    itemid: itemid,
+    qty: qty,
+    customerid: document.querySelector("#spanRetailerId").innerHTML,
+    details: detailList,
+  };
+
+  // return console.table(Params);
+
+  try {
+    btnSubmit.setAttribute("disabled", "disabled");
+    btnSubmit.innerHTML = '<i class="fa fa-spin fa-spinner"></i>';
+    swalLoadingShow("Please wait...");
+
+    const response = await fetch(`${URIMETHOD}/OverrideAllPricing`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: Params }),
+    });
+
+    const result = await response.json();
+    const data = result.d || result;
+
+    if (data.error) {
+      await isError(data.error.message.toUpperCase());
+    } else {
+      handlerHideBSModal("modalEditPricingAllItem");
+      await isSuccess(data.success.message);
+      // window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+      location.reload();
+    }
+  } catch (error) {
+    await isError(error.message);
   } finally {
     btnSubmit.removeAttribute("disabled");
     btnSubmit.innerHTML = `<i class="fa-solid fa-cloud-arrow-up me-2"></i> Submit`;
@@ -2999,7 +3139,8 @@ const dropdownActionButton = (row, createdby) => {
 
   // HIDE BUTTON EDIT PRICING
   let hideEditPricing = "hidden";
-  if (row.Group === "POA" || row.PriceGroupName.includes("POA")) {
+  // if (row.Group === "POA" || row.PriceGroupName.includes("POA")) {
+  if (["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)) {
     hideEditPricing = "";
   }
 
@@ -3043,7 +3184,7 @@ const dropdownActionButton = (row, createdby) => {
           </li>
           <div ${hideDivider} class="dropdown-divider"></div>
           <li ${hideEditPricing}>
-            <a class="dropdown-item " href="javascript:void(0);" id="btnEditPricingItem" data-id="${row.Id}" data-cost="${row.RealCost}" data-designid="${row.DesignId}" data-blindid="${row.BlindId}">
+            <a class="dropdown-item " href="javascript:void(0);" id="btnEditPricingItem" data-id="${row.Id}" data-cost="${row.RealCost}" data-designid="${row.DesignId}" data-blindid="${row.BlindId}" data-qty="${row.Qty}">
               <i class="ti ti-pencil-dollar text-success fs-1 me-1 opacity-50"></i>Edit Pricing
             </a>
           </li>
