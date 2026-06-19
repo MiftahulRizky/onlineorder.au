@@ -129,20 +129,34 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const controlname = controls.selectedOptions[0].dataset.name;
 
       const divHandleHeightMM = document.getElementById("divHandleHeightMM");
+      const divHandleNotes = document.getElementById("divHandleNotes");
+      const lblHandleNotes = document.getElementById("lblHandleNotes");
       document.getElementById("handleheightmm").value = "";
+      lblHandleNotes.innerHTML = "";
       divHandleHeightMM.classList.add("d-none");
+      divHandleNotes.classList.add("d-none");
       if (["Hinged Door"].includes(controlname)) {
+        if (["Keyed Lock"].includes(handleheight)) {
+          lblHandleNotes.innerHTML =
+            "Measurement to the centre of the tongue from bottom of door";
+        }
         if (!["Tulip A Latch", "Non-Keyed Latch", ""].includes(handleheight)) {
           divHandleHeightMM.classList.remove("d-none");
         }
       }
 
       if (["Sliding Door"].includes(controlname)) {
-        if (
-          ["Lock Height", "Non-Keyed Latch", "Specify"].includes(handleheight)
-        ) {
+        if (["Keyed Lock"].includes(handleheight)) {
+          lblHandleNotes.innerHTML =
+            "Measurement to the centre of the lock from bottom of the door";
+        }
+        if (["Lock Height", "Keyed Lock", "Specify"].includes(handleheight)) {
           divHandleHeightMM.classList.remove("d-none");
         }
+      }
+
+      if (["Keyed Lock"].includes(handleheight)) {
+        divHandleNotes.classList.remove("d-none");
       }
     }
 
@@ -806,29 +820,33 @@ const bindMidrail = (blindname, controlname, frametype) => {
   let data = [];
 
   if (["Basic Door", "Safety Door"].includes(blindname)) {
-    if (["Sliding Door"].includes(controlname)) {
-      data.push(
-        "No Midrail",
-        "Standard Midrail to Centre",
-        "Standard Mid Rail Specify",
-      );
-
-      if (!frametype.includes("Screen Door")) {
+    if (["Heavy Duty Diamond", "Ultra Barrier"].includes(tubetype)) {
+      data.push("No Midrail", "Specify", "Midrail to Centre");
+    } else {
+      if (["Sliding Door"].includes(controlname)) {
         data.push(
-          "Ultra Barrier Mid Rail to Centre",
-          "Ultra Barrier Mid Rail Specify",
+          "No Midrail",
+          "Standard Midrail to Centre",
+          "Standard Mid Rail Specify",
         );
-      }
-    }
-    if (["Hinged Door"].includes(controlname)) {
-      data.push(
-        "No Midrail",
-        "Vista Mid Rail Specify",
-        "Vista Mid Rail to Centre",
-      );
 
-      if (frametype.includes("Screen Door")) {
-        data.push("Standard Mid rail Specify", "Standard Midrail to Centre");
+        if (!frametype.includes("Screen Door")) {
+          data.push(
+            "Ultra Barrier Mid Rail to Centre",
+            "Ultra Barrier Mid Rail Specify",
+          );
+        }
+      }
+      if (["Hinged Door"].includes(controlname)) {
+        data.push(
+          "No Midrail",
+          "Vista Mid Rail Specify",
+          "Vista Mid Rail to Centre",
+        );
+
+        if (frametype.includes("Screen Door")) {
+          data.push("Standard Mid rail Specify", "Standard Midrail to Centre");
+        }
       }
     }
   }
@@ -1281,6 +1299,8 @@ const handlerElementVisibility = async (
     const divHandle = document.getElementById("divHandle");
     const divHandleHeight = document.getElementById("divHandleHeight");
     const divHandleHeightMM = document.getElementById("divHandleHeightMM");
+    const divHandleNotes = document.getElementById("divHandleNotes");
+    const lblHandleNotes = document.getElementById("lblHandleNotes");
     const divInswing = document.getElementById("divInswing");
     const divLockColour = document.getElementById("divLockColour");
     const divKeyed = document.getElementById("divKeyed");
@@ -1319,6 +1339,8 @@ const handlerElementVisibility = async (
     divHandle.classList.add("d-none");
     divHandleHeight.classList.add("d-none");
     divHandleHeightMM.classList.add("d-none");
+    divHandleNotes.classList.add("d-none");
+    lblHandleNotes.innerHTML = "";
     divInswing.classList.add("d-none");
     divLockColour.classList.add("d-none");
     divKeyed.classList.add("d-none");
@@ -1434,15 +1456,28 @@ const handlerElementVisibility = async (
       }
 
       if (["Hinged Door"].includes(item.ControlType)) {
-        if (!["Tulip A Latch", ""].includes(item.SlatSize)) {
+        if (["Keyed Lock"].includes(item.SlatSize)) {
+          lblHandleNotes.innerHTML =
+            "Measurement to the centre of the tongue from bottom of door";
+        }
+        if (!["Tulip A Latch", "Non-Keyed Latch", ""].includes(item.SlatSize)) {
           divHandleHeightMM.classList.remove("d-none");
         }
       }
 
       if (["Sliding Door"].includes(item.ControlType)) {
-        if (["Lock Height", "Specify"].includes(item.SlatSize)) {
+        if (["Keyed Lock"].includes(item.SlatSize)) {
+          lblHandleNotes.innerHTML =
+            "Measurement to the centre of the lock from bottom of the door";
+        }
+
+        if (["Lock Height", "Keyed Lock", "Specify"].includes(item.SlatSize)) {
           divHandleHeightMM.classList.remove("d-none");
         }
+      }
+
+      if (["Keyed Lock"].includes(item.SlatSize)) {
+        divHandleNotes.classList.remove("d-none");
       }
 
       if (["Specify"].includes(item.TrackColour)) {

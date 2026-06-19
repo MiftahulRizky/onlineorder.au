@@ -354,7 +354,7 @@ Partial Class Methods_Order_DoorMethod
                 '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "keyed is required !",.field = "keyed"}}
                 ' End If
                 
-                If Not InArray(data.frametype,"Heavy Duty Diamond") OR InArray(BlindName,"Security Door") Then
+                If Not InArray(data.frametype,"Heavy Duty Diamond") OR InArray(BlindName,"Security Door", "Safety Door", "Basic Door") Then
                     If String.IsNullOrEmpty(data.midrail) Then
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "midrail is required !",.field = "midrail"}}
                     End If

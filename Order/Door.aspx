@@ -207,6 +207,13 @@
                                         </div>
                                     </div>
 
+                                    <div class="mb-3 row" id="divHandleNotes">
+                                        <label for="handlenotes" class="col-lg-3 text-uppercase fw-bold"></label>
+                                        <div class="col-lg-9">
+                                            <small class="form-hint text-danger h5" id="lblHandleNotes"></small>
+                                        </div>
+                                    </div>
+
                                     <div class="mb-3 row" id="divInswing">
                                         <label for="inswing" class="col-lg-3 text-uppercase fw-bold" >inswing hinges</label>
                                         <div class="col-lg-4">
