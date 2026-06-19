@@ -1156,7 +1156,7 @@ Public Class PublicConfig
     End Sub
 
     Public Sub HitungSurcharge(headerId As String, itemId As String)
-        Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE Id='" + itemId + "' AND Active=1 ORDER BY Id ASC")
+        Dim thisData As DataSet = GetListData("SELECT * FROM view_details WHERE Id='" + itemId + "' AND Active=1")
 
         Dim surcharge As Decimal = 0.00
 
@@ -1215,12 +1215,9 @@ Public Class PublicConfig
                             width = "0"
                             drop = "0"
                            
-                            Dim CoatingData As DataSet = GetListData(String.Format("SELECT * FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND odp.Description='Powder Coating - Duralloy Colours' AND od.Active='1' AND odp.ItemId <> '{1}' ORDER BY odp.Id ASC", headerId, itemId))
-                            If CoatingData.Tables(0).Rows.Count > 1 Then
-                                For j As Integer = 0 To CoatingData.Tables(0).Rows.Count - 1
-                                    Dim Cost As Decimal = Convert.ToDecimal(CoatingData.Tables(0).Rows(j).Item("Cost").ToString())
-                                    If Cost = 200.00 Then Count = "Second"
-                                Next
+                            Dim CoatingData As DataSet = GetListData(String.Format("SELECT * FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND odp.Description='Powder Coating - Duralloy Colours' AND od.Active='1' AND odp.ItemId <> '{1}' AND odp.Cost = 200 ORDER BY odp.ItemId DESC", headerId, itemId))
+                            If CoatingData.Tables(0).Rows.Count > 0 Then
+                                Count = "Second"
                             End If
                             Dim priceGroupId As String = GetItemData(String.Format("SELECT Id FROM PricesGroup WHERE Name ='Retractable Flyscreen - {0}'", Count))
 
