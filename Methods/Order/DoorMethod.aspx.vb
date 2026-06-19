@@ -321,7 +321,7 @@ Partial Class Methods_Order_DoorMethod
 
                 Dim handleheight As String = InArray(data.handleheight, "Lock Height", "Specify")
                 If ControlName = "Hinged Door" Then
-                    handleheight = InArray(data.handleheight, "Lock Height", "Centre of Handle", "Bot of Tongue", "Centre of Tongue", "To Centre of Handle", "To Bottom of Tongue", "To Centre of Tongue", "Specify")
+                    handleheight = InArray(data.handleheight, "Lock Height", "Centre of Handle", "Bot of Tongue", "Centre of Tongue", "To Centre of Handle", "To Bottom of Tongue", "To Centre of Tongue", "Specify", "Keyed Lock")
                 End If
                 If Not String.IsNullOrEmpty(data.handleheight) AND handleheight Then
                     If String.IsNullOrEmpty(data.handleheightmm) Then
@@ -378,17 +378,17 @@ Partial Class Methods_Order_DoorMethod
                 ' End If
 
                 If InArray(ControlName, "Hinged Door") Then
-                    If String.IsNullOrEmpty(data.fixing) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fixing is required !",.field = "fixing"}}
-                    End If
+                    ' If String.IsNullOrEmpty(data.fixing) Then
+                    '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fixing is required !",.field = "fixing"}}
+                    ' End If
 
-                    If String.IsNullOrEmpty(data.fitted) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fitted is required !",.field = "fitted"}}
-                    End If
+                    ' If String.IsNullOrEmpty(data.fitted) Then
+                    '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fitted is required !",.field = "fitted"}}
+                    ' End If
 
-                    If String.IsNullOrEmpty(data.remove) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "remove product is required !",.field = "remove"}}
-                    End If
+                    ' If String.IsNullOrEmpty(data.remove) Then
+                    '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "remove product is required !",.field = "remove"}}
+                    ' End If
                 End IF
 
                 ' If String.IsNullOrEmpty(data.petdoortype) Then

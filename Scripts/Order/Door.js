@@ -107,6 +107,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     if (e.target.id === "handleside") {
       const blinds = document.getElementById("blindtype");
       const blindname = blinds.selectedOptions[0].dataset.name;
+      const tubetype = document.getElementById("tubetype").value;
       const controls = document.getElementById("controltype");
       const controlname = controls.selectedOptions[0].dataset.name;
       const frametype = document.getElementById("frametype").value;
@@ -119,7 +120,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       if (!["Sidelight", ""].includes(handleside)) {
         divHandleHeight.classList.remove("d-none");
       }
-      bindHandleHeight(blindname, controlname, frametype);
+      bindHandleHeight(blindname, tubetype, controlname, frametype);
     }
 
     if (e.target.id === "handleheight") {
@@ -131,13 +132,15 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       document.getElementById("handleheightmm").value = "";
       divHandleHeightMM.classList.add("d-none");
       if (["Hinged Door"].includes(controlname)) {
-        if (!["Tulip A Latch", ""].includes(handleheight)) {
+        if (!["Tulip A Latch", "Non-Keyed Latch", ""].includes(handleheight)) {
           divHandleHeightMM.classList.remove("d-none");
         }
       }
 
       if (["Sliding Door"].includes(controlname)) {
-        if (["Lock Height", "Specify"].includes(handleheight)) {
+        if (
+          ["Lock Height", "Non-Keyed Latch", "Specify"].includes(handleheight)
+        ) {
           divHandleHeightMM.classList.remove("d-none");
         }
       }
@@ -738,29 +741,33 @@ const bindHandleSide = (blindname, controlname, frametype) => {
   generateOption("handleside", data);
 };
 
-const bindHandleHeight = (blindname, controlname, frametype) => {
+const bindHandleHeight = (blindname, tubetype, controlname, frametype) => {
   if (!blindname) return;
   let data = [];
 
   if (["Basic Door", "Safety Door"].includes(blindname)) {
-    if (["Sliding Door"].includes(controlname)) {
-      data.push("Lock Height", "Handle Height to Centre", "Specify");
+    if (["Flydoor"].includes(tubetype)) {
+      data.push("Non-Keyed Latch", "Keyed Lock");
+    } else {
+      if (["Sliding Door"].includes(controlname)) {
+        data.push("Lock Height", "Handle Height to Centre", "Specify");
 
-      if (frametype.includes("Screen Door")) {
-        data.push("Bass Latch", "Batman Morticeed SNIB");
+        if (frametype.includes("Screen Door")) {
+          data.push("Bass Latch", "Batman Morticeed SNIB");
+        }
       }
-    }
-    if (["Hinged Door"].includes(controlname)) {
-      data.push(
-        "Lock Height",
-        "To Centre of Handle",
-        "To Bottom of Tongue",
-        "To Centre of Tongue",
-        "Specify",
-      );
+      if (["Hinged Door"].includes(controlname)) {
+        data.push(
+          "Lock Height",
+          "To Centre of Handle",
+          "To Bottom of Tongue",
+          "To Centre of Tongue",
+          "Specify",
+        );
 
-      if (frametype.includes("Screen Door")) {
-        data.push("Tulip A Latch");
+        if (frametype.includes("Screen Door")) {
+          data.push("Tulip A Latch");
+        }
       }
     }
   }
@@ -788,16 +795,7 @@ const bindLock = (blindname, controlname, frametype) => {
 
   if (["Basic Door", "Safety Door"].includes(blindname)) {
     if (["Hinged Door"].includes(controlname)) {
-      data.push(
-        "Black",
-        "Bronze",
-        "Brown",
-        "Hawthorne Green",
-        "Primrose",
-        "Stone Beige",
-        "White",
-        "White Birch",
-      );
+      data.push("Black", "Brown", "Primrose", "Beige", "White", "White Birch");
     }
   }
   generateOption("lockcolour", data);
@@ -866,14 +864,10 @@ const bindCloser = (blindname, controlname, frametype) => {
     if (["Hinged Door"].includes(controlname)) {
       data.push(
         "No Closer",
+        "Closer - Beige",
+        "Closer - Birch",
         "Closer - Black",
-        "Closer - Bronze",
-        "Closer - Brown",
-        "Closer - Green",
-        "Closer - Primrose",
-        "Closer - Stone Beige",
         "Closer - White",
-        "Closer - White Birch",
       );
     }
   }
@@ -946,22 +940,13 @@ const bindPetDoorType = (blindname, controlname, frametype) => {
   if (["Basic Door", "Safety Door"].includes(blindname)) {
     if (["Sliding Door"].includes(controlname)) {
       data.push(
-        "Pet Dr Large - Stone beige",
-        "Pet Dr Medium - Stone Beige",
         "Pet Dr Small - Black",
-        "Pet Dr Small - Stone Beige",
-        "Pet Dr Small - Bronze",
-        "Pet Dr Small - Brown",
-        "Pet Dr Small - Primrose",
         "Pet Dr Small - White",
+        "Pet Dr Small - Primrose",
         "Pet Dr Medium - Black",
-        "Pet Dr Medium - Bronze",
-        "Pet Dr Medium - Brown",
         "Pet Dr Medium - Primrose",
         "Pet Dr Medium - White",
         "Pet Dr Large - Black",
-        "Pet Dr Large - Bronze",
-        "Pet Dr Large - Brown",
         "Pet Dr Large - Primrose",
         "Pet Dr Large - White",
       );
@@ -969,19 +954,12 @@ const bindPetDoorType = (blindname, controlname, frametype) => {
     if (["Hinged Door"].includes(controlname)) {
       data.push(
         "Pet Dr Small - Black",
-        "Pet Dr Small - Bronze",
-        "Pet Dr Small - Brown",
-        "Pet Dr Small - Primrose",
         "Pet Dr Small - White",
+        "Pet Dr Small - Primrose",
         "Pet Dr Medium - Black",
-        "Pet Dr Medium - Bronze",
-        "Pet Dr Medium - Brown",
         "Pet Dr Medium - Primrose",
-        "Pet Dr Medium - Stone Beige",
         "Pet Dr Medium - White",
         "Pet Dr Large - Black",
-        "Pet Dr Large - Bronze",
-        "Pet Dr Large - Brown",
         "Pet Dr Large - Primrose",
         "Pet Dr Large - White",
       );
@@ -1237,7 +1215,12 @@ const bindItemOrders = async (itemid) => {
         bindCoatingType(),
         bindMesh(item.BlindName, item.ControlType, item.FrameType),
         bindHandleSide(item.BlindName, item.ControlType, item.FrameType),
-        bindHandleHeight(item.BlindName, item.ControlType, item.FrameType),
+        bindHandleHeight(
+          item.BlindName,
+          item.TubeType,
+          item.ControlType,
+          item.FrameType,
+        ),
         bindLock(item.BlindName, item.ControlType, item.FrameType),
         bindMidrail(item.BlindName, item.ControlType, item.FrameType),
         bindBugseal(item.BlindName, item.ControlType, item.FrameType),
@@ -1381,7 +1364,9 @@ const handlerElementVisibility = async (
       divMesh.classList.remove("d-none");
       divHandle.classList.remove("d-none");
       divKeyed.classList.remove("d-none");
-      divMidrail.classList.remove("d-none");
+      if (["Heavy Duty Diamond", "Ultra Barrier"].includes(tubetype)) {
+        divMidrail.classList.remove("d-none");
+      }
       divPetDor.classList.remove("d-none");
       divBugseal.classList.remove("d-none");
       // divHalf.classList.remove("d-none");
