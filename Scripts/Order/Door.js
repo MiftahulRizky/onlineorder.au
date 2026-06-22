@@ -89,6 +89,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     }
 
     if (e.target.id === "framecolour") {
+      const tubetype = document.getElementById("tubetype").value;
       const framecolour = e.target.value;
       const divCoating = document.getElementById("divCoating");
       divCoating.classList.add("d-none");
@@ -96,7 +97,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       if (["Powder Coating"].includes(framecolour)) {
         divCoating.classList.remove("d-none");
       }
-      bindCoatingType();
+      bindCoatingType(tubetype);
     }
 
     if (e.target.id === "handleside") {
@@ -683,17 +684,21 @@ const bindFrameColour = (blindname, tubetype, controlname) => {
   generateOption("framecolour", data);
 };
 
-const bindCoatingType = () => {
+const bindCoatingType = (tubetype) => {
   let data = [];
 
-  data.push(
-    "Dulux Standard / Duralloy / Surreal Effect",
-    "Dulux Precious / D1000 / Duratec Zeus",
-    "Dulux Alphatec",
-    "Dulux Duratec Eternity / Electro",
-    "Dulux Duratec Elements",
-    "Dulux Duratex Intensity",
-  );
+  if (["Retractable Pleated"].includes(tubetype)) {
+    data.push("Duralloy Colours");
+  } else {
+    data.push(
+      "Dulux Standard / Duralloy / Surreal Effect",
+      "Dulux Precious / D1000 / Duratec Zeus",
+      "Dulux Alphatec",
+      "Dulux Duratec Eternity / Electro",
+      "Dulux Duratec Elements",
+      "Dulux Duratex Intensity",
+    );
+  }
   generateOption("coatingtype", data);
 };
 
@@ -1171,7 +1176,7 @@ const bindItemOrders = async (itemid) => {
           item.Width,
         ),
         bindFrameColour(item.BlindName, item.TubeType, item.ControlType),
-        bindCoatingType(),
+        bindCoatingType(item.TubeType),
         bindMesh(item.BlindName, item.ControlType, item.FrameType),
         bindHandleSide(item.BlindName, item.ControlType, item.FrameType),
         bindHandleHeight(
