@@ -48,7 +48,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindMesh(blindname, controlname, frametype),
         bindHandleSide(blindname, controlname, frametype),
         bindLock(blindname, controlname, frametype),
-        bindMidrail(blindname, controlname, frametype),
+        bindMidrail(blindname, tubetype, controlname, frametype),
         bindBugseal(blindname, controlname, frametype),
         bindCloser(blindname, controlname, frametype),
         bindHalf(blindname, controlname, frametype),
@@ -78,7 +78,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindFrameColour(blindname, tubetype, controlname),
         bindMesh(blindname, controlname, frametype),
         bindHandleSide(blindname, controlname, frametype),
-        bindMidrail(blindname, controlname, frametype),
+        bindMidrail(blindname, tubetype, controlname, frametype),
       ]);
 
       const divMesh = document.getElementById("divMesh");
@@ -496,7 +496,7 @@ const bindControls = async (designid, blindtype, tubetype) => {
           bindMesh(blindname, controlname, frametype),
           bindHandleSide(blindname, controlname, frametype),
           bindLock(blindname, controlname, frametype),
-          bindMidrail(blindname, controlname, frametype),
+          bindMidrail(blindname, tubetype, controlname, frametype),
           bindBugseal(blindname, controlname, frametype),
           bindCloser(blindname, controlname, frametype),
           bindHalf(blindname, controlname, frametype),
@@ -815,7 +815,7 @@ const bindLock = (blindname, controlname, frametype) => {
   generateOption("lockcolour", data);
 };
 
-const bindMidrail = (blindname, controlname, frametype) => {
+const bindMidrail = (blindname, tubetype, controlname, frametype) => {
   if (!blindname) return;
   let data = [];
 
@@ -1240,7 +1240,12 @@ const bindItemOrders = async (itemid) => {
           item.FrameType,
         ),
         bindLock(item.BlindName, item.ControlType, item.FrameType),
-        bindMidrail(item.BlindName, item.ControlType, item.FrameType),
+        bindMidrail(
+          item.BlindName,
+          item.TubeType,
+          item.ControlType,
+          item.FrameType,
+        ),
         bindBugseal(item.BlindName, item.ControlType, item.FrameType),
         bindCloser(item.BlindName, item.ControlType, item.FrameType),
         bindHalf(item.BlindName, item.ControlType, item.FrameType),
