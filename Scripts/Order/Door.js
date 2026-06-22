@@ -157,6 +157,16 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       }
     }
 
+    if (e.target.id === "midrail") {
+      const midrail = e.target.value;
+      const divMidrailLength = document.getElementById("divMidrailLength");
+      divMidrailLength.classList.add("d-none");
+      document.getElementById("midraillength").value = "";
+      if (["Specify"].includes(midrail)) {
+        divMidrailLength.classList.remove("d-none");
+      }
+    }
+
     if (e.target.id === "petdoortype") {
       const blinds = document.getElementById("blindtype");
       const blindname = blinds.selectedOptions[0].dataset.name;
@@ -1243,6 +1253,7 @@ const handlerElementVisibility = async (
     const divLockColour = document.getElementById("divLockColour");
     const divKeyed = document.getElementById("divKeyed");
     const divMidrail = document.getElementById("divMidrail");
+    const divMidrailLength = document.getElementById("divMidrailLength");
     const divBugseal = document.getElementById("divBugseal");
     const divCloser = document.getElementById("divCloser");
     const lblCloser = document.getElementById("lblCloser");
@@ -1283,6 +1294,7 @@ const handlerElementVisibility = async (
     divLockColour.classList.add("d-none");
     divKeyed.classList.add("d-none");
     divMidrail.classList.add("d-none");
+    divMidrailLength.classList.add("d-none");
     divBugseal.classList.add("d-none");
     divCloser.classList.add("d-none");
     lblCloser.innerHTML = "Closer";
@@ -1421,6 +1433,10 @@ const handlerElementVisibility = async (
       if (["Specify"].includes(item.TrackColour)) {
         divPetDorPositionW.classList.remove("d-none");
       }
+
+      if (["Specify"].includes(item.MidrailCritical)) {
+        divMidrailLength.classList.remove("d-none");
+      }
     }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
@@ -1471,6 +1487,7 @@ const handlerSubmit = async (button) => {
       "lockcolour",
       "keyed",
       "midrail",
+      "midraillength",
       "bugseal",
       "closer",
       "install",
@@ -1573,6 +1590,7 @@ const handlerSetElementValues = (itemData) => {
     lockcolour: "PlungerPin",
     keyed: "Batten",
     midrail: "MidrailCritical",
+    midraillength: "MidrailHeight1",
     bugseal: "FlatType",
     closer: "ChildSafe",
     install: "BracketCover",

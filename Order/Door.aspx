@@ -245,7 +245,15 @@
                                         <label for="midrail" class="col-lg-3 text-uppercase fw-bold" >Mid Rail</label>
                                         <div class="col-lg-4">
                                             <select name="midrail" id="midrail" class="form-select"></select>
+                                            <small class="form-hint">* Type</small>
                                         </div>  
+                                        <div class="col-lg-4" id="divMidrailLength">
+                                            <div class="input-group">
+                                                <input type="number" min="1" name="midraillength" id="midraillength" class="form-control " autocomplete="off" />
+                                                <span class="input-group-text ">mm</span>
+                                            </div>
+                                            <small class="form-hint">* Length</small>
+                                        </div>
                                     </div>
 
                                    
