@@ -88,9 +88,6 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       if (["Ultra Barrier Screen Door"].includes(frametype)) {
         divMesh.classList.add("d-none");
       }
-      if (["Heavy Duty Diamond"].includes(frametype)) {
-        divMidrail.classList.add("d-none");
-      }
     }
 
     if (e.target.id === "framecolour") {
@@ -140,7 +137,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
           lblHandleNotes.innerHTML =
             "Measurement to the centre of the tongue from bottom of door";
         }
-        if (!["Tulip A Latch", "Non-Keyed Latch", ""].includes(handleheight)) {
+        if (!["Non-Keyed Latch", ""].includes(handleheight)) {
           divHandleHeightMM.classList.remove("d-none");
         }
       }
@@ -150,7 +147,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
           lblHandleNotes.innerHTML =
             "Measurement to the centre of the lock from bottom of the door";
         }
-        if (["Lock Height", "Keyed Lock", "Specify"].includes(handleheight)) {
+        if (!["Non-Keyed Latch", ""].includes(handleheight)) {
           divHandleHeightMM.classList.remove("d-none");
         }
       }
@@ -715,43 +712,7 @@ const bindHandleSide = (blindname, controlname, frametype) => {
   if (!blindname) return;
   let data = [];
 
-  if (["Basic Door", "Safety Door"].includes(blindname)) {
-    if (["Sliding Door"].includes(controlname)) {
-      data.push(
-        "Left",
-        "Right",
-        "Left - Reciever",
-        "Right - Reciever",
-        "Stacker (Left Slide)",
-        "Stacker (Right Slide)",
-      );
-    }
-    if (["Hinged Door"].includes(controlname)) {
-      data.push(
-        "Left",
-        "Right",
-        "Left - Reciever",
-        "Right - Reciever",
-        "Sidelight",
-      );
-    }
-  }
-
-  if (["Security Door"].includes(blindname)) {
-    if (["Sliding Door"].includes(controlname)) {
-      data.push(
-        "Left",
-        "Right",
-        "Left - Reciever",
-        "Right - Reciever",
-        "Stacker (Left Slide)",
-        "Stacker (Right Slide)",
-      );
-    }
-    if (["Hinged Door"].includes(controlname)) {
-      data.push("Left", "Right", "Left - Reciever", "Right - Reciever");
-    }
-  }
+  data.push("Left", "Right");
   generateOption("handleside", data);
 };
 
@@ -759,47 +720,19 @@ const bindHandleHeight = (blindname, tubetype, controlname, frametype) => {
   if (!blindname) return;
   let data = [];
 
-  if (["Basic Door", "Safety Door"].includes(blindname)) {
+  if (["Basic Door", "Safety Door", "Security Door"].includes(blindname)) {
     if (["Flydoor"].includes(tubetype)) {
       data.push("Non-Keyed Latch", "Keyed Lock");
     } else {
       if (["Sliding Door"].includes(controlname)) {
-        data.push("Lock Height", "Handle Height to Centre", "Specify");
-
-        if (frametype.includes("Screen Door")) {
-          data.push("Bass Latch", "Batman Morticeed SNIB");
-        }
+        data.push("Handle Height to Centre of Lock");
       }
       if (["Hinged Door"].includes(controlname)) {
-        data.push(
-          "Lock Height",
-          "To Centre of Handle",
-          "To Bottom of Tongue",
-          "To Centre of Tongue",
-          "Specify",
-        );
-
-        if (frametype.includes("Screen Door")) {
-          data.push("Tulip A Latch");
-        }
+        data.push("Centre of Tongue");
       }
     }
   }
 
-  if (["Security Door"].includes(blindname)) {
-    if (["Sliding Door"].includes(controlname)) {
-      data.push("Lock Height", "Handle Height to Centre", "Specify");
-    }
-    if (["Hinged Door"].includes(controlname)) {
-      data.push(
-        "Lock Height",
-        "Centre of Handle",
-        "Bot of Tongue",
-        "Centre of Tongue",
-        "Specify",
-      );
-    }
-  }
   generateOption("handleheight", data);
 };
 
@@ -1448,12 +1381,12 @@ const handlerElementVisibility = async (
         divMesh.classList.add("d-none");
       }
 
-      if (["Heavy Duty Diamond"].includes(item.FrameType)) {
-        divMidrail.classList.add("d-none");
-      }
-
       if (["Powder Coating"].includes(item.FrameColour)) {
         divCoating.classList.remove("d-none");
+      }
+
+      if (["Heavy Duty Diamond", "Ultra Barrier"].includes(item.TubeType)) {
+        divMidrail.classList.remove("d-none");
       }
 
       if (!["Sidelight", ""].includes(item.Brace)) {
@@ -1465,7 +1398,7 @@ const handlerElementVisibility = async (
           lblHandleNotes.innerHTML =
             "Measurement to the centre of the tongue from bottom of door";
         }
-        if (!["Tulip A Latch", "Non-Keyed Latch", ""].includes(item.SlatSize)) {
+        if (!["Non-Keyed Latch", ""].includes(item.SlatSize)) {
           divHandleHeightMM.classList.remove("d-none");
         }
       }
@@ -1476,7 +1409,7 @@ const handlerElementVisibility = async (
             "Measurement to the centre of the lock from bottom of the door";
         }
 
-        if (["Lock Height", "Keyed Lock", "Specify"].includes(item.SlatSize)) {
+        if (!["Non-Keyed Latch", ""].includes(item.SlatSize)) {
           divHandleHeightMM.classList.remove("d-none");
         }
       }
@@ -1786,6 +1719,7 @@ const generateOption = (elementId, list = []) => {
   switch (elementId) {
     case "trackless":
     case "frametype":
+    case "handleheight":
       validateLength = 0;
       break;
   }
