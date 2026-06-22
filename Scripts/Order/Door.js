@@ -82,9 +82,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       ]);
 
       const divMesh = document.getElementById("divMesh");
-      const divMidrail = document.getElementById("divMidrail");
       divMesh.classList.remove("d-none");
-      divMidrail.classList.remove("d-none");
       if (["Ultra Barrier Screen Door"].includes(frametype)) {
         divMesh.classList.add("d-none");
       }

@@ -175,9 +175,10 @@ Partial Class Methods_Order_VerticalBlindMethod
     Public Shared Function BindFabricLength(ByVal designid As String, ByVal tubetype As String, ByVal fabrictype As String) As Object
         Try
             Dim Width As String = ""
-            If tubetype = "Louvolite" Then
-                Width = "AND Width IN ('89', '127')"
-            End If
+            Select Case tubetype
+                Case "Louvolite", "Javaline"
+                    Width = "AND Width IN ('89', '127')"
+            End Select
 
             Dim MyQuery As String = String.Format("SELECT Width FROM Fabrics WHERE DesignId='{0}' AND Type='{1}' {2} AND Active='1' GROUP BY Width ORDER BY Width ASC", designid, fabrictype, Width)
             Dim datas As DataSet = publicCfg.GetListData(MyQuery)
