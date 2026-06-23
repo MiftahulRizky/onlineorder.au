@@ -1144,6 +1144,10 @@ Public Class OrderConfig
 
     ' SELL PRICE
 
+    Private Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
+    End Function
+
     Public Function CountCost(headerId As String, itemId As String) As Decimal
         Dim result As Decimal = 0.00
         Try
@@ -1328,8 +1332,8 @@ Public Class OrderConfig
                     If designName = "Panorama PVC Shutters" Then
                         Dim sqm As Decimal = Math.Round(width * drop / 1000000, 4)
                         thisGridMatrix = gridMatrix * sqm
-                        IF customerId = "LS-A268" Then
-                            '#Orion
+                        IF InArray(customerId, "LS-A268", "LS-A339") Then
+                            '#Orion & The Blinds Place Victoria
                             If sqm < 0.5 Then
                                 thisGridMatrix = gridMatrix / 2
                             End If
@@ -1340,6 +1344,7 @@ Public Class OrderConfig
                                 descriptionPrice = "Minimum Opening Size Charge (" & priceGroupName & ")"
                             End If
                         End If
+
                     End If
 
                     If designName = "Panorama PVC Parts" Then
