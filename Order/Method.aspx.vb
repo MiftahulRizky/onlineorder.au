@@ -2116,6 +2116,8 @@ Partial Class Order_Method
                 orderCfg.Log_Orders(dataLog)
 
                 orderCfg.UpdateProductType(data.headerid)
+
+                orderCfg.ReloadAllCost(data.headerid)
             Next
             Return "Success"
         End If
@@ -2205,6 +2207,9 @@ Partial Class Order_Method
             orderCfg.ResetAuthorization(data.headerid, itemId)
 
             orderCfg.UpdateProductType(data.headerid)
+
+            Dim Res As String = orderCfg.ReloadAllCost(data.headerid)
+            If Not Res = "200" Then Return Res
 
             Return "Success"
         End If

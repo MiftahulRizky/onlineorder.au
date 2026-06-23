@@ -1345,6 +1345,16 @@ Public Class OrderConfig
                             End If
                         End If
 
+                        IF Not InArray(customerId, "LS-A268", "LS-A339") Then
+                            '#All Customer
+                            Dim sqmAll As Decimal = GetItemData_Decimal("SELECT SUM(SquareMetre) FROM OrderDetails_Shutters WHERE HeaderId = '" + headerId + "' AND Active = 1")
+                            If sqmAll > 1 Then
+                                thisGridMatrix = gridMatrix * sqm
+                            Else
+                                thisGridMatrix = gridMatrix / 2
+                            End If
+                        End If
+
                     End If
 
                     If designName = "Panorama PVC Parts" Then
@@ -2340,6 +2350,27 @@ Public Class OrderConfig
             mailCfg.MailError("", "", "39BFC30E-915F-4C46-9612-2761D177F09D", ex.ToString())
         End Try
         Return result
+    End Function
+
+    Public Function ReloadAllCost(HeaderId As String) As String
+        Try
+            Dim DetailData As DataSet = GetListData("SELECT Id FROM OrderDetails_Shutters WHERE HeaderId='" + HeaderId + "' AND Active=1")
+            If DetailData.Tables(0).Rows.Count > 0 Then
+                For i As Integer = 0 To DetailData.Tables(0).Rows.Count - 1
+                    Dim ItemId As String = DetailData.Tables(0).Rows(i).Item("Id").ToString()
+
+                   ResetPriceDetail(HeaderId, ItemId)
+                    Dim cost As Decimal = CountCost(HeaderId, ItemId)
+                   UpdateCost(ItemId, cost)
+                   UpdateCostOverride(ItemId, cost)
+                   UpdateFinalCost(ItemId) 
+                   ResetAuthorization(HeaderId, ItemId)
+                Next 
+            End If
+            Return "200"
+        Catch ex As Exception
+            Return ex.Message
+        End Try
     End Function
 
     Public Function CountCharge(headerId As String, itemId As String, number As String) As Decimal
