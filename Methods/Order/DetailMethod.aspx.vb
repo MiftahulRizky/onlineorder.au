@@ -2101,7 +2101,7 @@ Partial Class Methods_Order_DetailMethod
                             End Using
 
                             Dim Matrix As String = publicCfg.GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty)- (odp.Qty*odp.Discount)) As Matrix FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Matrix' AND od.Active='1'", headerid, itemId))
-                            Dim Charge As String = publicCfg.GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty)- (odp.Qty*odp.Discount)) As Charge FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Charge' AND odp.Description NOT LIKE '%Powder Coating%' AND odp.Description <> 'Tracking & Interloock' AND od.Active='1'", headerid, itemId))
+                            Dim Charge As String = publicCfg.GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty)- (odp.Qty*odp.Discount)) As Charge FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Charge' AND odp.Description NOT LIKE '%Powder Coating%' AND odp.Description NOT LIKE '%Tracking & Interlock%' AND od.Active='1'", headerid, itemId))
 
                             publicCfg.UpdateMatrix(itemId, Qty, If(Matrix = "", 0D, CDec(Matrix)))
                             publicCfg.UpdateCharge(itemId, Qty, If(Charge = "", 0D, CDec(Charge)))

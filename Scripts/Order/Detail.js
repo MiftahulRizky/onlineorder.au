@@ -2523,7 +2523,7 @@ const handlerPricingItem = (id) => {
       render: (row) => {
         let cs = "";
         if (
-          (["Tracking & Interloock"].includes(row.Description) ||
+          (row.Description.includes("Tracking & Interlock") ||
             row.Description.includes("Powder Coating")) &&
           ["Charge"].includes(row.Type)
         ) {
@@ -2576,7 +2576,7 @@ const handlerPricingItem = (id) => {
       render: (row) => {
         let cs = "";
         if (
-          (["Tracking & Interloock"].includes(row.Description) ||
+          (row.Description.includes("Tracking & Interlock") ||
             row.Description.includes("Powder Coating")) &&
           ["Charge"].includes(row.Type)
         ) {
@@ -2644,7 +2644,7 @@ const handlerPricingItem = (id) => {
     columns: columnDefs,
     createdRow: (row, data, dataIndex) => {
       if (
-        (["Tracking & Interloock"].includes(data.Description) ||
+        (data.Description.includes("Tracking & Interlock") ||
           data.Description.includes("Powder Coating")) &&
         ["Charge"].includes(data.Type)
       ) {
