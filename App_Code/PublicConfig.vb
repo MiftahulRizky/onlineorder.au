@@ -739,7 +739,7 @@ Public Class PublicConfig
     Public Function GetGridCost(ListParam As List(Of Object)) As Decimal
         Dim TubeType As String = CStr(ListParam(0))
         Dim PriceGroupId As String = CStr(ListParam(1))
-        Dim Delivery As String = CStr(ListParam(1))
+        Dim Delivery As String = CStr(ListParam(2))
         Dim Drop As Integer = CInt(ListParam(3))
         Dim Width As Integer = CInt(ListParam(4))
         Dim WhereCost As String ="AND [Cost] > 0"
