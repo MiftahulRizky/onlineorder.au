@@ -748,6 +748,7 @@ const bindWandLength = () => {
     { value: "500", text: "500mm" },
     { value: "750", text: "750mm" },
     { value: "800", text: "800mm" },
+    { value: "1000", text: "1000mm" },
     { value: "1100", text: "1100mm" },
     { value: "1250", text: "1250mm" },
     { value: "1500", text: "1500mm" },

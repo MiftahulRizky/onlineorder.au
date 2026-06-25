@@ -2648,6 +2648,11 @@ const handlerPricingItem = (id) => {
           data.Description.includes("Powder Coating")) &&
         ["Charge"].includes(data.Type)
       ) {
+        if (
+          !["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)
+        ) {
+          $(row).addClass("d-none");
+        }
         $(row).addClass("opacity-50");
       }
     },
