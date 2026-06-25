@@ -736,11 +736,19 @@ Public Class PublicConfig
         Return result
     End Function
 
-    Public Function GetGridCost(G As String, Del As String, D As Integer, W As Integer) As Decimal
+    Public Function GetGridCost(ListParam As List(Of Object)) As Decimal
+        Dim TubeType As String = CStr(ListParam(0))
+        Dim PriceGroupId As String = CStr(ListParam(1))
+        Dim Delivery As String = CStr(ListParam(1))
+        Dim Drop As Integer = CInt(ListParam(3))
+        Dim Width As Integer = CInt(ListParam(4))
+        Dim WhereCost As String ="AND [Cost] > 0"
+        If TubeType = "Retractable Pleated" Then WhereCost = ""
+
         Dim result As Decimal = 0.00
         Using thisConn As New SqlConnection(myConn)
             thisConn.Open()
-            Using myCmd As New SqlCommand(String.Format("SELECT TOP 1 [Cost] FROM Prices WHERE [PriceGroupId] = '{0}' AND [Type] = '{1}' AND [Drop] >= '{2}' AND Width >= '{3}' AND [Cost] > 0 ORDER BY [Drop], Width, [Cost] ASC", UCase(G).ToString(), Del, D, W), thisConn)
+            Using myCmd As New SqlCommand(String.Format("SELECT TOP 1 [Cost] FROM Prices WHERE [PriceGroupId] = '{0}' AND [Type] = '{1}' AND [Drop] >= '{2}' AND Width >= '{3}' {4} ORDER BY [Drop], Width, [Cost] ASC", UCase(PriceGroupId).ToString(), Delivery, Drop, Width, WhereCost), thisConn)
                 Using rdResult = myCmd.ExecuteReader
                     While rdResult.Read
                         result = rdResult.Item(0)
@@ -990,7 +998,14 @@ Public Class PublicConfig
                     End If
                 End If
 
-                Dim getMatrix As Decimal = GetGridCost(priceGroupId, delivery, drop, width)
+                Dim ListParamCost As New List(Of Object) From {
+                    TubeType,
+                    priceGroupId,
+                    delivery,
+                    drop,
+                    width
+                }
+                Dim getMatrix As Decimal = GetGridCost(ListParamCost)
                 
                 '#---------------------Custom Matrix---------------------#
                 If designName = "Vertical Blinds" AndAlso blindName = "Slat Only" Then
@@ -1095,7 +1110,14 @@ Public Class PublicConfig
 
             If Not PriceGroupIdB = "" Then
                 Dim TypeB As String = "Matrix"
-                Dim getMatrixB As Decimal = GetGridCost(priceGroupIdB, delivery, drop, width)
+                 Dim ListParamCostB As New List(Of Object) From {
+                    TubeType,
+                    priceGroupIdB,
+                    delivery,
+                    drop,
+                    width
+                }
+                Dim getMatrixB As Decimal = GetGridCost(ListParamCostB)
 
                 '#---------------------Discount For Store Account---------------------#
                 Dim ListParamDiscountB As New List(Of Object) From {
