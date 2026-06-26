@@ -957,6 +957,7 @@ Public Class PublicConfig
             Dim TubeType As String = thisData.Tables(0).Rows(0).Item("TubeType").ToString()
             Dim controlType As String = thisData.Tables(0).Rows(0).Item("ControlType").ToString()
             Dim FrameColour As String = thisData.Tables(0).Rows(0).Item("FrameColour").ToString()
+            Dim AdditionalMotor As String = thisData.Tables(0).Rows(0).Item("AdditionalMotor").ToString()
             Dim FrameLeft As String = thisData.Tables(0).Rows(0).Item("FrameLeft").ToString()
             Dim SlatQty As String = thisData.Tables(0).Rows(0).Item("SlatQty").ToString()
             Dim doorCutOut As String = thisData.Tables(0).Rows(0).Item("DoorCutOut").ToString()
@@ -1358,25 +1359,33 @@ Public Class PublicConfig
 
     Private Function GetCoatingPrice(HeaderId As String, Coating As String) As String
         Dim result As String = String.Empty
+        Dim Interlock As String = ""
         Dim Desc As String = ""
 
         If InStr(Coating, "Dulux Standard") > 0 Then
             Desc = "Dulux Standard / Duralloy / Surreal Effect"
+            Interlock = "Dulux Standard"
         Else If InStr(Coating, "Duralloy Colours") > 0 Then
             Desc = "Duralloy Colours"
+            Interlock = "Duralloy Colours"
         Else If InStr(Coating, "Dulux Precious") > 0 Then
             Desc = "Dulux Precious / D1000 / Duratec Zeus"
+            Interlock = "Dulux Precious"
         Else If InStr(Coating, "Dulux Alphatec") > 0 Then
             Desc = "Dulux Alphatec"
+            Interlock = "Dulux Alphatec"
         Else If InStr(Coating, "Dulux Duratec Eternity") > 0 Then
             Desc = "Dulux Duratec Eternity / Electro"
+            Interlock = "Dulux Duratec Eternity"
         Else If InStr(Coating, "Dulux Duratec Elements") > 0 Then
             Desc = "Dulux Duratec Elements"
+            Interlock = "Dulux Duratec Elements"
         Else If InStr(Coating, "Dulux Duratex Intensity") > 0 Then
             Desc = "Dulux Duratex Intensity"
+            Interlock = "Dulux Duratex Intensity"
         End If
        
-        result = GetItemData(String.Format("SELECT SUM((odp.Qty*odp.Cost) - (odp.Qty*odp.Discount)) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND (odp.Description LIKE '%Powder Coating - {1}%' OR odp.Description LIKE '%Tracking & Interlock%') AND od.Active='1'", HeaderId, Desc))
+        result = GetItemData(String.Format("SELECT SUM((odp.Qty*odp.Cost) - (odp.Qty*odp.Discount)) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND (odp.Description LIKE '%Powder Coating - {1}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track W - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track Pip - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track J - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type F - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track H - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track U - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type 3 - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type 1 - #{2}%'OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type 1 - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type 2 - #{2}%') AND od.Active='1'", HeaderId, Desc, Interlock))
 
         Return result
     End Function
