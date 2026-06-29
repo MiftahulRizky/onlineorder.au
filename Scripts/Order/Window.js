@@ -1001,7 +1001,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
         divHandle.classList.remove("d-none");
         divPullCord.classList.remove("d-none");
       }
-      divExtras.classList.remove("d-none");
+      // divExtras.classList.remove("d-none");
     }
 
     if (item) {

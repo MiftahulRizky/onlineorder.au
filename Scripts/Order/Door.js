@@ -1388,7 +1388,7 @@ const handlerElementVisibility = async (
       divTrackless.classList.remove("d-none");
       lblFrame.innerHTML = "Frame Colour";
       divFrameColour.classList.remove("d-none");
-      divExtras.classList.remove("d-none");
+      // divExtras.classList.remove("d-none");
     }
 
     if (item) {

@@ -1196,7 +1196,7 @@ Public Class PublicConfig
             Dim lnm As String = thisData.Tables(0).Rows(0).Item("LinearMetre").ToString()
             Dim delivery As String = thisData.Tables(0).Rows(0).Item("OrderDelivery").ToString()
 
-            Dim surchargeData As DataSet = GetListData("SELECT * FROM Surcharges WHERE DesignId='" + UCase(designId).ToString() + "' AND BlindId='" + blindId + "' AND BlindNo = '" + blindNo + "' AND Active=1 ORDER BY Id ASC")
+            Dim surchargeData As DataSet = GetListData(String.Format("SELECT * FROM Surcharges WHERE DesignId='{0}' AND BlindId='{1}' AND BlindNo = '{2}' AND Active=1 ORDER BY Id ASC", UCase(designId).ToString(), UCase(blindId).ToString(), blindNo))
             If surchargeData.Tables(0).Rows.Count > 0 Then
                 Dim subCharge As Decimal = 0.00
                 For i As Integer = 0 To surchargeData.Tables(0).Rows.Count - 1
@@ -1238,7 +1238,7 @@ Public Class PublicConfig
                             width = "0"
                             drop = "0"
                            
-                            Dim CoatingData As DataSet = GetListData(String.Format("SELECT * FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND odp.Description='Powder Coating - Duralloy Colours' AND od.Active='1' AND odp.ItemId <> '{1}' AND odp.Cost = 200 ORDER BY odp.ItemId DESC", headerId, itemId))
+                            Dim CoatingData As DataSet = GetListData(String.Format("SELECT * FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND odp.Description='Powder Coating - Duralloy Colours' AND od.Active='1' AND odp.ItemId <> '{1}' AND odp.Cost = 200", headerId, itemId))
                             If CoatingData.Tables(0).Rows.Count > 0 Then
                                 Count = "Second"
                             End If
@@ -1247,33 +1247,14 @@ Public Class PublicConfig
                             queryCharge = String.Format("SELECT TOP 1 [Cost] FROM CassetteExtra WHERE [PriceGroupId] = '{0}' AND Width >= '{1}' AND [Drop] >='{2}' ORDER BY [Drop], Width, [Cost] ASC", UCase(priceGroupId).ToString(), width, drop)
                         End If
 
-                        ' If InStr(charge, "Long Length") > 0 Then
-                        '     If delivery = "Delivery" Then
-                        '         Dim LongLength As DataSet = GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId='{0}' AND Type='Charge' AND Description='Long Length'",headerId))
-                        '         If LongLength.Tables(0).Rows.Count > 0 Then Exit For
-                                
-                        '         thisCharge = 14.00
-                        '     Else
-                        '         If width >= 2000 AND width <= 3000 Then
-                                    
-                        '             thisCharge = 11
-                        '         End If
-    
-                        '         If width > 3000 Then
-                        '             thisCharge = 12
-                        '         End If
-                        '     End If
-
-                        ' Else
-                            'thisCharge = GetItemData(queryCharge) 'Default Code Result
-                            Dim chargeResult As String = GetItemData(queryCharge)
-                            Dim chargeValue As Decimal = 0D
-                            If Decimal.TryParse(chargeResult, chargeValue) Then
-                                thisCharge = chargeValue
-                            Else
-                                thisCharge = 0D ' Set default jika parsing gagal
-                            End If
-                        ' End If
+        
+                        Dim chargeResult As String = GetItemData(queryCharge)
+                        Dim chargeValue As Decimal = 0D
+                        If Decimal.TryParse(chargeResult, chargeValue) Then
+                            thisCharge = chargeValue
+                        Else
+                            thisCharge = 0D ' Set default jika parsing gagal
+                        End If
 
 
                         
@@ -1365,21 +1346,27 @@ Public Class PublicConfig
         If InStr(Coating, "Dulux Standard") > 0 Then
             Desc = "Dulux Standard / Duralloy / Surreal Effect"
             Interlock = "Dulux Standard"
+
         Else If InStr(Coating, "Duralloy Colours") > 0 Then
             Desc = "Duralloy Colours"
             Interlock = "Duralloy Colours"
+
         Else If InStr(Coating, "Dulux Precious") > 0 Then
             Desc = "Dulux Precious / D1000 / Duratec Zeus"
             Interlock = "Dulux Precious"
+
         Else If InStr(Coating, "Dulux Alphatec") > 0 Then
             Desc = "Dulux Alphatec"
             Interlock = "Dulux Alphatec"
+
         Else If InStr(Coating, "Dulux Duratec Eternity") > 0 Then
             Desc = "Dulux Duratec Eternity / Electro"
             Interlock = "Dulux Duratec Eternity"
+
         Else If InStr(Coating, "Dulux Duratec Elements") > 0 Then
             Desc = "Dulux Duratec Elements"
             Interlock = "Dulux Duratec Elements"
+            
         Else If InStr(Coating, "Dulux Duratex Intensity") > 0 Then
             Desc = "Dulux Duratex Intensity"
             Interlock = "Dulux Duratex Intensity"

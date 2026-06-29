@@ -590,7 +590,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, BlindId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, TubeType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PelmetType, BottomTrackType, MeshType, FrameType, Matrix, Charge, Markup, FabricGroups, OrderDelivery, PriceGroupName")
+                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, BlindId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, TubeType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PanelSize, PelmetType, BottomTrackType, MeshType, FrameType, Matrix, Charge, Markup, FabricGroups, OrderDelivery, PriceGroupName")
                 sqlBuilder.AppendLine("FROM view_details")
                 sqlBuilder.AppendLine("WHERE Active=@Active AND HeaderId=@HeaderId")
 
@@ -681,6 +681,7 @@ Partial Class Methods_Order_DetailMethod
                         Dim BlindNo As String = reader("BlindNo").ToString()
                         Dim UniqueId As String = reader("UniqueId").ToString()
                         Dim Width As String = reader("Width").ToString()
+                        Dim PanelSize As String = reader("PanelSize").ToString()
                         Dim Drop As String = reader("Drop").ToString()
                         Dim FrameColour As String = reader("FrameColour").ToString()
                         Dim PelmetType As String = reader("PelmetType").ToString()
@@ -945,6 +946,12 @@ Partial Class Methods_Order_DetailMethod
 
                             If TubeType = "Retractable Pleated" Then
                                 Product = String.Format("{0} - {1} #{2} {3}", BlindName, TubeType, BottomTrackType, Size)
+                            End If
+                        End If
+
+                        If DesignName = "Supply Only" Then
+                            If BlindName = "Mesh Only" AND NOT TubeType = "Ultra Barrier Mesh" Then
+                                Product = String.Format("{0} - {1} (Width: {2}mm x Length: {3}lm)", DesignName, TubeType, Width, PanelSize)
                             End If
                         End If
 
@@ -1645,8 +1652,8 @@ Partial Class Methods_Order_DetailMethod
                 publicCfg.ResetPriceDetail(itemId)
                 publicCfg.HitungHarga(data.headerid, itemId)
                 publicCfg.HitungSurcharge(data.headerid, itemId)
-
-                Dim dataLog As Object() = {data.headerid, itemId, "Blinds", data.loginid, "Add Item Order"}
+                Dim OrderType As String = publicCfg.GetItemData(String.Format("SELECT OrderType FROM OrderHeaders WHERE Id='{0}'", data.headerid))
+                Dim dataLog As Object() = {data.headerid, itemId, OrderType, data.loginid, "Add Surcharge Oder"}
                 orderCfg.Log_Orders(dataLog)
 
                 msg = "Service has been added successfully."
@@ -1672,8 +1679,8 @@ Partial Class Methods_Order_DetailMethod
                 publicCfg.ResetPriceDetail(itemId)
                 publicCfg.HitungHarga(data.headerid, itemId)
                 ' publicCfg.HitungSurcharge(data.headerid, itemId)
-
-                Dim dataLog As Object() = {data.headerid, itemId, "Blinds", data.loginid, "Update Item Order"}
+                Dim OrderType As String = publicCfg.GetItemData(String.Format("SELECT OrderType FROM OrderHeaders WHERE Id='{0}'", data.headerid))
+                Dim dataLog As Object() = {data.headerid, itemId, OrderType, data.loginid, "Update Surcharge Order"}
                 orderCfg.Log_Orders(dataLog)
 
                 msg = "Service has been updated successfully."
@@ -2111,6 +2118,7 @@ Partial Class Methods_Order_DetailMethod
                             publicCfg.HitungSurcharge(headerid, itemId)
                         End If
                     Next
+                    
                 Else
                     publicCfg.ResetPriceDetail(itemId)
                     publicCfg.HitungHarga(headerid, itemId)
@@ -2413,8 +2421,8 @@ Partial Class Methods_Order_DetailMethod
             publicCfg.ResetPriceDetail(NewItemId)
             publicCfg.HitungHarga(headerid, NewItemId)
             publicCfg.HitungSurcharge(headerid, NewItemId)
-
-            Dim dataLog As Object() = {headerid, NewItemId, "Blinds", loginid, "Copy Item Order"}
+            Dim OrderType As String = publicCfg.GetItemData(String.Format("SELECT OrderType FROM OrderHeaders WHERE Id='{0}'", headerid))
+            Dim dataLog As Object() = {headerid, NewItemId, OrderType, loginid, "Copy Item Order"}
             orderCfg.Log_Orders(dataLog)
 
             Return New SuccessResponse With {
