@@ -993,6 +993,14 @@ Public Class PublicConfig
                     delivery = "Pick Up"
                 End If
 
+                If designName = "Supply Only" Then
+                    delivery = "Pick Up"
+                    If InArray(blindName, "Frame Only") OR (InArray(blindName, "Mesh Only") AND InArray(TubeType, "Ultra Barrier Mesh")) Then
+                        width = "0"
+                    End If
+                    drop = "0"
+                End If
+
                 If designName = "Window" Then
                     delivery = "Pick Up"
                     If TubeType = "Flyscreens" Then
@@ -1019,6 +1027,10 @@ Public Class PublicConfig
                 End If
 
                 If designName = "Cellular Blinds" And blindName = "Potrait" Then
+                    getMatrix = getMatrix * Convert.ToDecimal(findMetre)
+                End If
+
+                If designName = "Supply Only" Then
                     getMatrix = getMatrix * Convert.ToDecimal(findMetre)
                 End If
 

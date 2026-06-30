@@ -237,7 +237,14 @@ Partial Class Methods_Order_SupplyOnlyMethod
             Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
             Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
 
-            Dim PriceGroupName As String = DesignName
+            Dim PriceGroupName As String = String.Format("{0} - {1}", DesignName, TubeName)
+            If InArray(BlindName, "Frame Only") Then
+                PriceGroupName =  String.Format("{0} - Frame Only", DesignName)
+            End If
+            If InArray(TubeName, "Ultra Barrier Mesh") Then
+                PriceGroupName =  String.Format("{0} - {1} ({2})", DesignName, TubeName, data.size)
+            End If
+
             Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
             If PriceGroupId = "" Then
                 Throw New Exception("Something went wrong !")
