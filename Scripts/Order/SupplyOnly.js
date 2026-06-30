@@ -26,9 +26,10 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blinds = document.getElementById("blindtype");
       const blindtype = blinds.value;
       const tubetype = e.target.value;
+      const blindname = blinds.selectedOptions[0].dataset.name;
       const tubename = e.target.selectedOptions[0].dataset.name;
       await handlerElementVisibility(blindtype, tubetype);
-      await Promise.all([bindSize(), bindWidth(), bindColour()]);
+      await Promise.all([bindSize(), bindWidth(), bindColour(blindname)]);
     }
   });
   el.addEventListener("input", (e) => {
@@ -161,8 +162,29 @@ const bindWidth = () => {
   generateOption("widthselect", ["810", "910", "1220", "1500", "1520", "1830"]);
 };
 
-const bindColour = () => {
-  generateOption("colour", ["Charcoal"]);
+const bindColour = (blindname) => {
+  if (!blindname) return;
+  let list = [];
+  if (["Mesh Only"].includes(blindname)) {
+    list.push("black");
+  }
+  if (["Frame Only"].includes(blindname)) {
+    list.push(
+      "Apo Grey",
+      "Beige",
+      "Birch White",
+      "Black",
+      "Bronze",
+      "Dune",
+      "Monument",
+      "Primrose",
+      "Silver",
+      "Surf Mist",
+      "White",
+      "Woodland Grey",
+    );
+  }
+  generateOption("colour", list);
 };
 
 const bindItemOrders = async (itemid) => {
