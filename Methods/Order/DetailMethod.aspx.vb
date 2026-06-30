@@ -3787,10 +3787,10 @@ Partial Class Methods_Order_DetailMethod
                 result += thStartRowSpan2 & "Width" & thEnd
                 result += thStartRowSpan2 & "Drop" & thEnd
                 result += thStartRowSpan2 & "Bracket" & thEnd
-                result += thStartRowSpan2 & "Bottom" & thEnd
+                result += thStartRowSpan2 & "Hold Down" & thEnd
                 result += thStartColSpan2 & "Control" & thEnd
                 result += thStartColSpan3 & "Pelmet" & thEnd
-                result += thStartColSpan2 & "Hand Return" & thEnd
+                result += thStartColSpan2 & "Pelmet Return" & thEnd
                 result += thStartColSpan2 & "Top LHS" & thEnd
                 result += thStartColSpan2 & "Top RHS" & thEnd
                 result += thStartColSpan2 & "Bottom LHS" & thEnd
@@ -3798,7 +3798,7 @@ Partial Class Methods_Order_DetailMethod
                 result += trEnd
 
                 result += trStart
-                result += thStart & "Position" & thEnd
+                result += thStart & "Position Lift, Tilt" & thEnd
                 result += thStart & "Length" & thEnd
                 result += thStart & "Type" & thEnd
                 result += thStart & "Width" & thEnd
@@ -5715,7 +5715,6 @@ Partial Class Methods_Order_DetailMethod
         End Try
         Return result
     End Function
-
 
 
     Private Shared Function BindDescOrderItem(HeaderId As String) As String
