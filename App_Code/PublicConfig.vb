@@ -743,7 +743,10 @@ Public Class PublicConfig
         Dim Drop As Integer = CInt(ListParam(3))
         Dim Width As Integer = CInt(ListParam(4))
         Dim WhereCost As String ="AND [Cost] > 0"
-        If TubeType = "Retractable Pleated" Then WhereCost = ""
+        Select Case TubeType
+            Case "Retractable Flyscreen Pleated", "Retractable Pleated"
+                WhereCost = ""
+        End Select
 
         Dim result As Decimal = 0.00
         Using thisConn As New SqlConnection(myConn)
@@ -1111,7 +1114,7 @@ Public Class PublicConfig
 
             If Not PriceGroupIdB = "" Then
                 Dim TypeB As String = "Matrix"
-                 Dim ListParamCostB As New List(Of Object) From {
+                Dim ListParamCostB As New List(Of Object) From {
                     TubeType,
                     priceGroupIdB,
                     delivery,
@@ -1372,7 +1375,7 @@ Public Class PublicConfig
             Interlock = "Dulux Duratex Intensity"
         End If
        
-        result = GetItemData(String.Format("SELECT SUM((odp.Qty*odp.Cost) - (odp.Qty*odp.Discount)) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND (odp.Description LIKE '%Powder Coating - {1}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track W - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track Pip - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track J - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type F - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track H - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track U - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type 3 - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type 1 - #{2}%'OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type 1 - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type 2 - #{2}%') AND od.Active='1'", HeaderId, Desc, Interlock))
+        result = GetItemData(String.Format("SELECT SUM((odp.Qty*odp.Cost) - (odp.Qty*odp.Discount)) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.Type ='Charge' AND (odp.Description LIKE '%Powder Coating - {1}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track W - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track Pip - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track J - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type F - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track H - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Track U - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type 3 - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type 1 - #{2}%'OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type 1 - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Interlock Type 2 - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Double Sliding Track Top - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Double Sliding Track Bottom - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Single Sliding Track Top - #{2}%' OR odp.Description LIKE '%#Tracking & Interlock - #Single Sliding Track Bottom - #{2}%') AND od.Active='1'", HeaderId, Desc, Interlock))
 
         Return result
     End Function

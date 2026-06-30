@@ -455,6 +455,7 @@ const bindFrameColour = (blindname, tubename, frametype) => {
   if (["Security Window"].includes(blindname)) {
     if (["Ultra Guard"].includes(tubename)) {
       list.push(
+        "Powder Coating",
         "TBC",
         "Apo Grey",
         "Custom Black",

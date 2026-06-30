@@ -190,9 +190,9 @@ Partial Class Methods_Order_WindowMethod
             If width < 150 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 150 !",.field = "width"}}
             End If
-            If width > 6000 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 6000 !",.field = "width"}}
-            End If
+            ' If width > 6000 Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 6000 !",.field = "width"}}
+            ' End If
 
             Dim drop As Integer
             If String.IsNullOrEmpty(data.drop) Then
@@ -204,9 +204,9 @@ Partial Class Methods_Order_WindowMethod
             If drop < 150 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "height must be greater than or equal to 150 !",.field = "drop"}}
             End If
-            If drop > 3200 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "height must be less than or equal to 3200 !",.field = "drop"}}
-            End If
+            ' If drop > 3200 Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "height must be less than or equal to 3200 !",.field = "drop"}}
+            ' End If
 
             ' If InArray(BlindName, "Basic Window") Then
             ' End If
