@@ -29,7 +29,11 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindname = blinds.selectedOptions[0].dataset.name;
       const tubename = e.target.selectedOptions[0].dataset.name;
       await handlerElementVisibility(blindtype, tubetype);
-      await Promise.all([bindSize(), bindWidth(), bindColour(blindname)]);
+      await Promise.all([
+        bindSize(),
+        bindWidth(tubename),
+        bindColour(blindname),
+      ]);
     }
   });
   el.addEventListener("input", (e) => {
@@ -158,8 +162,22 @@ const bindSize = () => {
   ]);
 };
 
-const bindWidth = () => {
-  generateOption("widthselect", ["810", "910", "1220", "1500", "1520", "1830"]);
+const bindWidth = (tubename) => {
+  if (!tubename) return;
+  let list = [];
+  if (["Fibreglass Mesh"].includes(tubename)) {
+    list.push("810", "1220", "1520", "1830");
+  }
+  if (["Aluminium Mesh"].includes(tubename)) {
+    list.push("810", "1220", "1500");
+  }
+  if (["Paw Proof Mesh"].includes(tubename)) {
+    list.push("910", "1220", "1520");
+  }
+  if (["Stainless Steel Mesh"].includes(tubename)) {
+    list.push("810", "1220", "1520");
+  }
+  generateOption("widthselect", list);
 };
 
 const bindColour = (blindname) => {
@@ -218,7 +236,11 @@ const bindItemOrders = async (itemid) => {
       await bindBlinds(item.DesignId);
       await bindTubes(item.DesignId, item.BlindId);
       await handlerElementVisibility(item.BlindId, item.KitId, item);
-      await Promise.all([bindSize(), bindWidth(), bindColour()]);
+      await Promise.all([
+        bindSize(),
+        bindWidth(item.TubeType),
+        bindColour(item.BlindName),
+      ]);
       await Promise.all([handlerSetElementValues(item)]);
     }
 
