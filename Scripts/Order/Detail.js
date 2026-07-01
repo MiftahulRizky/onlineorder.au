@@ -2595,7 +2595,7 @@ const handlerPricingItem = (id) => {
     processing: true,
     serverSide: true, // <<< INI KUNCI PENTINGNYA
     order: [], // Tetap bisa set default order di sini
-    pageLength: 25,
+    pageLength: 50,
     bPaginate: true,
     bInfo: true,
     bFilter: true,

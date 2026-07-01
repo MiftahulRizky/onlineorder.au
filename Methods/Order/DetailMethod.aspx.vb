@@ -2916,6 +2916,9 @@ Partial Class Methods_Order_DetailMethod
             result += Print_Cassette(headerid)
             result += Print_CassetteMotorised(headerid)
 
+            '#Door
+            result += Print_Door(headerid)
+
             'ROLLER
             result += Print_Global_Roller_SkinOnly(headerid)
             result += PrintPDFGlobalGearReduction(headerid)
@@ -4824,6 +4827,110 @@ Partial Class Methods_Order_DetailMethod
             Next
             result += tableEnd
         End If
+        Return result
+    End Function
+
+     Private Shared Function Print_Door(HeaderId As String) As String
+        Dim result As String = String.Empty
+
+        Try
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Door' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='20' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
+                result += spanStart & "DOOR" & spanEnd
+                result += tableStart
+                result += trStart
+                result += thStartRowSpan3 & "No" & thEnd
+                result += thStartRowSpan3 & "ID" & thEnd
+                result += thStartRowSpan3 & "Qty" & thEnd
+                result += thStartRowSpan3 & "Product" & thEnd
+                result += thStartRowSpan3 & "Location" & thEnd
+                ' result += thStartRowSpan3 & "Mounting" & thEnd
+                result += thStartRowSpan3 & "Width" & thEnd
+                result += thStartRowSpan3 & "Drop" & thEnd
+                ' result += thStartRowSpan3 & "Bracket" & thEnd
+                ' result += thStartRowSpan3 & "Bottomrail Hold Down Clip (Clear Plastic)" & thEnd
+                ' result += "<th colspan='2' rowspan='2' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;'>" & "Control" & thEnd
+                ' result += "<th colspan='8' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;'>" & "Cut Out" & thEnd               
+                ' result += trEnd
+
+                ' result += trStart
+                '     result += thStartColSpan2 & "Top LHS" & thEnd
+                '     result += thStartColSpan2 & "Top RHS" & thEnd
+                '     result += thStartColSpan2 & "Bottom LHS" & thEnd
+                '     result += thStartColSpan2 & "Bottom RHS" & thEnd
+                ' result += trEnd 
+
+                ' result += trStart
+                ' result += thStart & "Position" & thEnd
+                ' result += thStart & "Length" & thEnd
+                ' result += thStart & "Width" & thEnd
+                ' result += thStart & "Heigth" & thEnd
+                ' result += thStart & "Width" & thEnd
+                ' result += thStart & "Heigth" & thEnd
+                ' result += thStart & "Width" & thEnd
+                ' result += thStart & "Heigth" & thEnd
+                ' result += thStart & "Width" & thEnd
+                ' result += thStart & "Heigth" & thEnd
+                result += trEnd
+
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    Dim LHSWidth_Top As String = thisData.Tables(0).Rows(i).Item("LHSWidth_Top").ToString()
+                    Dim LHSHeight_Top As String = thisData.Tables(0).Rows(i).Item("LHSHeight_Top").ToString()
+                    Dim RHSWidth_Top As String = thisData.Tables(0).Rows(i).Item("RHSWidth_Top").ToString()
+                    Dim RHSHeight_Top As String = thisData.Tables(0).Rows(i).Item("RHSHeight_Top").ToString()
+                    Dim LHSWidth_Bottom As String = thisData.Tables(0).Rows(i).Item("LHSWidth_Bottom").ToString()
+                    Dim LHSHeight_Bottom As String = thisData.Tables(0).Rows(i).Item("LHSHeight_Bottom").ToString()
+                    Dim RHSWidth_Bottom As String = thisData.Tables(0).Rows(i).Item("RHSWidth_Bottom").ToString()
+                    Dim RHSHeight_Bottom As String = thisData.Tables(0).Rows(i).Item("RHSHeight_Bottom").ToString()
+
+                    If LHSWidth_Top = "0" Then : LHSWidth_Top = "" : End If
+                    If LHSHeight_Top = "0" Then : LHSHeight_Top = "" : End If
+                    If RHSWidth_Top = "0" Then : RHSWidth_Top = "" : End If
+                    If RHSHeight_Top = "0" Then : RHSHeight_Top = "" : End If
+                    If LHSWidth_Bottom = "0" Then : LHSWidth_Bottom = "" : End If
+                    If LHSHeight_Bottom = "0" Then : LHSHeight_Bottom = "" : End If
+                    If RHSWidth_Bottom = "0" Then : RHSWidth_Bottom = "" : End If
+                    If RHSHeight_Bottom = "0" Then : RHSHeight_Bottom = "" : End If
+
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("BracketOption").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("WandLength").ToString() & tdEnd
+                    ' result += tdStart & LHSWidth_Top & tdEnd
+                    ' result += tdStart & LHSHeight_Top & tdEnd
+                    ' result += tdStart & RHSWidth_Top & tdEnd
+                    ' result += tdStart & RHSHeight_Top & tdEnd
+                    ' result += tdStart & LHSWidth_Bottom & tdEnd
+                    ' result += tdStart & LHSHeight_Bottom & tdEnd
+                    ' result += tdStart & RHSWidth_Bottom & tdEnd
+                    ' result += tdStart & RHSHeight_Bottom & tdEnd
+                    result += trEnd
+
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result = "DOOR ERROR CREATE PDF"
+        End Try
         Return result
     End Function
 
