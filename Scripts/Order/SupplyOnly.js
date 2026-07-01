@@ -35,6 +35,17 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindColour(blindname),
       ]);
     }
+
+    if (e.target.id === "colour") {
+      const colour = e.target.value;
+      const divCoating = document.getElementById("divCoating");
+      document.getElementById("coatingcolour").value = "";
+      divCoating.classList.add("d-none");
+      if (["Powder Coating"].includes(colour)) {
+        divCoating.classList.remove("d-none");
+      }
+      bindCoatingType();
+    }
   });
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
@@ -188,6 +199,8 @@ const bindColour = (blindname) => {
   }
   if (["Frame Only"].includes(blindname)) {
     list.push(
+      "Brown",
+      "Powder Coating",
       "Apo Grey",
       "Beige",
       "Birch White",
@@ -203,6 +216,19 @@ const bindColour = (blindname) => {
     );
   }
   generateOption("colour", list);
+};
+
+const bindCoatingType = () => {
+  let data = [];
+  data.push(
+    "Dulux Standard / Duralloy / Surreal Effect",
+    "Dulux Precious / D1000 / Duratec Zeus",
+    "Dulux Alphatec",
+    "Dulux Duratec Eternity / Electro",
+    "Dulux Duratec Elements",
+    "Dulux Duratex Intensity",
+  );
+  generateOption("coatingtype", data);
 };
 
 const bindItemOrders = async (itemid) => {
@@ -240,6 +266,7 @@ const bindItemOrders = async (itemid) => {
         bindSize(),
         bindWidth(item.TubeType),
         bindColour(item.BlindName),
+        bindCoatingType(),
       ]);
       await Promise.all([handlerSetElementValues(item)]);
     }
@@ -264,6 +291,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     const divDrop = document.getElementById("divDrop");
     const divLength = document.getElementById("divLength");
     const divColour = document.getElementById("divColour");
+    const divCoating = document.getElementById("divCoating");
     const divCutOut = document.getElementById("divCutOut");
     const divMarkUp = document.getElementById("divMarkUp");
     const btnSubmit = document.querySelector("#btnSubmit");
@@ -279,6 +307,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     divDrop.classList.add("d-none");
     divLength.classList.add("d-none");
     divColour.classList.add("d-none");
+    divCoating.classList.add("d-none");
     divCutOut.classList.add("d-none");
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
@@ -328,6 +357,12 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       divCutOut.classList.remove("d-none");
     }
 
+    if (item) {
+      if (["Powder Coating"].includes(item.FrameColour)) {
+        divCoating.classList.remove("d-none");
+      }
+    }
+
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
 
     if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
@@ -361,6 +396,8 @@ const handlerSubmit = async (button) => {
       "drop",
       "length",
       "colour",
+      "coatingtype",
+      "coatingcolour",
       "cutout",
       "notes",
       "markup",
@@ -430,7 +467,9 @@ const handlerSetElementValues = (itemData) => {
     widthinput: "Width",
     widthselect: "Width",
     drop: "Drop",
-    colour: "SwipelColour",
+    colour: "FrameColour",
+    coatingtype: "FrameLeft",
+    coatingcolour: "FrameRight",
     cutout: "CutOut_LeftTop",
     trackless: "TilterPosition",
     notes: "Notes",

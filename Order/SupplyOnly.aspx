@@ -129,6 +129,18 @@
                                         </div>  
                                     </div>
 
+                                    <div class="mb-3 row" id="divCoating">
+                                        <label for="coatingtype" class="col-lg-3 text-uppercase fw-bold" id="">Powder Coating</label>
+                                        <div class="col-lg-4" id="divCoatingType">
+                                            <select name="coatingtype" id="coatingtype" class="form-select"></select>
+                                            <small class="form-hint">* Type</small>
+                                        </div>  
+                                        <div class="col-lg-4" id="divCoatingColour">
+                                            <input type="text" name="coatingcolour" id="coatingcolour" class="form-control" autocomplete="off"">
+                                            <small class="form-hint">* Colour</small>
+                                        </div>  
+                                    </div>
+
                                     <div class="mb-3 row" id="divCutOut">
                                         <label for="cutout" class="col-lg-3 text-uppercase fw-bold" >cut out</label>
                                         <div class="col-lg-4">

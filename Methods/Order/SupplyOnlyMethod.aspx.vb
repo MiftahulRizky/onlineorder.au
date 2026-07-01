@@ -28,6 +28,8 @@ Partial Class Methods_Order_SupplyOnlyMethod
         Public Property drop As String
         Public Property length As String
         Public Property colour As String
+        Public Property coatingtype As String
+        Public Property coatingcolour As String
         Public Property cutout As String
         Public Property notes As String
         Public Property markup As String
@@ -196,6 +198,18 @@ Partial Class Methods_Order_SupplyOnlyMethod
                 End If
             End If
 
+            If String.IsNullOrEmpty(data.colour) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "colour is required !",.field = "colour"}}
+            End If
+            If Not String.IsNullOrEmpty(data.colour) AND data.colour = "Powder Coating" Then
+                If String.IsNullOrEmpty(data.coatingtype) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "coating type is required !",.field = "coatingtype"}}
+                End If
+                If String.IsNullOrEmpty(data.coatingcolour) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "coating colour is required !",.field = "coatingcolour"}}
+                End If
+            End If
+
             Dim length As Decimal
             If InArray(BlindName, "Mesh Only") AND NOT InArray(TubeName, "Ultra Barrier Mesh") Then
                 If String.IsNullOrEmpty(data.widthselect) Then
@@ -285,6 +299,11 @@ Partial Class Methods_Order_SupplyOnlyMethod
                 FindWidth = widthinput
                 FindDrop = drop
             End If
+
+            If Not data.colour = "Powder Coating" Then
+                data.coatingtype = ""
+                data.coatingcolour = ""
+            End If
            
             Dim squareMetre As Decimal = 0.00'Math.Round(width * drop / 1000000, 4)
             Dim linearMetre As Decimal = 0.00'Math.Round(width / 1000, 4)
@@ -302,9 +321,9 @@ Partial Class Methods_Order_SupplyOnlyMethod
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
             
-                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, PelmetSize, PanelSize, Width, [Drop], SwipelColour, CutOut_LeftTop, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
+                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, PelmetSize, PanelSize, Width, [Drop], FrameColour, FrameLeft, FrameRight, CutOut_LeftTop, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
 
-                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @PelmetSize, @PanelSize, @Width, @Drop, @SwipelColour, @CutOut_LeftTop, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
+                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @PelmetSize, @PanelSize, @Width, @Drop, @FrameColour, @FrameLeft, @FrameRight, @CutOut_LeftTop, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand(String.Format("INSERT INTO OrderDetails({0}) VALUES ({1})", Field, Values), thisConn)
@@ -321,7 +340,9 @@ Partial Class Methods_Order_SupplyOnlyMethod
                         myCmd.Parameters.AddWithValue("@PanelSize", length.ToString())
                         myCmd.Parameters.AddWithValue("@Width", FindWidth)
                         myCmd.Parameters.AddWithValue("@Drop", FindDrop)
-                        myCmd.Parameters.AddWithValue("@SwipelColour", data.colour)
+                        myCmd.Parameters.AddWithValue("@FrameColour", data.colour)
+                        myCmd.Parameters.AddWithValue("@FrameLeft", data.coatingtype)
+                        myCmd.Parameters.AddWithValue("@FrameRight", data.coatingcolour)
                         myCmd.Parameters.AddWithValue("@CutOut_LeftTop", cutout)
                         myCmd.Parameters.AddWithValue("@SquareMetre", squareMetre)
                         myCmd.Parameters.AddWithValue("@LinearMetre", linearMetre)
@@ -349,7 +370,7 @@ Partial Class Methods_Order_SupplyOnlyMethod
 
                 Dim ItemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, PelmetSize=@PelmetSize, PanelSize=@PanelSize, Width=@width, [Drop]=@Drop, SwipelColour=@SwipelColour, CutOut_LeftTop=@CutOut_LeftTop, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, PelmetSize=@PelmetSize, PanelSize=@PanelSize, Width=@width, [Drop]=@Drop, FrameColour=@FrameColour, FrameLeft=@FrameLeft, FrameRight=@FrameRight, CutOut_LeftTop=@CutOut_LeftTop, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                          myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -363,7 +384,9 @@ Partial Class Methods_Order_SupplyOnlyMethod
                         myCmd.Parameters.AddWithValue("@PanelSize", length.ToString())
                         myCmd.Parameters.AddWithValue("@Width", FindWidth)
                         myCmd.Parameters.AddWithValue("@Drop", FindDrop)
-                        myCmd.Parameters.AddWithValue("@SwipelColour", data.colour)
+                        myCmd.Parameters.AddWithValue("@FrameColour", data.colour)
+                        myCmd.Parameters.AddWithValue("@FrameLeft", data.coatingtype)
+                        myCmd.Parameters.AddWithValue("@FrameRight", data.coatingcolour)
                         myCmd.Parameters.AddWithValue("@CutOut_LeftTop", cutout)
                         myCmd.Parameters.AddWithValue("@SquareMetre", squareMetre)
                         myCmd.Parameters.AddWithValue("@LinearMetre", linearMetre)
