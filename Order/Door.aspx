@@ -301,7 +301,7 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divPetDor">
-                                        <label for="petdoortype" class="col-lg-3 text-uppercase fw-bold">Pet Dor</label>
+                                        <label for="petdoortype" class="col-lg-3 text-uppercase fw-bold">Pet Door</label>
                                         <div class="col-lg-3 col-md-12 col-sm-12">
                                             <select name="petdoortype" id="petdoortype" class="form-select"></select>
                                             <small class="form-hint">* Type</small>

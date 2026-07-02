@@ -4830,7 +4830,7 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
-     Private Shared Function Print_Door(HeaderId As String) As String
+    Private Shared Function Print_Door(HeaderId As String) As String
         Dim result As String = String.Empty
 
         Try
@@ -4840,58 +4840,117 @@ Partial Class Methods_Order_DetailMethod
                 result += spanStart & "DOOR" & spanEnd
                 result += tableStart
                 result += trStart
-                result += thStartRowSpan3 & "No" & thEnd
-                result += thStartRowSpan3 & "ID" & thEnd
-                result += thStartRowSpan3 & "Qty" & thEnd
-                result += thStartRowSpan3 & "Product" & thEnd
-                result += thStartRowSpan3 & "Location" & thEnd
-                ' result += thStartRowSpan3 & "Mounting" & thEnd
-                result += thStartRowSpan3 & "Width" & thEnd
-                result += thStartRowSpan3 & "Drop" & thEnd
-                ' result += thStartRowSpan3 & "Bracket" & thEnd
-                ' result += thStartRowSpan3 & "Bottomrail Hold Down Clip (Clear Plastic)" & thEnd
-                ' result += "<th colspan='2' rowspan='2' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;'>" & "Control" & thEnd
-                ' result += "<th colspan='8' style='text-align:center;height:auto;font-size:8px;color:white;background-color:#007ACC;word-wrap:break-word;border:1px solid black;border-collapse:collapse;padding-top:5px;padding-bottom:5px;'>" & "Cut Out" & thEnd               
-                ' result += trEnd
-
-                ' result += trStart
-                '     result += thStartColSpan2 & "Top LHS" & thEnd
-                '     result += thStartColSpan2 & "Top RHS" & thEnd
-                '     result += thStartColSpan2 & "Bottom LHS" & thEnd
-                '     result += thStartColSpan2 & "Bottom RHS" & thEnd
-                ' result += trEnd 
-
-                ' result += trStart
-                ' result += thStart & "Position" & thEnd
-                ' result += thStart & "Length" & thEnd
-                ' result += thStart & "Width" & thEnd
-                ' result += thStart & "Heigth" & thEnd
-                ' result += thStart & "Width" & thEnd
-                ' result += thStart & "Heigth" & thEnd
-                ' result += thStart & "Width" & thEnd
-                ' result += thStart & "Heigth" & thEnd
-                ' result += thStart & "Width" & thEnd
-                ' result += thStart & "Heigth" & thEnd
+                result += thStartRowSpan2 & "No" & thEnd
+                result += thStartRowSpan2 & "ID" & thEnd
+                result += thStartRowSpan2 & "Qty" & thEnd
+                result += thStartRowSpan2 & "Product" & thEnd
+                result += thStartRowSpan2 & "Location" & thEnd
+                result += thStartColSpan3 & "Width" & thEnd
+                result += thStartRowSpan2 & "Height" & thEnd       
+                result += thStartColSpan2 & "Grille/Frame" & thEnd       
+                result += thStartRowSpan2 & "Mesh" & thEnd       
+                result += thStartColSpan2 & "Handle" & thEnd       
+                result += thStartRowSpan2 & "Inswing Hinges" & thEnd       
+                result += thStartRowSpan2 & "Lock Colour" & thEnd       
+                result += thStartRowSpan2 & "Keyed Alike" & thEnd       
+                result += thStartRowSpan2 & "Bug Seals" & thEnd       
+                result += thStartRowSpan2 & "Closer" & thEnd     
+                result += thStartColSpan2 & "Pet Door" & thEnd    
+                result += thStartRowSpan2 & "Extras" & thEnd    
                 result += trEnd
 
-                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
-                    Dim LHSWidth_Top As String = thisData.Tables(0).Rows(i).Item("LHSWidth_Top").ToString()
-                    Dim LHSHeight_Top As String = thisData.Tables(0).Rows(i).Item("LHSHeight_Top").ToString()
-                    Dim RHSWidth_Top As String = thisData.Tables(0).Rows(i).Item("RHSWidth_Top").ToString()
-                    Dim RHSHeight_Top As String = thisData.Tables(0).Rows(i).Item("RHSHeight_Top").ToString()
-                    Dim LHSWidth_Bottom As String = thisData.Tables(0).Rows(i).Item("LHSWidth_Bottom").ToString()
-                    Dim LHSHeight_Bottom As String = thisData.Tables(0).Rows(i).Item("LHSHeight_Bottom").ToString()
-                    Dim RHSWidth_Bottom As String = thisData.Tables(0).Rows(i).Item("RHSWidth_Bottom").ToString()
-                    Dim RHSHeight_Bottom As String = thisData.Tables(0).Rows(i).Item("RHSHeight_Bottom").ToString()
+                result += trStart
+                    '#Width
+                    result += thStart & "Width" & thEnd
+                    result += thStart & "Middle" & thEnd
+                    result += thStart & "Bottom" & thEnd
 
-                    If LHSWidth_Top = "0" Then : LHSWidth_Top = "" : End If
-                    If LHSHeight_Top = "0" Then : LHSHeight_Top = "" : End If
-                    If RHSWidth_Top = "0" Then : RHSWidth_Top = "" : End If
-                    If RHSHeight_Top = "0" Then : RHSHeight_Top = "" : End If
-                    If LHSWidth_Bottom = "0" Then : LHSWidth_Bottom = "" : End If
-                    If LHSHeight_Bottom = "0" Then : LHSHeight_Bottom = "" : End If
-                    If RHSWidth_Bottom = "0" Then : RHSWidth_Bottom = "" : End If
-                    If RHSHeight_Bottom = "0" Then : RHSHeight_Bottom = "" : End If
+                    '#Grille
+                    result += thStart & "Type" & thEnd
+                    result += thStart & "Colour" & thEnd
+
+                    '#Handle
+                    result += thStart & "Side" & thEnd
+                    result += thStart & "Height" & thEnd
+
+                    '#Pet Door
+                    result += thStart & "Type" & thEnd
+                    result += thStart & "Position" & thEnd
+                result += trEnd 
+
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    Dim FrameColour As String = thisData.Tables(0).Rows(i).Item("FrameColour").ToString()
+                    Dim FrameLeft As String = thisData.Tables(0).Rows(i).Item("FrameLeft").ToString()
+                    Dim FrameRight As String = thisData.Tables(0).Rows(i).Item("FrameRight").ToString()
+                    Dim MeshType As String = thisData.Tables(0).Rows(i).Item("MeshType").ToString()
+                    Dim Brace As String = thisData.Tables(0).Rows(i).Item("Brace").ToString()
+                    Dim SlatSize As String = thisData.Tables(0).Rows(i).Item("SlatSize").ToString()
+                    Dim SlatQty As String = thisData.Tables(0).Rows(i).Item("SlatQty").ToString()
+                    Dim TrackColour As String = thisData.Tables(0).Rows(i).Item("TrackColour").ToString()
+                    Dim WandPosition As String = thisData.Tables(0).Rows(i).Item("WandPosition").ToString()
+                    Dim AdditionalMotorRaw As String = thisData.Tables(0).Rows(i).Item("AdditionalMotor").ToString()
+                    
+                    If InStr(FrameLeft, "Dulux Standard") > 0 Then
+                        FrameLeft = "Dulux Standard"
+                    Else If InStr(FrameLeft, "Duralloy Colours") > 0 Then
+                        FrameLeft = "Duralloy Colours"
+                    Else If InStr(FrameLeft, "Dulux Precious") > 0 Then
+                        FrameLeft = "Dulux Precious"
+                    Else If InStr(FrameLeft, "Dulux Alphatec") > 0 Then
+                        FrameLeft = "Dulux Alphatec"
+                    Else If InStr(FrameLeft, "Dulux Duratec Eternity") > 0 Then
+                        FrameLeft = "Dulux Duratec Eternity"
+                    Else If InStr(FrameLeft, "Dulux Duratec Elements") > 0 Then
+                        FrameLeft = "Dulux Duratec Elements"
+                    Else If InStr(FrameLeft, "Dulux Duratex Intensity") > 0 Then
+                        FrameLeft = "Dulux Duratex Intensity"
+                    End If
+
+                    If FrameColour = "Powder Coating" Then 
+                        FrameColour = String.Format("{0} - {1}", FrameLeft, FrameRight)
+                    End IF
+
+                    If Not (SlatQty = "" Or SlatQty = "0") Then
+                        SlatSize += String.Format(" - ({0})", SlatQty)
+                    End If
+
+                    If Not (WandPosition = "" Or WandPosition = "0") Then
+                        TrackColour += String.Format(" - ({0})", WandPosition)
+                    End If
+
+                    Dim AdditionalMotor As String = ""
+                    If Not String.IsNullOrEmpty(AdditionalMotorRaw) Then
+                        Try
+                            Dim serializer As New JavaScriptSerializer()
+                            
+                            Dim rows As List(Of Dictionary(Of String, Object)) = serializer.Deserialize(Of List(Of Dictionary(Of String, Object)))(AdditionalMotorRaw)
+                            
+                            Dim lines As New List(Of String)()
+                            
+                            For Each item As Dictionary(Of String, Object) In rows
+                                Dim name As String = item("name").ToString()
+                                Dim unit As String = item("unit").ToString()
+                                Dim value As String = item("value").ToString()
+                                
+                                Dim formattedLine As String = ""
+                                
+                                If unit.Equals("Qty", StringComparison.OrdinalIgnoreCase) Then
+                                    formattedLine = name & " - " & value & "Pcs/Qty"
+                                Else
+                                    formattedLine = name & " - " & value & unit
+                                End If
+                                
+                                lines.Add(formattedLine)
+                            Next
+                            
+                            AdditionalMotor = String.Join("<br />", lines)
+                            
+                        Catch ex As Exception
+                            AdditionalMotor = "Error Parsing Data"
+                        End Try
+                    Else
+                        AdditionalMotor = "-"
+                    End If
 
                     result += trStart
                     result += tdStart & i + 1 & tdEnd
@@ -4899,21 +4958,23 @@ Partial Class Methods_Order_DetailMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
-                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("WidthMiddle").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("WidthBottom").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
-                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("BracketOption").ToString() & tdEnd
-                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
-                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
-                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("WandLength").ToString() & tdEnd
-                    ' result += tdStart & LHSWidth_Top & tdEnd
-                    ' result += tdStart & LHSHeight_Top & tdEnd
-                    ' result += tdStart & RHSWidth_Top & tdEnd
-                    ' result += tdStart & RHSHeight_Top & tdEnd
-                    ' result += tdStart & LHSWidth_Bottom & tdEnd
-                    ' result += tdStart & LHSHeight_Bottom & tdEnd
-                    ' result += tdStart & RHSWidth_Bottom & tdEnd
-                    ' result += tdStart & RHSHeight_Bottom & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FrameType").ToString() & tdEnd
+                    result += tdStart & FrameColour & tdEnd
+                    result += tdStart & MeshType & tdEnd
+                    result += tdStart & Brace & tdEnd
+                    result += tdStart & SlatSize & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("PortHole").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("PlungerPin").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Batten").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FlatType").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ChildSafe").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("TrackType").ToString() & tdEnd
+                    result += tdStart & TrackColour & tdEnd
+                    result += tdStart & AdditionalMotor & tdEnd
                     result += trEnd
 
                     If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
@@ -5839,6 +5900,7 @@ Partial Class Methods_Order_DetailMethod
         Dim totalGlobalRoman As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Global Roman Blinds' AND Active=1")
         Dim totalVerishades As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Veri Shades' AND Active=1")
         Dim totalVertical As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Vertical Blinds' AND Active=1")
+        Dim totalDoor As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Door' AND Active=1")
 
         If totalAluminium = "" Then : totalAluminium = "-" : End If
         If totalCellular = "" Then : totalCellular = "-" : End If
@@ -5851,6 +5913,7 @@ Partial Class Methods_Order_DetailMethod
         If totalGlobalRoman = "" Then : totalGlobalRoman = "-" : End If
         If totalVerishades = "" Then : totalVerishades = "-" : End If
         If totalVertical = "" Then : totalVertical = "-" : End If
+        If totalDoor = "" Then : totalDoor = "-" : End If
 
         Dim aluminiumblinds As String = "<b>Aluminium Blinds: " & totalAluminium & "</b>"
         Dim celloraBlinds As String = "<b>Cellular Blinds: " & totalCellular & "</b>"
@@ -5863,9 +5926,10 @@ Partial Class Methods_Order_DetailMethod
         Dim romanGlobalBlinds As String = "<b>Global Roman Blinds: " & totalGlobalRoman & "</b>"
         Dim verishades As String = "<b>Veri Shades: " & totalVerishades & "</b>"
         Dim verticalblinds As String = "<b>Vertical Blinds: " & totalVertical & "</b>"
+        Dim door As String = "<b>Door: " & totalDoor & "</b>"
 
         ' result = celloraBlinds & separted & lumen & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & rollerglobalblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
-        result = String.Format("{0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} | {8} | {9}",celloraBlinds, lumen, panelGlides, venetianblinds, rollerblinds, rollerglobalblinds, romanBlinds, romanGlobalBlinds, verishades, verticalblinds)
+        result = String.Format("{0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} | {8} | {9} | {10}",celloraBlinds, lumen, panelGlides, venetianblinds, rollerblinds, rollerglobalblinds, romanBlinds, romanGlobalBlinds, verishades, verticalblinds, door)
         Return result
     End Function
 
