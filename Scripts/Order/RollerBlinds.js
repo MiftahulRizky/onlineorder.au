@@ -472,8 +472,8 @@ const handlerElementVisibility = async (
       divControlPosition.classList.remove("d-none");
       lblControlPosition.innerHTML = "control side";
       divBracketCover.classList.remove("d-none");
-      if (brackettype === "Double") {
-        divBracketExt.classList.add("d-none");
+      if (["Single"].includes(brackettype)) {
+        divBracketExt.classList.remove("d-none");
       }
     }
 
@@ -491,8 +491,8 @@ const handlerElementVisibility = async (
       lblControlPosition.innerHTML = "motor side";
       divExtras.classList.remove("d-none");
       divBracketCover.classList.remove("d-none");
-      if (brackettype === "Double") {
-        divBracketExt.classList.add("d-none");
+      if (["Single"].includes(brackettype)) {
+        divBracketExt.classList.remove("d-none");
       }
     }
 
@@ -502,8 +502,11 @@ const handlerElementVisibility = async (
         divControlPosition.classList.remove("d-none");
         divChain.classList.remove("d-none");
         divBracketCover.classList.remove("d-none");
-        if (brackettype === "Double") {
-          divBracketExt.classList.add("d-none");
+        if (
+          ["Single"].includes(brackettype) ||
+          brackettype.includes("Linked")
+        ) {
+          divBracketExt.classList.remove("d-none");
         }
       }
       divTubeSize.classList.remove("d-none");

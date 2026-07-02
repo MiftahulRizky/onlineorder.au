@@ -2918,6 +2918,7 @@ Partial Class Methods_Order_DetailMethod
 
             '#Door
             result += Print_Door(headerid)
+            result += Print_Window(headerid)
 
             'ROLLER
             result += Print_Global_Roller_SkinOnly(headerid)
@@ -4995,6 +4996,152 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
+    Private Shared Function Print_Window(HeaderId As String) As String
+        Dim result As String = String.Empty
+
+        Try
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Window' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='20' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
+                result += spanStart & "WINDOW" & spanEnd
+                result += tableStart
+                result += trStart
+                result += thStartRowSpan2 & "No" & thEnd
+                result += thStartRowSpan2 & "ID" & thEnd
+                result += thStartRowSpan2 & "Qty" & thEnd
+                result += thStartRowSpan2 & "Product" & thEnd
+                result += thStartRowSpan2 & "Location" & thEnd
+                result += thStartRowSpan2 & "Width" & thEnd
+                result += thStartRowSpan2 & "Height" & thEnd       
+                result += thStartRowSpan2 & "Mesh" & thEnd       
+                result += thStartRowSpan2 & "Sliding" & thEnd 
+                result += thStartRowSpan2 & "Stacking" & thEnd 
+                result += thStartRowSpan2 & "Trackless" & thEnd 
+                result += thStartColSpan2 & "Frame" & thEnd       
+                result += thStartRowSpan2 & "Brace" & thEnd       
+                result += thStartRowSpan2 & "Fitting Otions" & thEnd 
+                result += thStartRowSpan2 & "Extras" & thEnd    
+                result += trEnd
+
+                result += trStart
+
+                    '#Grille
+                    result += thStart & "Type" & thEnd
+                    result += thStart & "Colour" & thEnd
+
+                result += trEnd 
+
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    Dim FrameColour As String = thisData.Tables(0).Rows(i).Item("FrameColour").ToString()
+                    Dim FrameLeft As String = thisData.Tables(0).Rows(i).Item("FrameLeft").ToString()
+                    Dim FrameRight As String = thisData.Tables(0).Rows(i).Item("FrameRight").ToString()
+                    Dim MeshType As String = thisData.Tables(0).Rows(i).Item("MeshType").ToString()
+                    Dim Brace As String = thisData.Tables(0).Rows(i).Item("Brace").ToString()
+                    Dim SlatSize As String = thisData.Tables(0).Rows(i).Item("SlatSize").ToString()
+                    Dim SlatQty As String = thisData.Tables(0).Rows(i).Item("SlatQty").ToString()
+                    Dim TrackColour As String = thisData.Tables(0).Rows(i).Item("TrackColour").ToString()
+                    Dim WandPosition As String = thisData.Tables(0).Rows(i).Item("WandPosition").ToString()
+                    Dim AdditionalMotorRaw As String = thisData.Tables(0).Rows(i).Item("AdditionalMotor").ToString()
+                    
+                    If InStr(FrameLeft, "Dulux Standard") > 0 Then
+                        FrameLeft = "Dulux Standard"
+                    Else If InStr(FrameLeft, "Duralloy Colours") > 0 Then
+                        FrameLeft = "Duralloy Colours"
+                    Else If InStr(FrameLeft, "Dulux Precious") > 0 Then
+                        FrameLeft = "Dulux Precious"
+                    Else If InStr(FrameLeft, "Dulux Alphatec") > 0 Then
+                        FrameLeft = "Dulux Alphatec"
+                    Else If InStr(FrameLeft, "Dulux Duratec Eternity") > 0 Then
+                        FrameLeft = "Dulux Duratec Eternity"
+                    Else If InStr(FrameLeft, "Dulux Duratec Elements") > 0 Then
+                        FrameLeft = "Dulux Duratec Elements"
+                    Else If InStr(FrameLeft, "Dulux Duratex Intensity") > 0 Then
+                        FrameLeft = "Dulux Duratex Intensity"
+                    End If
+
+                    If FrameColour = "Powder Coating" Then 
+                        FrameColour = String.Format("{0} - {1}", FrameLeft, FrameRight)
+                    End IF
+
+                    If Not (SlatQty = "" Or SlatQty = "0") Then
+                        SlatSize += String.Format(" - ({0})", SlatQty)
+                    End If
+
+                    If Not (WandPosition = "" Or WandPosition = "0") Then
+                        TrackColour += String.Format(" - ({0})", WandPosition)
+                    End If
+
+                    Dim AdditionalMotor As String = ""
+                    If Not String.IsNullOrEmpty(AdditionalMotorRaw) Then
+                        Try
+                            Dim serializer As New JavaScriptSerializer()
+                            
+                            Dim rows As List(Of Dictionary(Of String, Object)) = serializer.Deserialize(Of List(Of Dictionary(Of String, Object)))(AdditionalMotorRaw)
+                            
+                            Dim lines As New List(Of String)()
+                            
+                            For Each item As Dictionary(Of String, Object) In rows
+                                Dim name As String = item("name").ToString()
+                                Dim unit As String = item("unit").ToString()
+                                Dim value As String = item("value").ToString()
+                                
+                                Dim formattedLine As String = ""
+                                
+                                If unit.Equals("Qty", StringComparison.OrdinalIgnoreCase) Then
+                                    formattedLine = name & " - " & value & "Pcs/Qty"
+                                Else
+                                    formattedLine = name & " - " & value & unit
+                                End If
+                                
+                                lines.Add(formattedLine)
+                            Next
+                            
+                            AdditionalMotor = String.Join("<br />", lines)
+                            
+                        Catch ex As Exception
+                            AdditionalMotor = "Error Parsing Data"
+                        End Try
+                    Else
+                        AdditionalMotor = "-"
+                    End If
+
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & MeshType & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BottomTrackType").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("StackPosition").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("TilterPosition").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FrameType").ToString() & tdEnd
+                    result += tdStart & FrameColour & tdEnd
+                    result += tdStart & Brace & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Fitting").ToString() & tdEnd
+                    result += tdStart & AdditionalMotor & tdEnd
+                    result += trEnd
+
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result = "WINDOW ERROR CREATE PDF"
+        End Try
+        Return result
+    End Function
+
 
 
     Private Shared Function Print_Global_Roller_SkinOnly(HeaderId As String) As String
@@ -5901,6 +6048,7 @@ Partial Class Methods_Order_DetailMethod
         Dim totalVerishades As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Veri Shades' AND Active=1")
         Dim totalVertical As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Vertical Blinds' AND Active=1")
         Dim totalDoor As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Door' AND Active=1")
+        Dim totalWindow As String = GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Window' AND Active=1")
 
         If totalAluminium = "" Then : totalAluminium = "-" : End If
         If totalCellular = "" Then : totalCellular = "-" : End If
@@ -5914,6 +6062,7 @@ Partial Class Methods_Order_DetailMethod
         If totalVerishades = "" Then : totalVerishades = "-" : End If
         If totalVertical = "" Then : totalVertical = "-" : End If
         If totalDoor = "" Then : totalDoor = "-" : End If
+        If totalWindow = "" Then : totalWindow = "-" : End If
 
         Dim aluminiumblinds As String = "<b>Aluminium Blinds: " & totalAluminium & "</b>"
         Dim celloraBlinds As String = "<b>Cellular Blinds: " & totalCellular & "</b>"
@@ -5927,9 +6076,10 @@ Partial Class Methods_Order_DetailMethod
         Dim verishades As String = "<b>Veri Shades: " & totalVerishades & "</b>"
         Dim verticalblinds As String = "<b>Vertical Blinds: " & totalVertical & "</b>"
         Dim door As String = "<b>Door: " & totalDoor & "</b>"
+        Dim window As String = "<b>Window: " & totalWindow & "</b>"
 
         ' result = celloraBlinds & separted & lumen & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & rollerglobalblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
-        result = String.Format("{0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} | {8} | {9} | {10}",celloraBlinds, lumen, panelGlides, venetianblinds, rollerblinds, rollerglobalblinds, romanBlinds, romanGlobalBlinds, verishades, verticalblinds, door)
+        result = String.Format("{0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} | {8} | {9} | {10} | {11}",celloraBlinds, lumen, panelGlides, venetianblinds, rollerblinds, rollerglobalblinds, romanBlinds, romanGlobalBlinds, verishades, verticalblinds, door, window)
         Return result
     End Function
 
@@ -9089,7 +9239,7 @@ Partial Class Methods_Order_DetailMethod
                                 tableName = "JobSheet_GlobalPanelGlides"
 
                             Case "Roller Blinds"
-                                fieldsToProcess.AddRange({"Line", "BlindNo", "LinkBlind", "Qty", "Location", "Mounting", "Width", "Drop", "RollDirection", "ControlPosition", "ControlLength", "MotorStyle", "MotorRemote", "MotorCharger", "Connector", "Accessory", "TubeSize", "Trim", "ChildSafe", "Notes", "KitName", "BracketType", "TubeType", "TubeSkinSize", "NumBoldNuts",  "ControlType",  "ColourType", "ChainName", "ChainColour", "ChainLength","BottomName", "BottomType", "BottomColour","FabricName", "FabricType", "FabricColour", "FabricWidth"})
+                                fieldsToProcess.AddRange({"Line", "BlindNo", "LinkBlind", "Qty", "Location", "Mounting", "Width", "Drop", "RollDirection", "ControlPosition", "ControlLength", "MotorStyle", "MotorRemote", "MotorCharger", "Connector", "Accessory", "TubeSize", "Trim", "ChildSafe", "BracketCover", "BracketExtension", "Notes", "KitName", "BracketType", "TubeType", "TubeSkinSize", "NumBoldNuts",  "ControlType",  "ColourType", "ChainName", "ChainColour", "ChainLength","BottomName", "BottomType", "BottomColour","FabricName", "FabricType", "FabricColour", "FabricWidth"})
 
                                 tableName = "JobSheet_RollerBlinds"
 
@@ -12723,14 +12873,14 @@ Partial Class Methods_Order_DetailMethod
             End Select
         Next
 
-        Dim Motorised1 As String = ControlType(0) & " " & currentData("TubeSize1").ToString() & " (" & currentData("ColourType1").ToString() & ")"
-        Dim Motorised2 As String = ControlType(1) & " " & currentData("TubeSize2").ToString() & " (" & currentData("ColourType2").ToString() & ")"
-        Dim Motorised3 As String = ControlType(2) & " " & currentData("TubeSize3").ToString() & " (" & currentData("ColourType3").ToString() & ")"
-        Dim Motorised4 As String = ControlType(3) & " " & currentData("TubeSize4").ToString() & " (" & currentData("ColourType4").ToString() & ")"
-        Dim Motorised5 As String = ControlType(4) & " " & currentData("TubeSize5").ToString() & " (" & currentData("ColourType5").ToString() & ")"
-        Dim Motorised6 As String = ControlType(5) & " " & currentData("TubeSize6").ToString() & " (" & currentData("ColourType6").ToString() & ")"
+        Dim Motorised1 As String = String.Format("{0} {1} {2}", ControlType(0), currentData("TubeSize1").ToString(), If(currentData("ColourType1").ToString() = "", "", "(" & currentData("ColourType1").ToString() & ")"))
+        Dim Motorised2 As String = String.Format("{0} {1} {2}", ControlType(1), currentData("TubeSize2").ToString(), If(currentData("ColourType2").ToString() = "", "", "(" & currentData("ColourType2").ToString() & ")"))
+        Dim Motorised3 As String = String.Format("{0} {1} {2}", ControlType(2), currentData("TubeSize3").ToString(), If(currentData("ColourType3").ToString() = "", "", "(" & currentData("ColourType3").ToString() & ")"))
+        Dim Motorised4 As String = String.Format("{0} {1} {2}", ControlType(3), currentData("TubeSize4").ToString(), If(currentData("ColourType4").ToString() = "", "", "(" & currentData("ColourType4").ToString() & ")"))
+        Dim Motorised5 As String = String.Format("{0} {1} {2}", ControlType(4), currentData("TubeSize5").ToString(), If(currentData("ColourType5").ToString() = "", "", "(" & currentData("ColourType5").ToString() & ")"))
+        Dim Motorised6 As String = String.Format("{0} {1} {2}", ControlType(5), currentData("TubeSize6").ToString(), If(currentData("ColourType6").ToString() = "", "", "(" & currentData("ColourType6").ToString() & ")"))
 
-        Dim initBracketType As String() = {
+        Dim ibt As String() = {
             currentData("BracketType1").ToString(),
             currentData("BracketType2").ToString(),
             currentData("BracketType3").ToString(),
@@ -12738,28 +12888,52 @@ Partial Class Methods_Order_DetailMethod
             currentData("BracketType5").ToString(),
             currentData("BracketType6").ToString()
         }
-        For i As Integer = 0 To initBracketType.Length - 1
-            Select Case initBracketType(i)
+        For i As Integer = 0 To ibt.Length - 1
+            Select Case ibt(i)
                 Case "Single"
-                    initBracketType(i) = ""
+                    ibt(i) = "Single"
                 Case "Linked 2 Blinds (Dep)"
-                    initBracketType(i) = "L2B1C"
+                    ibt(i) = "L 2B1C"
                 Case "Linked 2 Blinds (Ind)"
-                    initBracketType(i) = "L2B2C"
+                    ibt(i) = "L 2B2C"
                 Case "Linked 3 Blinds (Dep)"
-                    initBracketType(i) = "L3B1C"
+                    ibt(i) = "L 3B1C"
                 Case "Linked 3 Blinds (Ind)"
-                    initBracketType(i) = "L3B2C"
+                    ibt(i) = "L 3B2C"
                 Case "Double"
-                    initBracketType(i) = "D"
+                    ibt(i) = "D"
                 Case "Double and Link System Dep"
-                    initBracketType(i) = "DL4B2C"
+                    ibt(i) = "DL 4B2C"
                 Case "Double and Link System Ind"
-                    initBracketType(i) = "DL4B4C"
+                    ibt(i) = "DL 4B4C"
             End Select
         Next
 
-         Dim initTubeType As String() = {
+        Dim ibc As String() = {
+            currentData("BracketCover1").ToString(),
+            currentData("BracketCover2").ToString(),
+            currentData("BracketCover3").ToString(),
+            currentData("BracketCover4").ToString(),
+            currentData("BracketCover5").ToString(),
+            currentData("BracketCover6").ToString()
+        }
+        For i As Integer = 0 To ibc.Length - 1
+          ibc(i) = ibc(i)
+        Next
+
+        Dim ibe As String() = {
+            currentData("BracketExtension1").ToString(),
+            currentData("BracketExtension2").ToString(),
+            currentData("BracketExtension3").ToString(),
+            currentData("BracketExtension4").ToString(),
+            currentData("BracketExtension5").ToString(),
+            currentData("BracketExtension6").ToString()
+        }
+        For i As Integer = 0 To ibe.Length - 1
+          ibe(i) = ibe(i)
+        Next
+
+        Dim itt As String() = {
             currentData("TubeType1").ToString(),
             currentData("TubeType2").ToString(),
             currentData("TubeType3").ToString(),
@@ -12767,19 +12941,25 @@ Partial Class Methods_Order_DetailMethod
             currentData("TubeType5").ToString(),
             currentData("TubeType6").ToString()
         }
-
-         For i As Integer = 0 To initTubeType.Length - 1
-            If InStr(initTubeType(i), "JAI") > 0 Then : initTubeType(i) = "MJH" : End If
-            If InStr(initTubeType(i), "Acmeda") > 0 Then : initTubeType(i) = "MAC" : End If
-            If InStr(initTubeType(i), "LOV") > 0 Then : initTubeType(i) = "MLOV" : End If
+        For i As Integer = 0 To itt.Length - 1
+            If InStr(itt(i), "JAI") > 0 Then : itt(i) = "M" : End If
+            If InStr(itt(i), "Acmeda") > 0 Then : itt(i) = "MAC" : End If
+            If InStr(itt(i), "LOV") > 0 Then : itt(i) = "MLOV" : End If
         Next
 
-        Dim Bracket1 As String = initTubeType(0) & " " & initBracketType(0)
-        Dim Bracket2 As String = initTubeType(1) & " " & initBracketType(1)
-        Dim Bracket3 As String = initTubeType(2) & " " & initBracketType(2)
-        Dim Bracket4 As String = initTubeType(3) & " " & initBracketType(3)
-        Dim Bracket5 As String = initTubeType(4) & " " & initBracketType(4)
-        Dim Bracket6 As String = initTubeType(5) & " " & initBracketType(5)
+        Dim FindBracket1 As String = FindBracketType(ibt(0), ibc(0), ibe(0), "M")
+        Dim FindBracket2 As String = FindBracketType(ibt(1), ibc(1), ibe(1), "M")
+        Dim FindBracket3 As String = FindBracketType(ibt(2), ibc(2), ibe(2), "M")
+        Dim FindBracket4 As String = FindBracketType(ibt(3), ibc(3), ibe(3), "M")
+        Dim FindBracket5 As String = FindBracketType(ibt(4), ibc(4), ibe(4), "M")
+        Dim FindBracket6 As String = FindBracketType(ibt(5), ibc(5), ibe(5), "M")
+
+        Dim Bracket1 As String = String.Format("{0} {1}", itt(0), FindBracket1)
+        Dim Bracket2 As String = String.Format("{0} {1}", itt(1), FindBracket2)
+        Dim Bracket3 As String = String.Format("{0} {1}", itt(2), FindBracket3)
+        Dim Bracket4 As String = String.Format("{0} {1}", itt(3), FindBracket4)
+        Dim Bracket5 As String = String.Format("{0} {1}", itt(4), FindBracket5)
+        Dim Bracket6 As String = String.Format("{0} {1}", itt(5), FindBracket6)
 
         Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
 
@@ -13079,7 +13259,7 @@ Partial Class Methods_Order_DetailMethod
             result+= trDetEnd
 
             '#line Blank
-            result += BlankLineEachRow(4)
+            result += BlankLineEachRow(2)
 
         result+= tableDetEnd
 
@@ -13152,6 +13332,85 @@ Partial Class Methods_Order_DetailMethod
 
     Private Shared Function PrintRollerStandard(currentData As DataRow) As String
         Dim result As String = String.Empty
+
+        Dim ibt As String() = {
+            currentData("BracketType1").ToString(),
+            currentData("BracketType2").ToString(),
+            currentData("BracketType3").ToString(),
+            currentData("BracketType4").ToString(),
+            currentData("BracketType5").ToString(),
+            currentData("BracketType6").ToString()
+        }
+        For i As Integer = 0 To ibt.Length - 1
+            Select Case ibt(i)
+                Case "Single"
+                    ibt(i) = "Single"
+                Case "Linked 2 Blinds (Dep)"
+                    ibt(i) = "L 2B1C"
+                Case "Linked 2 Blinds (Ind)"
+                    ibt(i) = "L 2B2C"
+                Case "Linked 3 Blinds (Dep)"
+                    ibt(i) = "L 3B1C"
+                Case "Linked 3 Blinds (Ind)"
+                    ibt(i) = "L 3B2C"
+                Case "Double"
+                    ibt(i) = "Double"
+                Case "Double and Link System Dep"
+                    ibt(i) = "DL 4B2C"
+                Case "Double and Link System Ind"
+                    ibt(i) = "DL 4B4C"
+            End Select
+        Next
+
+        Dim ibc As String() = {
+            currentData("BracketCover1").ToString(),
+            currentData("BracketCover2").ToString(),
+            currentData("BracketCover3").ToString(),
+            currentData("BracketCover4").ToString(),
+            currentData("BracketCover5").ToString(),
+            currentData("BracketCover6").ToString()
+        }
+        For i As Integer = 0 To ibc.Length - 1
+          ibc(i) = ibc(i)
+        Next
+
+        Dim ibe As String() = {
+            currentData("BracketExtension1").ToString(),
+            currentData("BracketExtension2").ToString(),
+            currentData("BracketExtension3").ToString(),
+            currentData("BracketExtension4").ToString(),
+            currentData("BracketExtension5").ToString(),
+            currentData("BracketExtension6").ToString()
+        }
+        For i As Integer = 0 To ibe.Length - 1
+          ibe(i) = ibe(i)
+        Next
+
+        Dim itt As String() = {
+            currentData("TubeType1").ToString(),
+            currentData("TubeType2").ToString(),
+            currentData("TubeType3").ToString(),
+            currentData("TubeType4").ToString(),
+            currentData("TubeType5").ToString(),
+            currentData("TubeType6").ToString()
+        }
+        For i As Integer = 0 To itt.Length - 1
+          itt(i) = itt(i)
+        Next
+
+        Dim FindBracket1 As String = FindBracketStd(ibt(0), ibc(0), ibe(0), itt(0))
+        Dim FindBracket2 As String = FindBracketStd(ibt(1), ibc(1), ibe(1), itt(1))
+        Dim FindBracket3 As String = FindBracketStd(ibt(2), ibc(2), ibe(2), itt(2))
+        Dim FindBracket4 As String = FindBracketStd(ibt(3), ibc(3), ibe(3), itt(3))
+        Dim FindBracket5 As String = FindBracketStd(ibt(4), ibc(4), ibe(4), itt(4))
+        Dim FindBracket6 As String = FindBracketStd(ibt(5), ibc(5), ibe(5), itt(5))
+
+        Dim Bracket1 As String = FindBracket1
+        Dim Bracket2 As String = FindBracket2
+        Dim Bracket3 As String = FindBracket3
+        Dim Bracket4 As String = FindBracket4
+        Dim Bracket5 As String = FindBracket5
+        Dim Bracket6 As String = FindBracket6
 
         Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
         
@@ -13372,12 +13631,12 @@ Partial Class Methods_Order_DetailMethod
             '#BracketType
             result+= trDetStart
                 result+= tdTitleStart & boldStart & "Bracket" & boldEnd & tdDetEnd
-                result+= tdDetStart & boldStart & currentData("BracketType1").ToString() & boldEnd & tdDetEnd
-                result+= tdDetStart & boldStart & currentData("BracketType2").ToString() & boldEnd & tdDetEnd
-                result+= tdDetStart & boldStart & currentData("BracketType3").ToString() & boldEnd & tdDetEnd
-                result+= tdDetStart & boldStart & currentData("BracketType4").ToString() & boldEnd & tdDetEnd
-                result+= tdDetStart & boldStart & currentData("BracketType5").ToString() & boldEnd & tdDetEnd
-                result+= tdDetRight & boldStart & currentData("BracketType6").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & Bracket1 & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & Bracket2 & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & Bracket3 & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & Bracket4 & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & Bracket5 & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & Bracket6 & boldEnd & tdDetEnd
             result+= trDetEnd
 
             '#LinkBlind
@@ -22619,6 +22878,86 @@ Partial Class Methods_Order_DetailMethod
             result+= trDetEnd
         Next
         Return result
+    End Function
+
+    Private Shared Function FindBracketType(brackettype As String, cover As String, ext As String, type As String) As String
+        Try
+            Dim result As String = ""
+
+            result = brackettype
+            If brackettype = "Single" Then
+                If cover = "Yes" Then result = "Cov"
+                If ext = "Yes" Then result = "Ext"
+                If cover = "Yes" And ext = "Yes" Then result = "Ext Cov"
+            End IF
+
+            If InArray(brackettype, "Double", "L 2B1C", "L 2B2C", "L 3B1C", "L 3B2C", "DL 4B2C", "DL 4B4C") Then
+                If cover = "Yes" Then result = String.Format("{0} Cov", brackettype)
+            End If
+
+            Return result
+        Catch ex As Exception
+            Return "500"
+        End Try
+    End Function
+
+    Private Shared Function FindBracketStd(brackettype As String, cover As String, ext As String, type As String) As String
+        Try
+            Dim result As String = ""
+
+            If InStr(type, "Standard") Then
+                result = brackettype
+                If brackettype = "Single" Then
+                    If cover = "Yes" Then result = "S Cover"
+                    If ext = "Yes" Then result = "Extension"
+                    If cover = "Yes" And ext = "Yes" Then result = "Ext Cover"
+                End IF
+                
+                If InArray(brackettype, "L 2B1C", "L 2B2C", "L 3B1C", "L 3B2C") Then
+                    If cover = "Yes" Then result = "L Cover"
+                    If ext = "Yes" Then result = String.Format("Ext {0}", brackettype)
+                    If cover = "Yes" And ext = "Yes" Then result = "Ext L Cover"
+                End If
+
+                If brackettype = "Double" Then
+                    If cover = "Yes" Then result = "D Cover"
+                End IF
+
+                If InArray(brackettype, "DL 4B2C", "DL 4B4C") Then
+                    If cover = "Yes" Then result = String.Format("{0} Cover", brackettype)
+                End IF
+            End IF
+           
+            If InStr(type, "Geared") Then
+                result = "Grared"
+                If brackettype = "Single" Then
+                    result = "G Single"
+                    If cover = "Yes" Then result = "G S Cover"
+                    If ext = "Yes" Then result = "G Extension"
+                    If cover = "Yes" And ext = "Yes" Then result = "G Ext Cover"
+                End IF
+                
+                If InArray(brackettype, "L 2B1C", "L 2B2C") Then
+                     result = String.Format("G {0}", brackettype)
+                    If cover = "Yes" Then result = "G L Cover"
+                    If ext = "Yes" Then result = String.Format("G Ext {0}", brackettype)
+                    If cover = "Yes" And ext = "Yes" Then result = "G EX L Cover"
+                End If
+
+                If brackettype = "Double" Then
+                    result = "G Double"
+                    If cover = "Yes" Then result = "G D Cover"
+                End IF
+
+                 If InArray(brackettype, "DL 4B2C", "DL 4B4C") Then
+                    If cover = "Yes" Then result = String.Format("G {0} Cover", brackettype)
+                End IF
+            End If
+
+            Return result
+        Catch ex As Exception
+            Return "500"
+        End Try
     End Function
 
     '#------------------------------------------|| Mailing Blinds ||------------------------------------------#
