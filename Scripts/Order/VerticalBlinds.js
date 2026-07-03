@@ -929,11 +929,9 @@ const bindBottom = () => {
 
   let data = [];
   data.push(
-    { value: "Chained (Black)", text: "Chained (Black)" },
     { value: "Chained (White)", text: "Chained (White)" },
     { value: "Fully Sewn In", text: "Fully Sewn In" },
     { value: "Plastic Chainless", text: "Plastic Chainless" },
-    { value: "Plastic Chainless (Black)", text: "Plastic Chainless (Black)" },
     { value: "Plastic Chainless (White)", text: "Plastic Chainless (White)" },
     { value: "Top Hanger Only", text: "Top Hanger Only" },
   );
