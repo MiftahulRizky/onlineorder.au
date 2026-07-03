@@ -558,7 +558,7 @@ const bindTrackType = (blindname) => {
     { value: "4 Channel Track", text: "4 Channel Track" },
     { value: "5 Channel Track", text: "5 Channel Track" },
   );
-  if (~["Track Only"].includes(blindname)) {
+  if (!["Track Only"].includes(blindname)) {
     data.push({ value: "6 Channel Track", text: "6 Channel Track" });
   }
 

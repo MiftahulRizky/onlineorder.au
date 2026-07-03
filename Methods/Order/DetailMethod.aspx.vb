@@ -20368,7 +20368,7 @@ Partial Class Methods_Order_DetailMethod
             currentData("InsertInTrack6").ToString()
         }
         For i As Integer = 0 To initTrackOption.Length - 1
-            If Not String.IsNullOrEmpty(initTrackOption(i).ToString()) Then
+            If InArray(initTrackOption(i).ToString(), "Yes", "1") Then
                 initTrackOption(i) = "Insert"
             Else
                 initTrackOption(i) = "Plain"
@@ -20673,7 +20673,7 @@ Partial Class Methods_Order_DetailMethod
 
             '#BracketColour
             result+= trDetStart
-                result+= tdTitleStart & "Bottom Colour" & tdDetEnd
+                result+= tdTitleStart & "Bracket Colour" & tdDetEnd
                 result+= tdDetStart & currentData("BracketColour1").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("BracketColour2").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("BracketColour3").ToString() & tdDetEnd
