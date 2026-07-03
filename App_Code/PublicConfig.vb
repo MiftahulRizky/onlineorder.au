@@ -995,6 +995,11 @@ Public Class PublicConfig
                     findMetre = sqm
                 End If
 
+                If designName = "Panel Glides" And blindName = "Panel Only" Then
+                    width = "0"
+                    drop = "0"
+                End If
+
                 If designName = "Additional" And OrderType = "Door and Window" Then
                     delivery = "Pick Up"
                 End If
