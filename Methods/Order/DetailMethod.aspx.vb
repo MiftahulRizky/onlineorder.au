@@ -12947,12 +12947,12 @@ Partial Class Methods_Order_DetailMethod
             If InStr(itt(i), "LOV") > 0 Then : itt(i) = "MLOV" : End If
         Next
 
-        Dim FindBracket1 As String = FindBracketType(ibt(0), ibc(0), ibe(0), "M")
-        Dim FindBracket2 As String = FindBracketType(ibt(1), ibc(1), ibe(1), "M")
-        Dim FindBracket3 As String = FindBracketType(ibt(2), ibc(2), ibe(2), "M")
-        Dim FindBracket4 As String = FindBracketType(ibt(3), ibc(3), ibe(3), "M")
-        Dim FindBracket5 As String = FindBracketType(ibt(4), ibc(4), ibe(4), "M")
-        Dim FindBracket6 As String = FindBracketType(ibt(5), ibc(5), ibe(5), "M")
+        Dim FindBracket1 As String = FindBracketType(ibt(0), ibc(0), ibe(0), itt(0))
+        Dim FindBracket2 As String = FindBracketType(ibt(1), ibc(1), ibe(1), itt(1))
+        Dim FindBracket3 As String = FindBracketType(ibt(2), ibc(2), ibe(2), itt(2))
+        Dim FindBracket4 As String = FindBracketType(ibt(3), ibc(3), ibe(3), itt(3))
+        Dim FindBracket5 As String = FindBracketType(ibt(4), ibc(4), ibe(4), itt(4))
+        Dim FindBracket6 As String = FindBracketType(ibt(5), ibc(5), ibe(5), itt(5))
 
         Dim Bracket1 As String = String.Format("{0} {1}", itt(0), FindBracket1)
         Dim Bracket2 As String = String.Format("{0} {1}", itt(1), FindBracket2)
@@ -22884,15 +22884,23 @@ Partial Class Methods_Order_DetailMethod
         Try
             Dim result As String = ""
 
-            result = brackettype
-            If brackettype = "Single" Then
-                If cover = "Yes" Then result = "Cov"
-                If ext = "Yes" Then result = "Ext"
-                If cover = "Yes" And ext = "Yes" Then result = "Ext Cov"
+            If InStr(type, "M") > 0 OR InStr(type, "MLOV") > 0 Then
+                result = brackettype
+                If brackettype = "Single" Then
+                    If cover = "Yes" Then result = "Cov"
+                    If ext = "Yes" Then result = "Ext"
+                    If cover = "Yes" And ext = "Yes" Then result = "Ext Cov"
+                End IF
+
+                If InArray(brackettype, "D", "L 2B1C", "L 2B2C", "L 3B1C", "L 3B2C", "DL 4B2C", "DL 4B4C") Then
+                    If cover = "Yes" Then result = String.Format("{0} Cov", brackettype)
+                End If
             End IF
 
-            If InArray(brackettype, "Double", "L 2B1C", "L 2B2C", "L 3B1C", "L 3B2C", "DL 4B2C", "DL 4B4C") Then
-                If cover = "Yes" Then result = String.Format("{0} Cov", brackettype)
+            If InStr(type, "MAC") > 0 Then
+                If brackettype = "Single" Then
+                    result=""
+                End IF
             End If
 
             Return result
