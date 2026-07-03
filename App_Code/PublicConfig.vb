@@ -737,16 +737,26 @@ Public Class PublicConfig
     End Function
 
     Public Function GetGridCost(ListParam As List(Of Object)) As Decimal
-        Dim TubeType As String = CStr(ListParam(0))
-        Dim PriceGroupId As String = CStr(ListParam(1))
-        Dim Delivery As String = CStr(ListParam(2))
-        Dim Drop As Integer = CInt(ListParam(3))
-        Dim Width As Integer = CInt(ListParam(4))
+        Dim PriceGroupId As String = CStr(ListParam(0))
+        Dim Delivery As String = CStr(ListParam(1))
+        Dim Drop As Integer = CInt(ListParam(2))
+        Dim Width As Integer = CInt(ListParam(3))
+        Dim DesignName As String = CStr(ListParam(4))
+        Dim BlindName As String = CStr(ListParam(5))
+        Dim TubeType As String = CStr(ListParam(6))
+        Dim ControlType As String = CStr(ListParam(7))
+
+
         Dim WhereCost As String ="AND [Cost] > 0"
-        Select Case TubeType
-            Case "Retractable Flyscreen Pleated", "Retractable Pleated"
+        If InArray(DesignName, "Door", "Window") Then
+            If InArray(TubeType, "Retractable Flyscreen Pleated", "Retractable Pleated") Then
                 WhereCost = ""
-        End Select
+            End If
+        End IF
+
+        If DesignName = "Panel Glides" AND BlindName = "Completed" Then
+            WhereCost = ""
+        End IF
 
         Dim result As Decimal = 0.00
         Using thisConn As New SqlConnection(myConn)
@@ -1011,11 +1021,14 @@ Public Class PublicConfig
                 End If
 
                 Dim ListParamCost As New List(Of Object) From {
-                    TubeType,
                     priceGroupId,
                     delivery,
                     drop,
-                    width
+                    width,
+                    designName,
+                    blindName,
+                    TubeType,
+                    controlType
                 }
                 Dim getMatrix As Decimal = GetGridCost(ListParamCost)
                 
@@ -1127,11 +1140,14 @@ Public Class PublicConfig
             If Not PriceGroupIdB = "" Then
                 Dim TypeB As String = "Matrix"
                 Dim ListParamCostB As New List(Of Object) From {
-                    TubeType,
                     priceGroupIdB,
                     delivery,
                     drop,
-                    width
+                    width,
+                    designName,
+                    blindName,
+                    TubeType,
+                    controlType
                 }
                 Dim getMatrixB As Decimal = GetGridCost(ListParamCostB)
 
