@@ -64,20 +64,8 @@
                         <div class="card-header">
                             <h3 class="card-title">Result</h3>
                         </div>
-                        <div class="card-body">
-                            <div id="table-default">
-                                <table class="table table-vcenter card-table datatable" id="reportServerSide" width="100%">
-                                    <thead class="fs-3 fw-bold">
-                                        <tr>
-                                            <th class="text-center">#</th>
-                                            <th class="h3 text-center">Product</th>
-                                            <th class="h3">Qty</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-
-                            </div>
+                        <div class="card-body" id="cardResult">
+                          
                         </div>
                         <div class="card-footer text-center">
                             <button type="button" class="btn btn-success" id="btnGeneratePDF">Generate PDF Report</button>

@@ -1,43 +1,38 @@
-﻿<%@ Page Language="VB" AutoEventWireup="true" CodeFile="Verishades.aspx.vb" Inherits="Order_Verishades" MasterPageFile="~/Site.master" MaintainScrollPositionOnPostback="true" Debug="true" Title="Veri Shades Order" %>
+﻿<%@ Page Title="Veri Shades" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="Verishades.aspx.vb" Inherits="Order_Verishades" MaintainScrollPositionOnPostback="true" Debug="true" %>
 
-<asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
     <div class="page-header">
         <div class="container-xl">
             <div class="row g-2 align-items-center">
                 <div class="col">
                     <div class="page-pretitle">
-                        <span runat="server" id="pageAction"></span>
+                    <span id="pageAction">. . . . .</span>
                     </div>
-                    <h2 class="page-title" runat="server" id="pageTitle"></h2>
+                    <h2 class="page-title" id="pageTitle">. . . . .</h2>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-xl" id="pageContent">
             <div class="row mb-3">
-                <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="col-lg-7 col-md-7 col-sm-7">
                     <div class="card">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-lg-12">
-                                    <asp:Table runat="server" Font-Size="Larger" CellPadding="5">
-                                        <asp:TableRow>
-                                            <asp:TableCell Width="130px">Order Number</asp:TableCell>
-                                            <asp:TableCell Width="15px">:</asp:TableCell>
-                                            <asp:TableCell>
-                                                <asp:Label runat="server" ID="lblOrderNo"></asp:Label>
-                                            </asp:TableCell>
-                                        </asp:TableRow>
-                                        <asp:TableRow>
-                                            <asp:TableCell>Reference</asp:TableCell>
-                                            <asp:TableCell>:</asp:TableCell>
-                                            <asp:TableCell>
-                                                <asp:Label runat="server" ID="lblOrderCust"></asp:Label>
-                                            </asp:TableCell>
-                                        </asp:TableRow>
-                                    </asp:Table>
+                                <div class="col-4 col-lg-4 col-md-4">
+                                    <label class="form-label text-secondary text-uppercase">Order #</label>
+                                    <label class="form-label" id="lblOrder">-</label>
+                                    <label class="form-label" id="lblItemId" hidden>-</label>
+                                </div>
+                                <div class="col-4 col-lg-4 col-md-4">
+                                    <label class="form-label text-secondary text-uppercase">Order Number</label>
+                                    <label class="form-label" id="lblOrderNumber" >-</label>
+                                </div>
+                                <div class="col-4 col-lg-4 col-md-4">
+                                    <label class="form-label text-secondary text-uppercase">Order Name</label>
+                                    <label class="form-label" id="lblOrderName">-</label>
                                 </div>
                             </div>
                         </div>
@@ -45,192 +40,162 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-lg-7 col-md-12 col-sm-12">
+            <div class="row mb-3">
+
+                <div class="col-7 col-lg-7 col-md-12">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title" runat="server" id="cardTitle"></h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3 row">
-                                <label class="col-lg-3 col-form-label">TYPE</label>
-                                <div class="col-lg-3 col-md-12 col-sm-12">
-                                    <asp:DropDownList runat="server" ID="ddlBlindType" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlBlindType_SelectedIndexChanged"></asp:DropDownList>
-                                </div>
+                        <form action="javascript:void(0)" method="post" id="formSubmit">
+                            <div class="card-header">
+                                <h3 class="card-title" id="cardTitle"></h3>
                             </div>
-
-                            <div class="mb-3 row" runat="server" visible="false">
-                                <label class="col-lg-3 col-form-label">VERI SHADES TYPE</label>
-                                <div class="col-lg-3 col-md-12 col-sm-12">
-                                    <asp:DropDownList runat="server" ID="ddlKitId" CssClass="form-select" AutoPostBack="true"></asp:DropDownList>
-                                </div>
-                            </div>
-
-                            <div runat="server" id="divDetail">
-                                <hr />
+                            <div class="card-body">
+                                
                                 <div class="mb-3 row">
-                                    <label class="col-lg-3 col-form-label">BLIND QTY</label>
-                                    <div class="col-lg-2 col-md-12 col-sm-12">
-                                        <asp:TextBox runat="server" TextMode="Number" ID="txtQty" CssClass="form-control" placeholder="Blind Qty ..." autocomplete="off"></asp:TextBox>
-                                    </div>
-
-                                    <div class="col-lg-2 col-sm-12">
-                                        <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#canvasInfo" role="button" aria-controls="canvasInfo" onclick="return showInfo('Quantity');"><i class="bi bi-info-circle me-2"></i>Info</a>
-                                    </div>
+                                    <label for="blindtype" class="col-lg-3 text-uppercase fw-bold">type</label>
+                                    <div class="col-lg-4">
+                                        <select type="text" name="blindtype" id="blindtype" class="form-select"></select>
+                                    </div>  
                                 </div>
 
-                                <div class="mb-3 row">
-                                    <label class="col-lg-3 col-form-label">ROOM TO INSTALL</label>
-                                    <div class="col-lg-6 col-md-12 col-sm-12">
-                                        <asp:TextBox runat="server" ID="txtLocation" CssClass="form-control" placeholder="Location ..." autocomplete="off"></asp:TextBox>
-                                    </div>
+                                <div class="mb-3 row" id="divTubeType">
+                                    <label for="tubetype" class="col-lg-3 text-uppercase fw-bold" id="lblTubeType">shade type</label>
+                                    <div class="col-lg-4">
+                                        <select type="text" name="tubetype" id="tubetype" class="form-select"></select>
+                                    </div>  
                                 </div>
 
-                                <div class="mb-3 row" runat="server" id="divMounting">
-                                    <label class="col-lg-3 col-form-label">MOUNTING</label>
-                                    <div class="col-lg-3 col-md-12 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlMounting" CssClass="form-select">
-                                            <asp:ListItem Value="" Text=""></asp:ListItem>
-                                            <asp:ListItem Value="Face Fit" Text="FACE FIT"></asp:ListItem>
-                                            <asp:ListItem Value="Reveal Fit" Text="REVEAL FIT"></asp:ListItem>
-                                        </asp:DropDownList>
-                                    </div>
-                                </div>
+                                <div  id="divFormDetail">
+                                    <hr/>
 
-                                <div class="mb-3 mt-6 row" runat="server" id="divFabric">
-                                    <label class="col-lg-3 col-form-label">FABRIC</label>
-                                    <div class="col-lg-3 col-md-12 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlFabricType" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlFabricType_SelectedIndexChanged"></asp:DropDownList>
-                                        <small class="form-hint">* Type</small>
+                                    <div class="mb-3 row" >
+                                        <label for="qty" class="col-lg-3 text-uppercase fw-bold" >quantity</label>
+                                        <div class="col-lg-4">
+                                            <input type="number" min="1" value="1" name="qty" id="qty" class="form-control">
+                                        </div>  
                                     </div>
 
-                                    <div class="col-lg-3 col-md-12 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlFabricColour" CssClass="form-select"></asp:DropDownList>
-                                        <small class="form-hint">* Colour</small>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3 mt-6 row">
-                                    <asp:Label runat="server" CssClass="col-md-3 col-form-label" ID="lblSize" Text="WIDTH x DROP"></asp:Label>
-                                    <div class="col-lg-2 col-md-12 col-sm-12" runat="server" id="divWidth">
-                                        <asp:TextBox runat="server" TextMode="Number" min="1" ID="txtWidth" CssClass="form-control" placeholder="Width ..."></asp:TextBox>
-                                        <small class="form-hint">* Width</small>
+                                    <div class="mb-3 row" id="divRoom">
+                                        <label for="room" class="col-lg-3 text-uppercase fw-bold" >room / location</label>
+                                        <div class="col-lg-4">
+                                            <input type="text" name="room" id="room" class="form-control" autocomplete="off">
+                                        </div>  
                                     </div>
 
-                                    <div class="col-lg-2 col-md-12 col-sm-12" runat="server" id="divDrop">
-                                        <asp:TextBox runat="server" TextMode="Number" min="1" ID="txtDrop" CssClass="form-control" placeholder="Drop ..."></asp:TextBox>
-                                        <small class="form-hint">* Drop</small>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3 row" runat="server" id="divBlindSize">
-                                    <label class="col-lg-3 col-form-label">BLIND SIZE</label>
-                                    <div class="col-lg-2 col-md-12 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlBlindSize" CssClass="form-select">
-                                            <asp:ListItem Value="0" Text=""></asp:ListItem>
-                                            <asp:ListItem Value="1" Text="YES"></asp:ListItem>
-                                        </asp:DropDownList>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-6 mt-6 row" runat="server" id="divStack">
-                                    <label class="col-lg-3 col-form-label">STACK CONFIGURATION</label>
-                                    <div class="col-lg-3 col-md-12 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlStackPosition" CssClass="form-select">
-                                            <asp:ListItem Value="" Text=""></asp:ListItem>
-                                            <asp:ListItem Value="Left" Text="LEFT"></asp:ListItem>
-                                            <asp:ListItem Value="Right" Text="RIGHT"></asp:ListItem>
-                                            <asp:ListItem Value="Centre Stack" Text="CENTRE STACK"></asp:ListItem>
-                                            <asp:ListItem Value="Centre Split" Text="CENTRE SPLIT"></asp:ListItem>
-                                        </asp:DropDownList>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-3 row" runat="server" id="divTrack">
-                                    <label class="col-lg-3 col-form-label">TRACK TYPE - COLOUR</label>
-                                    <div class="col-lg-4 col-md-12 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlTrackType" CssClass="form-select">
-                                            <asp:ListItem Value="" Text=""></asp:ListItem>
-                                            <asp:ListItem Value="Cube" Text="CUBE"></asp:ListItem>
-                                            <asp:ListItem Value="Decorative (Flat)" Text="DECORATIVE (FLAT)"></asp:ListItem>
-                                            <asp:ListItem Value="Decorative (Round)" Text="DECORATIVE (ROUND)"></asp:ListItem>
-                                            <asp:ListItem Value="Standard" Text="STANDARD"></asp:ListItem>
-                                        </asp:DropDownList>
-                                        <small class="form-hint">* Track Type</small>
+                                    <div class="mb-3 row" id="divMounting">
+                                        <label for="mounting" class="col-lg-3 text-uppercase fw-bold" >mounting</label>
+                                        <div class="col-lg-4">
+                                            <select name="mounting" id="mounting" class="form-select">
+                                                <option value=""></option>
+                                                <option value="Face Fit">FACE FIT</option>
+                                                <option value="Reveal Fit">REVEAL FIT</option>
+                                            </select>
+                                        </div>  
                                     </div>
 
-                                    <div class="col-lg-2 col-md-12 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlTrackColour" CssClass="form-select">
-                                            <asp:ListItem Value="" Text=""></asp:ListItem>
-                                            <asp:ListItem Value="Birch" Text="BIRCH"></asp:ListItem>
-                                            <asp:ListItem Value="Black" Text="BLACK"></asp:ListItem>
-                                            <asp:ListItem Value="White" Text="WHITE"></asp:ListItem>
-                                        </asp:DropDownList>
-                                        <small class="form-hint">* Track Colour</small>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-3 mt-6 row" runat="server" id="divWand">
-                                    <label class="col-lg-3 col-form-label">WAND SIZE x COLOUR</label>
-                                    <div class="col-lg-2 col-md-12 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlWandSize" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlWandSize_SelectedIndexChanged"></asp:DropDownList>
-                                        <small class="form-hint">* Size</small>
-                                    </div>
-
-                                    <div class="col-lg-2 col-md-12 col-sm-12">
-                                        <asp:DropDownList runat="server" ID="ddlWandColour" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlWandColour_SelectedIndexChanged"></asp:DropDownList>
-                                        <small class="form-hint">* Colour</small>
-                                    </div>
-
-                                    <div class="col-lg-2 col-md-12 col-sm-12" runat="server" id="divWandCustomLength">
-                                        <asp:TextBox runat="server" TextMode="Number" ID="txtWandCustomLength" CssClass="form-control" placeholder="Custom..." autocomplete="off"></asp:TextBox>
-                                        <small class="form-hint">* Custom</small>
-                                    </div>
-
-                                    <div class="col-lg-2 col-md-12 col-sm-12" runat="server" id="divBtnInfoCustom">
-                                        <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#canvasInfo" role="button" aria-controls="canvasInfo" onclick="return showInfo('Custom Wand Length');"><i class="bi bi-info-circle me-2"></i>Info</a>
-                                    </div>
-
-                                </div>
-
-                                <div class="mb-3 mt-6 row">
-                                    <label class="col-lg-3 col-form-label">SPECIAL INFORMATION</label>
-                                    <div class="col-lg-8 col-md-12 col-sm-12">
-                                        <asp:TextBox runat="server" TextMode="MultiLine" ID="txtNotes" Height="100px" CssClass="form-control" placeholder="Your notes ..." autocomplete="off" style="resize:none;"></asp:TextBox>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3 row" runat="server" id="divMarkUp">
-                                    <label class="col-lg-3 col-form-label" >MARK UP (%)</label>
-                                    <div class="col-lg-2 col-md-12 col-sm-12">
-                                        <asp:TextBox runat="server" TextMode="Number" ID="txtMarkUp" CssClass="form-control" placeholder="Mark Up ..." autocomplete="off"></asp:TextBox>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row" runat="server" id="divError">
-                                <div class="col-lg-12">
-                                    <div class="alert alert-important alert-danger alert-dismissible" role="alert">
-                                        <div class="d-flex">
-                                            <div>
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 8v4" /><path d="M12 16h.01" /></svg>
+                                    <div class="mb-3 row">
+                                        <label for="width" class="col-lg-3 text-uppercase fw-bold" id="lblWd">width x drop</label>
+                                        <div class="col-lg-4 col-md-12 col-sm-12" id="divWidth">
+                                            <div class="input-group">
+                                                <input type="number" min="1" name="width" id="width" class="form-control " autocomplete="off" placeholder="Width ...." />
+                                                <span class="input-group-text ">mm</span>
                                             </div>
-                                            <div>
-                                                <span runat="server" id="msgError"></span>
+                                            <small class="form-hint">* Width</small>
+                                        </div>
+                                        <div class="col-lg-4 col-md-12 col-sm-12" id="divDrop">
+                                            <div class="input-group">
+                                                <input type="number" min="1" name="drop" id="drop" class="form-control  " autocomplete="off" placeholder="Drop ...." />
+                                                <span class="input-group-text ">mm</span>
+                                            </div>
+                                            <small class="form-hint">* Drop</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divFabric">
+                                        <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">fabric</label>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <select name="fabrictype" id="fabrictype" class="form-select "></select>
+                                            <small class="form-hint">* Type</small>
+                                        </div>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <select name="fabriccolour" id="fabriccolour" class="form-select " ></select>
+                                            <small class="form-hint">* Colour</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divBlindSize">
+                                        <label for="blindsize" class="col-lg-3 text-uppercase fw-bold" >blind size</label>
+                                        <div class="col-lg-4">
+                                            <select type="text" name="blindsize" id="blindsize" class="form-select">
+                                                <option value="0"></option>
+                                                <option value="1">YES</option>
+                                            </select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divStack">
+                                        <label for="stack" class="col-lg-3 text-uppercase fw-bold" >stack confirguration</label>
+                                        <div class="col-lg-4">
+                                            <select type="text" name="stack" id="stack" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divTrack">
+                                        <label for="tracktype" class="col-lg-3 text-uppercase fw-bold" >track</label>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <select name="tracktype" id="tracktype" class="form-select "></select>
+                                            <small class="form-hint">* Type</small>
+                                        </div>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <select name="trackcolour" id="trackcolour" class="form-select " ></select>
+                                            <small class="form-hint">* Colour</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divWand">
+                                        <label for="wandsize" class="col-lg-3 text-uppercase fw-bold">wand</label>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                            <select name="wandsize" id="wandsize" class="form-select "></select>
+                                            <small class="form-hint">* Size</small>
+                                        </div>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                            <select name="wandcolour" id="wandcolour" class="form-select " ></select>
+                                            <small class="form-hint">* Colour</small>
+                                        </div>
+                                        <div class="col-lg-3 col-md-12 col-sm-12" id="divWandCustomSize">
+                                            <input type="number" min="0" name="customsize" id="customsize" class="form-control "  autocomplete="off">
+                                            <small class="form-hint">* Custom</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" >
+                                        <label for="notes" class="col-lg-3 text-uppercase fw-bold">special information</label>
+                                        <div class="col-lg-8">
+                                            <textarea name="notes" id="notes" class="form-control" placeholder="Your notes ..." rows="6" style="resize: none;"></textarea>
+                                            <span class="form-label-description" id="notescount">0/1000</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divMarkUp">
+                                        <label for="notes" class="col-lg-3 text-uppercase fw-bold">mark up</label>
+                                        <div class="col-lg-3">
+                                            <div class="input-group">
+                                                <input type="number" min="0" name="markup" id="markup" class="form-control "  autocomplete="off">
+                                                <span class="input-group-text ">%</span>
                                             </div>
                                         </div>
-                                        <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="card-footer text-end">
-                            <asp:LinkButton runat="server" ID="btnSubmit" Text="Submit" CssClass="btn btn-primary" OnClick="btnSubmit_Click" ></asp:LinkButton>
-                            <asp:LinkButton runat="server" ID="btnCancel" Text="Cancel" CssClass="btn btn-danger" OnClick="btnCancel_Click" >
-                                <i class="fa-solid fa-rotate-left me-2"></i> Cancel
-                            </asp:LinkButton>
-                        </div>
+
+                                </div>
+
+                            </div>
+                            <div class="card-footer text-center">
+                                <button type="submit" class="btn btn-primary" id="btnSubmit">Submit</button>
+                                <button type="button" class="btn btn-danger" id="btnCancel">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
@@ -239,141 +204,35 @@
                         <div class="card-header">
                             <h3 class="card-title">Notes</h3>
                         </div>
-
-                        <div class="card-body"></div>
+        
+                        <div class="card-body">
+                            <div class="mb-3 row">
+                                <p runat="server" id="pNotes"></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="canvasInfo" aria-labelledby="canvasInfoLabel">
-        <div class="offcanvas-header">
-            <h2 class="offcanvas-title" id="canvasInfoLabel"></h2>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <div class="text-body">
-                <span id="spanInfo" style="font-size:large;"></span>
-            </div>
-            <div class="mt-3">
-                <button class="btn btn-primary" type="button" data-bs-dismiss="offcanvas">
-                    <i class="bi bi-check2-circle me-2" style="font-size: 12pt;"></i>Ok. I Got It
-                </button>
             </div>
         </div>
     </div>
 
 
-    <!-- my custom script -->
     <script type="text/javascript">
-
-        document.addEventListener("DOMContentLoaded", () => {
-            loaderFadeOut();
-        })
-
-        document.querySelectorAll(".form-control, .form-select").forEach((e) => {
-            e.addEventListener("change", function (e) {
-                e.target.classList.remove("is-invalid");
-                resetError();
-            })
-            e.addEventListener("input", function (e) {
-                e.target.classList.remove("is-invalid");
-                resetError();
-            })
-        })
-        
-        const msgError = document.getElementById("MainContent_divError");
-        function resetError() {
-            if (msgError) {
-                msgError.classList.add("d-none");
-            }
-        }
-       
-        // Function untuk menampilkan pesan error dari code-behind
-        function showMessageError(msg){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                html: msg,
-                customClass: {
-                    popup: isDark ? "bg-dark text-white" : "bg-white text-dark"
-                }
-            });
-        }
-        function showInfo(Type) {
-            var spanInfo;
-
-            if (Type == 'Quantity') {
-                spanInfo = 'Please pay attention to the quantity you want to order, because the quantity you enter will be processed automatically.';
-            }else if (Type == 'Custom Wand Length') {
-                spanInfo = 'Maximum custom length 3000mm';
-            } else {
-                spanInfo = '';
-            }
-            document.getElementById("canvasInfoLabel").innerHTML = Type + ' Information';
-            document.getElementById("spanInfo").innerHTML = spanInfo;
-        }
+        let DESIGNIDORI = "28AF4887-5E18-4434-A6A0-08319672D7AA";
+        let HEADERID = '<%=Session("headerId")%>';
+        let ORDERTYPE = '<%= Session("orderType") %>';
+        let ITEMACTION = '<%= Session("itemAction") %>';
+        let DESIGNID = '<%= Session("designId") %>';
+        let ITEMID = '<%= Session("itemId") %>';
+        let CUSTOMERID = '<%= Session("CustomerId") %>';
+        let LOGINID = '<%= Session("LoginId") %>';
+        let ROLENAME = '<%= Session("RoleName") %>';
+        let LEVELNAME = '<%= Session("LevelName") %>';
+        let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
+        let URIMETHOD = "/Methods/Order/VerishadesMethod.aspx";
     </script>
 
-    <div runat="server" visible="false">
-        <asp:Label runat="server" ID="lblItemId"></asp:Label>
-        <asp:Label runat="server" ID="lblHeaderId"></asp:Label>
-        <asp:Label runat="server" ID="lblOrderType"></asp:Label>
-        
-        <asp:Label runat="server" ID="lblKitId"></asp:Label>
-        <asp:Label runat="server" ID="lblSoeKitId"></asp:Label>
-
-        <asp:Label runat="server" ID="lblExactId"></asp:Label>
-
-        <asp:Label runat="server" ID="lblPriceGroupId"></asp:Label>
-        <asp:Label runat="server" ID="lblWandSize"></asp:Label>
-
-        <asp:SqlDataSource ID="sdsPage" runat="server" ConnectionString="<%$ ConnectionStrings:DefaultConnection %>" InsertCommand="INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, ExactId, FabricId, PriceGroupId, BlindNo, Qty, BlindSize, Location, Mounting, Width, [Drop], StackPosition, TrackType, TrackColour, WandLength, WandColour, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES(@Id, @HeaderId, @KitId, @SoeKitId, @ExactId, @FabricId, @PriceGroupId, 'Blind 1', @Qty, @BlindSize, @Location, @Mounting, @Width, @Drop, @StackPosition, @TrackType, @TrackColour, @WandLength, @WandColour, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)" UpdateCommand="UPDATE OrderDetails SET KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, PriceGroupId=@PriceGroupId, BlindNo='Blind 1', Qty=@Qty, BlindSize=@BlindSize, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, StackPosition=@StackPosition, TrackType=@TrackType, TrackColour=@TrackColour, WandLength=@WandLength, WandColour=@WandColour, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id">
-            <InsertParameters>
-                <asp:ControlParameter ControlID="lblItemId" Name="Id" PropertyName="Text" />
-                <asp:ControlParameter ControlID="lblHeaderId" Name="HeaderId" PropertyName="Text" />
-                <asp:ControlParameter ControlID="lblKitId" Name="KitId" PropertyName="Text" />
-                <asp:ControlParameter ControlID="lblSoeKitId" Name="SoeKitId" PropertyName="Text" />
-                <asp:ControlParameter ControlID="lblExactId" Name="ExactId" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlFabricColour" Name="FabricId" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="lblPriceGroupId" Name="PriceGroupId" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlBlindSize" Name="BlindSize" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="txtQty" Name="Qty" PropertyName="Text" />                
-                <asp:ControlParameter ControlID="ddlMounting" Name="Mounting" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="txtLocation" Name="Location" PropertyName="Text" />
-                <asp:ControlParameter ControlID="txtWidth" Name="Width" PropertyName="Text" />
-                <asp:ControlParameter ControlID="txtDrop" Name="Drop" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlStackPosition" Name="StackPosition" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="ddlTrackType" Name="TrackType" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="ddlTrackColour" Name="TrackColour" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="lblWandSize" Name="WandLength" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlWandColour" Name="WandColour" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="txtNotes" Name="Notes" PropertyName="Text" />
-                <asp:ControlParameter ControlID="txtMarkUp" Name="MarkUp" PropertyName="Text" />
-            </InsertParameters>
-            <UpdateParameters>
-                <asp:ControlParameter ControlID="lblItemId" Name="Id" PropertyName="Text" />
-                <asp:ControlParameter ControlID="lblHeaderId" Name="HeaderId" PropertyName="Text" />
-                <asp:ControlParameter ControlID="lblKitId" Name="KitId" PropertyName="Text" />
-                <asp:ControlParameter ControlID="lblSoeKitId" Name="SoeKitId" PropertyName="Text" />
-                <asp:ControlParameter ControlID="lblExactId" Name="ExactId" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlFabricColour" Name="FabricId" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="lblPriceGroupId" Name="PriceGroupId" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlBlindSize" Name="BlindSize" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="txtQty" Name="Qty" PropertyName="Text" />                
-                <asp:ControlParameter ControlID="ddlMounting" Name="Mounting" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="txtLocation" Name="Location" PropertyName="Text" />
-                <asp:ControlParameter ControlID="txtWidth" Name="Width" PropertyName="Text" />
-                <asp:ControlParameter ControlID="txtDrop" Name="Drop" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlStackPosition" Name="StackPosition" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="ddlTrackType" Name="TrackType" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="ddlTrackColour" Name="TrackColour" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="lblWandSize" Name="WandLength" PropertyName="Text" />
-                <asp:ControlParameter ControlID="ddlWandColour" Name="WandColour" PropertyName="SelectedItem.Value" />
-                <asp:ControlParameter ControlID="txtNotes" Name="Notes" PropertyName="Text" />
-                <asp:ControlParameter ControlID="txtMarkUp" Name="MarkUp" PropertyName="Text" />
-            </UpdateParameters>
-        </asp:SqlDataSource>
-    </div>
+    <script type="text/javascript" src="/Scripts/Order/Verishades.js?<%= DateTime.Now.Ticks %>"></script>
 </asp:Content>
+

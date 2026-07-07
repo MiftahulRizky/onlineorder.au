@@ -29,8 +29,11 @@ document.querySelector("#btnFind").addEventListener("click", (e) => {
   });
 
   // handlerSubmit(e.target.form, e.target.id);
-  handlerFind(e.target.id);
-  // handlerFindReport(e.target.id);
+  if (!["Administrator"].includes(ROLENAME)) {
+    handlerFind(e.target.id);
+  } else {
+    handlerFindReport(e.target.id);
+  }
 });
 // =================================================FUNCTION================================================
 // --------------------------------------------||Binding Function||-----------------------------------------
@@ -271,44 +274,12 @@ const handlerFindReport = async (button) => {
       }
     }
 
-    // 3. Jika Sukses, Render atau Segarkan jQuery DataTables dengan Object Array dari Server
     if (result.success) {
       const dataBagiTabel = result.reportData || [];
 
-      // Jika sebelumnya tabel sudah pernah di-inisialisasi, kita hancurkan dulu (destroy) agar tidak bentrok
-      if ($.fn.DataTable.isDataTable("#reportServerSide")) {
-        $("#reportServerSide").DataTable().clear().destroy();
-      }
+      // masukan ke
+      renderTable(dataBagiTabel);
 
-      // Inisialisasi ulang DataTables dengan data object array terbaru
-      dataTableInstance = $("#reportServerSide").DataTable({
-        data: dataBagiTabel,
-        language: {
-          search: "",
-          lengthMenu: "_MENU_",
-        },
-        initComplete: () => {
-          stylingColumnSearchAndPaging("#reportServerSide");
-        },
-        columns: [
-          {
-            data: null,
-            width: "10%",
-            className: "text-center",
-            render: function (data, type, row, meta) {
-              return meta.row + 1;
-            },
-          },
-          { data: "DesignName", width: "80%" },
-          { data: "Qty", width: "10%" },
-        ],
-        order: [[0, "asc"]],
-        pageLength: 50,
-        responsive: true,
-      });
-
-      // Opsional: Tampilkan alert sukses dari sweetalert
-      // swalSuccessShow(result.success.message);
       Swal.close();
     }
   } catch (error) {
@@ -323,6 +294,42 @@ const handlerFindReport = async (button) => {
   }
 };
 // --------------------------------------------||Other Function||-----------------------------------------
+const renderTable = (data) => {
+  const container = document.getElementById("cardResult");
+
+  if (!data.length) {
+    container.innerHTML = "<p>No data found</p>";
+    return;
+  }
+
+  // Ambil semua kolom dari object pertama
+  const columns = Object.keys(data[0]);
+
+  let html = `<div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>`;
+
+  // HEADER
+  columns.forEach((col) => {
+    html += `<th>${col}</th>`;
+  });
+
+  html += `</tr></thead><tbody>`;
+
+  // BODY
+  data.forEach((row) => {
+    html += `<tr>`;
+    columns.forEach((col) => {
+      html += `<td>${row[col] ?? 0}</td>`;
+    });
+    html += `</tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+
+  container.innerHTML = html;
+};
 const reportProductPageLoaded = async () => {
   await Promise.all([bindFindBy(), bindStatus(), bindDate()]);
 

@@ -58,7 +58,7 @@ Partial Class Methods_ReportProductMethod
 
     Public Class SuccessResponse
         Public Property [success] As SuccessDetail
-        Public Property reportData As List(Of RowReport)
+        Public Property reportData As List(Of Dictionary(Of String, Object))
     End Class
 
     Public Class SuccessDetail
@@ -157,29 +157,46 @@ Partial Class Methods_ReportProductMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Invalid date format !", .field = "date"}}
             End If
 
-            
-            Dim query As String = String.Format("SELECT DesignId, DesignName, SUM(Qty) As Qty FROM view_details WHERE Active = 1 AND Status='{0}' AND (OrderNumber COLLATE SQL_Latin1_General_CP1_CI_AS NOT LIKE '%test%' AND OrderName COLLATE SQL_Latin1_General_CP1_CI_AS NOT LIKE '%test%') AND SubmittedDate >= '{1}' AND SubmittedDate < DATEADD(DAY, 1, '{2}') GROUP BY DesignId, DesignName ORDER BY DesignName ASC", data.status, data.fromdate, data.todate)
-            
-            Dim ProductData As DataSet = publicCfg.GetListData(query)
-            
-            Dim listReport As New List(Of RowReport)()
-            
-            If ProductData IsNot New DataSet() AndAlso ProductData.Tables.Count > 0 Then
-                For Each row As DataRow In ProductData.Tables(0).Rows
-                    listReport.Add(New RowReport() With {
-                        .DesignId = row("DesignId").ToString(),
-                        .DesignName = row("DesignName").ToString(),
-                        .Qty = If(IsDBNull(row("Qty")), 0, Convert.ToInt32(row("Qty")))
-                    })
+            Dim list As New List(Of Dictionary(Of String, Object))()
+            If data.findby = "product" Then
+            End If
+
+            If data.findby = "customer" Then
+                Dim dt As New DataTable()
+                Using conn As New SqlConnection(ConfigurationManager.ConnectionStrings("YourConn").ConnectionString)
+                    Using cmd As New SqlCommand("FindReportByCustomers", conn)
+                        cmd.CommandType = CommandType.StoredProcedure
+
+                        cmd.Parameters.AddWithValue("@fromdate", parsedFromDate)
+                        cmd.Parameters.AddWithValue("@todate", parsedToDate)
+                        cmd.Parameters.AddWithValue("@status", data.status)
+                        cmd.Parameters.AddWithValue("@fined", data.fined)
+
+                        Using da As New SqlDataAdapter(cmd)
+                            da.Fill(dt)
+                        End Using
+                    End Using
+                End Using
+
+                ' Convert ke List(Of Dictionary)
+                ' Dim list As New List(Of Dictionary(Of String, Object))()
+
+                For Each row As DataRow In dt.Rows
+                    Dim dict As New Dictionary(Of String, Object)
+                    For Each col As DataColumn In dt.Columns
+                        dict(col.ColumnName) = row(col)
+                    Next
+                    list.Add(dict)
                 Next
             End If
+
 
             Return New SuccessResponse With {
                 .success = New SuccessDetail With {
                     .message = "Data loaded successfully",
                     .dir = "U"
                 },
-                .reportData = listReport
+                .reportData = list
             }
 
         Catch ex As Exception
@@ -427,7 +444,7 @@ Partial Class Methods_ReportProductMethod
                 End If
                 Dim CustomerData As DataSet = publicCfg.GetListData(String.Format("SELECT StoreId As CustomerId, StoreName As CustomerName FROM view_headers WHERE Active = 1 AND Status = '{3}' AND SubmittedDate >= '{0}' AND SubmittedDate < DATEADD(DAY, 1, '{1}') AND (OrderNo COLLATE SQL_Latin1_General_CP1_CI_AS NOT LIKE '%test%' AND OrderCust COLLATE SQL_Latin1_General_CP1_CI_AS NOT LIKE '%test%') {2} GROUP BY StoreId, StoreName ORDER BY CustomerName ASC", fromdate, todate, byCustomer, status))
 
-                Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT Id, Name FROM Designs WHERE Active=1 AND Company <> 'LOOP' AND Description IN ('Environment : Production', 'Environment : Testing') ORDER BY Name ASC"))
+                Dim ProductData As DataSet = publicCfg.GetListData(String.Format("SELECT Id, Name FROM Designs WHERE Active=1 AND Company <> 'LOOP' AND Description IN ('Environment : Production') ORDER BY Name ASC"))
                 Dim ProductDataCount As Integer = ProductData.Tables(0).Rows.Count
 
 

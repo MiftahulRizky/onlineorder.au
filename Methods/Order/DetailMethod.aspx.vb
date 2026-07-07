@@ -10015,13 +10015,17 @@ Partial Class Methods_Order_DetailMethod
                 ReportType = "Venetian"
 
                 Select Case  currentData("BlindName").ToString()
+                    Case "Aluminium Venetian"
+                        ReportType = "Aluminium Venetian"
+                        ReportIcon = "V-alu"
+
                     Case "Mockwood Venetian"
                         ReportType = "Mockwood Venetian"
                         ReportIcon = "MV"
 
                     Case "Timber Venetian"
                         ReportType = "Timber Venetian"
-                        ReportIcon = "TV"
+                        ReportIcon = "T"
 
                     Case "Wooden Venetian"
                         ReportType = "Wooden Venetian"
@@ -18185,48 +18189,48 @@ Partial Class Methods_Order_DetailMethod
 
             '#---------------------------------|| Cut Outs ||-------------------------------------#
             '#CutOut_LeftTop
-            result+= trDetStart
-                result+= tdTitleStart & "Top Left" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_LeftTop6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Top Left" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_LeftTop6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#CutOut_RightTop
-            result+= trDetStart
-                result+= tdTitleStart & "Top Right" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_RightTop6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#CutOut_RightTop
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Top Right" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_RightTop6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#CutOut_LeftBottom
-            result+= trDetStart
-                result+= tdTitleStart & "Bottom Left" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_LeftBottom6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#CutOut_LeftBottom
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Bottom Left" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_LeftBottom6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#CutOut_RightBottom
-            result+= trDetStart
-                result+= tdTitleStart & "Bottom Right" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_RightBottom6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#CutOut_RightBottom
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Bottom Right" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_RightBottom6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
             '#---------------------------------|| Top ||-------------------------------------#
             '#LHSWidth_Top
@@ -18318,6 +18322,17 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & currentData("RHSHeight_Bottom6").ToString() & tdDetEnd
             result+= trDetEnd
 
+            '#BracketOption
+            result+= trDetStart
+                result+= tdTitleStart & "Holdown Bracket" & tdDetEnd
+                result+= tdDetStart & currentData("BracketOption1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketOption2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketOption3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketOption4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketOption5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("BracketOption6").ToString() & tdDetEnd
+            result+= trDetEnd
+
             '#BottomHoldDown
             result+= trDetStart
                 result+= tdTitleStart & "Holdown Colour" & tdDetEnd
@@ -18327,6 +18342,17 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetStart & currentData("BottomHoldDown4").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("BottomHoldDown5").ToString() & tdDetEnd
                 result+= tdDetRight & currentData("BottomHoldDown6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#BottomHoldDown
+            result+= trDetStart
+                result+= tdTitleStart & "2on 1 Headrail" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetRight & "" & tdDetEnd
             result+= trDetEnd
 
             '#Location
@@ -18576,49 +18602,49 @@ Partial Class Methods_Order_DetailMethod
             result+= trDetEnd
 
             '#---------------------------------|| Cut Outs ||-------------------------------------#
-            '#CutOut_LeftTop
-            result+= trDetStart
-                result+= tdTitleStart & "Top Left" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_LeftTop6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#CutOut_LeftTop
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Top Left" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_LeftTop6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#CutOut_RightTop
-            result+= trDetStart
-                result+= tdTitleStart & "Top Right" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_RightTop6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#CutOut_RightTop
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Top Right" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_RightTop6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#CutOut_LeftBottom
-            result+= trDetStart
-                result+= tdTitleStart & "Bottom Left" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_LeftBottom6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#CutOut_LeftBottom
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Bottom Left" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_LeftBottom6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#CutOut_RightBottom
-            result+= trDetStart
-                result+= tdTitleStart & "Bottom Right" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_RightBottom6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#CutOut_RightBottom
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Bottom Right" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_RightBottom6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
             '#---------------------------------|| Top ||-------------------------------------#
             '#LHSWidth_Top
@@ -18968,48 +18994,48 @@ Partial Class Methods_Order_DetailMethod
 
             '#---------------------------------|| Cut Outs ||-------------------------------------#
             '#CutOut_LeftTop
-            result+= trDetStart
-                result+= tdTitleStart & "Top Left" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_LeftTop6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Top Left" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_LeftTop6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#CutOut_RightTop
-            result+= trDetStart
-                result+= tdTitleStart & "Top Right" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_RightTop6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#CutOut_RightTop
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Top Right" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_RightTop6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#CutOut_LeftBottom
-            result+= trDetStart
-                result+= tdTitleStart & "Bottom Left" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_LeftBottom6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#CutOut_LeftBottom
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Bottom Left" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_LeftBottom6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#CutOut_RightBottom
-            result+= trDetStart
-                result+= tdTitleStart & "Bottom Right" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_RightBottom6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#CutOut_RightBottom
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Bottom Right" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_RightBottom6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
             '#---------------------------------|| Top ||-------------------------------------#
             '#LHSWidth_Top
@@ -19317,6 +19343,17 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & currentData("BottomHoldDown6").ToString() & tdDetEnd
             result+= trDetEnd
 
+            '#BottomHoldDown
+            result+= trDetStart
+                result+= tdTitleStart & "2on 1 Headrail" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetStart & "" & tdDetEnd
+                result+= tdDetRight & "" & tdDetEnd
+            result+= trDetEnd
+
             '#Cutouts
             result+= trDetStart
                 result+= tdTitleStart & boldStart & "Cut Outs" & boldEnd & tdDetEnd
@@ -19330,48 +19367,48 @@ Partial Class Methods_Order_DetailMethod
 
             '#---------------------------------|| Cut Outs ||-------------------------------------#
             '#CutOut_LeftTop
-            result+= trDetStart
-                result+= tdTitleStart & "Top Left" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftTop5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_LeftTop6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Top Left" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftTop5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_LeftTop6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#CutOut_RightTop
-            result+= trDetStart
-                result+= tdTitleStart & "Top Right" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightTop5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_RightTop6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#CutOut_RightTop
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Top Right" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightTop5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_RightTop6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#CutOut_LeftBottom
-            result+= trDetStart
-                result+= tdTitleStart & "Bottom Left" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_LeftBottom5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_LeftBottom6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#CutOut_LeftBottom
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Bottom Left" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_LeftBottom5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_LeftBottom6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
-            '#CutOut_RightBottom
-            result+= trDetStart
-                result+= tdTitleStart & "Bottom Right" & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CutOut_RightBottom5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CutOut_RightBottom6").ToString() & tdDetEnd
-            result+= trDetEnd
+            ' '#CutOut_RightBottom
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Bottom Right" & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CutOut_RightBottom5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CutOut_RightBottom6").ToString() & tdDetEnd
+            ' result+= trDetEnd
 
             '#---------------------------------|| Top ||-------------------------------------#
             '#LHSWidth_Top
