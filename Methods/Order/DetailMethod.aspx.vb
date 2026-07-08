@@ -902,7 +902,7 @@ Partial Class Methods_Order_DetailMethod
 
                         End If
 
-                        If InArray(DesignName, "Vari Shades", "Vertical Blinds", "Global Vertical Blinds") Then
+                        If InArray(DesignName, "Veri Shades", "Vertical Blinds", "Global Vertical Blinds") Then
                             Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
                             If BlindName = "Slat Only" Then
                                 Product = String.Format("{0} #{1} (Drop : {2}mm)", KitName, FabricType, Drop)
