@@ -466,6 +466,13 @@ const handlerElementVisibility = async (blindtype, item) => {
     const divWandCustomSize = document.getElementById("divWandCustomSize");
     const divBracket = document.getElementById("divBracket");
     const divTape = document.getElementById("divTape");
+    const divCarriers = document.getElementById("divCarriers");
+    const divSpacer = document.getElementById("divSpacer");
+    const divSlat = document.getElementById("divSlat");
+    const divSlatQty = document.getElementById("divSlatQty");
+    const divEndSlat = document.getElementById("divEndSlat");
+    const divTotalSlat = document.getElementById("divTotalSlat");
+    const divFabricQty = document.getElementById("divFabricQty");
     const divMarkUp = document.getElementById("divMarkUp");
     const btnSubmit = document.querySelector("#btnSubmit");
     // return;
@@ -483,6 +490,13 @@ const handlerElementVisibility = async (blindtype, item) => {
     divWandCustomSize.classList.add("d-none");
     divBracket.classList.add("d-none");
     divTape.classList.add("d-none");
+    divCarriers.classList.add("d-none");
+    divSpacer.classList.add("d-none");
+    divSlat.classList.add("d-none");
+    divSlatQty.classList.add("d-none");
+    divEndSlat.classList.add("d-none");
+    divTotalSlat.classList.add("d-none");
+    divFabricQty.classList.add("d-none");
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
 
@@ -503,6 +517,13 @@ const handlerElementVisibility = async (blindtype, item) => {
       divWand.classList.remove("d-none");
       divBracket.classList.remove("d-none");
       divTape.classList.remove("d-none");
+      divCarriers.classList.remove("d-none");
+      divSpacer.classList.remove("d-none");
+      divSlat.classList.remove("d-none");
+      divSlatQty.classList.remove("d-none");
+      divEndSlat.classList.remove("d-none");
+      divTotalSlat.classList.remove("d-none");
+      divFabricQty.classList.remove("d-none");
     }
 
     if (["Slat Only"].includes(blindname)) {
@@ -511,6 +532,13 @@ const handlerElementVisibility = async (blindtype, item) => {
       divFabric.classList.remove("d-none");
       divBlindSize.classList.remove("d-none");
       divTape.classList.remove("d-none");
+      divCarriers.classList.remove("d-none");
+      divSpacer.classList.remove("d-none");
+      divSlat.classList.remove("d-none");
+      divSlatQty.classList.remove("d-none");
+      divEndSlat.classList.remove("d-none");
+      divTotalSlat.classList.remove("d-none");
+      divFabricQty.classList.remove("d-none");
     }
 
     if (["Track Only"].includes(blindname)) {
@@ -521,6 +549,8 @@ const handlerElementVisibility = async (blindtype, item) => {
       divWand.classList.remove("d-none");
       divBracket.classList.remove("d-none");
       divTape.classList.remove("d-none");
+      divCarriers.classList.remove("d-none");
+      divSpacer.classList.remove("d-none");
     }
 
     if (item) {

@@ -246,7 +246,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row" id="divTape">
+                                    <div class="mb-3 row" id="divTotalSlat">
                                         <label for="tape" class="col-lg-3 text-uppercase fw-bold" >total slats</label>
                                         <div class="col-lg-4">
                                             <input type="number" min="0" name="totalslats" id="totalslats" class="form-control "  autocomplete="off" readonly>

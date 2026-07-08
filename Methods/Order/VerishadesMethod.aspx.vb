@@ -388,34 +388,6 @@ Partial Class Methods_VerishadesMethod
                 Throw New Exception("Something went wrong !")
             End If
 
-            If BlindName = "Single" Then
-                data.blindsize = ""
-            End If
-
-            If BlindName = "Slat Only" Then
-                data.width = ""
-                width = 0
-                data.stack = ""
-                data.tracktype = ""
-                data.trackcolour = ""
-                data.wandsize = ""
-                data.wandcolour = ""
-                data.customsize = ""
-                data.bracket = ""
-            End If
-
-            If BlindName = "Track Only" Then
-                data.drop = ""
-                drop = 0
-                data.fabrictype = ""
-                data.fabriccolour = ""
-                data.blindsize = ""
-            End If
-
-            If data.wandsize = "Custom" Then
-                data.wandsize = data.customsize
-            End IF
-
             '#Carrier Qty
             If data.carrieroverride = "True" Then
                 Dim CreateJSON = New With { .value = carrier, .checked = True}
@@ -520,6 +492,39 @@ Partial Class Methods_VerishadesMethod
                 Dim CreateJSON = New With { .value = fabricqty, .checked = False}
                 data.fabricqty = Newtonsoft.Json.JsonConvert.SerializeObject({CreateJSON})
             End If
+
+            If BlindName = "Single" Then
+                data.blindsize = ""
+            End If
+
+            If BlindName = "Slat Only" Then
+                data.width = ""
+                width = 0
+                data.stack = ""
+                data.tracktype = ""
+                data.trackcolour = ""
+                data.wandsize = ""
+                data.wandcolour = ""
+                data.customsize = ""
+                data.bracket = ""
+            End If
+
+            If BlindName = "Track Only" Then
+                data.drop = ""
+                drop = 0
+                data.fabrictype = ""
+                data.fabriccolour = ""
+                data.blindsize = ""
+                data.slat =""
+                data.slatqty =""
+                data.endslats =""
+                data.totalslats = 0
+                data.fabricqty = ""
+            End If
+
+            If data.wandsize = "Custom" Then
+                data.wandsize = data.customsize
+            End IF
 
             ' throw New Exception( data.wandsize)
 
@@ -641,8 +646,9 @@ Partial Class Methods_VerishadesMethod
     End Function
 
 
+    ' New SpacerInfo With {.MinWidth = 0, .MaxWidth = 141, .Spacer1Type = "107|109|110", .CarriersQty = 1},
     Private Shared ReadOnly SpacerVerishades As New List(Of SpacerInfo) From {
-        New SpacerInfo With {.MinWidth = 0, .MaxWidth = 141, .Spacer1Type = "107|109|110", .CarriersQty = 1},
+        New SpacerInfo With {.MinWidth = 0, .MaxWidth = 141, .Spacer1Type = "107", .CarriersQty = 1},
         New SpacerInfo With {.MinWidth = 142, .MaxWidth = 248, .Spacer1Type = "107", .CarriersQty = 2},
         New SpacerInfo With {.MinWidth = 249, .MaxWidth = 250, .Spacer1Type = "109", .CarriersQty = 2},
         New SpacerInfo With {.MinWidth = 251, .MaxWidth = 251, .Spacer1Type = "110", .CarriersQty = 2},
