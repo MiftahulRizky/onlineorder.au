@@ -1,816 +1,384 @@
-$(document).ready(function () {
-  if (ROLENAME === "Administrator") {
-    console.log("panelglides.js loaded successfully");
+document.addEventListener("DOMContentLoaded", () => {
+  if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
+    console.log("Global PG.js loaded successfully");
     console.log("ROLENAME: " + ROLENAME);
+    console.log("LEVELNAME: " + LEVELNAME);
     console.log("ITEMACTION: " + ITEMACTION);
     console.log("ITEMID: " + ITEMID);
+    console.log("HEADERID: " + HEADERID);
+    console.log("ORDERTYPE: " + ORDERTYPE);
     console.log("URIMETHOD: " + URIMETHOD);
   }
-  checkSession();
+  pgGlobalPageLoaded();
 });
 
-// ==================================================EVENTS==================================================
-// #-------------------------|| Button Event ||-------------------------#
-// BUTTON CANCEL
-$("#btnCancel").on(
-  "click",
-  () =>
-    (window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`),
-);
+// ===============================================================EVENTS========================================================================
+document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+  el.addEventListener("change", async (e) => {
+    e.target.classList.remove("is-invalid");
 
-// BUTTON SUBMIT
-$("#btnSubmit").on("click", submitForm);
+    if (e.target.id === "blindtype") {
+      const blindtype = e.target.value;
+      await handlerElementVisibility(blindtype);
+      await bindColours(DESIGNID, blindtype);
+    }
 
-// #-------------------------|| Input Event ||-------------------------#
-// CHANGE BLIND TYPE
-$("#blindtype").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-  $("#divFormDetail").attr("hidden", true);
+    if (e.target.id === "colourtype") {
+      const blindtype = document.getElementById("blindtype").value;
+      const colourtype = e.target.value;
+      await handlerElementVisibility(blindtype, colourtype);
+      await bindFabrics(DESIGNID, blindtype);
+      await Promise.all([
+        bindMounting(),
+        bindLayoutCode(),
+        bindNoPanel(),
+        bindTrackType(),
+        bindWandPosition(),
+        bindWandColour(),
+        bindBottomRail(),
+        bindBattenColour(),
+        bindFitting(),
+      ]);
+    }
 
-  const blindId = $(this).val();
+    if (e.target.id === "fabrictype") {
+      const fabrictype = e.target.value;
+      await bindFabricColours(DESIGNID, fabrictype);
+    }
 
-  const blindName = $(this).find("option:selected").data("name");
-  const fabrictype = $(this).find("option:selected").data("type");
-  console.log("fabrictype: " + fabrictype);
-
-  bindColourType(DESIGNID, blindId);
-  bindMounting(blindName);
-  bindFabricType(DESIGNID, blindName);
-  bindFabricColour(DESIGNID, fabrictype);
-  bindLayoutCode(blindName);
-  bindNoPanel();
-  bindTrackType();
-  bindTrackColour();
-  bindWandPosition();
-  bindWandColour();
-  bindBattenColour();
-});
-
-// CHANGE COLOUR TYPE
-$("#colourtype").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-
-  const blindName = $("#blindtype option:selected").data("name");
-  const colourtype = $(this).val();
-  visibleElementForm(blindName, colourtype);
-});
-
-// INPUT QTY
-$("#qty").on("input", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// INPUT ROOM
-$("#room").on("input", function (e) {
-  $(this).removeClass("is-invalid");
-});
-// INPUT MOUNTING
-$("#mounting").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// CHANGE FABRIC TYPE
-$("#fabrictype").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-  const fabrictype = $(this).find("option:selected").data("type");
-  bindFabricColour(DESIGNID, fabrictype);
-});
-
-// CHANGE FABRIC COLOUR
-$("#fabriccolour").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// INPUT WIDTH
-$("#width").on("input", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// INPUT DROP
-$("#drop").on("input", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// CHANGE LAYOUT CODE
-$("#layoutcode").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// CHANGE NO PANEL
-$("#nopanel").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// CHANGE TRACK TYPE
-$("#tracktype").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// CHANGE TRACK COLOUR
-$("#trackcolour").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// CHANGE WAND POSITION
-$("#wandposition").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// INPUT WAND LENGTH
-$("#wandlength").on("input", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// CHANGE WAND COLOUR
-$("#wandcolour").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// CHANGE BATTEN
-$("#batten").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-  visibleBattenColour($(this).val());
-});
-
-// CHANGE BATTEN COLOUR
-$("#battencolour").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// CHANGE FITTING
-$("#fitting").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// INPUT NOTES
-$("#notes").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-  let maxLength = 1000;
-  let currentLength = $(this).val().length;
-  $("#notescount").text(`${currentLength}/${maxLength}`);
-});
-
-// CHANGE MARKUP
-$("#markup").on("change", function (e) {
-  $(this).removeClass("is-invalid");
-});
-
-// ==================================================FUNCTIONS===============================================
-// #-------------------------|| Binding Function ||-------------------------#
-// BIND DESIGN TYPE
-function bindDesignType(designid) {
-  return new Promise((resolve, reject) => {
-    if (!designid) return resolve();
-
-    $.ajax({
-      type: "POST",
-      url: URIMETHOD + "/GetDesignType",
-      data: JSON.stringify({
-        designid: designid,
-      }),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (response) {
-        const data = response.d;
-        if (!data) {
-          var msg =
-            ROLENAME === "Administrator"
-              ? "No data returned from server : bindDesignType"
-              : "Please contact our IT team at support@onlineorder.au";
-          reject(isError(msg));
-          return;
-        }
-
-        document.getElementById("pageTitle").innerHTML = data.designName;
-        document.getElementById("pageAction").innerHTML = ITEMACTION;
-        resolve();
-      },
-      error: function (xhr, status, error, thrownError) {
-        var msg =
-          ROLENAME === "Administrator"
-            ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-            : "Please contact our IT team at support@onlineorder.au";
-        reject(isError(msg));
-      },
-    });
+    if (e.target.id === "tracktype") {
+      const tracktype = e.target.value;
+      document.getElementById("trackcolour").value = "";
+      await bindTrackColour(tracktype);
+    }
   });
-}
+  el.addEventListener("input", (e) => {
+    e.target.classList.remove("is-invalid");
 
-// BIND ITEM ORDER
-function bindFormAction(itemaction) {
+    if (e.target.id === "notes") {
+      let maxLength = 1000;
+      let currentLength = e.target.value.length;
+      document.querySelector("#notescount").textContent =
+        `${currentLength}/${maxLength}`;
+    }
+  });
+});
+
+document.querySelector("#btnSubmit").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+
+  // handlerSubmit(e.target.form, e.target.id);
+  handlerSubmit(e.target.id);
+});
+
+document.querySelector("#btnCancel").addEventListener("click", (e) => {
+  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+});
+
+// ============================================================FUNCTIONS========================================================================
+// ----------------------------------------------|| Binding Functions ||---------------------------------------
+const bindDesigns = async (designid) => {
+  try {
+    const Name = await getItemData(
+      `SELECT Name FROM Designs WHERE Id = '${designid}'`,
+    );
+
+    document.getElementById("pageTitle").innerHTML = Name;
+    document.getElementById("pageAction").innerHTML = ITEMACTION;
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+const bindHeaders = async (headerid) => {
+  try {
+    const OrderId = await getItemData(
+      `SELECT OrderId FROM view_order_headers WHERE Id = '${headerid}'`,
+    );
+    const OrderNumber = await getItemData(
+      `SELECT OrderNumber FROM view_order_headers WHERE Id = '${headerid}'`,
+    );
+    const OrderName = await getItemData(
+      `SELECT OrderName FROM view_order_headers WHERE Id = '${headerid}'`,
+    );
+
+    const lblOrder = document.getElementById("lblOrder");
+    const lblItemId = document.getElementById("lblItemId");
+    const lblOrderNumber = document.getElementById("lblOrderNumber");
+    const lblOrderName = document.getElementById("lblOrderName");
+
+    lblOrder.innerHTML = OrderId;
+    lblOrder.classList.add("fw-bold");
+
+    lblItemId.innerHTML = ITEMID;
+    lblItemId.classList.add("fw-bold");
+
+    lblOrderNumber.innerHTML = OrderNumber;
+    lblOrderNumber.classList.add("fw-bold");
+
+    lblOrderName.innerHTML = OrderName;
+    lblOrderName.classList.add("fw-bold");
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+const bindFormAction = (itemaction, id) => {
   const cardTitle = document.getElementById("cardTitle");
-  // if (!cardTitle) return console.warn("Elemen 'cardTitle' tidak ditemukan.");
-
   const actionMap = {
     AddItem: "ADD ITEM",
-    EditItem: "EDIT ITEM",
-    ViewItem: "VIEW ITEM",
+    NextItem: "NEXT ITEM",
+    EditItem: "EDIT ITEM ID: " + id,
+    ViewItem: "VIEW ITEM ID: " + id,
     CopyItem: "COPY ITEM",
   };
   cardTitle.innerText = actionMap[itemaction] || "";
-}
+};
 
-// BIND DATA HEADER
-function bindDataHeader(headerid) {
-  return new Promise((resolve, reject) => {
-    if (!headerid) return resolve();
+const bindBlinds = async (designid) => {
+  if (!designid) return;
 
-    $.ajax({
-      type: "POST",
-      url: URIMETHOD + "/GetHeaderData",
-      data: JSON.stringify({
-        headerid: headerid,
-      }),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (response) {
-        const data = response.d;
-        if (!data) {
-          var msg =
-            ROLENAME === "Administrator"
-              ? "No data returned from server : bindDataHeader"
-              : "Please contact our IT team at support@onlineorder.au";
-          reject(isError(msg));
-          return;
-        }
-
-        const divOrderNo = document.getElementById("divOrderNo");
-        const divOrderCust = document.getElementById("divOrderCust");
-
-        divOrderNo.innerHTML = data.orderNo;
-        divOrderNo.classList.add("fw-bold");
-
-        divOrderCust.innerHTML = data.orderCust;
-        divOrderCust.classList.add("fw-bold");
-
-        resolve(data);
-      },
-      error: function (xhr, status, error, thrownError) {
-        var msg =
-          ROLENAME === "Administrator"
-            ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-            : "Please contact our IT team at support@onlineorder.au";
-        reject(isError(msg));
-      },
-    });
+  await bindSelect({
+    elementId: "blindtype",
+    field: "blindtype",
+    params: { designid },
+    withDefaultOption: true,
   });
-}
+};
 
-// BIND DATA BLIND TYPE
-function bindBlindType(designid) {
-  return new Promise((resolve, reject) => {
-    const blindtype = document.getElementById("blindtype");
-    blindtype.innerHTML = ""; //reset
+const bindColours = async (designid, blindtype) => {
+  if (!designid || !blindtype) return;
 
-    if (!designid) return resolve();
-
-    bindColourType(designid, blindtype.value);
-
-    $.ajax({
-      type: "POST",
-      url: URIMETHOD + "/BindBlindType",
-      data: JSON.stringify({
-        designid: designid,
-      }),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (response) {
-        const data = response.d;
-
-        if (!data || data.length === 0) {
-          var msg =
-            ROLENAME === "Administrator"
-              ? "No data returned from server : bindBlindType"
-              : "Please contact our IT team at support@onlineorder.au";
-          reject(isError(msg));
-          return;
-        }
-
-        if (Array.isArray(data)) {
-          blindtype.innerHTML = ""; //reset
-
-          if (data.length > 1) {
-            const defaultOption = document.createElement("option");
-            defaultOption.text = "";
-            defaultOption.value = "";
-            blindtype.add(defaultOption);
-          }
-
-          data.forEach(function (item) {
-            const option = document.createElement("option");
-            option.value = item.value;
-            option.text = item.text.toUpperCase();
-            option.setAttribute("data-name", item.text);
-            blindtype.add(option);
-            blindtype.classList.add("fw-bold");
-          });
-
-          if (data.length === 1) {
-            blindtype.selectedIndex = 0;
-            bindColourType(designid, blindtype.value);
-          }
-        }
-        resolve();
-      },
-      error: function (xhr, status, error, thrownError) {
-        var msg =
-          ROLENAME === "Administrator"
-            ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-            : "Please contact our IT team at support@onlineorder.au";
-        reject(isError(msg));
-      },
-    });
+  await bindSelect({
+    elementId: "colourtype",
+    field: "colourtype",
+    params: { designid, blindtype },
+    withDefaultOption: true,
   });
-}
+};
 
-// BIND COLOUR TYPE
-function bindColourType(designid, blindid) {
-  return new Promise((resolve, reject) => {
-    const colourtype = document.getElementById("colourtype");
-    colourtype.innerHTML = ""; //reset
+const bindMounting = () => {
+  generateOption("mounting", ["Make Size", "Face Fit", "Reveal fit"]);
+};
 
-    if (!blindid) return resolve();
+const bindFabrics = async (designid, blindtype) => {
+  if (!designid || !blindtype) return;
 
-    const sel = document.getElementById("blindtype");
-    const blindName = sel.selectedOptions[0].getAttribute("data-name");
-
-    visibleElementForm(blindName, colourtype.value);
-
-    $.ajax({
-      type: "POST",
-      url: URIMETHOD + "/BindColourType",
-      data: JSON.stringify({
-        designid: designid,
-        blindid: blindid,
-      }),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (response) {
-        const data = response.d;
-
-        if (!data || data.length === 0) {
-          var msg =
-            ROLENAME === "Administrator"
-              ? "No data returned from server : bindColourType"
-              : "Please contact our IT team at support@onlineorder.au";
-          reject(isError(msg));
-          return;
-        }
-        if (Array.isArray(data)) {
-          colourtype.innerHTML = ""; //reset
-
-          if (data.length > 0) {
-            const defaultOption = document.createElement("option");
-            defaultOption.value = "";
-            defaultOption.text = "";
-            colourtype.appendChild(defaultOption);
-          }
-
-          data.forEach((item) => {
-            const option = document.createElement("option");
-            option.value = item.value;
-            option.text = item.text.toUpperCase();
-            colourtype.appendChild(option);
-            colourtype.classList.add("fw-bold");
-          });
-
-          if (data.length === 1) {
-            colourtype.selectedIndex = 0;
-            visibleElementForm(blindName, colourtype.value);
-          }
-        }
-        resolve();
-      },
-      error: function (xhr, status, error, thrownError) {
-        var msg =
-          ROLENAME === "Administrator"
-            ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-            : "Please contact our IT team at support@onlineorder.au";
-        reject(isError(msg));
-      },
-    });
+  await bindSelect({
+    elementId: "fabrictype",
+    field: "fabrictype",
+    params: { designid, blindtype },
+    withDefaultOption: true,
   });
-}
+};
 
-// BIND MOUNTING
-function bindMounting(blindName) {
-  return new Promise((resolve, reject) => {
-    const select = document.getElementById("mounting");
-    select.innerHTML = ""; // kosongkan dulu jika ingin reset
+const bindFabricColours = async (designid, fabrictype) => {
+  if (!designid || !fabrictype) return;
 
-    if (!blindName) return resolve();
+  await bindSelect({
+    elementId: "fabriccolour",
+    field: "fabriccolour",
+    params: { designid, fabrictype },
+    withDefaultOption: true,
+  });
+};
 
-    let data = [];
-    switch (blindName) {
-      case "Plain":
-      case "Plantation":
-      case "Sewless":
-        data = [
-          { value: "", label: "" },
-          { value: "Make Size", label: "Make Size" },
-          { value: "Face Fit", label: "Face Fit" },
-          { value: "Reveal fit", label: "Reveal fit" },
-        ];
-        break;
+const bindLayoutCode = () => {
+  generateOption("layoutcode", ["A", "B", "C", "D", "E", "F"]);
+};
+
+const bindNoPanel = () => {
+  let list = [];
+
+  for (let i = 2; i <= 9; i++) {
+    list.push(i.toString());
+  }
+
+  generateOption("nopanel", list);
+};
+
+const bindTrackType = () => {
+  generateOption("tracktype", [
+    "2 Channel Track",
+    "3 Channel Track",
+    "4 Channel Track",
+    "5 Channel Track",
+    "6 Channel Track",
+  ]);
+};
+
+const bindTrackColour = (tracktype) => {
+  if (!tracktype) return;
+  generateOption("trackcolour", ["Black", "Grey", "White"]);
+};
+
+const bindWandPosition = () => {
+  generateOption("wandposition", ["Back", "Front"]);
+};
+
+const bindWandColour = () => {
+  generateOption("wandcolour", ["Black", "Grey", "White"]);
+};
+
+const bindBottomRail = () => {
+  generateOption("bottomrail", ["Standard (Plain Pocket)", "Fabric Covered"]);
+};
+
+const bindBattenColour = () => {
+  generateOption("battencolour", [
+    "Aluminium",
+    "Timber - Alabaster",
+    "Timber - Batlic",
+    "Timber - Black",
+    "Timber - Brown",
+    "Timber - Cherry",
+    "Timber - Natural",
+    "Timber - Teak",
+    "Timber - White",
+  ]);
+};
+
+const bindFitting = () => {
+  generateOption("fitting", ["Face", "Reveal"]);
+};
+// ----------------------------------------------|| Handler Functions ||---------------------------------------
+const handlerElementVisibility = async (blindtype, colourtype, item) => {
+  try {
+    const lblItemId = document.getElementById("lblItemId");
+    const divColourType = document.getElementById("divColourType");
+    const divFormDetail = document.getElementById("divFormDetail");
+    const divBatten = document.getElementById("divBatten");
+    const divBattenColour = document.getElementById("divBattenColour");
+    const divMarkUp = document.getElementById("divMarkUp");
+    const btnSubmit = document.querySelector("#btnSubmit");
+    // return;
+    lblItemId.classList.add("d-none");
+    divColourType.classList.add("d-none");
+    divFormDetail.classList.add("d-none");
+    divBatten.classList.add("d-none");
+    divBattenColour.classList.add("d-none");
+    divMarkUp.classList.add("d-none");
+    btnSubmit.classList.add("d-none");
+
+    if (!blindtype) return;
+    const blindname = await getItemData(
+      `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
+    );
+    divColourType.classList.remove("d-none");
+
+    if (!colourtype) return;
+    divFormDetail.classList.remove("d-none");
+
+    if (["Plantation", "Sewless"].includes(blindname)) {
+      divBatten.classList.remove("d-none");
     }
 
-    data.forEach((item) => {
-      const option = document.createElement("option");
-      option.value = item.value;
-      option.text = item.label.toUpperCase();
-      select.appendChild(option);
+    if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
+
+    if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
+      btnSubmit.classList.remove("d-none");
+    } else if (ITEMACTION === "ViewItem") {
+      btnSubmit.classList.remove("d-none");
+      if (ROLENAME !== "Administrator") btnSubmit.classList.add("d-none");
+    }
+  } catch (error) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const handlerSubmit = async (button) => {
+  try {
+    // return alert(button);
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = [
+      "blindtype", // as Kit Id
+      "colourtype", // as Kit Id
+      "qty", // as Qty
+      "room", // as Location
+      "mounting", // as Mounting
+      "fabrictype", // as FabricId
+      "fabriccolour", // as FabricId
+      "width", // as Width
+      "drop", // as Drop
+      "layoutcode", // as LayoutCode
+      "nopanel", // as New NoPanel
+      "tracktype", // as TrackType
+      "trackcolour", // as TrackColour
+      "wandposition", // as New WandPosition
+      "wandlength", // as WandLength
+      "wandcolour", // as WandColour
+      "bottomrail", // as BottomHoldDown
+      "batten", // as New Batten
+      "battencolour", // as New BattenColour
+      "fitting", // as New Fitting
+      "notes", // as Notes
+      "markup", // as Markup
+    ];
+
+    const formData = {
+      headerid: HEADERID,
+      itemaction: ITEMACTION,
+      itemid: ITEMID,
+      designid: DESIGNID,
+      loginid: LOGINID,
+      rolename: ROLENAME,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.getElementById(field).value;
     });
 
-    resolve();
-  });
-}
+    // return console.table(formData);
 
-// BIND FABRIC TYPE
-function bindFabricType(designid, blindname) {
-  return new Promise((resolve, reject) => {
-    const sel = document.getElementById("fabrictype");
-    sel.innerHTML = ""; //reset
-
-    if (!designid || !blindname) return resolve();
-
-    bindFabricColour(designid, sel.value);
-
-    $.ajax({
-      type: "POST",
-      url: URIMETHOD + "/BindFabricType",
-      data: JSON.stringify({
-        designid: designid,
-        blindname: blindname,
-      }),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (response) {
-        const data = response.d;
-
-        if (!data || data.length === 0) {
-          var msg =
-            ROLENAME === "Administrator"
-              ? "No data returned from server : bindFabricType"
-              : "Please contact our IT team at support@onlineorder.au";
-          reject(isError(msg));
-          return;
-        }
-
-        if (Array.isArray(data)) {
-          sel.innerHTML = ""; //reset
-
-          if (data.length > 1) {
-            const defaultOption = document.createElement("option");
-            defaultOption.text = "";
-            defaultOption.value = "";
-            sel.add(defaultOption);
-          }
-
-          data.forEach(function (item) {
-            const option = document.createElement("option");
-            option.value = item.value;
-            option.text = item.text.toUpperCase();
-            option.setAttribute("data-type", item.text);
-            sel.add(option);
-          });
-
-          if (data.length === 1) {
-            sel.selectedIndex = 0;
-            bindFabricColour(designid, sel.value);
-          }
-        }
-        resolve();
+    const response = await fetch(URIMETHOD + "/Submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
       },
-      error: function (xhr, status, error, thrownError) {
-        var msg =
-          ROLENAME === "Administrator"
-            ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-            : "Please contact our IT team at support@onlineorder.au";
-        reject(isError(msg));
-      },
+      body: JSON.stringify({ data: formData }),
     });
-  });
-}
 
-// BIND FABRIC TYPE
-function bindFabricColour(designid, fabrictype) {
-  return new Promise((resolve, reject) => {
-    const sel = document.getElementById("fabriccolour");
-    sel.innerHTML = ""; //reset
-
-    if (!designid || !fabrictype) return resolve();
-
-    $.ajax({
-      type: "POST",
-      url: URIMETHOD + "/BindFabricColour",
-      data: JSON.stringify({
-        designid: designid,
-        fabrictype: fabrictype,
-      }),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (response) {
-        const data = response.d;
-
-        if (!data || data.length === 0) {
-          var msg =
-            ROLENAME === "Administrator"
-              ? "No data returned from server : bindFabricColour"
-              : "Please contact our IT team at support@onlineorder.au";
-          reject(isError(msg));
-          return;
-        }
-
-        if (Array.isArray(data)) {
-          sel.innerHTML = ""; //reset
-
-          if (data.length > 1) {
-            const defaultOption = document.createElement("option");
-            defaultOption.text = "";
-            defaultOption.value = "";
-            sel.add(defaultOption);
-          }
-
-          data.forEach(function (item) {
-            const option = document.createElement("option");
-            option.value = item.value;
-            option.text = item.text.toUpperCase();
-            option.setAttribute("data-colour", item.text);
-            sel.add(option);
-          });
-
-          if (data.length === 1) {
-            sel.selectedIndex = 0;
-          }
-        }
-        resolve();
-      },
-      error: function (xhr, status, error, thrownError) {
-        var msg =
-          ROLENAME === "Administrator"
-            ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-            : "Please contact our IT team at support@onlineorder.au";
-        reject(isError(msg));
-      },
-    });
-  });
-}
-
-// BIND LAYOUT CODE
-function bindLayoutCode(blindname) {
-  return new Promise((resolve, reject) => {
-    const select = document.getElementById("layoutcode");
-    select.innerHTML = ""; // kosongkan dulu jika ingin reset
-    if (!blindname) return resolve();
-
-    let data = [];
-    switch (blindname) {
-      case "Plain":
-      case "Sewless":
-      case "Plantation":
-        data = [
-          { value: "", text: "" },
-          { value: "A", text: "A" },
-          { value: "B", text: "B" },
-          { value: "C", text: "C" },
-          { value: "D", text: "D" },
-          { value: "E", text: "E" },
-          { value: "F", text: "F" },
-        ];
-        break;
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
     }
 
-    data.forEach((item) => {
-      const option = document.createElement("option");
-      option.value = item.value;
-      option.text = item.text;
-      select.appendChild(option);
-    });
+    const result = await response.json();
+    const dataResult = result.d || result;
 
-    resolve();
-  });
-}
-
-// BIND NO OF PANEL
-function bindNoPanel() {
-  return new Promise((resolve, reject) => {
-    const select = document.getElementById("nopanel");
-    select.innerHTML = ""; // kosongkan dulu jika ingin reset
-
-    let data = [];
-    data.push({ value: "", text: "" });
-    for (let i = 2; i <= 9; i++) {
-      data.push({ value: i, text: i });
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success);
+      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
     }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Submit";
+  }
+};
 
-    data.forEach((item) => {
-      const option = document.createElement("option");
-      option.value = item.value;
-      option.text = item.text;
-      select.appendChild(option);
-    });
-
-    resolve();
-  });
-}
-
-// BIND TRACK TYPE
-function bindTrackType() {
-  return new Promise((resolve, reject) => {
-    const select = document.getElementById("tracktype");
-    select.innerHTML = ""; // kosongkan dulu jika ingin reset
-
-    let data = [];
-    data = [
-      { value: "", text: "" },
-      { value: "2 Channel Track", text: "2 Channel Track" },
-      { value: "3 Channel Track", text: "3 Channel Track" },
-      { value: "4 Channel Track", text: "4 Channel Track" },
-      { value: "5 Channel Track", text: "5 Channel Track" },
-      { value: "6 Channel Track", text: "6 Channel Track" },
-    ];
-
-    data.forEach((item) => {
-      const option = document.createElement("option");
-      option.value = item.value;
-      option.text = item.text.toUpperCase();
-      select.appendChild(option);
-    });
-
-    resolve();
-  });
-}
-
-// BIND TRACK COLOUR
-function bindTrackColour() {
-  return new Promise((resolve, reject) => {
-    const select = document.getElementById("trackcolour");
-    select.innerHTML = ""; // kosongkan dulu jika ingin reset
-
-    let data = [];
-    data = [
-      { value: "", text: "" },
-      { value: "Black", text: "Black" },
-      { value: "Grey", text: "Grey" },
-      { value: "White", text: "White" },
-    ];
-
-    data.forEach((item) => {
-      const option = document.createElement("option");
-      option.value = item.value;
-      option.text = item.text.toUpperCase();
-      select.appendChild(option);
-    });
-
-    resolve();
-  });
-}
-
-// BIND WAND POSITION
-function bindWandPosition() {
-  return new Promise((resolve, reject) => {
-    const select = document.getElementById("wandposition");
-    select.innerHTML = ""; // kosongkan dulu jika ingin reset
-
-    let data = [];
-    data = [
-      { value: "", text: "" },
-      { value: "Back", text: "Back" },
-      { value: "Front", text: "Front" },
-    ];
-
-    data.forEach((item) => {
-      const option = document.createElement("option");
-      option.value = item.value;
-      option.text = item.text.toUpperCase();
-      select.appendChild(option);
-    });
-
-    resolve();
-  });
-}
-
-// BIND WAND COLOUR
-function bindWandColour() {
-  return new Promise((resolve, reject) => {
-    const select = document.getElementById("wandcolour");
-    select.innerHTML = ""; // kosongkan dulu jika ingin reset
-
-    let data = [];
-    data = [
-      { value: "", text: "" },
-      { value: "Black", text: "Black" },
-      { value: "Grey", text: "Grey" },
-      { value: "White", text: "White" },
-    ];
-
-    data.forEach((item) => {
-      const option = document.createElement("option");
-      option.value = item.value;
-      option.text = item.text.toUpperCase();
-      select.appendChild(option);
-    });
-
-    resolve();
-  });
-}
-
-// BIND BATTEN COLOUR
-function bindBattenColour() {
-  return new Promise((resolve, reject) => {
-    const select = document.getElementById("battencolour");
-    select.innerHTML = ""; // kosongkan dulu jika ingin reset
-
-    let data = [];
-    data = [
-      { value: "", text: "" },
-      { value: "Aluminium", text: "Aluminium" },
-      { value: "Timber - Alabaster", text: "Timber - Alabaster" },
-      { value: "Timber - Batlic", text: "Timber - Batlic" },
-      { value: "Timber - Black", text: "Timber - Black" },
-      { value: "Timber - Brown", text: "Timber - Brown" },
-      { value: "Timber - Cherry", text: "Timber - Cherry" },
-      { value: "Timber - Natural", text: "Timber - Natural" },
-      { value: "Timber - Teak", text: "Timber - Teak" },
-      { value: "Timber - White", text: "Timber - White" },
-    ];
-
-    data.forEach((item) => {
-      const option = document.createElement("option");
-      option.value = item.value;
-      option.text = item.text.toUpperCase();
-      select.appendChild(option);
-    });
-
-    resolve();
-  });
-}
-
-// BIND ITEM ORDER FOR EDIT ONLY
-function bindItemOrder(itemid) {
-  return new Promise((resolve, reject) => {
-    if (!itemid) return resolve();
-    // console.log("bindItemOrder", itemid);
-
-    $.ajax({
-      type: "POST",
-      url: URIMETHOD + "/BindItemOrder",
-      data: JSON.stringify({
-        itemid: itemid,
-      }),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (response) {
-        const data = response.d;
-
-        if (!data || data.length === 0) {
-          var msg =
-            ROLENAME === "Administrator"
-              ? "No data returned from server : bindItemOrder"
-              : "Please contact our IT team at support@onlineorder.au";
-          reject(isError(msg));
-          return;
-        }
-
-        const promises = data.map((item) => {
-          return Promise.resolve()
-            .then(() => bindBlindType(item.DesignId))
-            .then(() => bindColourType(item.DesignId, item.BlindId))
-            .then(() => bindMounting(item.BlindName))
-            .then(() => bindFabricType(item.DesignId, item.BlindName))
-            .then(() => bindFabricColour(item.DesignId, item.FabricType))
-            .then(() => bindLayoutCode(item.BlindName))
-            .then(() => bindNoPanel())
-            .then(() => bindTrackType())
-            .then(() => bindTrackColour())
-            .then(() => bindWandPosition())
-            .then(() => bindWandColour())
-            .then(() => bindBattenColour())
-            .then(() => setFormValues(item))
-            .then(() => visibleElementForm(item.BlindName, item.KitId))
-            .then(() => {
-              return Promise.all([visibleBattenColour(item.Batten)])
-                .then(resolve)
-                .catch(reject);
-            });
-        });
-
-        Promise.all(promises)
-          .then(() => resolve())
-          .catch((error) => reject(error));
-      },
-      error: function (xhr, status, error, thrownError) {
-        var msg =
-          ROLENAME === "Administrator"
-            ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-            : "Please contact our IT team at support@onlineorder.au";
-        reject(isError(msg));
-      },
-    });
-  });
-}
-
-function setFormValues(itemData) {
+const handlerSetElementValues = (itemData) => {
   const mapping = {
     blindtype: "BlindId",
     colourtype: "KitId",
@@ -836,207 +404,230 @@ function setFormValues(itemData) {
     markup: "MarkUp",
   };
 
-  Object.keys(mapping).forEach((id) => {
+  // 1. set normal fields
+  Object.entries(mapping).forEach(([id, key]) => {
     const el = document.getElementById(id);
-    if (!el) {
-      console.warn(`Elemen '${id}' tidak ditemukan.`);
-      return;
-    }
+    if (!el) return;
 
-    let value = itemData[mapping[id]];
+    let value = itemData[key];
+
     if (id === "markup" && value === 0) value = "";
-    el.value = value || "";
 
-    // Set value to empty if value is 0
-    if (el) el.value = el.value === "0" ? "" : el.value;
+    el.value = value ?? "";
+
+    if (el.value === "0") el.value = "";
   });
-  const maxLength = 1000;
-  const notesLength = (itemData["Notes"] || "").length;
-  $("#notescount").text(`${notesLength}/${maxLength}`);
+};
 
-  if (ITEMACTION === "CopyItem") {
-    const resetFields = ["room", "width", "drop", "notes"];
-    resetFields.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) el.value = "";
+const bindItemOrders = async (itemid) => {
+  try {
+    if (!itemid) return;
+
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid }),
     });
 
-    $("#notescount").text(`0/${maxLength}`);
-  }
-}
-
-// #-------------------------|| Submit Function ||-------------------------#
-function submitForm() {
-  if (ITEMACTION === "AddItem") {
-    var htmlButtonSubmit =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
-  }
-  if (ITEMACTION === "EditItem" || ITEMACTION === "CopyItem") {
-    var htmlButtonSubmit =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
-  }
-
-  resetFormError();
-
-  const fields = [
-    "blindtype", // as Kit Id
-    "colourtype", // as Kit Id
-    "qty", // as Qty
-    "room", // as Location
-    "mounting", // as Mounting
-    "fabrictype", // as FabricId
-    "fabriccolour", // as FabricId
-    "width", // as Width
-    "drop", // as Drop
-    "layoutcode", // as LayoutCode
-    "nopanel", // as New NoPanel
-    "tracktype", // as TrackType
-    "trackcolour", // as TrackColour
-    "wandposition", // as New WandPosition
-    "wandlength", // as WandLength
-    "wandcolour", // as WandColour
-    "bottomrail", // as BottomHoldDown
-    "batten", // as New Batten
-    "battencolour", // as New BattenColour
-    "fitting", // as New Fitting
-    "notes", // as Notes
-    "markup", // as Markup
-  ];
-
-  const formData = {
-    headerid: HEADERID,
-    itemaction: ITEMACTION,
-    itemid: ITEMID,
-    designid: DESIGNID,
-    loginid: LOGINID,
-  };
-
-  fields.forEach((field) => {
-    formData[field] = document.getElementById(field).value;
-  });
-
-  $.ajax({
-    type: "post",
-    url: URIMETHOD + "/SubmitForm",
-    data: JSON.stringify({ data: formData }),
-    dataType: "json",
-    contentType: "application/json; charset=utf-8",
-    beforeSend: function () {
-      $("#btnSubmit").attr("disable", "disable");
-      $("#btnSubmit").html('<i class="fa fa-spin fa-spinner"</i>');
-    },
-    complete: function () {
-      $("#btnSubmit").removeAttr("disable");
-      $("#btnSubmit").html(htmlButtonSubmit);
-    },
-    success: function (response) {
-      const result = response.d || response;
-      if (result.error) {
-        isError(result.error.message.toUpperCase()).then(() => {
-          const el = document.getElementById(result.error.field);
-          if (el) {
-            // el.focus();
-            el.classList.add("is-invalid");
-          }
-        });
-      } else {
-        isSuccess(result.success).then(() => {
-          window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
-        });
-      }
-    },
-    error: function (xhr, ajaxOptions, thrownError) {
-      var msg =
+    if (!res.ok) {
+      const msg =
         ROLENAME === "Administrator"
-          ? xhr.status + "\n" + xhr.responseText + "\n" + thrownError
-          : "Something went wrong, please try again!";
-      isError(msg);
-    },
-  });
-  return false;
-  // console.log(formData);
-}
-// #-------------------------|| Visible Function ||-----------------------#
-// VISIBLE ELEMENT FORM FUNCTION
-function visibleElementForm(blindname, colourtype) {
-  //DEFIND ELEMENTS
-  const btnSubmit = document.getElementById("btnSubmit");
-  const divFormDetail = document.getElementById("divFormDetail");
-  const divBattenColour = document.getElementById("divBattenColour");
-  const divMarkUp = document.getElementById("divMarkUp");
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
+    }
 
-  // SET DEFAULT HIDE ELEMENT
-  divFormDetail.setAttribute("hidden", true);
-  divBattenColour.setAttribute("hidden", true);
-  divMarkUp.setAttribute("hidden", true);
-  if (colourtype) {
-    divFormDetail.removeAttribute("hidden");
+    const response = await res.json();
+    const data = response.d;
+
+    if (!data || data.length === 0) {
+      throw isError("No data returned from server : bindItemOrders");
+    }
+
+    for (const item of data) {
+      await bindBlinds(item.DesignId);
+      await bindColours(item.DesignId, item.BlindId);
+      await handlerElementVisibility(item.BlindId, item.KitId, item);
+      await bindFabrics(item.DesignId, item.BlindId);
+      await bindFabricColours(item.DesignId, item.FabricType);
+      await Promise.all([
+        bindMounting(),
+        bindLayoutCode(),
+        bindNoPanel(),
+        bindTrackType(),
+        bindWandPosition(),
+        bindWandColour(),
+        bindBottomRail(),
+        bindBattenColour(),
+        bindFitting(),
+      ]);
+      await Promise.all([handlerSetElementValues(item)]);
+    }
+
+    return true; // ✅ success
+  } catch (error) {
+    console.error("bindItemOrder error:", error);
+    throw error;
   }
+};
 
-  if (MARKUPACCESS === "True") divMarkUp.removeAttribute("hidden");
-
-  if (ITEMACTION == "AddItem") {
-    //SET DEFAULT TEXT BUTTON SUBMIT
-    btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
-  } else if (ITEMACTION == "EditItem" || ITEMACTION == "CopyItem") {
-    //SET DEFAULT TEXT BUTTON SUBMIT
-    btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
-  } else if (ITEMACTION == "ViewItem") {
-    btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i> Submit";
-    if (ROLENAME !== "Administrator") btnSubmit.setAttribute("hidden", true);
-  }
-}
-
-// VISIBLE BATTEN COLOUR
-function visibleBattenColour(batten) {
-  const divBattenColour = document.getElementById("divBattenColour");
-  divBattenColour.removeAttribute("hidden");
-  if (batten === "No" || batten === "") {
-    divBattenColour.setAttribute("hidden", true);
-  }
-}
-// #-------------------------|| Other Function ||-------------------------#
-// SESSION FUNCTION
-const checkSession = async () => {
+// ----------------------------------------------|| Other Functions ||---------------------------------------
+const pgGlobalPageLoaded = async () => {
   if (!HEADERID) {
     window.location.href = "/order";
     return;
   }
+
   if (!ORDERTYPE) {
     window.location.href = "/order";
     return;
   }
+
   if (!ITEMACTION || !DESIGNID) {
     window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
     return;
   }
+
   if (DESIGNID.toUpperCase() !== DESIGNIDORI) {
     window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
     return;
   }
 
-  await bindDesignType(DESIGNID);
-  await bindDataHeader(HEADERID);
-  bindFormAction(ITEMACTION);
+  await bindDesigns(DESIGNID);
+  await bindHeaders(HEADERID);
+  await bindFormAction(ITEMACTION, ITEMID);
 
   if (ITEMACTION === "AddItem") {
-    visibleElementForm();
-    await bindBlindType(DESIGNID);
+    await bindBlinds(DESIGNID);
+    handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    await bindItemOrder(ITEMID);
+    await bindItemOrders(ITEMID);
     loaderFadeOut();
   }
 };
 
-// RESET FORM IS INVALID
-function resetFormError() {
-  document
-    .querySelectorAll(".form-control, .form-select")
-    .forEach((element) => {
-      element.classList.remove("is-invalid");
+const getItemData = async (query) => {
+  try {
+    const response = await fetch(`${URIMETHOD}/GetItemData`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: query }), // ✅ FIX
     });
-}
+
+    const json = await response.json();
+    return json.d;
+  } catch (err) {
+    console.error(err);
+    isError(err);
+  }
+};
+
+const bindSelect = async ({
+  elementId,
+  field,
+  params = {},
+  withDefaultOption = true,
+  onSingle = null,
+  afterRender = null,
+}) => {
+  const select = document.getElementById(elementId);
+  select.innerHTML = "";
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindListData`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        data: {
+          field,
+          ...params,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`${response.status}\n${text}`);
+    }
+
+    const result = await response.json();
+    const data = result.d;
+
+    if (!Array.isArray(data)) {
+      throw new Error(`No data returned from server : ${field}`);
+    }
+
+    select.innerHTML = "";
+
+    // default option
+    if (withDefaultOption && data.length > 0) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.text = "";
+      select.add(opt);
+    }
+
+    // render options
+    data.forEach((item) => {
+      const option = document.createElement("option");
+      option.value = item.value;
+      option.text = item.text.toUpperCase();
+      option.setAttribute("data-name", item.text);
+      select.add(option);
+    });
+
+    select.classList.add("fw-bold");
+
+    // callback setelah render
+    if (afterRender) {
+      await afterRender(data, select);
+    }
+
+    // kalau cuma 1 data
+    if (data.length === 1 && onSingle) {
+      select.selectedIndex = 0;
+      await onSingle(data[0], select);
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const generateOption = (elementId, list = []) => {
+  const sel = document.getElementById(elementId);
+  if (!sel) return;
+  sel.innerHTML = ""; // reset
+
+  let validateLength = 1;
+  switch (elementId) {
+    case "trackless":
+    case "frametype":
+    case "handleheight":
+      validateLength = 0;
+      break;
+  }
+
+  // Short A-Z
+  list.sort();
+
+  // default option kalau lebih dari 1 data
+  if (list.length > validateLength) {
+    const defaultOption = new Option("", "");
+    sel.add(defaultOption);
+  }
+
+  list.forEach((item) => {
+    const option = new Option(item.toUpperCase(), item);
+    option.setAttribute("data-name", item);
+    sel.add(option);
+  });
+};
