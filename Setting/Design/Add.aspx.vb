@@ -82,7 +82,7 @@
     Private Sub BindDataProductType()
         ddlType.Items.Clear()
         Try
-            ddlType.DataSource = publicCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM ProductType ORDER BY Name ASC")
+            ddlType.DataSource = publicCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM ProductType WHERE Active=1 ORDER BY Name ASC")
             ddlType.DataTextField = "NameText"
             ddlType.DataValueField = "Name"
             ddlType.DataBind()

@@ -409,6 +409,7 @@ const handlerSubmit = async (button) => {
       itemid: ITEMID,
       designid: DESIGNID,
       loginid: LOGINID,
+      rolename: ROLENAME,
     };
 
     fields.forEach((field) => {

@@ -205,31 +205,88 @@ document.querySelector("#btnAddItem").addEventListener("click", async (el) => {
 });
 
 // BUTTON ADD SERVICE
-document.querySelector("#btnAddService").addEventListener("click", () => {
-  // reset form
-  document
-    .querySelectorAll(
-      "#modalAddService .form-control, #modalAddService .form-select",
-    )
-    .forEach((e) => {
-      e.classList.remove("is-invalid");
-      e.value = "";
-    });
+document
+  .querySelector("#btnAddService")
+  .addEventListener("click", async (e) => {
+    // reset form
+    if (!["Administrator"].includes(ROLENAME)) {
+      document
+        .querySelectorAll(
+          "#modalAddService .form-control, #modalAddService .form-select",
+        )
+        .forEach((e) => {
+          e.classList.remove("is-invalid");
+          e.value = "";
+        });
 
-  // binding
-  handlerSelService("#modalAddService #category");
+      // binding
+      handlerSelService("#modalAddService #category");
 
-  // visible element
-  const divType = document.getElementById("divType");
-  const lblType = document.getElementById("lblType");
-  const modalLabel = document.getElementById("modalAddServiceLabel");
+      // visible element
+      const divType = document.getElementById("divType");
+      const lblType = document.getElementById("lblType");
+      const modalLabel = document.getElementById("modalAddServiceLabel");
 
-  modalLabel.innerHTML = "Add New Surcharge";
-  divType.setAttribute("hidden", true);
-  lblType.innerHTML = "Catgory Type";
+      modalLabel.innerHTML = "Add New Surcharge";
+      divType.setAttribute("hidden", true);
+      lblType.innerHTML = "Catgory Type";
 
-  handlerShowBSModal("modalAddService");
-});
+      handlerShowBSModal("modalAddService");
+    } else {
+      const btnLabel = e.target.innerHTML;
+      e.target.innerHTML = "Proccessing...";
+
+      try {
+        const response = await fetch(
+          URIMETHOD + "/SetSessionOpenPageInputItem",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            },
+            body: JSON.stringify({
+              id: "",
+              rolename: ROLENAME,
+              headerid: HEADERID,
+              ordertype: ORDERTYPE,
+              action: "AddItem",
+              designid: "415D0633-0648-42D8-B041-FE419E01BB3C",
+              production: "",
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`${response.status}\n${errorText}`);
+        }
+
+        const result = await response.json();
+        const dataResult = result.d || result;
+
+        if (dataResult.error) {
+          await isWarning(dataResult.error.message?.toUpperCase());
+          if (dataResult.error.field) {
+            const field = document.querySelector(dataResult.error.field);
+            field.classList.add("is-invalid");
+          }
+        } else {
+          // await isSuccess(dataResult.success.message);
+          // window.location.href = dataResult.success.message;
+          var finePage = dataResult.success.message.replace("~", "");
+          window.location.href = finePage;
+        }
+      } catch (error) {
+        var msg = error.message;
+        if (ROLENAME !== "Administrator") {
+          msg = "Please contact our IT team at support@onlineorder.au";
+        }
+        isError(msg);
+      } finally {
+        e.target.innerHTML = btnLabel;
+      }
+    }
+  });
 
 // ------------------------------------------||modalSendMailQuote Event ||------------------------------------
 document
@@ -2284,79 +2341,79 @@ const handlerEditItem = async (
   production,
   designname,
 ) => {
-  if (designname == "Additional") {
-    swalLoadingShow("Please wait while we prepare the data.");
-    try {
-      const response = await fetch(`${URIMETHOD}/BindOrderDetailsByID`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify({ itemid: id }),
-      });
+  // if (designname == "Additional") {
+  //   swalLoadingShow("Please wait while we prepare the data.");
+  //   try {
+  //     const response = await fetch(`${URIMETHOD}/BindOrderDetailsByID`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json; charset=utf-8",
+  //       },
+  //       body: JSON.stringify({ itemid: id }),
+  //     });
 
-      if (!response.ok) {
-        const msg = `${response.status} - ${response.statusText}`;
-        throw new Error(msg);
-      }
+  //     if (!response.ok) {
+  //       const msg = `${response.status} - ${response.statusText}`;
+  //       throw new Error(msg);
+  //     }
 
-      const dataResponse = await response.json();
-      const data = dataResponse.d;
+  //     const dataResponse = await response.json();
+  //     const data = dataResponse.d;
 
-      if (!data || data.length === 0) {
-        throw new Error("No data returned from server : handlerEditItem");
-      }
+  //     if (!data || data.length === 0) {
+  //       throw new Error("No data returned from server : handlerEditItem");
+  //     }
 
-      for (const item of data) {
-        await handlerSelService("#modalAddService #category");
-        await bindHardwareKit("#modalAddService #type", item.BlindId);
-        await setFormValues(item);
-        await visibleFormService(item);
-        await Swal.close();
-        await handlerShowBSModal("modalAddService");
-      }
-    } catch (error) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? error.message
-          : "Please contact our IT team at support@onlineorder.au";
-      await isError(msg);
+  //     for (const item of data) {
+  //       await handlerSelService("#modalAddService #category");
+  //       await bindHardwareKit("#modalAddService #type", item.BlindId);
+  //       await setFormValues(item);
+  //       await visibleFormService(item);
+  //       await Swal.close();
+  //       await handlerShowBSModal("modalAddService");
+  //     }
+  //   } catch (error) {
+  //     const msg =
+  //       ROLENAME === "Administrator"
+  //         ? error.message
+  //         : "Please contact our IT team at support@onlineorder.au";
+  //     await isError(msg);
+  //   }
+  // } else {
+  try {
+    const response = await fetch(`${URIMETHOD}/SetSessionOpenPageInputItem`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        id,
+        rolename: ROLENAME,
+        headerid,
+        ordertype,
+        action,
+        designid,
+        production,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
-  } else {
-    try {
-      const response = await fetch(`${URIMETHOD}/SetSessionOpenPageInputItem`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify({
-          id,
-          rolename: ROLENAME,
-          headerid,
-          ordertype,
-          action,
-          designid,
-          production,
-        }),
-      });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+    const data = await response.json();
+    const result = data.d || data;
 
-      const data = await response.json();
-      const result = data.d || data;
-
-      const finePage = result.success.message.replace("~", "");
-      window.location.href = finePage;
-    } catch (error) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? "Gagal menyetel session: " + error.message
-          : "Please contact our IT team at support@onlineorder.au";
-      await isError(msg);
-    }
+    const finePage = result.success.message.replace("~", "");
+    window.location.href = finePage;
+  } catch (error) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? "Gagal menyetel session: " + error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    await isError(msg);
   }
+  // }
 };
 
 const setFormValues = (itemData) => {

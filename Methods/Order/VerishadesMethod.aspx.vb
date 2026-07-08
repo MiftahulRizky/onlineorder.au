@@ -60,6 +60,7 @@ Partial Class Methods_VerishadesMethod
         Public Property itemid As String
         Public Property designid As String
         Public Property loginid As String
+        Public Property rolename As String
     End Class
 
     Public Class ParamListData
@@ -526,14 +527,14 @@ Partial Class Methods_VerishadesMethod
                 data.wandsize = data.customsize
             End IF
 
-            ' throw New Exception( data.wandsize)
+            ' throw New Exception(data.rolename)
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
             
                 Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], BlindSize,  StackPosition, TrackType, TrackColour, WandLength, WandColour, BracketOption, BracketColour, LouvreSize, LouvrePosition, Layout, LayoutSpecial, SlatSize, SlatQty, TubeSize, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
 
-                Dim Values As String = "@Id, @HeaderId, 'Blind 1', @KitId, @SoeKitId, @ExactId, @FabricId, @PriceGroupId,  @Qty, @Location, @Mounting, @Width, @Drop, @BlindSize, @StackPosition, @TrackType, @TrackColour, @WandLength, @WandColour, @BracketOption, @BracketColour, @LouvreSize, @LouvrePosition, @Layout, @LayoutSpecial, @SlatSize, @SlatQty, TubeSize, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
+                Dim Values As String = "@Id, @HeaderId, 'Blind 1', @KitId, @SoeKitId, @ExactId, @FabricId, @PriceGroupId,  @Qty, @Location, @Mounting, @Width, @Drop, @BlindSize, @StackPosition, @TrackType, @TrackColour, @WandLength, @WandColour, @BracketOption, @BracketColour, @LouvreSize, @LouvrePosition, @Layout, @LayoutSpecial, @SlatSize, @SlatQty, @TubeSize, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand(String.Format("INSERT INTO OrderDetails({0}) VALUES ({1})", Field, Values), thisConn)
@@ -641,7 +642,9 @@ Partial Class Methods_VerishadesMethod
 
             Return New SuccessResponse With {.success = msg}
         Catch ex As Exception
-            Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
+            Dim msg As String = ex.Message
+            If Not data.rolename = "Administrator" Then msg = "Please contact our IT team at support@onlineorder.au"
+            Return New ErrorResponse With { .error = New ErrorDetail With { .message = msg, .field = ""}}
         End Try
     End Function
 
