@@ -177,11 +177,7 @@
                                     <div class="mb-3 row" id="divBatten">
                                         <label for="batten" class="col-lg-3 text-uppercase fw-bold">batten</label>
                                         <div class="col-lg-4">
-                                            <select name="batten" id="batten" class="form-control ">
-                                                <option value=""></option>
-                                                <option value="No">NO</option>
-                                                <option value="Yes">YES</option>
-                                            </select>
+                                            <select name="batten" id="batten" class="form-control "></select>
                                         </div>
                                     </div>
 

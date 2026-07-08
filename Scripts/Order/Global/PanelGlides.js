@@ -37,7 +37,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindWandPosition(),
         bindWandColour(),
         bindBottomRail(),
-        bindBattenColour(),
+        bindBatten(),
         bindFitting(),
       ]);
     }
@@ -54,6 +54,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     }
 
     if (e.target.id === "batten") {
+      const blinds = document.getElementById("blindtype");
+      const blindname = blinds.selectedOptions[0].dataset.name;
       const batten = e.target.value;
       const divBattenColour = document.getElementById("divBattenColour");
       divBattenColour.classList.add("d-none");
@@ -61,7 +63,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       if (batten == "Yes") {
         divBattenColour.classList.remove("d-none");
       }
-      await bindBattenColour(batten);
+
+      await bindBattenColour(blindname, batten);
     }
   });
   el.addEventListener("input", (e) => {
@@ -240,19 +243,32 @@ const bindBottomRail = () => {
   generateOption("bottomrail", ["Standard (Plain Pocket)", "Fabric Covered"]);
 };
 
-const bindBattenColour = (bantten) => {
-  if (!bantten) return;
-  generateOption("battencolour", [
-    "Aluminium",
-    "Timber - Alabaster",
-    "Timber - Batlic",
-    "Timber - Black",
-    "Timber - Brown",
-    "Timber - Cherry",
-    "Timber - Natural",
-    "Timber - Teak",
-    "Timber - White",
-  ]);
+const bindBatten = () => {
+  generateOption("batten", ["No", "Yes"]);
+};
+
+const bindBattenColour = (blindname, bantten) => {
+  if (!blindname || !bantten) return;
+  let list = [];
+
+  if (["Plantation"].includes(blindname)) {
+    list.push(
+      "Timber - Alabaster",
+      "Timber - Batlic",
+      "Timber - Black",
+      "Timber - Brown",
+      "Timber - Cherry",
+      "Timber - Natural",
+      "Timber - Teak",
+      "Timber - White",
+    );
+  }
+
+  if (["Sewless"].includes(blindname)) {
+    list.push("Aluminium");
+  }
+
+  generateOption("battencolour", list);
 };
 
 const bindFitting = () => {
@@ -480,8 +496,8 @@ const bindItemOrders = async (itemid) => {
         bindWandPosition(),
         bindWandColour(),
         bindBottomRail(),
-        bindBattenColour(),
-        bindBattenColour(item.Batten),
+        bindBatten(),
+        bindBattenColour(item.BlindName, item.Batten),
         bindFitting(),
       ]);
       await Promise.all([handlerSetElementValues(item)]);
