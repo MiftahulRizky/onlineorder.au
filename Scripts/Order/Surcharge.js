@@ -12,6 +12,34 @@
   surchargePageLoaded();
 });
 
+// ===============================================================EVENTS========================================================================
+document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+  el.addEventListener("change", async (e) => {
+    e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "blindtype") {
+      const blindtype = e.target.value;
+      await handlerElementVisibility(blindtype);
+      await bindTubes(DESIGNID, blindtype);
+    }
+  });
+});
+
+document.querySelector("#btnSubmit").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+
+  // handlerSubmit(e.target.form, e.target.id);
+  //   handlerSubmit(e.target.id);
+});
+
+document.querySelector("#btnCancel").addEventListener("click", (e) => {
+  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+});
+
 // ============================================================FUNCTIONS========================================================================
 // ----------------------------------------------|| Binding Functions ||---------------------------------------
 const bindDesigns = async (designid) => {
@@ -82,6 +110,42 @@ const bindBlinds = async () => {
   });
 };
 
+// ----------------------------------------------|| Handler Functions ||---------------------------------------
+const handlerElementVisibility = async (
+  blindtype,
+  tubetype,
+  controltype,
+  item,
+) => {
+  try {
+    const lblItemId = document.getElementById("lblItemId");
+    const divTubeType = document.getElementById("divTubeType");
+    const lblTubeType = document.getElementById("lblTubeType");
+    const divControlType = document.getElementById("divControlType");
+    const btnSubmit = document.querySelector("#btnSubmit");
+    // return;
+    lblItemId.classList.add("d-none");
+    divTubeType.classList.add("d-none");
+    divControlType.classList.add("d-none");
+    btnSubmit.classList.add("d-none");
+
+    if (!blindtype) return;
+
+    if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
+      btnSubmit.classList.remove("d-none");
+    } else if (ITEMACTION === "ViewItem") {
+      btnSubmit.classList.remove("d-none");
+      if (ROLENAME !== "Administrator") btnSubmit.classList.add("d-none");
+    }
+  } catch (error) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const surchargePageLoaded = async () => {
   if (!HEADERID) {
@@ -110,7 +174,7 @@ const surchargePageLoaded = async () => {
 
   if (ITEMACTION === "AddItem") {
     await bindBlinds(DESIGNID);
-    // handlerElementVisibility();
+    handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
     // await bindItemOrders(ITEMID);

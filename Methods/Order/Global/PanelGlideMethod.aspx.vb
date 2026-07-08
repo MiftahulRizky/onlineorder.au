@@ -436,47 +436,47 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 }
             End If
 
-            '#-----------------------|| bottomrail ||-----------------------#
-            If String.IsNullOrEmpty(data.bottomrail) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "bottom rail is required !",
-                        .field = "bottomrail"
-                    }
-                }
-            End If
+            ' '#-----------------------|| bottomrail ||-----------------------#
+            ' If String.IsNullOrEmpty(data.bottomrail) Then
+            '     Return New ErrorResponse With {
+            '         .error = New ErrorDetail With {
+            '             .message = "bottom rail is required !",
+            '             .field = "bottomrail"
+            '         }
+            '     }
+            ' End If
 
-            '#-----------------------|| batten ||-----------------------#
-            If String.IsNullOrEmpty(data.batten) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "batten is required !",
-                        .field = "batten"
-                    }
-                }
-            End If
+            ' '#-----------------------|| batten ||-----------------------#
+            ' If String.IsNullOrEmpty(data.batten) Then
+            '     Return New ErrorResponse With {
+            '         .error = New ErrorDetail With {
+            '             .message = "batten is required !",
+            '             .field = "batten"
+            '         }
+            '     }
+            ' End If
 
-            '#-----------------------|| battencolour ||-----------------------#
-            If data.batten = "Yes" Then
-                If String.IsNullOrEmpty(data.battencolour) Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = "batten colour is required !",
-                            .field = "battencolour"
-                        }
-                    }
-                End If
-            End If
+            ' '#-----------------------|| battencolour ||-----------------------#
+            ' If data.batten = "Yes" Then
+            '     If String.IsNullOrEmpty(data.battencolour) Then
+            '         Return New ErrorResponse With {
+            '             .error = New ErrorDetail With {
+            '                 .message = "batten colour is required !",
+            '                 .field = "battencolour"
+            '             }
+            '         }
+            '     End If
+            ' End If
 
-            '#-----------------------|| fitting ||-----------------------#
-            If String.IsNullOrEmpty(data.fitting) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "fitting is required !",
-                        .field = "fitting"
-                    }
-                }
-            End If
+            ' '#-----------------------|| fitting ||-----------------------#
+            ' If String.IsNullOrEmpty(data.fitting) Then
+            '     Return New ErrorResponse With {
+            '         .error = New ErrorDetail With {
+            '             .message = "fitting is required !",
+            '             .field = "fitting"
+            '         }
+            '     }
+            ' End If
 
             '#--------------------------|| notes ||--------------------------#
             If Not String.IsNullOrEmpty(data.notes) Then
