@@ -176,7 +176,7 @@ const bindTubes = async (designid, blindtype) => {
       );
       const tubetype = item.value;
       const fabriccolour = document.getElementById("fabriccolour").value;
-      await handlerElementVisibility(blindtype);
+      await handlerElementVisibility(blindtype, tubetype);
       await bindFabrics(DESIGNID);
       await bindTape(fabriccolour);
       await Promise.all([bindStack(), bindTrackType(), bindWandSize()]);
@@ -430,7 +430,7 @@ const bindItemOrders = async (itemid) => {
       await bindFabrics(item.DesignId);
       await bindFabricColours(item.DesignId, item.FabricType);
       await bindTape(item.FabricId);
-      await handlerElementVisibility(item.BlindId, item);
+      await handlerElementVisibility(item.BlindId, item.TubeType, item);
       await Promise.all([
         bindStack(),
         bindTrackType(),
@@ -450,7 +450,7 @@ const bindItemOrders = async (itemid) => {
 };
 
 // ----------------------------------------------|| Handler Functions ||---------------------------------------
-const handlerElementVisibility = async (blindtype, item) => {
+const handlerElementVisibility = async (blindtype, tubetype, item) => {
   try {
     const lblItemId = document.getElementById("lblItemId");
     const divTubeType = document.getElementById("divTubeType");
@@ -505,6 +505,7 @@ const handlerElementVisibility = async (blindtype, item) => {
       `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
     );
 
+    if (!tubetype) return;
     divFormDetail.classList.remove("d-none");
 
     if (["Single"].includes(blindname)) {
