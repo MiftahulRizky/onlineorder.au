@@ -60,8 +60,8 @@ Partial Class Methods_Order_SurchargeMethod
                     Return GetFormattedData(query, "Id", "Name")
 
                 Case "tubetype"
-                    query = String.Format("SELECT Id, TubeType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId = '{1}' AND Active=1 ORDER BY TubeType ASC", data.designid, UCase(data.blindtype).ToString())
-                    Return GetFormattedData(query, "Id", "TubeType")
+                    query = String.Format("SELECT TubeType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId = '{1}' AND Active=1 GROUP BY TubeType ORDER BY TubeType ASC", data.designid, UCase(data.blindtype).ToString())
+                    Return GetFormattedData(query, "TubeType", "TubeType")
 
                 Case "controltype"
                     query = String.Format("SELECT Id, ControlType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId = '{1}' AND TubeType = '{2}' AND Active=1 ORDER BY ControlType ASC", data.designid, UCase(data.blindtype).ToString(), data.tubetype)
@@ -124,5 +124,5 @@ Partial Class Methods_Order_SurchargeMethod
         End Try
     End Function
 
-    
+
 End Class

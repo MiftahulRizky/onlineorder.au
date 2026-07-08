@@ -41,8 +41,6 @@
 
             sdsPage.Delete()
 
-            Dim userId As String = UCase(Session("UserId")).ToString()
-            publicCfg.InsertActivity(userId, Page.Title, "DELETE TUBE TYPE. ID : " & lblId.Text)
 
             Call BindData(txtSearch.Text)
         Catch ex As Exception
@@ -65,9 +63,6 @@
             lblActive.Text = newActive
 
             sdsPage.Update()
-
-            Dim userId As String = UCase(Session("UserId")).ToString()
-            publicCfg.InsertActivity(userId, Page.Title, "ACTIVE TUBE TYPE. ID : " & lblId.Text)
 
             Call BindData(txtSearch.Text)
         Catch ex As Exception

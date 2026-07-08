@@ -629,6 +629,7 @@ function bindBattenColour(blindName) {
           { value: "Teak", label: "Teak" },
           { value: "White", label: "White" },
         ];
+        break;
       case "Sewless":
         data = [{ value: "Aluminium-Ivory", label: "Aluminium-Ivory" }];
         break;

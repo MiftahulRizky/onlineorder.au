@@ -22,6 +22,13 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       await handlerElementVisibility(blindtype);
       await bindTubes(DESIGNID, blindtype);
     }
+
+    if (e.target.id === "tubetype") {
+      const blindtype = document.getElementById("blindtype").value;
+      const tubetype = e.target.value;
+      await handlerElementVisibility(blindtype, tubetype);
+      await bindControls(DESIGNID, blindtype, tubetype);
+    }
   });
 });
 
@@ -107,6 +114,36 @@ const bindBlinds = async () => {
     elementId: "blindtype",
     field: "blindtype",
     params: { designid: DESIGNID },
+    withDefaultOption: true,
+  });
+};
+
+const bindTubes = async (designid, blindtype) => {
+  if (!designid || !blindtype) return;
+
+  await bindSelect({
+    elementId: "tubetype",
+    field: "tubetype",
+    params: { designid, blindtype },
+    withDefaultOption: true,
+
+    onSingle: async (item, select) => {
+      const tubetype = item.value;
+
+      await handlerElementVisibility(blindtype, tubetype);
+      await bindControls(designid, blindtype, tubetype);
+    },
+  });
+};
+
+const bindControls = async (designid, blindtype, tubetype) => {
+  if (!designid || !blindtype || !tubetype) return;
+
+  await bindSelect({
+    elementId: "controltype",
+    field: "controltype",
+    params: { designid, blindtype, tubetype },
+    withDefaultOption: false,
   });
 };
 
@@ -130,6 +167,10 @@ const handlerElementVisibility = async (
     btnSubmit.classList.add("d-none");
 
     if (!blindtype) return;
+    divTubeType.classList.remove("d-none");
+
+    if (!tubetype) return;
+    divControlType.classList.remove("d-none");
 
     if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
       btnSubmit.classList.remove("d-none");
@@ -238,7 +279,7 @@ const bindSelect = async ({
     select.innerHTML = "";
 
     // default option
-    if (withDefaultOption && data.length > 0) {
+    if (withDefaultOption && data.length > 1) {
       const opt = document.createElement("option");
       opt.value = "";
       opt.text = "";
