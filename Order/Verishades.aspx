@@ -167,6 +167,105 @@
                                         </div>
                                     </div>
 
+                                    <div class="mb-3 row" id="divBracket">
+                                        <label for="bracket" class="col-lg-3 text-uppercase fw-bold" >bracket</label>
+                                        <div class="col-lg-4">
+                                            <select type="text" name="bracket" id="bracket" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-5 row" id="divTape">
+                                        <label for="tape" class="col-lg-3 text-uppercase fw-bold" >tape colour</label>
+                                        <div class="col-lg-4">
+                                            <select type="text" name="tape" id="tape" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divCarriers">
+                                        <label for="carrier" class="col-lg-3 text-uppercase fw-bold" >carrier qty</label>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <input type="number" min="0" name="carrier" id="carrier" class="form-control "  autocomplete="off">
+                                                <span class="input-group-text">
+                                                    <input class="form-check-input m-0" type="checkbox" name="carrieroverride" id="carrieroverride" >
+                                                    <label class="form-check-label ms-2" for="carrieroverride">Override</label>
+                                                </span>
+                                            </div>  
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divSpacer">
+                                        <label for="spacer" class="col-lg-3 text-uppercase fw-bold" >spacer size</label>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <input type="number" min="0" name="spacer" id="spacer" class="form-control "  autocomplete="off">
+                                                <span class="input-group-text">
+                                                    <input class="form-check-input m-0" type="checkbox" name="spaceroverride" id="spaceroverride" >
+                                                    <label class="form-check-label ms-2" for="spaceroverride">Override</label>
+                                                </span>
+                                            </div>  
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divSlat">
+                                        <label for="slat" class="col-lg-3 text-uppercase fw-bold" >slat size</label>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <input type="number" min="0" name="slat" id="slat" class="form-control "  autocomplete="off">
+                                                <span class="input-group-text">
+                                                    <input class="form-check-input m-0" type="checkbox" name="slatoverride" id="slatoverride" >
+                                                    <label class="form-check-label ms-2" for="slatoverride">Override</label>
+                                                </span>
+                                            </div>  
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divSlatQty">
+                                        <label for="slatqty" class="col-lg-3 text-uppercase fw-bold" >slat qty</label>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <input type="number" min="0" name="slatqty" id="slatqty" class="form-control "  autocomplete="off">
+                                                <span class="input-group-text">
+                                                    <input class="form-check-input m-0" type="checkbox" name="slatqtyoverride" id="slatqtyoverride" >
+                                                    <label class="form-check-label ms-2" for="slatqtyoverride">Override</label>
+                                                </span>
+                                            </div>  
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divEndSlat">
+                                        <label for="endslats" class="col-lg-3 text-uppercase fw-bold" >end slats</label>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <input type="number" min="0" name="endslats" id="endslats" class="form-control "  autocomplete="off">
+                                                <span class="input-group-text">
+                                                    <input class="form-check-input m-0" type="checkbox" name="endslatsoverride" id="endslatsoverride" >
+                                                    <label class="form-check-label ms-2" for="endslatsoverride">Override</label>
+                                                </span>
+                                            </div>  
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divTape">
+                                        <label for="tape" class="col-lg-3 text-uppercase fw-bold" >total slats</label>
+                                        <div class="col-lg-4">
+                                            <input type="number" min="0" name="totalslats" id="totalslats" class="form-control "  autocomplete="off" readonly>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divFabricQty">
+                                        <label for="fabricqty" class="col-lg-3 text-uppercase fw-bold" >fabric qty</label>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <input type="number" min="0" name="fabricqty" id="fabricqty" class="form-control "  autocomplete="off">
+                                                <span class="input-group-text">
+                                                    <input class="form-check-input m-0" type="checkbox" name="fabricqtyoverride" id="fabricqtyoverride" >
+                                                    <label class="form-check-label ms-2" for="fabricqtyoverride">Override</label>
+                                                </span>
+                                            </div>  
+                                        </div>
+                                    </div>
+
                                     <div class="mb-3 row" >
                                         <label for="notes" class="col-lg-3 text-uppercase fw-bold">special information</label>
                                         <div class="col-lg-8">

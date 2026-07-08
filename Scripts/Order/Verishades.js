@@ -29,10 +29,16 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       await bindFabricColours(DESIGNID, fabrictype);
     }
 
+    if (e.target.id === "fabriccolour") {
+      const fabriccolour = e.target.value;
+      await bindTape(fabriccolour);
+    }
+
     if (e.target.id === "tracktype") {
       const tracktype = e.target.value;
       document.getElementById("trackcolour").innerHTML = "";
-      bindTrackColour(tracktype);
+      document.getElementById("bracket").innerHTML = "";
+      await Promise.all([bindTrackColour(tracktype), bindBracket(tracktype)]);
     }
 
     if (e.target.id === "wandsize") {
@@ -54,6 +60,17 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       let currentLength = e.target.value.length;
       document.querySelector("#notescount").textContent =
         `${currentLength}/${maxLength}`;
+    }
+  });
+});
+
+document.querySelectorAll(".form-check-input").forEach((el) => {
+  el.addEventListener("click", (e) => {
+    e.target.classList.remove("is-invalid");
+
+    if (e.target.id.endsWith("override")) {
+      const targetId = e.target.id.replace("override", "");
+      document.getElementById(targetId).value = "";
     }
   });
 });
@@ -158,8 +175,10 @@ const bindTubes = async (designid, blindtype) => {
         `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
       );
       const tubetype = item.value;
+      const fabriccolour = document.getElementById("fabriccolour").value;
       await handlerElementVisibility(blindtype);
       await bindFabrics(DESIGNID);
+      await bindTape(fabriccolour);
       await Promise.all([bindStack(), bindTrackType(), bindWandSize()]);
     },
   });
@@ -229,6 +248,155 @@ const bindWandColour = (size) => {
   generateOption("wandcolour", list);
 };
 
+const bindBracket = (track) => {
+  if (!track) return;
+  let list = [];
+
+  switch (track) {
+    case "Cube":
+    case "Standard":
+      list.push("Ceiling clip", "Ext Face", "Ext Rev", "L Bkt w Clip ff");
+      break;
+    case "Decorative (Flat)":
+    case "Decorative (Round)":
+      list.push("Deco Ceiling", "Deco Face fit");
+      break;
+  }
+
+  generateOption("bracket", list);
+};
+
+const bindTape = async (fabricid) => {
+  let list = [];
+
+  const allColors = [
+    "Antique White",
+    "Black",
+    "Charcoal",
+    "Dark Grey",
+    "Fawn",
+    "Herringbone",
+    "Indigo",
+    "Ivory",
+    "Pure White",
+    "Shell",
+    "Soft Grey",
+    "Soft White",
+    "Strike Grey",
+  ];
+
+  const fabricname = await getItemData(
+    `SELECT Name FROM Fabrics WHERE Id = '${fabricid}'`,
+  );
+
+  let found = true;
+  switch (fabricname) {
+    case "Alpine White":
+    case "Autumn White":
+    case "Net White":
+    case "Standard White":
+    case "Eclipse Cotton":
+    case "Verlux Cotton":
+    case "Classic Snow":
+    case "Classic Pearl":
+      list.push("Pure White");
+      break;
+
+    case "Alpine Beige":
+    case "Autumn Beige":
+    case "Net Beige":
+    case "Net Ivory":
+    case "Standard Beige":
+    case "Standard Ivory":
+      list.push("Ivory");
+      break;
+
+    case "Alpine Charcoal":
+    case "Autumn Charcoal":
+    case "Net Charcoal":
+    case "Standard Charcoal":
+    case "Mist Black":
+    case "Classic Onyx":
+      list.push("Black");
+      break;
+
+    case "Alpine Light Grey":
+    case "Autumn Light Grey":
+    case "Mist Soft Grey":
+    case "Net Soft White": // tetap sesuai mapping kamu
+    case "Standard Soft White":
+    case "Eclipse Soft Grey":
+    case "Verlux Soft Grey":
+      list.push("Soft Grey");
+      break;
+
+    case "Alpine Slate":
+    case "Autumn Slate":
+    case "Net Slate":
+    case "Standard Slate":
+    case "Mist Dark Grey":
+    case "Eclipse Dark Grey":
+    case "Eclipse Night":
+    case "Classic Ash":
+      list.push("Dark Grey");
+      break;
+
+    case "Alpine Soft White":
+    case "Autumn Soft White":
+    case "Net Soft White":
+    case "Standard Soft White":
+      list.push("Soft White");
+      break;
+
+    case "Mist Antique White":
+    case "Verlux Flax":
+    case "Verlux Lucent":
+    case "Classic Sand":
+      list.push("Antique White");
+      break;
+
+    case "Mist Fawn":
+      list.push("Fawn");
+      break;
+
+    case "Mist Pure White":
+      list.push("Pure White");
+      break;
+
+    case "Mist Shell":
+    case "Verlux Sable":
+    case "Classic Dusk":
+      list.push("Shell");
+      break;
+
+    case "Eclipse Hygge":
+    case "Verlux Strike Grey":
+    case "Classic Thunder":
+      list.push("Strike Grey");
+      break;
+
+    case "Eclipse Iron":
+    case "Verlux Indigo":
+      list.push("Indigo");
+      break;
+
+    case "Verlux Herringbone":
+      list.push("Herringbone");
+      break;
+
+    default:
+      // optional fallback
+      found = false;
+      break;
+  }
+
+  if (!found) {
+    list.push(...allColors);
+  }
+
+  generateOption("tape", list);
+};
+
 const bindItemOrders = async (itemid) => {
   try {
     if (!itemid) return;
@@ -261,13 +429,15 @@ const bindItemOrders = async (itemid) => {
       await bindTubes(item.DesignId, item.BlindId);
       await bindFabrics(item.DesignId);
       await bindFabricColours(item.DesignId, item.FabricType);
+      await bindTape(item.FabricId);
       await handlerElementVisibility(item.BlindId, item);
       await Promise.all([
         bindStack(),
         bindTrackType(),
-        bindTrackColour(tracktype),
+        bindTrackColour(item.TrackType),
+        bindBracket(item.TrackType),
         bindWandSize(),
-        bindWandColour(wandsize),
+        bindWandColour(item.WandLength),
       ]);
       await Promise.all([handlerSetElementValues(item)]);
     }
@@ -294,6 +464,8 @@ const handlerElementVisibility = async (blindtype, item) => {
     const divTrack = document.getElementById("divTrack");
     const divWand = document.getElementById("divWand");
     const divWandCustomSize = document.getElementById("divWandCustomSize");
+    const divBracket = document.getElementById("divBracket");
+    const divTape = document.getElementById("divTape");
     const divMarkUp = document.getElementById("divMarkUp");
     const btnSubmit = document.querySelector("#btnSubmit");
     // return;
@@ -309,6 +481,8 @@ const handlerElementVisibility = async (blindtype, item) => {
     divTrack.classList.add("d-none");
     divWand.classList.add("d-none");
     divWandCustomSize.classList.add("d-none");
+    divBracket.classList.add("d-none");
+    divTape.classList.add("d-none");
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
 
@@ -327,6 +501,8 @@ const handlerElementVisibility = async (blindtype, item) => {
       divStack.classList.remove("d-none");
       divTrack.classList.remove("d-none");
       divWand.classList.remove("d-none");
+      divBracket.classList.remove("d-none");
+      divTape.classList.remove("d-none");
     }
 
     if (["Slat Only"].includes(blindname)) {
@@ -334,6 +510,7 @@ const handlerElementVisibility = async (blindtype, item) => {
       divDrop.classList.remove("d-none");
       divFabric.classList.remove("d-none");
       divBlindSize.classList.remove("d-none");
+      divTape.classList.remove("d-none");
     }
 
     if (["Track Only"].includes(blindname)) {
@@ -342,6 +519,8 @@ const handlerElementVisibility = async (blindtype, item) => {
       divStack.classList.remove("d-none");
       divTrack.classList.remove("d-none");
       divWand.classList.remove("d-none");
+      divBracket.classList.remove("d-none");
+      divTape.classList.remove("d-none");
     }
 
     if (item) {
@@ -389,6 +568,21 @@ const handlerSubmit = async (button) => {
       "wandsize",
       "wandcolour",
       "customsize",
+      "bracket",
+      "tape",
+      "carrier",
+      "carrieroverride",
+      "spacer",
+      "spaceroverride",
+      "slat",
+      "slatoverride",
+      "slatqty",
+      "slatqtyoverride",
+      "endslats",
+      "endslatsoverride",
+      "totalslats",
+      "fabricqty",
+      "fabricqtyoverride",
       "notes",
       "markup",
     ];
@@ -402,9 +596,16 @@ const handlerSubmit = async (button) => {
     };
 
     fields.forEach((field) => {
-      formData[field] = document.getElementById(field).value;
+      const el = document.getElementById(field);
+
+      if (el.type === "checkbox") {
+        formData[field] = el.checked; // true / false
+      } else {
+        formData[field] = el.value;
+      }
     });
 
+    // Swal.close();
     // return console.table(formData);
 
     const response = await fetch(URIMETHOD + "/Submit", {
@@ -456,7 +657,6 @@ const handlerSetElementValues = (itemData) => {
     widthinput: "Width",
     width: "Width",
     drop: "Drop",
-    drop: "Drop",
     fabrictype: "FabricType",
     fabriccolour: "FabricId",
     blindsize: "BlindSize",
@@ -466,11 +666,48 @@ const handlerSetElementValues = (itemData) => {
     wandsize: "WandLength",
     wandcolour: "WandColour",
     customsize: "WandLength",
+    bracket: "BracketOption",
+    tape: "BracketColour",
+    totalslats: "SlatQty",
     notes: "Notes",
     markup: "MarkUp",
   };
 
-  // 1. set normal fields
+  const jsonFields = [
+    {
+      inputId: "carrier",
+      checkboxId: "carrieroverride",
+      dataKey: "LouvreSize",
+    },
+    {
+      inputId: "spacer",
+      checkboxId: "spaceroverride",
+      dataKey: "LouvrePosition",
+    },
+    {
+      inputId: "slat",
+      checkboxId: "slatoverride",
+      dataKey: "Layout",
+    },
+    {
+      inputId: "slatqty",
+      checkboxId: "slatqtyoverride",
+      dataKey: "LayoutSpecial",
+    },
+    {
+      inputId: "endslats",
+      checkboxId: "endslatsoverride",
+      dataKey: "SlatSize",
+    },
+    {
+      inputId: "fabricqty",
+      checkboxId: "fabricqtyoverride",
+      dataKey: "TubeSize",
+    },
+    // tinggal tambah di sini nanti
+  ];
+
+  //Normal fields
   Object.entries(mapping).forEach(([id, key]) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -487,8 +724,16 @@ const handlerSetElementValues = (itemData) => {
     }
 
     el.value = value ?? "";
-
     if (el.value === "0") el.value = "";
+  });
+
+  // JSON fields (reusable)
+  jsonFields.forEach(({ inputId, checkboxId, dataKey }) => {
+    setJsonField({
+      inputId,
+      checkboxId,
+      rawValue: itemData[dataKey],
+    });
   });
 };
 // ----------------------------------------------|| Other Functions ||---------------------------------------
@@ -648,4 +893,24 @@ const generateOption = (elementId, list = []) => {
     option.setAttribute("data-name", item);
     sel.add(option);
   });
+};
+
+const setJsonField = ({ inputId, checkboxId, rawValue }) => {
+  const inputEl = document.getElementById(inputId);
+  const checkboxEl = document.getElementById(checkboxId);
+
+  if (!inputEl || !checkboxEl || !rawValue) return;
+
+  try {
+    const parsed = JSON.parse(rawValue);
+
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const { value, checked } = parsed[0];
+
+      inputEl.value = value ?? "";
+      checkboxEl.checked = checked ?? false;
+    }
+  } catch (err) {
+    console.error(`JSON parse error (${inputId})`, err);
+  }
 };

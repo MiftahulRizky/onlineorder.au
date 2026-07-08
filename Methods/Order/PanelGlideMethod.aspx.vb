@@ -289,13 +289,13 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
             End If
 
             IF InArray(BlindName, "Completed", "Track Only") Then
-                If String.IsNullOrEmpty(data.tracktype) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "track type is required !", .field = "tracktype"}}
-                End If
+                ' If String.IsNullOrEmpty(data.tracktype) Then
+                '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "track type is required !", .field = "tracktype"}}
+                ' End If
 
-                If String.IsNullOrEmpty(data.trackcolour) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "track colour is required !", .field = "trackcolour"}}
-                End If
+                ' If String.IsNullOrEmpty(data.trackcolour) Then
+                '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "track colour is required !", .field = "trackcolour"}}
+                ' End If
 
                 If String.IsNullOrEmpty(data.wandposition) Then
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "wand position is required !", .field = "wandposition"}}
