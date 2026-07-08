@@ -377,17 +377,17 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 }
             End If
 
-            '#-----------------------|| tracktype ||-----------------------#
-            If String.IsNullOrEmpty(data.tracktype) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "track type is required !",
-                        .field = "tracktype"
-                    }
-                }
-            End If
+            ' '#-----------------------|| tracktype ||-----------------------#
+            ' If String.IsNullOrEmpty(data.tracktype) Then
+            '     Return New ErrorResponse With {
+            '         .error = New ErrorDetail With {
+            '             .message = "track type is required !",
+            '             .field = "tracktype"
+            '         }
+            '     }
+            ' End If
 
-            '#-----------------------|| trackcolour ||-----------------------#
+            ' '#-----------------------|| trackcolour ||-----------------------#
             If String.IsNullOrEmpty(data.trackcolour) Then
                 Return New ErrorResponse With {
                     .error = New ErrorDetail With {
@@ -397,15 +397,15 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 }
             End If
 
-            '#-----------------------|| wandposition ||-----------------------#
-            If String.IsNullOrEmpty(data.wandposition) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "wand position is required !",
-                        .field = "wandposition"
-                    }
-                }
-            End If
+            ' '#-----------------------|| wandposition ||-----------------------#
+            ' If String.IsNullOrEmpty(data.wandposition) Then
+            '     Return New ErrorResponse With {
+            '         .error = New ErrorDetail With {
+            '             .message = "wand position is required !",
+            '             .field = "wandposition"
+            '         }
+            '     }
+            ' End If
 
             '#-----------------------|| wandlength ||-----------------------#
             Dim wandlength As Integer
