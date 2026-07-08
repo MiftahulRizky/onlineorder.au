@@ -33,6 +33,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindLayoutCode(),
         bindNoPanel(),
         bindTrackType(),
+        bindTrackColour(),
         bindWandPosition(),
         bindWandColour(),
         bindBottomRail(),
