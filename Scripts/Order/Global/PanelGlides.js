@@ -52,6 +52,17 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       document.getElementById("trackcolour").value = "";
       await bindTrackColour(tracktype);
     }
+
+    if (e.target.id === "batten") {
+      const batten = e.target.value;
+      const divBattenColour = document.getElementById("divBattenColour");
+      divBattenColour.classList.add("d-none");
+      document.getElementById("battencolour").value = "";
+      if (batten == "Yes") {
+        divBattenColour.classList.remove("d-none");
+      }
+      await bindBattenColour(batten);
+    }
   });
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
@@ -229,7 +240,8 @@ const bindBottomRail = () => {
   generateOption("bottomrail", ["Standard (Plain Pocket)", "Fabric Covered"]);
 };
 
-const bindBattenColour = () => {
+const bindBattenColour = (bantten) => {
+  if (!bantten) return;
   generateOption("battencolour", [
     "Aluminium",
     "Timber - Alabaster",
@@ -276,6 +288,12 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
 
     if (["Plantation", "Sewless"].includes(blindname)) {
       divBatten.classList.remove("d-none");
+    }
+
+    if (item) {
+      if (item.Batten == "Yes") {
+        divBattenColour.classList.remove("d-none");
+      }
     }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
@@ -463,6 +481,7 @@ const bindItemOrders = async (itemid) => {
         bindWandColour(),
         bindBottomRail(),
         bindBattenColour(),
+        bindBattenColour(item.Batten),
         bindFitting(),
       ]);
       await Promise.all([handlerSetElementValues(item)]);
