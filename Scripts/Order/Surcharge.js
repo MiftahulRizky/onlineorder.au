@@ -40,7 +40,7 @@ document.querySelector("#btnSubmit").addEventListener("click", (e) => {
   });
 
   // handlerSubmit(e.target.form, e.target.id);
-  //   handlerSubmit(e.target.id);
+  handlerSubmit(e.target.id);
 });
 
 document.querySelector("#btnCancel").addEventListener("click", (e) => {
@@ -143,7 +143,7 @@ const bindControls = async (designid, blindtype, tubetype) => {
     elementId: "controltype",
     field: "controltype",
     params: { designid, blindtype, tubetype },
-    withDefaultOption: false,
+    withDefaultOption: true,
   });
 };
 
@@ -187,6 +187,66 @@ const handlerElementVisibility = async (
   }
 };
 
+const handlerSubmit = async (button) => {
+  try {
+    // return alert(button);
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = ["blindtype", "tubetype", "controltype"];
+
+    const formData = {
+      headerid: HEADERID,
+      itemaction: ITEMACTION,
+      itemid: ITEMID,
+      designid: DESIGNID,
+      loginid: LOGINID,
+      rolename: ROLENAME,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.getElementById(field).value;
+    });
+
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/Submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success);
+      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Submit";
+  }
+};
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const surchargePageLoaded = async () => {
   if (!HEADERID) {

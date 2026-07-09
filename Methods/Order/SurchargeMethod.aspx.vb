@@ -14,6 +14,21 @@ Partial Class Methods_Order_SurchargeMethod
     Shared orderCfg As New OrderConfig()
     Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
+    Public Class ParamSubmit
+        '#Submit OrderHeader
+        Public Property blindtype As String
+        Public Property tubetype As String
+        Public Property controltype As String
+        
+
+        '#aditional param
+        Public Property headerid As String
+        Public Property itemaction As String
+        Public Property itemid As String
+        Public Property designid As String
+        Public Property loginid As String
+    End Class
+
 
     Public Class ParamListData
         Public Property field As String
@@ -121,6 +136,35 @@ Partial Class Methods_Order_SurchargeMethod
         Catch ex As Exception
             ' Tangani error agar bisa dikenali di JavaScript
             Return New With {.error = True, .message = ex.Message}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function Submit(ByVal data As ParamSubmit) As Object
+        Try
+            Dim msg As String = "200"
+            If String.IsNullOrEmpty(data.blindtype) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "category is required !", .field = "blindtype"}}
+            End If
+
+            If String.IsNullOrEmpty(data.tubetype) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "product is required !", .field = "tubetype"}}
+            End If
+
+            If String.IsNullOrEmpty(data.controltype) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "surcharge type is required !", .field = "controltype"}}
+            End If
+
+            Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.blindtype))
+            Dim TubeName As String = publicCfg.GetItemData(String.Format("SELECT TubeType FROM HardwareKits WHERE Id = '{0}'", data.controltype))
+            Dim ControlName As String = publicCfg.GetItemData(String.Format("SELECT ControlType FROM HardwareKits WHERE Id = '{0}'", data.controltype))
+
+            
+
+            Return New SuccessResponse With {.success = msg}
+        Catch ex As Exception
+            Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
         End Try
     End Function
 

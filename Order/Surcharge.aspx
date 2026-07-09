@@ -53,21 +53,21 @@
                                 
                                 <div class="mb-3 row">
                                     <label for="blindtype" class="col-lg-3 text-uppercase fw-bold">category</label>
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-7">
                                         <select type="text" name="blindtype" id="blindtype" class="form-select"></select>
                                     </div>  
                                 </div>
 
                                 <div class="mb-3 row" id="divTubeType">
                                     <label for="tubetype" class="col-lg-3 text-uppercase fw-bold" id="lblTubeType">product</label>
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-7">
                                         <select type="text" name="tubetype" id="tubetype" class="form-select"></select>
                                     </div>  
                                 </div>
 
                                 <div class="mb-3 row" id="divControlType">
                                     <label for="controltype" class="col-lg-3 text-uppercase fw-bold" id="lblTubeType">surcharge type</label>
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-7">
                                         <select type="text" name="controltype" id="controltype" class="form-select"></select>
                                     </div>  
                                 </div>

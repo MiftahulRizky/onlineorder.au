@@ -1176,6 +1176,7 @@ const handlerDisplayElement = (item) => {
           btnEditHeader.removeAttribute("hidden");
           btnDeleteHeader.removeAttribute("hidden");
           btnAddItem.removeAttribute("hidden");
+          btnSubmit.removeAttribute("hidden");
         }
         break;
       case "Administrator":
