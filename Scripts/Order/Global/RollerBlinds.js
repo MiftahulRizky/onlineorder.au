@@ -893,7 +893,7 @@ const handlerSubmit = async (button) => {
     }
     isError(msg);
   } finally {
-    document.getElementById(button).innerHTML = "Submit";
+    document.getElementById(button).innerHTML = "Save Changes";
   }
 };
 
@@ -1581,7 +1581,6 @@ const bindChains = () => {
 
   let data = [];
   data.push(
-    { value: "Beige", text: "Beige" },
     { value: "Birch White", text: "Birch White" },
     { value: "Black", text: "Black" },
     { value: "Grey", text: "Grey" },

@@ -173,11 +173,11 @@ $("#markup").on("change", function (e) {
 function submitForm() {
   if (ITEMACTION === "AddItem") {
     var htmlButtonSubmit =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Save Changes";
   }
   if (ITEMACTION === "EditItem" || ITEMACTION === "CopyItem") {
     var htmlButtonSubmit =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Save Changes";
   }
 
   handlerResetFormError();
@@ -673,7 +673,7 @@ function bindMaterialChain(blindName) {
       case "Sewless":
         data = [
           { value: "", label: "" },
-          { value: "Nickel Plated Steel", label: "Nickel Plated Steel" },
+          { value: "Chrome", label: "Chrome" },
           { value: "Plastic", label: "Plastic" },
           { value: "Stailess Steel", label: "Stailess Steel" },
         ];
@@ -704,10 +704,10 @@ function bindChainColour(blindName, materialChain) {
       case "Classic":
       case "Plantation":
       case "Sewless":
-        if (["Nickel Plated Steel"].includes(materialChain)) {
+        if (["Chrome"].includes(materialChain)) {
           data.push({
-            value: "Nickel Plated Steel",
-            label: "Nickel Plated Steel",
+            value: "Chrome",
+            label: "Chrome",
           });
         }
 
@@ -727,6 +727,13 @@ function bindChainColour(blindName, materialChain) {
           });
         }
         break;
+    }
+
+    if (data.length > 1) {
+      const defaultOption = document.createElement("option");
+      defaultOption.text = "";
+      defaultOption.value = "";
+      select.add(defaultOption);
     }
 
     data.forEach((item) => {
@@ -1102,14 +1109,14 @@ function handlerDisplayElemets(blindname, controlname) {
   if (ITEMACTION == "AddItem") {
     //SET DEFAULT TEXT BUTTON SUBMIT
     btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Save Changes";
   } else if (ITEMACTION == "EditItem" || ITEMACTION == "CopyItem") {
     //SET DEFAULT TEXT BUTTON SUBMIT
     btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Save Changes";
   } else if (ITEMACTION == "ViewItem") {
     btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Save Changes";
     if (ROLENAME !== "Administrator") btnSubmit.setAttribute("hidden", true);
   }
 }

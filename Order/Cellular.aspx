@@ -249,7 +249,7 @@
                             </div>
     
                             <div class="card-footer text-end">
-                                <button type="submit" id="btnSubmit" class="btn btn-primary "></button>
+                                <button type="submit" id="btnSubmit" class="btn btn-primary ">Save Changes</button>
                                 <button type="button" id="btnCancel"  class="btn btn-danger " >
                                    <i class="ti ti-cancel fs-2 me-1"></i> Cancel
                                 </button>

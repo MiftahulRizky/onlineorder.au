@@ -742,6 +742,17 @@ Partial Class Methods_Order_DetailMethod
                             Product = String.Format("Surcharge - {0}", Product)
                         End If
 
+                        If DesignName = "Surcharge" Then
+                            Product = String.Format("{0}", KitName)
+                            If BlindName = "Long Length Surcharge" Then
+                                Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id = '{0}'", HeaderId))
+                                Dim States As String = publicCfg.GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId = '{0}'", CustomerId))
+                                Product = String.Format("{0} {1}", KitName, States)
+                            End IF
+
+                            Product = String.Format("Surcharge - {0}", Product)
+                        End If
+
                         If DesignName = "Aluminium Blinds" Or DesignName = "Venetian Blinds" Then
                             Product = String.Format("{0} {1}", KitName, Size)
                         End If

@@ -215,7 +215,7 @@
 
                         </div>
                         <div class="card-footer text-end">
-                           <button type="button" id="btnSubmit" class="btn btn-primary ">plain text</button>
+                           <button type="button" id="btnSubmit" class="btn btn-primary ">Save Changes</button>
                             <a href="javascript:void(0);" id="btnCancel"  class="btn btn-danger " >
                                 <i class="fa-solid fa-rotate-left me-2"></i> Cancel
                             </a>

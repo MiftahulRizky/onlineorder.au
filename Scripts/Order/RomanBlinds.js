@@ -168,11 +168,11 @@ $("#markup").on("change", function (e) {
 function submitForm() {
   if (ITEMACTION === "AddItem") {
     var htmlButtonSubmit =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Save Changes";
   }
   if (ITEMACTION === "EditItem" || ITEMACTION === "CopyItem") {
     var htmlButtonSubmit =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Save Changes";
   }
 
   handlerResetFormError();
@@ -1084,14 +1084,14 @@ function handlerDisplayElemets(blindname, controlname) {
   if (ITEMACTION == "AddItem") {
     //SET DEFAULT TEXT BUTTON SUBMIT
     btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Save Changes";
   } else if (ITEMACTION == "EditItem" || ITEMACTION == "CopyItem") {
     //SET DEFAULT TEXT BUTTON SUBMIT
     btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Save Changes";
   } else if (ITEMACTION == "ViewItem") {
     btnSubmit.innerHTML =
-      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit";
+      "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Save Changes";
     if (ROLENAME !== "Administrator") btnSubmit.setAttribute("hidden", true);
   }
 }

@@ -29,6 +29,13 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       await handlerElementVisibility(blindtype, tubetype);
       await bindControls(DESIGNID, blindtype, tubetype);
     }
+
+    if (e.target.id === "controltype") {
+      const blindtype = document.getElementById("blindtype").value;
+      const tubetype = document.getElementById("tubetype").value;
+      const controltype = e.target.value;
+      await handlerElementVisibility(blindtype, tubetype, controltype);
+    }
   });
 });
 
@@ -144,7 +151,54 @@ const bindControls = async (designid, blindtype, tubetype) => {
     field: "controltype",
     params: { designid, blindtype, tubetype },
     withDefaultOption: true,
+
+    onSingle: async (item, select) => {
+      const controltype = item.value;
+      await handlerElementVisibility(blindtype, tubetype, controltype);
+    },
   });
+};
+
+const bindItemOrders = async (itemid) => {
+  try {
+    if (!itemid) return;
+
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid }),
+    });
+
+    if (!res.ok) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d;
+
+    if (!data || data.length === 0) {
+      throw isError("No data returned from server : bindItemOrders");
+    }
+
+    for (const item of data) {
+      await bindBlinds(item.DesignId);
+      await bindTubes(item.DesignId, item.BlindId);
+      await bindControls(item.DesignId, item.BlindId, item.TubeType);
+      await handlerElementVisibility(item.BlindId, item.KitId, item);
+      await Promise.all([handlerSetElementValues(item)]);
+    }
+
+    return true; // ✅ success
+  } catch (error) {
+    console.error("bindItemOrder error:", error);
+    throw error;
+  }
 };
 
 // ----------------------------------------------|| Handler Functions ||---------------------------------------
@@ -171,6 +225,17 @@ const handlerElementVisibility = async (
 
     if (!tubetype) return;
     divControlType.classList.remove("d-none");
+    if (["N/A"].includes(tubetype)) {
+      divTubeType.classList.add("d-none");
+    }
+
+    if (!controltype) return;
+    const controlname = await getItemData(
+      `SELECT ControlType FROM HardwareKits WHERE Id = '${controltype}'`,
+    );
+    if (["N/A"].includes(controlname)) {
+      divControlType.classList.add("d-none");
+    }
 
     if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
       btnSubmit.classList.remove("d-none");
@@ -247,6 +312,29 @@ const handlerSubmit = async (button) => {
     document.getElementById(button).innerHTML = "Submit";
   }
 };
+
+const handlerSetElementValues = (itemData) => {
+  const mapping = {
+    blindtype: "BlindId",
+    tubetype: "TubeType",
+    controltype: "KitId",
+  };
+
+  // 1. set normal fields
+  Object.entries(mapping).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    let value = itemData[key];
+
+    if (id === "markup" && value === 0) value = "";
+
+    el.value = value ?? "";
+
+    if (el.value === "0") el.value = "";
+  });
+};
+
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const surchargePageLoaded = async () => {
   if (!HEADERID) {
@@ -278,7 +366,7 @@ const surchargePageLoaded = async () => {
     handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    // await bindItemOrders(ITEMID);
+    await bindItemOrders(ITEMID);
     loaderFadeOut();
   }
 };

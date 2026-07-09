@@ -86,7 +86,7 @@ Partial Class Setting_PriceGroup_Detail
     Private Sub BindDataDesign()
         ddlDesign.Items.Clear()
         Try
-            ddlDesign.DataSource = publicCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Designs WHERE Type IN ('Blinds', 'Door', 'Window', 'Additional', 'Door and Window') ORDER BY Name ASC")
+            ddlDesign.DataSource = publicCfg.GetListData("SELECT *, UPPER(Name) AS NameText FROM Designs WHERE Type IN ('Blinds', 'Door', 'Window', 'Additional', 'Door and Window', 'Surcharge') ORDER BY Name ASC")
             ddlDesign.DataTextField = "NameText"
             ddlDesign.DataValueField = "Id"
             ddlDesign.DataBind()

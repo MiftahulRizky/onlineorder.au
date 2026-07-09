@@ -356,7 +356,7 @@ const handlerElementVisibility = (controltype, blindname, controlsystem) => {
   if (MARKUPACCESS === "True") divMarkUp.removeAttribute("hidden");
 
   btnSubmit.innerHTML =
-    "<i class='fa-solid fa-cloud-arrow-up me-2'></i> Submit";
+    "<i class='fa-solid fa-cloud-arrow-up me-2'></i> Save Changes";
 
   if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
     btnSubmit.removeAttribute("hidden");
