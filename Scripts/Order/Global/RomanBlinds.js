@@ -53,13 +53,15 @@ $("#controltype").on("change", function (e) {
   const blindname = $("#blindtype option:selected").data("name");
   const controlname = $(this).find("option:selected").data("name");
   const fabrictype = $(this).find("option:selected").data("type");
+  const materialchain = $("#materialchain").val();
+
   bindMounting(blindname);
   bindFabricType(DESIGNID, blindname, controlname);
   bindFabricColour(DESIGNID, fabrictype);
   bindControlPosition(blindname);
   //for chained
   bindMaterialChain(blindname);
-  bindChainColour(blindname);
+  bindChainColour(blindname, materialchain);
   //for cordlock
   bindCordColour(blindname);
   bindBattenColour(blindname);
@@ -112,6 +114,9 @@ $("#controlposition").on("change", function (e) {
 // CHANGE MATERIAL CHAIN
 $("#materialchain").on("change", function (e) {
   $(this).removeClass("is-invalid");
+  const blindname = $("#blindtype option:selected").data("name");
+  const materialchain = $(this).val();
+  bindChainColour(blindname, materialchain);
 });
 
 // CHANGE CHAIN COLOUR
@@ -668,7 +673,7 @@ function bindMaterialChain(blindName) {
       case "Sewless":
         data = [
           { value: "", label: "" },
-          { value: "Chrome", label: "Chrome" },
+          { value: "Nickel Plated Steel", label: "Nickel Plated Steel" },
           { value: "Plastic", label: "Plastic" },
           { value: "Stailess Steel", label: "Stailess Steel" },
         ];
@@ -687,27 +692,40 @@ function bindMaterialChain(blindName) {
 }
 
 // BIND CHAIN COLOUR
-function bindChainColour(blindName) {
+function bindChainColour(blindName, materialChain) {
   return new Promise((resolve, reject) => {
     const select = document.getElementById("chaincolour");
     select.innerHTML = ""; // kosongkan dulu jika ingin reset
 
-    if (!blindName) return resolve();
+    if (!blindName || !materialChain) return resolve();
 
     let data = [];
     switch (blindName) {
       case "Classic":
       case "Plantation":
       case "Sewless":
-        data = [
-          { value: "", label: "" },
-          { value: "Beige", label: "Beige" },
-          { value: "Birch White", label: "Birch White" },
-          { value: "Black", label: "Black" },
-          { value: "Grey", label: "Grey" },
-          { value: "Stainless Steel", label: "Stainless Steel" },
-          { value: "White", label: "White" },
-        ];
+        if (["Nickel Plated Steel"].includes(materialChain)) {
+          data.push({
+            value: "Nickel Plated Steel",
+            label: "Nickel Plated Steel",
+          });
+        }
+
+        if (["Plastic"].includes(materialChain)) {
+          data.push(
+            { value: "Ivory", label: "Ivory" },
+            { value: "White", label: "White" },
+            { value: "Black", label: "Black" },
+            { value: "Beige", label: "Beige" },
+            { value: "Grey", label: "Grey" },
+          );
+        }
+        if (["Stailess Steel"].includes(materialChain)) {
+          data.push({
+            value: "Stailess Steel",
+            label: "Stailess Steel",
+          });
+        }
         break;
     }
 
@@ -859,7 +877,7 @@ function bindItemOrder(itemid) {
             .then(() => bindBattenColour(item.BlindName))
             .then(() => bindControlPosition(item.BlindName))
             .then(() => bindMaterialChain(item.BlindName))
-            .then(() => bindChainColour(item.BlindName))
+            .then(() => bindChainColour(item.BlindName, item.MaterialChain))
             .then(() => bindCordColour(item.BlindName))
             .then(() => bindPlasticColour(item.BlindName))
             .then(() => bindCleat(item.BlindName))
