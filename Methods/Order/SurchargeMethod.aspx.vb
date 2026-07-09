@@ -164,9 +164,9 @@ Partial Class Methods_Order_SurchargeMethod
             Dim SoeId As String = publicCfg.GetItemData(String.Format("SELECT SoeId FROM HardwareKits WHERE Id='{0}'", data.controltype))
 
             Dim priceGroupName As String = "Surcharge"
-            ' IF InArray(BlindName, "Interim Levy") Then
-            '     PriceGroupName = BlindName
-            ' End If
+            IF InArray(BlindName, "Interim Levy") Then
+                PriceGroupName = BlindName
+            End If
 
             Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, priceGroupName)
             If String.IsNullOrEmpty(PriceGroupId) Then

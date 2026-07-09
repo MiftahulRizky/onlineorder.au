@@ -190,7 +190,12 @@ const bindItemOrders = async (itemid) => {
       await bindBlinds(item.DesignId);
       await bindTubes(item.DesignId, item.BlindId);
       await bindControls(item.DesignId, item.BlindId, item.TubeType);
-      await handlerElementVisibility(item.BlindId, item.KitId, item);
+      await handlerElementVisibility(
+        item.BlindId,
+        item.TubeType,
+        item.KitId,
+        item,
+      );
       await Promise.all([handlerSetElementValues(item)]);
     }
 
