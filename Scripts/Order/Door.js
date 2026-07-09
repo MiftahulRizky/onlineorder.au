@@ -245,13 +245,13 @@ const bindDesigns = async (designid) => {
 const bindHeaders = async (headerid) => {
   try {
     const OrderId = await getItemData(
-      `SELECT OrderId FROM view_order_headers WHERE Id = '${headerid}'`,
+      `SELECT OrderId FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = '${headerid}'`,
     );
     const OrderNumber = await getItemData(
-      `SELECT OrderNumber FROM view_order_headers WHERE Id = '${headerid}'`,
+      `SELECT OrderNumber FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = '${headerid}'`,
     );
     const OrderName = await getItemData(
-      `SELECT OrderName FROM view_order_headers WHERE Id = '${headerid}'`,
+      `SELECT OrderName FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = '${headerid}'`,
     );
 
     const lblOrder = document.getElementById("lblOrder");

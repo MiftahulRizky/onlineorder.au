@@ -72,19 +72,23 @@ const bindDesigns = async (designid) => {
 const bindHeaders = async (headerid) => {
   try {
     const OrderId = await getItemData(
-      `SELECT OrderId FROM view_order_headers WHERE Id = '${headerid}'`,
+      `SELECT OrderId FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = '${headerid}'`,
     );
     const OrderNumber = await getItemData(
-      `SELECT OrderNumber FROM view_order_headers WHERE Id = '${headerid}'`,
+      `SELECT OrderNumber FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = '${headerid}'`,
     );
     const OrderName = await getItemData(
-      `SELECT OrderName FROM view_order_headers WHERE Id = '${headerid}'`,
+      `SELECT OrderName FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = '${headerid}'`,
+    );
+    const Delivery = await getItemData(
+      `SELECT Delivery FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = '${headerid}'`,
     );
 
     const lblOrder = document.getElementById("lblOrder");
     const lblItemId = document.getElementById("lblItemId");
     const lblOrderNumber = document.getElementById("lblOrderNumber");
     const lblOrderName = document.getElementById("lblOrderName");
+    const lblPriceType = document.getElementById("lblPriceType");
 
     lblOrder.innerHTML = OrderId;
     lblOrder.classList.add("fw-bold");
@@ -97,6 +101,9 @@ const bindHeaders = async (headerid) => {
 
     lblOrderName.innerHTML = OrderName;
     lblOrderName.classList.add("fw-bold");
+
+    lblPriceType.innerHTML = Delivery;
+    lblPriceType.classList.add("fw-bold");
   } catch (error) {
     console.error(error.message);
   }

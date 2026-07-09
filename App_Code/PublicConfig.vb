@@ -1004,6 +1004,14 @@ Public Class PublicConfig
                     delivery = "Pick Up"
                 End If
 
+                If designName = "Surcharge" Then
+                    If InArray(blindName, "Residential Home Address") Then
+                        delivery = "Delivery"
+                        width = "0"
+                        drop = "0"
+                    End If
+                End If
+
                 If designName = "Door" Then
                     delivery = "Pick Up"
                 End If

@@ -22,18 +22,22 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-4 col-lg-4 col-md-4">
+                                <div class="col-3 col-lg-3 col-md-3">
                                     <label class="form-label text-secondary text-uppercase">Order #</label>
                                     <label class="form-label" id="lblOrder">-</label>
                                     <label class="form-label" id="lblItemId" hidden>-</label>
                                 </div>
-                                <div class="col-4 col-lg-4 col-md-4">
+                                <div class="col-3 col-lg-3 col-md-3">
                                     <label class="form-label text-secondary text-uppercase">Order Number</label>
                                     <label class="form-label" id="lblOrderNumber" >-</label>
                                 </div>
-                                <div class="col-4 col-lg-4 col-md-4">
+                                <div class="col-3 col-lg-3 col-md-3">
                                     <label class="form-label text-secondary text-uppercase">Order Name</label>
                                     <label class="form-label" id="lblOrderName">-</label>
+                                </div>
+                                <div class="col-3 col-lg-3 col-md-3">
+                                    <label class="form-label text-secondary text-uppercase">Pick Up/Delivery</label>
+                                    <label class="form-label" id="lblPriceType">-</label>
                                 </div>
                             </div>
                         </div>

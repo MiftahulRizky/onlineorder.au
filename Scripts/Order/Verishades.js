@@ -675,7 +675,7 @@ const handlerSubmit = async (button) => {
     }
     isError(msg);
   } finally {
-    document.getElementById(button).innerHTML = "Submit";
+    document.getElementById(button).innerHTML = "Save Changes";
   }
 };
 

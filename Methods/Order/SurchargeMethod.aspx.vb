@@ -162,9 +162,18 @@ Partial Class Methods_Order_SurchargeMethod
             Dim ControlName As String = publicCfg.GetItemData(String.Format("SELECT ControlType FROM HardwareKits WHERE Id = '{0}'", data.controltype))
             Dim KitName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM HardwareKits WHERE Id = '{0}'", data.controltype))
             Dim SoeId As String = publicCfg.GetItemData(String.Format("SELECT SoeId FROM HardwareKits WHERE Id='{0}'", data.controltype))
+            Dim Delivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM OrderHeaders WHERE Id='{0}'", data.headerid))
+
 
             Dim priceGroupName As String = "Surcharge"
             IF InArray(BlindName, "Interim Levy") Then
+                PriceGroupName = BlindName
+            End If
+            
+            IF InArray(BlindName, "Residential Home Address") Then
+                If Delivery = "Pick Up" Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Pick Up Residential Home Address is not allowed!", .field = "#modalAddService #id"}}
+                End If
                 PriceGroupName = BlindName
             End If
 

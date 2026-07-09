@@ -45,7 +45,7 @@ Partial Class Order_Venetian
 
         If Session("itemAction") = "AddItem" Then
             lblHeaderId.Text = Session("HeaderId")
-            btnSubmit.Visible = True : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit"
+            btnSubmit.Visible = True : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Save Changes"
             cardTitle.InnerHtml = "Add Item"
             If Not IsPostBack Then
                 txtQty.Text = "1"
@@ -62,7 +62,7 @@ Partial Class Order_Venetian
         If Session("itemAction") = "ViewItem" Then
             lblHeaderId.Text = Session("HeaderId")
             lblItemId.Text = Session("itemId")
-            btnSubmit.Visible = False : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Submit"
+            btnSubmit.Visible = False : btnSubmit.Text = "<i class='fa-solid fa-cloud-arrow-up me-2'></i>Save Changes"
             cardTitle.InnerHtml = "VIEW ITEM ID : " & lblItemId.Text
             If Session("RoleName") = "Administrator" Then : btnSubmit.Visible = True : End If
             If Not IsPostBack Then

@@ -327,7 +327,7 @@
                             </div>
                         </div>
                         <div class="card-footer text-end">
-                            <asp:LinkButton runat="server" ID="btnSubmit" Text="Submit" CssClass="btn btn-primary " OnClick="btnSubmit_Click" ></asp:LinkButton>
+                            <asp:LinkButton runat="server" ID="btnSubmit" Text="Save Changes" CssClass="btn btn-primary " OnClick="btnSubmit_Click" ></asp:LinkButton>
                             <asp:LinkButton runat="server" ID="btnCancel" Text="Cancel" CssClass="btn btn-danger " OnClick="btnCancel_Click" >
                             <i class="fa-solid fa-rotate-left me-2"></i>Cancel
                             </asp:LinkButton>

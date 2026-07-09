@@ -235,7 +235,7 @@
                         </div>
 
                         <div class="card-footer text-end">
-                            <button type="button" id="btnSubmit" class="btn btn-primary ">Submit</button>
+                            <button type="button" id="btnSubmit" class="btn btn-primary ">Save Changes</button>
                             <a href="javascript:void(0);" id="btnCancel"  class="btn btn-danger " >Cancel
                             </a>
                         </div>
