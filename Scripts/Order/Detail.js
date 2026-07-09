@@ -1585,7 +1585,7 @@ const handlerConvertToJob = async (headerid, action, msgloading) => {
     return isError("Order status not found.");
   }
 
-  if (["Completed", "Canceled"].includes(statusOrder)) {
+  if (["Draft", "Completed", "Canceled"].includes(statusOrder)) {
     await isError(
       `Cannot convert this order as the status is <b>${statusOrder}</b>`,
     );
