@@ -164,13 +164,13 @@ const bindDesigns = async (designid) => {
 const bindHeaders = async (headerid) => {
   try {
     const OrderId = await getItemData(
-      `SELECT OrderId FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door & Window') AND Id = '${headerid}'`,
+      `SELECT OrderId FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = '${headerid}'`,
     );
     const OrderNumber = await getItemData(
-      `SELECT OrderNumber FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door & Window') AND Id = '${headerid}'`,
+      `SELECT OrderNumber FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = '${headerid}'`,
     );
     const OrderName = await getItemData(
-      `SELECT OrderName FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door & Window') AND Id = '${headerid}'`,
+      `SELECT OrderName FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = '${headerid}'`,
     );
 
     const lblOrder = document.getElementById("lblOrder");
@@ -653,6 +653,7 @@ const bindTrackColour = (tubetype) => {
   }
   if (["Fairline", "Javaline"].includes(tubetype)) {
     data.push(
+      { value: "White", text: "White" },
       { value: "Beige", text: "Beige" },
       // { value: "Birch White", text: "Birch White" },
       { value: "Black", text: "Black" },

@@ -772,7 +772,7 @@ const submitSelectProduct = async (
     }
     isError(msg);
   } finally {
-    btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up me-2"></i>Submit`;
+    btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up me-2"></i>Next`;
   }
 };
 

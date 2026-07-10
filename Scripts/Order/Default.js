@@ -105,12 +105,36 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const id = e.target.dataset.id;
     const type = e.target.dataset.type;
     // handlerOpenDetailOrder(id);
+
+    let page = "/order";
     if (["Blinds", "Door", "Window", "Door and Window"].includes(type)) {
-      window.location.href = `/order/detail?param=${id}&ordertype=${type.toLowerCase()}`;
+      page = `/order/detail`;
     } else if (["Panorama", "Evolve"].includes(type)) {
-      window.location.href = `/order/shutters/detail?param=${id}&ordertype=${type.toLowerCase()}`;
+      page = `/order/shutters/detail`;
+    }
+
+    const live = `${page}?param=${id}&ordertype=${type.toLowerCase()}`;
+    const dev = `/order/orderdetails?param=${id}&ordertype=${type.toLowerCase()}`;
+
+    if (ROLENAME === "Administrator") {
+      Swal.fire({
+        title: "Please select one",
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: "Production",
+        denyButtonText: "Development",
+        customClass: {
+          popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = live;
+        } else if (result.isDenied) {
+          window.location.href = dev;
+        }
+      });
     } else {
-      window.location.href = `/order`;
+      window.location.href = live;
     }
   }
 });
