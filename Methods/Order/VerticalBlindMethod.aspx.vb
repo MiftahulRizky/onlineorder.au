@@ -52,6 +52,7 @@ Partial Class Methods_Order_VerticalBlindMethod
         Public Property itemid As String
         Public Property designid As String
         Public Property loginid As String
+        Public Property rolename As String
     End Class
 
     '#--- Kelas Output WebMethod ---#
@@ -424,7 +425,7 @@ Partial Class Methods_Order_VerticalBlindMethod
 
             Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
             If PriceGroupId = "" Then
-                Throw New Exception("Something went wrong !")
+                Throw New Exception("price group not found!")
             End If
 
             Dim ChainId As String = ""
@@ -647,7 +648,9 @@ Partial Class Methods_Order_VerticalBlindMethod
 
             Return New SuccessResponse With {.success = msg}
         Catch ex As Exception
-            Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
+            Dim msg As String = "Please contact our IT team at support@onlineorder.au"
+            If data.rolename = "Administrator" Then msg = ex.Message
+            Return New ErrorResponse With { .error = New ErrorDetail With { .message = msg, .field = ""}}
         End Try
     End Function  
 
