@@ -9369,8 +9369,8 @@ Partial Class Methods_Order_DetailMethod
             Dim CreatedDate As DateTime
             Dim SubmittedDate As DateTime
 
-            If Not DateTime.TryParse(CreatedDateStr, CreatedDate) Then : CreatedDate = DateTime.MinValue : End If
-            If Not DateTime.TryParse(SubmittedDateStr, SubmittedDate) Then : SubmittedDate = DateTime.MinValue : End If
+            Dim IsCreatedValid As Boolean = DateTime.TryParse(CreatedDateStr, CreatedDate)
+            Dim IsSubmittedValid As Boolean = DateTime.TryParse(SubmittedDateStr, SubmittedDate)
 
             ' Ambil data JobDetails
             Dim JobDetailData As DataSet = publicCfg.GetListData("SELECT * FROM JobDetails WHERE JobId='" & JobId & "' ORDER BY BlindName, DesignName, Id")
@@ -9522,8 +9522,8 @@ Partial Class Methods_Order_DetailMethod
                             myCmd.Parameters.AddWithValue("@OrderCust", OrderCust)
                             myCmd.Parameters.AddWithValue("@ZoneId", Delivery)
                             myCmd.Parameters.AddWithValue("@UserName", UserName)
-                            myCmd.Parameters.AddWithValue("@OrderCreated", CreatedDate)
-                            myCmd.Parameters.AddWithValue("@ShipDate", SubmittedDate)
+                            myCmd.Parameters.AddWithValue("@OrderCreated", If(IsCreatedValid, CreatedDate, DBNull.Value))
+                            myCmd.Parameters.AddWithValue("@ShipDate", If(IsSubmittedValid, SubmittedDate, DBNull.Value))
 
 
                             ' Tambahkan parameter untuk setiap field secara dinamis
@@ -10313,7 +10313,8 @@ Partial Class Methods_Order_DetailMethod
 
         Dim OrderCreated As String = Convert.ToDateTime(currentData("OrderCreated")).ToString("dd/MM/yyyy")
         Dim JobCreated As String = Convert.ToDateTime(currentData("JobCreated")).ToString("dd/MM/yyyy")
-        Dim ShipDate As String = Convert.ToDateTime(currentData("ShipDate")).ToString("dd MMM yy").ToUpper()
+        ' Dim ShipDate As String = Convert.ToDateTime(currentData("ShipDate")).ToString("dd MMM yy").ToUpper()
+        Dim ShipDate As String = If(IsDBNull(currentData("ShipDate")), "", Convert.ToDateTime(currentData("ShipDate")).ToString("dd MMM yy").ToUpper())
         Dim Notes1 As String = currentData("Notes1").ToString()
         Dim Notes2 As String = currentData("Notes2").ToString()
         Dim Notes3 As String = currentData("Notes3").ToString()
