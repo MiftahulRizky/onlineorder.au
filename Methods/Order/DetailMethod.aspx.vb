@@ -2198,7 +2198,9 @@ Partial Class Methods_Order_DetailMethod
             End If
 
             Dim sb As New StringBuilder()
-            For i As Integer = 0 To DetailData.Tables(0).Rows.Count - 1
+            Dim PageOf As Integer = 0
+            Dim Count As Integer = DetailData.Tables(0).Rows.Count
+            For i As Integer = 0 To Count - 1
                 Dim Barcode As String = String.Empty
                 Dim Qty As String = DetailData.Tables(0).Rows(i).Item("Qty").ToString()
                 Dim Location As String = DetailData.Tables(0).Rows(i).Item("Location").ToString()
@@ -2207,6 +2209,7 @@ Partial Class Methods_Order_DetailMethod
                 Dim DesignName As String = DetailData.Tables(0).Rows(i).Item("DesignName").ToString()
                 Dim FabricName As String = DetailData.Tables(0).Rows(i).Item("FabricName").ToString()
                 Dim Product As String = String.Format("{0} X {1} {2}", Width, Drop, DesignName)
+                PageOf += 1
 
                 sb.AppendLine("^XA")
                 sb.AppendLine("^FO17,50")
@@ -2217,7 +2220,7 @@ Partial Class Methods_Order_DetailMethod
                 sb.AppendLine(String.Format("^FO600,130^A0N,25,25^CI13^FH^FD{0}^FS", Location))
                 sb.AppendLine(String.Format("^FO35,140^A0N,25,25^CI13^FH^FD{0}^FS", FabricName))
                 sb.AppendLine(String.Format("^FO35,173^A0N,25,25^CI13^FH^FD{0}^FS", Product))
-                sb.AppendLine(String.Format("^FO610,155^A0N,30,30^CI13^FH^FD({0} OF 2)^FS", Qty))
+                sb.AppendLine(String.Format("^FO610,155^A0N,30,30^CI13^FH^FD({0} OF {1})^FS", PageOf, Count))
                 sb.AppendLine(String.Format("^FO630,49^A0N,45,45^CI13^FH^FD{0}^FS", Delivery))
                 sb.AppendLine("^PQ1,0,0,Y")
                 sb.AppendLine("^XZ")
