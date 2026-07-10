@@ -563,7 +563,7 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
         let html = `
       <input type="number" min="1" name="itemid" id="itemid" value="${id}" class="form-control " readonly hidden />
       <input type="number" min="1" name="qty" id="qty" value="${qty}" class="form-control " readonly hidden />
-      <table class="table table-vcenter" width="100%">
+      <table class="table table-bordered table-vcenter" width="100%">
         <thead>
           <tr>
             <th>No</th>

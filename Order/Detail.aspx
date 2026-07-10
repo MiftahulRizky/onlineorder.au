@@ -346,7 +346,7 @@
                         </div>
                         <div class="card-body">
                             <div id="table-default" class="">
-                                <table class="table table-vcenter table-hover w-100" id="tableAjax">
+                                <table class="table table-bordered table-vcenter table-hover w-100" id="tableAjax">
                                  <thead>
                                      <tr>
                                          <th class="text-center">#</th>
@@ -594,7 +594,7 @@
                 <div class="modal-body">
 
                     <div id="table-default">
-                        <table class="table table-vcenter card-table datatable" id="tablePricingDetail" width="100%">
+                        <table class="table table-bordered" id="tablePricingDetail" width="100%">
                             <thead class="fs-3 fw-bold">
                                 <tr>
                                     <th class="text-center">#</th>
@@ -629,7 +629,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <table class="table" width="100%" id="table-logs">
+                    <table class="table table-bordered" width="100%" id="table-logs">
                         <tbody></tbody>
                         <!-- <tr>
                             <td>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</td>
