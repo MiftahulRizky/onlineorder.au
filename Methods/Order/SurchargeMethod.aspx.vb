@@ -170,7 +170,7 @@ Partial Class Methods_Order_SurchargeMethod
                 PriceGroupName = BlindName
             End If
             
-            IF InArray(BlindName, "Residential Home Address", "Interstate Further Surcharge", "Minimum Blind Surcharge", "Long Length") Then
+            IF InArray(BlindName, "Residential Home Address", "Interstate Further Surcharge", "Minimum Blind Surcharge", "Long Length", "NSW Country", "NSW Metro") Then
                 If Delivery = "Pick Up" Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check delivery/pick up !", .field = "#modalAddService #id"}}
                 End If

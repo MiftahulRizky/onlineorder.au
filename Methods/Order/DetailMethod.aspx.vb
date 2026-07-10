@@ -9525,6 +9525,7 @@ Partial Class Methods_Order_DetailMethod
                             myCmd.Parameters.AddWithValue("@OrderCreated", CreatedDate)
                             myCmd.Parameters.AddWithValue("@ShipDate", SubmittedDate)
 
+
                             ' Tambahkan parameter untuk setiap field secara dinamis
                             For Each fieldName In fieldsToProcess
                                 For i As Integer = 0 To 5 ' Indeks 0 sampai 5 untuk 6 record
