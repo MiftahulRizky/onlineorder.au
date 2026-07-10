@@ -78,7 +78,7 @@
 
                             </div>
                             <div class="card-footer text-center">
-                                <button type="submit" class="btn btn-primary" id="btnSubmit">Submit</button>
+                                <button type="submit" class="btn btn-primary" id="btnSubmit">Save Changes</button>
                                 <button type="button" class="btn btn-danger" id="btnCancel">
                                     Cancel
                                 </button>

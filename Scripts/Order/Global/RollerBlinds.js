@@ -1581,6 +1581,7 @@ const bindChains = () => {
 
   let data = [];
   data.push(
+    { value: "Chrome", text: "Chrome" },
     { value: "Birch White", text: "Birch White" },
     { value: "Black", text: "Black" },
     { value: "Grey", text: "Grey" },

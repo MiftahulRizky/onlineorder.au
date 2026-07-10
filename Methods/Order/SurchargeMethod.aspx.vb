@@ -165,19 +165,67 @@ Partial Class Methods_Order_SurchargeMethod
             Dim Delivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM OrderHeaders WHERE Id='{0}'", data.headerid))
 
 
-            Dim priceGroupName As String = "Surcharge"
-            IF InArray(BlindName, "Interim Levy") Then
+            Dim PriceGroupName As String = "Surcharge"
+            IF BlindName = "Interim Levy" Then
                 PriceGroupName = BlindName
             End If
             
-            IF InArray(BlindName, "Residential Home Address") Then
+            IF InArray(BlindName, "Residential Home Address", "Interstate Further Surcharge", "Minimum Blind Surcharge", "Long Length") Then
                 If Delivery = "Pick Up" Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Pick Up Residential Home Address is not allowed!", .field = "#modalAddService #id"}}
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check delivery/pick up !", .field = "#modalAddService #id"}}
                 End If
                 PriceGroupName = BlindName
+
+                If BlindName = "Long Length" Then 
+                    PriceGroupName = String.Format("{0} {1}", BlindName, ControlName)
+                End IF
             End If
 
-            Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, priceGroupName)
+            IF BlindName = "Thrid Party Delivery" Then
+                If Delivery = "Pick Up" Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check delivery/pick up !", .field = "#modalAddService #id"}}
+                End If
+
+                If TubeName = "Roller" Then
+                    Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id='{0}'", data.headerid))
+                    Dim CustomerStates As String = publicCfg.GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId='{0}' AND [Primary]=1", CustomerId))
+                    If String.IsNullOrEmpty(CustomerStates) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check delivery/pick up !", .field = "#modalAddService #category"}}
+                    End If
+                    If CustomerStates = "NSW" Then
+                        PriceGroupName = String.Format("{0} NSW", BlindName)
+                    End If
+                    If CustomerStates = "VIC" Or CustomerStates = "QLD" Then
+                        PriceGroupName = String.Format("{0} VIC/QLD", BlindName)
+                    End If
+                Else
+                    PriceGroupName = BlindName
+                End If
+            End If
+
+            IF BlindName = "Overlength Surcharge" Then
+                If Delivery = "Pick Up" Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check delivery/pick up !", .field = "#modalAddService #id"}}
+                End If
+
+                If TubeName = "Roller" Then
+                    Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id='{0}'", data.headerid))
+                    Dim CustomerStates As String = publicCfg.GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId='{0}' AND [Primary]=1", CustomerId))
+                    If String.IsNullOrEmpty(CustomerStates) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check customer states !", .field = "#modalAddService #category"}}
+                    End If
+                    If CustomerStates = "NSW" Then
+                        PriceGroupName = String.Format("{0} {1} NSW", BlindName, ControlName)
+                    End If
+                    If CustomerStates = "VIC" Or CustomerStates = "QLD" Then
+                        PriceGroupName = String.Format("{0} {1} VIC/QLD", BlindName, ControlName)
+                    End If
+                End If
+            End If
+            ' Throw new Exception(PriceGroupName)
+
+
+            Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
             If String.IsNullOrEmpty(PriceGroupId) Then
                Throw New Exception("price group id not found !")
             End If

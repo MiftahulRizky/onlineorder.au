@@ -1005,11 +1005,8 @@ Public Class PublicConfig
                 End If
 
                 If designName = "Surcharge" Then
-                    If InArray(blindName, "Residential Home Address") Then
-                        delivery = "Delivery"
-                        width = "0"
-                        drop = "0"
-                    End If
+                    width = "0"
+                    drop = "0"
                 End If
 
                 If designName = "Door" Then

@@ -744,10 +744,16 @@ Partial Class Methods_Order_DetailMethod
 
                         If DesignName = "Surcharge" Then
                             Product = String.Format("{0}", KitName)
-                            If BlindName = "Long Length Surcharge" Then
-                                Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id = '{0}'", HeaderId))
-                                Dim States As String = publicCfg.GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId = '{0}'", CustomerId))
-                                Product = String.Format("{0} {1}", KitName, States)
+                            If InArray(BlindName, "Thrid Party Delivery", "Overlength Surcharge") Then
+                                If TubeType = "Roller" Then
+                                    Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id = '{0}'", HeaderId))
+                                    Dim States As String = publicCfg.GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId = '{0}'", CustomerId))
+                                    Product = String.Format("{0} {1} #{2}", BlindName, States, TubeType)
+                                    
+                                    If BlindName = "Overlength Surcharge" Then
+                                        Product = String.Format("{0} {3} {1} #{2}", BlindName, States, TubeType, ControlType)
+                                    End If
+                                End If
                             End IF
 
                             Product = String.Format("Surcharge - {0}", Product)

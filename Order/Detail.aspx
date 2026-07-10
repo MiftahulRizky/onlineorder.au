@@ -454,7 +454,7 @@
                     <i class="fa-solid fa-xmark me-2"></i>Close
                     </button>
                     <button type="button" class="btn btn-primary" id="submitAddItem">
-                        <i class="fa-solid fa-cloud-arrow-up me-2"></i>Submit
+                        <i class="fa-solid fa-cloud-arrow-up me-2"></i>Next
                     </button>
                 </div>
             </div>
@@ -558,7 +558,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="submitEditPricingItem">Submit</button>
+                    <button type="button" class="btn btn-primary" id="submitEditPricingItem">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -577,7 +577,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="submitEditPricingAllItem">Submit</button>
+                    <button type="button" class="btn btn-primary" id="submitEditPricingAllItem">Save Changes</button>
                 </div>
             </div>
         </div>
