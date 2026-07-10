@@ -254,19 +254,20 @@ Partial Class Methods_VerishadesMethod
                 End If
             End If
 
+           
+            If String.IsNullOrEmpty(data.stack) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "stack configuration is required !",.field = "stack"}}
+            End If
+            
+            If String.IsNullOrEmpty(data.tracktype) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "track type is required !",.field = "tracktype"}}
+            End If
+            If Not String.IsNullOrEmpty(data.tracktype) AND String.IsNullOrEmpty(data.trackcolour)Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "track colour is required !",.field = "trackcolour"}}
+            End If
+
             Dim customsize As Integer
             If InArray(BlindName, "Single", "Track Only") Then
-                If String.IsNullOrEmpty(data.stack) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "stack configuration is required !",.field = "stack"}}
-                End If
-                
-                If String.IsNullOrEmpty(data.tracktype) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "track type is required !",.field = "tracktype"}}
-                End If
-                If Not String.IsNullOrEmpty(data.tracktype) AND String.IsNullOrEmpty(data.trackcolour)Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "track colour is required !",.field = "trackcolour"}}
-                End If
-
                 If String.IsNullOrEmpty(data.wandsize) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "wand size is required !",.field = "wandsize"}}
                 End If
@@ -501,9 +502,9 @@ Partial Class Methods_VerishadesMethod
             If BlindName = "Slat Only" Then
                 data.width = ""
                 width = 0
-                data.stack = ""
-                data.tracktype = ""
-                data.trackcolour = ""
+                ' data.stack = ""
+                ' data.tracktype = ""
+                ' data.trackcolour = ""
                 data.wandsize = ""
                 data.wandcolour = ""
                 data.customsize = ""

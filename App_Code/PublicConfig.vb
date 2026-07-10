@@ -853,18 +853,39 @@ Public Class PublicConfig
 
         Dim result As Decimal = 0.00
         ' Dim thisData As DataSet = GetListData("SELECT Discount FROM Discounts WHERE StoreId = '" + StoreId + "' AND PriceGroupId = '" + PriceGroupId + "' AND Active=1")
-        Dim ThisBlind As String = GetItemData(String.Format("SELECT BlindId FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND BlindId='{2}' AND Active='1'", CustomerId, DesignId, BlindId))
-        Dim thisData As DataSet = GetListData(String.Format("SELECT * FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND Active='1'", CustomerId, DesignId))
-        If Not String.IsNullOrEmpty(ThisBlind) Then
-            thisData = GetListData(String.Format("SELECT * FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND BlindId='{2}' AND Active='1'", CustomerId, DesignId, ThisBlind))
+        ' Dim ThisBlind As String = GetItemData(String.Format("SELECT BlindId FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND BlindId='{2}' AND Active='1'", CustomerId, DesignId, BlindId))
+        ' Dim thisData As DataSet = GetListData(String.Format("SELECT * FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND Active='1'", CustomerId, DesignId))
+        ' If Not String.IsNullOrEmpty(ThisBlind) Then
+        '     thisData = GetListData(String.Format("SELECT * FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND BlindId='{2}' AND Active='1'", CustomerId, DesignId, ThisBlind))
+        ' End If
+
+        ' If Not thisData.Tables(0).Rows.Count = 0 Then
+        '     Dim DiscountBlindId As String = thisData.Tables(0).Rows(0).Item("BlindId").ToString()
+        '     Dim Discount As Integer = thisData.Tables(0).Rows(0).Item("Discount").ToString()
+        '     If BlindId = DiscountBlindId Then
+        '         result = Matrix * (Discount / 100)
+        '     End If
+        ' End If
+
+
+        ' 1. Coba ambil data diskon yang spesifik untuk BlindId ini terlebih dahulu
+        Dim thisData As DataSet = GetListData(String.Format("SELECT * FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND BlindId='{2}' AND Active='1'", CustomerId, DesignId, BlindId))
+
+        ' 2. Jika tidak ada diskon spesifik, ambil diskon umum untuk Customer & Design tersebut
+        If thisData Is Nothing OrElse thisData.Tables(0).Rows.Count = 0 Then
+            thisData = GetListData(String.Format("SELECT * FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND BlindId IS NULL AND Active='1'", CustomerId, DesignId))
         End If
 
-        If Not thisData.Tables(0).Rows.Count = 0 Then
-            Dim DiscountBlindId As String = thisData.Tables(0).Rows(0).Item("BlindId").ToString()
-            Dim Discount As Integer = thisData.Tables(0).Rows(0).Item("Discount").ToString()
-            If BlindId = DiscountBlindId Then
-                result = Matrix * (Discount / 100)
-            End If
+        ' 3. Proses perhitungan jika data ditemukan
+        If thisData IsNot Nothing AndAlso thisData.Tables(0).Rows.Count > 0 Then
+            Dim dr As DataRow = thisData.Tables(0).Rows(0)
+            
+            ' Menggunakan Convert.ToInt32 agar lebih aman dari format string
+            Dim Discount As Integer = Convert.ToInt32(dr("Discount"))
+            
+            ' Rumus perhitungan diskon 
+            ' Catatan: Pastikan Matrix dan result bertipe Double/Decimal karena pembagian 100 menghasilkan pecahan
+            result = Matrix * (Discount / 100.0)
         End If
         Return result
     End Function
