@@ -29,6 +29,8 @@ Partial Class Methods_ReportProductMethod
     Public Class ParamListData
         Public Property field As String
         Public Property findby As String
+
+        Public Property rolename As String
     End Class
 
     Public Class ParamReport
@@ -86,8 +88,13 @@ Partial Class Methods_ReportProductMethod
 
             Select Case data.field.ToLower()
                 Case "fined"
+                    Dim Desc As String = "'Environment : Production'"
+                    If data.rolename = "Administrator" Then
+                        Desc = "'Environment : Production', 'Environment : Testing', 'Environment : Development'"
+                    End If
+
                     If data.findby = "product" Then
-                        query = String.Format("SELECT Id, Name FROM Designs WHERE Active=1 AND Company <> 'LOOP' AND Description IN ('Environment : Production', 'Environment : Testing') ORDER BY Name ASC")
+                        query = String.Format("SELECT Id, Name FROM Designs WHERE Active=1 AND Company <> 'LOOP' AND Description IN ({0}) ORDER BY Name ASC", Desc)
                     End If
 
                     If data.findby = "customer" Then
@@ -158,12 +165,32 @@ Partial Class Methods_ReportProductMethod
             End If
 
             Dim list As New List(Of Dictionary(Of String, Object))()
+
             If data.findby = "product" Then
+
+                Dim finedValue As String = "NULL"
+                If Not String.IsNullOrEmpty(data.fined) AndAlso data.fined <> "all" Then
+                    finedValue = String.Format("'{0}'", data.fined)
+                End If
+
+                Dim fromDateSQL As String = parsedFromDate.ToString("yyyy-MM-dd")
+                Dim toDateSQL As String = parsedToDate.ToString("yyyy-MM-dd")
+
+                Dim DataReport As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM dbo.FindReportByProducts('{0}','{1}','{2}',{3}) ORDER BY YearNum ASC, MonthNum ASC, DesignName ASC", fromDateSQL, toDateSQL, data.status,finedValue))
+
+                For Each row As DataRow In DataReport.Tables(0).Rows
+                    Dim dict As New Dictionary(Of String, Object)
+                    For Each col As DataColumn In DataReport.Tables(0).Columns
+                        dict(col.ColumnName) = row(col)
+                    Next
+                    list.Add(dict)
+                Next
+
             End If
 
             If data.findby = "customer" Then
                 Dim dt As New DataTable()
-                Using conn As New SqlConnection(ConfigurationManager.ConnectionStrings("YourConn").ConnectionString)
+                Using conn As New SqlConnection(myConn)
                     Using cmd As New SqlCommand("FindReportByCustomers", conn)
                         cmd.CommandType = CommandType.StoredProcedure
 
@@ -177,9 +204,6 @@ Partial Class Methods_ReportProductMethod
                         End Using
                     End Using
                 End Using
-
-                ' Convert ke List(Of Dictionary)
-                ' Dim list As New List(Of Dictionary(Of String, Object))()
 
                 For Each row As DataRow In dt.Rows
                     Dim dict As New Dictionary(Of String, Object)

@@ -28,12 +28,7 @@ document.querySelector("#btnFind").addEventListener("click", (e) => {
     el.classList.remove("is-invalid");
   });
 
-  // handlerSubmit(e.target.form, e.target.id);
-  if (!["Administrator"].includes(ROLENAME)) {
-    handlerFind(e.target.id);
-  } else {
-    handlerFindReport(e.target.id);
-  }
+  handlerFindReport(e.target.id);
 });
 // =================================================FUNCTION================================================
 // --------------------------------------------||Binding Function||-----------------------------------------
@@ -119,6 +114,7 @@ const bindFined = async (findby) => {
         data: {
           field: "fined",
           findby,
+          rolename: ROLENAME,
         },
       }),
     });
@@ -172,60 +168,6 @@ const bindFined = async (findby) => {
 };
 
 // --------------------------------------------||Handler Function||---------------------------------------
-const handlerFind = async (button) => {
-  try {
-    // return alert(button);
-    document.getElementById(button).innerHTML = "Processing...";
-    swalLoadingShow("Please wait while we save the data.");
-    const fields = ["findby", "fined", "status", "fromdate", "todate"];
-
-    const formData = { rolename: ROLENAME };
-
-    fields.forEach((field) => {
-      formData[field] = document.getElementById(field).value;
-    });
-
-    // return console.table(formData);
-
-    const response = await fetch(URIMETHOD + "/FindReport", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({ data: formData }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`${response.status}\n${errorText}`);
-    }
-
-    const result = await response.json();
-    const dataResult = result.d || result;
-
-    if (dataResult.error) {
-      await isWarning(dataResult.error.message?.toUpperCase());
-      const field = document.getElementById(dataResult.error.field);
-      if (field) {
-        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
-        // field.focus();
-        field.classList.add("is-invalid");
-      }
-    } else {
-      await isSuccess(dataResult.success.message);
-      window.open(dataResult.success.dir, "_blank");
-      // window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
-    }
-  } catch (error) {
-    var msg = error.message;
-    if (ROLENAME !== "Administrator") {
-      msg = "Please contact our IT team at support@onlineorder.au";
-    }
-    isError(msg);
-  } finally {
-    document.getElementById(button).innerHTML = "Show";
-  }
-};
 
 // Variabel global untuk menyimpan instance datatable agar bisa di-reset/refresh
 let dataTableInstance = null;
@@ -277,8 +219,14 @@ const handlerFindReport = async (button) => {
     if (result.success) {
       const dataBagiTabel = result.reportData || [];
 
+      const findby = formData.findby;
       // masukan ke
-      renderTable(dataBagiTabel);
+      if (findby == "customer") {
+        renderTable(dataBagiTabel);
+      }
+      if (findby == "product") {
+        renderProductTable(dataBagiTabel);
+      }
 
       Swal.close();
     }
@@ -296,6 +244,7 @@ const handlerFindReport = async (button) => {
 // --------------------------------------------||Other Function||-----------------------------------------
 const renderTable = (data) => {
   const container = document.getElementById("cardResult");
+  container.innerHTML = "";
 
   if (!data.length) {
     container.innerHTML = "<p>No data found</p>";
@@ -306,7 +255,7 @@ const renderTable = (data) => {
   const columns = Object.keys(data[0]);
 
   let html = `<div class="table-responsive">
-                <table class="table table-bordered table-striped">
+                <table class="table table-bordered table-striped table-hover">
                   <thead>
                     <tr>`;
 
@@ -327,6 +276,70 @@ const renderTable = (data) => {
   });
 
   html += `</tbody></table></div>`;
+
+  container.innerHTML = html;
+};
+
+const renderProductTable = (data) => {
+  const container = document.getElementById("cardResult");
+  container.innerHTML = "";
+
+  if (!data.length) {
+    container.innerHTML = "<p>No data found</p>";
+    return;
+  }
+
+  let html = "";
+
+  // Group berdasarkan bulan + tahun
+  const grouped = data.reduce((acc, row) => {
+    const key = `${row.MonthName} ${row.YearNum}`;
+
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+
+    acc[key].push(row);
+
+    return acc;
+  }, {});
+
+  Object.keys(grouped).forEach((monthYear) => {
+    html += `
+      <h4 class="mt-4">
+        ${monthYear}
+      </h4>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover">
+
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Product</th>
+              <th>Qty</th>
+            </tr>
+          </thead>
+
+          <tbody>
+    `;
+
+    grouped[monthYear].forEach((row, index) => {
+      html += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${row.DesignName}</td>
+          <td>${row.Qty ?? 0}</td>
+        </tr>
+      `;
+    });
+
+    html += `
+          </tbody>
+        </table>
+      </div>
+    `;
+  });
 
   container.innerHTML = html;
 };
