@@ -30,6 +30,18 @@ document.querySelector("#btnFind").addEventListener("click", (e) => {
 
   handlerFindReport(e.target.id);
 });
+
+document.querySelector("#btnReset").addEventListener("click", async (e) => {
+  e.preventDefault();
+
+  document.querySelectorAll(".form-control, .form-select").forEach((el) => {
+    el.classList.remove("is-invalid");
+  });
+  const btnGeneratePDF = document.getElementById("btnGeneratePDF");
+  btnGeneratePDF.classList.add("d-none");
+  document.getElementById("cardResult").innerHTML = "";
+  await Promise.all([bindFindBy(), bindFined(), bindStatus(), bindDate()]);
+});
 // =================================================FUNCTION================================================
 // --------------------------------------------||Binding Function||-----------------------------------------
 const bindFindBy = () => {
@@ -171,7 +183,6 @@ const bindFined = async (findby) => {
 
 // Variabel global untuk menyimpan instance datatable agar bisa di-reset/refresh
 let dataTableInstance = null;
-
 const handlerFindReport = async (button) => {
   try {
     document.getElementById(button).innerHTML = "Processing...";
@@ -226,6 +237,12 @@ const handlerFindReport = async (button) => {
       }
       if (findby == "product") {
         renderProductTable(dataBagiTabel);
+      }
+
+      const btnGeneratePDF = document.getElementById("btnGeneratePDF");
+      btnGeneratePDF.classList.add("d-none");
+      if (["Administrator"].includes(ROLENAME)) {
+        btnGeneratePDF.classList.remove("d-none");
       }
 
       Swal.close();
@@ -345,6 +362,8 @@ const renderProductTable = (data) => {
 };
 const reportProductPageLoaded = async () => {
   await Promise.all([bindFindBy(), bindStatus(), bindDate()]);
+  const btnGeneratePDF = document.getElementById("btnGeneratePDF");
+  btnGeneratePDF.classList.add("d-none");
 
   await loaderFadeOut();
 };
