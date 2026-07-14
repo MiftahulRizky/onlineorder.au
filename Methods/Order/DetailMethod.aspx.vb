@@ -18,7 +18,8 @@ Imports Microsoft.VisualBasic
 Imports Newtonsoft.Json
 Imports System.Net
 Imports System.Net.Mail
-
+Imports System.Net.Http
+Imports System.Text
 
 
 Partial Class Methods_Order_DetailMethod
@@ -232,6 +233,57 @@ Partial Class Methods_Order_DetailMethod
         Public Spacer1Type As String
         Public CarriersQty As Integer
     End Class
+
+    '#--- Properti API Global Order ---#
+
+    Public Class OrderRequest
+        Public Property OrderNumber As String
+        Public Property OrderName As String
+        Public Property Details As List(Of OrderDetail)
+    End Class
+
+    Public Class OrderDetail
+        Public Property KitName As String
+        Public Property BracketType As String
+        Public Property TubeType As String
+        Public Property ControlType As String
+        Public Property ColourType As String
+        Public Property DesignName As String
+        Public Property BlindName As String
+        Public Property FabricType As String
+        Public Property FabricColour As String
+        Public Property Qty As Integer
+        Public Property Room As String
+        Public Property Mounting As String
+        Public Property Width As Integer
+        Public Property Drop As Integer
+        Public Property Layout As String
+        Public Property NumOfPanel As Integer
+        Public Property ControlPosition As String
+        Public Property ChainLength As Integer
+        Public Property MaterialChain As String
+        Public Property ChainColour As String
+        Public Property TrackType As String
+        Public Property TrackColour As String
+        Public Property CordLength As String
+        Public Property BattenColour As String
+        Public Property BracketOption As String
+        Public Property BottomHoldDown As String
+        Public Property PelmetWidth As Integer
+        Public Property CutOut_LeftTop As Integer
+        Public Property CutOut_RightTop As Integer
+        Public Property CutOut_LeftBottom As Integer
+        Public Property CutOut_RightBottom As Integer
+        Public Property LHSWidth_Top As Integer
+        Public Property LHSHeight_Top As Integer
+        Public Property RHSWidth_Top As Integer
+        Public Property RHSHeight_Top As Integer
+        Public Property LHSWidth_Bottom As Integer
+        Public Property LHSHeight_Bottom As Integer
+        Public Property RHSWidth_Bottom As Integer
+        Public Property RHSHeight_Bottom As Integer
+    End Class
+
 
     '#--- Kelas Output WebMethod ---#
     Public Class ErrorDetail
@@ -1258,30 +1310,27 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function SubmitOrder(ByVal headerid As String, ByVal loginid As String) As Object
+    Public Shared Function SubmitOrder(ByVal headerid As String, ByVal loginid As String, ByVal rolename As String) As Object
         Try
             If String.IsNullOrEmpty(headerid) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "This order is missing !"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "This order is missing !" }}
             End If
-
             Dim detailData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + headerid + "' AND Active='1'")
 
-            '# --------------------------|| Check Order Detail ||-------------------------------
             If detailData.Tables(0).Rows.Count < 1 Then
-                Return New ErrorResponse With {
-                    .[error] = New ErrorDetail With {
-                        .message = "Please add item first."
-                    }
-                }
+                Return New ErrorResponse With { .[error] = New ErrorDetail With { .message = "Please add item first."}}
             End If
 
-            '#------------------------------------------------|| Prepare Submit ||-------------------------------------------------#
-            '#-----------------------------------|| Set default values before submission ||----------------------------------------#
+            If rolename = "Administrator" Then
+                Dim ResApi As String = SendOrderGlobal(headerid)
+                If Not ResApi = "OK" Then
+                    Throw New Exception("API Error: " + ResApi)
+                End If
+                Throw New Exception("API Success")
+            End If
             
+            
+            ' Throw New Exception("Debug")
             Using thisConn As New SqlConnection(myConn)
                 Using myCmd As New SqlCommand("UPDATE OrderHeaders SET Status='New Order',  SubmittedDate=GETDATE() WHERE Id=@Id")
                     myCmd.Parameters.AddWithValue("@Id", headerid)
@@ -1301,12 +1350,88 @@ Partial Class Methods_Order_DetailMethod
                 }
             }
         Catch ex As Exception
-            Return New ErrorResponse With {
-                .error = New ErrorDetail With { .message = ex.Message}
-            }
+            Dim msg As string = ex.Message
+            If Not rolename = "Administrator" Then msg = "Please contact our IT team at support@onlineorder.au"
+            Return New ErrorResponse With {.error = New ErrorDetail With { .message = msg}}
         End Try
     End Function
 
+    Private Shared Function SendOrderGlobal(headerid As String) As String
+        Try
+            '#HeaderData sudah fix ada tidak perlu validasi
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_headers WHERE Id = '{0}'", headerid))
+            Dim Rows As DataRow = HeaderData.Tables(0).Rows(0)
+
+            Dim order As New OrderRequest With {
+                .OrderNumber = Rows("OrderNo").ToString(),
+                .OrderName = Rows("OrderCust").ToString(),
+                .Details = New List(Of OrderDetail)
+            }
+
+            Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT*FROM view_details WHERE HeaderId = '{0}' AND (DesignName LIKE '%Global%' OR BlindName IN ('25mm Aluminium', '50mm Aluminium')) AND Active=1", headerid))
+            Dim DetailCount As Integer = DetailData.Tables(0).Rows.Count
+
+            If DetailCount = 0 Then
+                Return "OK"
+            End If
+
+            If DetailCount > 0 Then
+                For Each dr As DataRow In DetailData.Tables(0).Rows
+                    order.Details.Add(New OrderDetail With {
+                        .KitName = dr("KitName").ToString(),
+                        .BracketType = dr("BracketType").ToString(),
+                        .TubeType = dr("TubeType").ToString(),
+                        .ControlType = dr("ControlType").ToString(),
+                        .ColourType = dr("ColourType").ToString(),
+                        .DesignName = dr("DesignName").ToString(),
+                        .BlindName = dr("BlindName").ToString(),
+                        .FabricType = dr("FabricType").ToString(),
+                        .FabricColour = dr("FabricColour").ToString(),
+                        .Qty = If(IsDBNull(dr("Qty")), 0, CInt(dr("Qty"))),
+                        .Room = dr("Location").ToString(),
+                        .Mounting = dr("Mounting").ToString(),
+                        .Width = If(IsDBNull(dr("Width")), 0, CInt(dr("Width"))),
+                        .Drop = If(IsDBNull(dr("Drop")), 0, CInt(dr("Drop"))),
+                        .Layout = dr("Layout").ToString(),
+                        .NumOfPanel = If(IsDBNull(dr("NumOfPanel")), 0, CInt(dr("NumOfPanel"))),
+                        .ControlPosition = dr("ControlPosition").ToString(),
+                        .ChainLength = If(IsDBNull(dr("ChainLength")), 0, CInt(dr("ChainLength"))),
+                        .MaterialChain = dr("MaterialChain").ToString(),
+                        .ChainColour = dr("ChainColour").ToString(),
+                        .TrackType = dr("TrackType").ToString(),
+                        .TrackColour = dr("TrackColour").ToString(),
+                        .CordLength = dr("CordLength").ToString(),
+                        .BattenColour = dr("BattenColour").ToString(),
+                        .BracketOption = dr("BracketOption").ToString(),
+                        .BottomHoldDown = dr("BottomHoldDown").ToString(),
+                        .PelmetWidth = If(IsDBNull(dr("PelmetWidth")), 0, CInt(dr("PelmetWidth"))),
+                        .CutOut_LeftTop = If(IsDBNull(dr("CutOut_LeftTop")), 0, CInt(dr("CutOut_LeftTop"))),
+                        .CutOut_RightTop = If(IsDBNull(dr("CutOut_RightTop")), 0, CInt(dr("CutOut_RightTop"))),
+                        .CutOut_LeftBottom = If(IsDBNull(dr("CutOut_LeftBottom")), 0, CInt(dr("CutOut_LeftBottom"))),
+                        .CutOut_RightBottom = If(IsDBNull(dr("CutOut_RightBottom")), 0, CInt(dr("CutOut_RightBottom"))),
+                        .LHSWidth_Top = If(IsDBNull(dr("LHSWidth_Top")), 0, CInt(dr("LHSWidth_Top"))),
+                        .LHSHeight_Top = If(IsDBNull(dr("LHSHeight_Top")), 0, CInt(dr("LHSHeight_Top"))),
+                        .RHSWidth_Top = If(IsDBNull(dr("RHSWidth_Top")), 0, CInt(dr("RHSWidth_Top"))),
+                        .RHSHeight_Top = If(IsDBNull(dr("RHSHeight_Top")), 0, CInt(dr("RHSHeight_Top"))),
+                        .LHSWidth_Bottom = If(IsDBNull(dr("LHSWidth_Bottom")), 0, CInt(dr("LHSWidth_Bottom"))),
+                        .LHSHeight_Bottom = If(IsDBNull(dr("LHSHeight_Bottom")), 0, CInt(dr("LHSHeight_Bottom"))),
+                        .RHSWidth_Bottom = If(IsDBNull(dr("RHSWidth_Bottom")), 0, CInt(dr("RHSWidth_Bottom"))),
+                        .RHSHeight_Bottom = If(IsDBNull(dr("RHSHeight_Bottom")), 0, CInt(dr("RHSHeight_Bottom")))
+                    })
+                Next
+
+                Dim json As String = JsonConvert.SerializeObject(order)
+                Dim client As New HttpClient()
+                ' client.DefaultRequestHeaders.Add("x-api-key", "YOUR_API_KEY")
+                Dim content As New StringContent(json, Encoding.UTF8, "application/json")
+                Dim response = client.PostAsync("https://webhook.site/119805c5-605d-48b9-840e-97f72a18efdf", content).Result
+                Return response.StatusCode.ToString()
+            End If
+
+        Catch ex As Exception
+            Return "SendOrderGlobal Error: " + ex.Message
+        End Try
+    End Function
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
@@ -6305,7 +6430,7 @@ Partial Class Methods_Order_DetailMethod
         Try
             Dim dt As New DataTable()
             Using thisConn As SqlConnection = New SqlConnection(myConn)
-                Dim selectQuery As String = "SELECT * FROM view_details WHERE HeaderId = @HeaderId AND Active = @Active ORDER BY Id ASC"
+                Dim selectQuery As String = "SELECT * FROM view_details WHERE HeaderId = @HeaderId AND Active = @Active AND DesignName NOT IN ('Surcharge', 'Additional') ORDER BY Id ASC"
                 Using da As New SqlDataAdapter(selectQuery, thisConn)
                     da.SelectCommand.Parameters.AddWithValue("@HeaderId", HeaderId)
                     da.SelectCommand.Parameters.AddWithValue("@Active", 1)

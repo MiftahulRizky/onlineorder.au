@@ -1468,7 +1468,6 @@ const handlerCreatePDFOrder = async (headerid, action, msgloading) => {
         "Content-Type": "application/json; charset=utf-8",
       },
       body: JSON.stringify({
-        headerid: headerid,
         action: action,
       }),
     });
@@ -1530,6 +1529,7 @@ const handlerSubmitOrder = async (headerid, action, msgloading) => {
           body: JSON.stringify({
             headerid: headerid,
             loginid: LOGINID,
+            rolename: ROLENAME,
           }),
         });
 
