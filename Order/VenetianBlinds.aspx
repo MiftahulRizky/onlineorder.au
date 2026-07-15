@@ -124,7 +124,7 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="controllength" id="controllength" class="form-control  " autocomplete="off"/>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoPelmetWidth">
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoControlLength">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -152,26 +152,40 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divBottom">
-                                        <label for="bracket" class="col-lg-3 text-uppercase fw-bold" >bottom hold dowm</label>
+                                        <label for="bottom" class="col-lg-3 text-uppercase fw-bold" >bottom hold down</label>
                                         <div class="col-lg-4">
-                                            <select name="bracket" id="bracket" class="form-select"></select>
+                                            <select name="bottom" id="bottom" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="div2on1Headreal">
+                                        <label for="twoheadrail" class="col-lg-3 text-uppercase fw-bold" >2 on 1 Headrail</label>
+                                        <div class="col-lg-4">
+                                            <select name="twoheadrail" id="twoheadrail" class="form-select">
+                                                <option value=""></option>
+                                                <option value="Yes">YES</option>
+                                            </select>
                                         </div>  
                                     </div>
 
                                     <div id="divPelmetDetail">
-                                        <div class="mb-3 mt-6 row">
+                                        <div class="mb-3 row">
                                             <label for="notes" class="col-lg-3 text-uppercase fw-bold text-danger">pelmet details</label>
                                         </div>
 
                                         <div class="mb-3 row" >
                                             <label for="pelmettype" class="col-lg-3 text-uppercase fw-bold" >pelmet</label>
-                                            <div class="col-lg-4">
+                                            <div class="col-lg-3">
                                                 <select name="pelmettype" id="pelmettype" class="form-select"></select>
                                                 <small class="form-hint">* Type</small>
                                             </div>  
-                                            <div class="col-lg-4">
+                                            <div class="col-lg-3" id="divPelmetSize">
+                                                <select name="pelmetsize" id="pelmetsize" class="form-select"></select>
+                                                <small class="form-hint">* Size</small>
+                                            </div>  
+                                            <div class="col-lg-3">
                                                 <div class="input-group">
-                                                    <input type="number" min="1" name="pelmetsize" id="pelmetsize" class="form-control  " autocomplete="off"/>
+                                                    <input type="number" min="1" name="pelmetwidth" id="pelmetwidth" class="form-control  " autocomplete="off"/>
                                                     <button class="btn btn-primary btn-information" type="button" id="btnInfoPelmetWidth">
                                                         <i class="ti ti-info-square-rounded fs-2"></i>
                                                     </button>
@@ -183,14 +197,14 @@
 
                                     <div class="mb-3 row" id="divReturnLength">
                                         <label for="returnleft" class="col-lg-3 text-uppercase fw-bold" >return length</label>
-                                        <div class="col-lg-3">
+                                        <div class="col-lg-3" id="divReturnLeft">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="returnleft" id="returnleft" class="form-control  " autocomplete="off"/>
                                                 <span class="input-group-text ">mm</span>
                                             </div>
                                             <small class="form-hint">* Left</small> 
                                         </div>
-                                        <div class="col-lg-3">
+                                        <div class="col-lg-3" id="divReturnRight">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="returnright" id="returnright" class="form-control  " autocomplete="off"/>
                                                 <span class="input-group-text ">mm</span>
@@ -247,7 +261,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 mt-6 row">
+                                    <div class="mb-3 row">
                                         <label for="notes" class="col-lg-3 text-uppercase fw-bold text-danger">bottom</label>
                                     </div>
 
@@ -327,7 +341,7 @@
         
                         <div class="card-body">
                             <div class="mb-3 row">
-                                <p runat="server" id="pNotes"></p>
+                                <p id="pNotes"></p>
                             </div>
                         </div>
                     </div>

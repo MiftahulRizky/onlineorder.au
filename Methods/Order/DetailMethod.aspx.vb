@@ -2293,7 +2293,7 @@ Partial Class Methods_Order_DetailMethod
 
             
 
-            Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_headers WHERE Id='" & headerid & "'")
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_headers WHERE Id='{0}' AND DesignName NOT IN ('Surcharge', 'Additional') ", headerid))
             If HeaderData.Tables(0).Rows.Count < 1 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Order Header not found."}}
             End If
