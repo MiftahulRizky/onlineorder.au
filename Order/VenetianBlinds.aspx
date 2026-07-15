@@ -158,6 +158,13 @@
                                         </div>  
                                     </div>
 
+                                    <div class="mb-3 row" id="divHoldBracket">
+                                        <label for="holdbracket" class="col-lg-3 text-uppercase fw-bold" >hold down bracket</label>
+                                        <div class="col-lg-4">
+                                            <select name="holdbracket" id="holdbracket" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
                                     <div class="mb-3 row" id="div2on1Headreal">
                                         <label for="twoheadrail" class="col-lg-3 text-uppercase fw-bold" >2 on 1 Headrail</label>
                                         <div class="col-lg-4">

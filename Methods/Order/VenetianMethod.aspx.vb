@@ -30,6 +30,7 @@ Partial Class Methods_Order_VenetianMethod
         Public Property controltilt As String
         Public Property bracket As String
         Public Property bottom As String
+        Public Property holdbracket As String
         Public Property twoheadrail As String
         Public Property pelmettype As String
         Public Property pelmetsize As String
@@ -254,9 +255,15 @@ Partial Class Methods_Order_VenetianMethod
                 End If
             End If
 
-            If InArray(BlindName, "25mm Aluminium", "50mm Aluminium", "50mm Mockwood", "63mm Mockwood", "50mm Timberstyle", "63mm Timberstyle", "50mm Wooden", "63mm Wooden") Then
+            If InArray(BlindName, "25mm Aluminium", "50mm Aluminium", "50mm Timberstyle", "63mm Timberstyle") Then
                 If String.IsNullOrEmpty(data.bottom) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom is required !",.field = "bottom"}}
+                End If
+            End If
+
+            If InArray(BlindName, "25mm Aluminium", "50mm Aluminium", "50mm Mockwood", "63mm Mockwood", "50mm Wooden", "63mm Wooden") Then
+                If String.IsNullOrEmpty(data.holdbracket) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "hold down bracket is required !",.field = "holdbracket"}}
                 End If
             End If
 
@@ -384,7 +391,7 @@ Partial Class Methods_Order_VenetianMethod
             If InArray(BlindName, "25mm Aluminium", "50mm Aluminium") Then
                 data.controllift = ""
                 data.controltilt = ""
-                data.twoheadrail = ""
+                ' data.twoheadrail = ""
                 data.pelmettype = ""
                 data.pelmetsize = ""
                 data.pelmetwidth = ""
@@ -401,12 +408,14 @@ Partial Class Methods_Order_VenetianMethod
                 data.controllength = ""
                 controllength = 0
                 data.bracket = ""
+                data.bottom = ""
                 data.pelmetsize = ""
             End If
 
             If InArray(BlindName, "50mm Timberstyle", "63mm Timberstyle") Then
                 data.controllift = ""
                 data.controltilt = ""
+                data.holdbracket = ""
             End If
 
             If InArray(BlindName, "50mm Wooden", "63mm Wooden") Then
@@ -414,6 +423,7 @@ Partial Class Methods_Order_VenetianMethod
                 data.controllength = ""
                 controllength = 0
                 data.bracket = ""
+                data.bottom = ""
                 data.pelmetsize = ""
             End If
 
@@ -530,9 +540,9 @@ Partial Class Methods_Order_VenetianMethod
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
             
-                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], ControlPosition, ControlLength, BracketOption, BottomHoldDown, DoorCutOut, PelmetType, PelmetWidth, PelmetSize, PelmetReturnSize, PelmetReturnSize2, CutOut_LeftTop, CutOut_RightTop, CutOut_LeftBottom, CutOut_RightBottom, LHSWidth_Top, LHSHeight_Top, RHSWidth_Top, RHSHeight_Top, LHSWidth_Bottom, LHSHeight_Bottom, RHSWidth_Bottom, RHSHeight_Bottom,  Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
+                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], ControlPosition, ControlLength, BracketOption, BottomHoldDown, BracketColour, DoorCutOut, PelmetType, PelmetWidth, PelmetSize, PelmetReturnSize, PelmetReturnSize2, CutOut_LeftTop, CutOut_RightTop, CutOut_LeftBottom, CutOut_RightBottom, LHSWidth_Top, LHSHeight_Top, RHSWidth_Top, RHSHeight_Top, LHSWidth_Bottom, LHSHeight_Bottom, RHSWidth_Bottom, RHSHeight_Bottom,  Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
 
-                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @ControlLength, @BracketOption, @BottomHoldDown, @DoorCutOut, @PelmetType, @PelmetWidth, @PelmetSize, @PelmetReturnSize, @PelmetReturnSize2, @CutOut_LeftTop, @CutOut_RightTop, @CutOut_LeftBottom, @CutOut_RightBottom, @LHSWidth_Top, @LHSHeight_Top, @RHSWidth_Top, @RHSHeight_Top, @LHSWidth_Bottom, @LHSHeight_Bottom, @RHSWidth_Bottom, @RHSHeight_Bottom, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
+                Dim Values As String = "@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @ControlLength, @BracketOption, @BottomHoldDown, @BracketColour, @DoorCutOut, @PelmetType, @PelmetWidth, @PelmetSize, @PelmetReturnSize, @PelmetReturnSize2, @CutOut_LeftTop, @CutOut_RightTop, @CutOut_LeftBottom, @CutOut_RightBottom, @LHSWidth_Top, @LHSHeight_Top, @RHSWidth_Top, @RHSHeight_Top, @LHSWidth_Bottom, @LHSHeight_Bottom, @RHSWidth_Bottom, @RHSHeight_Bottom, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand(String.Format("INSERT INTO OrderDetails({0}) VALUES ({1})", Field, Values), thisConn)
@@ -552,6 +562,7 @@ Partial Class Methods_Order_VenetianMethod
                         myCmd.Parameters.AddWithValue("@ControlLength", controllength)
                         myCmd.Parameters.AddWithValue("@BracketOption", data.bracket)
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.bottom)
+                        myCmd.Parameters.AddWithValue("@BracketColour", data.holdbracket)
                         myCmd.Parameters.AddWithValue("@DoorCutOut", data.twoheadrail)
                         myCmd.Parameters.AddWithValue("@PelmetType", data.pelmettype)
                         myCmd.Parameters.AddWithValue("@PelmetWidth", pelmetwidth)
@@ -593,7 +604,7 @@ Partial Class Methods_Order_VenetianMethod
             If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
                 Dim ItemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, ControlPosition=@ControlPosition, ControlLength=@ControlLength, BracketOption=@BracketOption, BottomHoldDown=@BottomHoldDown, DoorCutOut=@DoorCutOut, PelmetType=@PelmetType, PelmetWidth=@PelmetWidth, PelmetSize=@PelmetSize, PelmetReturnSize=@PelmetReturnSize, PelmetReturnSize2=@PelmetReturnSize2, CutOut_LeftTop=@CutOut_LeftTop, CutOut_RightTop=@CutOut_RightTop, CutOut_LeftBottom=@CutOut_LeftBottom, CutOut_RightBottom=@CutOut_RightBottom, LHSWidth_Top=@LHSWidth_Top, LHSHeight_Top=@LHSHeight_Top, RHSWidth_Top=@RHSWidth_Top, RHSHeight_Top=@RHSHeight_Top, LHSWidth_Bottom=@LHSWidth_Bottom, LHSHeight_Bottom=@LHSHeight_Bottom, RHSWidth_Bottom=@RHSWidth_Bottom, RHSHeight_Bottom=@RHSHeight_Bottom, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, ControlPosition=@ControlPosition, ControlLength=@ControlLength, BracketOption=@BracketOption, BottomHoldDown=@BottomHoldDown, BracketColour=@BracketColour, DoorCutOut=@DoorCutOut, PelmetType=@PelmetType, PelmetWidth=@PelmetWidth, PelmetSize=@PelmetSize, PelmetReturnSize=@PelmetReturnSize, PelmetReturnSize2=@PelmetReturnSize2, CutOut_LeftTop=@CutOut_LeftTop, CutOut_RightTop=@CutOut_RightTop, CutOut_LeftBottom=@CutOut_LeftBottom, CutOut_RightBottom=@CutOut_RightBottom, LHSWidth_Top=@LHSWidth_Top, LHSHeight_Top=@LHSHeight_Top, RHSWidth_Top=@RHSWidth_Top, RHSHeight_Top=@RHSHeight_Top, LHSWidth_Bottom=@LHSWidth_Bottom, LHSHeight_Bottom=@LHSHeight_Bottom, RHSWidth_Bottom=@RHSWidth_Bottom, RHSHeight_Bottom=@RHSHeight_Bottom, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -610,6 +621,7 @@ Partial Class Methods_Order_VenetianMethod
                         myCmd.Parameters.AddWithValue("@ControlLength", controllength)
                         myCmd.Parameters.AddWithValue("@BracketOption", data.bracket)
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.bottom)
+                        myCmd.Parameters.AddWithValue("@BracketColour", data.holdbracket)
                         myCmd.Parameters.AddWithValue("@DoorCutOut", data.twoheadrail)
                         myCmd.Parameters.AddWithValue("@PelmetType", data.pelmettype)
                         myCmd.Parameters.AddWithValue("@PelmetWidth", pelmetwidth)

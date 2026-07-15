@@ -9586,7 +9586,7 @@ Partial Class Methods_Order_DetailMethod
                                 tableName = "JobSheet_GlobalRomanBlinds"
 
                             Case "Venetian Blinds"
-                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "ControlPosition", "ControlLength", "WandLength", "BracketOption", "BottomHoldDown", "PelmetType", "PelmetWidth", "PelmetSize", "PelmetReturn", "PelmetReturnPosition", "PelmetReturnSize", "PelmetReturnSize2", "CutOut_LeftTop", "CutOut_RightTop", "CutOut_LeftBottom", "CutOut_RightBottom", "LHSWidth_Top", "LHSHeight_Top", "RHSWidth_Top", "RHSHeight_Top", "LHSWidth_Bottom", "LHSHeight_Bottom", "RHSWidth_Bottom", "RHSHeight_Bottom", "Notes", "KitName", "VenetianType", "ControlType", "ColourType"})
+                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "DoorCutOut", "ControlPosition", "ControlLength", "WandLength", "BracketOption", "BracketColour", "BottomHoldDown", "PelmetType", "PelmetWidth", "PelmetSize", "PelmetReturn", "PelmetReturnPosition", "PelmetReturnSize", "PelmetReturnSize2", "CutOut_LeftTop", "CutOut_RightTop", "CutOut_LeftBottom", "CutOut_RightBottom", "LHSWidth_Top", "LHSHeight_Top", "RHSWidth_Top", "RHSHeight_Top", "LHSWidth_Bottom", "LHSHeight_Bottom", "RHSWidth_Bottom", "RHSHeight_Bottom", "Notes", "KitName", "VenetianType", "ControlType", "ColourType"})
 
                                 tableName = "JobSheet_Venetian"
 
@@ -18410,6 +18410,40 @@ Partial Class Methods_Order_DetailMethod
     Private Shared Function PrintAluminiumVenetian(currentData As DataRow) As String
         Dim result As String = String.Empty
 
+        Dim ControlLength As String() = {
+            currentData("ControlLength1").ToString(),
+            currentData("ControlLength2").ToString(),
+            currentData("ControlLength3").ToString(),
+            currentData("ControlLength4").ToString(),
+            currentData("ControlLength5").ToString(),
+            currentData("ControlLength6").ToString()
+        }
+        For i As Integer = 0 To ControlLength.Length - 1
+            If ControlLength(i) = "" OR ControlLength(i) = "0" Then
+                ControlLength(i) = "Standard"
+            End IF
+        Next
+
+        Dim Line As String() = {
+            currentData("Line1").ToString(),
+            currentData("Line2").ToString(),
+            currentData("Line3").ToString(),
+            currentData("Line4").ToString(),
+            currentData("Line5").ToString(),
+            currentData("Line6").ToString()
+        }
+        For i As Integer = 0 To Line.Length - 1
+           Line(i) = Line(i)
+        Next
+
+        Dim FindControlLength1 As String = If(String.IsNullOrEmpty(Line(0)), "", ControlLength(0))
+        Dim FindControlLength2 As String = If(String.IsNullOrEmpty(Line(1)), "", ControlLength(1))
+        Dim FindControlLength3 As String = If(String.IsNullOrEmpty(Line(2)), "", ControlLength(2))
+        Dim FindControlLength4 As String = If(String.IsNullOrEmpty(Line(3)), "", ControlLength(3))
+        Dim FindControlLength5 As String = If(String.IsNullOrEmpty(Line(4)), "", ControlLength(4))
+        Dim FindControlLength6 As String = If(String.IsNullOrEmpty(Line(5)), "", ControlLength(5))
+
+
         Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
 
         '#line options
@@ -18486,12 +18520,12 @@ Partial Class Methods_Order_DetailMethod
             '#ControlLength
             result+= trDetStart
                 result+= tdTitleStart & "Wand Length" & tdDetEnd
-                result+= tdDetStart & currentData("ControlLength1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ControlLength2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ControlLength3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ControlLength4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ControlLength5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("ControlLength6").ToString() & tdDetEnd
+                result+= tdDetStart & FindControlLength1 & tdDetEnd
+                result+= tdDetStart & FindControlLength2 & tdDetEnd
+                result+= tdDetStart & FindControlLength3 & tdDetEnd
+                result+= tdDetStart & FindControlLength4 & tdDetEnd
+                result+= tdDetStart & FindControlLength5 & tdDetEnd
+                result+= tdDetRight & FindControlLength6 & tdDetEnd
             result+= trDetEnd
 
             '#BracketType
@@ -18651,15 +18685,15 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & currentData("RHSHeight_Bottom6").ToString() & tdDetEnd
             result+= trDetEnd
 
-            '#BracketOption
+            '#BracketColour
             result+= trDetStart
                 result+= tdTitleStart & "Holdown Bracket" & tdDetEnd
-                result+= tdDetStart & currentData("BracketOption1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BracketOption2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BracketOption3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BracketOption4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BracketOption5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("BracketOption6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("BracketColour6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#BottomHoldDown
@@ -18673,15 +18707,15 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & currentData("BottomHoldDown6").ToString() & tdDetEnd
             result+= trDetEnd
 
-            '#BottomHoldDown
+            '#DoorCutOut
             result+= trDetStart
                 result+= tdTitleStart & "2on 1 Headrail" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetRight & "" & tdDetEnd
+                result+= tdDetStart & currentData("DoorCutOut1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("DoorCutOut2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("DoorCutOut3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("DoorCutOut4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("DoorCutOut5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("DoorCutOut6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#Location
@@ -18767,8 +18801,6 @@ Partial Class Methods_Order_DetailMethod
         Next
 
         
-
-
 
 
         '#line options
@@ -18908,15 +18940,15 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & currentData("PelmetReturnSize26").ToString() & tdDetEnd
             result+= trDetEnd
 
-            '#BottomHoldDown
+            '#BracketColour
             result+= trDetStart
                 result+= tdTitleStart & fs12Start & "Hold Down Brckts" & fsEnd & tdDetEnd
-                result+= tdDetStart & currentData("BottomHoldDown1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BottomHoldDown2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BottomHoldDown3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BottomHoldDown4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BottomHoldDown5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("BottomHoldDown6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("BracketColour6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#Cutouts
@@ -19121,7 +19153,40 @@ Partial Class Methods_Order_DetailMethod
     Private Shared Function PrintTimberVenetian(currentData As DataRow) As String
         Dim result As String = String.Empty
 
-         Dim initUseBottom As String() = {
+        Dim ControlLength As String() = {
+            currentData("ControlLength1").ToString(),
+            currentData("ControlLength2").ToString(),
+            currentData("ControlLength3").ToString(),
+            currentData("ControlLength4").ToString(),
+            currentData("ControlLength5").ToString(),
+            currentData("ControlLength6").ToString()
+        }
+        For i As Integer = 0 To ControlLength.Length - 1
+            If ControlLength(i) = "" OR ControlLength(i) = "0" Then
+                ControlLength(i) = "Standard"
+            End IF
+        Next
+
+        Dim Line As String() = {
+            currentData("Line1").ToString(),
+            currentData("Line2").ToString(),
+            currentData("Line3").ToString(),
+            currentData("Line4").ToString(),
+            currentData("Line5").ToString(),
+            currentData("Line6").ToString()
+        }
+        For i As Integer = 0 To Line.Length - 1
+           Line(i) = Line(i)
+        Next
+
+        Dim FindControlLength1 As String = If(String.IsNullOrEmpty(Line(0)), "", ControlLength(0))
+        Dim FindControlLength2 As String = If(String.IsNullOrEmpty(Line(1)), "", ControlLength(1))
+        Dim FindControlLength3 As String = If(String.IsNullOrEmpty(Line(2)), "", ControlLength(2))
+        Dim FindControlLength4 As String = If(String.IsNullOrEmpty(Line(3)), "", ControlLength(3))
+        Dim FindControlLength5 As String = If(String.IsNullOrEmpty(Line(4)), "", ControlLength(4))
+        Dim FindControlLength6 As String = If(String.IsNullOrEmpty(Line(5)), "", ControlLength(5))
+
+        Dim initUseBottom As String() = {
             currentData("BottomHoldDown1").ToString(),
             currentData("BottomHoldDown2").ToString(),
             currentData("BottomHoldDown3").ToString(),
@@ -19225,12 +19290,12 @@ Partial Class Methods_Order_DetailMethod
             '#
             result+= trDetStart
                 result+= tdTitleStart & "Cord Length" & tdDetEnd
-                result+= tdDetStart & currentData("ControlLength1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ControlLength2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ControlLength3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ControlLength4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ControlLength5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("ControlLength6").ToString() & tdDetEnd
+                result+= tdDetStart & FindControlLength1 & tdDetEnd
+                result+= tdDetStart & FindControlLength2 & tdDetEnd
+                result+= tdDetStart & FindControlLength3 & tdDetEnd
+                result+= tdDetStart & FindControlLength4 & tdDetEnd
+                result+= tdDetStart & FindControlLength5 & tdDetEnd
+                result+= tdDetRight & FindControlLength6 & tdDetEnd
             result+= trDetEnd
 
            '#BottomHoldDown
@@ -19661,27 +19726,28 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & currentData("PelmetReturnSize26").ToString() & tdDetEnd
             result+= trDetEnd
 
-            '#BottomHoldDown
+            '#BracketColour
             result+= trDetStart
                 result+= tdTitleStart & fs12Start & "Hold Down Brckts" & fsEnd & tdDetEnd
-                result+= tdDetStart & currentData("BottomHoldDown1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BottomHoldDown2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BottomHoldDown3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BottomHoldDown4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("BottomHoldDown5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("BottomHoldDown6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("BracketColour6").ToString() & tdDetEnd
             result+= trDetEnd
 
-            '#BottomHoldDown
+            '#DoorCutOut
             result+= trDetStart
                 result+= tdTitleStart & "2on 1 Headrail" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetRight & "" & tdDetEnd
+                result+= tdDetStart & currentData("DoorCutOut1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("DoorCutOut2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("DoorCutOut3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("DoorCutOut4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("DoorCutOut5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("DoorCutOut6").ToString() & tdDetEnd
             result+= trDetEnd
+
 
             '#Cutouts
             result+= trDetStart

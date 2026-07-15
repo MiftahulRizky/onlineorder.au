@@ -44,7 +44,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindControlLift(),
         bindControlTilt(),
         bindBracket(blindname),
-        bindBottom(blindname),
+        bindBottomHoldDown(blindname),
+        bindHoldDownBracket(blindname),
         bindPelmetType(blindname),
         bindPelmetSize(),
       ]);
@@ -322,25 +323,32 @@ const bindBracket = (blindname) => {
   generateOption("bracket", list, 1);
 };
 
-const bindBottom = (blindname) => {
+const bindBottomHoldDown = (blindname) => {
   if (!blindname) return;
   let list = [];
-  if (
-    ["25mm Aluminium"].includes(blindname) ||
-    blindname.includes("Mockwood") ||
-    blindname.includes("Wooden")
-  ) {
-    list.push("N/A", "No", "Yes");
-  }
 
-  if (["50mm Aluminium"].includes(blindname)) {
-    list.push("N/A", "Silver", "Gold");
+  if (["50mm Aluminium", "25mm Aluminium"].includes(blindname)) {
+    list.push("Silver", "Gold");
   }
 
   if (blindname.includes("Timberstyle")) {
     list.push("Silver", "Gold");
   }
   generateOption("bottom", list);
+};
+
+const bindHoldDownBracket = (blindname) => {
+  if (!blindname) return;
+  let list = [];
+  if (
+    blindname.includes("Mockwood") ||
+    blindname.includes("Wooden") ||
+    blindname.includes("Aluminium")
+  ) {
+    list.push("No", "Yes");
+  }
+
+  generateOption("holdbracket", list);
 };
 
 const bindPelmetType = (blindname, mounting) => {
@@ -426,7 +434,8 @@ const bindItemOrders = async (itemid) => {
         bindControlLift(),
         bindControlTilt(),
         bindBracket(item.BlindName),
-        bindBottom(item.BlindName),
+        bindBottomHoldDown(item.BlindName),
+        bindHoldDownBracket(item.BlindName),
         bindPelmetType(item.BlindName, item.Mounting),
         bindPelmetSize(),
       ]);
@@ -456,6 +465,7 @@ const handlerElementVisibility = async (
     const divControlMock = document.getElementById("divControlMock");
     const divBracket = document.getElementById("divBracket");
     const divBottom = document.getElementById("divBottom");
+    const divHoldBracket = document.getElementById("divHoldBracket");
     const div2on1Headreal = document.getElementById("div2on1Headreal");
     const divPelmetDetail = document.getElementById("divPelmetDetail");
     const divPelmetSize = document.getElementById("divPelmetSize");
@@ -471,6 +481,7 @@ const handlerElementVisibility = async (
     divControlMock.classList.add("d-none");
     divBracket.classList.add("d-none");
     divBottom.classList.add("d-none");
+    divHoldBracket.classList.add("d-none");
     div2on1Headreal.classList.add("d-none");
     divPelmetDetail.classList.add("d-none");
     divPelmetSize.classList.add("d-none");
@@ -498,11 +509,13 @@ const handlerElementVisibility = async (
       divControl.classList.remove("d-none");
       divBracket.classList.remove("d-none");
       divBottom.classList.remove("d-none");
+      divHoldBracket.classList.remove("d-none");
+      div2on1Headreal.classList.remove("d-none");
     }
 
     if (["50mm Mockwood", "63mm Mockwood"].includes(blindname)) {
       divControlMock.classList.remove("d-none");
-      divBottom.classList.remove("d-none");
+      divHoldBracket.classList.remove("d-none");
       div2on1Headreal.classList.remove("d-none");
       divPelmetDetail.classList.remove("d-none");
     }
@@ -517,7 +530,7 @@ const handlerElementVisibility = async (
 
     if (["50mm Wooden", "63mm Wooden"].includes(blindname)) {
       divControlMock.classList.remove("d-none");
-      divBottom.classList.remove("d-none");
+      divHoldBracket.classList.remove("d-none");
       div2on1Headreal.classList.remove("d-none");
       divPelmetDetail.classList.remove("d-none");
     }
@@ -577,6 +590,7 @@ const handlerSubmit = async (button) => {
       "controltilt",
       "bracket",
       "bottom",
+      "holdbracket",
       "twoheadrail",
       "pelmettype",
       "pelmetsize",
@@ -667,6 +681,7 @@ const handlerSetElementValues = (itemData) => {
     controltilt: "ControlPosition",
     bracket: "BracketOption",
     bottom: "BottomHoldDown",
+    holdbracket: "BracketColour",
     twoheadrail: "DoorCutOut",
     pelmettype: "PelmetType",
     pelmetsize: "PelmetSize",
