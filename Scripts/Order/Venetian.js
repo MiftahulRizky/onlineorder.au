@@ -471,7 +471,8 @@ const handlerElementVisibility = async (
     const divPelmetSize = document.getElementById("divPelmetSize");
     const divReturnLength = document.getElementById("divReturnLength");
     const divReturnLeft = document.getElementById("divReturnLeft");
-    const divReturnRight = document.getElementById("divReturnRight");
+    const divMarkUp = document.getElementById("divMarkUp");
+    const btnSubmit = document.getElementById("btnSubmit");
     // return;
     lblItemId.classList.add("d-none");
     divControlType.classList.add("d-none");
@@ -730,6 +731,13 @@ const handlerSetElementValues = (itemData) => {
 
     if (el.value === "0") el.value = "";
   });
+
+  const maxLength = 1000;
+  const notesLength = (itemData["Notes"] || "").length;
+  const notesCountEl = document.getElementById("notescount");
+  if (notesCountEl) {
+    notesCountEl.textContent = `${notesLength}/${maxLength}`;
+  }
 };
 
 // ----------------------------------------------|| Other Functions ||---------------------------------------
