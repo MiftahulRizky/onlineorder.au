@@ -2293,7 +2293,7 @@ Partial Class Methods_Order_DetailMethod
 
             
 
-            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_headers WHERE Id='{0}' AND DesignName NOT IN ('Surcharge', 'Additional') ", headerid))
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_headers WHERE Id='{0}'", headerid))
             If HeaderData.Tables(0).Rows.Count < 1 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Order Header not found."}}
             End If
@@ -2317,7 +2317,7 @@ Partial Class Methods_Order_DetailMethod
 
             Dim fullPath As String = Path.Combine(dirPath, FileName)
 
-            Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE HeaderId='{0}' And Active='1' ORDER BY Id ASC", headerid))
+            Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE HeaderId='{0}' And Active='1' AND DesignName NOT IN ('Surcharge', 'Additional')  ORDER BY Id ASC", headerid))
             If DetailData.Tables(0).Rows.Count < 1 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Please add item first."}}
             End If
