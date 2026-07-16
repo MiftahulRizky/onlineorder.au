@@ -11606,7 +11606,7 @@ Partial Class Methods_Order_DetailMethod
         '     result+= trDetEnd
 
         '     '#Line Blank
-            result+= BlankLineEachRow(17)
+            result+= BlankLineEachRow(10)
 
         result+= tableDetEnd
 

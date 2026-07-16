@@ -379,7 +379,7 @@ Partial Class Methods_Order_CelloraMethod
             End If
 
 
-             If blindName = "Potrait" Then
+            If blindName = "Potrait" Then
                 If InStr(controlsystem, "Motorised") = 0 Then
                     data.motortype = ""
                     data.motorextra = ""

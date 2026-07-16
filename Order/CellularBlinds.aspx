@@ -92,12 +92,7 @@
                                     <div class="mb-3 row">
                                         <label for="mounting" class="col-lg-3 text-uppercase fw-bold">Mounting</label>
                                         <div class="col-lg-4">
-                                            <select name="mounting" id="mounting" class="form-control ">
-                                                <option value=""></option>
-                                                <option value="Reveal Fit">REVEAL FIT</option>
-                                                <option value="Face Fit">FACE FIT</option>
-                                                <option value="Make Size">MAKE SIZE</option>
-                                            </select>
+                                            <select name="mounting" id="mounting" class="form-control "></select>
                                         </div>
                                     </div>
 
@@ -158,12 +153,7 @@
                                     <div class="mb-3 row">
                                         <label for="controlposition" class="col-lg-3 text-uppercase fw-bold">control side</label>
                                         <div class="col-lg-4">
-                                            <select name="controlposition" id="controlposition" class="form-control ">
-                                                <option value=""></option>
-                                                <option value="L">L</option>
-                                                <option value="R">R</option>
-                                                <option value="LR">LR</option>
-                                            </select>
+                                            <select name="controlposition" id="controlposition" class="form-control "></select>
                                         </div>
                                     </div>
 
@@ -195,23 +185,14 @@
                                     <div class="mb-3 row">
                                         <label for="holddown" class="col-lg-3 text-uppercase fw-bold">Hold Down Bracket</label>
                                         <div class="col-lg-4">
-                                            <select name="holddown" id="holddown" class="form-control ">
-                                                <option value="No">NO</option>
-                                                <option value="Yes">YES</option>
-                                            </select>
+                                            <select name="holddown" id="holddown" class="form-control "></select>
                                         </div>
                                     </div>
 
                                     <div class="mb-3 row">
                                         <label for="cutout" class="col-lg-3 text-uppercase fw-bold">cut out</label>
                                         <div class="col-lg-4">
-                                            <select name="cutout" id="cutout" class="form-control ">
-                                                <option value=""></option>
-                                                <option value="1">1</option>
-                                                <option value="2">2</option>
-                                                <option value="3">3</option>
-                                                <option value="4">4</option>
-                                            </select>
+                                            <select name="cutout" id="cutout" class="form-control "></select>
                                         </div>
                                     </div>
 

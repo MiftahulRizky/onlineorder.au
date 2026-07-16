@@ -234,6 +234,16 @@ Partial Class Methods_Order_SupplyOnlyMethod
                 End If
             End If
 
+            If Not String.IsNullOrEmpty(data.notes) Then
+                If InStr(data.notes, "&") > 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must not contain [&] character !",.field = "notes"}}
+                End If
+
+                If data.notes.Trim().Length > 1000 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must be less than 1000 characters !",.field = "notes"}}
+                End If
+            End If
+
             Dim markup As Integer
             If Not String.IsNullOrEmpty(data.markup) Then
                 If Not Integer.TryParse(data.markup, markup) OrElse markup < 0 Then
