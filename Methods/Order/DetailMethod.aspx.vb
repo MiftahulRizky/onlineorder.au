@@ -259,15 +259,26 @@ Partial Class Methods_Order_DetailMethod
         Public Property Drop As Integer
         Public Property Layout As String
         Public Property NumOfPanel As Integer
+        Public Property DoorCutOut As String
         Public Property ControlPosition As String
         Public Property ChainLength As Integer
         Public Property MaterialChain As String
         Public Property ChainColour As String
         Public Property TrackType As String
         Public Property TrackColour As String
-        Public Property CordLength As String
+        Public Property NumOfWand As Integer
+        Public Property WandPosition As String
+        Public Property WandColour As String
+        Public Property WandLength As Integer
+        Public Property CordColour As String
+        Public Property CordLength As Integer
+        Public Property AcornPlasticColour As String
+        Public Property Batten As String
         Public Property BattenColour As String
         Public Property BracketOption As String
+        Public Property BracketColour As String
+        Public Property Fitting As String
+        Public Property Cleat As String
         Public Property BottomHoldDown As String
         Public Property PelmetWidth As Integer
         Public Property CutOut_LeftTop As Integer
@@ -1394,15 +1405,26 @@ Partial Class Methods_Order_DetailMethod
                         .Drop = If(IsDBNull(dr("Drop")), 0, CInt(dr("Drop"))),
                         .Layout = dr("Layout").ToString(),
                         .NumOfPanel = If(IsDBNull(dr("NumOfPanel")), 0, CInt(dr("NumOfPanel"))),
+                        .DoorCutOut = dr("DoorCutOut").ToString(),
                         .ControlPosition = dr("ControlPosition").ToString(),
                         .ChainLength = If(IsDBNull(dr("ChainLength")), 0, CInt(dr("ChainLength"))),
                         .MaterialChain = dr("MaterialChain").ToString(),
                         .ChainColour = dr("ChainColour").ToString(),
                         .TrackType = dr("TrackType").ToString(),
                         .TrackColour = dr("TrackColour").ToString(),
-                        .CordLength = dr("CordLength").ToString(),
+                        .NumOfWand = If(IsDBNull(dr("NumOfWand")), 0, CInt(dr("NumOfWand"))),
+                        .WandPosition = dr("WandPosition").ToString(),
+                        .WandColour = dr("WandColour").ToString(),
+                        .WandLength = If(IsDBNull(dr("WandLength")), 0, CInt(dr("WandLength"))),
+                        .CordColour = dr("CordColour").ToString(),
+                        .CordLength = If(IsDBNull(dr("CordLength")), 0, CInt(dr("CordLength"))),
+                        .AcornPlasticColour = dr("AcornPlasticColour").ToString(),
+                        .Batten = dr("Batten").ToString(),
                         .BattenColour = dr("BattenColour").ToString(),
                         .BracketOption = dr("BracketOption").ToString(),
+                        .BracketColour = dr("BracketColour").ToString(),
+                        .Fitting = dr("Fitting").ToString(),
+                        .Cleat = dr("Cleat").ToString(),
                         .BottomHoldDown = dr("BottomHoldDown").ToString(),
                         .PelmetWidth = If(IsDBNull(dr("PelmetWidth")), 0, CInt(dr("PelmetWidth"))),
                         .CutOut_LeftTop = If(IsDBNull(dr("CutOut_LeftTop")), 0, CInt(dr("CutOut_LeftTop"))),

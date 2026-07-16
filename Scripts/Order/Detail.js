@@ -1468,7 +1468,8 @@ const handlerCreatePDFOrder = async (headerid, action, msgloading) => {
         "Content-Type": "application/json; charset=utf-8",
       },
       body: JSON.stringify({
-        action: action,
+        headerid,
+        action,
       }),
     });
 
