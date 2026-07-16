@@ -167,7 +167,6 @@ Partial Class Methods_ReportProductMethod
             Dim list As New List(Of Dictionary(Of String, Object))()
 
             If data.findby = "product" Then
-
                 Dim finedValue As String = "NULL"
                 If Not String.IsNullOrEmpty(data.fined) AndAlso data.fined <> "all" Then
                     finedValue = String.Format("'{0}'", data.fined)
@@ -185,13 +184,12 @@ Partial Class Methods_ReportProductMethod
                     Next
                     list.Add(dict)
                 Next
-
             End If
 
             If data.findby = "customer" Then
                 Dim dt As New DataTable()
                 Using conn As New SqlConnection(myConn)
-                    Using cmd As New SqlCommand("FindReportByCustomers", conn)
+                    Using cmd As New SqlCommand("FindReportPivotByCustomer", conn)
                         cmd.CommandType = CommandType.StoredProcedure
 
                         cmd.Parameters.AddWithValue("@fromdate", parsedFromDate)

@@ -233,7 +233,7 @@ const handlerFindReport = async (button) => {
       const findby = formData.findby;
       // masukan ke
       if (findby == "customer") {
-        renderTable(dataBagiTabel);
+        renderCustomerTable(dataBagiTabel);
       }
       if (findby == "product") {
         renderProductTable(dataBagiTabel);
@@ -259,12 +259,12 @@ const handlerFindReport = async (button) => {
   }
 };
 // --------------------------------------------||Other Function||-----------------------------------------
-const renderTable = (data) => {
+const renderCustomerTable = (data) => {
   const container = document.getElementById("cardResult");
   container.innerHTML = "";
 
   if (!data.length) {
-    container.innerHTML = "<p>No data found</p>";
+    container.innerHTML = "<p class='text-center'>Oops! No data found</p>";
     return;
   }
 
@@ -272,13 +272,24 @@ const renderTable = (data) => {
   const columns = Object.keys(data[0]);
 
   let html = `<div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover">
+                <table class="table table-bordered table-striped table-hover" width="100%">
                   <thead>
                     <tr>`;
 
   // HEADER
   columns.forEach((col) => {
-    html += `<th>${col}</th>`;
+    let width = "5%";
+    let findCol = col;
+    switch (col) {
+      case "No":
+        width = "5%";
+        break;
+      case "CustomerName":
+        width = "85%";
+        findCol = "Customer Name";
+        break;
+    }
+    html += `<th width="${width}">${findCol}</th>`;
   });
 
   html += `</tr></thead><tbody>`;
@@ -302,7 +313,7 @@ const renderProductTable = (data) => {
   container.innerHTML = "";
 
   if (!data.length) {
-    container.innerHTML = "<p>No data found</p>";
+    container.innerHTML = "<p class='text-center'>Oops! No data found</p>";
     return;
   }
 
@@ -328,13 +339,13 @@ const renderProductTable = (data) => {
       </h4>
 
       <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
+        <table class="table table-bordered table-striped table-hover" width="100%">
 
           <thead>
             <tr>
-              <th>No</th>
-              <th>Product</th>
-              <th>Qty</th>
+              <th width="5%">No</th>
+              <th width="85%">Product</th>
+              <th width="10%">Qty</th>
             </tr>
           </thead>
 
@@ -366,24 +377,4 @@ const reportProductPageLoaded = async () => {
   btnGeneratePDF.classList.add("d-none");
 
   await loaderFadeOut();
-};
-
-const stylingColumnSearchAndPaging = (params) => {
-  const input = $(params + "_filter input");
-  input
-    .addClass("form-control form-control-sm")
-    .attr("placeholder", "🔍 Type here to search...")
-    .css({
-      width: "250px",
-      height: "40px",
-      fontSize: "15px",
-      display: "inline-block",
-    });
-
-  const lengthSelect = $(params + "_length select");
-  lengthSelect.addClass("form-select form-select-sm").css({
-    width: "65px",
-    fontSize: "15px",
-    height: "40px",
-  });
 };
