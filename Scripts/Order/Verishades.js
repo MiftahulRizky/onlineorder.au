@@ -769,6 +769,13 @@ const handlerSetElementValues = (itemData) => {
       rawValue: itemData[dataKey],
     });
   });
+
+  const maxLength = 1000;
+  const notesLength = (itemData["Notes"] || "").length;
+  const notesCountEl = document.getElementById("notescount");
+  if (notesCountEl) {
+    notesCountEl.textContent = `${notesLength}/${maxLength}`;
+  }
 };
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const verishadesPageLoaded = async () => {

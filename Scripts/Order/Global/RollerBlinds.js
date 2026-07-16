@@ -996,6 +996,13 @@ const handlerSetElementValues = (itemData) => {
     // jika nilainya "0" → kosong
     if (el.value === "0") el.value = "";
   });
+
+  const maxLength = 1000;
+  const notesLength = (itemData["Notes"] || "").length;
+  const notesCountEl = document.getElementById("notescount");
+  if (notesCountEl) {
+    notesCountEl.textContent = `${notesLength}/${maxLength}`;
+  }
 };
 // ------------------------------------------------------|| Binding Functions ||--------------------------------------
 const bindFormAction = (itemaction, id) => {

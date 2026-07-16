@@ -1678,6 +1678,13 @@ const handlerSetElementValues = (itemData) => {
       containerId: field.containerId,
     });
   });
+
+  const maxLength = 1000;
+  const notesLength = (itemData["Notes"] || "").length;
+  const notesCountEl = document.getElementById("notescount");
+  if (notesCountEl) {
+    notesCountEl.textContent = `${notesLength}/${maxLength}`;
+  }
 };
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const doorPageLoaded = async () => {
