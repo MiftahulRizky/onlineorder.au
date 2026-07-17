@@ -219,7 +219,7 @@ const bindControlPosition = () => {
 };
 
 const bindMaterialChain = () => {
-  generateOption("materialchain", ["Chrome", "Plastic", "Stailess Steel"]);
+  generateOption("materialchain", ["Chrome", "Plastic", "Stainless Steel"]);
 };
 
 const bindChainColour = () => {
@@ -228,7 +228,7 @@ const bindChainColour = () => {
     "Birch White",
     "Black",
     "Grey",
-    "Stailess Steel",
+    "Stainless Steel",
     "White",
   ]);
 };
@@ -256,7 +256,7 @@ const bindBattenColour = (blindname) => {
   if (blindname == "Sewless") {
     list = ["Aluminium-Ivory"];
   }
-  generateOption("battencolour", list);
+  generateOption("battencolour", list, 1);
 };
 
 const bindPlasticColour = () => {

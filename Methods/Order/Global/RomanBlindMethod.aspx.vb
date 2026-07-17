@@ -5,15 +5,17 @@ Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Guid
 Imports System.Collections.Generic
-
+Imports System.Linq
+Imports Newtonsoft.Json
 Partial Class Methods_Order_RomanBlindMethod
     Inherits System.Web.UI.Page
 
     Shared publicCfg As New PublicConfig()
     Shared orderCfg As New OrderConfig()
+    Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
-    '#-------------------------------|| INITIALIZE CLASS ||--------------------------#
-    Public Class ParamSaveData
+    Public Class ParamSubmit
+        '#Submit OrderHeader
         Public Property blindtype As String
         Public Property controltype As String
         Public Property qty As String
@@ -34,13 +36,27 @@ Partial Class Methods_Order_RomanBlindMethod
         Public Property battencolour As String
         Public Property notes As String
         Public Property markup As String
+        
+
+        '#aditional param
         Public Property headerid As String
         Public Property itemaction As String
         Public Property itemid As String
         Public Property designid As String
         Public Property loginid As String
+        Public Property rolename As String
     End Class
-    '#----------------------------|| DEFIND CLASS RESPONSE ||-----------------------#
+
+
+    Public Class ParamListData
+        Public Property field As String
+        Public Property designid As String
+        Public Property blindtype As String
+        Public Property controltype As String
+        Public Property fabrictype As String
+    End Class
+
+    '#--- Kelas Output WebMethod ---#
     Public Class ErrorDetail
         Public Property message As String
         Public Property field As String
@@ -56,152 +72,101 @@ Partial Class Methods_Order_RomanBlindMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function GetDesignName(ByVal designid As String) As Object
-        Dim designName As String = publicCfg.GetDesignName(designid)
-        Dim result As New Dictionary(Of String, String) From {
-            {"designName", designName}
-        }
-        Return result
-    End Function
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function GetHeaderData(ByVal headerid As String) As Object
-        Dim orderno As String = publicCfg.GetOrderNo(headerid)
-        Dim ordercust As String = publicCfg.GetOrderCust(headerid)
-        Dim result As New Dictionary(Of String, String) From {
-            {"orderNo", orderno},
-            {"orderCust", ordercust}
-        }
-        Return result
-    End Function
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindBlindType(ByVal designid As String) As Object
+    Public Shared Function GetItemData(ByVal query As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Blinds WHERE DesignId='" + designid + "' AND Active=1 ORDER BY Name ASC")
-            Dim list As New List(Of Dictionary(Of String, String))()
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-                For Each row As DataRow In datas.Tables(0).Rows
-                    Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("Id").ToString()},
-                        {"text", row("Name").ToString()}
-                    }
-                    list.Add(result)
-                Next
-            End If
-            Return list
+            Dim Item As String = publicCfg.GetItemData(query)
+            Return Item
         Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
-            Return New With {.error = ex.Message}
-        End Try
-    End Function
-
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindColourType(ByVal designid As String, ByVal blindid As String) As Object
-        Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT Id, ControlType FROM HardwareKits WHERE DesignId = '" + designid + "' AND BlindId='" + UCase(blindid).ToString() + "' AND Active=1 ORDER BY ControlType ASC")
-            Dim list As New List(Of Dictionary(Of String, String))()
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-                For Each row As DataRow In datas.Tables(0).Rows
-                    Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("Id").ToString()},
-                        {"text", row("ControlType").ToString()}
-                    }
-                    list.Add(result)
-                Next
-            End If
-            Return list
-        Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
-            Return New With {.error = ex.Message}
+            Return "ERROR: " & ex.Message ' biar kelihatan errornya
         End Try
     End Function
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindFabricType(ByVal designid As String, ByVal blindname As String, ByVal controlname As String) As Object
+    Public Shared Function BindListData(ByVal data As ParamListData) As Object
         Try
-            Dim des As String = ""
+            Dim query As String = ""
+            Dim resultList As New List(Of Dictionary(Of String, String))()
 
-            Select Case blindname
-                Case "Classic"
-                    If controlname = "Cord" Then
-                        des = "Cord Classic"
-                    End If
-                    If controlname = "Chain" Then
-                        des = "Chain Classic"
-                    End If
-                Case "Plantation"
-                    If controlname = "Chain" Then
-                        des = "Chain Plantation"
-                    End If
-                    If controlname = "Cord" Then
-                        des = "Cord Plantation"
-                    End If
-                Case "Sewless"
-                    If controlname = "Chain" Then
-                        des = "Chain Sewless"
-                    End If
-                    If controlname = "Cord" Then
-                        des = "Cord Sewless"
-                    End If
+            Select Case data.field.ToLower()
+                Case "blindtype"
+                    query = String.Format("SELECT Id, Name FROM Blinds WHERE DesignId='{0}' AND Active=1 ORDER BY Name ASC", data.designid)
+                    Return GetFormattedData(query, "Id", "Name")
+
+                Case "controltype"
+                    query = String.Format("SELECT Id, ControlType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND Active=1 ORDER BY ControlType ASC", data.designid, UCase(data.blindtype).ToString())
+                    Return GetFormattedData(query, "Id", "ControlType")
+
+                Case "fabrictype"
+                    Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id='{0}'", UCase(data.blindtype).ToString()))
+                    Dim ControlName As String = publicCfg.GetItemData(String.Format("SELECT ControlType FROM HardwareKits WHERE Id='{0}'", UCase(data.controltype).ToString()))
+                    Dim des As String = ""
+                    Select Case BlindName
+                        Case "Classic"
+                            If ControlName = "Cord" Then
+                                des = "Cord Classic"
+                            End If
+                            If ControlName = "Chain" Then
+                                des = "Chain Classic"
+                            End If
+                        Case "Plantation"
+                            If ControlName = "Chain" Then
+                                des = "Chain Plantation"
+                            End If
+                            If ControlName = "Cord" Then
+                                des = "Cord Plantation"
+                            End If
+                        Case "Sewless"
+                            If ControlName = "Chain" Then
+                                des = "Chain Sewless"
+                            End If
+                            If ControlName = "Cord" Then
+                                des = "Cord Sewless"
+                            End If
+                    End Select
+                    query = String.Format("SELECT Type FROM Fabrics WHERE DesignId='{0}' AND Description LIKE '%{1}%'AND Active='1' GROUP BY Type ORDER BY Type ASC", data.designid, des)
+                    Return GetFormattedData(query, "Type", "Type")
+
+                Case "fabriccolour"
+                    query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId='{0}' AND Active='1' AND Type='{1}' ORDER BY Name ASC", data.designid, data.fabrictype)
+                    Return GetFormattedData(query, "Id", "Colour")
+
+
+                Case Else
+                    Return New With {.error = "Invalid field"}
             End Select
 
-            
-            ' Jalankan query
-            Dim datas As DataSet = publicCfg.GetListData("SELECT Type FROM Fabrics WHERE DesignId='"+designId+"' AND Description LIKE '%"+des+"%'AND Active='1' GROUP BY Type ORDER BY Type ASC")
-
-            Dim list As New List(Of Dictionary(Of String, String))()
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-                For Each row As DataRow In datas.Tables(0).Rows
-                    Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("Type").ToString()},
-                        {"text", row("Type").ToString()}
-                    }
-                    list.Add(result)
-                Next
-            End If
-            Return list
         Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
             Return New With {.error = ex.Message}
         End Try
     End Function
 
+    Private Shared Function GetFormattedData(query As String, valueField As String, textField As String) As Object
+        Dim list As New List(Of Dictionary(Of String, String))()
 
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindFabricColour(ByVal designid As String, ByVal fabrictype As String) As Object
-        Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT Id, Colour FROM Fabrics WHERE DesignId='" + designid + "' AND Active='1' AND Type='" + fabrictype + "' ORDER BY Name ASC")
-            Dim list As New List(Of Dictionary(Of String, String))()
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-                For Each row As DataRow In datas.Tables(0).Rows
-                    Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("Id").ToString()},
-                        {"text", row("Colour").ToString()}
-                    }
-                    list.Add(result)
-                Next
-            End If
-            Return list
-        Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
-            Return New With {.error = ex.Message}
-        End Try
+        Dim datas As DataSet = publicCfg.GetListData(query)
+
+        If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
+            For Each row As DataRow In datas.Tables(0).Rows
+                list.Add(New Dictionary(Of String, String) From {
+                    {"value", row(valueField).ToString()},
+                    {"text", row(textField).ToString()}
+                })
+            Next
+        End If
+
+        Return list
     End Function
 
+    Private Shared Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
+    End Function
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindItemOrder(ByVal itemid As String) As Object
         Try
-            ' Gunakan parameterized query (idealnya pakai SqlParameter, ini simulasi fungsi GetListData Anda)
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE Id = '" + itemid + "'")
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE Id = '{0}'", itemid))
 
             Dim data As DataSet = DirectCast(datas, DataSet)
 
@@ -227,361 +192,188 @@ Partial Class Methods_Order_RomanBlindMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function SaveData(ByVal data As ParamSaveData) As Object
+    Public Shared Function Submit(ByVal data As ParamSubmit) As Object
         Try
-            '#-------------------------|| SET VALIDATE RULES ||-----------------------#
-            '#-------------------------|| blindtype ||-----------------------#
-             If String.IsNullOrEmpty(data.blindtype) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "type is required !",
-                        .field = "blindtype"
-                    }
-                }
-            End If
+            Dim msg As String = "200"
+            Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.blindtype))
+            Dim ControlName As String = publicCfg.GetItemData(String.Format("SELECT ControlType FROM HardwareKits WHERE Id = '{0}'", data.controltype))
 
-            '#-----------------------|| controltype ||-----------------------#
-            If String.IsNullOrEmpty(data.controltype) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "control type is required !",
-                        .field = "controltype"
-                    }
-                }
-            End If
-
-            Dim blindName As String = publicCfg.GetItemData("SELECT Name FROM Blinds WHERE Id = '" + data.blindtype + "'")
-            Dim controlname As String = publicCfg.GetItemData("SELECT ControlType FROM HardwareKits WHERE Id = '" + data.controltype + "'")
-
-            '#-----------------------|| qty ||-----------------------#
             Dim qty As Integer
             If String.IsNullOrEmpty(data.qty) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "qty is required !",
-                        .field = "qty"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "qty type is required !", .field = "qty"}}
             End If
             If Not Integer.TryParse(data.qty, qty) OrElse qty <= 0 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "qty must be a positive integer !",
-                        .field = "qty"
-                    }
-                }
-            End If
-            If qty > 5 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "qty must be less than or equal to 5 !",
-                        .field = "qty"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "please check your qty !", .field = "qty"}}
             End If
 
-            '#-----------------------|| room ||-----------------------#
-            ' If String.IsNullOrEmpty(data.room) Then
-            '     Return New ErrorResponse With {
-            '         .error = New ErrorDetail With {
-            '             .message = "room to install is required !",
-            '             .field = "room"
-            '         }
-            '     }
-            ' End If
+            If Not String.IsNullOrEmpty(data.room) Then
+                If InStr(data.room, "&") > 0 Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "character [&] is not allowed !", .field = "room"}}
+                End If
+            End If
 
-            '#-----------------------|| mounting ||-----------------------#
             If String.IsNullOrEmpty(data.mounting) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "mounting is required !",
-                        .field = "mounting"
-                    }
-                }
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting type is required !", .field = "mounting"}}
+            End If
+
+            Dim width As Integer
+            If String.IsNullOrEmpty(data.width) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width is required !",.field = "width"}}
+            End If
+            If Not Integer.TryParse(data.width, width) OrElse width <= 0 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be a positive integer !",.field = "width"}}
+            End If
+            ' If width < 150 Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 150 !",.field = "width"}}
+            ' End If
+            If width > 3000 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 3000 !",.field = "width"}}
             End If
 
             
-
-            '#-----------------------|| width ||-----------------------#
-            Dim width As Integer
-            If String.IsNullOrEmpty(data.width) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "width is required !",
-                        .field = "width"
-                    }
-                }
-            End If
-            If Not Integer.TryParse(data.width, width) OrElse width <= 0 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "width must be a positive integer !",
-                        .field = "width"
-                    }
-                }
-            End If
-            If width > 3000 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "width must be less than or equal to 3000 !",
-                        .field = "width"
-                    }
-                }
-            End If
-            '#-----------------------|| drop ||-----------------------#
             Dim drop As Integer
             If String.IsNullOrEmpty(data.drop) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "drop is required !",
-                        .field = "drop"
-                    }
-                }
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop is required !",.field = "drop"}}
             End If
             If Not Integer.TryParse(data.drop, drop) OrElse drop <= 0 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "drop must be a positive integer !",
-                        .field = "drop"
-                    }
-                }
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be a positive integer !",.field = "drop"}}
             End If
-
+            ' If drop < 150 Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be greater than or equal to 150 !",.field = "drop"}}
+            ' End If
             If drop > 3200 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "drop must be less than or equal to ` !",
-                        .field = "drop"
-                    }
-                }
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3200 !",.field = "drop"}}
             End If
 
-            '#-----------------------|| fabrictype ||-----------------------#
             If String.IsNullOrEmpty(data.fabrictype) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "fabric type is required !",
-                        .field = "fabrictype"
-                    }
-                }
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
             End If
 
-            '#-----------------------|| fabriccolour ||-----------------------#
-            If String.IsNullOrEmpty(data.fabriccolour) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "fabric colour is required !",
-                        .field = "fabriccolour"
-                    }
-                }
+            If Not String.IsNullOrEmpty(data.fabrictype) Then
+                If String.IsNullOrEmpty(data.fabriccolour) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
+                End If
             End If
 
-            '#-----------------------|| controlposition ||-----------------------#
             If String.IsNullOrEmpty(data.controlposition) Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {
-                        .message = "control position is required !",
-                        .field = "controlposition"
-                    }
-                }
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
             End If
 
-            '#-----------------------|| chain control ||-----------------------#
-            If controlname = "Chain" Then
-                '#-----------------------|| materialchain ||-----------------------#
+            Dim chainlength As Integer
+            If ControlName = "Chain" Then
                 If String.IsNullOrEmpty(data.materialchain) Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = "material chain is required !",
-                            .field = "materialchain"
-                        }
-                    }
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "material chain is required !",.field = "materialchain"}}
                 End If
 
-                '#-----------------------|| chaincolour ||-----------------------#
                 If String.IsNullOrEmpty(data.chaincolour) Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = "chain colour is required !",
-                            .field = "chaincolour"
-                        }
-                    }
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
                 End If
 
-                '#-----------------------|| chainlength ||-----------------------#
-                ' If String.IsNullOrEmpty(data.chainlength) Then
-                '     Return New ErrorResponse With {
-                '         .error = New ErrorDetail With {
-                '             .message = "chain length is required !",
-                '             .field = "chainlength"
-                '         }
-                '     }
-                ' End If
-
-                '#-----------------------|| battencolour ||-----------------------#
-                If String.IsNullOrEmpty(data.battencolour) Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = "batten colour is required !",
-                            .field = "battencolour"
-                        }
-                    }
-                End If
-            End If'#/chain control
-
-            '#-----------------------|| cordlock control ||-----------------------#
-            If controlname = "Cord" Then
-                '#-----------------------|| cordcolour ||-----------------------#
-                If String.IsNullOrEmpty(data.cordcolour) Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = "cord colour is required !",
-                            .field = "cordcolour"
-                        }
-                    }
-                End If
-
-                '#-----------------------|| cordlength ||-----------------------#
-                If String.IsNullOrEmpty(data.cordlength) Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = "cord length is required !",
-                            .field = "cordlength"
-                        }
-                    }
-                End If
-
-                '#-----------------------|| battencolour ||-----------------------#
-                If Not blindName = "Classic" Then
-                    If String.IsNullOrEmpty(data.battencolour) Then
-                        Return New ErrorResponse With {
-                            .error = New ErrorDetail With {
-                                .message = "batten colour is required !",
-                                .field = "battencolour"
-                            }
-                        }
+                If Not String.IsNullOrEmpty(data.chainlength) Then
+                    If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
                     End If
                 End If
+            End If
 
-                '#-----------------------|| plasticcolour ||-----------------------#
-                If String.IsNullOrEmpty(data.plasticcolour) Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = "acorn plastic colour is required !",
-                            .field = "plasticcolour"
-                        }
-                    }
+            Dim cordlength As Integer
+            If ControlName = "Cord" Then
+                If String.IsNullOrEmpty(data.cordcolour) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cord colour is required !",.field = "cordcolour"}}
                 End If
 
-                '#-----------------------|| cleat ||-----------------------#
-                If String.IsNullOrEmpty(data.cleat) Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = "cleat is required !",
-                            .field = "cleat"
-                        }
-                    }
+                If String.IsNullOrEmpty(data.cordlength) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cord length is required !",.field = "cordlength"}}
                 End If
-            End If '#/cordlock control
 
-            '#--------------------------|| notes ||--------------------------#
-            If Not String.IsNullOrEmpty(data.notes) Then
-                If data.notes.Trim().Length > 1000 Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = "notes must be less than 1000 characters !",
-                            .field = "notes"
-                        }
-                    }
+                If Not Integer.TryParse(data.cordlength, cordlength) OrElse cordlength <= 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cord length must be a positive integer !",.field = "cordlength"}}
                 End If
             End If
 
-             '#--------------------------|| notes ||--------------------------#
+            If Not BlindName = "Classic" Then
+                If String.IsNullOrEmpty(data.battencolour) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "battencolour"}}
+                End If
+            End If
+
+            If ControlName = "Cord" Then
+                If String.IsNullOrEmpty(data.plasticcolour) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "plastic colour is required !",.field = "plasticcolour"}}
+                End If
+
+                If String.IsNullOrEmpty(data.cleat) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cleat is required !",.field = "cleat"}}
+                End If
+            End If
+
+            If Not String.IsNullOrEmpty(data.notes) Then
+                If InStr(data.notes, "&") > 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must not contain [&] character !",.field = "notes"}}
+                End If
+
+                If data.notes.Trim().Length > 1000 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must be less than 1000 characters !",.field = "notes"}}
+                End If
+            End If
+
             Dim markup As Integer
             If Not String.IsNullOrEmpty(data.markup) Then
                 If Not Integer.TryParse(data.markup, markup) OrElse markup < 0 Then
-                    Return New ErrorResponse With {
-                        .error = New ErrorDetail With {
-                            .message = "please check your markup !",
-                            .field = "markup"
-                        }
-                    }
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check your markup !",.field = "markup"}}
                 End If
             End If
 
-            '#------------------------------------------------|| Prepare Submit ||-------------------------------------------------#
-            '#-----------------------------------|| Set default values before submission ||----------------------------------------#
-            Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
+            If String.IsNullOrEmpty(data.markup) Then
+                data.markup = "0"
+            End If
 
-            Dim msg As String = "debug message"
-            Dim chainId As String
 
-            Dim chainColour As String = "(" & data.chaincolour & ")"
-            Dim chainLength As String = data.chainlength
-            If controlname = "Chain" Then
-
-                '#jika chain length kosong maka diisi dengan default
+            Dim ChainId As String
+            Dim chaincolour As String = String.Format("({0})", data.chaincolour)
+            If ControlName = "Chain" Then
                 If String.IsNullOrEmpty(data.chainlength) Then
-                    chainLength = "500"
-                    If data.drop > 700 Then : chainLength = "600" : End If
-                    If data.drop > 800 Then : chainLength = "800" : End If
-                    If data.drop > 1100 Then : chainLength = "1000" : End If
-                    If data.drop > 1300 Then : chainLength = "1200" : End If
-                    If data.drop > 1600 Then : chainLength = "1500" : End If
-                    If data.drop > 2000 Then : chainLength = "1800" : End If
-                    If data.drop > 2400 Then : chainLength = "2000" : End If
-                    If data.drop > 2700 Then : chainLength = "2200" : End If
+                    chainlength = "500"
+                    If data.drop > 700 Then : chainlength = 600 : End If
+                    If data.drop > 800 Then : chainlength = 800 : End If
+                    If data.drop > 1100 Then : chainlength = 1000 : End If
+                    If data.drop > 1300 Then : chainlength = 1200 : End If
+                    If data.drop > 1600 Then : chainlength = 1500 : End If
+                    If data.drop > 2000 Then : chainlength = 1800 : End If
+                    If data.drop > 2400 Then : chainlength = 2000 : End If
+                    If data.drop > 2700 Then : chainlength = 2200 : End If
                 End If
 
-                Dim chainName As String = chainLength & " " & "Chain + Joiner" & " " & chainColour
-                Dim FormulaChain As String = publicCfg.GetItemData("SELECT Id FROM Chains WHERE Name = '" + chainName + "'")
+                Dim ChainName As String = String.Format("{0} Chain + Joiner {1}", chainlength, chaincolour)
+                ChainId = publicCfg.GetItemData(String.Format("SELECT Id FROM Chains WHERE Name = '{0}'", ChainName))
 
-                IF Not FormulaChain = "" Then
-                    chainId = FormulaChain
+                If String.IsNullOrEmpty(ChainId) Then
+                    ChainName = String.Format("Custom Chain + Joiner {0}", chaincolour)
+                    ChainId = publicCfg.GetItemData(String.Format("SELECT Id FROM Chains WHERE Name = '{0}'", ChainName))
                 End If
 
-                If FormulaChain = "" Then
-                    chainName = "Custom Chain + Joiner " & chainColour
-                    chainId = publicCfg.GetItemData("SELECT Id FROM Chains WHERE Name = '" + chainName + "'")
-                End If
-
-                '# kosongkan opsi cord
                 data.cordcolour = "" : data.cordlength = "" : data.plasticcolour ="" : data.cleat = ""
-
-                '#debug
-                ' Return New ErrorResponse With {
-                '     .error = New ErrorDetail With {
-                '         .message = chainColour,
-                '         .field = "chaincolour"
-                '     }
-                ' }
             End If
 
-            If controlname = "Cord" Then
+            If ControlName = "Cord" Then
                 '# kosongkan opsi chain
-                chainId = "" : data.materialchain = "" : data.chaincolour = "" : data.chainlength = ""
-                If blindname = "Classic" Then : data.battencolour = "" : End If
+                ChainId = "" : data.materialchain = "" : data.chaincolour = "" : data.chainlength = "" : chainlength = 0
+                If BlindName = "Classic" Then : data.battencolour = "" : End If
             End If
 
-            Dim soeKitId As String = publicCfg.GetItemData("SELECT SoeId FROM HardwareKits WHERE Id = '" + data.controlType + "'")
-            Dim fabricData As DataSet = publicCfg.GetListData("SELECT * FROM Fabrics WHERE Id = '" + data.fabriccolour + "'")
-            
-            Dim fabricId As String = fabricData.Tables(0).Rows(0).Item("Id").ToString()
-            Dim fabricGroupName As String = fabricData.Tables(0).Rows(0).Item("Group").ToString()
+            Dim SoeId As String = publicCfg.GetItemData("SELECT SoeId FROM HardwareKits WHERE Id = '" + data.controlType + "'")
+            Dim FabricGroup As String = publicCfg.GetItemData(String.Format("SELECT [Group] FROM Fabrics WHERE Id = '{0}'", data.fabriccolour))
 
-            Dim priceGroupName As String = "Roman Blind - " & controlname & " " & blindname & " " & fabricGroupName
-            Dim priceGroupId As String = publicCfg.GetPriceGroupId(data.designId, priceGroupName)
-            If String.IsNullOrEmpty(priceGroupId) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "Cannot find price group id!", .field = "" }}
+            Dim PriceGroupName As String =  String.Format("Roman Blind - {0} {1} {2}", ControlName, BlindName, FabricGroup)
+            Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designId, PriceGroupName)
+            If String.IsNullOrEmpty(PriceGroupId) Then
+                Throw New Exception("Price group not found !")
             End If
 
-            Dim designName As String = publicCfg.GetDesignName(data.designId)
-            Dim exactName As String = designName & " - " & blindName
-            Dim exactId As String = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
+            Dim DesignName As String = publicCfg.GetDesignName(data.designId)
+            Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
+            Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
 
-            
-
-            '#-----------------------|| SUBMIT VALIDATE ||-----------------------#
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim itemId As String = publicCfg.CreateOrderItemId()
 
@@ -590,11 +382,11 @@ Partial Class Methods_Order_RomanBlindMethod
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.controltype), DBNull.Value, UCase(data.controltype).ToString()))
-                        myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
-                        myCmd.Parameters.AddWithValue("@ExactId", exactId)
+                        myCmd.Parameters.AddWithValue("@SoeKitId", SoeId)
+                        myCmd.Parameters.AddWithValue("@ExactId", ExactId)
                         myCmd.Parameters.AddWithValue("@FabricId", IF(String.IsNullOrEmpty(data.fabriccolour), DBNull.Value, UCase(data.fabriccolour).ToString()))
-                        myCmd.Parameters.AddWithValue("@ChainId", If(String.IsNullOrEmpty(chainId), DBNull.Value, UCase(chainId).ToString()))
-                        myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(priceGroupId), DBNull.Value, UCase(priceGroupId).ToString()))
+                        myCmd.Parameters.AddWithValue("@ChainId", If(String.IsNullOrEmpty(ChainId), DBNull.Value, UCase(ChainId).ToString()))
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(PriceGroupId), DBNull.Value, UCase(PriceGroupId).ToString()))
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
@@ -602,9 +394,9 @@ Partial Class Methods_Order_RomanBlindMethod
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@MaterialChain", data.materialchain)
-                        myCmd.Parameters.AddWithValue("@ChainLength", chainLength)
+                        myCmd.Parameters.AddWithValue("@ChainLength", chainlength)
                         myCmd.Parameters.AddWithValue("@CordColour", data.cordcolour)
-                        myCmd.Parameters.AddWithValue("@CordLength", data.cordlength)
+                        myCmd.Parameters.AddWithValue("@CordLength", cordlength)
                         myCmd.Parameters.AddWithValue("@BattenColour", data.battencolour)
                         myCmd.Parameters.AddWithValue("@AcornPlasticColour", data.plasticcolour)
                         myCmd.Parameters.AddWithValue("@Cleat", data.cleat)
@@ -624,9 +416,9 @@ Partial Class Methods_Order_RomanBlindMethod
                 Dim dataLog As Object() = {data.headerid, itemId, "Blinds", data.loginid, "Add Item Order"}
                 orderCfg.Log_Orders(dataLog)
 
-                msg = "Data has been saved successfully."
+                msg = "Item added successfully !"
+                
             End If
-
 
             If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
                 Dim itemId As String = data.itemid
@@ -636,11 +428,11 @@ Partial Class Methods_Order_RomanBlindMethod
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.controltype), DBNull.Value, UCase(data.controltype).ToString()))
-                        myCmd.Parameters.AddWithValue("@SoeKitId", soeKitId)
-                        myCmd.Parameters.AddWithValue("@ExactId", exactId)
+                        myCmd.Parameters.AddWithValue("@SoeKitId", SoeId)
+                        myCmd.Parameters.AddWithValue("@ExactId", ExactId)
                         myCmd.Parameters.AddWithValue("@FabricId", IF(String.IsNullOrEmpty(data.fabriccolour), DBNull.Value, UCase(data.fabriccolour).ToString()))
-                        myCmd.Parameters.AddWithValue("@ChainId", If(String.IsNullOrEmpty(chainId), DBNull.Value, UCase(chainId).ToString()))
-                        myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(priceGroupId), DBNull.Value, UCase(priceGroupId).ToString()))
+                        myCmd.Parameters.AddWithValue("@ChainId", If(String.IsNullOrEmpty(ChainId), DBNull.Value, UCase(ChainId).ToString()))
+                        myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(PriceGroupId), DBNull.Value, UCase(PriceGroupId).ToString()))
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
@@ -648,9 +440,9 @@ Partial Class Methods_Order_RomanBlindMethod
                         myCmd.Parameters.AddWithValue("@Drop", drop)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@MaterialChain", data.materialchain)
-                        myCmd.Parameters.AddWithValue("@ChainLength", chainLength)
+                        myCmd.Parameters.AddWithValue("@ChainLength", chainlength)
                         myCmd.Parameters.AddWithValue("@CordColour", data.cordcolour)
-                        myCmd.Parameters.AddWithValue("@CordLength", data.cordlength)
+                        myCmd.Parameters.AddWithValue("@CordLength", cordlength)
                         myCmd.Parameters.AddWithValue("@BattenColour", data.battencolour)
                         myCmd.Parameters.AddWithValue("@AcornPlasticColour", data.plasticcolour)
                         myCmd.Parameters.AddWithValue("@Cleat", data.cleat)
@@ -669,20 +461,17 @@ Partial Class Methods_Order_RomanBlindMethod
 
                 Dim dataLog As Object() = {data.headerid, itemId, "Blinds", data.loginid, "Update Item Order"}
                 orderCfg.Log_Orders(dataLog)
+                
 
-                msg = "Data has been updated successfully."
+                msg = "Item updated successfully !"
+
             End If
 
-
-            Return New SuccessResponse With { .success = msg }
+            Return New SuccessResponse With {.success = msg}
         Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
-            Return New ErrorResponse With {
-                .error = New ErrorDetail With {
-                    .message = ex.Message,
-                    .field = ""
-                }
-            }
+            Dim msg As String = ex.Message
+            If Not data.rolename = "Administrator" Then msg = "Please contact our IT team at support@onlineorder.au"
+            Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
         End Try
     End Function
 

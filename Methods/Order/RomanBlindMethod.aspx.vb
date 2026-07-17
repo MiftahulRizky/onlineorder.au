@@ -10,7 +10,7 @@ Imports Newtonsoft.Json
 Partial Class Methods_Order_RomanBlindMethod
     Inherits System.Web.UI.Page
 
-   Shared publicCfg As New PublicConfig()
+    Shared publicCfg As New PublicConfig()
     Shared orderCfg As New OrderConfig()
     Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
