@@ -4819,7 +4819,7 @@ Partial Class Methods_Order_DetailMethod
                         End If
                     End If
 
-                    If Not BlindNo = "Blind 1" Then
+                    If Not BlindNo = "Blind 1" AND InStr(bracketType, "Dep") > 0 Then
                         MotorStyle = ""
                         MotorRemote = ""
                         MotorCharger = ""
