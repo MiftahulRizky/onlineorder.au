@@ -13302,12 +13302,12 @@ Partial Class Methods_Order_DetailMethod
             If InStr(itt(i), "LOV") > 0 Then : itt(i) = "MLOV" : End If
         Next
 
-        Dim FindBracket1 As String = FindBracketType(ibt(0), ibc(0), ibe(0), itt(0))
-        Dim FindBracket2 As String = FindBracketType(ibt(1), ibc(1), ibe(1), itt(1))
-        Dim FindBracket3 As String = FindBracketType(ibt(2), ibc(2), ibe(2), itt(2))
-        Dim FindBracket4 As String = FindBracketType(ibt(3), ibc(3), ibe(3), itt(3))
-        Dim FindBracket5 As String = FindBracketType(ibt(4), ibc(4), ibe(4), itt(4))
-        Dim FindBracket6 As String = FindBracketType(ibt(5), ibc(5), ibe(5), itt(5))
+        Dim FindBracket1 As String = FindBracketMotor(ibt(0), ibc(0), ibe(0), itt(0))
+        Dim FindBracket2 As String = FindBracketMotor(ibt(1), ibc(1), ibe(1), itt(1))
+        Dim FindBracket3 As String = FindBracketMotor(ibt(2), ibc(2), ibe(2), itt(2))
+        Dim FindBracket4 As String = FindBracketMotor(ibt(3), ibc(3), ibe(3), itt(3))
+        Dim FindBracket5 As String = FindBracketMotor(ibt(4), ibc(4), ibe(4), itt(4))
+        Dim FindBracket6 As String = FindBracketMotor(ibt(5), ibc(5), ibe(5), itt(5))
 
         Dim Bracket1 As String = String.Format("{0} {1}", itt(0), FindBracket1)
         Dim Bracket2 As String = String.Format("{0} {1}", itt(1), FindBracket2)
@@ -13753,12 +13753,24 @@ Partial Class Methods_Order_DetailMethod
           itt(i) = itt(i)
         Next
 
-        Dim FindBracket1 As String = FindBracketStd(ibt(0), ibc(0), ibe(0), itt(0))
-        Dim FindBracket2 As String = FindBracketStd(ibt(1), ibc(1), ibe(1), itt(1))
-        Dim FindBracket3 As String = FindBracketStd(ibt(2), ibc(2), ibe(2), itt(2))
-        Dim FindBracket4 As String = FindBracketStd(ibt(3), ibc(3), ibe(3), itt(3))
-        Dim FindBracket5 As String = FindBracketStd(ibt(4), ibc(4), ibe(4), itt(4))
-        Dim FindBracket6 As String = FindBracketStd(ibt(5), ibc(5), ibe(5), itt(5))
+        Dim ibn As String() = {
+            currentData("BlindNo1").ToString(),
+            currentData("BlindNo2").ToString(),
+            currentData("BlindNo3").ToString(),
+            currentData("BlindNo4").ToString(),
+            currentData("BlindNo5").ToString(),
+            currentData("BlindNo6").ToString()
+        }
+        For i As Integer = 0 To ibn.Length - 1
+          ibn(i) = ibn(i)
+        Next
+
+        Dim FindBracket1 As String = FindBracketStd(ibt(0), ibc(0), ibe(0), itt(0), ibn(0))
+        Dim FindBracket2 As String = FindBracketStd(ibt(1), ibc(1), ibe(1), itt(1), ibn(1))
+        Dim FindBracket3 As String = FindBracketStd(ibt(2), ibc(2), ibe(2), itt(2), ibn(2))
+        Dim FindBracket4 As String = FindBracketStd(ibt(3), ibc(3), ibe(3), itt(3), ibn(3))
+        Dim FindBracket5 As String = FindBracketStd(ibt(4), ibc(4), ibe(4), itt(4), ibn(4))
+        Dim FindBracket6 As String = FindBracketStd(ibt(5), ibc(5), ibe(5), itt(5), ibn(5))
 
         Dim Bracket1 As String = FindBracket1
         Dim Bracket2 As String = FindBracket2
@@ -23551,7 +23563,7 @@ Partial Class Methods_Order_DetailMethod
         Return result
     End Function
 
-    Private Shared Function FindBracketType(brackettype As String, cover As String, ext As String, type As String) As String
+    Private Shared Function FindBracketMotor(brackettype As String, cover As String, ext As String, type As String) As String
         Try
             Dim result As String = ""
 
@@ -23580,7 +23592,7 @@ Partial Class Methods_Order_DetailMethod
         End Try
     End Function
 
-    Private Shared Function FindBracketStd(brackettype As String, cover As String, ext As String, type As String) As String
+    Private Shared Function FindBracketStd(brackettype As String, cover As String, ext As String, type As String, blindno As String) As String
         Try
             Dim result As String = ""
 
@@ -23596,14 +23608,23 @@ Partial Class Methods_Order_DetailMethod
                     If cover = "Yes" Then result = "L Cover"
                     If ext = "Yes" Then result = String.Format("Ext {0}", brackettype)
                     If cover = "Yes" And ext = "Yes" Then result = "Ext L Cover"
+                    If Not String.IsNullOrEmpty(blindno) AND Not blindno = "Blind 1" Then
+                        result = "Com"
+                    End If
                 End If
 
                 If brackettype = "Double" Then
                     If cover = "Yes" Then result = "D Cover"
+                    If Not String.IsNullOrEmpty(blindno) AND Not blindno = "Blind 1" Then
+                        result = "Com"
+                    End If
                 End IF
 
                 If InArray(brackettype, "DL 4B2C", "DL 4B4C") Then
                     If cover = "Yes" Then result = String.Format("{0} Cover", brackettype)
+                    If Not String.IsNullOrEmpty(blindno) AND Not blindno = "Blind 1" Then
+                        result = "Com"
+                    End If
                 End IF
             End IF
            
@@ -23621,15 +23642,24 @@ Partial Class Methods_Order_DetailMethod
                     If cover = "Yes" Then result = "G L Cover"
                     If ext = "Yes" Then result = String.Format("G Ext {0}", brackettype)
                     If cover = "Yes" And ext = "Yes" Then result = "G EX L Cover"
+                    If Not String.IsNullOrEmpty(blindno) AND Not blindno = "Blind 1" Then
+                        result = "Com"
+                    End If
                 End If
 
                 If brackettype = "Double" Then
                     result = "G Double"
                     If cover = "Yes" Then result = "G D Cover"
+                    If Not String.IsNullOrEmpty(blindno) AND Not blindno = "Blind 1" Then
+                        result = "Com"
+                    End If
                 End IF
 
                  If InArray(brackettype, "DL 4B2C", "DL 4B4C") Then
                     If cover = "Yes" Then result = String.Format("G {0} Cover", brackettype)
+                    If Not String.IsNullOrEmpty(blindno) AND Not blindno = "Blind 1" Then
+                        result = "Com"
+                    End If
                 End IF
             End If
 

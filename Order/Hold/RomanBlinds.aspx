@@ -76,7 +76,7 @@
                                 </div>
 
                                 <div class="mb-3 row">
-                                    <label for="room" class="col-lg-3 text-uppercase fw-bold">room to install</label>
+                                    <label for="room" class="col-lg-3 text-uppercase fw-bold">room / location</label>
                                     <div class="col-lg-5">
                                         <input " name="room" id="room" class="form-control "autocomplete="off">
                                     </div>

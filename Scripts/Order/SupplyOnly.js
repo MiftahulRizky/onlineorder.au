@@ -627,7 +627,7 @@ const bindSelect = async ({
   }
 };
 
-const generateOption = (elementId, list = []) => {
+const generateOption = (elementId, list = [], lengthDefaultOption = 0) => {
   const sel = document.getElementById(elementId);
   if (!sel) return;
   sel.innerHTML = ""; // reset
