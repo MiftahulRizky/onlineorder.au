@@ -256,9 +256,9 @@
         let LOGINID = '<%= Session("LoginId") %>';
         let ROLENAME = '<%= Session("RoleName") %>';
         let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
-        let URIMETHOD = "/Methods/Order/Global/RomanBlindMethod.aspx"
+        let URIMETHOD = "/Methods/Order/Global/Hold/RomanBlindMethod.aspx"
         
     </script>
-    <script src="/Scripts/Order/Global/RomanBlinds.js?<%= DateTime.Now.Ticks %>"></script>
+    <script src="/Scripts/Order/Global/Hold/RomanBlinds.js?<%= DateTime.Now.Ticks %>"></script>
 </asp:Content>
 

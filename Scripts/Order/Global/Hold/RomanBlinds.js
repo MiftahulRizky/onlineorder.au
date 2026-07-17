@@ -1,6 +1,8 @@
 $(document).ready(function () {
   if (ROLENAME === "Administrator") {
-    console.log("panelglides.js loaded successfully");
+    console.log(
+      "panelglidesssssssssssssssssssssssssssssss.js loaded successfully",
+    );
     console.log("ROLENAME: " + ROLENAME);
     console.log("ITEMACTION: " + ITEMACTION);
     console.log("ITEMID: " + ITEMID);
