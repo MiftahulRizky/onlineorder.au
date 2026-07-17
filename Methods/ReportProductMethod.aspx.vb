@@ -189,7 +189,7 @@ Partial Class Methods_ReportProductMethod
             If data.findby = "customer" Then
                 Dim dt As New DataTable()
                 Using conn As New SqlConnection(myConn)
-                    Using cmd As New SqlCommand("FindReportPivotByCustomer", conn)
+                    Using cmd As New SqlCommand("FindReportByCustomers", conn)
                         cmd.CommandType = CommandType.StoredProcedure
 
                         cmd.Parameters.AddWithValue("@fromdate", parsedFromDate)
