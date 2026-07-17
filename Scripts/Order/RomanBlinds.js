@@ -30,6 +30,16 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const controltype = e.target.value;
       await handlerElementVisibility(blindtype, controltype);
       await bindFabrics(DESIGNID, blindtype, controltype);
+      await Promise.all([
+        bindMounting(),
+        bindControlPosition(),
+        bindMaterialChain(),
+        bindChainColour(),
+        bindCordColour(),
+        bindBattenColour(blindname),
+        bindPlasticColour(),
+        bindCleat(),
+      ]);
     }
 
     if (e.target.id === "fabrictype") {
@@ -142,14 +152,26 @@ const bindControls = async (designid, blindtype) => {
     field: "controltype",
     params: { designid, blindtype },
     withDefaultOption: true,
-    lengthDefaultOption: 0,
+    lengthDefaultOption: 1,
 
-    // onSingle: async (item, select) => {
-    //   const controltype = item.value;
-
-    //   // await handlerElementVisibility(blindtype, controltype);
-    //   // await bindControls(designid, blindtype, controltype);
-    // },
+    onSingle: async (item, select) => {
+      const controltype = item.value;
+      const blindname = await getItemData(
+        `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
+      );
+      await handlerElementVisibility(blindtype, controltype);
+      await bindFabrics(designid, blindtype, controltype);
+      await Promise.all([
+        bindMounting(),
+        bindControlPosition(),
+        bindMaterialChain(),
+        bindChainColour(),
+        bindCordColour(),
+        bindBattenColour(blindname),
+        bindPlasticColour(),
+        bindCleat(),
+      ]);
+    },
   });
 };
 
@@ -192,6 +214,58 @@ const bindFabricColours = async (designid, fabrictype) => {
   });
 };
 
+const bindControlPosition = () => {
+  generateOption("controlposition", ["RHC", "LHC"]);
+};
+
+const bindMaterialChain = () => {
+  generateOption("materialchain", ["Chrome", "Plastic", "Stailess Steel"]);
+};
+
+const bindChainColour = () => {
+  generateOption("chaincolour", [
+    "Beige",
+    "Birch White",
+    "Black",
+    "Grey",
+    "Stailess Steel",
+    "White",
+  ]);
+};
+
+const bindCordColour = () => {
+  generateOption("cordcolour", ["Alabaster", "Mahogany", "Teak", "White"]);
+};
+
+const bindBattenColour = (blindname) => {
+  if (!blindname) return;
+  let list = [];
+  if (blindname == "Plantation") {
+    list = [
+      "Alabaster",
+      "Batlic",
+      "Black",
+      "Brown",
+      "Cherry",
+      "Natural",
+      "Teak",
+      "White",
+    ];
+  }
+
+  if (blindname == "Sewless") {
+    list = ["Aluminium-Ivory"];
+  }
+  generateOption("battencolour", list);
+};
+
+const bindPlasticColour = () => {
+  generateOption("plasticcolour", ["Alabaster", "Mahogany", "Teak", "White"]);
+};
+
+const bindCleat = () => {
+  generateOption("cleat", ["Plastic"]);
+};
 // ----------------------------------------------|| Handler Functions ||---------------------------------------
 const handlerElementVisibility = async (blindtype, controltype, item) => {
   try {

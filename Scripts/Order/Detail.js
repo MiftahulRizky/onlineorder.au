@@ -3194,7 +3194,7 @@ const dropdownActionButton = (row, createdby) => {
     }
   }
 
-  if (row.DesignName == "Additional") {
+  if (["Additional", "Surcharge"].includes(row.DesignName)) {
     hideDelete = "";
   }
 
