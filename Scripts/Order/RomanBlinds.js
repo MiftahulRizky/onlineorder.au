@@ -67,7 +67,7 @@ document.querySelector("#btnSubmit").addEventListener("click", (e) => {
   });
 
   // handlerSubmit(e.target.form, e.target.id);
-  // handlerSubmit(e.target.id);
+  handlerSubmit(e.target.id);
 });
 
 document.querySelector("#btnCancel").addEventListener("click", (e) => {
@@ -266,6 +266,59 @@ const bindPlasticColour = () => {
 const bindCleat = () => {
   generateOption("cleat", ["Plastic"]);
 };
+
+const bindItemOrders = async (itemid) => {
+  try {
+    if (!itemid) return;
+
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid }),
+    });
+
+    if (!res.ok) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
+    }
+
+    const response = await res.json();
+    const data = response.d;
+
+    if (!data || data.length === 0) {
+      throw isError("No data returned from server : bindItemOrders");
+    }
+
+    for (const item of data) {
+      await bindBlinds(item.DesignId);
+      await bindControls(item.DesignId, item.BlindId);
+      await handlerElementVisibility(item.BlindId, item.KitId, item);
+      await bindFabrics(item.DesignId, item.BlindId, item.KitId);
+      await bindFabricColours(item.DesignId, item.FabricType);
+      await Promise.all([
+        bindMounting(),
+        bindControlPosition(),
+        bindMaterialChain(),
+        bindChainColour(),
+        bindCordColour(),
+        bindBattenColour(item.BlindName),
+        bindPlasticColour(),
+        bindCleat(),
+      ]);
+      await Promise.all([handlerSetElementValues(item)]);
+    }
+
+    return true; // ✅ success
+  } catch (error) {
+    console.error("bindItemOrder error:", error);
+    throw error;
+  }
+};
 // ----------------------------------------------|| Handler Functions ||---------------------------------------
 const handlerElementVisibility = async (blindtype, controltype, item) => {
   try {
@@ -357,6 +410,134 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
   }
 };
 
+const handlerSubmit = async (button) => {
+  try {
+    // return alert(button);
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = [
+      "blindtype", // as Kit Id
+      "controltype", // as Kit Id
+      "qty", // as Qty
+      "room", // as Location
+      "mounting", // as Mounting
+      "fabrictype", // as FabricId
+      "fabriccolour", // as FabricId
+      "width", // as Width
+      "drop", // as Drop
+      "controlposition", // as ControlPosition
+      "materialchain", // as New MaterialChain
+      "chaincolour", // as ChainId
+      "chainlength", // as ChainLength
+      "cordcolour", // as New CordColour
+      "cordlength", // as New CordLength
+      "battencolour", // as BattenColour
+      "plasticcolour", // as New AcornPlasticColour
+      "cleat", // as New Cleat
+      "notes", // as Notes
+      "markup", // as Markup
+    ];
+
+    const formData = {
+      headerid: HEADERID,
+      itemaction: ITEMACTION,
+      itemid: ITEMID,
+      designid: DESIGNID,
+      loginid: LOGINID,
+      rolename: ROLENAME,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.getElementById(field).value;
+    });
+
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/Submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      await isSuccess(dataResult.success);
+      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Save Changes";
+  }
+};
+
+const handlerSetElementValues = (itemData) => {
+  const mapping = {
+    blindtype: "BlindId",
+    controltype: "KitId",
+    qty: "Qty",
+    room: "Location",
+    mounting: "Mounting",
+    fabrictype: "FabricType",
+    fabriccolour: "FabricId",
+    width: "Width",
+    drop: "Drop",
+    materialchain: "MaterialChain",
+    controlposition: "ControlPosition",
+    chaincolour: "ChainColour",
+    chainlength: "ChainLength",
+    cordcolour: "CordColour",
+    cordlength: "CordLength",
+    battencolour: "BattenColour",
+    plasticcolour: "AcornPlasticColour",
+    cleat: "Cleat",
+    notes: "Notes",
+    markup: "MarkUp",
+  };
+
+  // 1. set normal fields
+  Object.entries(mapping).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    let value = itemData[key];
+
+    if (id === "markup" && value === 0) value = "";
+
+    el.value = value ?? "";
+
+    if (el.value === "0") el.value = "";
+  });
+
+  const maxLength = 1000;
+  const notesLength = (itemData["Notes"] || "").length;
+  const notesCountEl = document.getElementById("notescount");
+  if (notesCountEl) {
+    notesCountEl.textContent = `${notesLength}/${maxLength}`;
+  }
+};
+
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const romanPageLoaded = async () => {
   if (!HEADERID) {
@@ -388,7 +569,7 @@ const romanPageLoaded = async () => {
     handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    // await bindItemOrders(ITEMID);
+    await bindItemOrders(ITEMID);
     loaderFadeOut();
   }
 };

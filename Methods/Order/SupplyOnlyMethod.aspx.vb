@@ -41,6 +41,7 @@ Partial Class Methods_Order_SupplyOnlyMethod
         Public Property itemid As String
         Public Property designid As String
         Public Property loginid As String
+        Public Property rolename As String
     End Class
 
     Public Class ParamListData
@@ -423,6 +424,8 @@ Partial Class Methods_Order_SupplyOnlyMethod
 
             Return New SuccessResponse With {.success = msg}
         Catch ex As Exception
+            Dim msg As String = ex.Message
+            If Not data.rolename = "Administrator" Then msg = "Please contact our IT team at support@onlineorder.au"
             Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
         End Try
     End Function
