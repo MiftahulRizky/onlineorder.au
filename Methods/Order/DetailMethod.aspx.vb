@@ -2167,9 +2167,9 @@ Partial Class Methods_Order_DetailMethod
 
             Dim status As String = headerData.Tables(0).Rows(0)("Status").ToString()
             Dim customerid As String = headerData.Tables(0).Rows(0)("StoreId").ToString()
-            If rolename <> "Administrator" AndAlso status <> "Draft" Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Permission denied : not administrator."}}
-            End If
+            ' If rolename <> "Administrator" AndAlso status <> "Draft" Then
+            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Permission denied : not administrator."}}
+            ' End If
 
             If status = "Canceled" Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Permission denied : order has been canceled."}}
