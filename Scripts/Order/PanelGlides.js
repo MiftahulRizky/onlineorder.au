@@ -761,7 +761,7 @@ const bindItemOrders = async (itemid) => {
       await Promise.all([
         bindLayoutCode(),
         bindNoPanel(),
-        bindTrackType(),
+        bindTrackType(item.BlindName),
         bindTrackColour(item.TrackType),
         bindWandPosition(),
         bindWandColour(),

@@ -117,6 +117,9 @@
                         <a href="javascript:void(0)" id="btnDownloadBarcode" class="dropdown-item">
                             <i class="ti ti-file-barcode fs-2 me-2 opacity-50"></i> Download Barcode
                         </a>
+                        <a href="javascript:void(0)" id="btnQuoteDisc" class="dropdown-item">
+                            <i class="ti ti-pencil-discount fs-2 me-2 opacity-50"></i> Override Discount
+                        </a>
 
                         <div class="dropdown-divider"></div>
                         <a href="javascript:void(0)" id="btnPrintQuote" class="dropdown-item">
@@ -429,6 +432,30 @@
         </div>
     </div>
 
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+    Launch static backdrop modal
+    </button>
+
+    <!-- Modal Override Discount-->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Override Discount (%)</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitOverrideDisc">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- modalAddItem -->
     <div class="modal fade" id="modalAddItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalAddItemLabel" aria-hidden="true">
@@ -619,8 +646,7 @@
         </div>
     </div>
 
-
-     <!-- logs -->
+    <!-- logs -->
     <div class="modal fade" id="modalLogs" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLogsLabel" aria-hidden="true">
         <div class="modal-dialog  modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
