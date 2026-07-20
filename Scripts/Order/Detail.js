@@ -126,8 +126,15 @@ document.querySelector("#btnDownloadBarcode").addEventListener("click", () => {
 });
 
 // BTN OVERRIDE DISCOUNT
-document.querySelector("#btnQuoteDisc").addEventListener("click", () => {
+document.querySelector("#btnQuoteDisc").addEventListener("click", async () => {
+  swalLoadingShow("Please wait...");
+  const QuoteDisc = await getItemData(
+    `SELECT QuoteDisc FROM OrderHeaders WHERE Id = '${HEADERID}'`,
+  );
+  const discount = document.querySelector("#modalQuoteDisc #discount");
+  discount.value = QuoteDisc;
   handlerShowBSModal("modalQuoteDisc");
+  swal.close();
 });
 
 // BTN PRINT QUOTE
@@ -306,6 +313,21 @@ document
   .addEventListener("click", () => {
     submitSendMailQuote();
   });
+
+// ------------------------------------------||modalQuoteDisc Event ||----------------------------------
+document
+  .querySelector("#modalQuoteDisc #btnSubmitOverrideDisc")
+  .addEventListener("click", (e) => {
+    document
+      .querySelectorAll(
+        "#modalQuoteDisc .form-control, #modalQuoteDisc .form-select",
+      )
+      .forEach((el) => {
+        el.classList.remove("is-invalid");
+      });
+    submitOverrideDisc(e.target.id);
+  });
+
 // ------------------------------------------||modalAddItem Event ||------------------------------------
 // CHANGE DESIGN TYPE
 document.querySelectorAll("#modalAddItem .form-select").forEach((e) => {
@@ -933,6 +955,91 @@ const submitSendMailQuote = async () => {
   }
 
   return false;
+};
+
+// SUBMIT OVERRIDE DISCOUNT
+const submitOverrideDisc = async (button) => {
+  try {
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = ["discount"];
+
+    const formData = {
+      headerid: HEADERID,
+      loginid: LOGINID,
+      rolename: ROLENAME,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.querySelector(
+        `#modalQuoteDisc #${field}`,
+      ).value;
+    });
+
+    // swal.close();
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/SubmitOverrideDisc", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const result = await response.json();
+    const dataResult = result.d || result;
+
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else {
+      // await isSuccess(dataResult.success.message);
+      // location.reload();
+      let msg = dataResult.success.message;
+      msg += `<br/> <br/> Do you want to reload the pricing?`;
+      const statusOrder = document.getElementById("spanStatusOrder").innerHTML;
+
+      Swal.fire({
+        title: "Success!",
+        html: msg,
+        icon: "success",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        customClass: {
+          popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          handlerReloadPricing(HEADERID, statusOrder, "click");
+        } else {
+          location.reload();
+        }
+        handlerHideBSModal("modalQuoteDisc");
+      });
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Save Changes";
+  }
 };
 
 // SUBMIT EDIT PRICING

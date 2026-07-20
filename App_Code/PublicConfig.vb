@@ -845,11 +845,12 @@ Public Class PublicConfig
 
     ' Public Function HitungDiscount(StoreId As String, PriceGroupId As String, Matrix As Decimal) As Decimal
     Public Function HitungDiscount(ListParam As List(Of Object)) As Decimal
-        Dim CustomerId As String = CStr(ListParam(0))
-        Dim PriceGroupId As String = CStr(ListParam(1))
-        Dim Matrix As Decimal = CDec(ListParam(2))
-        Dim DesignId As String = CStr(ListParam(3))
-        Dim BlindId As String = CStr(ListParam(4))
+        Dim HeaderId As String = CStr(ListParam(0))
+        Dim CustomerId As String = CStr(ListParam(1))
+        Dim PriceGroupId As String = CStr(ListParam(2))
+        Dim Matrix As Decimal = CDec(ListParam(3))
+        Dim DesignId As String = CStr(ListParam(4))
+        Dim BlindId As String = CStr(ListParam(5))
 
         Dim result As Decimal = 0.00
         ' Dim thisData As DataSet = GetListData("SELECT Discount FROM Discounts WHERE StoreId = '" + StoreId + "' AND PriceGroupId = '" + PriceGroupId + "' AND Active=1")
@@ -882,11 +883,19 @@ Public Class PublicConfig
             
             ' Menggunakan Convert.ToInt32 agar lebih aman dari format string
             Dim Discount As Integer = Convert.ToInt32(dr("Discount"))
+            Dim QuoteDisc AS String = GetItemData(String.Format("SELECT QuoteDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
+            If Not String.IsNullOrEmpty(QuoteDisc) AND Not QuoteDisc = "0" Then
+                Discount = Convert.ToInt32(QuoteDisc)
+            End If
             
             ' Rumus perhitungan diskon 
             ' Catatan: Pastikan Matrix dan result bertipe Double/Decimal karena pembagian 100 menghasilkan pecahan
             result = Matrix * (Discount / 100.0)
         End If
+
+
+
+
         Return result
     End Function
 
@@ -1081,6 +1090,7 @@ Public Class PublicConfig
 
                 '#---------------------Discount For Store Account---------------------#
                 Dim ListParamDiscount As New List(Of Object) From {
+                    HeaderId,
                     storeId,
                     priceGroupId,
                     getMatrix,
@@ -1184,6 +1194,7 @@ Public Class PublicConfig
 
                 '#---------------------Discount For Store Account---------------------#
                 Dim ListParamDiscountB As New List(Of Object) From {
+                    HeaderId,
                     storeId,
                     priceGroupIdB,
                     getMatrixB,

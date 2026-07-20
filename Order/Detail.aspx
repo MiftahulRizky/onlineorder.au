@@ -118,7 +118,7 @@
                             <i class="ti ti-file-barcode fs-2 me-2 opacity-50"></i> Download Barcode
                         </a>
                         <a href="javascript:void(0)" id="btnQuoteDisc" class="dropdown-item">
-                            <i class="ti ti-pencil-discount fs-2 me-2 opacity-50"></i> Override Discount
+                            <i class="ti ti-pencil-discount fs-2 me-2 opacity-50"></i> Override Customer Discount
                         </a>
 
                         <div class="dropdown-divider"></div>
@@ -434,27 +434,27 @@
 
     <!-- Modal Override Discount-->
     <div class="modal fade" id="modalQuoteDisc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalQuoteDiscLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalQuoteDiscLabel">Override Discount (%)</h1>
+                    <h1 class="modal-title" id="modalQuoteDiscLabel">Override Customer Discount (%)</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3 row" id="divMarkUp">
-                        <label for="notes" class="col-lg-3 text-uppercase fw-bold">Discount : </label>
-                        <div class="col-lg-3">
+                    <div class="row ">
+                        <div class="col-lg-10 mx-auto">
+                            <label for="notes" class="text-uppercase fw-bold mb-2">Discount</label>
                             <div class="input-group">
                                 <input type="number" min="0" name="discount" id="discount" class="form-control "  autocomplete="off">
                                 <span class="input-group-text ">%</span>
                             </div>
-                            <small class="form-hint text-warning">* for this order only (including all products)</small>
+                            <small class="form-hint text-warning">* For this order only (including all products) !</small>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" id="btnSubmitOverrideDisc">Save Changes</button>
+                    <button type="button" class="btn btn-primary" id="btnSubmitOverrideDisc">Save Changes</button>
                 </div>
             </div>
         </div>

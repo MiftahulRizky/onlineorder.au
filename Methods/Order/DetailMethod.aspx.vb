@@ -197,6 +197,14 @@ Partial Class Methods_Order_DetailMethod
         Public Property loginid As String
     End Class
 
+    Public Class ParamSubmitOverrideDisc
+        Public Property discount  As String
+
+        Public Property rolename As String
+        Public Property headerid As String
+        Public Property loginid As String
+    End Class
+
     
     Public Class ParamOverridePricing
         Public Property id  As String
@@ -1936,6 +1944,44 @@ Partial Class Methods_Order_DetailMethod
                     .field = "#modalSendMailQuote #id"
                 }
             }
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function SubmitOverrideDisc(data As ParamSubmitOverrideDisc) As Object
+        Try
+            Dim msg As String = "200"
+
+            Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE OrderType='Blinds' AND Id='" & data.headerid & "'")
+            If HeaderData.Tables(0).Rows.Count < 1 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "order is missing !"}}
+            End If
+
+            If String.IsNullOrEmpty(data.discount) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "this order is missing !", .field = "#modalQuoteDisc #discount"}}
+            End If
+
+            
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET QuoteDisc=@QuoteDisc WHERE Id=@Id", thisConn)
+                    myCmd.Parameters.AddWithValue("@Id", data.headerid)
+                    myCmd.Parameters.AddWithValue("@QuoteDisc", data.discount)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+
+            Return New SuccessResponse With {
+                .Success = New SuccessDetail With { .message = "Discount has been applied successfully."}
+            }
+        Catch ex As Exception
+            Dim msg As String = ex.Message
+            If Not data.rolename = "Administrator" Then msg = "Please contact our IT team at support@onlineorder.au"
+            Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
         End Try
     End Function
 
@@ -12375,15 +12421,37 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & currentData("NumOfPanel6").ToString() & tdDetEnd
             result+= trDetEnd
 
+            '#TrackType
+            result+= trDetStart
+                result+= tdTitleStart & "Tracks" & tdDetEnd
+                result+= tdDetStart & currentData("TrackType1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("TrackType6").ToString() & tdDetEnd
+            result+= trDetEnd
+
             '#TrackColour
             result+= trDetStart
-                result+= tdTitleStart & "Control Position" & tdDetEnd
+                result+= tdTitleStart & "Track Colour" & tdDetEnd
                 result+= tdDetStart & currentData("TrackColour1").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("TrackColour2").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("TrackColour3").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("TrackColour4").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("TrackColour5").ToString() & tdDetEnd
                 result+= tdDetRight & currentData("TrackColour6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#WandPosition
+            result+= trDetStart
+                result+= tdTitleStart & "Control Position" & tdDetEnd
+                result+= tdDetStart & currentData("WandPosition1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("WandPosition2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("WandPosition3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("WandPosition4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("WandPosition5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("WandPosition6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#WandLength
@@ -12672,15 +12740,37 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetRight & currentData("NumOfPanel6").ToString() & tdDetEnd
             result+= trDetEnd
 
+             '#TrackType
+            result+= trDetStart
+                result+= tdTitleStart & "Tracks" & tdDetEnd
+                result+= tdDetStart & currentData("TrackType1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("TrackType6").ToString() & tdDetEnd
+            result+= trDetEnd
+
             '#TrackColour
             result+= trDetStart
-                result+= tdTitleStart & "Control Position" & tdDetEnd
+                result+= tdTitleStart & "Track Colour" & tdDetEnd
                 result+= tdDetStart & currentData("TrackColour1").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("TrackColour2").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("TrackColour3").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("TrackColour4").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("TrackColour5").ToString() & tdDetEnd
                 result+= tdDetRight & currentData("TrackColour6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#WandPosition
+            result+= trDetStart
+                result+= tdTitleStart & "Control Position" & tdDetEnd
+                result+= tdDetStart & currentData("WandPosition1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("WandPosition2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("WandPosition3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("WandPosition4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("WandPosition5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("WandPosition6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#WandLength
