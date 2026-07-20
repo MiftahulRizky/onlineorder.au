@@ -2024,6 +2024,7 @@ Partial Class Methods_Order_DetailMethod
                
 
                 Dim ListParamDiscount As New List(Of Object) From {
+                    data.headerid,
                     data.customerid,
                     "",
                     newcost,
@@ -2079,6 +2080,7 @@ Partial Class Methods_Order_DetailMethod
 
 
                 Dim ListParamDiscount As New List(Of Object) From {
+                    data.headerid,
                     data.customerid,
                     "",
                     item.poa,
@@ -2094,6 +2096,7 @@ Partial Class Methods_Order_DetailMethod
 
             
             Dim Matrix As String = publicCfg.GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty)- (odp.Qty*odp.Discount)) As Matrix FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Matrix' AND od.Active='1'", data.headerid, data.itemid))
+            
             Dim Charge As String = publicCfg.GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty)- (odp.Qty*odp.Discount)) As Charge FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Charge' AND odp.Description NOT LIKE '%Powder Coating%' AND odp.Description <> 'Tracking & Interloock' AND od.Active='1'", data.headerid, data.itemid))
 
             publicCfg.UpdateMatrix(data.itemid, data.qty, If(Matrix = "", 0D, CDec(Matrix)))
@@ -2302,6 +2305,7 @@ Partial Class Methods_Order_DetailMethod
                             publicCfg.HitungSurcharge(headerid, itemId)
 
                             Dim ListParamDiscount As New List(Of Object) From {
+                                headerid,
                                 customerid,
                                 "",
                                 Poa,
