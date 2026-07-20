@@ -615,7 +615,7 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
               <input type="text" 
                 value="${item.Poa}" 
                 class="form-control input-poa" 
-                data-id="${item.Id}"
+                data-id="${item.Id}" data-type="${item.Type}"
                 placeholder="Example: 10.00" />
             </div>
           </td>
@@ -1127,6 +1127,7 @@ const submitEditAllPricing = async () => {
   poaInputs.forEach((input) => {
     detailList.push({
       id: input.dataset.id,
+      type: input.dataset.type,
       poa: input.value.replace(",", "."),
     });
   });

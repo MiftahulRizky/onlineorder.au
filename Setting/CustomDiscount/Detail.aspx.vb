@@ -37,9 +37,6 @@ Partial Class Setting_CustomDiscount_Detail
 
                 sdsPage.Update()
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
-                publicCfg.InsertActivity(userId, Page.Title, "UPDATE SURCHARGE")
-
                 Response.Redirect("~/setting/customdiscount", False)
             End If
         Catch ex As Exception
@@ -53,7 +50,7 @@ Partial Class Setting_CustomDiscount_Detail
 
     Private Sub BindData(Id As String)
         Try
-            Dim myData As  DataSet = publicCfg.GetListData("SELECT * FROM CustomDiscount WHERE Id = '" + Id + "'")
+            Dim myData As  DataSet = publicCfg.GetListData("SELECT * FROM CustomDiscounts WHERE Id = '" + Id + "'")
             If myData.Tables(0).Rows.Count = 0 Then
                 Response.Redirect("~/setting/customdiscount", False)
                 Exit Sub
@@ -71,6 +68,7 @@ Partial Class Setting_CustomDiscount_Detail
             txtName.Text = myData.Tables(0).Rows(0).Item("Name").ToString()
             ddlFieldName.SelectedValue = myData.Tables(0).Rows(0).Item("FieldName").ToString()
             txtFormula.Text = myData.Tables(0).Rows(0).Item("Formula").ToString().Replace(ddlFieldName.SelectedValue, "")
+            ddlType.Text = myData.Tables(0).Rows(0).Item("Type").ToString()
             txtCharge.Text = myData.Tables(0).Rows(0).Item("Charge").ToString()
             ' Pastikan txtFromDate dan txtToDate adalah TextBox dengan TextMode="Date"
             If myData IsNot Nothing AndAlso myData.Tables.Count > 0 AndAlso myData.Tables(0).Rows.Count > 0 Then

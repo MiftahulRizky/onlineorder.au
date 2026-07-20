@@ -278,7 +278,7 @@ Debug="true" %>
       runat="server"
       ID="sdsPage"
       ConnectionString="<%$ ConnectionStrings:DefaultConnection %>"
-      UpdateCommand="UPDATE CustomDiscountS SET DesignId=@DesignId, BlindId=@BlindId, BlindNo=@BlindNo, Name=@Name, FieldName=@FieldName, Formula=@Formula, Charge=@Charge, FromDate=@FromDate, ToDate=@ToDate, Description=@Description, Active=@Active WHERE Id=@Id"
+      UpdateCommand="UPDATE CustomDiscounts SET DesignId=@DesignId, BlindId=@BlindId, BlindNo=@BlindNo, Name=@Name, FieldName=@FieldName, Formula=@Formula, Charge=@Charge, FromDate=@FromDate, ToDate=@ToDate, Description=@Description, Active=@Active WHERE Id=@Id"
     >
       <UpdateParameters>
         <asp:ControlParameter ControlID="lblId" Name="Id" PropertyName="Text" />

@@ -230,6 +230,7 @@ Partial Class Methods_Order_DetailMethod
     End Class
     Public Class PricingDetail
         Public Property id As String
+        Public Property type As String
         Public Property poa As Decimal
     End Class
 
@@ -333,7 +334,7 @@ Partial Class Methods_Order_DetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindOrderDetailPrice(ByVal itemid As String) As Object
         Try
-            Dim dt As DataTable = publicCfg.GetListData(String.Format("SELECT Id, Qty, Description, Cost, Poa FROM OrderDetailsPrice WHERE ItemId = '{0}' AND ((Type = 'Charge' AND Description NOT LIKE '%Powder Coating%' AND Description NOT LIKE '%Tracking & Interloock%') OR (Type = 'Matrix')) ORDER BY CASE WHEN Type = 'Matrix' THEN 1 WHEN Type = 'Charge' THEN 2 WHEN Type = 'Discount' THEN 3 ELSE 4 END", itemid)).Tables(0)
+            Dim dt As DataTable = publicCfg.GetListData(String.Format("SELECT Id, Qty, Type, Description, Cost, Poa FROM OrderDetailsPrice WHERE ItemId = '{0}' AND ((Type = 'Charge' AND Description NOT LIKE '%Powder Coating%' AND Description NOT LIKE '%Tracking & Interloock%') OR (Type = 'Matrix')) ORDER BY CASE WHEN Type = 'Matrix' THEN 1 WHEN Type = 'Charge' THEN 2 WHEN Type = 'Discount' THEN 3 ELSE 4 END", itemid)).Tables(0)
 
             Dim list As New List(Of Object)
 
@@ -341,6 +342,7 @@ Partial Class Methods_Order_DetailMethod
                 list.Add(New With {
                     .Id = row("Id").ToString(),
                     .Qty = row("Qty").ToString(),
+                    .Type = row("Type").ToString(),
                     .Description = row("Description").ToString(),
                     .Cost = CDec(row("Cost")).ToString("C", New CultureInfo("en-US")),
                     .Poa = row("Poa").ToString().Replace(",", ".")
@@ -2088,16 +2090,24 @@ Partial Class Methods_Order_DetailMethod
                     BlindId
                 }
                 Dim Discount As Decimal = publicCfg.HitungDiscount(ListParamDiscount)
-                Dim Res As String = UpdateOverrideAllPricing(item.id, item.poa, Discount)
+                Dim DiscountB As Decimal = publicCfg.HitungCustomDiscount(data.headerid, data.itemid, (item.poa - Discount), item.type)
+
+                If item.type = "Charge" Then
+                    Discount = DiscountB
+                End If
+
+                ' Throw New Exception(DiscountB.ToString())
+
+                Dim Res As String = UpdateOverrideAllPricing(item.id, item.poa, Discount, DiscountB)
                 IF Not Res = "200" Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res}}
                 End If
             Next
 
             
-            Dim Matrix As String = publicCfg.GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty)- (odp.Qty*odp.Discount)) As Matrix FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Matrix' AND od.Active='1'", data.headerid, data.itemid))
+            Dim Matrix As String = publicCfg.GetItemData(String.Format("SELECT SUM(( odp.Cost * odp.Qty ) - ( odp.Qty * ISNULL( odp.Discount, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountB, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountC, 0 ) )) As Matrix FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Matrix' AND od.Active='1'", data.headerid, data.itemid))
             
-            Dim Charge As String = publicCfg.GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty)- (odp.Qty*odp.Discount)) As Charge FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Charge' AND odp.Description NOT LIKE '%Powder Coating%' AND odp.Description <> 'Tracking & Interloock' AND od.Active='1'", data.headerid, data.itemid))
+            Dim Charge As String = publicCfg.GetItemData(String.Format("SELECT SUM(( odp.Cost * odp.Qty ) - ( odp.Qty * ISNULL( odp.Discount, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountB, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountC, 0 ) )) As Charge FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Charge' AND odp.Description NOT LIKE '%Powder Coating%' AND odp.Description <> 'Tracking & Interloock' AND od.Active='1'", data.headerid, data.itemid))
 
             publicCfg.UpdateMatrix(data.itemid, data.qty, If(Matrix = "", 0D, CDec(Matrix)))
             publicCfg.UpdateCharge(data.itemid, data.qty, If(Charge = "", 0D, CDec(Charge)))
@@ -2139,13 +2149,14 @@ Partial Class Methods_Order_DetailMethod
         End Try
     End Function
 
-    Private Shared Function UpdateOverrideAllPricing(id As String, newcost As Decimal, disc As Decimal) As String
+    Private Shared Function UpdateOverrideAllPricing(id As String, newcost As Decimal, disc As Decimal, discB As Decimal) As String
         Try
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET Cost=@Cost, Discount=@Disc, Poa=@Poa WHERE Id=@Id", thisConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET Cost=@Cost, Discount=@Disc, DiscountB=@DiscB, Poa=@Poa WHERE Id=@Id", thisConn)
                     myCmd.Parameters.AddWithValue("@Id", id)
                     myCmd.Parameters.AddWithValue("@Cost", newcost)
                     myCmd.Parameters.AddWithValue("@Disc", disc)
+                    myCmd.Parameters.AddWithValue("@DiscB", discB)
                     myCmd.Parameters.AddWithValue("@Poa", newcost)
                     myCmd.Connection = thisConn
                     thisConn.Open()
@@ -2292,18 +2303,22 @@ Partial Class Methods_Order_DetailMethod
 
                 Dim Prices As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderDetailsPrice WHERE HeaderId='{0}' AND ItemId='{1}' ORDER BY CASE WHEN Type = 'Matrix' THEN 1 WHEN Type = 'Charge' THEN 2 WHEN Type = 'Discount' THEN 3 ELSE 4 END", headerid, itemId))
                 If Prices.Tables(0).Rows.Count > 0 Then
+                    '#Reset dan Hitung Harga Default
+                    publicCfg.ResetPriceDetail(itemId)
+                    publicCfg.HitungHarga(headerid, itemId)
+                    publicCfg.HitungSurcharge(headerid, itemId)
+
                     For Each priceRow As DataRow In Prices.Tables(0).Rows
+                        '# Simpan Nilai
                         Dim Id As String = priceRow("Id").ToString()
+                        Dim Type As String = priceRow("Type").ToString()
                         Dim Description As String = priceRow("Description").ToString()
                         Dim Qty As Integer = Convert.ToInt32(priceRow("Qty"))
                         Dim Cost As Decimal = Convert.ToDecimal(priceRow("Cost"))
                         Dim Poa As Decimal = Convert.ToDecimal(priceRow("Poa"))
 
-                        IF Poa > 0 Then
-                            publicCfg.ResetPriceDetail(itemId)
-                            publicCfg.HitungHarga(headerid, itemId)
-                            publicCfg.HitungSurcharge(headerid, itemId)
-
+                        IF CInt(Poa) > 0 Then
+                            '#masukan ulang nilai sebelum di reset
                             Dim ListParamDiscount As New List(Of Object) From {
                                 headerid,
                                 customerid,
@@ -2313,17 +2328,18 @@ Partial Class Methods_Order_DetailMethod
                                 blindId
                             }
                             Dim Discount As Decimal = publicCfg.HitungDiscount(ListParamDiscount)
-                            ' Dim Res As String = UpdateOverrideAllPricing(Id, Poa, Discount)
-                            ' IF Not Res = "200" Then
-                            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res}}
-                            ' End If
+                            Dim DiscountB As Decimal = publicCfg.HitungCustomDiscount(headerid, itemId, (Poa - Discount), Type)
 
+                            If Type = "Charge" Then
+                                Discount = DiscountB
+                            End If
                             Using thisConn As New SqlConnection(myConn)
-                                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET Cost=@Cost, Discount=@Disc, Poa=@Poa WHERE ItemId=@ItemId AND Description=@Description", thisConn)
+                                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET Cost=@Cost, Discount=@Disc, DiscountB=@DiscB, Poa=@Poa WHERE ItemId=@ItemId AND Description=@Description", thisConn)
                                     myCmd.Parameters.AddWithValue("@ItemId", itemId)
                                     myCmd.Parameters.AddWithValue("@Description", Description)
                                     myCmd.Parameters.AddWithValue("@Cost", Poa)
                                     myCmd.Parameters.AddWithValue("@Disc", Discount)
+                                    myCmd.Parameters.AddWithValue("@DiscB", DiscountB)
                                     myCmd.Parameters.AddWithValue("@Poa", Poa)
                                     myCmd.Connection = thisConn
                                     thisConn.Open()
@@ -2332,15 +2348,12 @@ Partial Class Methods_Order_DetailMethod
                                 End Using
                             End Using
 
-                            Dim Matrix As String = publicCfg.GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty)- (odp.Qty*odp.Discount)) As Matrix FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Matrix' AND od.Active='1'", headerid, itemId))
-                            Dim Charge As String = publicCfg.GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty)- (odp.Qty*odp.Discount)) As Charge FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Charge' AND odp.Description NOT LIKE '%Powder Coating%' AND odp.Description NOT LIKE '%Tracking & Interlock%' AND od.Active='1'", headerid, itemId))
+                            Dim Matrix As String = publicCfg.GetItemData(String.Format("SELECT SUM(( odp.Cost * odp.Qty ) - ( odp.Qty * ISNULL( odp.Discount, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountB, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountC, 0 ) )) As Matrix FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Matrix' AND od.Active='1'", headerid, itemId))
+                            
+                            Dim Charge As String = publicCfg.GetItemData(String.Format("SELECT SUM(( odp.Cost * odp.Qty ) - ( odp.Qty * ISNULL( odp.Discount, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountB, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountC, 0 ) )) As Charge FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Charge' AND odp.Description NOT LIKE '%Powder Coating%' AND odp.Description NOT LIKE '%Tracking & Interlock%' AND od.Active='1'", headerid, itemId))
 
                             publicCfg.UpdateMatrix(itemId, Qty, If(Matrix = "", 0D, CDec(Matrix)))
                             publicCfg.UpdateCharge(itemId, Qty, If(Charge = "", 0D, CDec(Charge)))
-                        Else
-                            publicCfg.ResetPriceDetail(itemId)
-                            publicCfg.HitungHarga(headerid, itemId)
-                            publicCfg.HitungSurcharge(headerid, itemId)
                         End If
                     Next
                     
@@ -21238,12 +21251,12 @@ Partial Class Methods_Order_DetailMethod
             '#
             result+= trDetStart
                 result+= tdTitleStart & "Carries Qty" & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CarrierQty6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("SlatQty1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("SlatQty2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("SlatQty3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("SlatQty4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("SlatQty5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("SlatQty6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#

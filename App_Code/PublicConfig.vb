@@ -924,10 +924,10 @@ Public Class PublicConfig
                     ' result = result + 2.00 'debug
                     If Not cekFormula = "" Then
 
-                        If fromDate = "" And toDate = "" Then
+                        If String.IsNullOrEmpty(fromDate) And String.IsNullOrEmpty(toDate) Then
                             If InStr(chargeResult, "%") > 0 Then
                                 Dim replicent As String = Replace(chargeResult, "%", "")
-                                result = matrix * (Decimal.Parse(replicent) / 100)
+                                result = matrix * (CDec(replicent) / 100)
                             End If
 
                             If InStr(chargeResult, "$") > 0 Then
@@ -937,7 +937,7 @@ Public Class PublicConfig
                         End If
 
                         '# discount start only
-                        If fromDate <> "" AndAlso toDate = "" Then
+                        If Not String.IsNullOrEmpty(fromDate) AndAlso String.IsNullOrEmpty(toDate) Then
                             If DateTime.Parse(createdDate) >= DateTime.Parse(fromDate) Then
                                 If InStr(chargeResult, "%") > 0 Then
                                     Dim replicent As String = Replace(chargeResult, "%", "")
@@ -952,7 +952,7 @@ Public Class PublicConfig
                         End If
 
                         '# discount start and end
-                        If fromDate <> "" AndAlso toDate <> "" Then 
+                        If Not String.IsNullOrEmpty(fromDate) AndAlso Not String.IsNullOrEmpty(toDate) Then 
                             If DateTime.Parse(createdDate) >= DateTime.Parse(fromDate) AndAlso DateTime.Parse(createdDate) < DateTime.Parse(toDate) Then
                                 If InStr(chargeResult, "%") > 0 Then
                                     Dim replicent As String = Replace(chargeResult, "%", "")
