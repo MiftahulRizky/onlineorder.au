@@ -432,21 +432,25 @@
         </div>
     </div>
 
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-    Launch static backdrop modal
-    </button>
-
     <!-- Modal Override Discount-->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="modalQuoteDisc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalQuoteDiscLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Override Discount (%)</h1>
+                    <h1 class="modal-title fs-5" id="modalQuoteDiscLabel">Override Discount (%)</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    ...
+                    <div class="mb-3 row" id="divMarkUp">
+                        <label for="notes" class="col-lg-3 text-uppercase fw-bold">Discount : </label>
+                        <div class="col-lg-3">
+                            <div class="input-group">
+                                <input type="number" min="0" name="discount" id="discount" class="form-control "  autocomplete="off">
+                                <span class="input-group-text ">%</span>
+                            </div>
+                            <small class="form-hint text-warning">* for this order only (including all products)</small>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

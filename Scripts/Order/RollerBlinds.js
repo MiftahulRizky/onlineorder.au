@@ -747,7 +747,12 @@ const handlerElementVisibility = async (
       btnSubmit.classList.remove("d-none");
     } else if (ITEMACTION === "ViewItem") {
       btnSubmit.classList.remove("d-none");
-      if (ROLENAME !== "Administrator") btnSubmit.classList.add("d-none");
+      if (
+        ["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)
+      ) {
+        btnSubmit.classList.add("d-none");
+      }
+      // if (ROLENAME !== "Administrator") btnSubmit.classList.add("d-none");
     }
   } catch (error) {
     const msg =

@@ -125,6 +125,11 @@ document.querySelector("#btnDownloadBarcode").addEventListener("click", () => {
   handlerDownloadBarcode(HEADERID);
 });
 
+// BTN OVERRIDE DISCOUNT
+document.querySelector("#btnQuoteDisc").addEventListener("click", () => {
+  handlerShowBSModal("modalQuoteDisc");
+});
+
 // BTN PRINT QUOTE
 document.querySelector("#btnPrintQuote").addEventListener("click", () => {
   handlerPrintQuote(HEADERID, "preview");
