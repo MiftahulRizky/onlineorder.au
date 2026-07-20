@@ -1112,6 +1112,8 @@ const handlerDisplayElement = (item) => {
   const dividerEmailDeposit = document.getElementById("dividerEmailDeposit");
   const btnChangeStatus = document.getElementById("btnChangeStatus");
   const btnSendOrderMail = document.getElementById("btnSendOrderMail");
+  const btnDownloadBarcode = document.getElementById("btnDownloadBarcode");
+  const btnQuoteDisc = document.getElementById("btnQuoteDisc");
   const btnReloadPricing = document.getElementById("btnReloadPricing");
   const btnAddItem = document.getElementById("btnAddItem");
   const btnAddService = document.getElementById("btnAddService");
@@ -1136,6 +1138,8 @@ const handlerDisplayElement = (item) => {
   dividerEmailDeposit.setAttribute("hidden", true);
   btnChangeStatus.setAttribute("hidden", true);
   btnSendOrderMail.setAttribute("hidden", true);
+  btnDownloadBarcode.setAttribute("hidden", true);
+  btnQuoteDisc.setAttribute("hidden", true);
   btnReloadPricing.setAttribute("hidden", true);
   btnAddItem.setAttribute("hidden", true);
   btnAddService.setAttribute("hidden", true);
@@ -1199,7 +1203,9 @@ const handlerDisplayElement = (item) => {
     // if (ROLENAME === "Administrator") {
     if (item.Status !== "Completed") {
       btnAddService.removeAttribute("hidden");
+      btnQuoteDisc.removeAttribute("hidden");
     }
+    btnDownloadBarcode.removeAttribute("hidden");
   }
 
   // btnQuote, btnQuoteDetail, & btnDownloadQuote
