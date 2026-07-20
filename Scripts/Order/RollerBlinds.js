@@ -748,7 +748,7 @@ const handlerElementVisibility = async (
     } else if (ITEMACTION === "ViewItem") {
       btnSubmit.classList.remove("d-none");
       if (
-        ["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)
+        !["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)
       ) {
         btnSubmit.classList.add("d-none");
       }
