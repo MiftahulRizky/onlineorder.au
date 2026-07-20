@@ -1975,6 +1975,11 @@ Partial Class Methods_Order_DetailMethod
             End Using
 
 
+            Dim OrderType As String = publicCfg.GetItemData(String.Format("SELECT OrderType FROM OrderHeaders WHERE Id='{0}'", data.headerid))
+            Dim dataLog As Object() = {data.headerid, "", OrderType, data.loginid, "Override Customer Discount"}
+            orderCfg.Log_Orders(dataLog)
+
+
             Return New SuccessResponse With {
                 .Success = New SuccessDetail With { .message = "Discount has been applied successfully."}
             }
