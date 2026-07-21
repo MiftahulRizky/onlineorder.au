@@ -1332,27 +1332,10 @@ Public Class OrderConfig
                     If designName = "Panorama PVC Shutters" Then
                         Dim sqm As Decimal = Math.Round(width * drop / 1000000, 4)
                         thisGridMatrix = gridMatrix * sqm
-                        IF InArray(customerId, "LS-A268", "LS-A339") Then
-                            '#Orion & The Blinds Place Victoria
-                            If sqm < 0.5 Then
-                                thisGridMatrix = gridMatrix / 2
-                            End If
-                        Else
-                            '#All Customer
-                            If sqm < 1 Then
-                                thisGridMatrix = gridMatrix
-                                descriptionPrice = "Minimum Opening Size Charge (" & priceGroupName & ")"
-                            End If
-                        End If
-
-                        IF Not InArray(customerId, "LS-A268", "LS-A339") Then
-                            '#All Customer
-                            Dim sqmAll As Decimal = GetItemData_Decimal("SELECT SUM(SquareMetre) FROM OrderDetails_Shutters WHERE HeaderId = '" + headerId + "' AND Active = 1")
-                            If sqmAll > 1 Then
-                                thisGridMatrix = gridMatrix * sqm
-                            Else
-                                thisGridMatrix = gridMatrix / 2
-                            End If
+                       
+                        If sqm < 0.5 Then
+                            thisGridMatrix = gridMatrix
+                            descriptionPrice = "Minimum Opening Size Charge (" & priceGroupName & ")"
                         End If
 
                     End If
