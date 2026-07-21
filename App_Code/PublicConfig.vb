@@ -927,7 +927,7 @@ Public Class PublicConfig
                         If String.IsNullOrEmpty(fromDate) And String.IsNullOrEmpty(toDate) Then
                             If InStr(chargeResult, "%") > 0 Then
                                 Dim replicent As String = Replace(chargeResult, "%", "")
-                                result = matrix * (CDec(replicent) / 100)
+                                result = matrix * (CInt(replicent) / 100)
                             End If
 
                             If InStr(chargeResult, "$") > 0 Then

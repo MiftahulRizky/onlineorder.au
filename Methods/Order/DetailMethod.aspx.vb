@@ -7021,17 +7021,30 @@ Partial Class Methods_Order_DetailMethod
                                 End If
                             Next
                         ElseIf TubeType.Contains("Louvolite") Then
-                            For Each item In Spacer127Louvolite
-                                If Width <= item.MaxWidth Then
-                                    If param = "Spacer1Type" Then
-                                        result = item.Spacer1Type
-                                    End If
-                                    If param = "CarrierQty" Then
-                                        result = item.CarriersQty
-                                    End If
-                                    Exit For
-                                End If
-                            Next
+                            ' For Each item In Spacer127Louvolite
+                            '     If Width <= item.MaxWidth Then
+                            '         If param = "Spacer1Type" Then
+                            '             result = item.Spacer1Type
+                            '         End If
+                            '         If param = "CarrierQty" Then
+                            '             result = item.CarriersQty
+                            '         End If
+                            '         Exit For
+                            '     End If
+                            ' Next
+
+                            Dim selected = Spacer127Louvolite _
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                        If selected IsNot Nothing Then
+                            If param = "Spacer1Type" Then
+                                result = selected.Spacer1Type
+                            ElseIf param = "CarrierQty" Then
+                                result = selected.CarriersQty
+                            End If
+                        End If
                         Else
                             For Each item In Spacer127Metal
                                 If Width <= item.MaxWidth Then
@@ -21251,12 +21264,12 @@ Partial Class Methods_Order_DetailMethod
             '#
             result+= trDetStart
                 result+= tdTitleStart & "Carries Qty" & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("SlatQty6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("CarrierQty6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#
