@@ -32,8 +32,6 @@ Partial Class Setting_CustomDiscount_Add
                 txtFormula.Text = ddlFieldName.SelectedValue & txtFormula.Text
                 sdsPage.Insert()
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
-                publicCfg.InsertActivity(userId, Page.Title, "INSERT SURCHARGE")
 
                 Response.Redirect("~/setting/customdiscount", False)
             End If

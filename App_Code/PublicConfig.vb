@@ -1336,8 +1336,13 @@ Public Class PublicConfig
                         Dim customDiscount As Decimal = 0.00
                         If checkDiscount.Tables(0).Rows.Count > 0 Then
                             Dim FormulaCustomDiscount As String = checkDiscount.Tables(0).Rows(0).Item("Formula").ToString()
+                            Dim CustomDiscountName As String = checkDiscount.Tables(0).Rows(0).Item("Name").ToString()
                             If formula = FormulaCustomDiscount Then
                                 customDiscount = HitungCustomDiscount(headerId, itemId, thisCharge, type)
+                            Else
+                                If CustomDiscountName = "SBS/ACCENT 15%" Then
+                                    customDiscount = HitungCustomDiscount(headerId, itemId, thisCharge, type)
+                                End If
                             End If
                         End If
 
