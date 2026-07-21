@@ -23904,7 +23904,7 @@ Partial Class Methods_Order_DetailMethod
                     If cover = "Yes" And ext = "Yes" Then result = "G Ext Cover"
                 End IF
                 
-                If InArray(brackettype, "L 2B1C", "L 2B2C") Then
+                If InArray(brackettype, "L 2B1C", "L 2B2C", "L 3B1C", "L 3B2C") Then
                      result = String.Format("G {0}", brackettype)
                     If cover = "Yes" Then result = "G L Cover"
                     If ext = "Yes" Then result = String.Format("G Ext {0}", brackettype)

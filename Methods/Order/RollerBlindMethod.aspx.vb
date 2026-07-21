@@ -45,6 +45,7 @@ Partial Class Methods_Order_RollerBlindMethod
         Public Property accessory As String
         Public Property extras As String
         Public Property bracketcovers As String
+        Public Property bracketcovercolours As String
         Public Property bracketext As String
         Public Property notes As String
         Public Property markup As String
@@ -968,6 +969,12 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
             End If
 
+            If Not String.IsNullOrEmpty(data.bracketcovers) Then
+                If String.IsNullOrEmpty(data.bracketcovercolours) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bracket cover colour is required !",.field = "bracketcovercolours"}}
+                End If
+            End If
+
             If Not String.IsNullOrEmpty(data.notes) Then
                 If InStr(data.notes, "&") > 0 Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must not contain [&] character !",.field = "notes"}}
@@ -1118,7 +1125,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketColour, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketColour, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@UniqueId", If( String.IsNullOrEmpty(data.uniqueid), DBNull.Value, data.uniqueid))
@@ -1143,6 +1150,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         myCmd.Parameters.AddWithValue("@TubeSize", data.tubesize)
                         myCmd.Parameters.AddWithValue("@Trim", data.trim)
                         myCmd.Parameters.AddWithValue("@BracketCover", data.bracketcovers)
+                        myCmd.Parameters.AddWithValue("@BracketColour", data.bracketcovercolours)
                         myCmd.Parameters.AddWithValue("@BracketExtension", data.bracketext)
                         myCmd.Parameters.AddWithValue("@ChildSafe", data.childsafe)
                         myCmd.Parameters.AddWithValue("@MotorStyle", data.motorstyle)
@@ -1197,7 +1205,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketColour, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketColour, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@UniqueId", data.uniqueid)
@@ -1222,6 +1230,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         myCmd.Parameters.AddWithValue("@TubeSize", data.tubesize)
                         myCmd.Parameters.AddWithValue("@Trim", data.trim)
                         myCmd.Parameters.AddWithValue("@BracketCover", data.bracketcovers)
+                        myCmd.Parameters.AddWithValue("@BracketColour", data.bracketcovercolours)
                         myCmd.Parameters.AddWithValue("@BracketExtension", data.bracketext)
                         myCmd.Parameters.AddWithValue("@ChildSafe", data.childsafe)
                         myCmd.Parameters.AddWithValue("@MotorStyle", data.motorstyle)
@@ -1490,7 +1499,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 
                 Dim ItemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, UniqueId=@UniqueId, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, BottomRailId=@BottomRailId, PriceGroupId=@PriceGroupId, CassetteExtraId=@CassetteExtraId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, RollDirection=@RollDirection, ControlPosition=@ControlPosition, ChainLength=@ChainLength, Accessory=@Accessory, TubeSize=@TubeSize, Trim=@Trim, BracketCover=@BracketCover, BracketExtension=@BracketExtension, ChildSafe=@ChildSafe, MotorStyle=@MotorStyle, MotorRemote=@MotorRemote, MotorBattery=@MotorBattery, MotorCharger=@MotorCharger, Connector=@Connector, AdditionalMotor=@AdditionalMotor, CableExitPoint=@CableExitPoint, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, UniqueId=@UniqueId, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, BottomRailId=@BottomRailId, PriceGroupId=@PriceGroupId, CassetteExtraId=@CassetteExtraId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, RollDirection=@RollDirection, ControlPosition=@ControlPosition, ChainLength=@ChainLength, Accessory=@Accessory, TubeSize=@TubeSize, Trim=@Trim, BracketCover=@BracketCover, BracketColour=@BracketColour, BracketExtension=@BracketExtension, ChildSafe=@ChildSafe, MotorStyle=@MotorStyle, MotorRemote=@MotorRemote, MotorBattery=@MotorBattery, MotorCharger=@MotorCharger, Connector=@Connector, AdditionalMotor=@AdditionalMotor, CableExitPoint=@CableExitPoint, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@UniqueId", If(String.IsNullOrEmpty(data.uniqueid), DBNull.Value, data.uniqueid))
@@ -1515,6 +1524,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         myCmd.Parameters.AddWithValue("@TubeSize", data.tubesize)
                         myCmd.Parameters.AddWithValue("@Trim", data.trim)
                         myCmd.Parameters.AddWithValue("@BracketCover", data.bracketcovers)
+                        myCmd.Parameters.AddWithValue("@BracketColour", data.bracketcovercolours)
                         myCmd.Parameters.AddWithValue("@BracketExtension", data.bracketext)
                         myCmd.Parameters.AddWithValue("@ChildSafe", data.childsafe)
                         myCmd.Parameters.AddWithValue("@MotorStyle", data.motorstyle)

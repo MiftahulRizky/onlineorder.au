@@ -339,12 +339,17 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divBracketCover">
-                                        <label for="bracketcovers" class="col-lg-3 text-uppercase fw-bold" >bracket covers</label>
+                                        <label for="bracketcovers" class="col-lg-3 text-uppercase fw-bold" >bracket cover</label>
                                         <div class="col-lg-4">
                                             <select type="text" name="bracketcovers" id="bracketcovers" class="form-select">
                                                 <option value=""></option>
                                                 <option value="Yes">YES</option>
                                             </select>
+                                            <small class="form-hint">* Cover</small>
+                                        </div>  
+                                        <div class="col-lg-4" id="divBracketCoverColour">
+                                            <select type="text" name="bracketcovercolours" id="bracketcovercolours" class="form-select"></select>
+                                            <small class="form-hint">* Colour</small>
                                         </div>  
                                     </div>
 

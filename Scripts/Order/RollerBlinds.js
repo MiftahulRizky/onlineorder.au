@@ -170,6 +170,18 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
       await bindRailColour(brackettype, railtype, trim);
     }
+
+    if (e.target.id === "bracketcovers") {
+      const bracketcovers = e.target.value;
+      const divBracketCoverColour = document.getElementById(
+        "divBracketCoverColour",
+      );
+      divBracketCoverColour.classList.add("d-none");
+      if (bracketcovers === "Yes") {
+        divBracketCoverColour.classList.remove("d-none");
+      }
+      bindBracketCoverColours();
+    }
   });
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
@@ -338,6 +350,9 @@ const handlerElementVisibility = async (
     const divAccessory = document.getElementById("divAccessory");
     const divExtras = document.getElementById("divExtras");
     const divBracketCover = document.getElementById("divBracketCover");
+    const divBracketCoverColour = document.getElementById(
+      "divBracketCoverColour",
+    );
     const divBracketExt = document.getElementById("divBracketExt");
     const divMarkUp = document.getElementById("divMarkUp");
 
@@ -375,6 +390,7 @@ const handlerElementVisibility = async (
     divAccessory.classList.add("d-none");
     divExtras.classList.add("d-none");
     divBracketCover.classList.add("d-none");
+    divBracketCoverColour.classList.add("d-none");
     divBracketExt.classList.add("d-none");
     btnSubmit.classList.add("d-none");
 
@@ -740,6 +756,10 @@ const handlerElementVisibility = async (
       if (item.Trim === "1F") {
         divBottomRail.classList.remove("d-none");
       }
+
+      if (item.BracketColour === "Yes") {
+        divBracketCoverColour.classList.remove("d-none");
+      }
     }
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
 
@@ -799,6 +819,7 @@ const handlerSubmit = async (button) => {
       "accessory",
       "extras",
       "bracketcovers",
+      "bracketcovercolours",
       "bracketext",
       "notes",
       "markup",
@@ -2086,6 +2107,15 @@ const bindTubeSize = (blindname, tubetype) => {
   });
 };
 
+const bindBracketCoverColours = () => {
+  generateOption("bracketcovercolours", [
+    "Birch White",
+    "Black",
+    "Grey",
+    "White",
+  ]);
+};
+
 const bindChildSafe = () => {
   const sel = document.getElementById("childsafe");
   sel.innerHTML = ""; //reset
@@ -2318,4 +2348,103 @@ const getItemData = async (query) => {
     console.error(err);
     isError(err);
   }
+};
+
+const bindSelect = async ({
+  elementId,
+  field,
+  params = {},
+  withDefaultOption = true,
+  lengthDefaultOption = 0,
+  onSingle = null,
+  afterRender = null,
+}) => {
+  const select = document.getElementById(elementId);
+  select.innerHTML = "";
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindListData`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        data: {
+          field,
+          ...params,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`${response.status}\n${text}`);
+    }
+
+    const result = await response.json();
+    const data = result.d;
+
+    if (!Array.isArray(data)) {
+      throw new Error(`No data returned from server : ${field}`);
+    }
+
+    select.innerHTML = "";
+
+    // default option
+    if (withDefaultOption && data.length > lengthDefaultOption) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.text = "";
+      select.add(opt);
+    }
+
+    // render options
+    data.forEach((item) => {
+      const option = document.createElement("option");
+      option.value = item.value;
+      option.text = item.text.toUpperCase();
+      option.setAttribute("data-name", item.text);
+      select.add(option);
+    });
+
+    select.classList.add("fw-bold");
+
+    // callback setelah render
+    if (afterRender) {
+      await afterRender(data, select);
+    }
+
+    // kalau cuma 1 data
+    if (data.length === 1 && onSingle) {
+      select.selectedIndex = 0;
+      await onSingle(data[0], select);
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const generateOption = (elementId, list = [], lengthDefaultOption = 0) => {
+  const sel = document.getElementById(elementId);
+  if (!sel) return;
+  sel.innerHTML = ""; // reset
+
+  // Short A-Z
+  list.sort();
+
+  // default option kalau lebih dari 1 data
+  if (list.length > lengthDefaultOption) {
+    const defaultOption = new Option("", "");
+    sel.add(defaultOption);
+  }
+
+  list.forEach((item) => {
+    const option = new Option(item.toUpperCase(), item);
+    option.setAttribute("data-name", item);
+    sel.add(option);
+  });
 };
