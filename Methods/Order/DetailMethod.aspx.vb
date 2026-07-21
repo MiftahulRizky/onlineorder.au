@@ -770,16 +770,14 @@ Partial Class Methods_Order_DetailMethod
                         Dim Matrix As String = reader("Matrix").ToString()
                         Dim Charge As String = reader("Charge").ToString()
                         Dim MarkUp As String = reader("MarkUp").ToString()
-                        Dim Discount As String = reader("Discount").ToString()
                         Dim FabricGroups As String = reader("FabricGroups").ToString()
                         Dim OrderDelivery As String = reader("OrderDelivery").ToString()
                         Dim PriceGroupName As String = reader("PriceGroupName").ToString()
-
+                        Dim Discount As String = publicCfg.GetItemData(String.Format("SELECT SUM(Qty*(Discount+DiscountB+DiscountC))FROM OrderDetailsPrice WHERE ItemId = '{0}'", Id))
 
                         '#-------------------|| Cost ||-------------------#
                         Dim Cost As String = String.Empty
                         Dim totalCost As Decimal = 0.00
-                        If Discount = "" Then Discount = "0"
                         If DesignName = "Vertical Blinds" AndAlso BlindName = "Slat Only" Then
                             If Matrix = 0 Then
                                 totalCost = Convert.ToDecimal(Charge)

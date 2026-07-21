@@ -893,9 +893,6 @@ Public Class PublicConfig
             result = Matrix * (Discount / 100.0)
         End If
 
-
-
-
         Return result
     End Function
 
@@ -967,7 +964,7 @@ Public Class PublicConfig
                         End If
                         ' Call PriceDetail(headerId, itemId, "Discount", qty, description, 0, 0, result)
                     End If
-                    Call UpdateDiscount(itemId, qty, result)
+                    ' Call UpdateDiscount(itemId, qty, result)
                 Next
             End If
         End If
