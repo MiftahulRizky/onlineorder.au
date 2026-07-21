@@ -7009,161 +7009,185 @@ Partial Class Methods_Order_DetailMethod
                 Select Case SlatSize
                     Case "127", "127mm"
                         If TubeType.Contains("Tiltrack") Then
-                            For Each item In Spacer127Tiltrack
-                                If Width <= item.MaxWidth Then
-                                    If param = "Spacer1Type" Then
-                                        result = item.Spacer1Type
-                                    End If
-                                    If param = "CarrierQty" Then
-                                        result = item.CarriersQty
-                                    End If
-                                    Exit For
-                                End If
-                            Next
-                        ElseIf TubeType.Contains("Louvolite") Then
-                            ' For Each item In Spacer127Louvolite
-                            '     If Width <= item.MaxWidth Then
-                            '         If param = "Spacer1Type" Then
-                            '             result = item.Spacer1Type
-                            '         End If
-                            '         If param = "CarrierQty" Then
-                            '             result = item.CarriersQty
-                            '         End If
-                            '         Exit For
-                            '     End If
-                            ' Next
+                            Dim selected = Spacer127Tiltrack _
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
 
+                            If selected IsNot Nothing Then
+                                If param = "Spacer1Type" Then
+                                    result = selected.Spacer1Type
+                                ElseIf param = "CarrierQty" Then
+                                    result = selected.CarriersQty
+                                End If
+                            End If
+                        ElseIf TubeType.Contains("Louvolite") Then
                             Dim selected = Spacer127Louvolite _
                             .Where(Function(x) Width <= x.MaxWidth) _
                             .OrderBy(Function(x) x.MaxWidth) _
                             .FirstOrDefault()
 
-                        If selected IsNot Nothing Then
-                            If param = "Spacer1Type" Then
-                                result = selected.Spacer1Type
-                            ElseIf param = "CarrierQty" Then
-                                result = selected.CarriersQty
-                            End If
-                        End If
-                        Else
-                            For Each item In Spacer127Metal
-                                If Width <= item.MaxWidth Then
-                                    If param = "Spacer1Type" Then
-                                        result = item.Spacer1Type
-                                    End If
-                                    If param = "CarrierQty" Then
-                                        result = item.CarriersQty
-                                    End If
-                                    Exit For
+                            If selected IsNot Nothing Then
+                                If param = "Spacer1Type" Then
+                                    result = selected.Spacer1Type
+                                ElseIf param = "CarrierQty" Then
+                                    result = selected.CarriersQty
                                 End If
-                            Next
+                            End If
+                        ElseIf TubeType.Contains("Javaline") Then
+                            Dim selected = Spacer127Javaline _
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            If selected IsNot Nothing Then
+                                If param = "Spacer1Type" Then
+                                    result = selected.Spacer1Type
+                                ElseIf param = "CarrierQty" Then
+                                    result = selected.CarriersQty
+                                End If
+                            End If
+                        Else
+                             Dim selected = Spacer127Metal _
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            If selected IsNot Nothing Then
+                                If param = "Spacer1Type" Then
+                                    result = selected.Spacer1Type
+                                ElseIf param = "CarrierQty" Then
+                                    result = selected.CarriersQty
+                                End If
+                            End If
                         End If
                     Case "100", "100mm"
                         If TubeType.Contains("Tiltrack") Then
-                            For Each item In Spacer100Tiltrack
-                                If Width <= item.MaxWidth Then
-                                    If param = "Spacer1Type" Then
-                                        result = item.Spacer1Type
-                                    End If
-                                    If param = "CarrierQty" Then
-                                        result = item.CarriersQty
-                                    End If
-                                    Exit For
+                            Dim selected = Spacer100Tiltrack _
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            If selected IsNot Nothing Then
+                                If param = "Spacer1Type" Then
+                                    result = selected.Spacer1Type
+                                ElseIf param = "CarrierQty" Then
+                                    result = selected.CarriersQty
                                 End If
-                            Next
+                            End If
                         Else
-                            For Each item In Spacer100Metal
-                                If Width <= item.MaxWidth Then
-                                    If param = "Spacer1Type" Then
-                                        result = item.Spacer1Type
-                                    End If
-                                    If param = "CarrierQty" Then
-                                        result = item.CarriersQty
-                                    End If
-                                    Exit For
+                            Dim selected = Spacer100Metal _
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            If selected IsNot Nothing Then
+                                If param = "Spacer1Type" Then
+                                    result = selected.Spacer1Type
+                                ElseIf param = "CarrierQty" Then
+                                    result = selected.CarriersQty
                                 End If
-                            Next
+                            End If
                         End If
                     Case "89", "89mm"
                         If TubeType.Contains("Tiltrack") Then
-                            For Each item In Spacer89Tiltrack
-                                If Width <= item.MaxWidth Then
-                                    If param = "Spacer1Type" Then
-                                        result = item.Spacer1Type
-                                    End If
-                                    If param = "CarrierQty" Then
-                                        result = item.CarriersQty
-                                    End If
-                                    Exit For
+                            Dim selected = Spacer89Tiltrack _
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            If selected IsNot Nothing Then
+                                If param = "Spacer1Type" Then
+                                    result = selected.Spacer1Type    
+                                ElseIf param = "CarrierQty" Then
+                                    result = selected.CarriersQty
                                 End If
-                            Next
+                            End If
                         ElseIf TubeType.Contains("Louvolite") Then
-                            For Each item In Spacer89Louvolite
-                                If Width <= item.MaxWidth Then
-                                    If param = "Spacer1Type" Then
-                                        result = item.Spacer1Type
-                                    End If
-                                    If param = "CarrierQty" Then
-                                        result = item.CarriersQty
-                                    End If
-                                    Exit For
+                            Dim selected = Spacer89Louvolite _
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            If selected IsNot Nothing Then
+                                If param = "Spacer1Type" Then
+                                    result = selected.Spacer1Type    
+                                ElseIf param = "CarrierQty" Then
+                                    result = selected.CarriersQty
                                 End If
-                            Next
+                            End If
+                        ElseIf TubeType.Contains("Javaline") Then
+                            Dim selected = Spacer89Javaline _
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            If selected IsNot Nothing Then
+                                If param = "Spacer1Type" Then
+                                    result = selected.Spacer1Type
+                                ElseIf param = "CarrierQty" Then
+                                    result = selected.CarriersQty
+                                End If
+                            End If
                         Else
-                            For Each item In Spacer89Metal
-                                If Width <= item.MaxWidth Then
-                                    If param = "Spacer1Type" Then
-                                        result = item.Spacer1Type
-                                    End If
-                                    If param = "CarrierQty" Then
-                                        result = item.CarriersQty
-                                    End If
-                                    Exit For
+                            Dim selected = Spacer89Metal _
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            If selected IsNot Nothing Then
+                                If param = "Spacer1Type" Then
+                                    result = selected.Spacer1Type    
+                                ElseIf param = "CarrierQty" Then
+                                    result = selected.CarriersQty
                                 End If
-                            Next
+                            End If
                         End If
                     Case "63", "63mm"
                         If TubeType.Contains("Tiltrack") Then
-                            For Each item In Spacer63Tiltrack
-                                If Width <= item.MaxWidth Then
-                                    If param = "Spacer1Type" Then
-                                        result = item.Spacer1Type
-                                    End If
-                                    If param = "CarrierQty" Then
-                                        result = item.CarriersQty
-                                    End If
-                                    Exit For
+                            Dim selected = Spacer63Tiltrack _
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            If selected IsNot Nothing Then
+                                If param = "Spacer1Type" Then
+                                    result = selected.Spacer1Type    
+                                ElseIf param = "CarrierQty" Then
+                                    result = selected.CarriersQty
                                 End If
-                            Next
+                            End If
                         Else
-                            For Each item In Spacer63Metal
-                                If Width <= item.MaxWidth Then
-                                    If param = "Spacer1Type" Then
-                                        result = item.Spacer1Type
-                                    End If
-                                    If param = "CarrierQty" Then
-                                        result = item.CarriersQty
-                                    End If
-                                    Exit For
+                            Dim selected = Spacer63Metal _
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            If selected IsNot Nothing Then
+                                If param = "Spacer1Type" Then
+                                    result = selected.Spacer1Type    
+                                ElseIf param = "CarrierQty" Then
+                                    result = selected.CarriersQty
                                 End If
-                            Next
+                            End If
                         End If
                 End Select
             End If
         End If
 
         ' If DesignName = "Veri Shades" Then
-        '     For Each item In SpacerVerishades
-        '         If Width >= item.MinWidth AndAlso Width <= item.MaxWidth Then
-        '             If param = "Spacer1Type" Then
-        '                 result = item.Spacer1Type
-        '             End If
-        '             If param = "CarrierQty" Then
-        '                 result = item.CarriersQty
-        '             End If
-        '             Exit For
+        '     Dim selected = SpacerVerishades _
+        '     .Where(Function(x) Width >= x.MaxWidth AndAlso Width <= x.MaxWidth) _
+        '     .OrderBy(Function(x) x.MaxWidth) _
+        '     .FirstOrDefault()
+
+        '     If selected IsNot Nothing Then
+        '         If param = "Spacer1Type" Then
+        '             result = selected.Spacer1Type    
+        '         ElseIf param = "CarrierQty" Then
+        '             result = selected.CarriersQty
         '         End If
-        '     Next
+        '     End If
         ' End If
 
 
@@ -9366,6 +9390,125 @@ Partial Class Methods_Order_DetailMethod
         New SpacerInfo With {.MaxWidth = 2618, .Spacer1Type = "85", .CarriersQty = 36},
         New SpacerInfo With {.MaxWidth = 2701, .Spacer1Type = "87", .CarriersQty = 36},
         New SpacerInfo With {.MaxWidth = 2768, .Spacer1Type = "89", .CarriersQty = 36}
+    }
+
+    Private Shared ReadOnly Spacer127Javaline As New List(Of SpacerInfo) From {
+        New SpacerInfo With {.MaxWidth = 591,  .Spacer1Type = "115", .CarriersQty = 5},
+        New SpacerInfo With {.MaxWidth = 705,  .Spacer1Type = "115", .CarriersQty = 6},
+        New SpacerInfo With {.MaxWidth = 818,  .Spacer1Type = "115", .CarriersQty = 7},
+        New SpacerInfo With {.MaxWidth = 931,  .Spacer1Type = "115", .CarriersQty = 8},
+        New SpacerInfo With {.MaxWidth = 1044, .Spacer1Type = "115", .CarriersQty = 9},
+        New SpacerInfo With {.MaxWidth = 1157, .Spacer1Type = "115", .CarriersQty = 10},
+        New SpacerInfo With {.MaxWidth = 1271, .Spacer1Type = "115", .CarriersQty = 11},
+        New SpacerInfo With {.MaxWidth = 1384, .Spacer1Type = "115", .CarriersQty = 12},
+        New SpacerInfo With {.MaxWidth = 1497, .Spacer1Type = "115", .CarriersQty = 13},
+        New SpacerInfo With {.MaxWidth = 1610, .Spacer1Type = "115", .CarriersQty = 14},
+        New SpacerInfo With {.MaxWidth = 1723, .Spacer1Type = "115", .CarriersQty = 15},
+        New SpacerInfo With {.MaxWidth = 1837, .Spacer1Type = "115", .CarriersQty = 16},
+        New SpacerInfo With {.MaxWidth = 1950, .Spacer1Type = "115", .CarriersQty = 17},
+        New SpacerInfo With {.MaxWidth = 2063, .Spacer1Type = "115", .CarriersQty = 18},
+        New SpacerInfo With {.MaxWidth = 2176, .Spacer1Type = "115", .CarriersQty = 19},
+        New SpacerInfo With {.MaxWidth = 2289, .Spacer1Type = "115", .CarriersQty = 20},
+        New SpacerInfo With {.MaxWidth = 2403, .Spacer1Type = "115", .CarriersQty = 21},
+        New SpacerInfo With {.MaxWidth = 2516, .Spacer1Type = "115", .CarriersQty = 22},
+        New SpacerInfo With {.MaxWidth = 2629, .Spacer1Type = "115", .CarriersQty = 23},
+        New SpacerInfo With {.MaxWidth = 2742, .Spacer1Type = "115", .CarriersQty = 24},
+        New SpacerInfo With {.MaxWidth = 2855, .Spacer1Type = "115", .CarriersQty = 25},
+        New SpacerInfo With {.MaxWidth = 2969, .Spacer1Type = "115", .CarriersQty = 26},
+        New SpacerInfo With {.MaxWidth = 3082, .Spacer1Type = "115", .CarriersQty = 27},
+        New SpacerInfo With {.MaxWidth = 3195, .Spacer1Type = "115", .CarriersQty = 28},
+        New SpacerInfo With {.MaxWidth = 3308, .Spacer1Type = "115", .CarriersQty = 29},
+        New SpacerInfo With {.MaxWidth = 3421, .Spacer1Type = "115", .CarriersQty = 30},
+        New SpacerInfo With {.MaxWidth = 3535, .Spacer1Type = "115", .CarriersQty = 31},
+        New SpacerInfo With {.MaxWidth = 3648, .Spacer1Type = "115", .CarriersQty = 32},
+        New SpacerInfo With {.MaxWidth = 3761, .Spacer1Type = "115", .CarriersQty = 33},
+        New SpacerInfo With {.MaxWidth = 3874, .Spacer1Type = "115", .CarriersQty = 34},
+        New SpacerInfo With {.MaxWidth = 3987, .Spacer1Type = "115", .CarriersQty = 35},
+        New SpacerInfo With {.MaxWidth = 4109, .Spacer1Type = "115", .CarriersQty = 36},
+        New SpacerInfo With {.MaxWidth = 4223, .Spacer1Type = "115", .CarriersQty = 37},
+        New SpacerInfo With {.MaxWidth = 4337, .Spacer1Type = "115", .CarriersQty = 38},
+        New SpacerInfo With {.MaxWidth = 4451, .Spacer1Type = "115", .CarriersQty = 39},
+        New SpacerInfo With {.MaxWidth = 4565, .Spacer1Type = "115", .CarriersQty = 40},
+        New SpacerInfo With {.MaxWidth = 4679, .Spacer1Type = "115", .CarriersQty = 41},
+        New SpacerInfo With {.MaxWidth = 4793, .Spacer1Type = "115", .CarriersQty = 42},
+        New SpacerInfo With {.MaxWidth = 4907, .Spacer1Type = "115", .CarriersQty = 43},
+        New SpacerInfo With {.MaxWidth = 5021, .Spacer1Type = "115", .CarriersQty = 44},
+        New SpacerInfo With {.MaxWidth = 5135, .Spacer1Type = "115", .CarriersQty = 45},
+        New SpacerInfo With {.MaxWidth = 5249, .Spacer1Type = "115", .CarriersQty = 46},
+        New SpacerInfo With {.MaxWidth = 5363, .Spacer1Type = "115", .CarriersQty = 47},
+        New SpacerInfo With {.MaxWidth = 5477, .Spacer1Type = "115", .CarriersQty = 48}
+    }
+
+    Private Shared ReadOnly Spacer89Javaline As New List(Of SpacerInfo) From {
+        New SpacerInfo With {.MaxWidth = 472,  .Spacer1Type = "79", .CarriersQty = 6},
+        New SpacerInfo With {.MaxWidth = 546,  .Spacer1Type = "79", .CarriersQty = 7},
+        New SpacerInfo With {.MaxWidth = 620,  .Spacer1Type = "79", .CarriersQty = 8},
+        New SpacerInfo With {.MaxWidth = 695,  .Spacer1Type = "79", .CarriersQty = 9},
+        New SpacerInfo With {.MaxWidth = 769,  .Spacer1Type = "79", .CarriersQty = 10},
+        New SpacerInfo With {.MaxWidth = 843,  .Spacer1Type = "79", .CarriersQty = 11},
+        New SpacerInfo With {.MaxWidth = 917,  .Spacer1Type = "79", .CarriersQty = 12},
+        New SpacerInfo With {.MaxWidth = 991,  .Spacer1Type = "79", .CarriersQty = 13},
+        New SpacerInfo With {.MaxWidth = 1066, .Spacer1Type = "79", .CarriersQty = 14},
+        New SpacerInfo With {.MaxWidth = 1140, .Spacer1Type = "79", .CarriersQty = 15},
+        New SpacerInfo With {.MaxWidth = 1214, .Spacer1Type = "79", .CarriersQty = 16},
+        New SpacerInfo With {.MaxWidth = 1288, .Spacer1Type = "79", .CarriersQty = 17},
+        New SpacerInfo With {.MaxWidth = 1362, .Spacer1Type = "79", .CarriersQty = 18},
+        New SpacerInfo With {.MaxWidth = 1437, .Spacer1Type = "79", .CarriersQty = 19},
+        New SpacerInfo With {.MaxWidth = 1511, .Spacer1Type = "79", .CarriersQty = 20},
+        New SpacerInfo With {.MaxWidth = 1585, .Spacer1Type = "79", .CarriersQty = 21},
+        New SpacerInfo With {.MaxWidth = 1659, .Spacer1Type = "79", .CarriersQty = 22},
+        New SpacerInfo With {.MaxWidth = 1733, .Spacer1Type = "79", .CarriersQty = 23},
+        New SpacerInfo With {.MaxWidth = 1808, .Spacer1Type = "79", .CarriersQty = 24},
+        New SpacerInfo With {.MaxWidth = 1882, .Spacer1Type = "79", .CarriersQty = 25},
+        New SpacerInfo With {.MaxWidth = 1956, .Spacer1Type = "79", .CarriersQty = 26},
+        New SpacerInfo With {.MaxWidth = 2030, .Spacer1Type = "79", .CarriersQty = 27},
+        New SpacerInfo With {.MaxWidth = 2104, .Spacer1Type = "79", .CarriersQty = 28},
+        New SpacerInfo With {.MaxWidth = 2179, .Spacer1Type = "79", .CarriersQty = 29},
+        New SpacerInfo With {.MaxWidth = 2253, .Spacer1Type = "79", .CarriersQty = 30},
+        New SpacerInfo With {.MaxWidth = 2327, .Spacer1Type = "79", .CarriersQty = 31},
+        New SpacerInfo With {.MaxWidth = 2401, .Spacer1Type = "79", .CarriersQty = 32},
+        New SpacerInfo With {.MaxWidth = 2475, .Spacer1Type = "79", .CarriersQty = 33},
+        New SpacerInfo With {.MaxWidth = 2550, .Spacer1Type = "79", .CarriersQty = 34},
+        New SpacerInfo With {.MaxWidth = 2624, .Spacer1Type = "79", .CarriersQty = 35},
+        New SpacerInfo With {.MaxWidth = 2698, .Spacer1Type = "79", .CarriersQty = 36},
+        New SpacerInfo With {.MaxWidth = 2772, .Spacer1Type = "79", .CarriersQty = 37},
+        New SpacerInfo With {.MaxWidth = 2846, .Spacer1Type = "79", .CarriersQty = 38},
+        New SpacerInfo With {.MaxWidth = 2921, .Spacer1Type = "79", .CarriersQty = 39},
+        New SpacerInfo With {.MaxWidth = 2995, .Spacer1Type = "79", .CarriersQty = 40},
+        New SpacerInfo With {.MaxWidth = 3069, .Spacer1Type = "79", .CarriersQty = 41},
+        New SpacerInfo With {.MaxWidth = 3143, .Spacer1Type = "79", .CarriersQty = 42},
+        New SpacerInfo With {.MaxWidth = 3217, .Spacer1Type = "79", .CarriersQty = 43},
+        New SpacerInfo With {.MaxWidth = 3292, .Spacer1Type = "79", .CarriersQty = 44},
+        New SpacerInfo With {.MaxWidth = 3366, .Spacer1Type = "79", .CarriersQty = 45},
+        New SpacerInfo With {.MaxWidth = 3440, .Spacer1Type = "79", .CarriersQty = 46},
+        New SpacerInfo With {.MaxWidth = 3514, .Spacer1Type = "79", .CarriersQty = 47},
+        New SpacerInfo With {.MaxWidth = 3588, .Spacer1Type = "79", .CarriersQty = 48},
+        New SpacerInfo With {.MaxWidth = 3663, .Spacer1Type = "79", .CarriersQty = 49},
+        New SpacerInfo With {.MaxWidth = 3737, .Spacer1Type = "79", .CarriersQty = 50},
+        New SpacerInfo With {.MaxWidth = 3811, .Spacer1Type = "79", .CarriersQty = 51},
+        New SpacerInfo With {.MaxWidth = 3885, .Spacer1Type = "79", .CarriersQty = 52},
+        New SpacerInfo With {.MaxWidth = 3959, .Spacer1Type = "79", .CarriersQty = 53},
+        New SpacerInfo With {.MaxWidth = 4031, .Spacer1Type = "79", .CarriersQty = 54},
+        New SpacerInfo With {.MaxWidth = 4105, .Spacer1Type = "79", .CarriersQty = 55},
+        New SpacerInfo With {.MaxWidth = 4179, .Spacer1Type = "79", .CarriersQty = 56},
+        New SpacerInfo With {.MaxWidth = 4253, .Spacer1Type = "79", .CarriersQty = 57},
+        New SpacerInfo With {.MaxWidth = 4327, .Spacer1Type = "79", .CarriersQty = 58},
+        New SpacerInfo With {.MaxWidth = 4401, .Spacer1Type = "79", .CarriersQty = 59},
+        New SpacerInfo With {.MaxWidth = 4475, .Spacer1Type = "79", .CarriersQty = 60},
+        New SpacerInfo With {.MaxWidth = 4549, .Spacer1Type = "79", .CarriersQty = 61},
+        New SpacerInfo With {.MaxWidth = 4623, .Spacer1Type = "79", .CarriersQty = 62},
+        New SpacerInfo With {.MaxWidth = 4697, .Spacer1Type = "79", .CarriersQty = 63},
+        New SpacerInfo With {.MaxWidth = 4771, .Spacer1Type = "79", .CarriersQty = 64},
+        New SpacerInfo With {.MaxWidth = 4845, .Spacer1Type = "79", .CarriersQty = 65},
+        New SpacerInfo With {.MaxWidth = 4919, .Spacer1Type = "79", .CarriersQty = 66},
+        New SpacerInfo With {.MaxWidth = 4993, .Spacer1Type = "79", .CarriersQty = 67},
+        New SpacerInfo With {.MaxWidth = 5067, .Spacer1Type = "79", .CarriersQty = 68},
+        New SpacerInfo With {.MaxWidth = 5141, .Spacer1Type = "79", .CarriersQty = 69},
+        New SpacerInfo With {.MaxWidth = 5215, .Spacer1Type = "79", .CarriersQty = 70},
+        New SpacerInfo With {.MaxWidth = 5289, .Spacer1Type = "79", .CarriersQty = 71},
+        New SpacerInfo With {.MaxWidth = 5363, .Spacer1Type = "79", .CarriersQty = 72},
+        New SpacerInfo With {.MaxWidth = 5437, .Spacer1Type = "79", .CarriersQty = 73},
+        New SpacerInfo With {.MaxWidth = 5511, .Spacer1Type = "79", .CarriersQty = 74}
     }
 
     Private Shared ReadOnly SpacerVerishades As New List(Of SpacerInfo) From {
