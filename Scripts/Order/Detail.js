@@ -1534,10 +1534,10 @@ const handlerHeaderInfo = async (item) => {
 
       if (PRICEACCESS == "1" || PRICEACCESS == "True") {
         const Cost = await getItemData(
-          `SELECT SUM(Cost) FROM OrderDetailsPrice WHERE HeaderId = '${item.Id}'`,
+          `SELECT SUM(Cost*Qty) FROM OrderDetailsPrice WHERE HeaderId = '${item.Id}'`,
         );
         const Discount = await getItemData(
-          `SELECT SUM(Discount+DiscountB+DiscountC) FROM OrderDetailsPrice WHERE HeaderId = '${item.Id}'`,
+          `SELECT SUM((Discount+DiscountB+DiscountC) * Qty) FROM OrderDetailsPrice WHERE HeaderId = '${item.Id}'`,
         );
         // SumPrice = await getItemData(
         //   `SELECT SUM(TotalMatrix + TotalCharge) AS SumPrice FROM OrderDetails WHERE HeaderId = '${item.Id}' AND Active=1`,
