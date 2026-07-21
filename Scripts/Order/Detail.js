@@ -1533,9 +1533,17 @@ const handlerHeaderInfo = async (item) => {
       let FinalTotal = 0;
 
       if (PRICEACCESS == "1" || PRICEACCESS == "True") {
-        SumPrice = await getItemData(
-          `SELECT SUM(TotalMatrix + TotalCharge) AS SumPrice FROM OrderDetails WHERE HeaderId = '${item.Id}' AND Active=1`,
+        const Cost = await getItemData(
+          `SELECT SUM(Cost) FROM OrderDetailsPrice WHERE HeaderId = '${item.Id}'`,
         );
+        const Discount = await getItemData(
+          `SELECT SUM(Discount+DiscountB+DiscountC) FROM OrderDetailsPrice WHERE HeaderId = '${item.Id}'`,
+        );
+        // SumPrice = await getItemData(
+        //   `SELECT SUM(TotalMatrix + TotalCharge) AS SumPrice FROM OrderDetails WHERE HeaderId = '${item.Id}' AND Active=1`,
+        // );
+
+        SumPrice = parseFloat(Cost) - parseFloat(Discount);
 
         // convert string "556,40" -> number 556.40
         SumPrice = parseFloat(SumPrice.toString().replace(",", ".")) || 0;
