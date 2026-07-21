@@ -669,7 +669,7 @@ Partial Class Methods_Order_DetailMethod
 
                 ' --- 2. Bangun Query Utama dengan Filtering, Ordering, dan Pagination ---
                 Dim sqlBuilder As New System.Text.StringBuilder()
-                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, BlindId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, TubeType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PanelSize, PelmetType, BottomTrackType, MeshType, FrameType, Matrix, Charge, Markup, FabricGroups, OrderDelivery, PriceGroupName")
+                sqlBuilder.AppendLine("SELECT Id, HeaderId, DesignId, BlindId, Qty, Location, Mounting, DesignName, BlindName, KitName, BracketType, TubeType, ControlType, FabricType, BlindNo, UniqueId, Width, [Drop], FrameColour, PanelSize, PelmetType, BottomTrackType, MeshType, FrameType, Matrix, Charge, Discount, Markup, FabricGroups, OrderDelivery, PriceGroupName")
                 sqlBuilder.AppendLine("FROM view_details")
                 sqlBuilder.AppendLine("WHERE Active=@Active AND HeaderId=@HeaderId")
 
@@ -770,6 +770,7 @@ Partial Class Methods_Order_DetailMethod
                         Dim Matrix As String = reader("Matrix").ToString()
                         Dim Charge As String = reader("Charge").ToString()
                         Dim MarkUp As String = reader("MarkUp").ToString()
+                        Dim Discount As String = reader("Discount").ToString()
                         Dim FabricGroups As String = reader("FabricGroups").ToString()
                         Dim OrderDelivery As String = reader("OrderDelivery").ToString()
                         Dim PriceGroupName As String = reader("PriceGroupName").ToString()
@@ -778,18 +779,18 @@ Partial Class Methods_Order_DetailMethod
                         '#-------------------|| Cost ||-------------------#
                         Dim Cost As String = String.Empty
                         Dim totalCost As Decimal = 0.00
-                        
+                        If Discount = "" Then Discount = "0"
                         If DesignName = "Vertical Blinds" AndAlso BlindName = "Slat Only" Then
                             If Matrix = 0 Then
                                 totalCost = Convert.ToDecimal(Charge)
                                 Cost = "$" & totalCost.ToString("N2", enUS)
                             Else
-                                totalCost = Convert.ToDecimal(Matrix) + Convert.ToDecimal(Charge)
+                                totalCost = (Convert.ToDecimal(Matrix) + Convert.ToDecimal(Charge)) - Convert.ToDecimal(Discount)
                                 Cost = "$" & totalCost.ToString("N2", enUS)
                             End If
                         Else
                             If Matrix > 0 Then
-                                totalCost = Convert.ToDecimal(Matrix) + Convert.ToDecimal(Charge)
+                                totalCost = (Convert.ToDecimal(Matrix) + Convert.ToDecimal(Charge)) - Convert.ToDecimal(Discount)
                                 Cost = "$" & totalCost.ToString("N2", enUS)
                             End If
                         End If

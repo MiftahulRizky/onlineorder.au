@@ -1335,15 +1335,17 @@ Public Class PublicConfig
                         Dim checkDiscount As DataSet = GetListData("SELECT * FROM CustomDiscounts WHERE DesignId='" + UCase(designId).ToString() + "' AND BlindId='" + blindId + "' AND BlindNo = '" + blindNo + "' AND Type='" + type + "' AND Active=1 ORDER BY Id ASC")
                         Dim customDiscount As Decimal = 0.00
                         If checkDiscount.Tables(0).Rows.Count > 0 Then
-                            Dim FormulaCustomDiscount As String = checkDiscount.Tables(0).Rows(0).Item("Formula").ToString()
-                            Dim CustomDiscountName As String = checkDiscount.Tables(0).Rows(0).Item("Name").ToString()
-                            If formula = FormulaCustomDiscount Then
-                                customDiscount = HitungCustomDiscount(headerId, itemId, thisCharge, type)
-                            Else
-                                If CustomDiscountName = "SBS/ACCENT 15%" Then
+                            For j As Integer = 0 To checkDiscount.Tables(0).Rows.Count - 1
+                                Dim FormulaCustomDiscount As String = checkDiscount.Tables(0).Rows(j).Item("Formula").ToString()
+                                Dim CustomDiscountName As String = checkDiscount.Tables(0).Rows(j).Item("Name").ToString()
+                                If formula = FormulaCustomDiscount Then
                                     customDiscount = HitungCustomDiscount(headerId, itemId, thisCharge, type)
+                                Else
+                                    If CustomDiscountName = "SBS/ACCENT 15%" Then
+                                        customDiscount = HitungCustomDiscount(headerId, itemId, thisCharge, type)
+                                    End If
                                 End If
-                            End If
+                            Next
                         End If
 
                         Dim ListParam As New List(Of Object) From {
