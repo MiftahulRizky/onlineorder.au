@@ -927,7 +927,7 @@ Public Class PublicConfig
                         If String.IsNullOrEmpty(fromDate) And String.IsNullOrEmpty(toDate) Then
                             If InStr(chargeResult, "%") > 0 Then
                                 Dim replicent As String = Replace(chargeResult, "%", "")
-                                result = matrix * (CInt(replicent) / 100)
+                                result = matrix * (Decimal.Parse(replicent) / 100)
                             End If
 
                             If InStr(chargeResult, "$") > 0 Then
@@ -1338,13 +1338,8 @@ Public Class PublicConfig
                             Dim FormulaCustomDiscount As String = checkDiscount.Tables(0).Rows(0).Item("Formula").ToString()
                             If formula = FormulaCustomDiscount Then
                                 customDiscount = HitungCustomDiscount(headerId, itemId, thisCharge, type)
-                                If customDiscount > 0 Then
-                                    thisCharge = thisCharge - customDiscount
-                                End If
                             End If
                         End If
-
-                        Dim realCharge As Decimal = thisCharge
 
                         Dim ListParam As New List(Of Object) From {
                             headerId,
@@ -1352,7 +1347,7 @@ Public Class PublicConfig
                             type,
                             qty,
                             description,
-                            realCharge,
+                            thisCharge,
                             customDiscount,
                             0
                         }
