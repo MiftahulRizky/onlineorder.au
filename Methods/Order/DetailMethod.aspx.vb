@@ -9139,7 +9139,7 @@ Partial Class Methods_Order_DetailMethod
         New SpacerInfo With {.MaxWidth = 1717, .Spacer1Type = "125", .CarriersQty = 15},
         New SpacerInfo With {.MaxWidth = 1743, .Spacer1Type = "127", .CarriersQty = 15},
         New SpacerInfo With {.MaxWidth = 1775, .Spacer1Type = "129", .CarriersQty = 15},
-        New SpacerInfo With {.MaxWidth = 1759, .Spacer1Type = "123", .CarriersQty = 16},
+        New SpacerInfo With {.MaxWidth = 1795, .Spacer1Type = "123", .CarriersQty = 16},
         New SpacerInfo With {.MaxWidth = 1830, .Spacer1Type = "125", .CarriersQty = 16},
         New SpacerInfo With {.MaxWidth = 1857, .Spacer1Type = "127", .CarriersQty = 16},
         New SpacerInfo With {.MaxWidth = 1892, .Spacer1Type = "129", .CarriersQty = 16},
