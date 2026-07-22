@@ -678,9 +678,9 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     If data.blindno = "Blind 2" Then
                         If InArray(data.itemaction, "NextItem", "EditItem") Then
-                            ' If String.IsNullOrEmpty(data.controlposition) Then
-                            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
-                            ' End If
+                            If String.IsNullOrEmpty(data.controlposition) Then
+                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                            End If
                             ' If String.IsNullOrEmpty(data.chaincolour) Then
                             '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
                             ' End If
@@ -695,6 +695,19 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     If data.blindno = "Blind 3" Then
                         If InArray(data.itemaction, "NextItem", "EditItem") Then
+                            If String.IsNullOrEmpty(data.controlposition) Then
+                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                            End If
+                            If String.IsNullOrEmpty(data.chaincolour) Then
+                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                            End If
+                            Dim chainlength As Integer
+                            If Not String.IsNullOrEmpty(data.chainlength) Then
+                                If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                End If
+                            End If
+
                             ' Dim controlB2 As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             ' Dim chainB2 As String = publicCfg.GetItemData(String.Format("SELECT ChainId FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
 
@@ -1159,31 +1172,20 @@ Partial Class Methods_Order_RollerBlindMethod
                 BottomRailId = data.railcolour
             End If
 
-            If InStr(data.controltype, "Somfy") > 0 Or InStr(data.controltype, "Alpha") > 0 Then
-                data.chaincolour = ""
-                data.chainlength = ""
+            If data.brackettype = "Linked 3 Blinds (Ind)" AND data.blindno = "Blind 2" Then
                 ChainId = ""
                 CLength = ""
+                data.chainlength = ""
 
-                If data.brackettype = "Headbox & Side Channels" Then
-                    data.connector = ""
-                End If
-
-                If BlindName = "Motorised" Or (data.controltype = "Alpha WF" Or data.controltype = "Somfy WF") Then
-                    data.cableexitpoint = ""
-                End If
             End If
+
 
             Dim squareMetre As Decimal = Math.Round(width * drop / 1000000, 4)
             Dim linearMetre As Decimal = Math.Round(width / 1000, 4)
 
             ' Throw New Exception("yeahhhh")
 
-            ' If data.trim = "1F" Then
-            '     data.accessory = ""
-            ' End If
-            
-            ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = data.uniqueid, .field = ""}}
+
             
             
             Dim msg As String = "200"
@@ -1194,8 +1196,6 @@ Partial Class Methods_Order_RollerBlindMethod
                 If data.brackettype = "Double" Or InStr(data.brackettype, "Linked") > 0 Or InStr(data.brackettype, "Link") > 0 Then
                     data.uniqueid = GenerateUniqueId()
                 End If
-
-                ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = data.uniqueid, .field = ""}}
 
 
                 Using thisConn As New SqlConnection(myConn)
@@ -1434,16 +1434,18 @@ Partial Class Methods_Order_RollerBlindMethod
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResFabric, .field = ""}}
                     End If
 
-                    '#SdsControlChainInd
-                    Dim ListControl As New List(Of Object) From {
-                        ItemId,
-                        data.uniqueid,
-                        data.blindno
-                    }
-                    
-                    Dim ResControl As String = SdsControlChainInd(ListControl)
-                    IF Not ResControl = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                    If data.brackettype = "Linked 3 Blinds (Ind)" Then
+                        '#SdsControlLink3Ind
+                        Dim ListControl As New List(Of Object) From {
+                            ItemId,
+                            data.uniqueid,
+                            data.blindno
+                        }
+                        
+                        Dim ResControl As String = SdsControlLink3Ind(ListControl)
+                        IF Not ResControl = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                        End If
                     End If
 
                 End If
@@ -1749,16 +1751,18 @@ Partial Class Methods_Order_RollerBlindMethod
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResFabric, .field = ""}}
                     End If
 
-                    '#SdsControlChainInd
-                    Dim ListControl As New List(Of Object) From {
-                        ItemId,
-                        data.uniqueid,
-                        data.blindno
-                    }
-                    
-                    Dim ResControl As String = SdsControlChainInd(ListControl)
-                    IF Not ResControl = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                    If data.brackettype = "Linked 3 Blinds (Ind)" Then
+                        '#SdsControlLink3Ind
+                        Dim ListControl As New List(Of Object) From {
+                            ItemId,
+                            data.uniqueid,
+                            data.blindno
+                        }
+                        
+                        Dim ResControl As String = SdsControlLink3Ind(ListControl)
+                        IF Not ResControl = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                        End If
                     End If
 
                 End If
@@ -1992,28 +1996,41 @@ Partial Class Methods_Order_RollerBlindMethod
         End Try
     End function
 
-    Private Shared Function SdsControlChainInd(ListParam As List(Of Object)) As String
+    Private Shared Function SdsControlLink3Ind(ListParam As List(Of Object)) As String
         Try
             Dim ThisControl As String = ""
+            Dim ThisBlindNo As String = ""
             Dim ItemId As String = CStr(ListParam(0))
             Dim UniqueId As String = CStr(ListParam(1))
             Dim BlindNo As String = CStr(ListParam(2))
             Dim ControlB1 As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE UniqueId='{0}' AND BlindNo='Blind 1' AND Active=1", UniqueId))
-            Dim ChainId As String = publicCfg.GetItemData(String.Format("SELECT ChainId FROM OrderDetails WHERE UniqueId='{0}' AND BlindNo='Blind 1' AND Active=1", UniqueId))
-            Dim ChainLength As String = publicCfg.GetItemData(String.Format("SELECT ChainLength FROM OrderDetails WHERE UniqueId='{0}' AND BlindNo='Blind 1' AND Active=1", UniqueId))
+            Dim ControlB3 As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE UniqueId='{0}' AND BlindNo='Blind 3' AND Active=1", UniqueId))
+
+            If BlindNo = "Blind 2" Then Return "200"
            
-            If ControlB1 = "Left" Then
-                ThisControl = "Right"
-            Else If ControlB1 = "Right" Then
-                ThisControl = "Left"
+            If BlindNo = "Blind 1" Then
+                ThisBlindNo = "Blind 3"
+                If ControlB1 = "Left" Then
+                    ThisControl = "Right"
+                Else If ControlB1 = "Right" Then
+                    ThisControl = "Left"
+                End If
+            End If
+
+            If BlindNo = "Blind 3" Then
+                ThisBlindNo = "Blind 1"
+                If ControlB3 = "Left" Then
+                    ThisControl = "Right"
+                Else If ControlB3 = "Right" Then
+                    ThisControl = "Left"
+                End If
             End If
 
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderDetails SET ControlPosition=@ControlPosition, ChainId=@ChainId, ChainLength=@ChainLength WHERE BlindNo IN ('Blind 2', 'Blind 3') AND UniqueId=@UniqueId AND Active=1", thisConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetails SET ControlPosition=@ControlPosition WHERE BlindNo=@BlindNo AND UniqueId=@UniqueId AND Active=1", thisConn)
                     myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
                     myCmd.Parameters.AddWithValue("@ControlPosition", ThisControl)
-                    myCmd.Parameters.AddWithValue("@ChainId", ChainId)
-                    myCmd.Parameters.AddWithValue("@ChainLength", ChainLength)
+                    myCmd.Parameters.AddWithValue("@BlindNo", ThisBlindNo)
                     myCmd.Connection = thisConn
                     thisConn.Open()
                     myCmd.ExecuteNonQuery()

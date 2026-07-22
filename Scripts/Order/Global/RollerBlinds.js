@@ -463,12 +463,6 @@ const handlerElementVisibility = async (
       divTubeType.classList.remove("d-none");
     }
 
-    if (["Linked 3 Blinds (Ind)"].includes(brackettype)) {
-      if (lblBlindNo.innerHTML == "Blind 1") {
-        lblIndBlind.classList.remove("d-none");
-      }
-    }
-
     // ---------------------------------|| on change tubetype ||---------------------------------
     if (!tubetype) return;
 
@@ -499,8 +493,7 @@ const handlerElementVisibility = async (
       // divAccessory.classList.remove("d-none");
 
       if (["Linked 3 Blinds (Ind)"].includes(brackettype)) {
-        if (["Blind 2", "Blind 3"].includes(lblBlindNo.innerHTML)) {
-          divControlPosition.classList.add("d-none");
+        if (["Blind 2"].includes(lblBlindNo.innerHTML)) {
           divChain.classList.add("d-none");
         }
       }
