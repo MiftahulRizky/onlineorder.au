@@ -914,6 +914,7 @@ const handlerSetElementValues = (itemData) => {
     accessory: "Accessory",
     extras: "AdditionalMotor",
     bracketcovers: "BracketCover",
+    bracketcovercolours: "BracketColour",
     bracketext: "BracketExtension",
     notes: "Notes",
     markup: "MarkUp",

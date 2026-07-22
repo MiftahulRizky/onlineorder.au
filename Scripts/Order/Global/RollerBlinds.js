@@ -81,6 +81,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const tubetype = document.getElementById("tubetype").value;
       const controltype = document.getElementById("controltype").value;
       const colourtype = e.target.value;
+      const width = document.getElementById("width").value;
+      const drop = document.getElementById("drop").value;
 
       await bindFabrics(DESIGNID);
       if (
@@ -95,7 +97,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       await Promise.all([
         bindChains(DESIGNID),
         bindTrims(blindname, brackettype, tubetype),
-        bindTubeSize(blindname, tubetype),
+        bindTubeSize(blindname, tubetype, width, drop),
         bindChildSafe(),
         bindAccessory(),
       ]);
@@ -190,6 +192,24 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   });
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
+
+    if (e.target.id === "width") {
+      const blinds = document.getElementById("blindtype");
+      const blindname = blinds.selectedOptions[0].dataset.name;
+      const tubetype = document.getElementById("tubetype").value;
+      const width = e.target.value;
+      const drop = document.getElementById("drop").value;
+      bindTubeSize(blindname, tubetype, width, drop);
+    }
+
+    if (e.target.id === "drop") {
+      const blinds = document.getElementById("blindtype");
+      const blindname = blinds.selectedOptions[0].dataset.name;
+      const tubetype = document.getElementById("tubetype").value;
+      const width = document.getElementById("width").value;
+      const drop = e.target.value;
+      bindTubeSize(blindname, tubetype, width, drop);
+    }
 
     if (e.target.id === "notes") {
       let maxLength = 1000;
@@ -362,6 +382,7 @@ const handlerElementVisibility = async (
     const divRoll = document.getElementById("divRoll");
     const divControlPosition = document.getElementById("divControlPosition");
     const lblControlPosition = document.getElementById("lblControlPosition");
+    const lblIndBlind = document.getElementById("lblIndBlind");
     const divChain = document.getElementById("divChain");
     const divBottomRail = document.getElementById("divBottomRail");
     const lblBotomRail = document.getElementById("lblBotomRail");
@@ -402,6 +423,7 @@ const handlerElementVisibility = async (
     divRoll.classList.add("d-none");
 
     lblControlPosition.innerHTML = "control position";
+    lblIndBlind.classList.add("d-none");
     divChain.classList.add("d-none");
     divBottomRail.classList.add("d-none");
     lblBotomRail.innerHTML = "bottom rail type x colour";
@@ -424,16 +446,12 @@ const handlerElementVisibility = async (
 
     // -------------------------------|| on change blindtype ||---------------------------------
     if (!blindname) return;
-    if (blindname === "Cassette") {
-      lblBracketType.innerHTML = "cassette type";
-      lblColourType.innerHTML = "cassette colour";
-    }
 
-    if (["Motorised", "Gear Reduction"].includes(blindname)) {
+    if (["Gear Reduction"].includes(blindname)) {
       lblColourType.innerHTML = "colour type";
     }
 
-    if (["Cassette", "Motorised", "Gear Reduction"].includes(blindname)) {
+    if (["Gear Reduction"].includes(blindname)) {
       divAdditional.classList.remove("d-none");
     }
 
@@ -441,112 +459,51 @@ const handlerElementVisibility = async (
 
     // ---------------------------------|| on change brackettype ||---------------------------------
     if (!brackettype) return;
-    if (["Cassette", "Motorised", "Gear Reduction"].includes(blindname)) {
+    if (["Gear Reduction"].includes(blindname)) {
       divTubeType.classList.remove("d-none");
     }
 
-    if (blindname === "Skin Only") {
-      if (
-        ["With Tube & Bottom Included", "With Tube Included"].includes(
-          brackettype,
-        )
-      ) {
-        divTubeSize.classList.remove("d-none");
+    if (["Linked 3 Blinds (Ind)"].includes(brackettype)) {
+      if (lblBlindNo.innerHTML == "Blind 1") {
+        lblIndBlind.classList.remove("d-none");
       }
     }
 
     // ---------------------------------|| on change tubetype ||---------------------------------
     if (!tubetype) return;
-    if (
-      blindname == "Motorised" ||
-      (blindname == "Cassette" && tubetype == "Motorised")
-    ) {
-      btnInfoControlType.classList.remove("d-none");
-    }
 
-    if (["Cassette", "Motorised", "Gear Reduction"].includes(blindname)) {
-      if (tubetype !== "Spring Operated") {
-        divControlType.classList.remove("d-none");
-      }
+    if (["Gear Reduction"].includes(blindname)) {
+      divControlType.classList.remove("d-none");
     }
 
     // ---------------------------------|| on change controltype ||---------------------------------
     if (!controltype) return;
-    if (["Cassette", "Motorised", "Gear Reduction"].includes(blindname)) {
-      if (tubetype !== "Spring Operated") {
-        divColourType.classList.remove("d-none");
-      }
+    if (["Gear Reduction"].includes(blindname)) {
+      divColourType.classList.remove("d-none");
     }
 
     // ---------------------------------|| on change colourtype ||---------------------------------
     if (!colourtype) return;
     divFormDetail.classList.remove("d-none");
-    if (blindname === "Cassette") {
-      if (tubetype === "Motorised") {
-        divMotorStyle.classList.remove("d-none");
-        divMotorRemote.classList.remove("d-none");
-        if (["Alpha WF", "Somfy WF"].includes(controltype)) {
-          divMotorCharger.classList.remove("d-none");
-        }
-        if (!["Alpha WF", "Somfy WF"].includes(controltype)) {
-          divConnector.classList.remove("d-none");
-        }
-        if (
-          ["Alpha RTS", "Alpha WS", "Somfy RTS", "Somfy WS"].includes(
-            controltype,
-          )
-        ) {
-          divCableExitPoint.classList.remove("d-none");
-        }
-        divAccessory.classList.remove("d-none");
-        divExtras.classList.remove("d-none");
-      }
-      if (tubetype == "JAI Geared") {
-        divChain.classList.remove("d-none");
-        divChildSafe.classList.remove("d-none");
-        divAccessory.classList.remove("d-none");
-      }
-      divRoll.classList.remove("d-none");
-      divControlPosition.classList.remove("d-none");
-      lblControlPosition.innerHTML = "control side";
-      divBracketCover.classList.remove("d-none");
-      if (brackettype === "Double") {
-        divBracketExt.classList.add("d-none");
-      }
-    }
-
-    if (blindname === "Motorised") {
-      divMotorStyle.classList.remove("d-none");
-      divMotorRemote.classList.remove("d-none");
-      if (["Alpha WF", "Somfy WF"].includes(controltype)) {
-        divMotorCharger.classList.remove("d-none");
-      }
-      if (!["Alpha WF", "Somfy WF"].includes(controltype)) {
-        divConnector.classList.remove("d-none");
-      }
-      divRoll.classList.remove("d-none");
-      divControlPosition.classList.remove("d-none");
-      lblControlPosition.innerHTML = "motor side";
-      divExtras.classList.remove("d-none");
-      divBracketCover.classList.remove("d-none");
-      if (brackettype === "Double") {
-        divBracketExt.classList.add("d-none");
-      }
-    }
 
     if (blindname === "Gear Reduction") {
-      if (tubetype !== "Spring Operated") {
-        divRoll.classList.remove("d-none");
-        divControlPosition.classList.remove("d-none");
-        divChain.classList.remove("d-none");
-        divBracketCover.classList.remove("d-none");
-        if (brackettype === "Double") {
-          divBracketExt.classList.add("d-none");
-        }
+      divRoll.classList.remove("d-none");
+      divControlPosition.classList.remove("d-none");
+      divChain.classList.remove("d-none");
+      divBracketCover.classList.remove("d-none");
+      if (brackettype === "Double") {
+        divBracketExt.classList.add("d-none");
       }
       divTubeSize.classList.remove("d-none");
       divChildSafe.classList.remove("d-none");
       // divAccessory.classList.remove("d-none");
+
+      if (["Linked 3 Blinds (Ind)"].includes(brackettype)) {
+        if (["Blind 2", "Blind 3"].includes(lblBlindNo.innerHTML)) {
+          divControlPosition.classList.add("d-none");
+          divChain.classList.add("d-none");
+        }
+      }
     }
 
     if (item) {
@@ -1416,6 +1373,9 @@ const bindColours = async (
           throw new Error("Blind name not found : bindColours");
         }
 
+        const width = document.getElementById("width").value;
+        const drop = document.getElementById("drop").value;
+
         await bindFabrics(designid);
         if (blindname == "Motorised") {
           await Promise.all([
@@ -1426,7 +1386,7 @@ const bindColours = async (
         await Promise.all([
           bindChains(designid),
           bindTrims(blindname, brackettype, tubetype),
-          bindTubeSize(blindname, tubetype),
+          bindTubeSize(blindname, tubetype, width, drop),
           bindChildSafe(),
           bindAccessory(),
         ]);
@@ -1853,71 +1813,15 @@ const bindTrims = (blindname, brackettype, tubetype) => {
 };
 
 const bindRailType = async (brackettype, trim) => {
-  const select = document.getElementById("railtype");
-  document.getElementById("railcolour").innerHTML = "";
-  select.innerHTML = "";
-
   if (!brackettype || !trim) return;
 
-  try {
-    const response = await fetch(`${URIMETHOD}/BindRailType`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({
-        brackettype,
-        trim,
-      }),
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      const msg = `${response.status}\n${text}`;
-      throw new Error(msg);
-    }
-
-    // parsing hasil response JSON
-    const result = await response.json();
-    const data = result.d;
-
-    // validasi apakah ada data
-    if (!data) {
-      throw new Error("No data returned from server : bindRailType");
-    }
-
-    // render ke elemen halaman
-    if (Array.isArray(data)) {
-      select.innerHTML = ""; //reset
-
-      if (data.length > 1) {
-        const defaultOption = document.createElement("option");
-        defaultOption.text = "";
-        defaultOption.value = "";
-        select.add(defaultOption);
-      }
-
-      data.forEach(function (item) {
-        const option = document.createElement("option");
-        option.value = item.value;
-        option.text = item.text.toUpperCase();
-        option.setAttribute("data-name", item.text);
-        select.add(option);
-        // select.classList.add("fw-bold");
-      });
-
-      if (data.length === 1) {
-        select.selectedIndex = 0;
-        // bindControls(DESIGNID, select.value);
-      }
-    }
-  } catch (err) {
-    const msg =
-      ROLENAME === "Administrator"
-        ? err.message
-        : "Please contact our IT team at support@onlineorder.au";
-    isError(msg);
-  }
+  await bindSelect({
+    elementId: "railtype",
+    field: "railtype",
+    params: { brackettype, trim },
+    withDefaultOption: true,
+    lengthDefaultOption: 0,
+  });
 };
 
 const bindRailColour = async (brackettype, railtype, trim) => {
@@ -1987,81 +1891,22 @@ const bindRailColour = async (brackettype, railtype, trim) => {
   }
 };
 
-const bindTubeSize = (blindname, tubetype) => {
-  const sel = document.getElementById("tubesize");
-  sel.innerHTML = ""; //reset
-
+const bindTubeSize = (blindname, tubetype, width, drop) => {
   if (!blindname || !tubetype) return;
-
   let data = [];
+
   if (blindname == "Gear Reduction") {
-    if (
-      tubetype == "JAI Standard" ||
-      tubetype == "JAI Geared" ||
-      tubetype == "LOV Standard" ||
-      tubetype == "LOV Geared" ||
-      tubetype == "Spring Operated"
-    ) {
-      data.push(
-        { value: "40", text: "40" },
-        { value: "45", text: "45" },
-        { value: "45H", text: "45H" },
-      );
-    }
     if (tubetype == "Gear Reduction") {
-      data.push(
-        { value: "38", text: "38" },
-        { value: "45", text: "45" },
-        { value: "49", text: "49" },
-      );
+      if (!width || !drop) return;
+      let squareMetre = (parseFloat(width) * parseFloat(drop)) / 1000000;
+      let rounded = Math.round(squareMetre);
+      if (rounded < 6) {
+        data.push("38", "45");
+      }
+      data.push("49");
     }
   }
-
-  if (blindname == "Skin Only") {
-    data.push(
-      { value: "40", text: "40" },
-      { value: "45", text: "45" },
-      { value: "45H", text: "45H" },
-    );
-  }
-
-  if (blindname == "Cassette") {
-    data.push(
-      { value: "40", text: "40" },
-      { value: "45", text: "45" },
-      { value: "45H", text: "45H" },
-    );
-  }
-
-  if (blindname == "Motorised") {
-    switch (tubetype) {
-      case "45 JAI":
-      case "45 LOV":
-        data.push({ value: "45", text: "45" });
-        break;
-      case "45H JAI":
-        data.push({ value: "45H", text: "45H" });
-        break;
-      case "63 Acmeda":
-        data.push({ value: "63", text: "63" });
-        break;
-    }
-  }
-
-  if (data.length > 1) {
-    const defaultOption = document.createElement("option");
-    defaultOption.text = "";
-    defaultOption.value = "";
-    sel.add(defaultOption);
-  }
-
-  data.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
-    sel.add(option);
-  });
+  generateOption("tubesize", data);
 };
 
 const bindChildSafe = () => {
@@ -2251,7 +2096,7 @@ const bindItemOrders = async (itemid) => {
       await bindRailType(item.BracketType, item.Trim);
       await bindRailColour(item.BracketType, item.BottomType, item.Trim);
       await Promise.all([
-        bindTubeSize(item.BlindName, item.TubeType),
+        bindTubeSize(item.BlindName, item.TubeType, item.Width, item.Drop),
         bindChildSafe(),
         bindAccessory(),
         handlerSetElementValues(item),
@@ -2287,6 +2132,105 @@ const getItemData = async (query) => {
     console.error(err);
     isError(err);
   }
+};
+
+const bindSelect = async ({
+  elementId,
+  field,
+  params = {},
+  withDefaultOption = true,
+  lengthDefaultOption = 0,
+  onSingle = null,
+  afterRender = null,
+}) => {
+  const select = document.getElementById(elementId);
+  select.innerHTML = "";
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindListData`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        data: {
+          field,
+          ...params,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`${response.status}\n${text}`);
+    }
+
+    const result = await response.json();
+    const data = result.d;
+
+    if (!Array.isArray(data)) {
+      throw new Error(`No data returned from server : ${field}`);
+    }
+
+    select.innerHTML = "";
+
+    // default option
+    if (withDefaultOption && data.length > lengthDefaultOption) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.text = "";
+      select.add(opt);
+    }
+
+    // render options
+    data.forEach((item) => {
+      const option = document.createElement("option");
+      option.value = item.value;
+      option.text = item.text.toUpperCase();
+      option.setAttribute("data-name", item.text);
+      select.add(option);
+    });
+
+    select.classList.add("fw-bold");
+
+    // callback setelah render
+    if (afterRender) {
+      await afterRender(data, select);
+    }
+
+    // kalau cuma 1 data
+    if (data.length === 1 && onSingle) {
+      select.selectedIndex = 0;
+      await onSingle(data[0], select);
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
+
+const generateOption = (elementId, list = [], lengthDefaultOption = 0) => {
+  const sel = document.getElementById(elementId);
+  if (!sel) return;
+  sel.innerHTML = ""; // reset
+
+  // Short A-Z
+  list.sort();
+
+  // default option kalau lebih dari 1 data
+  if (list.length > lengthDefaultOption) {
+    const defaultOption = new Option("", "");
+    sel.add(defaultOption);
+  }
+
+  list.forEach((item) => {
+    const option = new Option(item.toUpperCase(), item);
+    option.setAttribute("data-name", item);
+    sel.add(option);
+  });
 };
 
 const handlerHideBSModal = (id) => {

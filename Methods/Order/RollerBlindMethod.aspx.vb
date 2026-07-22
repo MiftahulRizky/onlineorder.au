@@ -1072,6 +1072,11 @@ Partial Class Methods_Order_RollerBlindMethod
 
                 Dim ChainName As String = String.Format("{0} Chain + Joiner {1}", CLength, ChainColour)
                 ChainId = publicCfg.GetItemData(String.Format("SELECT Id FROM Chains WHERE Name = '{0}'", ChainName))
+
+                If String.IsNullOrEmpty(ChainId) Then
+                    ChainName = String.Format("Custom Chain + Joiner {0}", ChainColour)
+                    ChainId = publicCfg.GetItemData(String.Format("SELECT Id FROM Chains WHERE Name = '{0}'", ChainName))
+                End If
                 
                 If String.IsNullOrEmpty(data.chainlength) OR data.chainlength = "0" Then : data.chainlength = CLength : End If
                 If Not String.IsNullOrEmpty(data.chainlength) Then : data.chainlength = data.chainlength : End If

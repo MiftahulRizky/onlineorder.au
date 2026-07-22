@@ -3,7 +3,12 @@
   "OrderName": "T API Global",
   "Details": [
     {
-      "KitName": "25mm Aluminium (Basic White)",
+      "KitName": [
+        {
+          "KitA": "25mm Aluminium (Basic White)",
+          "KitB": "25mm Aluminium (Basic White)"
+        }
+      ],
       "BracketType": "N/A",
       "TubeType": "N/A",
       "ControlType": "N/A",

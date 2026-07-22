@@ -2623,7 +2623,7 @@ Partial Class Methods_Order_DetailMethod
             Dim NewItemId As string = publicCfg.CreateOrderItemId()
             Dim NewBlindNo As String = "Blind 1"
             Dim NewUniqueId As String = String.Empty
-            If BracketType = "Double" Or BracketType = "Linked 2 Blinds (Ind)" Or BracketType = "Linked 2 Blinds (Dep)" Then
+            If InArray(BracketType, "Double", "Linked 2 Blinds (Ind)", "Linked 2 Blinds (Dep)", "Linked 3 Blinds (Ind)", "Linked 3 Blinds (Dep)", "Double and Link System Ind", "Double and Link System Dep") Then
                 NewUniqueId = GenerateUniqueId()
             End IF
 

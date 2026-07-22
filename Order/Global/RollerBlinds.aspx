@@ -255,6 +255,7 @@
                                                 <option value="Left">LEFT</option>
                                                 <option value="Right">RIGHT</option>
                                             </select>
+                                            <small class="form-hint" id="lblIndBlind">* Independent Blind</small>
                                         </div>  
                                     </div>
                                     
