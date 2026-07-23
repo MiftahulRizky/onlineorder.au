@@ -1534,10 +1534,10 @@ const handlerHeaderInfo = async (item) => {
 
       if (PRICEACCESS == "1" || PRICEACCESS == "True") {
         const Cost = await getItemData(
-          `SELECT SUM(Cost*Qty) FROM OrderDetailsPrice WHERE HeaderId = '${item.Id}'`,
+          `SELECT SUM(odp.Cost*odp.Qty) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId = '${item.Id}' AND od.Active=1`,
         );
         const Discount = await getItemData(
-          `SELECT SUM((Discount+DiscountB+DiscountC) * Qty) FROM OrderDetailsPrice WHERE HeaderId = '${item.Id}'`,
+          `SELECT SUM((odp.Discount+odp.DiscountB+odp.DiscountC) * odp.Qty) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId ='${item.Id}' AND od.Active='1'`,
         );
         // SumPrice = await getItemData(
         //   `SELECT SUM(TotalMatrix + TotalCharge) AS SumPrice FROM OrderDetails WHERE HeaderId = '${item.Id}' AND Active=1`,
