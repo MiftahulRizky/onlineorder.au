@@ -767,8 +767,8 @@ Partial Class Methods_Order_DetailMethod
                         Dim BottomTrackType As String = reader("BottomTrackType").ToString()
                         Dim MeshType As String = reader("MeshType").ToString()
                         Dim FrameType As String = reader("FrameType").ToString()
-                        Dim Matrix As String = reader("Matrix").ToString()
-                        Dim Charge As String = reader("Charge").ToString()
+                        Dim Matrix As String = publicCfg.GetItemData(String.Format("SELECT SUM(Qty*Cost) FROM OrderDetailsPrice WHERE ItemId = '{0}' AND Type = 'Matrix'", Id))
+                        Dim Charge As String = publicCfg.GetItemData(String.Format("SELECT SUM(Qty*Cost) FROM OrderDetailsPrice WHERE ItemId = '{0}' AND Type = 'Charge'", Id))
                         Dim MarkUp As String = reader("MarkUp").ToString()
                         Dim FabricGroups As String = reader("FabricGroups").ToString()
                         Dim OrderDelivery As String = reader("OrderDelivery").ToString()
@@ -778,20 +778,25 @@ Partial Class Methods_Order_DetailMethod
                         '#-------------------|| Cost ||-------------------#
                         Dim Cost As String = String.Empty
                         Dim totalCost As Decimal = 0.00
+                        Dim matrixVal As Decimal = 0
+                        Dim chargeVal As Decimal = 0
+                        Dim discountVal As Decimal = 0
+
+                        Decimal.TryParse(Matrix, matrixVal)
+                        Decimal.TryParse(Charge, chargeVal)
+                        Decimal.TryParse(Discount, discountVal)
                         If DesignName = "Vertical Blinds" AndAlso BlindName = "Slat Only" Then
-                            If Matrix = 0 Then
-                                totalCost = Convert.ToDecimal(Charge)
-                                Cost = "$" & totalCost.ToString("N2", enUS)
+                            If matrixVal = 0 Then
+                                totalCost = chargeVal
                             Else
-                                totalCost = (Convert.ToDecimal(Matrix) + Convert.ToDecimal(Charge)) - Convert.ToDecimal(Discount)
-                                Cost = "$" & totalCost.ToString("N2", enUS)
+                                totalCost = (matrixVal + chargeVal) - discountVal
                             End If
                         Else
-                            If Matrix > 0 Then
-                                totalCost = (Convert.ToDecimal(Matrix) + Convert.ToDecimal(Charge)) - Convert.ToDecimal(Discount)
-                                Cost = "$" & totalCost.ToString("N2", enUS)
+                            If matrixVal > 0 Then
+                                totalCost = (matrixVal + chargeVal) - discountVal
                             End If
                         End If
+                        Cost = "$" & totalCost.ToString("N2", enUS)
 
                         '#-------------------|| Markup ||-------------------#
                         Dim FindMarkUp As String = String.Empty
