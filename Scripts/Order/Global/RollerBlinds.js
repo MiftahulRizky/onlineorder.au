@@ -220,6 +220,24 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   });
 });
 
+document.querySelectorAll(".btn-information").forEach((el) => {
+  el.addEventListener("click", async (e) => {
+    const id = e.currentTarget.id;
+    let msg = "";
+
+    switch (id) {
+      case "btnInfoControlPosition":
+        msg =
+          "If Blind 2 has the same control side as Blind 1, then Blind 2 is dependent on Blind 1. If Blind 2 has the same control side as Blind 3 (meaning Line 3 is opposite to Blind 1), then Blind 2 is dependent on Blind 3.";
+        break;
+    }
+
+    if (msg) {
+      isInfo(msg);
+    }
+  });
+});
+
 // button submit
 document.querySelector("#btnSubmit").addEventListener("click", (e) => {
   e.preventDefault();
@@ -382,6 +400,9 @@ const handlerElementVisibility = async (
     const divRoll = document.getElementById("divRoll");
     const divControlPosition = document.getElementById("divControlPosition");
     const lblControlPosition = document.getElementById("lblControlPosition");
+    const btnInfoControlPosition = document.getElementById(
+      "btnInfoControlPosition",
+    );
     const lblIndBlind = document.getElementById("lblIndBlind");
     const divChain = document.getElementById("divChain");
     const divBottomRail = document.getElementById("divBottomRail");
@@ -424,6 +445,7 @@ const handlerElementVisibility = async (
 
     lblControlPosition.innerHTML = "control position";
     lblIndBlind.classList.add("d-none");
+    btnInfoControlPosition.classList.add("d-none");
     divChain.classList.add("d-none");
     divBottomRail.classList.add("d-none");
     lblBotomRail.innerHTML = "bottom rail type x colour";
@@ -461,6 +483,12 @@ const handlerElementVisibility = async (
     if (!brackettype) return;
     if (["Gear Reduction"].includes(blindname)) {
       divTubeType.classList.remove("d-none");
+    }
+
+    if (["Linked 3 Blinds (Ind)"].includes(brackettype)) {
+      if (["Blind 2"].includes(lblBlindNo.innerHTML)) {
+        btnInfoControlPosition.classList.remove("d-none");
+      }
     }
 
     // ---------------------------------|| on change tubetype ||---------------------------------
