@@ -495,7 +495,7 @@ Partial Class Methods_Order_RollerBlindMethod
             End IF
 
             If data.controltype = "Chain" Then
-                If InArray(data.brackettype, "Single", "Double", "Linked 2 Blinds (Ind)") Then
+                If InArray(data.brackettype, "Single", "Double") Then
                     If String.IsNullOrEmpty(data.controlposition) Then
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
                     End If
@@ -507,6 +507,40 @@ Partial Class Methods_Order_RollerBlindMethod
                     If Not String.IsNullOrEmpty(data.chainlength) Then
                         If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
                             Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                        End If
+                    End If
+                End If
+
+                If data.brackettype = "Linked 2 Blinds (Ind)" Then
+                    If String.IsNullOrEmpty(data.controlposition) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                    End If
+
+                    If String.IsNullOrEmpty(data.chaincolour) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                    End If
+                    Dim chainlength As Integer
+                    If Not String.IsNullOrEmpty(data.chainlength) Then
+                        If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                        End If
+                    End If
+
+                    If data.blindno = "Blind 1" Then
+                        If InArray(data.itemaction, "EditItem", "ViewItem") Then
+                            Dim ControlB2 As String = FindControlPosition(data.uniqueid, "Blind 2")
+                            If data.controlposition = ControlB2 Then
+                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "The control position cannot be the same as the second blind !",.field = "controlposition"}}
+                            End If
+                        End If
+                    End If
+
+                    If data.blindno = "Blind 2" Then
+                        If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
+                            Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
+                            If data.controlposition = ControlB1 Then
+                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "The control position cannot be the same as the first blind !",.field = "controlposition"}}
+                            End If
                         End If
                     End If
                 End If
@@ -659,84 +693,37 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
 
                 If data.brackettype = "Linked 3 Blinds (Ind)" Then
-                    If data.blindno = "Blind 1" Then
-                        If InArray(data.itemaction, "AddItem", "EditItem") Then
-                            If String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
-                            End If
-                            If String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
-                            End If
-                            Dim chainlength As Integer
-                            If Not String.IsNullOrEmpty(data.chainlength) Then
-                                If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
-                                End If
+                    If String.IsNullOrEmpty(data.controlposition) Then
+                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                    End If
+
+                    If InArray(data.blindno, "Blind 1", "Blind 3") Then
+                        If String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                        End If
+                        Dim chainlength As Integer
+                        If Not String.IsNullOrEmpty(data.chainlength) Then
+                            If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
                             End If
                         End If
                     End If
-
-                    If data.blindno = "Blind 2" Then
-                        If InArray(data.itemaction, "NextItem", "EditItem") Then
-                            If String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                    
+                    If data.blindno = "Blind 1" Then
+                        If InArray(data.itemaction, "EditItem", "ViewItem") Then
+                            Dim ControlB3 As String = FindControlPosition(data.uniqueid, "Blind 3")
+                            If data.controlposition = ControlB3 Then
+                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "The control position cannot be the same as the third blind !",.field = "controlposition"}}
                             End If
-                            ' If String.IsNullOrEmpty(data.chaincolour) Then
-                            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
-                            ' End If
-                            ' Dim chainlength As Integer
-                            ' If Not String.IsNullOrEmpty(data.chainlength) Then
-                            '     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                            '         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
-                            '     End If
-                            ' End If
                         End If
                     End If
 
                     If data.blindno = "Blind 3" Then
-                        If InArray(data.itemaction, "NextItem", "EditItem") Then
-                            If String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
-                            End If
-                            If String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
-                            End If
-                            Dim chainlength As Integer
-                            If Not String.IsNullOrEmpty(data.chainlength) Then
-                                If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
-                                End If
-                            End If
-
-                            ' Dim controlB2 As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
-                            ' Dim chainB2 As String = publicCfg.GetItemData(String.Format("SELECT ChainId FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
-
-                            ' If Not controlB2 = "" AND Not chainB2 = "" Then
-                            '     If Not String.IsNullOrEmpty(data.controlposition) Then
-                            '         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
-                            '     End If
-                            '     If Not String.IsNullOrEmpty(data.chaincolour) Then
-                            '         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour not required !",.field = "chaincolour"}}
-                            '     End If
-                            '     If Not String.IsNullOrEmpty(data.chainLength) Then
-                            '         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length not required !",.field = "chainLength"}}
-                            '     End If
-                            ' End If
-                            ' If Not controlB2 = "" AND chainB2 = "" Then
-                            '     If String.IsNullOrEmpty(data.controlposition) Then
-                            '         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
-                            '     End If
-                            '     If String.IsNullOrEmpty(data.chaincolour) Then
-                            '         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
-                            '     End If
-                            '     If Not String.IsNullOrEmpty(data.chainLength) Then
-                            '        Dim chainlength As Integer
-                            '         If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                            '             Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
-                            '         End If
-                            '     End If
-                            ' End If
-                            
+                        If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
+                            Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
+                            If data.controlposition = ControlB1 Then
+                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "The control position cannot be the same as the first blind !",.field = "controlposition"}}
+                            End If                    
                         End If
                     End If
                 End If
@@ -1004,21 +991,6 @@ Partial Class Methods_Order_RollerBlindMethod
                                 End If
                             End If
                         End If
-                    End If
-                End If
-            End If
-
-            If InArray(data.brackettype, "With Tube & Bottom Included", "With Bottom Included") Then
-                If String.IsNullOrEmpty(data.trim) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "trim is required !",.field = "trim"}}
-                End If
-
-                If Not String.IsNullOrEmpty(data.trim) AND data.trim = "1F" Then
-                    If String.IsNullOrEmpty(data.railtype) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail type is required !",.field = "railtype"}}
-                    End If
-                    If String.IsNullOrEmpty(data.railcolour) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail colour is required !",.field = "railcolour"}}
                     End If
                 End If
             End If
@@ -1434,20 +1406,6 @@ Partial Class Methods_Order_RollerBlindMethod
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResFabric, .field = ""}}
                     End If
 
-                    If data.brackettype = "Linked 3 Blinds (Ind)" Then
-                        '#SdsControlLink3Ind
-                        Dim ListControl As New List(Of Object) From {
-                            ItemId,
-                            data.uniqueid,
-                            data.blindno
-                        }
-                        
-                        Dim ResControl As String = SdsControlLink3Ind(ListControl)
-                        IF Not ResControl = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
-                        End If
-                    End If
-
                 End If
 
                 If data.brackettype = "Double and Link System Dep" Then
@@ -1749,20 +1707,6 @@ Partial Class Methods_Order_RollerBlindMethod
                     Dim ResFabric As String = SdsFabric(ListFabric)
                     IF Not ResFabric = "200" Then
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResFabric, .field = ""}}
-                    End If
-
-                    If data.brackettype = "Linked 3 Blinds (Ind)" Then
-                        '#SdsControlLink3Ind
-                        Dim ListControl As New List(Of Object) From {
-                            ItemId,
-                            data.uniqueid,
-                            data.blindno
-                        }
-                        
-                        Dim ResControl As String = SdsControlLink3Ind(ListControl)
-                        IF Not ResControl = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
-                        End If
                     End If
 
                 End If
@@ -2171,5 +2115,14 @@ Partial Class Methods_Order_RollerBlindMethod
     '         Return "SdsFabric: " & ex.Message
     '     End Try
     ' End function
+
+    Private Shared Function FindControlPosition(uniqueid As String, blindno As String) As String
+        Try
+            Dim result As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = '{0}' AND UniqueId='{1}' AND Active = 1",blindno, uniqueid))
+            Return result
+        Catch ex As Exception
+            Return ""
+        End Try
+    End Function
 
 End Class
