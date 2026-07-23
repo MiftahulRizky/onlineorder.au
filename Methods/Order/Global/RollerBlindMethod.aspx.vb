@@ -68,6 +68,7 @@ Partial Class Methods_Order_RollerBlindMethod
         Public Property brackettype As String
         Public Property tubetype As String
         Public Property controltype As String
+        Public Property fabrictype As String
         Public Property trim As String
     End Class
 
@@ -117,17 +118,29 @@ Partial Class Methods_Order_RollerBlindMethod
                     query = String.Format("SELECT Id, Name FROM Blinds WHERE DesignId='{0}' AND Active=1 ORDER BY Name ASC", data.designid)
                     Return GetFormattedData(query, "Id", "Name")
 
+                Case "brackettype"
+                    query = String.Format("SELECT BracketType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND Active=1 GROUP BY BracketType ORDER BY BracketType ASC", data.designid, UCase(data.blindtype).ToString())
+                    Return GetFormattedData(query, "BracketType", "BracketType")
+
                 Case "tubetype"
-                    query = String.Format("SELECT Id, TubeType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId = '{1}' AND Active=1 ORDER BY TubeType ASC", data.designid, UCase(data.blindtype).ToString())
-                    Return GetFormattedData(query, "Id", "TubeType")
+                    query = String.Format("SELECT TubeType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND BracketType='{2}' AND Active=1 GROUP BY TubeType ORDER BY TubeType ASC", data.designid, UCase(data.blindtype).ToString(), data.brackettype)
+                    Return GetFormattedData(query, "TubeType", "TubeType")
 
                 Case "controltype"
-                    query = String.Format("SELECT ControlType FROM HardwareKits WHERE DesignId='{0}' AND BlindId='{1}' AND Active=1 GROUP BY ControlType ORDER BY ControlType ASC", data.designid, UCase(data.blindtype).ToString())
+                    query = String.Format("SELECT ControlType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND BracketType='{2}' AND TubeType='{3}' AND Active=1 GROUP BY ControlType ORDER BY ControlType ASC", data.designid, UCase(data.blindtype).ToString(), data.brackettype, data.tubetype)
                     Return GetFormattedData(query, "ControlType", "ControlType")
 
                 Case "colourtype"
-                    query = String.Format("SELECT Id, ColourType FROM HardwareKits WHERE DesignId='{0}' AND BlindId='{1}' AND ControlType = '{2}' AND Active=1 ORDER BY ColourType ASC", data.designid, UCase(data.blindtype).ToString(), data.controltype)
+                    query = String.Format("SELECT Id, ColourType FROM HardwareKits WHERE BlindId = '{1}' AND BracketType = '{2}' AND TubeType = '{3}' AND ControlType='{4}' AND Active=1 ORDER BY Name ASC", data.designid, UCase(data.blindtype).ToString(), data.brackettype, data.tubetype, data.controltype)
                     Return GetFormattedData(query, "Id", "ColourType")
+
+                Case "fabrictype"
+                    query = String.Format("SELECT Type FROM Fabrics WHERE DesignId='{0}' AND Active='1' GROUP BY Type ORDER BY Type ASC", data.designid)
+                    Return GetFormattedData(query, "Type", "Type")
+
+                Case "fabriccolour"
+                    query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId='{0}' AND Active='1' AND Type='{1}' ORDER BY Name ASC", data.designid, data.fabrictype)
+                    Return GetFormattedData(query, "Id", "Colour")
 
                 Case "railtype"
                     Dim FindBracket As String = data.brackettype
@@ -540,7 +553,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then
                             Dim ControlB2 As String = FindControlPosition(data.uniqueid, "Blind 2")
                             If data.controlposition = ControlB2 AndAlso Not data.isConfirmed Then
-                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "The control position cannot be the same as the second blind !. If this process continues, the controls will end up in opposing positions. Do you want to continue ?"}}
+                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 2 blinds independent: <b>The control position cannot be the same as the second blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}}
                             End If
                         End If
                     End If
@@ -549,7 +562,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
                             Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
                             If data.controlposition = ControlB1 AndAlso Not data.isConfirmed Then
-                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "The control position cannot be the same as the first blind !. If this process continues, the controls will end up in opposing positions. Do you want to continue ?"}}
+                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 2 blinds independent: <b>The control position cannot be the same as the first blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}}
                             End If
                         End If
                     End If
@@ -723,7 +736,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then
                             Dim ControlB3 As String = FindControlPosition(data.uniqueid, "Blind 3")
                             If data.controlposition = ControlB3 AndAlso Not data.isConfirmed Then
-                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "The control position cannot be the same as the third blind !. If this process continues, the controls will end up in opposing positions. Do you want to continue ?"}}
+                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 3 blinds independent: <b>The control position cannot be the same as the second blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}}
                             End If
                         End If
                     End If
@@ -732,7 +745,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
                             Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
                             If data.controlposition = ControlB1 AndAlso Not data.isConfirmed Then
-                                 Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "The control position cannot be the same as the first blind !. If this process continues, the controls will end up in opposing positions. Do you want to continue ?"}}
+                                 Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 3 blinds independent: <b>The control position cannot be the same as the first blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}}
                             End If                    
                         End If
                     End If
