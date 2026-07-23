@@ -1067,154 +1067,514 @@ const bindDesigns = async (designid) => {
 };
 
 const bindBlinds = async () => {
+  const select = document.getElementById("blindtype");
+  select.innerHTML = "";
+
   if (!DESIGNID) return;
 
-  await bindSelect({
-    elementId: "blindtype",
-    field: "blindtype",
-    params: { designid: DESIGNID },
-    withDefaultOption: true,
-    lengthDefaultOption: 0,
-  });
+  try {
+    const response = await fetch(`${URIMETHOD}/BindBlindType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ designid: DESIGNID }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindBlinds");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
 };
 
-const bindBrackets = async (designid, blindtype) => {
-  if (!designid || !blindtype) return;
+const bindBrackets = async (designid, blindid) => {
+  const select = document.getElementById("brackettype");
+  select.innerHTML = "";
 
-  await bindSelect({
-    elementId: "brackettype",
-    field: "brackettype",
-    params: { designid, blindtype },
-    withDefaultOption: true,
-    lengthDefaultOption: 0,
-  });
+  if (!designid || !blindid) return;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindBracketType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ designid, blindid }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindBrackets");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
 };
 
-const bindTubes = async (designid, blindtype, brackettype) => {
-  if (!designid || !blindtype || !brackettype) return;
+const bindTubes = async (designid, blindid, brackettype) => {
+  const select = document.getElementById("tubetype");
+  select.innerHTML = "";
 
-  await bindSelect({
-    elementId: "tubetype",
-    field: "tubetype",
-    params: { designid, blindtype, brackettype },
-    withDefaultOption: true,
-    lengthDefaultOption: 0,
+  if (!designid || !blindid || !brackettype) return;
 
-    onSingle: async (item, select) => {
-      const tubetype = item.value;
-      const blindname = await getItemData(
-        `SELECT Name FROM BlindTypes WHERE Id = '${blindtype}'`,
-      );
-      await handlerElementVisibility(blindname, brackettype, tubetype);
-      await bindControls(designid, blindtype, brackettype, tubetype);
-    },
-  });
+  try {
+    const response = await fetch(`${URIMETHOD}/BindTubeType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ designid, blindid, brackettype }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindTubes");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+        const blindname =
+          document.getElementById("blindtype").selectedOptions[0].dataset.name;
+        await handlerElementVisibility(blindname, brackettype, select.value);
+        await bindControls(designid, blindid, brackettype, select.value);
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
 };
 
-const bindControls = async (designid, blindtype, brackettype, tubetype) => {
-  if (!designid || !blindtype || !brackettype || !tubetype) return;
+const bindControls = async (designid, blindid, brackettype, tubetype) => {
+  const select = document.getElementById("controltype");
+  select.innerHTML = "";
 
-  await bindSelect({
-    elementId: "controltype",
-    field: "controltype",
-    params: { designid, blindtype, brackettype, tubetype },
-    withDefaultOption: true,
-    lengthDefaultOption: 0,
+  if (!designid || !blindid || !brackettype || !tubetype) return;
 
-    onSingle: async (item, select) => {
-      const controltype = item.value;
-      const blindname = await getItemData(
-        `SELECT Name FROM BlindTypes WHERE Id = '${blindtype}'`,
-      );
-      await handlerElementVisibility(
-        blindname,
-        brackettype,
-        tubetype,
-        controltype,
-      );
-      await bindColours(
-        designid,
-        blindtype,
-        brackettype,
-        tubetype,
-        controltype,
-      );
-    },
-  });
+  try {
+    const response = await fetch(`${URIMETHOD}/BindControlType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ designid, blindid, brackettype, tubetype }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindControls");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+        const blindname =
+          document.getElementById("blindtype").selectedOptions[0].dataset.name;
+
+        await handlerElementVisibility(
+          blindname,
+          brackettype,
+          tubetype,
+          select.value,
+        );
+        await bindColours(
+          designid,
+          blindid,
+          brackettype,
+          tubetype,
+          select.value,
+        );
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
 };
 
 const bindColours = async (
   designid,
-  blindtype,
+  blindid,
   brackettype,
   tubetype,
   controltype,
 ) => {
-  if (!designid || !blindtype || !brackettype || !tubetype || !controltype)
+  const select = document.getElementById("colourtype");
+  select.innerHTML = "";
+
+  if (!designid || !blindid || !brackettype || !tubetype || !controltype)
     return;
 
-  await bindSelect({
-    elementId: "colourtype",
-    field: "colourtype",
-    params: { designid, blindtype, brackettype, tubetype, controltype },
-    withDefaultOption: true,
-    lengthDefaultOption: 0,
-
-    onSingle: async (item, select) => {
-      const colourtype = item.value;
-      const blindname = await getItemData(
-        `SELECT Name FROM BlindTypes WHERE Id = '${blindtype}'`,
-      );
-      const width = document.getElementById("width").value;
-      const drop = document.getElementById("drop").value;
-
-      await bindFabrics(designid);
-      if (blindname == "Motorised") {
-        await Promise.all([
-          bindMotorStyle(controltype),
-          bindMotorRemote(controltype),
-        ]);
-      }
-      await Promise.all([
-        bindChains(designid),
-        bindTrims(blindname, brackettype, tubetype),
-        bindTubeSize(blindname, tubetype, width, drop),
-        bindChildSafe(),
-        bindAccessory(),
-      ]);
-      await handlerElementVisibility(
-        blindname,
+  try {
+    const response = await fetch(`${URIMETHOD}/BindColourType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        designid,
+        blindid,
         brackettype,
         tubetype,
         controltype,
-        colourtype,
-      );
-    },
-  });
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindColours");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+
+        const blindname = await getItemData(
+          ` SELECT Name FROM Blinds WHERE Id = '${blindid}' AND Active=1 `,
+        );
+        if (!blindname) {
+          throw new Error("Blind name not found : bindColours");
+        }
+
+        await bindFabrics(designid);
+        if (blindname == "Motorised") {
+          await Promise.all([
+            bindMotorStyle(controltype),
+            bindMotorRemote(controltype),
+          ]);
+        }
+        await Promise.all([
+          bindChains(designid),
+          bindTrims(blindname, brackettype, tubetype),
+          bindTubeSize(blindname, tubetype),
+          bindChildSafe(),
+          bindAccessory(),
+        ]);
+        await handlerElementVisibility(
+          blindname,
+          brackettype,
+          tubetype,
+          controltype,
+          select.value,
+        );
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
 };
 
 const bindFabrics = async (designid) => {
+  const select = document.getElementById("fabrictype");
+  document.getElementById("fabriccolour").innerHTML = "";
+  select.innerHTML = "";
+
   if (!designid) return;
 
-  await bindSelect({
-    elementId: "fabrictype",
-    field: "fabrictype",
-    params: { designid },
-    withDefaultOption: true,
-    lengthDefaultOption: 0,
-  });
+  try {
+    const response = await fetch(`${URIMETHOD}/BindFabricType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        designid,
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindFabrics");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+        // bindControls(DESIGNID, select.value);
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
 };
 
 const bindFabricColours = async (designid, fabrictype) => {
+  const select = document.getElementById("fabriccolour");
+  select.innerHTML = "";
+
   if (!designid || !fabrictype) return;
 
-  await bindSelect({
-    elementId: "fabriccolour",
-    field: "fabriccolour",
-    params: { designid, fabrictype },
-    withDefaultOption: true,
-    lengthDefaultOption: 0,
-  });
+  try {
+    const response = await fetch(`${URIMETHOD}/BindFabricColour`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        designid,
+        fabrictype,
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      const msg = `${response.status}\n${text}`;
+      throw new Error(msg);
+    }
+
+    // parsing hasil response JSON
+    const result = await response.json();
+    const data = result.d;
+
+    // validasi apakah ada data
+    if (!data) {
+      throw new Error("No data returned from server : bindFabricColours");
+    }
+
+    // render ke elemen halaman
+    if (Array.isArray(data)) {
+      select.innerHTML = ""; //reset
+
+      if (data.length > 1) {
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "";
+        defaultOption.value = "";
+        select.add(defaultOption);
+      }
+
+      data.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.text.toUpperCase();
+        option.setAttribute("data-name", item.text);
+        select.add(option);
+        select.classList.add("fw-bold");
+      });
+
+      if (data.length === 1) {
+        select.selectedIndex = 0;
+        // bindControls(DESIGNID, select.value);
+      }
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
 };
 
 const bindChains = () => {
