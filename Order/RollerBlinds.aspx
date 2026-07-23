@@ -250,11 +250,16 @@
                                     <div class="mb-3 row" id="divControlPosition">
                                         <label for="controlposition" class="col-lg-3 text-uppercase fw-bold" id="lblControlPosition">control position</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="controlposition" id="controlposition" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Left">LEFT</option>
-                                                <option value="Right">RIGHT</option>
-                                            </select>
+                                            <div class="input-group">
+                                                <select type="text" name="controlposition" id="controlposition" class="form-select">
+                                                    <option value=""></option>
+                                                    <option value="Left">LEFT</option>
+                                                    <option value="Right">RIGHT</option>
+                                                </select>
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoControlPosition">
+                                                    <i class="ti ti-info-square-rounded fs-2"></i>
+                                                </button>
+                                            </div>
                                         </div>  
                                     </div>
                                     

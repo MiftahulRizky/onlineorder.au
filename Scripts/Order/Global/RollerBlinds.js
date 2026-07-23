@@ -220,24 +220,6 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   });
 });
 
-document.querySelectorAll(".btn-information").forEach((el) => {
-  el.addEventListener("click", async (e) => {
-    const id = e.currentTarget.id;
-    let msg = "";
-
-    switch (id) {
-      case "btnInfoControlPosition":
-        msg =
-          "If Blind 2 has the same control side as Blind 1, then Blind 2 is dependent on Blind 1. If Blind 2 has the same control side as Blind 3 (meaning Line 3 is opposite to Blind 1), then Blind 2 is dependent on Blind 3.";
-        break;
-    }
-
-    if (msg) {
-      isInfo(msg);
-    }
-  });
-});
-
 // button submit
 document.querySelector("#btnSubmit").addEventListener("click", (e) => {
   e.preventDefault();
@@ -293,6 +275,29 @@ if (btnInfo) {
             break;
           case "btnInfoTubeSize":
             text = "TubeSize";
+            break;
+          case "btnInfoControlPosition":
+            const brackettype = document.querySelector("#brackettype").value;
+            const lblBlindNo = document.getElementById("lblBlindNo");
+            if (["Linked 2 Blinds (Dep)"].includes(brackettype)) {
+              text =
+                "Linked 2 Dependent: Control allowed only on Blind 1 (Blind 2 empty) or Blind 2 (Blind 1 empty).";
+            }
+
+            if (["Linked 3 Blinds (Dep)"].includes(brackettype)) {
+              if (["Blind 1", "Blind 3"].includes(lblBlindNo.innerHTML)) {
+                text =
+                  "Linked 3 Dependent: Control allowed only on Blind 1 (Blind 2 & 3 empty) or Blind 3 (Blind 1 & 2 empty).";
+              }
+            }
+
+            if (["Linked 3 Blinds (Ind)"].includes(brackettype)) {
+              if (["Blind 2"].includes(lblBlindNo.innerHTML)) {
+                text =
+                  "If Blind 2 has the same control side as Blind 1, then Blind 2 is dependent on Blind 1. If Blind 2 has the same control side as Blind 3 (meaning Line 3 is opposite to Blind 1), then Blind 2 is dependent on Blind 3.";
+              }
+            }
+
             break;
         }
 
@@ -483,6 +488,16 @@ const handlerElementVisibility = async (
     if (!brackettype) return;
     if (["Gear Reduction"].includes(blindname)) {
       divTubeType.classList.remove("d-none");
+    }
+
+    if (["Linked 2 Blinds (Dep)"].includes(brackettype)) {
+      btnInfoControlPosition.classList.remove("d-none");
+    }
+
+    if (["Linked 3 Blinds (Dep)"].includes(brackettype)) {
+      if (["Blind 1", "Blind 3"].includes(lblBlindNo.innerHTML)) {
+        btnInfoControlPosition.classList.remove("d-none");
+      }
     }
 
     if (["Linked 3 Blinds (Ind)"].includes(brackettype)) {
@@ -1088,12 +1103,12 @@ const bindTubes = async (designid, blindtype, brackettype) => {
     field: "tubetype",
     params: { designid, blindtype, brackettype },
     withDefaultOption: true,
-    lengthDefaultOption: 0,
+    lengthDefaultOption: 1,
 
     onSingle: async (item, select) => {
       const tubetype = item.value;
       const blindname = await getItemData(
-        `SELECT Name FROM BlindTypes WHERE Id = '${blindtype}'`,
+        `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
       );
       await handlerElementVisibility(blindname, brackettype, tubetype);
       await bindControls(designid, blindtype, brackettype, tubetype);
@@ -1109,12 +1124,12 @@ const bindControls = async (designid, blindtype, brackettype, tubetype) => {
     field: "controltype",
     params: { designid, blindtype, brackettype, tubetype },
     withDefaultOption: true,
-    lengthDefaultOption: 0,
+    lengthDefaultOption: 1,
 
     onSingle: async (item, select) => {
       const controltype = item.value;
       const blindname = await getItemData(
-        `SELECT Name FROM BlindTypes WHERE Id = '${blindtype}'`,
+        `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
       );
       await handlerElementVisibility(
         blindname,
@@ -1153,7 +1168,7 @@ const bindColours = async (
     onSingle: async (item, select) => {
       const colourtype = item.value;
       const blindname = await getItemData(
-        `SELECT Name FROM BlindTypes WHERE Id = '${blindtype}'`,
+        `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
       );
       const width = document.getElementById("width").value;
       const drop = document.getElementById("drop").value;
