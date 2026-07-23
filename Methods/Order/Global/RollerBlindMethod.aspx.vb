@@ -58,6 +58,7 @@ Partial Class Methods_Order_RollerBlindMethod
         Public Property loginid As String
         Public Property blindno As String
         Public Property uniqueid As String
+        Public Property isConfirmed As Boolean
     End Class
 
     Public Class ParamListData
@@ -78,6 +79,15 @@ Partial Class Methods_Order_RollerBlindMethod
 
     Public Class ErrorResponse
         Public Property [error] As ErrorDetail
+    End Class
+
+    Public Class ConfirmDetail
+        Public Property message As String
+    End Class
+
+    Public Class ConfirmResponse
+        Public Property confirm As ConfirmDetail
+        ' Public Property message As String
     End Class
 
     Public Class SuccessResponse
@@ -529,8 +539,8 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.blindno = "Blind 1" Then
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then
                             Dim ControlB2 As String = FindControlPosition(data.uniqueid, "Blind 2")
-                            If data.controlposition = ControlB2 Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "The control position cannot be the same as the second blind !",.field = "controlposition"}}
+                            If data.controlposition = ControlB2 AndAlso Not data.isConfirmed Then
+                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "The control position cannot be the same as the second blind !. If this process continues, the controls will end up in opposing positions. Do you want to continue ?"}}
                             End If
                         End If
                     End If
@@ -538,8 +548,8 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.blindno = "Blind 2" Then
                         If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
                             Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
-                            If data.controlposition = ControlB1 Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "The control position cannot be the same as the first blind !",.field = "controlposition"}}
+                            If data.controlposition = ControlB1 AndAlso Not data.isConfirmed Then
+                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "The control position cannot be the same as the first blind !. If this process continues, the controls will end up in opposing positions. Do you want to continue ?"}}
                             End If
                         End If
                     End If
@@ -712,8 +722,8 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.blindno = "Blind 1" Then
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then
                             Dim ControlB3 As String = FindControlPosition(data.uniqueid, "Blind 3")
-                            If data.controlposition = ControlB3 Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "The control position cannot be the same as the third blind !",.field = "controlposition"}}
+                            If data.controlposition = ControlB3 AndAlso Not data.isConfirmed Then
+                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "The control position cannot be the same as the third blind !. If this process continues, the controls will end up in opposing positions. Do you want to continue ?"}}
                             End If
                         End If
                     End If
@@ -721,8 +731,8 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.blindno = "Blind 3" Then
                         If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
                             Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
-                            If data.controlposition = ControlB1 Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "The control position cannot be the same as the first blind !",.field = "controlposition"}}
+                            If data.controlposition = ControlB1 AndAlso Not data.isConfirmed Then
+                                 Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "The control position cannot be the same as the first blind !. If this process continues, the controls will end up in opposing positions. Do you want to continue ?"}}
                             End If                    
                         End If
                     End If
@@ -1406,6 +1416,34 @@ Partial Class Methods_Order_RollerBlindMethod
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResFabric, .field = ""}}
                     End If
 
+                    If data.brackettype = "Linked 2 Blinds (Ind)" AndAlso data.isConfirmed Then
+                        '#SdsControlLink3Ind
+                        Dim ListControl As New List(Of Object) From {
+                            ItemId,
+                            data.uniqueid,
+                            data.blindno
+                        }
+                        
+                        Dim ResControl As String = SdsControlLink2Ind(ListControl)
+                        IF Not ResControl = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                        End If
+                    End If
+
+                    If data.brackettype = "Linked 3 Blinds (Ind)" AndAlso data.isConfirmed Then
+                        '#SdsControlLink3Ind
+                        Dim ListControl As New List(Of Object) From {
+                            ItemId,
+                            data.uniqueid,
+                            data.blindno
+                        }
+                        
+                        Dim ResControl As String = SdsControlLink3Ind(ListControl)
+                        IF Not ResControl = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                        End If
+                    End If
+
                 End If
 
                 If data.brackettype = "Double and Link System Dep" Then
@@ -1709,6 +1747,34 @@ Partial Class Methods_Order_RollerBlindMethod
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResFabric, .field = ""}}
                     End If
 
+                    If data.brackettype = "Linked 2 Blinds (Ind)" AndAlso data.isConfirmed Then
+                        '#SdsControlLink3Ind
+                        Dim ListControl As New List(Of Object) From {
+                            ItemId,
+                            data.uniqueid,
+                            data.blindno
+                        }
+                        
+                        Dim ResControl As String = SdsControlLink2Ind(ListControl)
+                        IF Not ResControl = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                        End If
+                    End If
+
+                    If data.brackettype = "Linked 3 Blinds (Ind)" AndAlso data.isConfirmed Then
+                        '#SdsControlLink3Ind
+                        Dim ListControl As New List(Of Object) From {
+                            ItemId,
+                            data.uniqueid,
+                            data.blindno
+                        }
+                        
+                        Dim ResControl As String = SdsControlLink3Ind(ListControl)
+                        IF Not ResControl = "200" Then
+                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                        End If
+                    End If
+
                 End If
 
                 If data.brackettype = "Double and Link System Dep" Then
@@ -1937,6 +2003,53 @@ Partial Class Methods_Order_RollerBlindMethod
             Return "200"
         Catch ex As Exception
             Return "SdsRollDep: " & ex.Message
+        End Try
+    End function
+
+    Private Shared Function SdsControlLink2Ind(ListParam As List(Of Object)) As String
+        Try
+            Dim ThisControl As String = ""
+            Dim ThisBlindNo As String = ""
+            Dim ItemId As String = CStr(ListParam(0))
+            Dim UniqueId As String = CStr(ListParam(1))
+            Dim BlindNo As String = CStr(ListParam(2))
+            Dim ControlB1 As String = FindControlPosition(UniqueId, "Blind 1")
+            Dim ControlB2 As String = FindControlPosition(UniqueId, "Blind 2")
+
+           
+            If BlindNo = "Blind 1" Then
+                ThisBlindNo = "Blind 2"
+                If ControlB1 = "Left" Then
+                    ThisControl = "Right"
+                Else If ControlB1 = "Right" Then
+                    ThisControl = "Left"
+                End If
+            End If
+
+            If BlindNo = "Blind 2" Then
+                ThisBlindNo = "Blind 1"
+                If ControlB2 = "Left" Then
+                    ThisControl = "Right"
+                Else If ControlB2 = "Right" Then
+                    ThisControl = "Left"
+                End If
+            End If
+
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetails SET ControlPosition=@ControlPosition WHERE BlindNo=@BlindNo AND UniqueId=@UniqueId AND Active=1", thisConn)
+                    myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
+                    myCmd.Parameters.AddWithValue("@ControlPosition", ThisControl)
+                    myCmd.Parameters.AddWithValue("@BlindNo", ThisBlindNo)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return "200"
+        Catch ex As Exception
+            Return "SdsFabric: " & ex.Message
         End Try
     End function
 

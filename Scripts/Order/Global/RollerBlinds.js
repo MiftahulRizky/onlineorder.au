@@ -779,7 +779,7 @@ const handlerElementVisibility = async (
   }
 };
 
-const handlerSubmit = async (button) => {
+const handlerSubmit = async (button, isConfirmed = false) => {
   try {
     // return alert(button);
     document.getElementById(button).innerHTML = "Processing...";
@@ -826,6 +826,7 @@ const handlerSubmit = async (button) => {
       itemid: ITEMID,
       designid: DESIGNID,
       loginid: LOGINID,
+      isConfirmed: isConfirmed,
       blindno: document.getElementById("lblBlindNo")?.innerHTML,
       uniqueid: document.getElementById("lblUniqueId")?.innerHTML,
     };
@@ -851,6 +852,12 @@ const handlerSubmit = async (button) => {
 
     const result = await response.json();
     const dataResult = result.d || result;
+
+    if (dataResult.confirm) {
+      const yes = await isConfirm(dataResult.confirm.message?.toUpperCase());
+      if (yes) return handlerSubmit(button, true);
+      return;
+    }
 
     if (dataResult.error) {
       await isWarning(dataResult.error.message?.toUpperCase());
@@ -2273,4 +2280,22 @@ const handlerShowBSModal = (params) => {
     keyboard: false,
   });
   myModal.show();
+};
+
+const isConfirm = async (message) => {
+  return new Promise((resolve) => {
+    Swal.fire({
+      title: "Confirmation",
+      text: message,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      customClass: {
+        popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+      },
+    }).then((result) => {
+      resolve(result.isConfirmed);
+    });
+  });
 };
