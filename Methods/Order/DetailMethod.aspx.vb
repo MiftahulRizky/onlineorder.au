@@ -2445,6 +2445,22 @@ Partial Class Methods_Order_DetailMethod
                 sb.AppendLine("^XZ")
                 sb.AppendLine()
                 sb.AppendLine()
+                
+                sb.AppendLine("^XA")
+                sb.AppendLine("^FO17,50")
+                sb.AppendLine(String.Format("^FO35,10^A0N,45,45^CI13^FH^FD{0}^FS", StoreName))
+                sb.AppendLine(String.Format("^FO35,50^A0N,40,40^CI13^FH^FD{0}^FS", OrderCust))
+                sb.AppendLine(String.Format("^FO600,90^A0N,40,40^CI13^FH^FD{0}^FS", OrderNo))
+                sb.AppendLine(String.Format("^FO35,90^A0N,45,45^CI13^FH^FD{0}^FS", headerid))
+                sb.AppendLine(String.Format("^FO600,130^A0N,25,25^CI13^FH^FD{0}^FS", Location))
+                sb.AppendLine(String.Format("^FO35,140^A0N,25,25^CI13^FH^FD{0}^FS", FabricName))
+                sb.AppendLine(String.Format("^FO35,173^A0N,25,25^CI13^FH^FD{0}^FS", Product))
+                sb.AppendLine(String.Format("^FO610,155^A0N,30,30^CI13^FH^FD({0} OF {1})^FS", PageOf, Count))
+                sb.AppendLine(String.Format("^FO630,49^A0N,45,45^CI13^FH^FD{0}^FS", Delivery))
+                sb.AppendLine("^PQ1,0,0,Y")
+                sb.AppendLine("^XZ")
+                sb.AppendLine()
+                sb.AppendLine()
             Next
 
             File.WriteAllText(fullPath, sb.ToString(), Encoding.ASCII)
