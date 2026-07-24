@@ -72,6 +72,19 @@ Partial Class Methods_Order_RollerBlindMethod
         Public Property trim As String
     End Class
 
+    Public Class EditDataPayload
+        Public Property ItemOrder As Dictionary(Of String, String)
+        Public Property BlindOptions As Object
+        Public Property BracketOptions As Object
+        Public Property TubeOptions As Object
+        Public Property ControlOptions As Object
+        Public Property ColourOptions As Object
+        Public Property FabricTypeOptions As Object
+        Public Property FabricColourOptions As Object
+        Public Property RailOptions As Object
+        Public Property RailColourOptions As Object
+    End Class
+
     '#--- Kelas Output WebMethod ---#
     Public Class ErrorDetail
         Public Property message As String
@@ -179,6 +192,73 @@ Partial Class Methods_Order_RollerBlindMethod
         End If
 
         Return list
+    End Function
+
+    Private Shared Function GetOptionsList(query As String, valueField As String, textField As String) As List(Of Dictionary(Of String, String))
+        Dim list As New List(Of Dictionary(Of String, String))()
+        Dim datas As DataSet = publicCfg.GetListData(query)
+
+        If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
+            For Each row As DataRow In datas.Tables(0).Rows
+                list.Add(New Dictionary(Of String, String) From {
+                    {"value", row(valueField).ToString()},
+                    {"text", row(textField).ToString()}
+                })
+            Next
+        End If
+        Return list
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindItemOrder(ByVal itemid As String) As Object
+        Try
+            Dim payload As New EditDataPayload()
+
+            ' 1. Ambil data utama dari view_details
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE Id = '{0}' AND Active = '1'", itemid))
+            
+            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 AndAlso datas.Tables(0).Rows.Count > 0 Then
+                Dim row As DataRow = datas.Tables(0).Rows(0)
+                Dim dict As New Dictionary(Of String, String)()
+                For Each col As DataColumn In datas.Tables(0).Columns
+                    dict(col.ColumnName) = row(col).ToString()
+                Next
+                payload.ItemOrder = dict
+
+                ' Mengambil variabel state menggunakan EXACT KEY dari mapping JS Anda
+                Dim DesignId As String = dict("DesignId")
+                Dim BlindId As String = dict("BlindId")  
+                Dim BracketType As String = dict("BracketType")
+                Dim TubeType As String = dict("TubeType")        
+                Dim ControlType As String = dict("ControlType")  
+                Dim FabricType As String = dict("FabricType")   
+                Dim Trim As String = dict("Trim")                
+                Dim BottomType As String = dict("BottomType")                
+
+                payload.BlindOptions = GetOptionsList(String.Format("SELECT Id, Name FROM Blinds WHERE DesignId='{0}' AND Active=1 ORDER BY Name ASC", DesignId), "Id", "Name")
+                payload.BracketOptions = GetOptionsList(String.Format("SELECT BracketType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND Active=1 GROUP BY BracketType ORDER BY BracketType ASC", DesignId, UCase(BlindId)), "BracketType", "BracketType")
+                payload.TubeOptions = GetOptionsList(String.Format("SELECT TubeType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND BracketType='{2}' AND Active=1 GROUP BY TubeType ORDER BY TubeType ASC", DesignId, UCase(BlindId), BracketType), "TubeType", "TubeType")
+                payload.ControlOptions = GetOptionsList(String.Format("SELECT ControlType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND BracketType='{2}' AND TubeType='{3}' AND Active=1 GROUP BY ControlType ORDER BY ControlType ASC", DesignId, UCase(BlindId), BracketType, TubeType), "ControlType", "ControlType")
+                payload.ColourOptions = GetOptionsList(String.Format("SELECT Id, ColourType FROM HardwareKits WHERE BlindId = '{1}' AND BracketType = '{2}' AND TubeType = '{3}' AND ControlType='{4}' AND Active=1 ORDER BY Name ASC", DesignId, UCase(BlindId), BracketType, TubeType, ControlType), "Id", "ColourType")
+                payload.FabricTypeOptions = GetOptionsList(String.Format("SELECT Type FROM Fabrics WHERE DesignId='{0}' AND Active='1' GROUP BY Type ORDER BY Type ASC", DesignId), "Type", "Type")
+                payload.FabricColourOptions = GetOptionsList(String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId='{0}' AND Active='1' AND Type='{1}' ORDER BY Name ASC", DesignId, FabricType), "Id", "Colour")
+
+                Dim FindBracket As String = BracketType
+                If BracketType = "Headbox & Side Channels" Then FindBracket = "Headbox &amp; Side Channels"
+                If BracketType = "With Tube & Bottom Included" Then FindBracket = "With Tube &amp; Bottom Included"
+
+                payload.RailOptions = GetOptionsList(String.Format("SELECT Type FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Company = 'SG' AND Trim ='{1}' AND Active ='1' GROUP BY Type ORDER BY Type ASC", FindBracket, Trim), "Type", "Type")
+
+                payload.RailColourOptions = GetOptionsList(String.Format("SELECT Id, Colour, VALUE Product FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Type='{1}' AND Company = 'SG' AND Trim ='{2}' AND  Active ='1' ORDER BY Name ASC", FindBracket, BottomType, Trim), "Id", "Colour")
+            Else
+                Return New With {.error = True, .message = "Data tidak ditemukan"}
+            End If
+
+            Return payload
+        Catch ex As Exception
+            Return New With {.error = True, .message = ex.Message}
+        End Try
     End Function
 
 
@@ -2244,88 +2324,5 @@ Partial Class Methods_Order_RollerBlindMethod
 
 
 
-
-
-
-    Public Class EditDataPayload
-        Public Property ItemOrder As Dictionary(Of String, String)
-        Public Property BlindOptions As Object
-        Public Property BracketOptions As Object
-        Public Property TubeOptions As Object
-        Public Property ControlOptions As Object
-        Public Property ColourOptions As Object
-        Public Property FabricTypeOptions As Object
-        Public Property FabricColourOptions As Object
-        Public Property RailOptions As Object
-        Public Property RailColourOptions As Object
-    End Class
-
-    ' Helper yang sedikit dimodifikasi untuk mengembalikan List langsung
-    Private Shared Function GetOptionsList(query As String, valueField As String, textField As String) As List(Of Dictionary(Of String, String))
-        Dim list As New List(Of Dictionary(Of String, String))()
-        Dim datas As DataSet = publicCfg.GetListData(query)
-
-        If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-            For Each row As DataRow In datas.Tables(0).Rows
-                list.Add(New Dictionary(Of String, String) From {
-                    {"value", row(valueField).ToString()},
-                    {"text", row(textField).ToString()}
-                })
-            Next
-        End If
-        Return list
-    End Function
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindItemOrder(ByVal itemid As String) As Object
-        Try
-            Dim payload As New EditDataPayload()
-
-            ' 1. Ambil data utama dari view_details
-            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE Id = '{0}' AND Active = '1'", itemid))
-            
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 AndAlso datas.Tables(0).Rows.Count > 0 Then
-                Dim row As DataRow = datas.Tables(0).Rows(0)
-                Dim dict As New Dictionary(Of String, String)()
-                For Each col As DataColumn In datas.Tables(0).Columns
-                    dict(col.ColumnName) = row(col).ToString()
-                Next
-                payload.ItemOrder = dict
-
-                ' Mengambil variabel state menggunakan EXACT KEY dari mapping JS Anda
-                Dim DesignId As String = dict("DesignId")
-                Dim BlindId As String = dict("BlindId")  
-                Dim BracketType As String = dict("BracketType")
-                Dim TubeType As String = dict("TubeType")        
-                Dim ControlType As String = dict("ControlType")  
-                Dim FabricType As String = dict("FabricType")   
-                Dim Trim As String = dict("Trim")                
-                Dim BottomType As String = dict("BottomType")                
-
-                payload.BlindOptions = GetOptionsList(String.Format("SELECT Id, Name FROM Blinds WHERE DesignId='{0}' AND Active=1 ORDER BY Name ASC", DesignId), "Id", "Name")
-                payload.BracketOptions = GetOptionsList(String.Format("SELECT BracketType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND Active=1 GROUP BY BracketType ORDER BY BracketType ASC", DesignId, UCase(BlindId)), "BracketType", "BracketType")
-                payload.TubeOptions = GetOptionsList(String.Format("SELECT TubeType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND BracketType='{2}' AND Active=1 GROUP BY TubeType ORDER BY TubeType ASC", DesignId, UCase(BlindId), BracketType), "TubeType", "TubeType")
-                payload.ControlOptions = GetOptionsList(String.Format("SELECT ControlType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND BracketType='{2}' AND TubeType='{3}' AND Active=1 GROUP BY ControlType ORDER BY ControlType ASC", DesignId, UCase(BlindId), BracketType, TubeType), "ControlType", "ControlType")
-                payload.ColourOptions = GetOptionsList(String.Format("SELECT Id, ColourType FROM HardwareKits WHERE BlindId = '{1}' AND BracketType = '{2}' AND TubeType = '{3}' AND ControlType='{4}' AND Active=1 ORDER BY Name ASC", DesignId, UCase(BlindId), BracketType, TubeType, ControlType), "Id", "ColourType")
-                payload.FabricTypeOptions = GetOptionsList(String.Format("SELECT Type FROM Fabrics WHERE DesignId='{0}' AND Active='1' GROUP BY Type ORDER BY Type ASC", DesignId), "Type", "Type")
-                payload.FabricColourOptions = GetOptionsList(String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId='{0}' AND Active='1' AND Type='{1}' ORDER BY Name ASC", DesignId, FabricType), "Id", "Colour")
-
-                Dim FindBracket As String = BracketType
-                If BracketType = "Headbox & Side Channels" Then FindBracket = "Headbox &amp; Side Channels"
-                If BracketType = "With Tube & Bottom Included" Then FindBracket = "With Tube &amp; Bottom Included"
-
-                payload.RailOptions = GetOptionsList(String.Format("SELECT Type FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Company = 'SG' AND Trim ='{1}' AND Active ='1' GROUP BY Type ORDER BY Type ASC", FindBracket, Trim), "Type", "Type")
-
-                payload.RailColourOptions = GetOptionsList(String.Format("SELECT Id, Colour, VALUE Product FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Type='{1}' AND Company = 'SG' AND Trim ='{2}' AND  Active ='1' ORDER BY Name ASC", FindBracket, BottomType, Trim), "Id", "Colour")
-            Else
-                Return New With {.error = True, .message = "Data tidak ditemukan"}
-            End If
-
-            Return payload
-        Catch ex As Exception
-            Return New With {.error = True, .message = ex.Message}
-        End Try
-    End Function
 
 End Class

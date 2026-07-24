@@ -1797,6 +1797,89 @@ const bindExtras = (blindname, controltype, motorstyle) => {
 //     throw error;
 //   }
 // };
+
+const bindItemOrders = async (itemid) => {
+  try {
+    if (!itemid) return;
+
+    // 1. Ambil payload data tunggal (1 request)
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`${res.status} - ${res.statusText}`);
+    }
+
+    const response = await res.json();
+    const payload = response.d;
+
+    if (!payload || payload.error) {
+      throw new Error(
+        payload.message || "No data returned from server : bindItemOrders",
+      );
+    }
+
+    const item = payload.ItemOrder;
+
+    renderSelect({ elementId: "blindtype", data: payload.BlindOptions });
+    renderSelect({ elementId: "brackettype", data: payload.BracketOptions });
+    renderSelect({
+      elementId: "tubetype",
+      data: payload.TubeOptions,
+      withDefaultOption: true,
+      lengthDefaultOption: 1,
+    });
+    renderSelect({
+      elementId: "controltype",
+      data: payload.ControlOptions,
+      withDefaultOption: true,
+      lengthDefaultOption: 1,
+    });
+    renderSelect({ elementId: "colourtype", data: payload.ColourOptions });
+    renderSelect({ elementId: "fabrictype", data: payload.FabricTypeOptions });
+    renderSelect({
+      elementId: "fabriccolour",
+      data: payload.FabricColourOptions,
+    });
+    renderSelect({ elementId: "railtype", data: payload.RailOptions });
+    renderSelect({ elementId: "railcolour", data: payload.RailColourOptions });
+    if (["Motorised"].includes(item.BlindName)) {
+      bindMotorStyle(item.ControlType);
+      bindMotorRemote(item.ControlType);
+      bindExternalBattery();
+      bindMotorCharger(item.ControlType, item.MotorStyle);
+      bindExtras(item.BlindName, item.ControlType, item.MotorStyle);
+    }
+    bindChains(item.DesignId);
+    bindTrims(item.BlindName, item.BracketType, item.TubeType);
+    bindTubeSize(item.BlindName, item.TubeType, item.Width, item.Drop);
+    bindChildSafe();
+    bindAccessory();
+    handlerSetElementValues(item);
+    handlerElementVisibility(
+      item.BlindName,
+      item.BracketType,
+      item.TubeType,
+      item.ControlType,
+      item.ColourType,
+      item,
+    );
+
+    return true;
+  } catch (error) {
+    console.error("bindItemOrder error:", error);
+    const msg =
+      ROLENAME === "Administrator"
+        ? error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
+};
 // ------------------------------------------------------|| Other Functions ||--------------------------------------
 const getItemData = async (query) => {
   try {
@@ -1980,87 +2063,4 @@ const renderSelect = ({
   });
 
   select.classList.add("fw-bold");
-};
-
-const bindItemOrders = async (itemid) => {
-  try {
-    if (!itemid) return;
-
-    // 1. Ambil payload data tunggal (1 request)
-    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({ itemid }),
-    });
-
-    if (!res.ok) {
-      throw new Error(`${res.status} - ${res.statusText}`);
-    }
-
-    const response = await res.json();
-    const payload = response.d;
-
-    if (!payload || payload.error) {
-      throw new Error(
-        payload.message || "No data returned from server : bindItemOrders",
-      );
-    }
-
-    const item = payload.ItemOrder;
-
-    renderSelect({ elementId: "blindtype", data: payload.BlindOptions });
-    renderSelect({ elementId: "brackettype", data: payload.BracketOptions });
-    renderSelect({
-      elementId: "tubetype",
-      data: payload.TubeOptions,
-      withDefaultOption: true,
-      lengthDefaultOption: 1,
-    });
-    renderSelect({
-      elementId: "controltype",
-      data: payload.ControlOptions,
-      withDefaultOption: true,
-      lengthDefaultOption: 1,
-    });
-    renderSelect({ elementId: "colourtype", data: payload.ColourOptions });
-    renderSelect({ elementId: "fabrictype", data: payload.FabricTypeOptions });
-    renderSelect({
-      elementId: "fabriccolour",
-      data: payload.FabricColourOptions,
-    });
-    renderSelect({ elementId: "railtype", data: payload.RailOptions });
-    renderSelect({ elementId: "railcolour", data: payload.RailColourOptions });
-    if (["Motorised"].includes(item.BlindName)) {
-      bindMotorStyle(item.ControlType);
-      bindMotorRemote(item.ControlType);
-      bindExternalBattery();
-      bindMotorCharger(item.ControlType, item.MotorStyle);
-      bindExtras(item.BlindName, item.ControlType, item.MotorStyle);
-    }
-    bindChains(item.DesignId);
-    bindTrims(item.BlindName, item.BracketType, item.TubeType);
-    bindTubeSize(item.BlindName, item.TubeType, item.Width, item.Drop);
-    bindChildSafe();
-    bindAccessory();
-    handlerSetElementValues(item);
-    handlerElementVisibility(
-      item.BlindName,
-      item.BracketType,
-      item.TubeType,
-      item.ControlType,
-      item.ColourType,
-      item,
-    );
-
-    return true;
-  } catch (error) {
-    console.error("bindItemOrder error:", error);
-    const msg =
-      ROLENAME === "Administrator"
-        ? error.message
-        : "Please contact our IT team at support@onlineorder.au";
-    isError(msg);
-  }
 };
