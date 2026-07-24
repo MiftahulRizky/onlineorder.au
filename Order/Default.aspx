@@ -279,7 +279,7 @@
         let URIMETHOD = '/Methods/Order/DefaultMethod.aspx';      
         let src="../Scripts/OrderHeaderPage/OrderHeaderPage.js";
     </script>
-    <script src="/Scripts/Order/Default.js?<%= DateTime.Now.Ticks %>"></script>
+    <script src="/Scripts/Order/Default.js?v=1.0.0"></script>
 
 
 </asp:Content>

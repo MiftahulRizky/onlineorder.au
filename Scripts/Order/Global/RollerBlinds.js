@@ -1714,89 +1714,89 @@ const bindExtras = (blindname, controltype, motorstyle) => {
   });
 };
 
-const bindItemOrders = async (itemid) => {
-  try {
-    if (!itemid) return;
+// const bindItemOrders = async (itemid) => {
+//   try {
+//     if (!itemid) return;
 
-    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({ itemid }),
-    });
+//     const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json; charset=utf-8",
+//       },
+//       body: JSON.stringify({ itemid }),
+//     });
 
-    if (!res.ok) {
-      const msg =
-        ROLENAME === "Administrator"
-          ? `${res.status} - ${res.statusText}`
-          : "Please contact our IT team at support@onlineorder.au";
-      throw isError(msg);
-    }
+//     if (!res.ok) {
+//       const msg =
+//         ROLENAME === "Administrator"
+//           ? `${res.status} - ${res.statusText}`
+//           : "Please contact our IT team at support@onlineorder.au";
+//       throw isError(msg);
+//     }
 
-    const response = await res.json();
-    const data = response.d;
+//     const response = await res.json();
+//     const data = response.d;
 
-    if (!data || data.length === 0) {
-      throw isError("No data returned from server : bindItemOrders");
-    }
+//     if (!data || data.length === 0) {
+//       throw isError("No data returned from server : bindItemOrders");
+//     }
 
-    for (const item of data) {
-      await bindBlinds(item.DesignId);
-      await bindBrackets(item.DesignId, item.BlindId);
-      await bindTubes(item.DesignId, item.BlindId, item.BracketType);
-      await bindControls(
-        item.DesignId,
-        item.BlindId,
-        item.BracketType,
-        item.TubeType,
-      );
-      await bindColours(
-        item.DesignId,
-        item.BlindId,
-        item.BracketType,
-        item.TubeType,
-        item.ControlType,
-      );
-      await bindFabrics(item.DesignId);
-      await bindFabricColours(item.DesignId, item.FabricType);
-      if (item.BlindName == "Motorised") {
-        await Promise.all([
-          bindMotorStyle(item.ControlType),
-          bindMotorRemote(item.ControlType),
-          bindExternalBattery(),
-          bindMotorCharger(item.ControlType, item.MotorStyle),
-          bindExtras(item.BlindName, item.ControlType, item.MotorStyle),
-        ]);
-      }
-      await Promise.all([
-        bindChains(item.DesignId),
-        bindTrims(item.BlindName, item.BracketType, item.TubeType),
-      ]);
-      await bindRailType(item.BracketType, item.Trim);
-      await bindRailColour(item.BracketType, item.BottomType, item.Trim);
-      await Promise.all([
-        bindTubeSize(item.BlindName, item.TubeType, item.Width, item.Drop),
-        bindChildSafe(),
-        bindAccessory(),
-        handlerSetElementValues(item),
-      ]);
-      await handlerElementVisibility(
-        item.BlindName,
-        item.BracketType,
-        item.TubeType,
-        item.ControlType,
-        item.ColourType,
-        item,
-      );
-    }
+//     for (const item of data) {
+//       await bindBlinds(item.DesignId);
+//       await bindBrackets(item.DesignId, item.BlindId);
+//       await bindTubes(item.DesignId, item.BlindId, item.BracketType);
+//       await bindControls(
+//         item.DesignId,
+//         item.BlindId,
+//         item.BracketType,
+//         item.TubeType,
+//       );
+//       await bindColours(
+//         item.DesignId,
+//         item.BlindId,
+//         item.BracketType,
+//         item.TubeType,
+//         item.ControlType,
+//       );
+//       await bindFabrics(item.DesignId);
+//       await bindFabricColours(item.DesignId, item.FabricType);
+//       if (item.BlindName == "Motorised") {
+//         await Promise.all([
+//           bindMotorStyle(item.ControlType),
+//           bindMotorRemote(item.ControlType),
+//           bindExternalBattery(),
+//           bindMotorCharger(item.ControlType, item.MotorStyle),
+//           bindExtras(item.BlindName, item.ControlType, item.MotorStyle),
+//         ]);
+//       }
+//       await Promise.all([
+//         bindChains(item.DesignId),
+//         bindTrims(item.BlindName, item.BracketType, item.TubeType),
+//       ]);
+//       await bindRailType(item.BracketType, item.Trim);
+//       await bindRailColour(item.BracketType, item.BottomType, item.Trim);
+//       await Promise.all([
+//         bindTubeSize(item.BlindName, item.TubeType, item.Width, item.Drop),
+//         bindChildSafe(),
+//         bindAccessory(),
+//         handlerSetElementValues(item),
+//       ]);
+//       await handlerElementVisibility(
+//         item.BlindName,
+//         item.BracketType,
+//         item.TubeType,
+//         item.ControlType,
+//         item.ColourType,
+//         item,
+//       );
+//     }
 
-    return true; // ✅ success
-  } catch (error) {
-    console.error("bindItemOrder error:", error);
-    throw error;
-  }
-};
+//     return true; // ✅ success
+//   } catch (error) {
+//     console.error("bindItemOrder error:", error);
+//     throw error;
+//   }
+// };
 // ------------------------------------------------------|| Other Functions ||--------------------------------------
 const getItemData = async (query) => {
   try {
@@ -1950,4 +1950,117 @@ const isConfirm = async (message) => {
       resolve(result.isConfirmed);
     });
   });
+};
+
+const renderSelect = ({
+  elementId,
+  data,
+  withDefaultOption = true,
+  lengthDefaultOption = 0,
+}) => {
+  const select = document.getElementById(elementId);
+  if (!select) return;
+
+  select.innerHTML = "";
+  if (!Array.isArray(data)) return;
+
+  if (withDefaultOption && data.length > lengthDefaultOption) {
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.text = "";
+    select.add(opt);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    select.add(option);
+  });
+
+  select.classList.add("fw-bold");
+};
+
+const bindItemOrders = async (itemid) => {
+  try {
+    if (!itemid) return;
+
+    // 1. Ambil payload data tunggal (1 request)
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`${res.status} - ${res.statusText}`);
+    }
+
+    const response = await res.json();
+    const payload = response.d;
+
+    if (!payload || payload.error) {
+      throw new Error(
+        payload.message || "No data returned from server : bindItemOrders",
+      );
+    }
+
+    const item = payload.ItemOrder;
+
+    renderSelect({ elementId: "blindtype", data: payload.BlindOptions });
+    renderSelect({ elementId: "brackettype", data: payload.BracketOptions });
+    renderSelect({
+      elementId: "tubetype",
+      data: payload.TubeOptions,
+      withDefaultOption: true,
+      lengthDefaultOption: 1,
+    });
+    renderSelect({
+      elementId: "controltype",
+      data: payload.ControlOptions,
+      withDefaultOption: true,
+      lengthDefaultOption: 1,
+    });
+    renderSelect({ elementId: "colourtype", data: payload.ColourOptions });
+    renderSelect({ elementId: "fabrictype", data: payload.FabricTypeOptions });
+    renderSelect({
+      elementId: "fabriccolour",
+      data: payload.FabricColourOptions,
+    });
+    renderSelect({ elementId: "railtype", data: payload.RailOptions });
+    renderSelect({ elementId: "railcolour", data: payload.RailColourOptions });
+    if (["Motorised"].includes(item.BlindName)) {
+      bindMotorStyle(item.ControlType);
+      bindMotorRemote(item.ControlType);
+      bindExternalBattery();
+      bindMotorCharger(item.ControlType, item.MotorStyle);
+      bindExtras(item.BlindName, item.ControlType, item.MotorStyle);
+    }
+    bindChains(item.DesignId);
+    bindTrims(item.BlindName, item.BracketType, item.TubeType);
+    bindTubeSize(item.BlindName, item.TubeType, item.Width, item.Drop);
+    bindChildSafe();
+    bindAccessory();
+    handlerSetElementValues(item);
+    handlerElementVisibility(
+      item.BlindName,
+      item.BracketType,
+      item.TubeType,
+      item.ControlType,
+      item.ColourType,
+      item,
+    );
+
+    return true;
+  } catch (error) {
+    console.error("bindItemOrder error:", error);
+    const msg =
+      ROLENAME === "Administrator"
+        ? error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
+  }
 };
