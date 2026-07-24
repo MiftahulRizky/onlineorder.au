@@ -428,6 +428,23 @@ Partial Class Order_Detail
                 Exit Sub
             End If
 
+            If lblOrderType.Text = "Evolve" Then
+                Dim fileName As String = String.Format("Job Order {0}.pdf", spanOrderId.InnerText)
+                Dim filePath As String = Server.MapPath("~/file/order/")
+
+                Dim finalPath As String = Path.Combine(filePath, fileName)
+
+                Dim previewCfg As New ShuttersPreviewConfig
+                previewCfg.BindContent(lblHeaderId.Text, finalPath)
+
+                mailCfg.MailSuplierEvolve(lblHeaderId.Text, finalPath)
+
+                Threading.Thread.Sleep(3000)
+
+                Response.Redirect(Request.RawUrl)
+                Exit Sub
+            End If
+
            Response.Redirect(Request.RawUrl)
         Catch ex As Exception
             MessageError(True, ex.ToString())

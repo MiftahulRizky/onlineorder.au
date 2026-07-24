@@ -1067,6 +1067,155 @@ Public Class MailConfig
         End Try
     End Sub
 
+    Public Sub MailSuplierEvolve(Id As String, Lampiran As String)
+        Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Id = '" & Id & "'")
+        If myData.Tables(0).Rows.Count = 0 Then Exit Sub
+
+        Dim row As DataRow = myData.Tables(0).Rows(0)
+        Dim orderId As String = row("OrderId").ToString()
+        Dim customerId As String = row("CustomerId").ToString()
+        Dim orderNumber As String = row("OrderNumber").ToString()
+        Dim orderName As String = row("OrderName").ToString()
+        Dim orderDate As String = Convert.ToDateTime(row("SubmittedDate")).ToString("dd MMM yyyy")
+        Dim loginId As String = row("CreatedBy").ToString().ToUpper()
+
+        Dim customerName As String = GetItemData("SELECT Name FROM Customers WHERE Id = '" & customerId & "'")
+
+        Dim addressData As DataSet = GetListData("SELECT Street AS Address1, CONVERT(VARCHAR, Suburb) + ', ' + CONVERT(VARCHAR, States) + ' ' + CONVERT(VARCHAR, PostCode) AS Address2 FROM CustomerAddress WHERE CustomerId = '" & customerId & "' AND [Primary] = 1")
+        If addressData.Tables(0).Rows.Count = 0 Then Exit Sub
+
+        Dim appId As String = GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE Id = '" & loginId & "'")
+        If String.IsNullOrEmpty(appId) Then Exit Sub
+
+        Dim mailData As DataSet = GetListData("SELECT * FROM Mailings WHERE ApplicationId = '" & appId & "' AND Name = 'Supplier Shutters' AND Active = 1")
+        Dim mailDevelopment As DataSet = GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
+
+        If mailData.Tables(0).Rows.Count = 0 Then Exit Sub
+
+        Dim mailRow As DataRow = mailData.Tables(0).Rows(0)
+        Dim mailServer As String = mailRow("Server").ToString()
+        Dim mailHost As String = mailRow("Host").ToString()
+        Dim mailPort As Integer = Convert.ToInt32(mailRow("Port"))
+        Dim mailAccount As String = mailRow("Account").ToString()
+        Dim mailPassword As String = mailRow("Password").ToString()
+        Dim mailAlias As String = mailRow("Alias").ToString()
+        Dim mailTo As String = mailRow("To").ToString()
+        Dim mailCc As String = mailRow("Cc").ToString()
+        Dim mailBcc As String = mailRow("Bcc").ToString()
+        Dim mailNetworkCredentials As Boolean = Convert.ToBoolean(mailRow("NetworkCredentials"))
+        Dim mailDefaultCredentials As Boolean = Convert.ToBoolean(mailRow("DefaultCredentials"))
+        Dim mailEnableSSL As Boolean = Convert.ToBoolean(mailRow("EnableSSL"))
+
+        Dim thisText As String = String.Format("{0} - {1} - {2} - New Job # {3}", customerName, orderNumber, orderName, orderId)
+
+        Dim mailContent As String =
+        "<div style='font-family: Lucida Sans Unicode, sans-serif; font-size: 14px; color: #000000;'>" &
+        "Dear Clark,<br><br>" &
+        "We would like to inform you that a new order has been successfully created in our system.<br><br>" &
+        "You may access the order details through the link provided below:<br><br>" &
+        "https://onlineorder.au/handler/evolve.ashx?id=" & Id & "<br><br>" &
+        "Please review the order at your earliest convenience and proceed accordingly. Should you require any further information or clarification, feel free to contact us.<br><br>" &
+        "Kind Regards,<br>Customer Service<br><br><br>" &
+        "<strong>Sunlight Products</strong><br>" &
+        "28 Stoddart Road, Prospect NSW 2148<br><br>" &
+        "<span style='color: red;'>P</span>: 02 9688 1555<br>" &
+        "<span style='color: red;'>E</span>: customerservice@sunlight.com.au<br>" &
+        "<span style='color: red;'>W</span>: https://sunlightproducts.com.au<br>" &
+        "</div>"
+
+        Try
+            Using myMail As New MailMessage()
+                myMail.Subject = thisText
+                myMail.From = New MailAddress(mailServer, mailAlias)
+                myMail.Body = mailContent
+                myMail.IsBodyHtml = True
+
+                IF mailDevelopment.Tables.Count > 0 then
+                    Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                    Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+
+                    If activeDev = "True" Or activeDev = "1" Then
+                        myMail.To.Add(mdev)
+                    Else
+                        ' To
+                        If Not String.IsNullOrWhiteSpace(mailTo) Then
+                            For Each email In mailTo.Split(";"c)
+                                If IsValidEmail(email) Then myMail.To.Add(email)
+                            Next
+                        Else
+                            myMail.To.Add("reza@bigblinds.co.id")
+                        End If
+
+                        ' Cc
+                        If Not String.IsNullOrWhiteSpace(mailCc) Then
+                            For Each email In mailCc.Split(";"c)
+                                If IsValidEmail(email) Then myMail.CC.Add(email)
+                            Next
+                        End If
+
+                        ' Bcc
+                        If Not String.IsNullOrWhiteSpace(mailBcc) Then
+                            For Each email In mailBcc.Split(";"c)
+                                If IsValidEmail(email) Then myMail.Bcc.Add(email)
+                            Next
+                        End If
+                    End If
+                Else
+                    ' To
+                    If Not String.IsNullOrWhiteSpace(mailTo) Then
+                        For Each email In mailTo.Split(";"c)
+                            If IsValidEmail(email) Then myMail.To.Add(email)
+                        Next
+                    Else
+                        myMail.To.Add("reza@bigblinds.co.id")
+                    End If
+
+                    ' Cc
+                    If Not String.IsNullOrWhiteSpace(mailCc) Then
+                        For Each email In mailCc.Split(";"c)
+                            If IsValidEmail(email) Then myMail.CC.Add(email)
+                        Next
+                    End If
+
+                    ' Bcc
+                    If Not String.IsNullOrWhiteSpace(mailBcc) Then
+                        For Each email In mailBcc.Split(";"c)
+                            If IsValidEmail(email) Then myMail.Bcc.Add(email)
+                        Next
+                    End If
+                End If
+
+                ' Attachment tanpa FileStream agar tidak lock
+                If File.Exists(Lampiran) Then
+                    myMail.Attachments.Add(New Attachment(Lampiran))
+                Else
+                    Throw New FileNotFoundException("File lampiran tidak ditemukan: " & Lampiran)
+                End If
+
+                ' Kirim email
+                Using smtpClient As New SmtpClient(mailHost, mailPort)
+                    smtpClient.EnableSsl = mailEnableSSL
+                    smtpClient.UseDefaultCredentials = mailDefaultCredentials
+                    smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network
+                    If mailNetworkCredentials Then
+                        smtpClient.Credentials = New NetworkCredential(mailAccount, mailPassword)
+                    ElseIf mailDefaultCredentials Then
+                        smtpClient.UseDefaultCredentials = True
+                    Else
+                        smtpClient.Credentials = CredentialCache.DefaultNetworkCredentials
+                    End If
+                    smtpClient.Send(myMail)
+                End Using
+            End Using
+
+            ' Setelah terkirim, hapus lampiran
+            If File.Exists(Lampiran) Then File.Delete(Lampiran)
+
+        Catch ex As Exception
+            Console.WriteLine("Gagal mengirim email: " & ex.Message)
+        End Try
+    End Sub
+
     Public Sub MailNewShipment(HeaderId As String)
         Try
             Dim myData As DataSet = GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Id = '" + HeaderId + "'")
