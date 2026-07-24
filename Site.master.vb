@@ -53,7 +53,7 @@ Partial Public Class SiteMaster
                 Session("PriceAccess") = myData.Tables(0).Rows(0).Item("Price").ToString()
                 Session("MarkUpAccess") = myData.Tables(0).Rows(0).Item("MarkUp").ToString()
 
-                Dim myData2 As DataSet = publicCfg.GetListData("SELECT * FROM CustomerContacts WHERE CustomerId = '" + Session("CustomerId") + "' AND Name = '" + Session("FullName") + "'")
+                Dim myData2 As DataSet = publicCfg.GetListData("SELECT * FROM CustomerContacts WHERE CustomerId = '" + Session("CustomerId") + "' AND Name = '" + Replace(Session("FullName"), "'", "") + "'")
                 IF myData2.Tables(0).Rows.Count > 0 Then
                     Session("CustomerContactId") = myData2.Tables(0).Rows(0).Item("Id").ToString()
                 End If
