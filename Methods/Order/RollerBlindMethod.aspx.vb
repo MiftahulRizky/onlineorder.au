@@ -731,7 +731,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then
                             Dim ControlB3 As String = FindControlPosition(data.uniqueid, "Blind 3")
                             If data.controlposition = ControlB3 AndAlso Not data.isConfirmed Then
-                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 3 blinds independent: <b>The control position cannot be the same as the second blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}}
+                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 3 blinds independent: <b>The control position cannot be the same as the third blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}}
                             End If
                         End If
                     End If
