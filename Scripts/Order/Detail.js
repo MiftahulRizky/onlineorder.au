@@ -1397,6 +1397,7 @@ const handlerHeaderInfo = async (item) => {
 
   // CARD 2
   const spanSubmittedDate = document.getElementById("spanSubmittedDate");
+  const spanProductionDate = document.getElementById("spanProductionDate");
   const spanCompletedDate = document.getElementById("spanCompletedDate");
   const spanCanceledDate = document.getElementById("spanCanceledDate");
   const spanTotal = document.getElementById("spanTotal");
@@ -1458,22 +1459,39 @@ const handlerHeaderInfo = async (item) => {
     // CARD 2
     // SubmittedDate
     if (!item.SubmittedDate) spanSubmittedDate.innerHTML = "-";
+    if (!item.SubmittedDate) spanProductionDate.innerHTML = "-";
     if (item.SubmittedDate) {
       const cardPrice = document.getElementById("cardPrice");
       // cardPrice.classList.add("mb-3", "mt-1");
 
-      const customDate = parseCustomDate(item.SubmittedDate);
-      if (!customDate || isNaN(customDate.getTime())) {
+      const customSubmitDate = parseCustomDate(item.SubmittedDate);
+      if (!customSubmitDate || isNaN(customSubmitDate.getTime())) {
         console.warn("Tanggal tidak valid:", item.SubmittedDate);
         spanCreatedDate.innerHTML = "-";
         return;
       }
+
+      const customProductionDate = parseCustomDate(item.JobDate);
+      if (!customProductionDate || isNaN(customProductionDate.getTime())) {
+        console.warn("Tanggal tidak valid:", item.SubmittedDate);
+        spanCreatedDate.innerHTML = "-";
+        return;
+      }
+
       if (ROLENAME === "Administrator") {
-        spanSubmittedDate.innerHTML = customDate
+        spanSubmittedDate.innerHTML = customSubmitDate
+          .toLocaleDateString("id-ID", us)
+          .replace(/\./g, ":");
+        spanProductionDate.innerHTML = customProductionDate
           .toLocaleDateString("id-ID", us)
           .replace(/\./g, ":");
       } else {
-        spanSubmittedDate.innerHTML = customDate.toLocaleDateString(
+        spanSubmittedDate.innerHTML = customSubmitDate.toLocaleDateString(
+          "en-US",
+          indo,
+        );
+
+        spanProductionDate.innerHTML = customProductionDate.toLocaleDateString(
           "en-US",
           indo,
         );

@@ -230,22 +230,27 @@
                     <div class="card">
                         <div class="card-body border-bottom py-3">
                             <div class="row mb-4">
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
                                     <span style="font-size:larger;">Created By :</span>
                                     <br />
                                     <span id="spanCreatedBy" style="font-size:larger;font-weight:bold;"></span>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
                                     <span style="font-size:larger;">Created Date :</span>
                                     <br />
                                     <span id="spanCreatedDate" style="font-size:larger;font-weight:bold;"></span>
                                 </div>
-                            </div>
-                            <div class="row mb-4">
                                 <div class="col-lg-4">
                                     <span style="font-size:larger;">Submitted Date :</span>
                                     <br />
                                     <span id="spanSubmittedDate" style="font-size:larger;font-weight:bold;"></span>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-lg-4">
+                                    <span style="font-size:larger;">Production Date :</span>
+                                    <br />
+                                    <span id="spanProductionDate" style="font-size:larger;font-weight:bold;"></span>
                                 </div>
 
                                 <div class="col-lg-4">
@@ -701,7 +706,7 @@
         let REPRINT = '<%= Session("Reprint") %>';
         let URIMETHOD = '/Methods/Order/DetailMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/Detail.js?v=1.0.0"></script>
+    <script src="/Scripts/Order/Detail.js?v=1.0.1"></script>
 
 </asp:Content>
 
