@@ -69,8 +69,13 @@
                                 <div class="mb-3 row" id="divTubeType">
                                     <label for="tubetype" class="col-lg-3 text-uppercase fw-bold" id="lblTubeType">mechanism type</label>
                                     <div class="col-lg-4">
-                                        <select type="text" name="tubetype" id="tubetype" class="form-select"></select>
-                                    </div>  
+                                        <div class="input-group">
+                                            <select type="text" name="tubetype" id="tubetype" class="form-select"></select>
+                                            <button class="btn btn-primary btn-information" type="button" id="btnInfoTubeSize">
+                                                <i class="ti ti-info-square-rounded fs-2"></i>
+                                            </button>
+                                        </div>  
+                                    </div>
                                 </div>
 
                                 <div class="mb-3 row" id="divControlType">
@@ -312,9 +317,6 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <select type="text" name="tubesize" id="tubesize" class="form-select"></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoTubeSize">
-                                                    <i class="ti ti-info-square-rounded fs-2"></i>
-                                                </button>
                                             </div>
                                         </div>  
                                     </div>
@@ -475,5 +477,5 @@
         let URIMETHOD = "/Methods/Order/Global/RollerBlindMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/Global/RollerBlinds.js?v=1.0.0"></script>
+    <script type="text/javascript" src="/Scripts/Order/Global/RollerBlinds.js?v=1.0.3"></script>
 </asp:Content>

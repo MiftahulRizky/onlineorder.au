@@ -187,7 +187,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const railtype = e.target.value;
       const trim = document.getElementById("trim").value;
 
-      bindRailColour(brackettype, railtype, trim);
+      await bindRailColour(brackettype, railtype, trim);
     }
   });
   el.addEventListener("input", (e) => {
@@ -531,7 +531,7 @@ const handlerElementVisibility = async (
       if (brackettype === "Double") {
         divBracketExt.classList.add("d-none");
       }
-      divTubeSize.classList.remove("d-none");
+      // divTubeSize.classList.remove("d-none");
       divChildSafe.classList.remove("d-none");
       // divAccessory.classList.remove("d-none");
 
@@ -1199,6 +1199,7 @@ const bindColours = async (
 };
 
 const bindFabrics = async (designid) => {
+  document.getElementById("fabriccolour").innerHTML = "";
   if (!designid) return;
 
   await bindSelect({
@@ -1493,6 +1494,7 @@ const bindTrims = (blindname, brackettype, tubetype) => {
 };
 
 const bindRailType = async (brackettype, trim) => {
+  document.getElementById("railcolour").innerHTML = "";
   if (!brackettype || !trim) return;
 
   await bindSelect({
@@ -1505,70 +1507,15 @@ const bindRailType = async (brackettype, trim) => {
 };
 
 const bindRailColour = async (brackettype, railtype, trim) => {
-  const select = document.getElementById("railcolour");
-  select.innerHTML = "";
-
   if (!brackettype || !railtype || !trim) return;
 
-  try {
-    const response = await fetch(`${URIMETHOD}/BindRailColour`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({
-        brackettype,
-        railtype,
-        trim,
-      }),
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      const msg = `${response.status}\n${text}`;
-      throw new Error(msg);
-    }
-
-    // parsing hasil response JSON
-    const result = await response.json();
-    const data = result.d;
-
-    // validasi apakah ada data
-    if (!data) {
-      throw new Error("No data returned from server : bindRailColour");
-    }
-
-    // render ke elemen halaman
-    if (Array.isArray(data)) {
-      select.innerHTML = ""; //reset
-
-      if (data.length > 1) {
-        const defaultOption = document.createElement("option");
-        defaultOption.text = "";
-        defaultOption.value = "";
-        select.add(defaultOption);
-      }
-
-      data.forEach(function (item) {
-        const option = document.createElement("option");
-        option.value = item.value;
-        option.text = item.text.toUpperCase();
-        option.setAttribute("data-name", item.text);
-        select.add(option);
-        // select.classList.add("fw-bold");
-      });
-
-      if (data.length === 1) {
-        select.selectedIndex = 0;
-      }
-    }
-  } catch (err) {
-    const msg =
-      ROLENAME === "Administrator"
-        ? err.message
-        : "Please contact our IT team at support@onlineorder.au";
-    isError(msg);
-  }
+  await bindSelect({
+    elementId: "railcolour",
+    field: "railcolour",
+    params: { brackettype, railtype, trim },
+    withDefaultOption: true,
+    lengthDefaultOption: 0,
+  });
 };
 
 const bindTubeSize = (blindname, tubetype, width, drop) => {
@@ -1576,15 +1523,13 @@ const bindTubeSize = (blindname, tubetype, width, drop) => {
   let data = [];
 
   if (blindname == "Gear Reduction") {
-    if (tubetype == "Gear Reduction") {
-      if (!width || !drop) return;
-      let squareMetre = (parseFloat(width) * parseFloat(drop)) / 1000000;
-      let rounded = Math.round(squareMetre);
-      if (rounded < 6) {
-        data.push("38", "45");
-      }
-      data.push("49");
+    if (!width || !drop) return;
+    let squareMetre = (parseFloat(width) * parseFloat(drop)) / 1000000;
+    let rounded = Math.round(squareMetre);
+    if (rounded < 6) {
+      data.push("38", "45");
     }
+    data.push("49");
   }
   generateOption("tubesize", data);
 };

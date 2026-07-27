@@ -433,5 +433,5 @@
         let URIMETHOD = "/Methods/Order/RollerBlindMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/RollerBlinds.js?<%= DateTime.Now.Ticks %>"></script>
+    <script type="text/javascript" src="/Scripts/Order/RollerBlinds.js?v=1.0.1"></script>
 </asp:Content>

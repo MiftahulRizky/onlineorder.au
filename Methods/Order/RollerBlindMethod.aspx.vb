@@ -1049,7 +1049,7 @@ Partial Class Methods_Order_RollerBlindMethod
             
 
 
-            If (BlindName = "Skin Only" AND InStr(data.brackettype, "Tube") > 0 ) OR BlindName = "Standard" Then
+            If (BlindName = "Skin Only" AND InStr(data.brackettype, "Tube") > 0 ) OR BlindName = "Standard" OR (BlindName = "Cassette" AND Not data.tubetype = "Motorised") Then
                 If String.IsNullOrEmpty(data.tubesize) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "tube size is required !",.field = "tubesize"}}
                 End If

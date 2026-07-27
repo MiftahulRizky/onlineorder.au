@@ -70,6 +70,7 @@ Partial Class Methods_Order_RollerBlindMethod
         Public Property controltype As String
         Public Property fabrictype As String
         Public Property trim As String
+        Public Property railtype As String
     End Class
 
     Public Class EditDataPayload
@@ -167,6 +168,19 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     query = String.Format("SELECT Type FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Company = 'SG' AND Trim ='{1}' AND Active ='1' GROUP BY Type ORDER BY Type ASC", FindBracket, data.trim)
                     Return GetFormattedData(query, "Type", "Type")
+
+                Case "railcolour"
+                    Dim FindBracket As String = data.brackettype
+                    If data.brackettype = "Headbox & Side Channels" Then
+                        FindBracket = "Headbox &amp; Side Channels"
+                    End If
+                    
+                    If data.brackettype = "With Tube & Bottom Included" Then
+                        FindBracket = "With Tube &amp; Bottom Included"
+                    End If
+
+                    query = String.Format("SELECT Id, Colour FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Type='{1}' AND Company = 'SG' AND Trim ='{2}' AND Active ='1' ORDER BY Name ASC", FindBracket, data.railtype, data.trim)
+                    Return GetFormattedData(query, "Id", "Colour")
 
                 Case Else
                     Return New With {.error = "Invalid field"}
@@ -337,6 +351,11 @@ Partial Class Methods_Order_RollerBlindMethod
             End If
             If drop > 3200 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3200 !",.field = "drop"}}
+            End If
+
+            Dim blindarea As Integer = Math.Round(width * drop / 1000000, 0)
+            If width > 1810 AND data.tubetype = "38"  Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cannot down grade to 38mm tube !",.field = "tubetype"}}
             End If
 
             If String.IsNullOrEmpty(data.fabrictype) Then

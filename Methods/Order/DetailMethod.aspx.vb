@@ -545,7 +545,7 @@ Partial Class Methods_Order_DetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindOrderHeaderByID(ByVal headerid As String, ByVal ordertype As String) As Object
         Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE Id = '" + headerid + "' AND OrderType = '" + ordertype + "'")
+            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE Id = '" + headerid + "' AND OrderType = '" + ordertype + "' AND Active = 1")
 
             Dim data As DataSet = DirectCast(datas, DataSet)
 

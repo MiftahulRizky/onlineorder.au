@@ -524,6 +524,7 @@ const handlerElementVisibility = async (
       }
       if (tubetype == "JAI Geared") {
         divChain.classList.remove("d-none");
+        divTubeSize.classList.remove("d-none");
         divChildSafe.classList.remove("d-none");
         divAccessory.classList.remove("d-none");
       }
