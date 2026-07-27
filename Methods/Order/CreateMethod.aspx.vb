@@ -43,6 +43,7 @@ Partial Class Methods_Order_CreateMethod
 
         '#aditional param
         Public Property loginid As String
+        Public Property rolename As String
         Public Property actions As String
     End Class
 
@@ -172,31 +173,52 @@ Partial Class Methods_Order_CreateMethod
                 End If
 
                 If data.actions = "add" Then
-                    '# check by customer
+                    ' '# check by customer
+                    ' Dim OrderNumber As String = data.ordernumber.Trim()
+                    ' Dim OrderNumberByCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND CustomerId = '" & data.customer & "' AND Active = 1")
+
+                    ' If String.Equals(OrderNumber.Trim(), OrderNumberByCust, StringComparison.OrdinalIgnoreCase) Then
+                    '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
+                    ' End If
+
+                    ' '# check by all customer
+                    ' Dim OrderNumberAllCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND Active = 1")
+                    ' If String.Equals(OrderNumber.Trim(), OrderNumberAllCust, StringComparison.OrdinalIgnoreCase) Then
+                    '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
+                    ' End If
+
+                    '#cek by product type on customer same
                     Dim OrderNumber As String = data.ordernumber.Trim()
-                    Dim OrderNumberByCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND CustomerId = '" & data.customer & "' AND Active = 1")
-
-                    If String.Equals(OrderNumber.Trim(), OrderNumberByCust, StringComparison.OrdinalIgnoreCase) Then
+                    Dim FindOrderNumberByCust As String = publicCfg.GetItemData(String.Format("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '{0}' AND CustomerId = '{1}' AND OrderType='{2}' AND Active = '1'", OrderNumber, data.customer, data.ordertype))
+                    If String.Equals(OrderNumber.Trim(), FindOrderNumberByCust, StringComparison.OrdinalIgnoreCase) Then
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
                     End If
 
-                    '# check by all customer
-                    Dim OrderNumberAllCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND Active = 1")
-                    If String.Equals(OrderNumber.Trim(), OrderNumberAllCust, StringComparison.OrdinalIgnoreCase) Then
+                     '# check by all customer
+                    Dim FindOrderNumberAllCust As String = publicCfg.GetItemData(String.Format("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '{0}' AND CustomerId <> '{1}' AND Active = 1", OrderNumber, data.customer))
+                    If String.Equals(OrderNumber.Trim(), FindOrderNumberAllCust, StringComparison.OrdinalIgnoreCase) Then
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
                     End If
+
+
                 Else If data.actions = "edit" Then
-                    '# check by customer
+                '     '# check by customer
+                '     Dim OrderNumber As String = data.ordernumber.Trim()
+                '     Dim OrderNumberByCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND CustomerId = '" & data.customer & "' AND Id <> '" & data.id & "' AND Active = 1")
+
+                '     If String.Equals(OrderNumber.Trim(), OrderNumberByCust, StringComparison.OrdinalIgnoreCase) Then
+                '         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
+                '     End If
+
+                '     '# check by all customer
+                '     Dim OrderNumberAllCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND Id <> '" & data.id & "' AND Active = 1")
+                '     If String.Equals(OrderNumber.Trim(), OrderNumberAllCust, StringComparison.OrdinalIgnoreCase) Then
+                '         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
+                '     End If
+
                     Dim OrderNumber As String = data.ordernumber.Trim()
-                    Dim OrderNumberByCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND CustomerId = '" & data.customer & "' AND Id <> '" & data.id & "' AND Active = 1")
-
-                    If String.Equals(OrderNumber.Trim(), OrderNumberByCust, StringComparison.OrdinalIgnoreCase) Then
-                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
-                    End If
-
-                    '# check by all customer
-                    Dim OrderNumberAllCust As String = publicCfg.GetItemData("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '" & OrderNumber & "' AND Id <> '" & data.id & "' AND Active = 1")
-                    If String.Equals(OrderNumber.Trim(), OrderNumberAllCust, StringComparison.OrdinalIgnoreCase) Then
+                    Dim FindOrderNumberAllCust As String = publicCfg.GetItemData(String.Format("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '{0}' AND CustomerId <> '{1}' AND Active = 1", OrderNumber, data.customer))
+                    If String.Equals(OrderNumber.Trim(), FindOrderNumberAllCust, StringComparison.OrdinalIgnoreCase) Then
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
                     End If
                 End If
@@ -243,7 +265,7 @@ Partial Class Methods_Order_CreateMethod
                 End If
             End If
 
-            ' Return New ErrorResponse With { .error = New ErrorDetail With { .message = FinalDelivery, .field = "delivery"}}
+            ' Throw New Exception("200")
 
             Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString    
 
@@ -359,12 +381,9 @@ Partial Class Methods_Order_CreateMethod
 
             Return New SuccessResponse With {.success = New SuccessDetail With {.message = msg, .url = url}}
         Catch ex As Exception
-            Return New ErrorResponse With {
-                .error = New ErrorDetail With {
-                    .message = ex.Message,
-                    .field = ""
-                }
-            }
+            Dim msg As String = "Please contact our IT team at support@onlineorder.au"
+            If data.rolename = "Administrator" Then msg = ex.Message
+            Return New ErrorResponse With {.error = New ErrorDetail With {.message = msg,.field = ""}}
         End Try
     End Function
 

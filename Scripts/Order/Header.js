@@ -170,6 +170,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
     const additionalData = {
       loginid: LOGINID,
       actions: ACTION,
+      rolename: ROLENAME,
     };
 
     const finalData = {
@@ -198,11 +199,7 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(
-        ROLENAME === "Administrator"
-          ? `${response.status}\n${errorText}`
-          : "Something went wrong, please try again!",
-      );
+      throw new Error(`${response.status}\n${errorText}`);
     }
 
     const result = await response.json();
@@ -217,19 +214,13 @@ const handlerSubmit = async (formEl, button, htmlButton) => {
         field.classList.add("is-invalid");
       }
     } else {
-      Swal.fire({
-        title: "Success",
-        html: dataResult.success.message,
-        icon: "success",
-        confirmButtonText: "Next",
-        customClass: {
-          popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-        },
-      }).then(() => {
-        window.location.href = dataResult.success.url;
-      });
+      await isSuccess(dataResult.success.message);
+      window.location.href = dataResult.success.url;
     }
   } catch (err) {
+    let msg = err.message;
+    if (!["Administrator"].includes(ROLENAME))
+      msg = "Please contact our IT team at support@onlineorder.au";
     await isError(err.message);
   }
 };
@@ -604,7 +595,7 @@ const handlerSetElementValues = (itemData) => {
     note: "OrderNote",
   };
 
-  console.table(itemData);
+  // console.table(itemData);
 
   Object.entries(mapping).forEach(([id, key]) => {
     const el = document.getElementById(id);

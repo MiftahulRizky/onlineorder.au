@@ -6984,32 +6984,32 @@ Partial Class Methods_Order_DetailMethod
     Private Shared Function GetNumBoldNuts(row As DataRow) As Integer
         Dim result As Integer = 0
         Dim kitName As String = row("KitName").ToString()
-        Dim bottomType As String = row("BottomType").ToString()
-        Dim tubeSize As String = row("TubeSize").ToString()
-        Dim drop As Integer = CInt(row("Drop").ToString())
-        Dim trim As String = row("Trim").ToString()
+        Dim BottomType As String = row("BottomType").ToString()
+        Dim TubeSize As String = row("TubeSize").ToString()
+        Dim Drop As Integer = CInt(row("Drop").ToString())
+        Dim Trim As String = row("Trim").ToString()
 
-        Select Case tubeSize
+        Select Case TubeSize
             Case "40"
-                If trim = "1F" AndAlso (bottomType = "Oval" OrElse (InStr(bottomType, "Flat") > 0 AndAlso bottomType <> "Flat Wrapped")) Then
-                    result = drop + 200
+                If Trim = "1F" AndAlso (BottomType = "Oval" OrElse (InStr(BottomType, "Flat") > 0 AndAlso BottomType <> "Flat Wrapped")) Then
+                    result = Drop + 200
                 End If
-                If trim = "1P" OrElse String.IsNullOrEmpty(bottomType) OrElse bottomType = "Flat Wrapped" OrElse bottomType = "Oval Bumper" Then
-                    result = drop + 250
+                If Trim = "1P" OrElse String.IsNullOrEmpty(BottomType) OrElse BottomType = "Flat Wrapped" OrElse BottomType = "Oval Bumper" Then
+                    result = Drop + 250
                 End If
             Case "45","45H","50"
-                If trim = "1F" AndAlso (bottomType = "Oval" OrElse (InStr(bottomType, "Flat") > 0 AndAlso bottomType <> "Flat Wrapped")) Then
-                    result = drop + 300
+                If Trim = "1F" AndAlso (BottomType = "Oval" OrElse (InStr(BottomType, "Flat") > 0 AndAlso BottomType <> "Flat Wrapped")) Then
+                    result = Drop + 300
                 End If
-                If trim = "1P" OrElse String.IsNullOrEmpty(bottomType) OrElse bottomType = "Flat Wrapped" OrElse bottomType = "Oval Bumper" Then
-                    result = drop + 350
+                If Trim = "1P" OrElse String.IsNullOrEmpty(BottomType) OrElse BottomType = "Flat Wrapped" OrElse BottomType = "Oval Bumper" Then
+                    result = Drop + 350
                 End If
             Case "63"
-                If trim = "1F" AndAlso (bottomType = "Oval" OrElse (InStr(bottomType, "Flat") > 0 AndAlso bottomType <> "Flat Wrapped")) Then
-                    result = drop + 350
+                If Trim = "1F" AndAlso (BottomType = "Oval" OrElse (InStr(BottomType, "Flat") > 0 AndAlso BottomType <> "Flat Wrapped")) Then
+                    result = Drop + 350
                 End If
-                If trim = "1P" OrElse String.IsNullOrEmpty(bottomType) OrElse bottomType = "Flat Wrapped" OrElse bottomType = "Oval Bumper" Then
-                    result = drop + 400
+                If Trim = "1P" OrElse String.IsNullOrEmpty(BottomType) OrElse BottomType = "Flat Wrapped" OrElse BottomType = "Oval Bumper" Then
+                    result = Drop + 400
                 End If
         End Select
 
