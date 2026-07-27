@@ -21993,7 +21993,7 @@ Partial Class Methods_Order_DetailMethod
             currentData("InsertInTrack6").ToString()
         }
         For i As Integer = 0 To initTrackOption.Length - 1
-            If Not String.IsNullOrEmpty(initTrackOption(i).ToString()) Then
+            If InArray(initTrackOption(i).ToString(), "Yes", "1") Then
                 initTrackOption(i) = "Insert"
             Else
                 initTrackOption(i) = "Plain"
