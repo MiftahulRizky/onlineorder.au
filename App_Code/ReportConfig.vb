@@ -703,6 +703,88 @@ Public Class ReportConfig
         End Try
     End Sub
 
+    Public Sub ShutterEvolveOrders(Files As String, StartDate As DateTime, EndDate As DateTime)
+        Try
+            Dim startDateStr As String = StartDate.ToString("yyyy-MM-dd")
+            Dim endDateStr As String = EndDate.ToString("yyyy-MM-dd")
+
+            Dim thisQuery As String = "SELECT DISTINCT OrderHeaders_Shutters.*, Customers.Name AS CustomerName FROM OrderHeaders_Shutters INNER JOIN Customers ON OrderHeaders_Shutters.CustomerId = Customers.Id INNER JOIN OrderDetails_Shutters ON OrderHeaders_Shutters.Id = OrderDetails_Shutters.HeaderId INNER JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id WHERE OrderHeaders_Shutters.Active = 1 AND CONVERT(DATE, OrderHeaders_Shutters.JobDate) >= '" + startDateStr + "' AND CONVERT(DATE, OrderHeaders_Shutters.JobDate) <= '" + endDateStr + "' AND (Products.DesignId = 'F70CD0D8-06E5-4C99-B8D8-E9506C1A0F12' OR Products.DesignId = 'DAA2D2CD-B5B6-49FA-A9F8-C65A609440BE') AND (OrderHeaders_Shutters.Status = 'In Production' OR OrderHeaders_Shutters.Status = 'Completed') ORDER BY Customers.Name ASC"
+
+            Dim thisData As DataSet = GetListData(thisQuery)
+
+            If thisData.Tables(0).Rows.Count > 0 Then
+                Dim doc As New Document(PageSize.A4.Rotate(), 36, 36, 80, 72)
+                Dim pdfFilePath As String = Files
+                Using fs As New FileStream(pdfFilePath, FileMode.Create)
+                    Dim period As String = StartDate.ToString("MMM yyyy") & " - " & EndDate.ToString("MMM yyyy")
+
+                    Dim writer As PdfWriter = PdfWriter.GetInstance(doc, fs)
+                    Dim pageEvent As New ReportEvents() With {
+                        .PageTitle = "Evolve Orders Report",
+                        .PagePeriod = period
+                    }
+                    writer.PageEvent = pageEvent
+                    doc.Open()
+
+                    Dim data As String() = {}
+
+                    Dim table As New PdfPTable(9)
+                    table.WidthPercentage = 100
+                    table.SetWidths(New Single() {0.05F, 0.1F, 0.1F, 0.2F, 0.15F, 0.1F, 0.1F, 0.1F, 0.1F})
+
+                    table.AddCell(HeaderCellOriginal("No"))
+                    table.AddCell(HeaderCellOriginal("Job Number"))
+                    table.AddCell(HeaderCellOriginal("Job Date"))
+                    table.AddCell(HeaderCellOriginal("Retailer Name"))
+                    table.AddCell(HeaderCellOriginal("Retailer Order Number"))
+                    table.AddCell(HeaderCellOriginal("Customer Name"))
+                    table.AddCell(HeaderCellOriginal("Item Count"))
+                    table.AddCell(HeaderCellOriginal("Panel Qty"))
+                    table.AddCell(HeaderCellOriginal("M2"))
+
+                    For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                        Dim headerId As String = thisData.Tables(0).Rows(i).Item("Id").ToString()
+
+                        Dim itemCount As Integer = GetItemData_Integer("SELECT COUNT(*) FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id WHERE OrderDetails_Shutters.HeaderId = '" + headerId + "' AND (Products.DesignId = 'F70CD0D8-06E5-4C99-B8D8-E9506C1A0F12' OR Products.DesignId = 'DAA2D2CD-B5B6-49FA-A9F8-C65A609440BE') AND OrderDetails_Shutters.Active=1")
+
+                        Dim panelQty As Integer = GetItemData_Integer("SELECT SUM(OrderDetails_Shutters.PanelQty) FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id WHERE OrderDetails_Shutters.HeaderId = '" + headerId + "' AND (Products.DesignId = 'F70CD0D8-06E5-4C99-B8D8-E9506C1A0F12' OR Products.DesignId = 'DAA2D2CD-B5B6-49FA-A9F8-C65A609440BE') AND OrderDetails_Shutters.Active=1")
+
+                        Dim squareMetre As Integer = GetItemData_Integer("SELECT SUM(OrderDetails_Shutters.SquareMetre) FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id WHERE OrderDetails_Shutters.HeaderId = '" + headerId + "' AND (Products.DesignId = 'F70CD0D8-06E5-4C99-B8D8-E9506C1A0F12' OR Products.DesignId = 'DAA2D2CD-B5B6-49FA-A9F8-C65A609440BE') AND OrderDetails_Shutters.Active=1")
+
+                        Dim jobDate As String = String.Empty
+                        If Not thisData.Tables(0).Rows(0).Item("JobDate").ToString() = "" Then
+                            jobDate = Convert.ToDateTime(thisData.Tables(0).Rows(0).Item("jobDate")).ToString("dd MMM yyyy")
+                        End If
+
+                        table.AddCell(ContentCell(i + 1))
+                        table.AddCell(ContentCell(thisData.Tables(0).Rows(i).Item("JobId").ToString()))
+                        table.AddCell(ContentCell(jobDate))
+                        table.AddCell(ContentCell(thisData.Tables(0).Rows(i).Item("CustomerName").ToString()))
+                        table.AddCell(ContentCell(thisData.Tables(0).Rows(i).Item("OrderNumber").ToString()))
+                        table.AddCell(ContentCell(thisData.Tables(0).Rows(i).Item("OrderName").ToString()))
+                        table.AddCell(ContentCell(itemCount.ToString()))
+                        table.AddCell(ContentCell(panelQty.ToString()))
+                        table.AddCell(ContentCell(squareMetre.ToString()))
+                    Next
+
+                    Dim totalItemCount As Integer = GetItemData_Integer("SELECT COUNT(*) FROM OrderDetails_Shutters INNER JOIN OrderHeaders_Shutters ON OrderDetails_Shutters.HeaderId = OrderHeaders_Shutters.Id LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id WHERE CONVERT(DATE, OrderHeaders_Shutters.JobDate) >= '" + startDateStr + "' AND CONVERT(DATE, OrderHeaders_Shutters.JobDate) <= '" + endDateStr + "' AND (Products.DesignId = 'F70CD0D8-06E5-4C99-B8D8-E9506C1A0F12' OR Products.DesignId = 'DAA2D2CD-B5B6-49FA-A9F8-C65A609440BE') AND OrderHeaders_Shutters.Active = 1 AND OrderDetails_Shutters.Active=1")
+                    Dim totalPanelQty As Integer = GetItemData_Integer("SELECT SUM(OrderDetails_Shutters.PanelQty) FROM OrderDetails_Shutters INNER JOIN OrderHeaders_Shutters ON OrderDetails_Shutters.HeaderId = OrderHeaders_Shutters.Id LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id WHERE CONVERT(DATE, OrderHeaders_Shutters.JobDate) >= '" + startDateStr + "' AND CONVERT(DATE, OrderHeaders_Shutters.JobDate) <= '" + endDateStr + "' AND (Products.DesignId = 'F70CD0D8-06E5-4C99-B8D8-E9506C1A0F12' OR Products.DesignId = 'DAA2D2CD-B5B6-49FA-A9F8-C65A609440BE') AND OrderHeaders_Shutters.Active = 1 AND OrderDetails_Shutters.Active=1")
+                    Dim totalSquareMetre As Integer = GetItemData_Integer("SELECT SUM(OrderDetails_Shutters.SquareMetre) FROM OrderDetails_Shutters INNER JOIN OrderHeaders_Shutters ON OrderDetails_Shutters.HeaderId = OrderHeaders_Shutters.Id LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id WHERE CONVERT(DATE, OrderHeaders_Shutters.JobDate) >= '" + startDateStr + "' AND CONVERT(DATE, OrderHeaders_Shutters.JobDate) <= '" + endDateStr + "' AND (Products.DesignId = 'F70CD0D8-06E5-4C99-B8D8-E9506C1A0F12' OR Products.DesignId = 'DAA2D2CD-B5B6-49FA-A9F8-C65A609440BE') AND OrderHeaders_Shutters.Active = 1 AND OrderDetails_Shutters.Active=1")
+
+                    table.AddCell(FooterCellCol4("TOTAL"))
+                    table.AddCell(FooterCell(totalItemCount))
+                    table.AddCell(FooterCell(totalPanelQty))
+                    table.AddCell(FooterCell(totalSquareMetre))
+
+                    doc.Add(table)
+
+                    doc.Close()
+                End Using
+            End If
+        Catch ex As Exception
+        End Try
+    End Sub
+
     Public Sub Customers(Files As String, CashSale As String)
         Try
             Dim thisQuery As String = "SELECT Customers.*, CustomerGroups.Name AS GroupName, CASE WHEN Customers.CashSale = 1 THEN 'Yes' ELSE 'No' END AS CashSaleCustomer, CASE WHEN Customers.OnStop = 1 THEN 'Yes' ELSE 'No' END AS OnStopCustomer FROM Customers LEFT JOIN CustomerGroups ON Customers.[Group] = CustomerGroups.Id ORDER BY Customers.Name ASC"

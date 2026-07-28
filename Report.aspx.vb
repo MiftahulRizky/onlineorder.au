@@ -85,6 +85,10 @@ Partial Class Report
                     ShuttersOrdersAction()
                 End If
 
+                If ddlReportType.SelectedValue = "EvolveOrder" Then
+                    EvolveOrdersAction()
+                End If
+
                 If ddlReportType.SelectedValue = "ShuttersMonth" Then
                     ShuttersMTMAction()
                 End If
@@ -178,6 +182,20 @@ Partial Class Report
 
         Response.ContentType = "application/pdf"
         Response.AddHeader("Content-Disposition", "attachment; filename=Shutters Orders.pdf")
+        Response.TransmitFile(pdfFilePath)
+        Response.End()
+    End Sub
+
+    Private Sub EvolveOrdersAction()
+        Dim pdfFilePath As String = Server.MapPath("~/file/report/Shutters Orders.pdf")
+
+        Dim dateFrom As DateTime = DateTime.Parse(txtStartDate.Text)
+        Dim dateTo As DateTime = DateTime.Parse(txtEndDate.Text)
+
+        reportCfg.ShutterEvolveOrders(pdfFilePath, dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"))
+
+        Response.ContentType = "application/pdf"
+        Response.AddHeader("Content-Disposition", "attachment; filename=Evolve Orders.pdf")
         Response.TransmitFile(pdfFilePath)
         Response.End()
     End Sub
@@ -339,7 +357,7 @@ Partial Class Report
                 divEndDate.Visible = True
             End If
 
-            If ReportType = "ShuttersOrder" Or ReportType = "ShuttersMonth" Then
+            If ReportType = "ShuttersOrder" Or ReportType = "ShuttersMonth" Or ReportType = "EvolveOrder" Then
                 divStartDate.Visible = True
                 divEndDate.Visible = True
             End If
