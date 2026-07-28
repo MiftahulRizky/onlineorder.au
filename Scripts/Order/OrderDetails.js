@@ -30,27 +30,19 @@ const bindHeader = async (headerid, ordertype) => {
     });
 
     if (!response.ok) {
-      const msg = `${response.status} - ${response.statusText}`;
-      throw new Error(msg);
+      throw new Error(`${response.status} - ${response.statusText}`);
     }
 
-    const dataResponse = await response.json();
-    const data = dataResponse.d;
+    const { d: data } = await response.json();
 
-    if (!data || data.length === 0) {
-      window.location.href = "/order";
+    if (!data) {
+      window.location.replace("/order");
+      return;
     }
 
-    for (const item of data) {
-      // await handlerReloadPricingOnReadyPage(item.Id, item.Status, "binding");
-      //   await handlerHeaderInfo(item);
-      //   await bindDetails(item.Id, item.Status, item.CreatedBy);
-      //   await handlerDisplayElement(item);
-      //   await handlerCheckOrder(item.Id, item.Status, item.CreatedBy);
-      await loaderFadeOut();
-    }
+    handlerHeaderInfo(data); // langsung 1 object, bukan array
   } catch (error) {
-    const msg = "Please contact our IT team at support@onlineorder.au";
+    let msg = "Please contact our IT team at support@onlineorder.au";
     if (["Administrator"].includes(ROLENAME)) {
       msg = error.message;
     }
@@ -69,6 +61,7 @@ const orderDetailPageLoaded = async () => {
   }
 
   await bindHeader(HEADERID, ORDERTYPE);
+  await loaderFadeOut();
 };
 
 const getItemData = async (query) => {
