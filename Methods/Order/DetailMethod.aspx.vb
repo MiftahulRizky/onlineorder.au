@@ -1347,11 +1347,11 @@ Partial Class Methods_Order_DetailMethod
             End If
 
             If rolename = "Administrator" Then
-                Dim ResApi As String = SendOrderGlobal(headerid)
-                If Not ResApi = "OK" Then
-                    Throw New Exception("API Error: " + ResApi)
-                End If
-                Throw New Exception("API Success")
+                ' Dim ResApi As String = SendOrderGlobal(headerid)
+                ' If Not ResApi = "OK" Then
+                '     Throw New Exception("API Error: " + ResApi)
+                ' End If
+                ' Throw New Exception("API Success")
             End If
             
             
@@ -21975,6 +21975,7 @@ Partial Class Methods_Order_DetailMethod
             currentData("Line5").ToString(),
             currentData("Line6").ToString()
         }
+
         For i As Integer = 0 To initVenType.Length - 1
             If Not String.IsNullOrEmpty(initVenType(i).ToString()) Then
                 initVenType(i) = "Track Only"
@@ -22224,6 +22225,17 @@ Partial Class Methods_Order_DetailMethod
                 result+= tdDetStart & currentData("BracketOption4").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("BracketOption5").ToString() & tdDetEnd
                 result+= tdDetRight & currentData("BracketOption6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#BracketColour
+            result+= trDetStart
+                result+= tdTitleStart & "Bracket Colour" & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("BracketColour6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#Sloper
@@ -23961,7 +23973,7 @@ Partial Class Methods_Order_DetailMethod
 
     Private Shared Function MailSubmitOrder(headerid As String, directory As String) As String
         Try
-            Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType = 'Blinds' ", headerid))
+            Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType IN ('Blinds', 'Door and Window') ", headerid))
             If OrderData.Tables(0).Rows.Count = 0 Then Return "invalid orders"
 
             Dim CustomerId As String = OrderData.Tables(0).Rows(0).Item("CustomerId").ToString()

@@ -41,6 +41,7 @@ const bindHeader = async (headerid, ordertype) => {
     }
 
     handlerHeaderInfo(data); // langsung 1 object, bukan array
+    handlerDisplayElement(data);
   } catch (error) {
     let msg = "Please contact our IT team at support@onlineorder.au";
     if (["Administrator"].includes(ROLENAME)) {
@@ -50,6 +51,106 @@ const bindHeader = async (headerid, ordertype) => {
   }
 };
 
+// ----------------------------------------------|| Handler Functions ||-------------------------------------
+const spanEl = {
+  retailerName: document.getElementById("spanRetailerName"),
+  retailerId: document.getElementById("spanRetailerId"),
+  orderId: document.getElementById("spanOrderId"),
+  joNumber: document.getElementById("spanJoNumber"),
+  orderType: document.getElementById("spanOrderProductType"),
+  orderNo: document.getElementById("spanOrderNo"),
+  orderCust: document.getElementById("spanOrderCust"),
+  createdDate: document.getElementById("spanCreatedDate"),
+  createdBy: document.getElementById("spanCreatedBy"),
+  note: document.getElementById("spanNote"),
+  statusNote: document.getElementById("spanStatusNote"),
+  statusOrder: document.getElementById("spanStatusOrder"),
+  delivery: document.getElementById("spanDelivery"),
+  submittedDate: document.getElementById("spanSubmittedDate"),
+  productionDate: document.getElementById("spanProductionDate"),
+  completedDate: document.getElementById("spanCompletedDate"),
+  canceledDate: document.getElementById("spanCanceledDate"),
+  total: document.getElementById("spanTotal"),
+  gst: document.getElementById("spanGST"),
+  final: document.getElementById("spanFinalTotal"),
+};
+
+const handlerHeaderInfo = (item) => {
+  if (!item) return;
+
+  setText(spanEl.retailerName, item.CustomerName);
+  setText(spanEl.retailerId, item.CustomerId);
+  setText(spanEl.orderId, item.OrderId);
+  setText(spanEl.orderNo, item.OrderNumber);
+  setText(spanEl.orderCust, item.OrderName);
+  setText(spanEl.note, item.OrderNote);
+  setText(spanEl.statusNote, item.StatusAdditional);
+  setText(spanEl.statusOrder, item.Status);
+  setText(spanEl.delivery, item.Delivery);
+
+  setText(spanEl.createdBy, item.CreatedByName);
+  spanEl.createdDate.textContent = formatDate(item.CreatedDate);
+
+  spanEl.submittedDate.textContent = formatDate(item.SubmittedDate);
+  spanEl.productionDate.textContent = formatDate(item.JobDate);
+  spanEl.completedDate.textContent = formatDate(item.CompletedDate);
+  spanEl.canceledDate.textContent = formatDate(item.CanceledDate);
+
+  spanEl.joNumber.innerHTML = item.JoNumberId
+    ? `<span class="badge badge-outline text-red">${item.JoNumberId}</span> <a href="javascript:void(0);" id="btnCopyJoNumber" class="btn btn-sm  border-0 bg-transparent" data-jonumber="${item.JoNumberId}"><i class="ti ti-copy fs-2 opacity-50"></i></a>`
+    : "-";
+
+  setText(spanEl.orderType, item.OrderType);
+
+  spanEl.total.innerHTML = formatCurrency(item.SumPrice);
+  spanEl.gst.innerHTML = formatCurrency(item.Gst);
+  spanEl.final.innerHTML = formatCurrency(item.FinalTotal);
+};
+
+const btnEl = {
+  btnJobSheet: document.getElementById("btnJobSheet"),
+  btnReprintJobSheet: document.getElementById("btnReprintJobSheet"),
+  btnChangeJobStatus: document.getElementById("btnChangeJobStatus"),
+  btnSubmit: document.getElementById("btnSubmit"),
+  btnEditHeader: document.getElementById("btnEditHeader"),
+  btnDeleteHeader: document.getElementById("btnDeleteHeader"),
+  btnQuote: document.getElementById("btnQuote"),
+  btnQuoteDetail: document.getElementById("btnQuoteDetail"),
+  btnDownloadQuote: document.getElementById("btnDownloadQuote"),
+  btnMoreAction: document.getElementById("btnMoreAction"),
+  btnEmailDeposit: document.getElementById("btnEmailDeposit"),
+  dividerEmailDeposit: document.getElementById("dividerEmailDeposit"),
+  btnChangeStatus: document.getElementById("btnChangeStatus"),
+  btnSendOrderMail: document.getElementById("btnSendOrderMail"),
+  btnDownloadBarcode: document.getElementById("btnDownloadBarcode"),
+  btnQuoteDisc: document.getElementById("btnQuoteDisc"),
+  btnReloadPricing: document.getElementById("btnReloadPricing"),
+  btnAddItem: document.getElementById("btnAddItem"),
+  btnAddService: document.getElementById("btnAddService"),
+  divPrice: document.getElementById("divPrice"),
+  msgThanks: document.getElementById("msgThanks"),
+  thMarkUp: document.querySelector(".thMarkUp"),
+  thPrice: document.querySelector(".thPrice"),
+};
+
+const handlerDisplayElement = (item) => {
+  Object.values(btnEl).forEach((el) => {
+    if (el) el.classList.add("d-none");
+  });
+
+  if (!item) return;
+
+  if (["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)) {
+    btnEl.btnJobSheet.classList.remove("d-none");
+  }
+
+  if (item.JoNumberId) {
+    btnEl.btnReprintJobSheet.classList.remove("d-none");
+  }
+
+  if (["Administrator"]) {
+  }
+};
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const orderDetailPageLoaded = async () => {
   if (!ULTRON || !ORDERTYPE) window.location.href = "/order";
@@ -57,6 +158,10 @@ const orderDetailPageLoaded = async () => {
   if (CUSTOMERID == "LS-A224") window.location.href = "/order"; // JPM Direct
 
   if (CUSTOMERID == "DEFAULT" && USERNAME == "galih") {
+    window.location.href = "/order";
+  }
+
+  if (!["Administrator"].includes(ROLENAME)) {
     window.location.href = "/order";
   }
 
@@ -177,4 +282,84 @@ const generateOption = (elementId, list = [], lengthDefaultOption = 0) => {
     option.setAttribute("data-name", item);
     sel.add(option);
   });
+};
+
+const setText = (el, val) => {
+  if (!el) return;
+  el.innerHTML = val || "-";
+};
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return "-";
+
+  const d = parseCustomDate(dateStr);
+  if (!d || isNaN(d.getTime())) return "-";
+
+  return ROLENAME === "Administrator"
+    ? d
+        .toLocaleDateString("id-ID", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })
+        .replace(/\./g, ":")
+    : d.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+      });
+};
+
+const formatCurrency = (num) => {
+  if (!num) return "-";
+  let result = `$${Number(num).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+  return `<span class="badge badge-outline text-green" style="font-size:larger;">${result}</span>`;
+};
+
+const parseCustomDate = (value) => {
+  if (!value || typeof value !== "string") return null;
+
+  // Format ISO: 2025-07-10 08:42:01.653
+  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/.test(value)) {
+    return new Date(value.replace(" ", "T"));
+  }
+
+  // Format: 10/07/2025 08:42:01 (24 jam)
+  const match24 = value.match(
+    /^(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/,
+  );
+  if (match24) {
+    const [_, day, month, year, hour, minute, second] = match24;
+    return new Date(
+      `${year}-${month.padStart(2, "0")}-${day.padStart(
+        2,
+        "0",
+      )}T${hour}:${minute}:${second}`,
+    );
+  }
+
+  // Format: 13/07/2025 1:06:07 PM (12 jam)
+  const match12 = value.match(
+    /^(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{1,2}):(\d{2}):(\d{2}) (\w{2})$/,
+  );
+  if (match12) {
+    let [_, day, month, year, hour, minute, second, period] = match12;
+    hour = parseInt(hour, 10);
+    if (period === "PM" && hour < 12) hour += 12;
+    if (period === "AM" && hour === 12) hour = 0;
+    return new Date(
+      `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}T${hour
+        .toString()
+        .padStart(2, "0")}:${minute}:${second}`,
+    );
+  }
+
+  return null;
 };
