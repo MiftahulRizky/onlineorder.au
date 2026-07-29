@@ -26,7 +26,9 @@ const bindHeader = async (headerid, ordertype) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ headerid, ordertype }),
+      body: JSON.stringify({
+        data: { headerid, ordertype, loginid: LOGINID, rolename: ROLENAME },
+      }),
     });
 
     if (!response.ok) {
@@ -39,9 +41,11 @@ const bindHeader = async (headerid, ordertype) => {
       window.location.replace("/order");
       return;
     }
+    console.table(data);
 
     handlerHeaderInfo(data); // langsung 1 object, bukan array
     handlerDisplayElement(data);
+    handlerCheckOrder(data.ResCheckOrder);
   } catch (error) {
     let msg = "Please contact our IT team at support@onlineorder.au";
     if (["Administrator"].includes(ROLENAME)) {
@@ -74,7 +78,6 @@ const spanEl = {
   gst: document.getElementById("spanGST"),
   final: document.getElementById("spanFinalTotal"),
 };
-
 const handlerHeaderInfo = (item) => {
   if (!item) return;
 
@@ -132,7 +135,6 @@ const btnEl = {
   thMarkUp: document.querySelector(".thMarkUp"),
   thPrice: document.querySelector(".thPrice"),
 };
-
 const handlerDisplayElement = (item) => {
   Object.values(btnEl).forEach((el) => {
     if (el) el.classList.add("d-none");
@@ -153,7 +155,106 @@ const handlerDisplayElement = (item) => {
       btnEl.btnDeleteHeader.classList.remove("d-none");
       btnEl.btnAddItem.classList.remove("d-none");
     }
+
+    if (!["Completed"].includes(item.Status)) {
+      btnEl.btnAddService.classList.remove("d-none");
+      btnEl.btnQuoteDisc.classList.remove("d-none");
+    }
+    btnEl.btnDownloadBarcode.classList.remove("d-none");
+
+    btnEl.btnQuote.classList.remove("d-none");
+    btnEl.btnQuoteDetail.classList.remove("d-none");
+    btnEl.btnDownloadQuote.classList.remove("d-none");
+
+    if (
+      ["New Order", "In Production", "Completed", "On Hold"].includes(
+        item.Status,
+      )
+    ) {
+      btnEl.btnChangeStatus.classList.remove("d-none");
+      btnEl.btnSendOrderMail.classList.remove("d-none");
+    }
+
+    btnEl.btnMoreAction.classList.remove("d-none");
+
+    btnEl.btnEmailDeposit.classList.remove("d-none");
+    btnEl.dividerEmailDeposit.classList.remove("d-none");
+
+    if (!["Canceled"].includes(item.Status)) {
+      btnEl.btnReloadPricing.classList.remove("d-none");
+    }
   }
+
+  if (["PPIC & DE", "Customer Service"].includes(ROLENAME)) {
+    btnEl.btnJobSheet.classList.remove("d-none");
+
+    if (["Draft", "Pending Price Approval"].includes(item.Status)) {
+      btnEl.btnSubmit.classList.remove("d-none");
+      btnEl.btnEditHeader.classList.remove("d-none");
+      btnEl.btnDeleteHeader.classList.remove("d-none");
+      btnEl.btnAddItem.classList.remove("d-none");
+    }
+
+    if (!["Completed"].includes(item.Status)) {
+      btnEl.btnAddService.classList.remove("d-none");
+      btnEl.btnQuoteDisc.classList.remove("d-none");
+    }
+    btnEl.btnDownloadBarcode.classList.remove("d-none");
+
+    if (
+      ["New Order", "In Production", "Completed", "On Hold"].includes(
+        item.Status,
+      )
+    ) {
+      btnEl.btnChangeStatus.classList.remove("d-none");
+    }
+
+    btnEl.btnMoreAction.classList.remove("d-none");
+
+    if (!["Canceled"].includes(item.Status)) {
+      btnEl.btnReloadPricing.classList.remove("d-none");
+    }
+  }
+
+  if (["Administrator"].includes(ROLENAME)) {
+    if (["Draft", "Pending Price Approval"].includes(item.Status)) {
+      btnEl.btnSubmit.classList.remove("d-none");
+      btnEl.btnEditHeader.classList.remove("d-none");
+      btnEl.btnDeleteHeader.classList.remove("d-none");
+      btnEl.btnAddItem.classList.remove("d-none");
+    }
+
+    btnEl.btnQuote.classList.remove("d-none");
+    btnEl.btnQuoteDetail.classList.remove("d-none");
+    btnEl.btnDownloadQuote.classList.remove("d-none");
+  }
+};
+
+const handlerCheckOrder = (res) => {
+  if (!["Yes"].includes(res.Action)) return;
+
+  Swal.fire({
+    title: "Order Information",
+    html: res.Message,
+    icon: "info",
+    showClass: {
+      popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+    },
+    hideClass: {
+      popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+    },
+    customClass: {
+      popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+    },
+  });
 };
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const orderDetailPageLoaded = async () => {

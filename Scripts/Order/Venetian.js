@@ -327,12 +327,19 @@ const bindBottomHoldDown = (blindname) => {
   if (!blindname) return;
   let list = [];
 
-  if (["50mm Aluminium", "25mm Aluminium"].includes(blindname)) {
+  if (
+    ["50mm Aluminium"].includes(blindname) ||
+    blindname.includes("Timberstyle")
+  ) {
     list.push("Silver", "Gold");
   }
 
-  if (blindname.includes("Timberstyle")) {
-    list.push("Silver", "Gold");
+  if (
+    blindname.includes("Mockwood") ||
+    blindname.includes("Wooden") ||
+    ["25mm Aluminium"].includes(blindname)
+  ) {
+    list.push("No", "Yes");
   }
   generateOption("bottom", list);
 };
@@ -510,13 +517,14 @@ const handlerElementVisibility = async (
       divControl.classList.remove("d-none");
       divBracket.classList.remove("d-none");
       divBottom.classList.remove("d-none");
-      divHoldBracket.classList.remove("d-none");
+      // divHoldBracket.classList.remove("d-none");
       div2on1Headreal.classList.remove("d-none");
     }
 
     if (["50mm Mockwood", "63mm Mockwood"].includes(blindname)) {
       divControlMock.classList.remove("d-none");
-      divHoldBracket.classList.remove("d-none");
+      // divHoldBracket.classList.remove("d-none");
+      divBottom.classList.remove("d-none");
       div2on1Headreal.classList.remove("d-none");
       divPelmetDetail.classList.remove("d-none");
     }
@@ -531,7 +539,8 @@ const handlerElementVisibility = async (
 
     if (["50mm Wooden", "63mm Wooden"].includes(blindname)) {
       divControlMock.classList.remove("d-none");
-      divHoldBracket.classList.remove("d-none");
+      // divHoldBracket.classList.remove("d-none");
+      divBottom.classList.remove("d-none");
       div2on1Headreal.classList.remove("d-none");
       divPelmetDetail.classList.remove("d-none");
     }

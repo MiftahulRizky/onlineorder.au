@@ -704,7 +704,7 @@
         let REPRINT = '<%= Session("Reprint") %>';
         let URIMETHOD = '/Methods/Order/OrderDetailMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.6"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.7"></script>
 
 
 </asp:Content>
