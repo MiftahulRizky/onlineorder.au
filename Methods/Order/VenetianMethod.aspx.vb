@@ -262,9 +262,9 @@ Partial Class Methods_Order_VenetianMethod
             End If
 
             If InArray(BlindName, "25mm Aluminium", "50mm Aluminium", "50mm Mockwood", "63mm Mockwood", "50mm Wooden", "63mm Wooden") Then
-                If String.IsNullOrEmpty(data.holdbracket) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "hold down bracket is required !",.field = "holdbracket"}}
-                End If
+                ' If String.IsNullOrEmpty(data.holdbracket) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "hold down bracket is required !",.field = "holdbracket"}}
+                ' End If
             End If
 
             Dim pelmetwidth As Integer
