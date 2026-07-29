@@ -22012,8 +22012,8 @@ Partial Class Methods_Order_DetailMethod
         For i As Integer = 0 To initSloper.Length - 1
             If InArray(initSloper(i).ToString(), "Yes", "1", "True", "true") Then
                 initSloper(i) = "Yes"
-            Else
-                initSloper(i) = "no"
+            Else If InArray(initSloper(i).ToString(), "No", "0", "False", "false") Then
+                initSloper(i) = "No"
             End If
         Next
 
