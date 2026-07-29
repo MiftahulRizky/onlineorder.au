@@ -687,6 +687,7 @@ const bindStackPosition = () => {
 
   let data = [];
   data.push(
+    { value: "Fix", text: "Fix" },
     { value: "Left", text: "Left" },
     { value: "Right", text: "Right" },
     { value: "Center", text: "Center" },

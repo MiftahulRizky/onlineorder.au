@@ -181,6 +181,7 @@
                                         <div class="col-lg-4">
                                             <select type="text" name="controlposition" id="controlposition" class="form-select">
                                                 <option value=""></option>
+                                                <option value="Tilt Only">TILT ONLY</option>
                                                 <option value="Left">LEFT</option>
                                                 <option value="Right">RIGHT</option>
                                                 <option value="Twin Wand">TWIN WAND</option>

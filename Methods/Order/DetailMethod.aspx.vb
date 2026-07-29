@@ -22001,6 +22001,22 @@ Partial Class Methods_Order_DetailMethod
             End If
         Next
 
+        Dim initSloper As String() = {
+            currentData("Sloper1").ToString(),
+            currentData("Sloper2").ToString(),
+            currentData("Sloper3").ToString(),
+            currentData("Sloper4").ToString(),
+            currentData("Sloper5").ToString(),
+            currentData("Sloper6").ToString()
+        }
+        For i As Integer = 0 To initSloper.Length - 1
+            If InArray(initSloper(i).ToString(), "Yes", "1", "True", "true") Then
+                initSloper(i) = "Yes"
+            Else
+                initSloper(i) = "no"
+            End If
+        Next
+
         
         '#Line Option
         result += LineOptions(currentData)
@@ -22241,12 +22257,12 @@ Partial Class Methods_Order_DetailMethod
             '#Sloper
             result+= trDetStart
                 result+= tdTitleStart & "Sloper" & tdDetEnd
-                result+= tdDetStart & currentData("Sloper1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Sloper2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Sloper3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Sloper4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Sloper5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("Sloper6").ToString() & tdDetEnd
+                result+= tdDetStart & initSloper(0) & tdDetEnd
+                result+= tdDetStart & initSloper(1) & tdDetEnd
+                result+= tdDetStart & initSloper(2) & tdDetEnd
+                result+= tdDetStart & initSloper(3) & tdDetEnd
+                result+= tdDetStart & initSloper(4) & tdDetEnd
+                result+= tdDetRight & initSloper(5) & tdDetEnd
             result+= trDetEnd
 
             '#Location

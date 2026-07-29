@@ -140,15 +140,19 @@ const handlerDisplayElement = (item) => {
 
   if (!item) return;
 
-  if (["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)) {
-    btnEl.btnJobSheet.classList.remove("d-none");
-  }
-
   if (item.JoNumberId) {
     btnEl.btnReprintJobSheet.classList.remove("d-none");
   }
 
-  if (["Administrator"]) {
+  if (["Administrator"].includes(ROLENAME)) {
+    btnEl.btnJobSheet.classList.remove("d-none");
+
+    if (["Draft", "Pending Price Approval"].includes(item.Status)) {
+      btnEl.btnSubmit.classList.remove("d-none");
+      btnEl.btnEditHeader.classList.remove("d-none");
+      btnEl.btnDeleteHeader.classList.remove("d-none");
+      btnEl.btnAddItem.classList.remove("d-none");
+    }
   }
 };
 // ----------------------------------------------|| Other Functions ||---------------------------------------
