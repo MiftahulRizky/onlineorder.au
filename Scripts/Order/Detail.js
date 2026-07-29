@@ -1435,19 +1435,21 @@ const handlerHeaderInfo = async (item) => {
     spanOrderCust.innerHTML = item.OrderName;
 
     // CreatedDate
-    const customDate = parseCustomDate(item.CreatedDate);
-    if (!customDate || isNaN(customDate.getTime())) {
-      console.warn("Tanggal tidak valid:", item.CreatedDate);
-      spanCreatedDate.innerHTML = "-";
-      return;
-    }
-    if (ROLENAME === "Administrator") {
-      spanCreatedDate.innerHTML = customDate
-        .toLocaleDateString("id-ID", us)
-        .replace(/\./g, ":");
-    } else {
-      spanCreatedDate.innerHTML = customDate.toLocaleDateString("en-US", indo);
-    }
+    // const customDate = parseCustomDate(item.CreatedDate);
+    // if (!customDate || isNaN(customDate.getTime())) {
+    //   console.warn("Tanggal tidak valid:", item.CreatedDate);
+    //   spanCreatedDate.innerHTML = "-";
+    //   return;
+    // }
+    // if (ROLENAME === "Administrator") {
+    //   spanCreatedDate.innerHTML = customDate
+    //     .toLocaleDateString("id-ID", us)
+    //     .replace(/\./g, ":");
+    // } else {
+    //   spanCreatedDate.innerHTML = customDate.toLocaleDateString("en-US", indo);
+    // }
+
+    spanCreatedDate.innerHTML = formatDate(item.CreatedDate);
 
     spanNote.innerHTML = item.OrderNote ? item.OrderNote : "-";
     spanStatusNote.innerHTML = item.StatusAdditional
@@ -1458,87 +1460,91 @@ const handlerHeaderInfo = async (item) => {
 
     // CARD 2
     // SubmittedDate
-    if (!item.SubmittedDate) spanSubmittedDate.innerHTML = "-";
-    if (!item.SubmittedDate) spanProductionDate.innerHTML = "-";
-    if (item.SubmittedDate) {
-      const cardPrice = document.getElementById("cardPrice");
-      // cardPrice.classList.add("mb-3", "mt-1");
+    spanSubmittedDate.innerHTML = formatDate(item.SubmittedDate);
+    // if (!item.SubmittedDate) spanSubmittedDate.innerHTML = "-";
+    // if (!item.SubmittedDate) spanProductionDate.innerHTML = "-";
+    // if (item.SubmittedDate) {
+    //   const cardPrice = document.getElementById("cardPrice");
 
-      const customSubmitDate = parseCustomDate(item.SubmittedDate);
-      if (!customSubmitDate || isNaN(customSubmitDate.getTime())) {
-        console.warn("Tanggal tidak valid:", item.SubmittedDate);
-        spanCreatedDate.innerHTML = "-";
-        return;
-      }
+    //   // cardPrice.classList.add("mb-3", "mt-1");
 
-      const customProductionDate = parseCustomDate(item.JobDate);
-      if (!customProductionDate || isNaN(customProductionDate.getTime())) {
-        console.warn("Tanggal tidak valid:", item.SubmittedDate);
-        spanCreatedDate.innerHTML = "-";
-        return;
-      }
+    //   const customSubmitDate = parseCustomDate(item.SubmittedDate);
+    //   if (!customSubmitDate || isNaN(customSubmitDate.getTime())) {
+    //     console.warn("Tanggal tidak valid:", item.SubmittedDate);
+    //     spanCreatedDate.innerHTML = "-";
+    //     return;
+    //   }
 
-      if (ROLENAME === "Administrator") {
-        spanSubmittedDate.innerHTML = customSubmitDate
-          .toLocaleDateString("id-ID", us)
-          .replace(/\./g, ":");
-        spanProductionDate.innerHTML = customProductionDate
-          .toLocaleDateString("id-ID", us)
-          .replace(/\./g, ":");
-      } else {
-        spanSubmittedDate.innerHTML = customSubmitDate.toLocaleDateString(
-          "en-US",
-          indo,
-        );
+    //   const customProductionDate = parseCustomDate(item.JobDate);
+    //   if (!customProductionDate || isNaN(customProductionDate.getTime())) {
+    //     console.warn("Tanggal tidak valid:", item.SubmittedDate);
+    //     spanCreatedDate.innerHTML = "-";
+    //     return;
+    //   }
 
-        spanProductionDate.innerHTML = customProductionDate.toLocaleDateString(
-          "en-US",
-          indo,
-        );
-      }
-    }
+    //   if (ROLENAME === "Administrator") {
+    //     spanSubmittedDate.innerHTML = customSubmitDate
+    //       .toLocaleDateString("id-ID", us)
+    //       .replace(/\./g, ":");
+    //     spanProductionDate.innerHTML = customProductionDate
+    //       .toLocaleDateString("id-ID", us)
+    //       .replace(/\./g, ":");
+    //   } else {
+    //     spanSubmittedDate.innerHTML = customSubmitDate.toLocaleDateString(
+    //       "en-US",
+    //       indo,
+    //     );
+
+    //     spanProductionDate.innerHTML = customProductionDate.toLocaleDateString(
+    //       "en-US",
+    //       indo,
+    //     );
+    //   }
+    // }
 
     // CompletedDate
-    if (!item.CompletedDate) spanCompletedDate.innerHTML = "-";
-    if (item.CompletedDate) {
-      const customDate = parseCustomDate(item.CompletedDate);
-      if (!customDate || isNaN(customDate.getTime())) {
-        console.warn("Tanggal tidak valid:", item.CompletedDate);
-        spanCreatedDate.innerHTML = "-";
-        return;
-      }
-      if (ROLENAME === "Administrator") {
-        spanCompletedDate.innerHTML = customDate
-          .toLocaleDateString("id-ID", us)
-          .replace(/\./g, ":");
-      } else {
-        spanCompletedDate.innerHTML = customDate.toLocaleDateString(
-          "en-US",
-          indo,
-        );
-      }
-    }
+    spanCompletedDate.innerHTML = formatDate(item.CompletedDate);
+    // if (!item.CompletedDate) spanCompletedDate.innerHTML = "-";
+    // if (item.CompletedDate) {
+    //   const customDate = parseCustomDate(item.CompletedDate);
+    //   if (!customDate || isNaN(customDate.getTime())) {
+    //     console.warn("Tanggal tidak valid:", item.CompletedDate);
+    //     spanCreatedDate.innerHTML = "-";
+    //     return;
+    //   }
+    //   if (ROLENAME === "Administrator") {
+    //     spanCompletedDate.innerHTML = customDate
+    //       .toLocaleDateString("id-ID", us)
+    //       .replace(/\./g, ":");
+    //   } else {
+    //     spanCompletedDate.innerHTML = customDate.toLocaleDateString(
+    //       "en-US",
+    //       indo,
+    //     );
+    //   }
+    // }
 
     // CanceledDate
-    if (!item.CanceledDate) spanCanceledDate.innerHTML = "-";
-    if (item.CanceledDate) {
-      const customDate = parseCustomDate(item.CanceledDate);
-      if (!customDate || isNaN(customDate.getTime())) {
-        console.warn("Tanggal tidak valid:", item.CanceledDate);
-        spanCreatedDate.innerHTML = "-";
-        return;
-      }
-      if (ROLENAME === "Administrator") {
-        spanCanceledDate.innerHTML = customDate
-          .toLocaleDateString("id-ID", us)
-          .replace(/\./g, ":");
-      } else {
-        spanCanceledDate.innerHTML = customDate.toLocaleDateString(
-          "en-US",
-          indo,
-        );
-      }
-    }
+    spanCanceledDate.innerHTML = formatDate(item.CanceledDate);
+    // if (!item.CanceledDate) spanCanceledDate.innerHTML = "-";
+    // if (item.CanceledDate) {
+    //   const customDate = parseCustomDate(item.CanceledDate);
+    //   if (!customDate || isNaN(customDate.getTime())) {
+    //     console.warn("Tanggal tidak valid:", item.CanceledDate);
+    //     spanCreatedDate.innerHTML = "-";
+    //     return;
+    //   }
+    //   if (ROLENAME === "Administrator") {
+    //     spanCanceledDate.innerHTML = customDate
+    //       .toLocaleDateString("id-ID", us)
+    //       .replace(/\./g, ":");
+    //   } else {
+    //     spanCanceledDate.innerHTML = customDate.toLocaleDateString(
+    //       "en-US",
+    //       indo,
+    //     );
+    //   }
+    // }
 
     try {
       const CreatedBy = await getItemData(
@@ -3408,4 +3414,29 @@ const stylingColumnSearchAndPaging = () => {
   $("#tableAjax_length").hide();
   $("#tableAjax_info").hide();
   $("#tableAjax_paginate").hide();
+};
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return "-";
+
+  const d = parseCustomDate(dateStr);
+  if (!d || isNaN(d.getTime())) return "-";
+
+  return ROLENAME === "Administrator"
+    ? d
+        .toLocaleDateString("id-ID", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })
+        .replace(/\./g, ":")
+    : d.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+      });
 };
