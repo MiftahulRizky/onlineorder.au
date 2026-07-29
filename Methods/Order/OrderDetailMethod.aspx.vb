@@ -71,6 +71,8 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindOrderHeaderByID(ByVal data As ParamBindOrderHeaderByID) As Object
         Try
+            Dim HeaderData As Object
+            Dim DetailData As Object
             Dim query As String = <sql>
             SELECT 
                 h.Id,
@@ -132,7 +134,7 @@ Partial Class Methods_Order_OrderDetailMethod
                             Dim Status As String = reader("Status").ToString()
                             Dim ResCheckOrder As Object = CekOrder(Id, Status, data.loginid, data.rolename)
 
-                            Return New With {
+                            HeaderData = New With {
                                 .Id = reader("Id").ToString(),
                                 .CustomerName = reader("CustomerName").ToString(),
                                 .CustomerId = reader("CustomerId").ToString(),
@@ -161,7 +163,10 @@ Partial Class Methods_Order_OrderDetailMethod
                 End Using
             End Using
 
-            Dim HeaderData As String
+            Return New With {
+                .header = HeaderData,
+                .detail = DetailData
+            }
 
             Return Nothing
 

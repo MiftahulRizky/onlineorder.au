@@ -1027,6 +1027,7 @@ Partial Class Methods_Order_RollerBlindMethod
             If Not String.IsNullOrEmpty(data.railcolour) Then
                 BottomRailId = data.railcolour
             End If
+            
 
             If data.brackettype = "Linked 3 Blinds (Ind)" AND data.blindno = "Blind 2" Then
                 ChainId = ""
@@ -1039,7 +1040,7 @@ Partial Class Methods_Order_RollerBlindMethod
             Dim squareMetre As Decimal = Math.Round(width * drop / 1000000, 4)
             Dim linearMetre As Decimal = Math.Round(width / 1000, 4)
 
-            ' Throw New Exception("yeahhhh")
+            ' Throw New Exception(data.railcolour)
 
 
             

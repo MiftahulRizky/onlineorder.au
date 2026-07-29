@@ -158,13 +158,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const trim = e.target.value;
 
       bindRailType(brackettype, trim);
-
-      if (blindname == "Skin Only" && trim == "1F") {
-        divBottomRail.classList.remove("d-none");
-        divRailColour.classList.remove("d-none");
-      }
       if (
-        ["Cassette", "Motorised", "Gear Reduction"].includes(blindname) &&
+        ["Gear Reduction"].includes(blindname) &&
         ["Bottom Rail", "Decorative"].includes(trim)
       ) {
         divBottomRail.classList.remove("d-none");
@@ -175,6 +170,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         }
         if (trim == "Decorative") {
           btnInfoTrim.classList.remove("d-none");
+          // divRailColour.classList.remove("d-none");
         }
         divBottomRail.classList.remove("d-none");
         divAccessory.classList.remove("d-none");
@@ -1514,7 +1510,7 @@ const bindRailColour = async (brackettype, railtype, trim) => {
     field: "railcolour",
     params: { brackettype, railtype, trim },
     withDefaultOption: true,
-    lengthDefaultOption: 0,
+    lengthDefaultOption: 1,
   });
 };
 

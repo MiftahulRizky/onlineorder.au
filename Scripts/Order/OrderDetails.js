@@ -43,9 +43,9 @@ const bindHeader = async (headerid, ordertype) => {
     }
     console.table(data);
 
-    handlerHeaderInfo(data); // langsung 1 object, bukan array
-    handlerDisplayElement(data);
-    handlerCheckOrder(data.ResCheckOrder);
+    handlerHeaderInfo(data.header); // langsung 1 object, bukan array
+    handlerDisplayElement(data.header);
+    handlerCheckOrder(data.header.ResCheckOrder);
   } catch (error) {
     let msg = "Please contact our IT team at support@onlineorder.au";
     if (["Administrator"].includes(ROLENAME)) {
