@@ -2007,11 +2007,11 @@ Partial Class Order_Detail
                         aDeposit.Visible = True
                     End If
                     If lblCashSale.Text = True Then divGenerateJob.Visible = True
-                    If customerMinimum = True Then
-                        Dim checkService As Integer = orderCfg.GetItemData_Integer("SELECT COUNT(*) FROM OrderDetails_Shutters WHERE HeaderId = '" + headerId + "' AND ProductId = '901C1FF3-F3B5-4ACE-A73E-79027ECAEFFF' AND Active = 1")
-                        Dim sumPrice As Decimal = orderCfg.GetItemData_Decimal("SELECT SUM(FinalCost) AS SumPrice FROM OrderDetails_Shutters WHERE HeaderId = '" + headerId + "' AND Active=1")
-                        If checkService = 0 And sumPrice < 200 Then divMinimumSurcharge.Visible = True
-                    End If
+                    ' If customerMinimum = True Then
+                    '     Dim checkService As Integer = orderCfg.GetItemData_Integer("SELECT COUNT(*) FROM OrderDetails_Shutters WHERE HeaderId = '" + headerId + "' AND ProductId = '901C1FF3-F3B5-4ACE-A73E-79027ECAEFFF' AND Active = 1")
+                    '     Dim sumPrice As Decimal = orderCfg.GetItemData_Decimal("SELECT SUM(FinalCost) AS SumPrice FROM OrderDetails_Shutters WHERE HeaderId = '" + headerId + "' AND Active=1")
+                    '     If checkService = 0 And sumPrice < 200 Then divMinimumSurcharge.Visible = True
+                    ' End If
 
                     If spanStatusAdditional.InnerText = "On Hold - Customer Request" Then
                         aAddItem.Visible = True
@@ -2111,11 +2111,11 @@ Partial Class Order_Detail
                         aDeposit.Visible = True
                     End If
                     If lblCashSale.Text = True Then divGenerateJob.Visible = True
-                    If customerMinimum = True Then
-                        Dim checkService As Integer = orderCfg.GetItemData_Integer("SELECT COUNT(*) FROM OrderDetails_Shutters WHERE HeaderId = '" + headerId + "' AND ProductId = '901C1FF3-F3B5-4ACE-A73E-79027ECAEFFF' AND Active = 1")
-                        Dim sumPrice As Decimal = orderCfg.GetItemData_Decimal("SELECT SUM(FinalCost) AS SumPrice FROM OrderDetails_Shutters WHERE HeaderId = '" + headerId + "' AND Active=1")
-                        If checkService = 0 And sumPrice < 200 Then divMinimumSurcharge.Visible = True
-                    End If
+                    ' If customerMinimum = True Then
+                    '     Dim checkService As Integer = orderCfg.GetItemData_Integer("SELECT COUNT(*) FROM OrderDetails_Shutters WHERE HeaderId = '" + headerId + "' AND ProductId = '901C1FF3-F3B5-4ACE-A73E-79027ECAEFFF' AND Active = 1")
+                    '     Dim sumPrice As Decimal = orderCfg.GetItemData_Decimal("SELECT SUM(FinalCost) AS SumPrice FROM OrderDetails_Shutters WHERE HeaderId = '" + headerId + "' AND Active=1")
+                    '     If checkService = 0 And sumPrice < 200 Then divMinimumSurcharge.Visible = True
+                    ' End If
                     If spanStatusAdditional.InnerText = "On Hold - Customer Request" Then
                         aAddItem.Visible = True
                         aSubmitOrder.Visible = True
