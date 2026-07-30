@@ -21772,6 +21772,41 @@ Partial Class Methods_Order_DetailMethod
             End If
         Next
 
+        Dim initTubeType As String() = {
+            currentData("TubeType1").ToString(),
+            currentData("TubeType2").ToString(),
+            currentData("TubeType3").ToString(),
+            currentData("TubeType4").ToString(),
+            currentData("TubeType5").ToString(),
+            currentData("TubeType6").ToString()
+        }
+        For i As Integer = 0 To initTubeType.Length - 1
+            initTubeType(i) = initTubeType(i)
+        Next
+
+        Dim initDropBlind As String() = {
+            currentData("Drop1").ToString(),
+            currentData("Drop2").ToString(),
+            currentData("Drop3").ToString(),
+            currentData("Drop4").ToString(),
+            currentData("Drop5").ToString(),
+            currentData("Drop6").ToString()
+        }
+        For i As Integer = 0 To initDropBlind.Length - 1
+            If Not String.IsNullOrEmpty(initDropBlind(i).ToString()) OR Not initDropBlind(i).ToString() = "0" Then
+                initDropBlind(i) = initDropBlind(i)
+            Else
+                initDropBlind(i) = String.Empty
+            End If
+        Next
+
+        Dim FindDropBlind1 As String = If(initTubeType(0) <> "Exact Size", initDropBlind(0), String.Empty)   
+        Dim FindDropBlind2 As String = If(initTubeType(1) <> "Exact Size", initDropBlind(1), String.Empty)   
+        Dim FindDropBlind3 As String = If(initTubeType(2) <> "Exact Size", initDropBlind(2), String.Empty)   
+        Dim FindDropBlind4 As String = If(initTubeType(3) <> "Exact Size", initDropBlind(3), String.Empty)   
+        Dim FindDropBlind5 As String = If(initTubeType(4) <> "Exact Size", initDropBlind(4), String.Empty)   
+        Dim FindDropBlind6 As String = If(initTubeType(5) <> "Exact Size", initDropBlind(5), String.Empty)
+
 
         
         '#Line Option
@@ -21803,13 +21838,13 @@ Partial Class Methods_Order_DetailMethod
 
              '#Drop
             result+= trDetStart
-                result+= tdTitleStart & "Drop (mm)" & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop1").ToString()), "0", currentData("Drop1").ToString()) & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop2").ToString()), "0", currentData("Drop2").ToString()) & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop3").ToString()), "0", currentData("Drop3").ToString()) & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop4").ToString()), "0", currentData("Drop4").ToString()) & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop5").ToString()), "0", currentData("Drop5").ToString()) & tdDetEnd
-                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Drop6").ToString()), "0", currentData("Drop6").ToString()) & tdDetEnd
+                result+= tdTitleStart & "Drop Blind (mm)" & tdDetEnd
+                result+= tdDetStart & FindDropBlind1 & tdDetEnd
+                result+= tdDetStart & FindDropBlind2 & tdDetEnd
+                result+= tdDetStart & FindDropBlind3 & tdDetEnd
+                result+= tdDetStart & FindDropBlind4 & tdDetEnd
+                result+= tdDetStart & FindDropBlind5 & tdDetEnd
+                result+= tdDetRight & FindDropBlind6 & tdDetEnd
             result+= trDetEnd
 
              '#Drop

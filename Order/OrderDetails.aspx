@@ -14,7 +14,7 @@
                 <div class="col-lg-10 col-sm-12 col-md-12 text-end">
 
                     <!-- buton finish -->
-                    <button type="button" class="btn  btn-cyan" id="btnFinish">
+                    <button type="button" class="btn my-button btn-cyan" id="btnFinish">
                         <i class="ti ti-checks fs-2 opacity-50 me-2"></i>
                         Finish
                     </button>
@@ -26,7 +26,7 @@
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
                         <li>
-                            <a class="dropdown-item" href="javascript:void(0)" id="btnPreviewPrint">
+                            <a class="dropdown-item my-button" href="javascript:void(0)" id="btnPreviewPrint">
                                 <i class="ti ti-printer fs-2 me-2 opacity-50"></i> Preview / Print
                             </a>
                         </li>
@@ -704,7 +704,7 @@
         let REPRINT = '<%= Session("Reprint") %>';
         let URIMETHOD = '/Methods/Order/OrderDetailMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.22"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.23"></script>
 
 
 </asp:Content>

@@ -851,6 +851,7 @@ Public Class PublicConfig
         Dim Matrix As Decimal = CDec(ListParam(3))
         Dim DesignId As String = CStr(ListParam(4))
         Dim BlindId As String = CStr(ListParam(5))
+        Dim DesignName As String = GetItemData(String.Format("SELECT Name FROM Designs WHERE Id='{0}'", DesignId))
 
         Dim result As Decimal = 0.00
         ' Dim thisData As DataSet = GetListData("SELECT Discount FROM Discounts WHERE StoreId = '" + StoreId + "' AND PriceGroupId = '" + PriceGroupId + "' AND Active=1")
@@ -878,11 +879,12 @@ Public Class PublicConfig
         End If
 
         ' 3. Proses perhitungan jika data ditemukan
+         Dim Discount As Integer = 0
         If thisData IsNot Nothing AndAlso thisData.Tables(0).Rows.Count > 0 Then
             Dim dr As DataRow = thisData.Tables(0).Rows(0)
             
             ' Menggunakan Convert.ToInt32 agar lebih aman dari format string
-            Dim Discount As Integer = Convert.ToInt32(dr("Discount"))
+            Discount  = Convert.ToInt32(dr("Discount"))
             Dim QuoteDisc AS String = GetItemData(String.Format("SELECT QuoteDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
             If Not String.IsNullOrEmpty(QuoteDisc) AND Not QuoteDisc = "0" Then
                 Discount = Convert.ToInt32(QuoteDisc)
@@ -890,9 +892,20 @@ Public Class PublicConfig
             
             ' Rumus perhitungan diskon 
             ' Catatan: Pastikan Matrix dan result bertipe Double/Decimal karena pembagian 100 menghasilkan pecahan
-            result = Matrix * (Discount / 100.0)
+            ' result = Matrix * (Discount / 100.0)
+        Else
+            Dim QuoteDisc AS String = GetItemData(String.Format("SELECT QuoteDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
+            If Not String.IsNullOrEmpty(QuoteDisc) AND Not QuoteDisc = "0" Then
+                Discount = Convert.ToInt32(QuoteDisc)
+            End If
+
+            ' result = Matrix * (Discount / 100.0)
         End If
 
+        If Not InArray(DesignName, "Surcharge", "Additional") Then
+            result = Matrix * (Discount / 100.0)
+        End If
+        
         Return result
     End Function
 

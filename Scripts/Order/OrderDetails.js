@@ -14,7 +14,79 @@
   orderDetailPageLoaded();
 });
 
+// ==============================================|| INITIALIZATION ||========================================
+let DataTableDetails;
+const spanEl = {
+  retailerName: document.getElementById("spanRetailerName"),
+  retailerId: document.getElementById("spanRetailerId"),
+  orderId: document.getElementById("spanOrderId"),
+  joNumber: document.getElementById("spanJoNumber"),
+  orderType: document.getElementById("spanOrderProductType"),
+  orderNo: document.getElementById("spanOrderNo"),
+  orderCust: document.getElementById("spanOrderCust"),
+  createdDate: document.getElementById("spanCreatedDate"),
+  createdBy: document.getElementById("spanCreatedBy"),
+  note: document.getElementById("spanNote"),
+  statusNote: document.getElementById("spanStatusNote"),
+  statusOrder: document.getElementById("spanStatusOrder"),
+  delivery: document.getElementById("spanDelivery"),
+  submittedDate: document.getElementById("spanSubmittedDate"),
+  productionDate: document.getElementById("spanProductionDate"),
+  completedDate: document.getElementById("spanCompletedDate"),
+  canceledDate: document.getElementById("spanCanceledDate"),
+  total: document.getElementById("spanTotal"),
+  gst: document.getElementById("spanGST"),
+  final: document.getElementById("spanFinalTotal"),
+};
+const btnEl = {
+  btnFinish: document.getElementById("btnFinish"),
+  btnPreviewPrint: document.getElementById("btnPreviewPrint"),
+  btnPreviewPDF: document.getElementById("btnPreviewPDF"),
+  btnJobSheet: document.getElementById("btnJobSheet"),
+  btnReprintJobSheet: document.getElementById("btnReprintJobSheet"),
+  btnChangeJobStatus: document.getElementById("btnChangeJobStatus"),
+  btnSubmit: document.getElementById("btnSubmit"),
+  btnEditHeader: document.getElementById("btnEditHeader"),
+  btnDeleteHeader: document.getElementById("btnDeleteHeader"),
+  btnQuote: document.getElementById("btnQuote"),
+  btnQuoteDetail: document.getElementById("btnQuoteDetail"),
+  btnDownloadQuote: document.getElementById("btnDownloadQuote"),
+  btnMoreAction: document.getElementById("btnMoreAction"),
+  btnEmailDeposit: document.getElementById("btnEmailDeposit"),
+  dividerEmailDeposit: document.getElementById("dividerEmailDeposit"),
+  btnChangeStatus: document.getElementById("btnChangeStatus"),
+  btnSendOrderMail: document.getElementById("btnSendOrderMail"),
+  btnDownloadBarcode: document.getElementById("btnDownloadBarcode"),
+  btnQuoteDisc: document.getElementById("btnQuoteDisc"),
+  btnReloadPricing: document.getElementById("btnReloadPricing"),
+  btnAddItem: document.getElementById("btnAddItem"),
+  btnAddService: document.getElementById("btnAddService"),
+  divPrice: document.getElementById("divPrice"),
+  msgThanks: document.getElementById("msgThanks"),
+  thMarkUp: document.querySelector(".thMarkUp"),
+  thPrice: document.querySelector(".thPrice"),
+};
+const liEl = {
+  liDetailItem: document.getElementsByClassName("liDetailItem"),
+  liEditItem: document.getElementsByClassName("liEditItem"),
+  liCopyItem: document.getElementsByClassName("liCopyItem"),
+  liDeleteItem: document.getElementsByClassName("liDeleteItem"),
+  liEditPricingItem: document.getElementsByClassName("liEditPricingItem"),
+  liPricingItem: document.getElementsByClassName("liPricingItem"),
+  liDivider: document.getElementsByClassName("liDivider"),
+};
 // ==============================================|| EVENTS ||================================================
+Object.values(btnEl).forEach((el) => {
+  if (!el) return;
+  el.addEventListener("click", (e) => {
+    e.preventDefault();
+    const id = e.target.id;
+
+    if (id === "btnFinish") {
+      window.location.href = "/order";
+    }
+  });
+});
 // ============================================|| FUNCTION ||================================================
 // ------------------------------------------||Binding Function ||-------------------------------------------
 const bindOrderAggregate = async (headerid, ordertype) => {
@@ -62,7 +134,6 @@ const bindOrderAggregate = async (headerid, ordertype) => {
   }
 };
 
-let DataTableDetails;
 const bindDetails = (details) => {
   if (!details || details.length === 0) return;
 
@@ -153,28 +224,6 @@ const bindDetails = (details) => {
   });
 };
 // ----------------------------------------------|| Handler Functions ||-------------------------------------
-const spanEl = {
-  retailerName: document.getElementById("spanRetailerName"),
-  retailerId: document.getElementById("spanRetailerId"),
-  orderId: document.getElementById("spanOrderId"),
-  joNumber: document.getElementById("spanJoNumber"),
-  orderType: document.getElementById("spanOrderProductType"),
-  orderNo: document.getElementById("spanOrderNo"),
-  orderCust: document.getElementById("spanOrderCust"),
-  createdDate: document.getElementById("spanCreatedDate"),
-  createdBy: document.getElementById("spanCreatedBy"),
-  note: document.getElementById("spanNote"),
-  statusNote: document.getElementById("spanStatusNote"),
-  statusOrder: document.getElementById("spanStatusOrder"),
-  delivery: document.getElementById("spanDelivery"),
-  submittedDate: document.getElementById("spanSubmittedDate"),
-  productionDate: document.getElementById("spanProductionDate"),
-  completedDate: document.getElementById("spanCompletedDate"),
-  canceledDate: document.getElementById("spanCanceledDate"),
-  total: document.getElementById("spanTotal"),
-  gst: document.getElementById("spanGST"),
-  final: document.getElementById("spanFinalTotal"),
-};
 const handlerHeaderInfo = (item) => {
   if (!item) return;
 
@@ -207,41 +256,6 @@ const handlerHeaderInfo = (item) => {
   spanEl.final.innerHTML = formatCurrency(item.FinalTotal);
 };
 
-const btnEl = {
-  btnJobSheet: document.getElementById("btnJobSheet"),
-  btnReprintJobSheet: document.getElementById("btnReprintJobSheet"),
-  btnChangeJobStatus: document.getElementById("btnChangeJobStatus"),
-  btnSubmit: document.getElementById("btnSubmit"),
-  btnEditHeader: document.getElementById("btnEditHeader"),
-  btnDeleteHeader: document.getElementById("btnDeleteHeader"),
-  btnQuote: document.getElementById("btnQuote"),
-  btnQuoteDetail: document.getElementById("btnQuoteDetail"),
-  btnDownloadQuote: document.getElementById("btnDownloadQuote"),
-  btnMoreAction: document.getElementById("btnMoreAction"),
-  btnEmailDeposit: document.getElementById("btnEmailDeposit"),
-  dividerEmailDeposit: document.getElementById("dividerEmailDeposit"),
-  btnChangeStatus: document.getElementById("btnChangeStatus"),
-  btnSendOrderMail: document.getElementById("btnSendOrderMail"),
-  btnDownloadBarcode: document.getElementById("btnDownloadBarcode"),
-  btnQuoteDisc: document.getElementById("btnQuoteDisc"),
-  btnReloadPricing: document.getElementById("btnReloadPricing"),
-  btnAddItem: document.getElementById("btnAddItem"),
-  btnAddService: document.getElementById("btnAddService"),
-  divPrice: document.getElementById("divPrice"),
-  msgThanks: document.getElementById("msgThanks"),
-  thMarkUp: document.querySelector(".thMarkUp"),
-  thPrice: document.querySelector(".thPrice"),
-};
-const liEl = {
-  liDetailItem: document.getElementsByClassName("liDetailItem"),
-  liEditItem: document.getElementsByClassName("liEditItem"),
-  liCopyItem: document.getElementsByClassName("liCopyItem"),
-  liDeleteItem: document.getElementsByClassName("liDeleteItem"),
-  liEditPricingItem: document.getElementsByClassName("liEditPricingItem"),
-  liPricingItem: document.getElementsByClassName("liPricingItem"),
-  liDivider: document.getElementsByClassName("liDivider"),
-};
-
 const handlerDisplayElement = (header, detail) => {
   Object.values(btnEl).forEach((el) => {
     if (el) el.classList.add("d-none");
@@ -250,6 +264,10 @@ const handlerDisplayElement = (header, detail) => {
   DataTableDetails.columns(6).visible(false);
 
   if (!header || !detail) return;
+
+  btnEl.btnFinish.classList.remove("d-none");
+  btnEl.btnPreviewPrint.classList.remove("d-none");
+  btnEl.btnPreviewPDF.classList.remove("d-none");
 
   if (header.JoNumberId) {
     btnEl.btnReprintJobSheet.classList.remove("d-none");
