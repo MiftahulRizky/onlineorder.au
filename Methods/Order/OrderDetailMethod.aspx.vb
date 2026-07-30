@@ -67,6 +67,9 @@ Partial Class Methods_Order_OrderDetailMethod
         End Try
     End Function
 
+    Private Shared Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
+    End Function
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>

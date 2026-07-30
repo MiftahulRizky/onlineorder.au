@@ -801,7 +801,7 @@ const handlerElementVisibility = async (
         divBottomRail.classList.remove("d-none");
       }
 
-      if (item.BracketColour === "Yes") {
+      if (item.BracketCover === "Yes") {
         divBracketCoverColour.classList.remove("d-none");
       }
     }
@@ -2005,6 +2005,7 @@ const bindItemOrders = async (itemid) => {
       await bindRailColour(item.BracketType, item.BottomType, item.Trim);
       await Promise.all([
         bindTubeSize(item.BlindName, item.TubeType),
+        bindBracketCoverColours(),
         bindChildSafe(),
         bindAccessory(),
         handlerSetElementValues(item),
