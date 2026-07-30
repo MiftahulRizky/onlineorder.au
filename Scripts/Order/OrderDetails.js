@@ -41,9 +41,10 @@ const bindHeader = async (headerid, ordertype) => {
       window.location.replace("/order");
       return;
     }
-    console.table(data);
+    console.log(data.detail);
 
     handlerHeaderInfo(data.header); // langsung 1 object, bukan array
+    bindDetails(data.detail); // langsung 1 object, bukan array
     handlerDisplayElement(data.header);
     handlerCheckOrder(data.header.ResCheckOrder);
   } catch (error) {
@@ -55,6 +56,57 @@ const bindHeader = async (headerid, ordertype) => {
   }
 };
 
+let DataTableDetails;
+const bindDetails = (details) => {
+  if (!details || details.length === 0) return;
+
+  // if ($.fn.DataTable.isDataTable("#tableAjax")) {
+  //   $("#tableAjax").DataTable().clear().destroy();
+  // }
+
+  const columnDefs = [
+    {
+      width: "5%",
+      data: null,
+      className: "text-center",
+      render: (data, type, row, meta) => meta.row + 1,
+    },
+    { width: "5%", data: "Id", className: "text-center" },
+    { width: "5%", data: "Qty", className: "text-center" },
+    { width: "20%", data: "Location" },
+    { width: "60%", data: "Product" },
+    { width: "5%", data: "Cost", className: "thPrice" },
+    { width: "5%", data: "Markup", className: "thMarkUp" },
+    {
+      width: "5%",
+      data: null,
+      className: "text-center",
+      orderable: false,
+      render: (data) => {
+        return ``;
+      },
+    },
+  ];
+
+  DataTableDetails = $("#tableAjax").DataTable({
+    data: details,
+    pageLength: 100,
+    responsive: true,
+    bPaginate: true,
+    bInfo: true,
+    bFilter: true,
+    bDestroy: true,
+    autoWidth: false,
+    columns: columnDefs,
+    language: {
+      search: "",
+      lengthMenu: "_MENU_",
+    },
+    initComplete: () => {
+      stylingColumnSearchAndPaging("#tableAjax");
+    },
+  });
+};
 // ----------------------------------------------|| Handler Functions ||-------------------------------------
 const spanEl = {
   retailerName: document.getElementById("spanRetailerName"),
@@ -139,6 +191,8 @@ const handlerDisplayElement = (item) => {
   Object.values(btnEl).forEach((el) => {
     if (el) el.classList.add("d-none");
   });
+  DataTableDetails.columns(5).visible(false);
+  DataTableDetails.columns(6).visible(false);
 
   if (!item) return;
 
@@ -227,6 +281,17 @@ const handlerDisplayElement = (item) => {
     btnEl.btnQuote.classList.remove("d-none");
     btnEl.btnQuoteDetail.classList.remove("d-none");
     btnEl.btnDownloadQuote.classList.remove("d-none");
+  }
+
+  if (["True", "1"].includes(PRICEACCESS)) {
+    DataTableDetails.columns(5).visible(true);
+    btnEl.thPrice.classList.remove("d-none");
+    btnEl.divPrice.classList.remove("d-none");
+  }
+
+  if (["True", "1"].includes(MARKUPACCESS)) {
+    DataTableDetails.columns(6).visible(true);
+    btnEl.thMarkUp.classList.remove("d-none");
   }
 };
 
@@ -428,6 +493,15 @@ const formatCurrency = (num) => {
   return `<span class="badge badge-outline text-green" style="font-size:larger;">${result}</span>`;
 };
 
+const formatCurrencyDetail = (value) => {
+  if (!value) return "$0.00";
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(parseFloat(value));
+};
+
 const parseCustomDate = (value) => {
   if (!value || typeof value !== "string") return null;
 
@@ -467,4 +541,24 @@ const parseCustomDate = (value) => {
   }
 
   return null;
+};
+
+const stylingColumnSearchAndPaging = (params) => {
+  const input = $(params + "_filter input");
+  input
+    .addClass("form-control form-control-sm")
+    .attr("placeholder", "🔍 Type here to search...")
+    .css({
+      width: "250px",
+      height: "40px",
+      fontSize: "15px",
+      display: "inline-block",
+    });
+
+  const lengthSelect = $(params + "_length select");
+  lengthSelect.addClass("form-select form-select-sm").css({
+    width: "65px",
+    fontSize: "15px",
+    height: "40px",
+  });
 };

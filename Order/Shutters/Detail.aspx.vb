@@ -389,10 +389,10 @@ Partial Class Order_Detail
                 Dim checkService As Integer = orderCfg.GetItemData_Integer("SELECT COUNT(*) FROM OrderDetails_Shutters WHERE HeaderId = '" + lblHeaderId.Text + "' AND ProductId = '901C1FF3-F3B5-4ACE-A73E-79027ECAEFFF' AND Active = 1")
                 Dim sumPrice As Decimal = orderCfg.GetItemData_Decimal("SELECT SUM(FinalCost) AS SumPrice FROM OrderDetails_Shutters WHERE HeaderId = '" + lblHeaderId.Text + "' AND Active=1")
 
-                If checkService = 0 And sumPrice < 200 Then
-                    MessageError(True, "PLEASE ADD THE MINIMUM ORDER SURCHARGE, THEN REGENERATE THE JOB. !")
-                    Exit Sub
-                End If
+                ' If checkService = 0 And sumPrice < 200 Then
+                '     MessageError(True, "PLEASE ADD THE MINIMUM ORDER SURCHARGE, THEN REGENERATE THE JOB. !")
+                '     Exit Sub
+                ' End If
             End If
 
             Dim jobId As String = spanOrderId.InnerText & "/01"
