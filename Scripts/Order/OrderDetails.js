@@ -17,17 +17,23 @@
 // ==============================================|| EVENTS ||================================================
 // ============================================|| FUNCTION ||================================================
 // ------------------------------------------||Binding Function ||-------------------------------------------
-const bindHeader = async (headerid, ordertype) => {
+const bindOrderAggregate = async (headerid, ordertype) => {
   if (!headerid) return;
 
   try {
-    const response = await fetch(`${URIMETHOD}/BindOrderHeaderByID`, {
+    const response = await fetch(`${URIMETHOD}/BindOrderAggregate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
       body: JSON.stringify({
-        data: { headerid, ordertype, loginid: LOGINID, rolename: ROLENAME },
+        data: {
+          headerid,
+          ordertype,
+          loginid: LOGINID,
+          rolename: ROLENAME,
+          customercontactid: CUSTOMERCONTACTID,
+        },
       }),
     });
 
@@ -43,13 +49,13 @@ const bindHeader = async (headerid, ordertype) => {
     }
     console.log(data.detail);
 
-    handlerHeaderInfo(data.header); // langsung 1 object, bukan array
-    bindDetails(data.detail); // langsung 1 object, bukan array
-    handlerDisplayElement(data.header);
+    handlerHeaderInfo(data.header);
+    bindDetails(data.detail);
+    handlerDisplayElement(data.header, data.detail);
     handlerCheckOrder(data.header.ResCheckOrder);
   } catch (error) {
     let msg = "Please contact our IT team at support@onlineorder.au";
-    if (["Administrator"].includes(ROLENAME)) {
+    if (!["Administrator"].includes(ROLENAME)) {
       msg = error.message;
     }
     isError(msg);
@@ -82,8 +88,47 @@ const bindDetails = (details) => {
       data: null,
       className: "text-center",
       orderable: false,
-      render: (data) => {
-        return ``;
+      render: (data, type, row) => {
+        return `
+            <div class="dropdown text-center">
+              <button class="border-0 bg-transparent dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-three-dots-vertical fs-1 opacity-50"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li class="liDetailItem">
+                  <a class="dropdown-item" href="javascript:void(0);" id="btnDetailItem" data-id="${row.Id}"" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}" data-designname="${row.DesignName}" data-production='${row.Production}'>
+                    <i class="ti ti-info-square-rounded me-1 opacity-50 fs-2"></i>Detail
+                  </a>
+                </li>
+                <li class="liEditItem">
+                  <a class="dropdown-item" href="javascript:void(0);" id="btnEditItem" data-id="${row.Id}" data-headerid="${row.HeaderId}" data-designid="${row.DesignId}" data-designname="${row.DesignName}" data-production='${row.Production}'>
+                  <i class="ti ti-edit me-1 opacity-50 fs-2"></i>Edit
+                  </a>
+                </li>
+                <li class="liCopyItem">
+                  <a class="dropdown-item" href="javascript:void(0);" id="btnCopyItem" data-id="${row.Id}" data-headerid="${row.HeaderId}" data-product="${row.Product}" >
+                    <i class="ti ti-copy-plus me-1 opacity-50 fs-2"></i>Copy
+                  </a>
+                </li>
+                <li class="liDeleteItem">
+                  <a class="dropdown-item text-danger" href="javascript:void(0);" id="btnDeleteItem" data-id="${row.Id}" data-product="${row.Product}">
+                    <i class="ti ti-trash-x me-1 opacity-50 fs-2"></i>Delete
+                  </a>
+                </li>
+                <div class="dropdown-divider liDivider"></div>
+                <li class="liEditPricingItem">
+                  <a class="dropdown-item " href="javascript:void(0);" id="btnEditPricingItem" data-id="${row.Id}" data-cost="${row.RealCost}" data-designid="${row.DesignId}" data-blindid="${row.BlindId}" data-qty="${row.Qty}">
+                    <i class="ti ti-pencil-dollar text-success fs-1 me-1 opacity-50"></i>Edit Pricing
+                  </a>
+                </li>
+                <li class="liPricingItem">
+                  <a class="dropdown-item " href="javascript:void(0);" id="btnPricingItem" data-id="${row.Id}">
+                    <i class="ti ti-tags me-1 opacity-50 fs-2"></i>Pricing
+                  </a>
+                </li>
+              </ul>
+            </div>
+          `;
       },
     },
   ];
@@ -187,30 +232,40 @@ const btnEl = {
   thMarkUp: document.querySelector(".thMarkUp"),
   thPrice: document.querySelector(".thPrice"),
 };
-const handlerDisplayElement = (item) => {
+const liEl = {
+  liDetailItem: document.getElementsByClassName("liDetailItem"),
+  liEditItem: document.getElementsByClassName("liEditItem"),
+  liCopyItem: document.getElementsByClassName("liCopyItem"),
+  liDeleteItem: document.getElementsByClassName("liDeleteItem"),
+  liEditPricingItem: document.getElementsByClassName("liEditPricingItem"),
+  liPricingItem: document.getElementsByClassName("liPricingItem"),
+  liDivider: document.getElementsByClassName("liDivider"),
+};
+
+const handlerDisplayElement = (header, detail) => {
   Object.values(btnEl).forEach((el) => {
     if (el) el.classList.add("d-none");
   });
   DataTableDetails.columns(5).visible(false);
   DataTableDetails.columns(6).visible(false);
 
-  if (!item) return;
+  if (!header || !detail) return;
 
-  if (item.JoNumberId) {
+  if (header.JoNumberId) {
     btnEl.btnReprintJobSheet.classList.remove("d-none");
   }
 
   if (["Administrator"].includes(ROLENAME)) {
     btnEl.btnJobSheet.classList.remove("d-none");
 
-    if (["Draft", "Pending Price Approval"].includes(item.Status)) {
+    if (["Draft", "Pending Price Approval"].includes(header.Status)) {
       btnEl.btnSubmit.classList.remove("d-none");
       btnEl.btnEditHeader.classList.remove("d-none");
       btnEl.btnDeleteHeader.classList.remove("d-none");
       btnEl.btnAddItem.classList.remove("d-none");
     }
 
-    if (!["Completed"].includes(item.Status)) {
+    if (!["Completed"].includes(header.Status)) {
       btnEl.btnAddService.classList.remove("d-none");
       btnEl.btnQuoteDisc.classList.remove("d-none");
     }
@@ -222,7 +277,7 @@ const handlerDisplayElement = (item) => {
 
     if (
       ["New Order", "In Production", "Completed", "On Hold"].includes(
-        item.Status,
+        header.Status,
       )
     ) {
       btnEl.btnChangeStatus.classList.remove("d-none");
@@ -234,7 +289,7 @@ const handlerDisplayElement = (item) => {
     btnEl.btnEmailDeposit.classList.remove("d-none");
     btnEl.dividerEmailDeposit.classList.remove("d-none");
 
-    if (!["Canceled"].includes(item.Status)) {
+    if (!["Canceled"].includes(header.Status)) {
       btnEl.btnReloadPricing.classList.remove("d-none");
     }
   }
@@ -242,14 +297,14 @@ const handlerDisplayElement = (item) => {
   if (["PPIC & DE", "Customer Service"].includes(ROLENAME)) {
     btnEl.btnJobSheet.classList.remove("d-none");
 
-    if (["Draft", "Pending Price Approval"].includes(item.Status)) {
+    if (["Draft", "Pending Price Approval"].includes(header.Status)) {
       btnEl.btnSubmit.classList.remove("d-none");
       btnEl.btnEditHeader.classList.remove("d-none");
       btnEl.btnDeleteHeader.classList.remove("d-none");
       btnEl.btnAddItem.classList.remove("d-none");
     }
 
-    if (!["Completed"].includes(item.Status)) {
+    if (!["Completed"].includes(header.Status)) {
       btnEl.btnAddService.classList.remove("d-none");
       btnEl.btnQuoteDisc.classList.remove("d-none");
     }
@@ -257,7 +312,7 @@ const handlerDisplayElement = (item) => {
 
     if (
       ["New Order", "In Production", "Completed", "On Hold"].includes(
-        item.Status,
+        header.Status,
       )
     ) {
       btnEl.btnChangeStatus.classList.remove("d-none");
@@ -265,13 +320,13 @@ const handlerDisplayElement = (item) => {
 
     btnEl.btnMoreAction.classList.remove("d-none");
 
-    if (!["Canceled"].includes(item.Status)) {
+    if (!["Canceled"].includes(header.Status)) {
       btnEl.btnReloadPricing.classList.remove("d-none");
     }
   }
 
   if (["Administrator"].includes(ROLENAME)) {
-    if (["Draft", "Pending Price Approval"].includes(item.Status)) {
+    if (["Draft", "Pending Price Approval"].includes(header.Status)) {
       btnEl.btnSubmit.classList.remove("d-none");
       btnEl.btnEditHeader.classList.remove("d-none");
       btnEl.btnDeleteHeader.classList.remove("d-none");
@@ -283,15 +338,83 @@ const handlerDisplayElement = (item) => {
     btnEl.btnDownloadQuote.classList.remove("d-none");
   }
 
+  // ----------------------------------------------|| Hide Button Datatable ||---------------------------------------
+  Object.values(liEl).forEach((el) => {
+    Array.from(el).forEach((li) => {
+      li.classList.add("d-none");
+    });
+  });
+
+  if (["Draft", "Pending Price Approval"].includes(header.Status)) {
+    ["liEditItem", "liCopyItem", "liDeleteItem"].forEach((key) => {
+      Array.from(liEl[key]).forEach((li) => {
+        li.classList.remove("d-none");
+      });
+    });
+
+    if (
+      ["PPIC & DE", "Customer Service", "Manager", "Account"].includes(
+        ROLENAME,
+      ) &&
+      header.CreatedBy.toUpperCase() !== LOGINID.toUpperCase()
+    ) {
+      ["liEditItem", "liCopyItem", "liDeleteItem"].forEach((key) => {
+        Array.from(liEl[key]).forEach((li) => {
+          li.classList.add("d-none");
+        });
+      });
+
+      ["liDetailItem"].forEach((key) => {
+        Array.from(liEl[key]).forEach((li) => {
+          li.classList.add("d-none");
+        });
+      });
+    }
+  }
+
+  if (["Additional", "Surcharge"].includes(detail.DesignName)) {
+    ["liDeleteItem"].forEach((key) => {
+      Array.from(liEl[key]).forEach((li) => {
+        li.classList.remove("d-none");
+      });
+    });
+  }
+
+  let hideEditPricing = "True";
+  let hidePricing = "True";
   if (["True", "1"].includes(PRICEACCESS)) {
     DataTableDetails.columns(5).visible(true);
     btnEl.thPrice.classList.remove("d-none");
     btnEl.divPrice.classList.remove("d-none");
+
+    if (["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)) {
+      ["liEditPricingItem"].forEach((key) => {
+        Array.from(liEl[key]).forEach((li) => {
+          li.classList.remove("d-none");
+        });
+      });
+      hideEditPricing = "False";
+    }
+
+    ["liPricingItem"].forEach((key) => {
+      Array.from(liEl[key]).forEach((li) => {
+        li.classList.remove("d-none");
+      });
+    });
+    hidePricing = "False";
   }
 
   if (["True", "1"].includes(MARKUPACCESS)) {
     DataTableDetails.columns(6).visible(true);
     btnEl.thMarkUp.classList.remove("d-none");
+  }
+
+  if (hideEditPricing == "False" && hidePricing == "False") {
+    ["liDivider"].forEach((key) => {
+      Array.from(liEl[key]).forEach((li) => {
+        li.classList.remove("d-none");
+      });
+    });
   }
 };
 
@@ -335,7 +458,7 @@ const orderDetailPageLoaded = async () => {
     window.location.href = "/order";
   }
 
-  await bindHeader(HEADERID, ORDERTYPE);
+  await bindOrderAggregate(HEADERID, ORDERTYPE);
   await loaderFadeOut();
 };
 

@@ -48,12 +48,13 @@ Partial Class Methods_Order_OrderDetailMethod
         Public Property success As SuccessDetail
     End Class
 
-    Public Class ParamBindOrderHeaderByID
+    Public Class ParamBindOrderAggregate
         Public Property headerid As String
         Public Property ordertype As String
 
         Public Property loginid As String
         Public Property rolename As String
+        Public Property customercontactid As String
     End Class
 
     <WebMethod()>
@@ -73,12 +74,10 @@ Partial Class Methods_Order_OrderDetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindOrderHeaderByID(ByVal data As ParamBindOrderHeaderByID) As Object
+    Public Shared Function BindOrderAggregate(ByVal data As ParamBindOrderAggregate) As Object
         Try
             Dim HeaderData As Object
             Dim DetailData As New List(Of Object)()
-            Dim Status As String
-            Dim CreatedByName As String
 
             Dim QueryHeader As String = <sql>
                 SELECT 
@@ -137,9 +136,7 @@ Partial Class Methods_Order_OrderDetailMethod
                             Dim finalTotal As Decimal = sumPrice + gst
 
                             Dim Id As String = reader("Id").ToString()
-                            Status = reader("Status").ToString()
-                            CreatedByName = reader("CreatedByName").ToString()
-                            Dim ResCheckOrder As Object = CekOrder(Id, Status, data.loginid, data.rolename)
+                            Dim ResCheckOrder As Object = CekOrder(Id, reader("Status").ToString(), data.loginid, data.rolename)
 
                             HeaderData = New With {
                                 .Id = reader("Id").ToString(),
@@ -151,7 +148,8 @@ Partial Class Methods_Order_OrderDetailMethod
                                 .OrderNumber = reader("OrderNumber").ToString(),
                                 .OrderName = reader("OrderName").ToString(),
                                 .CreatedDate = reader("CreatedDate").ToString(),
-                                .CreatedByName = CreatedByName,
+                                .CreatedByName = reader("CreatedByName").ToString(),
+                                .CreatedBy = reader("CreatedBy").ToString(),
                                 .OrderNote = reader("OrderNote").ToString(),
                                 .StatusAdditional = reader("StatusAdditional").ToString(),
                                 .Status = reader("Status").ToString(),
@@ -234,46 +232,42 @@ Partial Class Methods_Order_OrderDetailMethod
 
                     Using reader As SqlDataReader = cmd.ExecuteReader()
                         While reader.Read()
-                            Dim HideNext As String = "hidden"
-                            Dim TextNext As String = "Add blind that is doubled to this blind"
+                            Dim FabricGroups As String = reader("FabricGroups").ToString()
+                            Dim PriceGroupName As String = reader("PriceGroupName").ToString()
 
                             Dim Product As String = FindProduct(reader)
+                            Dim HideNext As String = FindHideNext(reader, data.rolename, HeaderData.CreatedByName, data.customercontactid)
+                            Dim TextNext As String = FindTextNext(reader)
 
+                            Dim BaseCost As String = FindBaseCost(reader)
                             Dim Cost As String = FindCost(reader)
+                            Dim FinalCost As String =  Cost
+                            If FabricGroups = "POA" OR InStr(PriceGroupName, "POA") > 0 Then
+                                Dim baseCostValue As Decimal
+                                If Decimal.TryParse(BaseCost, baseCostValue) AndAlso baseCostValue = 0D Then
+                                    FinalCost = "<span class='badge bg-orange-lt'>POA</span>"
+                                End If
+                            End If
+                            
                             Dim Markup As String = reader("Markup").ToString()
                             If MarkUp = "0" Then MarkUp = ""
 
                             DetailData.Add(New With {
                                 .Id = reader("Id").ToString(),
                                 .HeaderId = reader("HeaderId").ToString(),
+                                .CustomerContactId = data.customercontactid,
+                                .StatusHeader = HeaderData.Status,
                                 .DesignId = reader("DesignId").ToString(),
                                 .BlindId = reader("BlindId").ToString(),
+                                .DesignName = reader("DesignName").ToString(),
                                 .Qty = reader("Qty").ToString(),
                                 .Location = reader("Location").ToString(),
-                                .Mounting = reader("Mounting").ToString(),
-                                .DesignName = reader("DesignName").ToString(),
-                                .BlindName = reader("BlindName").ToString(),
-                                .KitName = reader("KitName").ToString(),
-                                .BracketType = reader("BracketType").ToString(),
-                                .TubeType = reader("TubeType").ToString(),
-                                .ControlType = reader("ControlType").ToString(),
-                                .FabricType = reader("FabricType").ToString(),
-                                .BlindNo = reader("BlindNo").ToString(),
-                                .UniqueId = reader("UniqueId").ToString(),
-                                .Width = reader("Width").ToString(),
-                                .Drop = reader("Drop").ToString(),
-                                .FrameColour = reader("FrameColour").ToString(),
-                                .PanelSize = reader("PanelSize").ToString(),
-                                .PelmetType = reader("PelmetType").ToString(),
-                                .BottomTrackType = reader("BottomTrackType").ToString(),
-                                .MeshType = reader("MeshType").ToString(),
-                                .FrameType = reader("FrameType").ToString(),
-                                .Cost = Cost,
                                 .Product = Product,
-                                .Charge = reader("Charge").ToString(),
-                                .Discount = reader("Discount").ToString(),
-                                .Markup = reader("Markup").ToString(),
-                                .FabricGroups = reader("FabricGroups").ToString(),
+                                .HideNext = HideNext,
+                                .TextNext = TextNext,
+                                .Cost = FinalCost,
+                                .Markup = Markup,
+                                .Group = reader("FabricGroups").ToString(),
                                 .OrderDelivery = reader("OrderDelivery").ToString(),
                                 .PriceGroupName = reader("PriceGroupName").ToString()
                             })
@@ -385,6 +379,7 @@ Partial Class Methods_Order_OrderDetailMethod
         Dim HeaderId As String = reader("HeaderId").ToString()
         Dim DesignId As String = reader("DesignId").ToString()
         Dim BlindId As String = reader("BlindId").ToString()
+        Dim Mounting As String = reader("Mounting").ToString()
         Dim DesignName As String = reader("DesignName").ToString()
         Dim BlindName As String = reader("BlindName").ToString()
         Dim KitName As String = reader("KitName").ToString()
@@ -396,6 +391,10 @@ Partial Class Methods_Order_OrderDetailMethod
         Dim UniqueId As String = reader("UniqueId").ToString()
         Dim Width As String = reader("Width").ToString()
         Dim Drop As String = reader("Drop").ToString()
+        Dim PanelSize As String = reader("PanelSize").ToString()
+        Dim FrameType As String = reader("FrameType").ToString()
+        Dim BottomTrackType As String = reader("BottomTrackType").ToString()
+        Dim PelmetType As String = reader("PelmetType").ToString()
 
         Dim Size As String = String.Format("({0} x {1})", Width, Drop)
         Dim Product As String = String.Format("{0} {1}", KitName, Size)
@@ -670,6 +669,93 @@ Partial Class Methods_Order_OrderDetailMethod
 
 
         Return Product
+    End Function
+
+    Private Shared Function FindHideNext(reader As SqlDataReader, rolename As String, createdby As String, customercontactid As String) As String
+        Dim HideNext As String = "hidden"
+
+        Dim DesignName As String = reader("DesignName").ToString()
+        Dim BracketType As String = reader("BracketType").ToString()
+        Dim UniqueId As String = reader("UniqueId").ToString()
+        Dim BlindNo As String = reader("BlindNo").ToString()
+
+        If DesignName = "Roller Blinds" Or DesignName = "Global Roller Blinds" Then
+
+            Dim TotalBlind As Integer = Convert.ToInt32(publicCfg.GetItemData("SELECT COUNT(Id) FROM OrderDetails WHERE UniqueId = '" + UniqueId + "' AND Active = 1"))
+            If BracketType = "Double" Or BracketType = "Linked 2 Blinds (Ind)" Or BracketType = "Linked 2 Blinds (Dep)" Then
+                HideNext = ""
+                If TotalBlind >= 2 Then : HideNext = "hidden" : End If 
+            End If
+
+            If BracketType = "Linked 3 Blinds (Ind)" Or BracketType = "Linked 3 Blinds (Dep)" Then
+                HideNext = "hidden"
+                If BlindNo = "Blind 1" And TotalBlind < 2 Then
+                    HideNext = ""
+                End If
+                If BlindNo = "Blind 2" And TotalBlind < 3 Then
+                    HideNext = ""
+                End If
+            End If
+
+            If BracketType = "Double and Link System Dep" Or BracketType = "Double and Link System Ind" Then 'added 240925
+                HideNext = "hidden"
+                If BlindNo = "Blind 1" And TotalBlind < 2 Then
+                    HideNext = ""
+                End If
+                If BlindNo = "Blind 2" And TotalBlind < 3 Then
+                    HideNext = ""
+                End If
+                If BlindNo = "Blind 3" And TotalBlind < 4 Then
+                    HideNext = ""
+                End If
+            End If
+
+        End If
+        
+        If (rolename = "PPIC & DE" Or rolename = "Customer Service") And UCase(createdby).ToString() <> UCase(customercontactid) Then
+            HideNext = "hidden"
+        End If
+
+
+        Return HideNext
+    End Function
+
+    Private Shared Function FindTextNext(reader As SqlDataReader) As String
+        Dim TextNext As String = "Add blind that is doubled to this blind"
+        Dim BracketType As String = reader("BracketType").ToString()
+        Dim BlindNo As String = reader("BlindNo").ToString()
+
+        If BracketType = "Linked 2 Blinds (Ind)" Or BracketType = "Linked 2 Blinds (Dep)" Then
+            TextNext = "Add 2nd blind that is linked to this blind"
+        End If
+
+        If BracketType = "Linked 3 Blinds (Ind)" Or BracketType = "Linked 3 Blinds (Dep)" Then
+            TextNext = "Add 2nd blind that is linked to this blind"
+            If BlindNo = "Blind 2" Then
+                TextNext = "Add to complete blind"
+            End If
+        End If
+
+        If BracketType = "Double and Link System Dep" Or BracketType = "Double and Link System Ind" Then 'added 240925
+            TextNext = "Add a 2rd blind connected to this blind"
+            If BlindNo = "Blind 2" Then
+                TextNext = "Add a 3rd blind connected to this blind"
+            End If
+            If BlindNo = "Blind 3" Then
+                TextNext = "Add to complete blind"
+            End If
+        End If
+
+
+        Return TextNext
+    End Function
+
+    Private Shared Function FindBaseCost(reader As SqlDataReader) As String
+        Dim Id As String = reader("Id").ToString()
+        Dim HeaderId As String = reader("HeaderId").ToString()
+        Dim result As String = publicCfg.GetItemData(String.Format("SELECT FORMAT(Cost, 'N2', 'en-US') AS FormatRealCost FROM OrderDetailsPrice WHERE Type ='Matrix' And HeaderId = '{0}' And ItemId = '{1}'", HeaderId, Id))
+
+        Return result
     End Function
 
     Private Shared Function FindCost(reader As SqlDataReader) As String
