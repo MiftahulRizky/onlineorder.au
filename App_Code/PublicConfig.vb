@@ -1014,6 +1014,7 @@ Public Class PublicConfig
             Dim FrameLeft As String = thisData.Tables(0).Rows(0).Item("FrameLeft").ToString()
             Dim SlatQty As String = thisData.Tables(0).Rows(0).Item("SlatQty").ToString()
             Dim doorCutOut As String = thisData.Tables(0).Rows(0).Item("DoorCutOut").ToString()
+            Dim NumOfPanel As String = thisData.Tables(0).Rows(0).Item("NumOfPanel").ToString()
             Dim sqm As String = thisData.Tables(0).Rows(0).Item("SquareMetre").ToString()
             Dim lnm As String = thisData.Tables(0).Rows(0).Item("LinearMetre").ToString()
             Dim size As String = "(" & width & " x " & drop & ")"
@@ -1095,6 +1096,10 @@ Public Class PublicConfig
 
                 If designName = "Supply Only" Then
                     getMatrix = getMatrix * Convert.ToDecimal(findMetre)
+                End If
+
+                If designName = "Panel Glides" And blindName = "Panel Only" Then
+                    getMatrix = getMatrix * CInt(NumOfPanel)
                 End If
 
 
