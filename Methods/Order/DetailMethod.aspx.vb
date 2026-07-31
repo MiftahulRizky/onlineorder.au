@@ -6848,7 +6848,6 @@ Partial Class Methods_Order_DetailMethod
     End Function
 
     Private Shared Function GetTubeSkinSize(row As DataRow) As Integer
-        Dim result As Integer = 0
         Dim KitName As String = row("KitName").ToString()
         Dim DesignId As String = row("DesignId").ToString()
         Dim DesignName As String = row("DesignName").ToString()
