@@ -41,7 +41,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindNotes(blindname),
         bindSizeType(),
         bindDropFloor(),
-        bindMounting(),
+        bindMounting(blindname),
         bindControlPosition(),
         bindControlLift(),
         bindControlTilt(),
@@ -308,8 +308,17 @@ const bindDropFloor = () => {
   generateOption("dropfloor", ["No", "Yes"]);
 };
 
-const bindMounting = () => {
-  generateOption("mounting", ["Face Fit", "Reveal Fit"]);
+const bindMounting = (blindname) => {
+  if (!blindname) return;
+  let list = ["Face Fit", "Reveal Fit"];
+  if (
+    !["50mm Aluminium", "50mm Timberstyle", "63mm Timberstyle"].includes(
+      blindname,
+    )
+  ) {
+    list.push("Make Size");
+  }
+  generateOption("mounting", list);
 };
 
 const bindControlPosition = () => {
@@ -457,7 +466,7 @@ const bindItemOrders = async (itemid) => {
         bindNotes(item.BlindName),
         bindSizeType(),
         bindDropFloor(),
-        bindMounting(),
+        bindMounting(item.BlindName),
         bindControlPosition(),
         bindControlLift(),
         bindControlTilt(),
