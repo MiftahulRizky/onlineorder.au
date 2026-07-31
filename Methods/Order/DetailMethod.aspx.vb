@@ -6981,7 +6981,7 @@ Partial Class Methods_Order_DetailMethod
             
         End If
 
-        If DesignName = "Venetian Blinds" Then
+        If InArray(DesignName, "Venetian Blinds", "Roller Blinds") Then
             If LouvreSize = "Opening Size" Then
                 Dim DeducWidth As String = publicCfg.GetItemData(String.Format("SELECT Width FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", DesignId, BlindId, Mounting))
                 result = result + CInt(DeducWidth)
@@ -7031,7 +7031,7 @@ Partial Class Methods_Order_DetailMethod
                 End If
         End Select
 
-        If DesignName = "Venetian Blinds" Then
+       If InArray(DesignName, "Venetian Blinds", "Roller Blinds") Then
             If LouvreSize = "Opening Size" Then
                 Dim DropDeduc As String = publicCfg.GetItemData(String.Format("SELECT [Drop] FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", DesignId, BlindId, Mounting))
 
