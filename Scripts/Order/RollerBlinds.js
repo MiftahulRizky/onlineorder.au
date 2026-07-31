@@ -364,6 +364,8 @@ const handlerElementVisibility = async (
     const divColourType = document.getElementById("divColourType");
 
     const divFormDetail = document.getElementById("divFormDetail");
+    const divSizeType = document.getElementById("divSizeType");
+    const divDropFloor = document.getElementById("divDropFloor");
     const divAttention = document.getElementById("divAttention");
     const lblNextDesc = document.getElementById("lblNextDesc");
     const divMotorStyle = document.getElementById("divMotorStyle");
@@ -408,6 +410,8 @@ const handlerElementVisibility = async (
     divColourType.classList.add("d-none");
     divControlPosition.classList.add("d-none");
     divFormDetail.classList.add("d-none");
+    divSizeType.classList.add("d-none");
+    divDropFloor.classList.add("d-none");
     divAttention.classList.add("d-none");
     divMotorStyle.classList.add("d-none");
     btnInfoMotorStyle.classList.add("d-none");
@@ -550,6 +554,8 @@ const handlerElementVisibility = async (
     }
 
     if (blindname === "Motorised") {
+      divSizeType.classList.remove("d-none");
+      divDropFloor.classList.remove("d-none");
       divMotorStyle.classList.remove("d-none");
       divMotorRemote.classList.remove("d-none");
       if (["Alpha WF", "Somfy WF"].includes(controltype)) {
@@ -569,6 +575,8 @@ const handlerElementVisibility = async (
     }
 
     if (blindname === "Standard") {
+      divSizeType.classList.remove("d-none");
+      divDropFloor.classList.remove("d-none");
       if (tubetype !== "Spring Operated") {
         divRoll.classList.remove("d-none");
         divControlPosition.classList.remove("d-none");
