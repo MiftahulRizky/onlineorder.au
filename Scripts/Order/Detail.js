@@ -122,7 +122,7 @@ document.querySelector("#btnReloadPricing").addEventListener("click", () => {
 
 // BTN DOWNLOAD BARCODE
 document.querySelector("#btnDownloadBarcode").addEventListener("click", () => {
-  handlerDownloadBarcode(HEADERID);
+  handlerDownloadBarcode(HEADERID, "");
 });
 
 // BTN OVERRIDE DISCOUNT
@@ -482,7 +482,6 @@ document
   });
 
 // ------------------------------------------||tableAjax Event ||------------------------------------
-// BUTTON DETAIL ITEM
 document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnDetailItem") {
     const id = e.target.dataset.id;
@@ -501,9 +500,7 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
       designname,
     );
   }
-});
 
-document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnEditItem") {
     const id = e.target.dataset.id;
     const designid = e.target.dataset.designid;
@@ -521,10 +518,7 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
       designname,
     );
   }
-});
 
-// BUTTON COPY ITEM
-document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnCopyItem") {
     const id = e.target.dataset.id;
     const headerid = e.target.dataset.headerid;
@@ -536,19 +530,13 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
       "Please wait while we copy the item...",
     );
   }
-});
 
-// BUTTON DELETE ITEM
-document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnDeleteItem") {
     const id = e.target.dataset.id;
     const product = e.target.dataset.product;
     handlerDeleteItem(id, product, "Please wait while we delete the item...");
   }
-});
 
-// BUTTON EDIT PRICING ITEM
-document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnEditPricingItem") {
     const id = e.target.dataset.id;
     const qty = e.target.dataset.qty;
@@ -633,19 +621,18 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
         handlerShowBSModal("modalEditPricingAllItem");
       });
   }
-});
 
-// BUTTON PRICING ITEM
-document.querySelector("#tableAjax").addEventListener("click", (e) => {
   if (e.target.id === "btnPricingItem") {
     const id = e.target.dataset.id;
     handlerPricingItem(id);
     handlerShowBSModal("modalPricingItem");
   }
-});
 
-// HANDLER NEXT ITEM
-document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  if (e.target.id === "btnDownloadBarcodeItem") {
+    const itemid = e.target.dataset.id;
+    handlerDownloadBarcode(HEADERID, itemid);
+  }
+
   if (e.target.id === "btnNextItem") {
     const id = e.target.dataset.id;
     const designid = e.target.dataset.designid;
@@ -2187,7 +2174,7 @@ const handlerReloadPricingOnReadyPage = async (headerid, status, action) => {
 };
 
 // HANDLER DOWNLOAD BARCODE
-const handlerDownloadBarcode = async (headerid) => {
+const handlerDownloadBarcode = async (headerid, itemid) => {
   swalLoadingShow("Please wait while we download the barcode.");
   try {
     const response = await fetch(`${URIMETHOD}/DownloadBarcode`, {
@@ -2195,7 +2182,7 @@ const handlerDownloadBarcode = async (headerid) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ headerid }),
+      body: JSON.stringify({ headerid, itemid }),
     });
 
     if (!response.ok) {
@@ -3351,9 +3338,13 @@ const dropdownActionButton = (row, createdby) => {
 
   // HIDE BUTTON EDIT PRICING
   let hideEditPricing = "hidden";
+  let hideDownloadBarcode = "hidden";
+  let hideDividerBarcode = "hidden";
   // if (row.Group === "POA" || row.PriceGroupName.includes("POA")) {
   if (["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)) {
     hideEditPricing = "";
+    hideDownloadBarcode = "";
+    hideDividerBarcode = "";
   }
 
   //  HIDE BUTTON PRICING
@@ -3397,12 +3388,18 @@ const dropdownActionButton = (row, createdby) => {
           <div ${hideDivider} class="dropdown-divider"></div>
           <li ${hideEditPricing}>
             <a class="dropdown-item " href="javascript:void(0);" id="btnEditPricingItem" data-id="${row.Id}" data-cost="${row.RealCost}" data-designid="${row.DesignId}" data-blindid="${row.BlindId}" data-qty="${row.Qty}">
-              <i class="ti ti-pencil-dollar text-success fs-1 me-1 opacity-50"></i>Edit Pricing
+              <i class="ti ti-pencil-dollar text-success fs-2 me-1 opacity-50"></i>Edit Pricing
             </a>
           </li>
           <li>
             <a ${hidePricing} class="dropdown-item " href="javascript:void(0);" id="btnPricingItem" data-id="${row.Id}">
               <i class="ti ti-tags me-1 opacity-50 fs-2"></i>Pricing
+            </a>
+          </li>
+          <div ${hideDividerBarcode} class="dropdown-divider"></div>
+          <li ${hideDownloadBarcode}>
+            <a class="dropdown-item " href="javascript:void(0);" id="btnDownloadBarcodeItem" data-id="${row.Id}" >
+              <i class="ti ti-file-barcode fs-2 me-1 opacity-50"></i>Download Barcode
             </a>
           </li>
         </ul>

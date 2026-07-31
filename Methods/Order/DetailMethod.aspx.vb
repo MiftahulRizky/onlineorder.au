@@ -2379,7 +2379,7 @@ Partial Class Methods_Order_DetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function DownloadBarcode(ByVal headerid As String) As Object
+    Public Shared Function DownloadBarcode(ByVal headerid As String, ByVal itemid As String) As Object
         Try
             Dim msg As String = "Barcode has been downloaded."
             Dim url As String = ""
@@ -2409,9 +2409,14 @@ Partial Class Methods_Order_DetailMethod
                 Directory.CreateDirectory(dirPath)
             End If
 
-            Dim fullPath As String = Path.Combine(dirPath, FileName)
+            Dim WhereId As String =""
+            If Not String.IsNullOrEmpty(itemid) Then
+                WhereId = String.Format(" AND Id='{0}'", itemid)
+                FileName = (String.Format("-BARCODE-ORDER-{0}-{1}-{2}.txt", OrderNo, StoreId, itemid)).Replace(" ", "")
+            End If
 
-            Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE HeaderId='{0}' And Active='1' AND DesignName NOT IN ('Surcharge', 'Additional')  ORDER BY Id ASC", headerid))
+            Dim fullPath As String = Path.Combine(dirPath, FileName)
+            Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE HeaderId='{0}' And Active='1' AND DesignName NOT IN ('Surcharge', 'Additional') {1} ORDER BY Id ASC", headerid, WhereId))
             If DetailData.Tables(0).Rows.Count < 1 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Please add item first."}}
             End If
