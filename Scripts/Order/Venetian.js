@@ -39,6 +39,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       await handlerElementVisibility(blindtype, controltype, colourtype);
       await Promise.all([
         bindNotes(blindname),
+        bindSizeType(),
+        bindDropFloor(),
         bindMounting(),
         bindControlPosition(),
         bindControlLift(),
@@ -51,6 +53,14 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       ]);
     }
 
+    if (e.target.id === "sizetype") {
+      const sizetype = e.target.value;
+      const divDropFloor = document.getElementById("divDropFloor");
+      divDropFloor.classList.add("d-none");
+      if (["Opening Size"].includes(sizetype)) {
+        divDropFloor.classList.remove("d-none");
+      }
+    }
     if (e.target.id === "mounting") {
       const blinds = document.getElementById("blindtype");
       const blindtype = blinds.value;
@@ -289,8 +299,16 @@ const bindNotes = (blindname) => {
   pNotes.innerHTML = text;
 };
 
+const bindSizeType = () => {
+  generateOption("sizetype", ["Opening Size", "Make Size"]);
+};
+
+const bindDropFloor = () => {
+  generateOption("dropfloor", ["No", "Yes"]);
+};
+
 const bindMounting = () => {
-  generateOption("mounting", ["Face Fit", "Make Size", "Reveal Fit"]);
+  generateOption("mounting", ["Face Fit", "Reveal Fit"]);
 };
 
 const bindControlPosition = () => {
@@ -436,6 +454,8 @@ const bindItemOrders = async (itemid) => {
       );
       await Promise.all([
         bindNotes(item.BlindName),
+        bindSizeType(),
+        bindDropFloor(),
         bindMounting(),
         bindControlPosition(),
         bindControlLift(),
@@ -468,6 +488,8 @@ const handlerElementVisibility = async (
     const divControlType = document.getElementById("divControlType");
     const divColourType = document.getElementById("divColourType");
     const divFormDetail = document.getElementById("divFormDetail");
+    const divSizeType = document.getElementById("divSizeType");
+    const divDropFloor = document.getElementById("divDropFloor");
     const divControl = document.getElementById("divControl");
     const divControlMock = document.getElementById("divControlMock");
     const divBracket = document.getElementById("divBracket");
@@ -485,6 +507,8 @@ const handlerElementVisibility = async (
     divControlType.classList.add("d-none");
     divColourType.classList.add("d-none");
     divFormDetail.classList.add("d-none");
+    divSizeType.classList.add("d-none");
+    divDropFloor.classList.add("d-none");
     divControl.classList.add("d-none");
     divControlMock.classList.add("d-none");
     divBracket.classList.add("d-none");
@@ -514,6 +538,9 @@ const handlerElementVisibility = async (
     divFormDetail.classList.remove("d-none");
 
     if (["25mm Aluminium", "50mm Aluminium"].includes(blindname)) {
+      if (["50mm Aluminium"].includes(blindname)) {
+        divSizeType.classList.remove("d-none");
+      }
       divControl.classList.remove("d-none");
       divBracket.classList.remove("d-none");
       divBottom.classList.remove("d-none");
@@ -530,6 +557,7 @@ const handlerElementVisibility = async (
     }
 
     if (["50mm Timberstyle", "63mm Timberstyle"].includes(blindname)) {
+      divSizeType.classList.remove("d-none");
       divControl.classList.remove("d-none");
       divBracket.classList.remove("d-none");
       divBottom.classList.remove("d-none");
@@ -546,6 +574,9 @@ const handlerElementVisibility = async (
     }
 
     if (item) {
+      if (["Opening Size"].includes(item.LouvreSize)) {
+        divDropFloor.classList.remove("d-none");
+      }
       if (item.PelmetType == "With Return") {
         divReturnLength.classList.remove("d-none");
         divReturnLeft.classList.remove("d-none");
@@ -569,7 +600,8 @@ const handlerElementVisibility = async (
       btnSubmit.classList.remove("d-none");
     } else if (ITEMACTION === "ViewItem") {
       btnSubmit.classList.remove("d-none");
-      if (ROLENAME !== "Administrator") btnSubmit.classList.add("d-none");
+      if (!["Administrator", "PPIC & DE"].includes(ROLENAME))
+        btnSubmit.classList.add("d-none");
     }
   } catch (error) {
     const msg =
@@ -591,6 +623,8 @@ const handlerSubmit = async (button) => {
       "colourtype",
       "qty",
       "room",
+      "sizetype",
+      "dropfloor",
       "mounting",
       "width",
       "drop",
@@ -682,6 +716,8 @@ const handlerSetElementValues = (itemData) => {
     colourtype: "KitId",
     qty: "Qty",
     room: "Location",
+    sizetype: "LouvreSize",
+    dropfloor: "LouvrePosition",
     mounting: "Mounting",
     width: "Width",
     drop: "Drop",
