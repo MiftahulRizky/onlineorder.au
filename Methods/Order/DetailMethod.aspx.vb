@@ -6862,8 +6862,7 @@ Partial Class Methods_Order_DetailMethod
         Dim ControlPosition As String = row("ControlPosition").ToString()
         Dim TubeSize As String = row("TubeSize").ToString()
         Dim Width As Integer = CInt(row("Width").ToString())
-
-
+        Dim result As Integer = width
         '#..........................................|| Blinds ||..........................................#
         If BlindName = "Standard" Then
             '#-----------------------|| JAI / LOV ||-----------------------#
@@ -6986,7 +6985,7 @@ Partial Class Methods_Order_DetailMethod
         If DesignName = "Venetian Blinds" Then
             If LouvreSize = "Opening Size" Then
                 Dim DeducWidth As String = publicCfg.GetItemData(String.Format("SELECT Width FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", DesignId, BlindId, Mounting))
-                result = Width + CInt(DeducWidth)
+                result = result + CInt(DeducWidth)
             End If
         End If
 
@@ -6995,7 +6994,7 @@ Partial Class Methods_Order_DetailMethod
     End Function
 
     Private Shared Function GetNumBoldNuts(row As DataRow) As Integer
-        Dim result As Integer = 0
+      
         Dim kitName As String = row("KitName").ToString()
         Dim DesignId As String = row("DesignId").ToString()
         Dim DesignName As String = row("DesignName").ToString()
@@ -7007,6 +7006,7 @@ Partial Class Methods_Order_DetailMethod
         Dim TubeSize As String = row("TubeSize").ToString()
         Dim Drop As Integer = CInt(row("Drop").ToString())
         Dim Trim As String = row("Trim").ToString()
+        Dim result As Integer = Drop
 
         Select Case TubeSize
             Case "40"
@@ -7041,7 +7041,7 @@ Partial Class Methods_Order_DetailMethod
                     DropFloor = publicCfg.GetItemData(String.Format("SELECT DropFloor FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", DesignId, BlindId, Mounting))
                 End If
                 
-                result = Drop + CInt(DropDeduc) + CInt(DropFloor)
+                result = result + CInt(DropDeduc) + CInt(DropFloor)
             End If
         End If
 

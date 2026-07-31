@@ -207,7 +207,7 @@ Partial Class Methods_Order_VenetianMethod
             End IF
 
             If String.IsNullOrEmpty(data.mounting) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting type is required !", .field = "mounting"}}
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
             End If
 
             Dim width As Integer

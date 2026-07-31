@@ -60,6 +60,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       if (["Opening Size"].includes(sizetype)) {
         divDropFloor.classList.remove("d-none");
       }
+      bindDropFloor();
     }
     if (e.target.id === "mounting") {
       const blinds = document.getElementById("blindtype");

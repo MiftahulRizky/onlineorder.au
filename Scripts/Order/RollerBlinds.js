@@ -93,6 +93,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         ]);
       }
       await Promise.all([
+        bindSizeType(),
+        bindDropFloor(),
         bindChains(DESIGNID),
         bindTrims(blindname, brackettype, tubetype),
         bindTubeSize(blindname, tubetype),
@@ -106,6 +108,16 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         controltype,
         colourtype,
       );
+    }
+
+    if (e.target.id === "sizetype") {
+      const sizetype = e.target.value;
+      const divDropFloor = document.getElementById("divDropFloor");
+      divDropFloor.classList.add("d-none");
+      if (["Opening Size"].includes(sizetype)) {
+        divDropFloor.classList.remove("d-none");
+      }
+      bindDropFloor();
     }
 
     // ---------------------------------||fabrictype||---------------------------------
@@ -840,6 +852,8 @@ const handlerSubmit = async (button, isConfirmed = false) => {
       "colourtype",
       "qty",
       "room",
+      "sizetype",
+      "dropfloor",
       "mounting",
       "width",
       "drop",
@@ -942,6 +956,8 @@ const handlerSetElementValues = (itemData) => {
     colourtype: "KitId",
     qty: "Qty",
     room: "Location",
+    sizetype: "LouvreSize",
+    dropfloor: "LouvrePosition",
     mounting: "Mounting",
     width: "Width",
     drop: "Drop",
@@ -1235,6 +1251,14 @@ const bindColours = async (
       );
     },
   });
+};
+
+const bindSizeType = () => {
+  generateOption("sizetype", ["Opening Size", "Make Size"]);
+};
+
+const bindDropFloor = () => {
+  generateOption("dropfloor", ["No", "Yes"]);
 };
 
 const bindFabrics = async (designid) => {
@@ -1998,6 +2022,8 @@ const bindItemOrders = async (itemid) => {
         ]);
       }
       await Promise.all([
+        bindSizeType(),
+        bindDropFloor(),
         bindChains(item.DesignId),
         bindTrims(item.BlindName, item.BracketType, item.TubeType),
       ]);
