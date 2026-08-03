@@ -528,7 +528,7 @@ Partial Class Methods_Order_VerticalBlindMethod
             End If
 
             Dim SlatSize As String = data.slatsize
-            If BlindName = "Complete" Then
+            If InArray(BlindName , "Complete", "Slat Only") Then
                 SlatSize = data.fabriclength
             End If
 
