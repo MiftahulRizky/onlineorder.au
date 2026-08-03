@@ -119,7 +119,7 @@
                             <i class="ti ti-pencil-discount fs-2 me-2 opacity-50"></i> Override Customer Discount
                         </a>
 
-                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-divider" id="dividerPrintQuote"></div>
                         <a href="javascript:void(0)" id="btnPrintQuote" class="dropdown-item">
                             <i class="ti ti-printer fs-2 me-2 opacity-50"></i> Print Quote
                         </a>
@@ -703,8 +703,10 @@
         let PREVIEWACCESS = '<%= Session("printPreview") %>';
         let REPRINT = '<%= Session("Reprint") %>';
         let URIMETHOD = '/Methods/Order/OrderDetailMethod.aspx';      
+        let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
+        let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.23"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.9"></script>
 
 
 </asp:Content>
