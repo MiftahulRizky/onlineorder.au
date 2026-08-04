@@ -3157,10 +3157,7 @@ Partial Class Order_Detail
                 End If
 
                 If Session("RoleName") = "Customer Service" Or Session("RoleName") = "Data Entry" OR Session("RoleName") = "PPIC & DE" Then
-                    If designType = "RBR" Or designType = "Curtain" Or designType = "Blinds" Or designType = "Veri Shades" Or designType = "Zebra Blinds" Then
-                        result = False
-                    End If
-                    If designType = "Additional" Then : result = False : End If
+                    result = True
                 End If
 
                 If Session("RoleName") = "Administrator" Then
