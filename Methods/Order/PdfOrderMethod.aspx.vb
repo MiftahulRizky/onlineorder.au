@@ -3333,7 +3333,6 @@ Partial Class Methods_Order_PdfOrderMethod
             Dim url As String = ""
             Dim fileDirectory As String = ""
             Dim detailData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + headerid + "' AND Active='1'")
-
             If detailData.Tables(0).Rows.Count < 1 Then
                 Return New ErrorResponse With { .[error] = New ErrorDetail With {.message = "Please add item first."}}
             End If
@@ -3384,6 +3383,11 @@ Partial Class Methods_Order_PdfOrderMethod
             Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_headers WHERE Id='" & headerid & "'")
             If HeaderData.Tables(0).Rows.Count < 1 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Order Header not found."}}
+            End If
+
+            Dim DetailData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" & headerid & "'")
+            If DetailData.Tables(0).Rows.Count < 1 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please add item first."}}
             End If
 
             ' Dim status As String = HeaderData.Tables(0).Rows(0)("Status").ToString()

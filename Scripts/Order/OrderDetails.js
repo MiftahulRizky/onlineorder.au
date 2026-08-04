@@ -233,6 +233,10 @@ Object.values(btnEl).forEach((el) => {
       if (id === "btnLogs") {
         handlerShowBSModal("modalLogs");
       }
+
+      if (id === "btnCopyJoNumber") {
+        alert("Copy to clipboard");
+      }
     } catch (error) {
       const msg = `Event btnEl: ${error.message}`;
       catchMessages(msg);
@@ -353,8 +357,7 @@ const bindOrderAggregate = async (headerid, ordertype) => {
     const { d: data } = await response.json();
 
     if (!data) {
-      window.location.replace("/order");
-      return;
+      throw new Error("No data");
     }
 
     if (data.error) {
@@ -519,10 +522,10 @@ const handlerDisplayElement = (header, detail) => {
     Object.values(btnEl).forEach((el) => {
       if (el) el.classList.add("d-none");
     });
-    DataTableDetails.columns(5).visible(false);
-    DataTableDetails.columns(6).visible(false);
-
     if (!header || !detail) return;
+
+    DataTableDetails?.columns(5)?.visible(false);
+    DataTableDetails?.columns(6)?.visible(false);
 
     btnEl.btnFinish.classList.remove("d-none");
     btnEl.btnPreviewPrint.classList.remove("d-none");
@@ -668,7 +671,7 @@ const handlerDisplayElement = (header, detail) => {
     let hideEditPricing = "True";
     let hidePricing = "True";
     if (["True", "1"].includes(PRICEACCESS)) {
-      DataTableDetails.columns(5).visible(true);
+      DataTableDetails?.columns(5).visible(true);
       btnEl.thPrice.classList.remove("d-none");
       btnEl.divPrice.classList.remove("d-none");
 
@@ -696,7 +699,7 @@ const handlerDisplayElement = (header, detail) => {
     }
 
     if (["True", "1"].includes(MARKUPACCESS)) {
-      DataTableDetails.columns(6).visible(true);
+      DataTableDetails?.columns(6).visible(true);
       btnEl.thMarkUp.classList.remove("d-none");
     }
 
@@ -715,6 +718,7 @@ const handlerDisplayElement = (header, detail) => {
 
 const handlerCheckOrder = (res) => {
   try {
+    if (!res) return;
     if (!["Yes"].includes(res.Action)) return;
 
     Swal.fire({
@@ -767,7 +771,7 @@ const handlerCreatePDFOrder = async (headerid, action) => {
     const result = data.d || data;
 
     if (result.error) {
-      throw new Error(result.error.message);
+      await isWarning(result.error.message.toUpperCase());
     } else {
       await isSuccess(result.success.message);
 
@@ -780,7 +784,6 @@ const handlerCreatePDFOrder = async (headerid, action) => {
       }
     }
   } catch (error) {
-    Swal.close();
     const msg = `handlerCreatePDFOrder: ${error.message}`;
     cathcMessages(msg);
   }
@@ -809,7 +812,7 @@ const handlerCreateJOBOrder = async (headerid, action, msgloading) => {
     const result = data.d || data;
 
     if (result.error) {
-      throw new Error(result.error.message);
+      await isWarning(result.error.message.toUpperCase());
     } else {
       await isSuccess(result.success.message);
 
@@ -859,11 +862,13 @@ const handlerSubmitOrder = async (headerid, action, msgloading) => {
         }
 
         const data = await response.json();
-        const resultData = data.d || data;
+        const res = data.d || data;
 
-        if (resultData.error) {
-          throw new Error(resultData.error.message);
-        } else {
+        if (res.warning) {
+          await isWarning(res.message.toUpperCase());
+        } else if (res.error) {
+          throw new Error(res.message);
+        } else if (res.success) {
           handlerCreatePDFOrder(headerid, action, msgloading);
         }
       } catch (error) {
@@ -906,12 +911,14 @@ const handlerDeleteHeader = async (headerid) => {
     }
 
     const data = await response.json();
-    const resultData = data.d || data;
+    const res = data.d || data;
 
-    if (resultData.error) {
-      throw new Error(resultData.error.message);
-    } else {
-      await isSuccess(resultData.success.message);
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message);
+    } else if (res.success) {
+      await isSuccess(res.message);
       window.location.href = "/order";
     }
   } catch (error) {
@@ -945,7 +952,7 @@ const handlerCreatePDFCustomerQuote = async (
     const data = result.d || result;
 
     if (data.error) {
-      throw new Error(data.error.message);
+      await isWarning(data.error.message.toUpperCase());
     } else {
       await isSuccess(data.success.message);
 
@@ -989,17 +996,19 @@ const handlerReloadPricingOnReadyPage = async (headerid, status, action) => {
     }
 
     const data = await response.json();
-    const result = data.d || data;
+    const res = data.d || data;
 
-    if (result.error) {
-      throw new Error(result.error.message);
-    } else {
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+    } else if (res.success) {
       if (action === "binding") {
         if (["Administrator"].includes(ROLENAME)) {
-          console.log(result.success.message);
+          console.log(res.message);
         }
       } else if (["click"].includes(action)) {
-        await isSuccess(result.success.message);
+        await isSuccess(res.message);
         location.reload();
       }
     }
@@ -1163,12 +1172,14 @@ const handlerDownloadBarcode = async (headerid, itemid) => {
     }
 
     const data = await response.json();
-    const result = data.d || data;
-    if (result.error) {
-      throw new Error(result.error.message);
-    } else {
-      await isSuccess(result.success.message);
-      window.open(result.success.url, "_blank");
+    const res = data.d || data;
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+    } else if (res.success) {
+      await isSuccess(res.message);
+      window.open(res.url, "_blank");
     }
   } catch (error) {
     const msg = `handlerDownloadBarcode: ${error.message}`;
@@ -1194,7 +1205,7 @@ const handlerPrintQuote = async (headerid, action) => {
     const data = await response.json();
     const result = data.d || data;
     if (result.error) {
-      throw new Error(result.error.message);
+      isWarning(result.error.message.toUpperCase());
     } else {
       await isSuccess(result.success.message);
       window.open(result.success.url, "_blank");
@@ -1235,7 +1246,6 @@ const bindStatus = (params, statusNow) => {
 
 // ----------------------------------------------|| Submit Functions ||--------------------------------------
 const submitChangeStatus = async () => {
-  // Hapus semua tanda invalid di awal
   document
     .querySelectorAll("#modalChangeStatus .form-control")
     .forEach((e) => e.classList.remove("is-invalid"));
@@ -1262,12 +1272,10 @@ const submitChangeStatus = async () => {
   });
 
   try {
-    // === Sebelum request ===
     btnSubmit.setAttribute("disabled", "disabled");
     btnSubmit.innerHTML = '<i class="fa fa-spin fa-spinner"></i>';
     swalLoadingShow("Please wait while we update the status.");
 
-    // === Kirim request ===
     const response = await fetch(`${URIMETHOD}/UpdateStatusOrder`, {
       method: "POST",
       headers: {
@@ -1280,19 +1288,20 @@ const submitChangeStatus = async () => {
       throw new Error(`HTTP error: ${response.status}`);
     }
 
-    const result = await response.json();
-    const data = result.d || result;
+    const data = await response.json();
+    const res = data.d || data;
 
-    // === Setelah sukses ===
-    if (data.error) {
-      await isWarning(data.error.message.toUpperCase());
-      const fieldElement = document.querySelector(data.error.field);
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+      const fieldElement = document.querySelector(res.field);
       if (fieldElement) {
         fieldElement.focus();
         fieldElement.classList.add("is-invalid");
       }
-    } else {
-      await isSuccess(data.success.message);
+    } else if (res.success) {
+      await isSuccess(res.message);
       handlerHideBSModal("modalChangeStatus");
       location.reload();
     }
@@ -1342,21 +1351,15 @@ const submitOverrideDisc = async (button) => {
       throw new Error(`${response.status}\n${errorText}`);
     }
 
-    const result = await response.json();
-    const dataResult = result.d || result;
+    const data = await response.json();
+    const res = data.d || data;
 
-    if (dataResult.error) {
-      await isWarning(dataResult.error.message?.toUpperCase());
-      const field = document.getElementById(dataResult.error.field);
-      if (field) {
-        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
-        // field.focus();
-        field.classList.add("is-invalid");
-      }
-    } else {
-      // await isSuccess(dataResult.success.message);
-      // location.reload();
-      let msg = dataResult.success.message;
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message?.toUpperCase());
+    } else if (res.success) {
+      let msg = res.message;
       msg += `<br/> <br/> Do you want to reload the pricing?`;
       const statusOrder = document.getElementById("spanStatusOrder").innerHTML;
 
@@ -1432,19 +1435,21 @@ const submitSendMailQuote = async () => {
       throw new Error(`HTTP error: ${response.status}`);
     }
 
-    const result = await response.json();
-    const data = result.d || result;
+    const data = await response.json();
+    const res = data.d || data;
 
-    if (data.error) {
-      await isError(data.error.message.toUpperCase());
-      const fieldElement = document.querySelector(data.error.field);
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+      const fieldElement = document.querySelector(res.field);
       if (fieldElement) {
         fieldElement.focus();
         fieldElement.classList.add("is-invalid");
       }
-    } else {
+    } else if (res.success) {
       handlerHideBSModal("modalSendMailQuote");
-      await isSuccess(data.success.message);
+      await isSuccess(res.message);
     }
   } catch (error) {
     const msg = `submitSendMailQuote: ${error.message}`;

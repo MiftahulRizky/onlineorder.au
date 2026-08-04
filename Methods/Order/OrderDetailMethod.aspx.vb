@@ -39,6 +39,7 @@ Partial Class Methods_Order_OrderDetailMethod
         Public Property [error] As ErrorDetail
     End Class
 
+
     Public Class SuccessDetail
         Public Property message As String
         Public Property url As String
@@ -97,7 +98,7 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim Item As String = publicCfg.GetItemData(query)
             Return Item
         Catch ex As Exception
-            Return "ERROR: " & ex.Message ' biar kelihatan errornya
+            Return New With { .error = New With { .message = ex.Message}}
         End Try
     End Function
 
@@ -864,7 +865,7 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim detailData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + headerid + "' AND Active='1'")
 
             If detailData.Tables(0).Rows.Count < 1 Then
-                Return New ErrorResponse With { .[error] = New ErrorDetail With { .message = "Please add item first."}}
+                Return New With { .warning = true, .message = "Please add item first."}
             End If
 
             If rolename = "Administrator" Then
@@ -890,11 +891,9 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim dataLog As Object() = {headerid, "", "Blinds", loginid, "Submit Order"}
             orderCfg.Log_Orders(dataLog)
 
-            Return New SuccessResponse With { .Success = New SuccessDetail With { .message = "Order has been submitted successfully."}}
+            Return New With { .success = true, .message = "Order has been submitted successfully."}
         Catch ex As Exception
-            Dim msg As string = ex.Message
-            If Not rolename = "Administrator" Then msg = "Please contact our IT team at support@onlineorder.au"
-            Return New ErrorResponse With {.error = New ErrorDetail With { .message = msg}}
+           Return New With { .error = true, .message = ex.Message}
         End Try
     End Function
 
@@ -906,7 +905,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
         '#DELETE
         If String.IsNullOrEmpty(id) Then
-             Return New ErrorResponse With { .error = New ErrorDetail With { .message = "This order is missing !"}}
+            Throw New Exception("This order is missing !")
         End If
 
         If Not String.IsNullOrEmpty(id) Then
@@ -921,9 +920,9 @@ Partial Class Methods_Order_OrderDetailMethod
             End Using
         End If 
 
-        Return New SuccessResponse With { .Success = New SuccessDetail With { .message = "Data has been deleted successfully, Click <b>OK</b> to redirect to order page.", .url = "/order" }}
+        Return New With { .success = true, .message = "Order has been deleted successfully."}
         Catch ex As Exception
-            Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = "" }}
+            Return New With { .error = true, .message = ex.Message}
         End Try
     End Function
 
@@ -937,8 +936,9 @@ Partial Class Methods_Order_OrderDetailMethod
 
             Dim headerData As DataSet = publicCfg.GetListData("SELECT * FROM view_headers WHERE Id='" & headerid & "'")
             If headerData.Tables(0).Rows.Count < 1 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Order Header not found."}}
+                Throw New Exception("Order Header not found.")
             End If
+
 
             Dim status As String = headerData.Tables(0).Rows(0)("Status").ToString()
             Dim customerid As String = headerData.Tables(0).Rows(0)("StoreId").ToString()
@@ -947,7 +947,7 @@ Partial Class Methods_Order_OrderDetailMethod
             ' End If
 
             If status = "Canceled" Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Permission denied : order has been canceled."}}
+                Throw New Exception("Order canceled.")
             End If
 
             ' Ambil semua detail sekaligus
@@ -955,7 +955,7 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim detailData As DataSet = publicCfg.GetListData(query)
 
             If detailData.Tables(0).Rows.Count < 1 Then
-               Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Order Header not found."}}
+               Return New With {.warning = true, .message = "Please add item first."}
             End If
 
             For Each row As DataRow In detailData.Tables(0).Rows
@@ -1119,13 +1119,10 @@ Partial Class Methods_Order_OrderDetailMethod
                     publicCfg.HitungSurcharge(headerid, itemId)
                 End If
             Next
-            msg = "Reload pricing has been updated successfully."
 
-            Return New SuccessResponse With {
-                .Success = New SuccessDetail With {.message = msg, .url = url}
-            }
+            Return New With {.success = true, .message = "Reload pricing has been updated successfully."}
         Catch ex As Exception
-            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ex.Message}}
+            Return New With {.error = true, .message = ex.Message}
         End Try
     End Function
 
@@ -1221,37 +1218,37 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim msg As String
 
             If String.IsNullOrEmpty(data.id) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "this order is missing !", .field = "#modalChangeStatus #id"}}
+                Throw New Exception("this order is missing !")
             End If
 
             If String.IsNullOrEmpty(data.status) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With {.message = "status is required !", .field = "#modalChangeStatus #status" }}
+                Return New With { .warning = true, .message = "status is required !", .field = "#modalChangeStatus #status"}
             End If
             If data.status = data.statusOld Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "you don't choose different changes on status, don't do it with the same status!", .field = "#modalChangeStatus #status"}}
+                Return New With { .warning = true, .message = "you don't choose different changes on status, don't do it with the same status!", .field = "#modalChangeStatus #status"}
             End If
 
 
             If data.status = "New Order" Then
                 If data.submittedDate = "" Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "submitted date is required !", .field = "#modalChangeStatus #submitteddate"}}
+                    Return New With { .warning = true, .message = "submitted date is required !", .field = "#modalChangeStatus #submitteddate"}
                 End If
             End If
 
             If data.status = "Completed" Then
                 If data.completeddate = "" Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "shipped date is required !", .field = "#modalChangeStatus #completeddate"}}
+                    Return New With { .warning = true, .message = "shipped date is required !", .field = "#modalChangeStatus #completeddate"}
                 End If
             End If
 
             If data.status = "Canceled" Then
                 If data.canceleddate = "" Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "canceled date is required !", .field = "#modalChangeStatus #canceleddate"}}
+                    Return New With { .warning = true, .message = "canceled date is required !", .field = "#modalChangeStatus #canceleddate"}
                 End If
             End If
             
             If data.description = "" Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "description is required !", .field = "#modalChangeStatus #description"}}
+                Return New With { .warning = true, .message = "description is required !", .field = "#modalChangeStatus #description"}
             End If          
 
             Dim findDesc As String = data.description
@@ -1328,16 +1325,9 @@ Partial Class Methods_Order_OrderDetailMethod
                 msg = "Status has been updated successfully."
              End If
 
-            Return New SuccessResponse With {
-                .Success = New SuccessDetail With { .message = msg}
-            }
+            Return New With {.success = true, .message = msg}
         Catch ex As Exception
-            Return New ErrorResponse With {
-                .error = New ErrorDetail With {
-                    .message = ex.Message,
-                    .field = ""
-                }
-            }
+            Return New With {.error = true, .message = ex.Message}
         End Try
     End Function
 
@@ -1353,7 +1343,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
             Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_headers WHERE Id='{0}'", headerid))
             If HeaderData.Tables(0).Rows.Count < 1 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Order Header not found."}}
+                Throw New Exception("Order Header not found.")
             End If
 
             ' Dim status As String = HeaderData.Tables(0).Rows(0)("Status").ToString()
@@ -1382,7 +1372,7 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim fullPath As String = Path.Combine(dirPath, FileName)
             Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE HeaderId='{0}' And Active='1' AND DesignName NOT IN ('Surcharge', 'Additional') {1} ORDER BY Id ASC", headerid, WhereId))
             If DetailData.Tables(0).Rows.Count < 1 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Please add item first."}}
+                Return New With {.warning = true, .message = "Please add item first."}
             End If
 
             Dim sb As New StringBuilder()
@@ -1436,11 +1426,9 @@ Partial Class Methods_Order_OrderDetailMethod
             
             url = String.Format("/Methods/Order/Handler/DowloadPDFOrder.ashx?file={0}&keyDownload=barcode", FileName)
 
-            Return New SuccessResponse With {
-                .Success = New SuccessDetail With {.message = msg, .url = url}
-            }
+            Return New With {.success = true, .message = msg, .url = url}
         Catch ex As Exception
-            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ex.Message}}
+            Return New With {.error = true, .message = ex.Message}
         End Try
     End Function
 
@@ -1452,11 +1440,11 @@ Partial Class Methods_Order_OrderDetailMethod
 
             Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE OrderType='Blinds' AND Id='" & data.headerid & "'")
             If HeaderData.Tables(0).Rows.Count < 1 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "order is missing !"}}
+               Throw New Exception("This order is missing !")
             End If
 
             If String.IsNullOrEmpty(data.discount) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "this order is missing !", .field = "#modalQuoteDisc #discount"}}
+                Return New With {.warning = true, .message = "discount is required !", .field = "#modalQuoteDisc #discount"}
             End If
 
             
@@ -1477,13 +1465,9 @@ Partial Class Methods_Order_OrderDetailMethod
             orderCfg.Log_Orders(dataLog)
 
 
-            Return New SuccessResponse With {
-                .Success = New SuccessDetail With { .message = "Discount has been applied successfully."}
-            }
+            Return New With {.success = true, .message = "Discount has been applied successfully."}
         Catch ex As Exception
-            Dim msg As String = ex.Message
-            If Not data.rolename = "Administrator" Then msg = "Please contact our IT team at support@onlineorder.au"
-            Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
+           Return New With {.error = true, .message = ex.Message}
         End Try
     End Function
 
@@ -1495,30 +1479,30 @@ Partial Class Methods_Order_OrderDetailMethod
 
             Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE OrderType='Blinds' AND Id='" & data.headerid & "'")
             If HeaderData.Tables(0).Rows.Count < 1 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "order is missing !"}}
+                Throw New Exception("This order is missing !")
             End If
 
             If String.IsNullOrEmpty(data.id) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "this order is missing !", .field = "#modalSendMailQuote #id"}}
+                Throw New Exception("id is missing !")
             End If
 
             If String.IsNullOrEmpty(data.from) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "pleasze check mail from !", .field = "#modalSendMailQuote #from"}}
+                Return New With {.warning = true, .message = "pleasze check mail from !", .field = "#modalSendMailQuote #from"}
             End If
 
             If String.IsNullOrEmpty(data.mailto) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "pleasze check mail to !", .field = "#modalSendMailQuote #mailto"}}
+                Return New With {.warning = true, .message = "please check mail to !", .field = "#modalSendMailQuote #mailto"}
             End If
             If Not String.IsNullOrEmpty(data.mailto) Then
                 If Not Regex.IsMatch(data.mailto, "^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$") Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check mail to format !",.field = "#modalSendMailQuote #mailto"}}
+                    Return New With {.warning = true, .message = "please check mail to format !",.field = "#modalSendMailQuote #mailto"}
                 End If
             End If
 
            
             If Not String.IsNullOrEmpty(data.cc) Then
                 If Not Regex.IsMatch(data.cc, "^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$") Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check mail to format !", .field = "#modalSendMailQuote #cc"}}
+                    Return New With {.warning = true, .message = "please check mail to format !", .field = "#modalSendMailQuote #cc"}
                 End If
             End If
 
@@ -1537,23 +1521,15 @@ Partial Class Methods_Order_OrderDetailMethod
 
             Dim Res As String = MailOriginQuote(data.headerid, dirPath, data.id, data.mailto)
             If Not Res = "200" Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = Res, .field = "#modalSendMailQuote #id"}}
+                throw New Exception(Res)
             End If
 
-            ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = FileName, .field = "#modalSendMailQuote #cc"}}
             
 
 
-            Return New SuccessResponse With {
-                .Success = New SuccessDetail With { .message = msg}
-            }
+            Return New With {.success = true, .message = msg}
         Catch ex As Exception
-            Return New ErrorResponse With {
-                .error = New ErrorDetail With {
-                    .message = ex.Message,
-                    .field = "#modalSendMailQuote #id"
-                }
-            }
+            Return New With {.error = True, .message = ex.Message}
         End Try
     End Function
 

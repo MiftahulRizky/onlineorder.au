@@ -75,6 +75,12 @@ Partial Class Methods_Order_JobSheetMethod
             Dim JoNumber As String = String.Empty
             Dim fileDirectory As String = String.Empty
 
+            Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE HeaderId='{0}' AND Active='1'", headerid))
+            Dim detailCount As Integer = DetailData.Tables(0).Rows.Count
+            If detailCount < 1 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Please add item first."}}
+            End If
+
             If action = "convert" then
                 JobId = CreateJobId()
                 JoNumber = CreateJobNumber()
