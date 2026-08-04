@@ -3381,12 +3381,12 @@ Partial Class Methods_Order_PdfOrderMethod
 
             Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_headers WHERE Id='" & headerid & "'")
             If HeaderData.Tables(0).Rows.Count < 1 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Order Header not found."}}
+                Throw New Exception("Order Header not found.")
             End If
 
             Dim DetailData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" & headerid & "'")
             If DetailData.Tables(0).Rows.Count < 1 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please add item first."}}
+                Return New With {.warning = true, .message = "please add item first."}
             End If
 
             ' Dim status As String = HeaderData.Tables(0).Rows(0)("Status").ToString()
@@ -3399,7 +3399,7 @@ Partial Class Methods_Order_PdfOrderMethod
             Dim StoreId As String = HeaderData.Tables(0).Rows(0).Item("StoreId").ToString()
             Dim StoreName As String = HeaderData.Tables(0).Rows(0).Item("StoreName").ToString()
             Dim Delivery As String = HeaderData.Tables(0).Rows(0).Item("Delivery").ToString()
-            Dim FileName As String = ("-QUOTE-ORDER-" & OrderNo & "-" & StoreId & ".pdf").Replace(" ", "")
+            Dim FileName As String = (String.Format("-QUOTE-ORDER-{0}-{1}.pdf", OrderNo, StoreId)).Replace(" ", "")
 
             Dim dirPath As String = HttpContext.Current.Server.MapPath("~/File/Order/Quote/Origin/")
             If Not Directory.Exists(dirPath) Then
@@ -3421,11 +3421,9 @@ Partial Class Methods_Order_PdfOrderMethod
 
             printCfg.CreatePDFQuote(headerid, username, dirPath, FileName, Key)
 
-            Return New SuccessResponse With {
-                .Success = New SuccessDetail With {.message = msg, .url = url}
-            }
+            Return New With {.success = true, .message = msg, .url = url}
         Catch ex As Exception
-            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ex.Message}}
+            Return New With {.error = true, .message = ex.Message}
         End Try
     End Function
 

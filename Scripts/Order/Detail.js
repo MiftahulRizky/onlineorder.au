@@ -1262,7 +1262,7 @@ const handlerDisplayElement = (item) => {
   }
 
   // btnSubmit, btnEditHeader, btnDeleteHeader, & btnAddItem
-  if (item.Status === "Draft" || item.Status === "Pending Price Approval") {
+  if (["Draft", "Pending Price Approval"].includes(item.Status)) {
     switch (ROLENAME) {
       case "Customer":
         btnSubmit.removeAttribute("hidden");

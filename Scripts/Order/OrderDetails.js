@@ -1119,8 +1119,11 @@ const hanlderDisplayElementModalChangeStatus = (status) => {
 
 const handlerSetRandomElementValues = (header, detail, other) => {
   try {
+    // Ovveride Customer Discount
     document.querySelector("#modalQuoteDisc #discount").value =
       header.QuoteDisc || 0;
+
+    // Send Mail Quote
     document.querySelector("#modalSendMailQuote #id").value =
       other.SendMailQuoteId;
     document.querySelector("#modalSendMailQuote #from").value =
@@ -1128,11 +1131,11 @@ const handlerSetRandomElementValues = (header, detail, other) => {
     document.querySelector("#modalSendMailQuote #mailto").value =
       other.SendMailQuoteTo;
 
+    // Logs
     const table = document.querySelector("#modalLogs #table-logs tbody");
     table.innerHTML = "";
 
     const logs = other?.Logs || [];
-
     if (logs.length === 0) {
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -1209,12 +1212,14 @@ const handlerPrintQuote = async (headerid, action) => {
     }
 
     const data = await response.json();
-    const result = data.d || data;
-    if (result.error) {
-      isWarning(result.error.message.toUpperCase());
-    } else {
-      await isSuccess(result.success.message);
-      window.open(result.success.url, "_blank");
+    const res = data.d || data;
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+    } else if (res.success) {
+      await isSuccess(res.message);
+      window.open(res.url, "_blank");
     }
   } catch (error) {
     const msg = `handlerPrintQuote: ${error.message}`;
