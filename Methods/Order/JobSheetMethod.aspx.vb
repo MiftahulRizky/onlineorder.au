@@ -78,7 +78,7 @@ Partial Class Methods_Order_JobSheetMethod
             Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE HeaderId='{0}' AND Active='1'", headerid))
             Dim detailCount As Integer = DetailData.Tables(0).Rows.Count
             If detailCount < 1 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Please add item first."}}
+                Return New With {.warning = true, .message = "Please add item first."}
             End If
 
             If action = "convert" then
@@ -87,18 +87,18 @@ Partial Class Methods_Order_JobSheetMethod
 
                 Dim resultUpdateOrderHeader As String = UpdateOrderHeader(headerid, JoNumber)
                 If resultUpdateOrderHeader <> "200" then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = resultUpdateOrderHeader}}
+                    Throw New Exception(resultUpdateOrderHeader)
                 End If
 
                 Dim resultCreateJobHeaders As String = CreateJobHeaders(JobId, headerid)
                 If resultCreateJobHeaders <> "200" then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = resultCreateJobHeaders}}
+                    Throw New Exception(resultCreateJobHeaders)
                 End If
 
                 '# Create Job Details
                 Dim resultCreateJobDetails As String = CreateJobDetails(JobId, headerid)
                 If resultCreateJobDetails <> "200" then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = resultCreateJobDetails}}
+                    Throw New Exception(resultCreateJobDetails)
                 End If
 
                  msg = "Jobsheet successfully created"
@@ -109,7 +109,7 @@ Partial Class Methods_Order_JobSheetMethod
                 Dim latesJoNumber As String = publicCfg.GetItemData("SELECT JoNumber FROM OrderHeaders WHERE Id = '" + headerid + "'")
                 Dim latesJobHeader As DataSet = publicCfg.GetListData("SELECT * FROM JobHeaders WHERE HeaderId = '" + headerid + "' AND JoNumber = '" + latesJoNumber + "'")
                 If latesJobHeader.Tables(0).Rows.Count = 0 then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "Job data not found."}}
+                    Throw New Exception("Job data not found.")
                 End If
                 
                 '#----------------------------------------------|| cek jobdetails & create ||----------------------------------------------#
@@ -118,26 +118,26 @@ Partial Class Methods_Order_JobSheetMethod
                 If checkJobDetail.Tables(0).Rows.Count = 0 then
                     Dim resultCreateJobDetails As String = CreateJobDetails(JobId, headerid)
                     If resultCreateJobDetails <> "200" then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = resultCreateJobDetails}}
+                        Throw New Exception(resultCreateJobDetails)
                     End If
                 End If
 
                 '#----------------------------------------------|| create pdf ||----------------------------------------------#
                 Dim orderNo As String = latesJobHeader.Tables(0).Rows(0).Item("OrderNo").ToString()
                 Dim storeId As String = latesJobHeader.Tables(0).Rows(0).Item("StoreId").ToString()
-                Dim fileName As String = ("-JOB-ORDER-" & orderNo & "-" & storeId & ".pdf").Replace(" ", "")
+                Dim fileName As String = (String.Format("-JOB-ORDER-{0}-{1}.pdf", orderNo, storeId)).Replace(" ", "")
                 fileDirectory = HttpContext.Current.Server.MapPath("~/file/order/job")
 
                 If action = "reprint" or action = "preview" then
 
                     Dim resultResetJobSheets As String = ResetJobSheets(JobId)
                     If resultResetJobSheets <> "200" then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = resultResetJobSheets}}
+                        Throw New Exception(resultResetJobSheets)
                     End If
 
                     Dim resultCreateJobSheets As String = CreateJobSheets(JobId)
                     If resultCreateJobSheets <> "200" then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = resultCreateJobSheets}}
+                        Throw New Exception(resultCreateJobSheets)
                     End If
 
                     '#kirim file name pdf ke session
@@ -146,7 +146,7 @@ Partial Class Methods_Order_JobSheetMethod
                     '#panggil fungsi create pdf
                     Dim  resultCreatePDFJobSheets As String = CreatePDFJobSheets(jobId, fileDirectory, fileName)
                     If resultCreatePDFJobSheets <> "200" then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = resultCreatePDFJobSheets}}
+                        Throw New Exception(resultCreatePDFJobSheets)
                     End If
 
                     msg = "Print page is successfully prepared <br> click <b>OK</b> to open it."
@@ -158,9 +158,9 @@ Partial Class Methods_Order_JobSheetMethod
 
             
 
-            Return New SuccessResponse With {.Success = New SuccessDetail With {.message = msg, .url = url}}
+            Return New With {.success = true, .message = msg, .url = url}
         Catch ex As Exception
-            Return New ErrorResponse With {.error = New ErrorDetail With {.message = "CreateJOBOrder : " & ex.Message}}
+            Return New With {.error = true, .message = ex.Message}
         End Try
     End Function
 

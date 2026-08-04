@@ -1448,6 +1448,7 @@ const handlerHeaderInfo = async (item) => {
     // CARD 2
     // SubmittedDate
     spanSubmittedDate.innerHTML = formatDate(item.SubmittedDate);
+    spanProductionDate.innerHTML = formatDate(item.JobDate);
     // if (!item.SubmittedDate) spanSubmittedDate.innerHTML = "-";
     // if (!item.SubmittedDate) spanProductionDate.innerHTML = "-";
     // if (item.SubmittedDate) {

@@ -768,17 +768,19 @@ const handlerCreatePDFOrder = async (headerid, action) => {
     }
 
     const data = await response.json();
-    const result = data.d || data;
+    const res = data.d || data;
 
-    if (result.error) {
-      await isWarning(result.error.message.toUpperCase());
-    } else {
-      await isSuccess(result.success.message);
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+    } else if (res.success) {
+      await isSuccess(res.message);
 
       if (action === "download") {
-        window.location.href = result.success.url;
+        window.location.href = res.url;
       } else if (action === "preview") {
-        window.open(result.success.url, "_blank");
+        window.open(res.url, "_blank");
       } else if (action === "submit" || action === "mail") {
         location.reload();
       }
@@ -809,17 +811,19 @@ const handlerCreateJOBOrder = async (headerid, action, msgloading) => {
     }
 
     const data = await response.json();
-    const result = data.d || data;
+    const res = data.d || data;
 
-    if (result.error) {
-      await isWarning(result.error.message.toUpperCase());
-    } else {
-      await isSuccess(result.success.message);
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+    } else if (res.success) {
+      await isSuccess(res.message);
 
       if (action === "download") {
-        window.location.href = result.success.url;
+        window.location.href = res.url;
       } else if (action === "reprint" || action === "preview") {
-        window.open(result.success.url, "_blank");
+        window.open(res.url, "_blank");
       } else if (action === "convert") {
         location.reload();
       }
@@ -948,18 +952,20 @@ const handlerCreatePDFCustomerQuote = async (
       throw new Error(`HTTP ${response.status}`);
     }
 
-    const result = await response.json();
-    const data = result.d || result;
+    const data = await response.json();
+    const res = data.d || data;
 
-    if (data.error) {
-      await isWarning(data.error.message.toUpperCase());
-    } else {
-      await isSuccess(data.success.message);
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+    } else if (res.success) {
+      await isSuccess(res.message);
 
       if (action === "download") {
-        window.location.href = data.success.url;
+        window.location.href = res.url;
       } else if (action === "preview") {
-        window.open(data.success.url, "_blank");
+        window.open(res.url, "_blank");
       }
     }
   } catch (error) {

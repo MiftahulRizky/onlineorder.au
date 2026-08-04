@@ -87,20 +87,19 @@ Partial Class Methods_Order_PdfOrderMethod
             Dim detailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE HeaderId='{0}' AND Active='1'", headerid))
 
             If detailData.Tables(0).Rows.Count < 1 Then
-                Return New ErrorResponse With { .[error] = New ErrorDetail With { .message = "Please add item first."}}
+                Return New With { .warning = true, .message = "Please add item first !"}
             End If
 
             Dim headerData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_headers WHERE Id='{0}'", headerid))
             Dim status As String = headerData.Tables(0).Rows(0).Item("Status").ToString()
             if headerData.Tables(0).Rows.Count < 1 Then
-                Return New ErrorResponse With { .[error] = New ErrorDetail With { .message = "Order Header not found."}}
                 Throw New Exception("Order Header not found.")
             End If
 
 
             If action = "mail" Then
                 If status = "Draft" Or Status = "Cenceled" Then
-                    Throw New Exception("You can't send an email for a draft or canceled order.")
+                    Return New With { .warning = true, .message = "You can't send an email for a draft or canceled order."}
                 End If
             End If
 
@@ -168,10 +167,10 @@ Partial Class Methods_Order_PdfOrderMethod
             End If
 
 
-            Return New SuccessResponse With {.Success = New SuccessDetail With { .message = msg, .url = url }}
+            Return New With {.success = true, .message = msg, .url = url}
 
         Catch ex As Exception
-            Return New ErrorResponse With {.[error] = New ErrorDetail With {.message = ex.Message, .field = ""}}
+            Return New With {.error = true, .message = ex.Message}
         End Try
     End Function
 
@@ -3334,12 +3333,12 @@ Partial Class Methods_Order_PdfOrderMethod
             Dim fileDirectory As String = ""
             Dim detailData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + headerid + "' AND Active='1'")
             If detailData.Tables(0).Rows.Count < 1 Then
-                Return New ErrorResponse With { .[error] = New ErrorDetail With {.message = "Please add item first."}}
+                Return New With { .warning = true, .message = "Please add item first."}
             End If
 
             Dim headerData As DataSet = publicCfg.GetListData("SELECT * FROM OrderHeaders WHERE Id='" + headerid + "'")
             if headerData.Tables(0).Rows.Count < 1 Then
-                Return New ErrorResponse With { .[error] = New ErrorDetail With { .message = "Order Header not found."}}
+                Throw New Exception("Order Header not found.")
             End If
 
             Dim orderNo As String = headerData.Tables(0).Rows(0).Item("OrderNo").ToString()
@@ -3364,10 +3363,10 @@ Partial Class Methods_Order_PdfOrderMethod
             
             printCfg.CreatePDFQuote(headerid, username, fileDirectory, fileName, Key)
 
-            Return New SuccessResponse With {.Success = New SuccessDetail With { .message = msg, .url = url }}
+            Return New With {.success = true, .message = msg, .url = url}
 
         Catch ex As Exception
-            Return New ErrorResponse With { .[error] = New ErrorDetail With { .message = ex.Message, .field = "" }}
+            Return New With { .error = true, .message = ex.Message}
         End Try
     End Function
 
