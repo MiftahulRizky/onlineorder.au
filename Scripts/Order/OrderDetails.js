@@ -44,7 +44,7 @@ const btnEl = {
   dividerLogs: document.getElementById("dividerLogs"),
   btnLogs: document.getElementById("btnLogs"),
   btnAddItem: document.getElementById("btnAddItem"),
-  btnAddService: document.getElementById("btnAddService"),
+  btnAddSurcharge: document.getElementById("btnAddSurcharge"),
   divPrice: document.getElementById("divPrice"),
   msgThanks: document.getElementById("msgThanks"),
   thMarkUp: document.querySelector(".thMarkUp"),
@@ -54,8 +54,8 @@ const spanEl = {
   retailerName: document.getElementById("spanRetailerName"),
   retailerId: document.getElementById("spanRetailerId"),
   orderId: document.getElementById("spanOrderId"),
-  spanJoNumber: document.getElementById("spanJoNumber"),
-  spanJoNumberMsg: document.getElementById("spanJoNumberMsg"),
+  joNumber: document.getElementById("spanJoNumber"),
+  joNumberMsg: document.getElementById("spanJoNumberMsg"),
   orderType: document.getElementById("spanOrderProductType"),
   orderNo: document.getElementById("spanOrderNo"),
   orderCust: document.getElementById("spanOrderCust"),
@@ -89,6 +89,7 @@ const liEl = {
 const elModal = {
   modalChangeStatus: document.getElementById("modalChangeStatus"),
   modalQuoteDisc: document.getElementById("modalQuoteDisc"),
+  modalProductionDate: document.getElementById("modalProductionDate"),
   modalAddItem: document.getElementById("modalAddItem"),
   modalAddService: document.getElementById("modalAddService"),
   modalSendMailQuote: document.getElementById("modalSendMailQuote"),
@@ -96,21 +97,9 @@ const elModal = {
   modalEditPricingAllItem: document.getElementById("modalEditPricingAllItem"),
   modalLogs: document.getElementById("modalLogs"),
 };
-const elmodalChangeStatus = {
-  divSubmittedDate: document.getElementById("divSubmittedDate"),
-  divCompletedDate: document.getElementById("divCompletedDate"),
-  divCanceledDate: document.getElementById("divCanceledDate"),
-  divDescription: document.getElementById("divDescription"),
-};
-// const elmodalAddItem = {
-//   designid: document.getElementById("designid"),
-//   production: document.getElementById("production"),
-//   divProduction: document.getElementById("divProduction"),
-// };
 
 // ==============================================|| EVENTS ||================================================
 
-// Button Event
 Object.values(btnEl).forEach((el) => {
   if (!el) return;
   el.addEventListener("click", async (e) => {
@@ -249,6 +238,14 @@ Object.values(btnEl).forEach((el) => {
 
         handlerShowBSModal("modalAddItem");
       }
+
+      if (id === "btnAddSurcharge") {
+        const designid = "415D0633-0648-42D8-B041-FE419E01BB3C";
+        const production = "";
+        const action = "AddItem";
+
+        await submitSelectProduct(designid, production, action, id);
+      }
     } catch (error) {
       const msg = `Event btnEl: ${error.message}`;
       catchMessages(msg);
@@ -256,7 +253,6 @@ Object.values(btnEl).forEach((el) => {
   });
 });
 
-// Span Event
 Object.values(spanEl).forEach((el) => {
   if (!el) return;
   el.addEventListener("click", async (e) => {
@@ -271,6 +267,33 @@ Object.values(spanEl).forEach((el) => {
           showCopyMessage();
         }
       }
+
+      if (id === "spanProductionDate") {
+        const raw = e.currentTarget.dataset.date;
+        console.log(raw);
+
+        if (["Customer"].includes(ROLENAME)) return;
+
+        const datePart = raw.split(" ")[0];
+        const parts = datePart.split("/");
+        let day, month, year;
+
+        if (parts[0].length === 4) {
+          // format yyyy/MM/dd
+          [year, month, day] = parts;
+        } else {
+          // format dd/MM/yyyy atau d/MM/yyyy
+          [day, month, year] = parts;
+        }
+
+        const formatted = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+
+        console.log(formatted);
+
+        elModal.modalProductionDate.querySelector("#productiondate").value =
+          formatted;
+        handlerShowBSModal("modalProductionDate");
+      }
     } catch (error) {
       const msg = `Event spanEl: ${error.message}`;
       catchMessages(msg);
@@ -278,7 +301,6 @@ Object.values(spanEl).forEach((el) => {
   });
 });
 
-// Event on modal
 const modalHandlers = {
   modalChangeStatus: {
     init: (modal) => {},
@@ -361,6 +383,28 @@ const modalHandlers = {
     },
   },
 
+  modalProductionDate: {
+    init: (modal) => {},
+
+    events: (modal) => {
+      modal.addEventListener("change", (e) => {
+        e.target.classList.remove("is-invalid");
+      });
+
+      modal.addEventListener("click", (e) => {
+        if (e.target.id === "btnSubmitProductionDate") {
+          modal
+            .querySelectorAll(".form-control, .form-select")
+            .forEach((el) => {
+              el.classList.remove("is-invalid");
+            });
+
+          submitChangeProductionDate(e.target.id);
+        }
+      });
+    },
+  },
+
   modalAddItem: {
     init: (modal) => {
       const divProduction = modal.querySelector("#divProduction");
@@ -377,26 +421,22 @@ const modalHandlers = {
           const selectedOption = e.target.selectedOptions[0];
           const designname = selectedOption?.dataset.name;
           await bindProduction(designname);
-
-          // alert(designname);
         }
       });
 
-      // modal.addEventListener("click", (e) => {
-      //   if (e.target.id === "btnSubmitOverrideDisc") {
-      //     modal
-      //       .querySelectorAll(".form-control, .form-select")
-      //       .forEach((el) => {
-      //         el.classList.remove("is-invalid");
-      //       });
+      modal.addEventListener("click", async (e) => {
+        const id = e.target.id;
+        if (id === "submitAddItem") {
+          const designid = modal.querySelector("#designid").value;
+          const production = modal.querySelector("#production").value;
+          const action = "AddItem";
 
-      //     submitOverrideDisc(e.target.id);
-      //   }
-      // });
+          await submitSelectProduct(designid, production, action, id);
+        }
+      });
     },
   },
 };
-
 Object.entries(elModal).forEach(([key, modal]) => {
   if (!modal) return;
 
@@ -670,15 +710,16 @@ const handlerHeaderInfo = (item) => {
 
     spanEl.submittedDate.textContent = formatDate(item.SubmittedDate);
     spanEl.productionDate.textContent = formatDate(item.JobDate);
+    spanEl.productionDate.setAttribute("data-date", item.JobDate);
     spanEl.completedDate.textContent = formatDate(item.CompletedDate);
     spanEl.canceledDate.textContent = formatDate(item.CanceledDate);
 
     let JoNumVal = item.JoNumberId
       ? `<span class="badge badge-outline text-red">${item.JoNumberId}</span>`
       : "-";
-    spanEl.spanJoNumber.innerHTML = JoNumVal;
-    spanEl.spanJoNumber.setAttribute("data-number", item.JoNumberId);
-    spanEl.spanJoNumberMsg.classList.add("d-none");
+    spanEl.joNumber.innerHTML = JoNumVal;
+    spanEl.joNumber.setAttribute("data-number", item.JoNumberId);
+    spanEl.joNumberMsg.classList.add("d-none");
 
     setText(spanEl.orderType, item.OrderType);
 
@@ -1114,7 +1155,7 @@ const displayElOverall = (header, detail) => {
       }
 
       if (!["Completed"].includes(header.Status)) {
-        btnEl.btnAddService.classList.remove("d-none");
+        btnEl.btnAddSurcharge.classList.remove("d-none");
         btnEl.btnQuoteDisc.classList.remove("d-none");
       }
       btnEl.btnDownloadBarcode.classList.remove("d-none");
@@ -1156,7 +1197,7 @@ const displayElOverall = (header, detail) => {
       }
 
       if (!["Completed"].includes(header.Status)) {
-        btnEl.btnAddService.classList.remove("d-none");
+        btnEl.btnAddSurcharge.classList.remove("d-none");
         btnEl.btnQuoteDisc.classList.remove("d-none");
       }
       btnEl.btnDownloadBarcode.classList.remove("d-none");
@@ -1280,22 +1321,38 @@ const displayElOverall = (header, detail) => {
 };
 
 const displayElmodalChangeStatus = (status) => {
-  Object.values(elmodalChangeStatus).forEach((el) => {
-    if (el) el.classList.add("d-none");
-  });
+  elModal.modalChangeStatus
+    .querySelector("#divDescription")
+    .classList.add("d-none");
+  elModal.modalChangeStatus
+    .querySelector("#divSubmittedDate")
+    .classList.add("d-none");
+  elModal.modalChangeStatus
+    .querySelector("#divCompletedDate")
+    .classList.add("d-none");
+  elModal.modalChangeStatus
+    .querySelector("#divCanceledDate")
+    .classList.add("d-none");
 
   if (status) {
-    elmodalChangeStatus.divDescription.classList.remove("d-none");
+    elModal.modalChangeStatus
+      .querySelector("#divDescription")
+      .classList.remove("d-none");
     switch (status) {
       case "New Order":
-        elmodalChangeStatus.divSubmittedDate.classList.remove("d-none");
+        elModal.modalChangeStatus
+          .querySelector("#divSubmittedDate")
+          .classList.remove("d-none");
         break;
       case "Completed":
-        elmodalChangeStatus.divCompletedDate.classList.remove("d-none");
+        elModal.modalChangeStatus
+          .querySelector("#divCompletedDate")
+          .classList.remove("d-none");
         break;
       case "Canceled":
-        divCanceledDate.removeAttribute("hidden");
-        elmodalChangeStatus.divCanceledDate.classList.remove("d-none");
+        elModal.modalChangeStatus
+          .querySelector("#divCanceledDate")
+          .classList.remove("d-none");
         break;
     }
   }
@@ -1540,6 +1597,63 @@ const submitOverrideDisc = async (button) => {
   }
 };
 
+const submitChangeProductionDate = async (button) => {
+  try {
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = ["productiondate"];
+
+    const formData = {
+      headerid: HEADERID,
+      loginid: LOGINID,
+      rolename: ROLENAME,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.querySelector(
+        `#modalProductionDate #${field}`,
+      ).value;
+    });
+
+    // swal.close();
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/SubmitChangeProductionDate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message?.toUpperCase());
+      const field = document.getElementById(res.field);
+      if (field) {
+        field.classList.add("is-invalid");
+      }
+    } else if (res.success) {
+      await isSuccess(res.message);
+      location.reload();
+    }
+  } catch (error) {
+    const msg = `submitChangeProductionDate: ${error.message}`;
+    catchMessages(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Save Changes";
+  }
+};
+
 const submitSendMailQuote = async () => {
   // Hapus semua tanda invalid di awal
   document
@@ -1610,6 +1724,56 @@ const submitSendMailQuote = async () => {
 
   return false;
 };
+
+const submitSelectProduct = async (designid, production, action, button) => {
+  document.getElementById(button).innerHTML = "Proccessing...";
+  try {
+    const response = await fetch(URIMETHOD + "/FindProductForm", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        data: {
+          id: "",
+          rolename: ROLENAME,
+          headerid: HEADERID,
+          ordertype: ORDERTYPE,
+          action: action,
+          designid: designid,
+          production: production,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message?.toUpperCase());
+      if (res.field) {
+        const field = document.querySelector(res.field);
+        field.classList.add("is-invalid");
+      }
+    } else if (res.success) {
+      var finePage = res.page.replace("~", "");
+      window.location.href = finePage;
+    }
+  } catch (error) {
+    const msg = `submitSelectProduct: ${error.message}`;
+    catchMessages(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Next";
+  }
+};
+
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const orderDetailPageLoaded = async () => {
   try {
@@ -1939,7 +2103,7 @@ const copyToClipboard = async (text) => {
 };
 
 const showCopyMessage = () => {
-  const el = spanEl.spanJoNumberMsg;
+  const el = spanEl.joNumberMsg;
   if (!el) return;
 
   el.classList.remove("d-none"); // tampilkan

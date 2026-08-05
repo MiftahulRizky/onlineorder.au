@@ -259,7 +259,7 @@
                                 <div class="col-lg-4">
                                     <span style="font-size:larger;">Production Date :</span>
                                     <br />
-                                    <span id="spanProductionDate" style="font-size:larger;font-weight:bold;"></span>
+                                    <span id="spanProductionDate" style="font-size:larger;font-weight:bold;cursor: pointer;"></span>
                                 </div>
 
                                 <div class="col-lg-4">
@@ -357,7 +357,7 @@
                                 <a href="javascript:void(0);" id="btnAddItem" class="btn btn-primary ">
                                     <i class="ti ti-clipboard-plus fs-2 me-2 opacity-50"></i> Add Item
                                 </a>
-                                <a href="javascript:void(0);" id="btnAddService" class="btn btn-primary ">
+                                <a href="javascript:void(0);" id="btnAddSurcharge" class="btn btn-primary ">
                                     <i class="ti ti-database-dollar fs-2 me-2 opacity-50"></i> Add Surcharge
                                 </a>
                             </div>
@@ -519,10 +519,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fa-solid fa-xmark me-2"></i>Close
+                        Close
                     </button>
                     <button type="button" class="btn btn-primary" id="submitAddItem">
-                        <i class="fa-solid fa-cloud-arrow-up me-2"></i>Next
+                        Next
                     </button>
                 </div>
             </div>
@@ -740,7 +740,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.18"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.9"></script>
 
 
 </asp:Content>

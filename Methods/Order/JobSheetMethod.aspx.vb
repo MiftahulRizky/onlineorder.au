@@ -109,7 +109,10 @@ Partial Class Methods_Order_JobSheetMethod
                 Dim latesJoNumber As String = publicCfg.GetItemData("SELECT JoNumber FROM OrderHeaders WHERE Id = '" + headerid + "'")
                 Dim latesJobHeader As DataSet = publicCfg.GetListData("SELECT * FROM JobHeaders WHERE HeaderId = '" + headerid + "' AND JoNumber = '" + latesJoNumber + "'")
                 If latesJobHeader.Tables(0).Rows.Count = 0 then
-                    Throw New Exception("Job data not found.")
+                    Dim resultCreateJobHeaders As String = CreateJobHeaders(JobId, headerid)
+                    If resultCreateJobHeaders <> "200" then
+                        Throw New Exception(resultCreateJobHeaders)
+                    End If
                 End If
                 
                 '#----------------------------------------------|| cek jobdetails & create ||----------------------------------------------#
@@ -166,8 +169,8 @@ Partial Class Methods_Order_JobSheetMethod
 
     Private Shared Function CreateJobId() As String
         Try
-            Dim result As String = String.Empty
-            Dim idDetail As String = String.Empty
+            Dim result As String = ""
+            Dim idDetail As String = ""
             Using thisConn As New SqlConnection(myConn)
                 thisConn.Open()
                 Using myCmd As New SqlCommand("SELECT TOP 1 Id FROM JobHeaders ORDER BY Id DESC", thisConn)
@@ -179,7 +182,7 @@ Partial Class Methods_Order_JobSheetMethod
                 End Using
                 thisConn.Close()
             End Using
-            If idDetail = "" Then : result = 1
+            If idDetail = "" Or idDetail = "0" Then : result = 1
             Else : result = CInt(idDetail) + 1
             End If
             Return result

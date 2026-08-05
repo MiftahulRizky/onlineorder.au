@@ -364,6 +364,8 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
             Dim exactName As String = designName & " - " & blindName
             Dim exactId As String = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
 
+            ' Throw New Exception(exactName & " | " & exactId)
+
           
             '#-----------------------|| SUBMIT VALIDATE ||-----------------------#
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then

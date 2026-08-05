@@ -380,6 +380,8 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
             Dim ExactName As String = DesignName & " - " & BlindName
             Dim ExactId As String = orderCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + ExactName + "'")
 
+            ' Throw New Exception(ExactName & " | " & ExactId)
+
             Dim numOfWand As Integer = 1
             If data.layoutcode = "E" Or data.layoutcode = "F" Then
                 numOfWand = 2

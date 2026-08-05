@@ -373,7 +373,7 @@ Partial Class Methods_VerishadesMethod
 
             Dim SoeId As String = publicCfg.GetSoeKitId(data.tubetype)
             Dim DesignName As String = publicCfg.GetDesignName(data.designid)
-            Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
+            Dim ExactName As String = String.Format("{0}", DesignName, BlindName)
             Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
 
             Dim PriceGroupName As String = BlindName

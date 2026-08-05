@@ -80,6 +80,14 @@ Partial Class Methods_Order_OrderDetailMethod
         Public Property loginid As String
     End Class
 
+    Public Class ParamSubmitChangeProductionDate
+        Public Property productiondate  As String
+
+        Public Property rolename As String
+        Public Property headerid As String
+        Public Property loginid As String
+    End Class
+
     Public Class ParamSubmitSendMailQuote
         Public Property id  As String
         Public Property from As String
@@ -89,6 +97,16 @@ Partial Class Methods_Order_OrderDetailMethod
         Public Property username As String
         Public Property headerid As String
         Public Property loginid As String
+    End Class
+
+    Public Class ParamFindProductForm
+        Public Property id  As String
+        Public Property rolename As String
+        Public Property headerid As String
+        Public Property ordertype As String
+        Public Property action As String
+        Public Property designid As String
+        Public Property production As String
     End Class
 
     <WebMethod()>
@@ -1536,6 +1554,46 @@ Partial Class Methods_Order_OrderDetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function SubmitChangeProductionDate(data As ParamSubmitChangeProductionDate) As Object
+        Try
+
+            Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE OrderType='Blinds' AND Id='" & data.headerid & "'")
+            If HeaderData.Tables(0).Rows.Count < 1 Then
+                Throw New Exception("order is missing !")
+            End If
+
+            If String.IsNullOrEmpty(data.productiondate) Then
+                Return New With {.warning = true, .message = "date is required !", .field = "#modalQuoteDisc #productiondate"}
+            End If
+
+            
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET JobDate=@JobDate WHERE Id=@Id", thisConn)
+                    myCmd.Parameters.AddWithValue("@Id", data.headerid)
+                    myCmd.Parameters.AddWithValue("@JobDate", data.productiondate)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+
+            Dim OrderType As String = publicCfg.GetItemData(String.Format("SELECT OrderType FROM OrderHeaders WHERE Id='{0}'", data.headerid))
+            Dim dataLog As Object() = {data.headerid, "", OrderType, data.loginid, "Change Production Date"}
+            orderCfg.Log_Orders(dataLog)
+
+
+            Return New With {.success = true, .message = "Date has been applied successfully."}
+        Catch ex As Exception
+            Dim msg As String = ex.Message
+            If Not data.rolename = "Administrator" Then msg = "Please contact our IT team at support@onlineorder.au"
+            Return New With { .error = true, .message = msg}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function SubmitSendMailQuote(data As ParamSubmitSendMailQuote) As Object
         Try
             Dim msg As String = "Mail has been sent successfully."
@@ -1749,6 +1807,67 @@ Partial Class Methods_Order_OrderDetailMethod
             }
         Catch ex As Exception
             Return New With {.error = True, .message = String.Format("BindProduction: {0}", ex.Message)}
+        End Try
+    End Function
+
+    <WebMethod(EnableSession:=True)>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function FindProductForm(data as ParamFindProductForm) As Object
+        Try
+            If String.isNullOrEmpty(data.headerid) Then
+                Throw New Exception("headerid is null or empty !")
+            End If
+            If String.isNullOrEmpty(data.ordertype) Then
+                Throw New Exception("ordertype is null or empty !")
+            End If
+            If String.isNullOrEmpty(data.action) Then
+                Throw New Exception("action is null or empty !")
+            End If
+            If String.isNullOrEmpty(data.designid) Then
+                Throw New Exception("designid is null or empty !")
+            End If
+
+            Dim DesignName As String = publicCfg.GetDesignName(data.designid)
+            Dim page As String = publicCfg.GetDesignPage(data.designid)
+            If InArray(DesignName, "Roller Blinds", "Panel Glides", "Roman Blinds", "Vertical Blinds") Then
+
+                Dim Env As String =""
+                If data.rolename = "Customer" Then
+                    Env = "AND Description = 'Environment : Production'"
+                End If
+                if InArray(data.rolename, "PPIC & DE", "Manager", "Customer Service") Then
+                    Env = "AND Description IN ('Environment : Production', 'Environment : Testing')"
+                End If
+
+                Dim GlobalDesigns As String = publicCfg.GetItemData(String.Format("SELECT Id FROM Designs WHERE Name = 'Global {0}' {1} AND Active = 1", DesignName, Env))
+                IF Not String.IsNullOrEmpty(GlobalDesigns) Then
+                    If String.isNullOrEmpty(data.production) Then
+                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = "production is required !", .field = "#modalAddItem #production"}}
+                    End If
+                    If Not String.isNullOrEmpty(data.production) AND data.production = "Global" Then
+                        Dim Name As String = String.Format("{0} {1}", data.production, DesignName)
+                        page = publicCfg.GetItemData(String.Format("SELECT Page FROM Designs WHERE Name = '{0}'", Name))
+                        data.designid = publicCfg.GetItemData(String.Format("SELECT Id FROM Designs WHERE Name = '{0}'", Name))
+                    End If
+                End IF
+
+            End If
+            
+            ' Throw New Exception("page: " & page)
+
+            HttpContext.Current.Session("headerId") = data.headerid 
+            HttpContext.Current.Session("itemAction") = data.action
+            HttpContext.Current.Session("orderType") = data.ordertype
+            HttpContext.Current.Session("designId") = UCase(data.designid).ToString()
+
+            If Not String.IsNullOrEmpty(data.id) And (data.action ="EditItem" Or data.action = "ViewItem" Or data.action = "NextItem") Then
+                HttpContext.Current.Session("itemId") = data.id
+            End If
+
+
+            Return New With {.success = true, .page = page}
+        Catch ex As Exception
+            Return New With { .error = true, .message = String.Format("FindProductForm: {0}", ex.Message)}
         End Try
     End Function
 End Class

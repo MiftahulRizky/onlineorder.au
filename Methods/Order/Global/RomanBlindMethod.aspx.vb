@@ -371,8 +371,10 @@ Partial Class Methods_Order_RomanBlindMethod
             End If
 
             Dim DesignName As String = publicCfg.GetDesignName(data.designId)
-            Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
+            Dim ExactName As String = String.Format("{0}", DesignName, BlindName)
             Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
+
+            ' Throw New Exception(ExactName & "|" & ExactId)
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim itemId As String = publicCfg.CreateOrderItemId()
