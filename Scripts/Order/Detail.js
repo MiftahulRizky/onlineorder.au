@@ -204,6 +204,7 @@ document.addEventListener("click", (e) => {
 // CHANGE PRODUCTION DATE
 document.querySelector("#spanProductionDate").addEventListener("click", (e) => {
   const raw = e.target.closest("#spanProductionDate").dataset.date;
+  console.log(raw);
   if (["Customer"].includes(ROLENAME)) return;
 
   // convert "03/08/2026 15:51:57" -> "2026-08-03"
