@@ -204,14 +204,28 @@ document.addEventListener("click", (e) => {
 // CHANGE PRODUCTION DATE
 document.querySelector("#spanProductionDate").addEventListener("click", (e) => {
   const raw = e.target.closest("#spanProductionDate").dataset.date;
+
   console.log(raw);
+
   if (["Customer"].includes(ROLENAME)) return;
 
-  // convert "03/08/2026 15:51:57" -> "2026-08-03"
-  const [datePart] = raw.split(" ");
-  const [day, month, year] = datePart.split("/");
+  const datePart = raw.split(" ")[0];
 
-  const formatted = `${year}-${month}-${day}`;
+  const parts = datePart.split("/");
+
+  let day, month, year;
+
+  if (parts[0].length === 4) {
+    // format yyyy/MM/dd
+    [year, month, day] = parts;
+  } else {
+    // format dd/MM/yyyy atau d/MM/yyyy
+    [day, month, year] = parts;
+  }
+
+  const formatted = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+
+  console.log(formatted);
 
   document.querySelector("#modalProductionDate #productiondate").value =
     formatted;
