@@ -205,6 +205,14 @@ Partial Class Methods_Order_DetailMethod
         Public Property loginid As String
     End Class
 
+    Public Class ParamSubmitProductionDate
+        Public Property productiondate As String
+
+        Public Property rolename As String
+        Public Property headerid As String
+        Public Property loginid As String
+    End Class
+
     
     Public Class ParamOverridePricing
         Public Property id  As String
@@ -1993,6 +2001,47 @@ Partial Class Methods_Order_DetailMethod
             Dim msg As String = ex.Message
             If Not data.rolename = "Administrator" Then msg = "Please contact our IT team at support@onlineorder.au"
             Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function SubmitProductionDate(data As ParamSubmitProductionDate) As Object
+        Try
+            Dim msg As String = "200"
+
+            Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE OrderType='Blinds' AND Id='" & data.headerid & "'")
+            If HeaderData.Tables(0).Rows.Count < 1 Then
+                Throw New Exception("order is missing !")
+            End If
+
+            If String.IsNullOrEmpty(data.productiondate) Then
+                Return New With {.warning = true, .message = "date is required !", .field = "#modalQuoteDisc #productiondate"}
+            End If
+
+            
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET JobDate=@JobDate WHERE Id=@Id", thisConn)
+                    myCmd.Parameters.AddWithValue("@Id", data.headerid)
+                    myCmd.Parameters.AddWithValue("@JobDate", data.productiondate)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+
+            Dim OrderType As String = publicCfg.GetItemData(String.Format("SELECT OrderType FROM OrderHeaders WHERE Id='{0}'", data.headerid))
+            Dim dataLog As Object() = {data.headerid, "", OrderType, data.loginid, "Change Production Date"}
+            orderCfg.Log_Orders(dataLog)
+
+
+            Return New With {.success = true, .message = "Date has been applied successfully."}
+        Catch ex As Exception
+            Dim msg As String = ex.Message
+            If Not data.rolename = "Administrator" Then msg = "Please contact our IT team at support@onlineorder.au"
+            Return New With { .error = true, .message = msg}
         End Try
     End Function
 
@@ -6526,7 +6575,7 @@ Partial Class Methods_Order_DetailMethod
     Private Shared Function CreateJobHeaders(JobId As String, HeaderId As String) As String
         Try 
             Using thisConn As SqlConnection = New SqlConnection(myConn)
-                Using myCmd As SqlCommand = New SqlCommand("INSERT INTO JobHeaders (Id, HeaderId, JoNumber, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, Address, Suburb, States, PostCode, Phone, Email, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, StatusDescription, CreatedDate, SubmittedDate, CompletedDate, Active, OrderId, UserName, StoreName, StoreCompany, StoreType) SELECT @JobId, Id As HeaderId, JoNumber, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, Address, Suburb, States, PostCode, Phone, Email, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, StatusDescription, CreatedDate, SubmittedDate, CompletedDate, Active, OrderId, UserName, StoreName, StoreCompany, StoreType FROM view_headers WHERE Id=@HeaderId", thisConn)
+                Using myCmd As SqlCommand = New SqlCommand("INSERT INTO JobHeaders (Id, HeaderId, JoNumber, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, Address, Suburb, States, PostCode, Phone, Email, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, StatusDescription, CreatedDate, SubmittedDate, JobDate, CompletedDate, Active, OrderId, UserName, StoreName, StoreCompany, StoreType) SELECT @JobId, Id As HeaderId, JoNumber, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, Address, Suburb, States, PostCode, Phone, Email, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, StatusDescription, CreatedDate, SubmittedDate, JobDate, CompletedDate, Active, OrderId, UserName, StoreName, StoreCompany, StoreType FROM view_headers WHERE Id=@HeaderId", thisConn)
                     myCmd.Parameters.AddWithValue("@HeaderId", HeaderId)
                     myCmd.Parameters.AddWithValue("@JobId", JobId)
                     myCmd.Connection = thisConn
@@ -9795,12 +9844,15 @@ Partial Class Methods_Order_DetailMethod
             Dim UserName As String = JobHeaderData.Tables(0).Rows(0).Item("UserName").ToString()
             Dim CreatedDateStr As String = JobHeaderData.Tables(0).Rows(0).Item("CreatedDate").ToString()
             Dim SubmittedDateStr As String = JobHeaderData.Tables(0).Rows(0).Item("SubmittedDate").ToString()
+            Dim JobDateStr As String = JobHeaderData.Tables(0).Rows(0).Item("JobDate").ToString()
 
             Dim CreatedDate As DateTime
             Dim SubmittedDate As DateTime
+            Dim JobDate As DateTime
 
             Dim IsCreatedValid As Boolean = DateTime.TryParse(CreatedDateStr, CreatedDate)
             Dim IsSubmittedValid As Boolean = DateTime.TryParse(SubmittedDateStr, SubmittedDate)
+            Dim IsJobDateValid As Boolean = DateTime.TryParse(JobDateStr, JobDate)
 
             ' Ambil data JobDetails
             Dim JobDetailData As DataSet = publicCfg.GetListData("SELECT * FROM JobDetails WHERE JobId='" & JobId & "' ORDER BY BlindName, DesignName, Id")
@@ -9953,7 +10005,8 @@ Partial Class Methods_Order_DetailMethod
                             myCmd.Parameters.AddWithValue("@ZoneId", Delivery)
                             myCmd.Parameters.AddWithValue("@UserName", UserName)
                             myCmd.Parameters.AddWithValue("@OrderCreated", If(IsCreatedValid, CreatedDate, DBNull.Value))
-                            myCmd.Parameters.AddWithValue("@ShipDate", If(IsSubmittedValid, SubmittedDate, DBNull.Value))
+                            ' myCmd.Parameters.AddWithValue("@ShipDate", If(IsSubmittedValid, SubmittedDate, DBNull.Value))
+                            myCmd.Parameters.AddWithValue("@ShipDate", If(IsJobDateValid, JobDate, DBNull.Value))
 
 
                             ' Tambahkan parameter untuk setiap field secara dinamis

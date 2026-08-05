@@ -201,6 +201,23 @@ document.addEventListener("click", (e) => {
   copyToClipboard(jonumber);
 });
 
+// CHANGE PRODUCTION DATE
+document.querySelector("#spanProductionDate").addEventListener("click", (e) => {
+  const raw = e.target.closest("#spanProductionDate").dataset.date;
+  if (["Customer"].includes(ROLENAME)) return;
+
+  // convert "03/08/2026 15:51:57" -> "2026-08-03"
+  const [datePart] = raw.split(" ");
+  const [day, month, year] = datePart.split("/");
+
+  const formatted = `${year}-${month}-${day}`;
+
+  document.querySelector("#modalProductionDate #productiondate").value =
+    formatted;
+
+  handlerShowBSModal("modalProductionDate");
+});
+
 // BUTTON ADD ITEMS
 document.querySelector("#btnAddItem").addEventListener("click", async (el) => {
   document
@@ -328,6 +345,19 @@ document
     submitOverrideDisc(e.target.id);
   });
 
+// ------------------------------------------||modalProductionDate Event ||------------------------------------
+document
+  .querySelector("#modalProductionDate #btnSubmitProductionDate")
+  .addEventListener("click", (e) => {
+    document
+      .querySelectorAll(
+        "#modalProductionDate .form-control, #modalProductionDate .form-select",
+      )
+      .forEach((el) => {
+        el.classList.remove("is-invalid");
+      });
+    submitProductionDate(e.target.id);
+  });
 // ------------------------------------------||modalAddItem Event ||------------------------------------
 // CHANGE DESIGN TYPE
 document.querySelectorAll("#modalAddItem .form-select").forEach((e) => {
@@ -1029,6 +1059,69 @@ const submitOverrideDisc = async (button) => {
   }
 };
 
+// SUBMIT OVERRIDE DISCOUNT
+const submitProductionDate = async (button) => {
+  try {
+    document.getElementById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = ["productiondate"];
+
+    const formData = {
+      headerid: HEADERID,
+      loginid: LOGINID,
+      rolename: ROLENAME,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.querySelector(
+        `#modalProductionDate #${field}`,
+      ).value;
+    });
+
+    // swal.close();
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/SubmitProductionDate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message?.toUpperCase());
+      const field = document.getElementById(res.field);
+      if (field) {
+        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
+        // field.focus();
+        field.classList.add("is-invalid");
+      }
+    } else if (res.success) {
+      await isSuccess(res.message);
+      location.reload();
+    }
+  } catch (error) {
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
+  } finally {
+    document.getElementById(button).innerHTML = "Save Changes";
+  }
+};
+
 // SUBMIT EDIT PRICING
 const submitEditPricing = async () => {
   document
@@ -1449,6 +1542,7 @@ const handlerHeaderInfo = async (item) => {
     // SubmittedDate
     spanSubmittedDate.innerHTML = formatDate(item.SubmittedDate);
     spanProductionDate.innerHTML = formatDate(item.JobDate);
+    spanProductionDate.setAttribute("data-date", item.JobDate);
     // if (!item.SubmittedDate) spanSubmittedDate.innerHTML = "-";
     // if (!item.SubmittedDate) spanProductionDate.innerHTML = "-";
     // if (item.SubmittedDate) {

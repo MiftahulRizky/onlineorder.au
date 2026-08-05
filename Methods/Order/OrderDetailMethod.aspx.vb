@@ -172,9 +172,6 @@ Partial Class Methods_Order_OrderDetailMethod
                             Dim gst As Decimal = sumPrice * 0.1D
                             Dim finalTotal As Decimal = sumPrice + gst
 
-                            Dim Id As String = reader("Id").ToString()
-                            Dim ResCheckOrder As Object = CekOrder(Id, reader("Status").ToString(), data.loginid, data.rolename)
-
                             HeaderData = New With {
                                 .Id = reader("Id").ToString(),
                                 .CustomerName = reader("CustomerName").ToString(),
@@ -197,8 +194,7 @@ Partial Class Methods_Order_OrderDetailMethod
                                 .CanceledDate = reader("CanceledDate").ToString(),
                                 .SumPrice = sumPrice,
                                 .Gst = gst,
-                                .FinalTotal = finalTotal,
-                                .ResCheckOrder = ResCheckOrder
+                                .FinalTotal = finalTotal
                             }
                         End If
                     End Using
@@ -313,30 +309,34 @@ Partial Class Methods_Order_OrderDetailMethod
                 End Using
             End Using
 
-            Dim Mailings As DataSet = publicCfg.GetListData(String.Format("SELECT Id, Server FROM Mailings WHERE ApplicationId ='{0}' AND Name = 'Quote Order Shutters' AND Active = 1", data.applicationid))
-            Dim SendMailQuoteId As String = String.Empty
-            Dim SendMailQuoteFrom As String = String.Empty
-            Dim SendMailQuoteTo As String = publicCfg.GetItemData(String.Format("SELECT Email FROM CustomerContacts WHERE CustomerId = '{0}' AND [Primary]=1", HeaderData.CustomerId))
-            If Mailings.Tables(0).Rows.Count > 0 Then
-                SendMailQuoteId = Mailings.Tables(0).Rows(0).Item("Id").ToString()
-                SendMailQuoteFrom = Mailings.Tables(0).Rows(0).Item("Server").ToString()
+            Dim ResCheckOrder As Object = CekOrder(HeaderData.Id, HeaderData.Status, data.loginid, data.rolename)
+            If ResCheckOrder.error Then
+                Throw New Exception(ResCheckOrder.message)
+            End If
+            
+            Dim SendMailQuote As Object = FindMailQuote(data.applicationid, HeaderData.CustomerId)
+            If SendMailQuote.error Then 
+                Throw New Exception(SendMailQuote.message)
             End If
 
-            Dim Logs As DataSet = publicCfg.GetListData(String.Format("SELECT CustomerLogins.FullName, Log_Orders.ActionDate, Log_Orders.Description FROM Log_Orders INNER JOIN CustomerLogins ON Log_Orders.ActionBy=CustomerLogins.Id WHERE Log_Orders.HeaderId='{0}' AND Log_Orders.Type='{1}'  ORDER BY ActionDate DESC", data.headerid, data.ordertype))
-            Dim LogsData As List(Of Dictionary(Of String, Object)) = New List(Of Dictionary(Of String, Object))()
-            For Each row As DataRow In Logs.Tables(0).Rows
-                Dim dict As New Dictionary(Of String, Object)()
-                For Each col As DataColumn In Logs.Tables(0).Columns
-                    dict.Add(col.ColumnName, row(col))
-                Next
-                LogsData.Add(dict)
-            Next
+            Dim Logs As Object = FindLogs(data.headerid, data.ordertype)
+            If Logs.error Then 
+                Throw New Exception(Logs.message)
+            End If
+
+            Dim Designs As Object = FindDesigns(HeaderData.CustomerId, data.ordertype, data.rolename)
+            If Designs.error Then 
+                Throw New Exception(Designs.message)
+            End If
+           
+
+           
 
             OtherData = New With {
-                .SendMailQuoteId = SendMailQuoteId,
-                .SendMailQuoteFrom = SendMailQuoteFrom,
-                .SendMailQuoteTo = SendMailQuoteTo,
-                .Logs = LogsData
+                .ResCheckOrder = ResCheckOrder,
+                .SendMailQuote = SendMailQuote,
+                .Logs = Logs,
+                .Designs = Designs
             }
 
 
@@ -356,7 +356,6 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim url As String = String.Empty
             Dim Action As String = String.Empty
             Dim textSwall As String = String.Empty
-            ' Dim RoleName As String = HttpContext.Current.Session("RoleName").ToString()
             Dim CustomerContactId As String = HttpContext.Current.Session("CustomerContactId").ToString()
 
             Dim detailData As DataSet = publicCfg.GetListData("SELECT Id, UniqueId, DesignName, BracketType, FabricGroups FROM view_details WHERE HeaderId='" + headerid + "' AND Active=1 ORDER BY Id ASC")
@@ -433,9 +432,73 @@ Partial Class Methods_Order_OrderDetailMethod
                 
             Next
 
-            Return New With {.Action = Action, .Message = textSwall}
+            Return New With {.error = false, .Action = Action, .Message = textSwall}
         Catch ex As Exception
-            Return New With {.error = ex.Message}
+            Return New With {.error = true, .message = String.Format("CekOrder: {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared Function FindMailQuote(ByVal appid As String, ByVal customerid As String) As Object
+        Try
+            Dim Mailings As DataSet = publicCfg.GetListData(String.Format("SELECT Id, Server FROM Mailings WHERE ApplicationId ='{0}' AND Name = 'Quote Order Shutters' AND Active = 1", appid))
+            Dim MailId As String = String.Empty
+            Dim MailFrom As String = String.Empty
+            Dim MailTo As String = publicCfg.GetItemData(String.Format("SELECT Email FROM CustomerContacts WHERE CustomerId = '{0}' AND [Primary]=1", customerid))
+            If Mailings.Tables(0).Rows.Count > 0 Then
+                MailId = Mailings.Tables(0).Rows(0).Item("Id").ToString()
+                MailFrom = Mailings.Tables(0).Rows(0).Item("Server").ToString()
+            End If
+
+            Return New With {.error = false, .MailId = MailId, .MailFrom = MailFrom, .MailTo = MailTo}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("FindMailQuote: {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared Function FindLogs(ByVal headerid As String, ByVal ordertype As String) As Object
+        Try
+            Dim Logs As DataSet = publicCfg.GetListData(String.Format("SELECT CustomerLogins.FullName, Log_Orders.ActionDate, Log_Orders.Description FROM Log_Orders INNER JOIN CustomerLogins ON Log_Orders.ActionBy=CustomerLogins.Id WHERE Log_Orders.HeaderId='{0}' AND Log_Orders.Type='{1}'  ORDER BY ActionDate DESC", headerid, ordertype))
+
+            Dim LogsData As List(Of Dictionary(Of String, Object)) = New List(Of Dictionary(Of String, Object))()
+            For Each row As DataRow In Logs.Tables(0).Rows
+                Dim dict As New Dictionary(Of String, Object)()
+                For Each col As DataColumn In Logs.Tables(0).Columns
+                    dict.Add(col.ColumnName, row(col))
+                Next
+                LogsData.Add(dict)
+            Next
+
+            Return New With {.error = false, .LogsData = LogsData}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("FindLogs: {0}", ex.Message)}
+        End Try
+    End Function
+    
+    Private Shared Function FindDesigns(ByVal customerid As String, ByVal ordertype As String, ByVal rolename As String) As Object
+        Try
+            Dim Env As String = ""
+            If rolename = "Customer" Then
+                Env = "AND Designs.Description = 'Environment : Production'"
+            End If
+            If InArray(rolename, "PPIC & DE", "Manager", "Customer Service") Then
+                Env = "AND Designs.Description IN ('Environment : Production', 'Environment : Testing')"
+            End If
+
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Designs.Id, Designs.Name FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '{0}' AND Designs.Type <> 'Additional' AND Designs.Company = 'SP' AND Designs.Type = '{1}' {2} AND Designs.Active = 1 ORDER BY Designs.Name ASC", customerid, ordertype, Env))
+
+            Dim list As New List(Of Dictionary(Of String, String))()
+            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
+                For Each row As DataRow In datas.Tables(0).Rows
+                    Dim result As New Dictionary(Of String, String) From {
+                        {"value", row("Id").ToString()},
+                        {"text", row("Name").ToString()}
+                    }
+                    list.Add(result)
+                Next
+            End If
+            Return New With {.error = false, .list = list}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("FindDesigns: {0}", ex.Message)}
         End Try
     End Function
 
@@ -1636,6 +1699,56 @@ Partial Class Methods_Order_OrderDetailMethod
                 errorMessage &= " Inner Exception: " & ex.InnerException.Message
             End If
             Return errorMessage
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindProduction(ByVal designname As String, ByVal rolename As String) As Object
+        Try
+            If String.IsNullOrEmpty(designname) Then
+                Throw New Exception("designname is null or empty.")
+            End If
+
+            Dim HasGlobal As List(Of String) = New List(Of String) From {
+                "Roller Blinds", 
+                "Panel Glides", 
+                "Roman Blinds", 
+                "Vertical Blinds"
+            }
+
+            Dim OptProd As List(Of String) = New List(Of String) From {
+                "Sunlight"
+            }
+
+            Dim VisProd As Boolean = False
+
+            If HasGlobal.Contains(designname) Then
+                Dim Env As String = ""
+
+                If rolename = "Customer" Then
+                    Env = "AND Description = 'Environment : Production'"
+                End If
+
+                If InArray(rolename, "PPIC & DE", "Manager", "Customer Service") Then
+                    Env = "AND Description IN ('Environment : Production', 'Environment : Testing')"
+                End If
+
+                Dim GlobalProduct As String = publicCfg.GetItemData(String.Format("SELECT Id FROM Designs WHERE Name = 'Global {0}' {1} AND Active = 1", designname, Env))
+
+                If Not String.IsNullOrEmpty(GlobalProduct) Then
+                    OptProd.Add("Global")
+                    VisProd = True
+                End If
+            End If
+
+            Return New With {
+                .error = false,
+                .OptProd = OptProd,
+                .VisProd = VisProd
+            }
+        Catch ex As Exception
+            Return New With {.error = True, .message = String.Format("BindProduction: {0}", ex.Message)}
         End Try
     End Function
 End Class

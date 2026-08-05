@@ -16,7 +16,7 @@
     <div class="page-body">
         <div class="container-xl">
             <div class="row">
-                <div class="col-8">
+                <div class="col-7">
                     <form action="javascript:void(0)" method="post" id="form-submit">
                     <div class="card">
                         <div class="card-header">
@@ -94,30 +94,6 @@
                                     </div>
                                 </div>
 
-                                <div class="row mb-3" id="divDueDate" hidden>
-                                    <label for="delivery" class="col-lg-4 form-label text-uppercase required">due date</label>
-                                    <div class="col-lg-2">
-                                        <input type="date" class="form-control" id="duedate" name="duedate">
-                                    </div>
-                                    <div class="col-lg-2">
-                                        <span class="input-group-text">
-                                            <input class="form-check-input m-0" type="checkbox" name="duedate6" id="duedate6" >
-                                            <label class="form-check-label ms-2" for="duedate6">+ 6 days</label>
-                                        </span>
-                                    </div>
-                                    <div class="col-lg-2">
-                                        <span class="input-group-text">
-                                            <input class="form-check-input m-0" type="checkbox" name="duedate9" id="duedate9" >
-                                            <label class="form-check-label ms-2" for="duedate9">+ 9 days</label>
-                                        </span>
-                                    </div>
-                                    <div class="col-lg-2">
-                                        <span class="input-group-text">
-                                            <input class="form-check-input m-0" type="checkbox" name="duedateoverwrite" id="duedateoverwrite" >
-                                            <label class="form-check-label ms-2" for="duedateoverwrite">Overwrite</label>
-                                        </span>
-                                    </div>
-                                </div>
 
                                 <div class="row mb-3">
                                     <label for="note" class="col-lg-4 form-label text-uppercase">note</label>

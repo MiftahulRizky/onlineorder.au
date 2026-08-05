@@ -16,28 +16,6 @@
 
 // ==============================================|| INITIALIZATION ||========================================
 let DataTableDetails;
-const spanEl = {
-  retailerName: document.getElementById("spanRetailerName"),
-  retailerId: document.getElementById("spanRetailerId"),
-  orderId: document.getElementById("spanOrderId"),
-  joNumber: document.getElementById("spanJoNumber"),
-  orderType: document.getElementById("spanOrderProductType"),
-  orderNo: document.getElementById("spanOrderNo"),
-  orderCust: document.getElementById("spanOrderCust"),
-  createdDate: document.getElementById("spanCreatedDate"),
-  createdBy: document.getElementById("spanCreatedBy"),
-  note: document.getElementById("spanNote"),
-  statusNote: document.getElementById("spanStatusNote"),
-  statusOrder: document.getElementById("spanStatusOrder"),
-  delivery: document.getElementById("spanDelivery"),
-  submittedDate: document.getElementById("spanSubmittedDate"),
-  productionDate: document.getElementById("spanProductionDate"),
-  completedDate: document.getElementById("spanCompletedDate"),
-  canceledDate: document.getElementById("spanCanceledDate"),
-  total: document.getElementById("spanTotal"),
-  gst: document.getElementById("spanGST"),
-  final: document.getElementById("spanFinalTotal"),
-};
 const btnEl = {
   btnFinish: document.getElementById("btnFinish"),
   btnPreviewPrint: document.getElementById("btnPreviewPrint"),
@@ -72,6 +50,29 @@ const btnEl = {
   thMarkUp: document.querySelector(".thMarkUp"),
   thPrice: document.querySelector(".thPrice"),
 };
+const spanEl = {
+  retailerName: document.getElementById("spanRetailerName"),
+  retailerId: document.getElementById("spanRetailerId"),
+  orderId: document.getElementById("spanOrderId"),
+  spanJoNumber: document.getElementById("spanJoNumber"),
+  spanJoNumberMsg: document.getElementById("spanJoNumberMsg"),
+  orderType: document.getElementById("spanOrderProductType"),
+  orderNo: document.getElementById("spanOrderNo"),
+  orderCust: document.getElementById("spanOrderCust"),
+  createdDate: document.getElementById("spanCreatedDate"),
+  createdBy: document.getElementById("spanCreatedBy"),
+  note: document.getElementById("spanNote"),
+  statusNote: document.getElementById("spanStatusNote"),
+  statusOrder: document.getElementById("spanStatusOrder"),
+  delivery: document.getElementById("spanDelivery"),
+  submittedDate: document.getElementById("spanSubmittedDate"),
+  productionDate: document.getElementById("spanProductionDate"),
+  completedDate: document.getElementById("spanCompletedDate"),
+  canceledDate: document.getElementById("spanCanceledDate"),
+  total: document.getElementById("spanTotal"),
+  gst: document.getElementById("spanGST"),
+  final: document.getElementById("spanFinalTotal"),
+};
 const liEl = {
   liDetailItem: document.getElementsByClassName("liDetailItem"),
   liEditItem: document.getElementsByClassName("liEditItem"),
@@ -85,12 +86,6 @@ const liEl = {
     "liDownloadBarcodeItem",
   ),
 };
-const elChangeStatus = {
-  divSubmittedDate: document.getElementById("divSubmittedDate"),
-  divCompletedDate: document.getElementById("divCompletedDate"),
-  divCanceledDate: document.getElementById("divCanceledDate"),
-  divDescription: document.getElementById("divDescription"),
-};
 const elModal = {
   modalChangeStatus: document.getElementById("modalChangeStatus"),
   modalQuoteDisc: document.getElementById("modalQuoteDisc"),
@@ -101,8 +96,20 @@ const elModal = {
   modalEditPricingAllItem: document.getElementById("modalEditPricingAllItem"),
   modalLogs: document.getElementById("modalLogs"),
 };
+const elmodalChangeStatus = {
+  divSubmittedDate: document.getElementById("divSubmittedDate"),
+  divCompletedDate: document.getElementById("divCompletedDate"),
+  divCanceledDate: document.getElementById("divCanceledDate"),
+  divDescription: document.getElementById("divDescription"),
+};
+// const elmodalAddItem = {
+//   designid: document.getElementById("designid"),
+//   production: document.getElementById("production"),
+//   divProduction: document.getElementById("divProduction"),
+// };
 
 // ==============================================|| EVENTS ||================================================
+
 // Button Event
 Object.values(btnEl).forEach((el) => {
   if (!el) return;
@@ -234,8 +241,13 @@ Object.values(btnEl).forEach((el) => {
         handlerShowBSModal("modalLogs");
       }
 
-      if (id === "btnCopyJoNumber") {
-        alert("Copy to clipboard");
+      if (id === "btnAddItem") {
+        document.querySelectorAll("#modalAddItem .form-select").forEach((e) => {
+          e.classList.remove("is-invalid");
+          e.value = "";
+        });
+
+        handlerShowBSModal("modalAddItem");
       }
     } catch (error) {
       const msg = `Event btnEl: ${error.message}`;
@@ -244,86 +256,159 @@ Object.values(btnEl).forEach((el) => {
   });
 });
 
+// Span Event
+Object.values(spanEl).forEach((el) => {
+  if (!el) return;
+  el.addEventListener("click", async (e) => {
+    try {
+      const id = e.currentTarget.id;
+
+      if (id === "spanJoNumber") {
+        const jonumber = e.currentTarget.dataset.number;
+        const success = await copyToClipboard(jonumber);
+
+        if (success) {
+          showCopyMessage();
+        }
+      }
+    } catch (error) {
+      const msg = `Event spanEl: ${error.message}`;
+      catchMessages(msg);
+    }
+  });
+});
+
 // Event on modal
 const modalHandlers = {
-  modalChangeStatus: (modal) => {
-    modal.addEventListener("change", (e) => {
-      e.target.classList.remove("is-invalid");
-      const id = e.target.id;
+  modalChangeStatus: {
+    init: (modal) => {},
 
-      if (id === "status") {
-        const status = e.target.value;
-        hanlderDisplayElementModalChangeStatus(status);
-      }
-    });
+    events: (modal) => {
+      modal.addEventListener("change", (e) => {
+        e.target.classList.remove("is-invalid");
 
-    modal.addEventListener("input", (e) => {
-      e.target.classList.remove("is-invalid");
-    });
+        if (e.target.id === "status") {
+          const status = e.target.value;
+          displayElmodalChangeStatus(status);
+        }
+      });
 
-    modal.addEventListener("click", (e) => {
-      const id = e.target.id;
-      if (id === "tooltipDescription") {
-        const status = document.querySelector(
-          "#modalChangeStatus #status",
-        ).value;
-        let title = `${status} Description`;
-        let msg = `explain and write why you changed it to <b>${status}</b> status`;
+      modal.addEventListener("input", (e) => {
+        e.target.classList.remove("is-invalid");
+      });
 
-        Swal.fire({
-          title: title,
-          html: msg,
-          customClass: {
-            popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-          },
-          icon: "question",
-        });
-      }
+      modal.addEventListener("click", (e) => {
+        const id = e.target.id;
 
-      if (id === "submitChangeStatus") {
-        submitChangeStatus();
-      }
-    });
-  },
+        if (id === "tooltipDescription") {
+          const status = modal.querySelector("#status")?.value;
 
-  modalSendMailQuote: (modal) => {
-    modal.addEventListener("input", (e) => {
-      e.target.classList.remove("is-invalid");
-    });
+          let title = `${status} Description`;
+          let msg = `explain and write why you changed it to <b>${status}</b> status`;
 
-    modal.addEventListener("click", (e) => {
-      const id = e.target.id;
-      if (id === "btnSendMailQuote") {
-        submitSendMailQuote();
-      }
-    });
-  },
-
-  modalQuoteDisc: (modal) => {
-    modal.addEventListener("input", (e) => {
-      e.target.classList.remove("is-invalid");
-    });
-
-    modal.addEventListener("click", (e) => {
-      const id = e.target.id;
-      if (id === "btnSubmitOverrideDisc") {
-        document
-          .querySelectorAll(
-            "#modalQuoteDisc .form-control, #modalQuoteDisc .form-select",
-          )
-          .forEach((el) => {
-            el.classList.remove("is-invalid");
+          Swal.fire({
+            title: title,
+            html: msg,
+            customClass: {
+              popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+            },
+            icon: "question",
           });
-        submitOverrideDisc(id);
-      }
-    });
+        }
+
+        if (id === "submitChangeStatus") {
+          submitChangeStatus();
+        }
+      });
+    },
+  },
+
+  modalSendMailQuote: {
+    init: (modal) => {},
+
+    events: (modal) => {
+      modal.addEventListener("input", (e) => {
+        e.target.classList.remove("is-invalid");
+      });
+
+      modal.addEventListener("click", (e) => {
+        if (e.target.id === "btnSendMailQuote") {
+          submitSendMailQuote();
+        }
+      });
+    },
+  },
+
+  modalQuoteDisc: {
+    init: (modal) => {},
+
+    events: (modal) => {
+      modal.addEventListener("input", (e) => {
+        e.target.classList.remove("is-invalid");
+      });
+
+      modal.addEventListener("click", (e) => {
+        if (e.target.id === "btnSubmitOverrideDisc") {
+          modal
+            .querySelectorAll(".form-control, .form-select")
+            .forEach((el) => {
+              el.classList.remove("is-invalid");
+            });
+
+          submitOverrideDisc(e.target.id);
+        }
+      });
+    },
+  },
+
+  modalAddItem: {
+    init: (modal) => {
+      const divProduction = modal.querySelector("#divProduction");
+      divProduction.classList.add("d-none");
+    },
+
+    events: (modal) => {
+      modal.addEventListener("change", async (e) => {
+        e.target.classList.remove("is-invalid");
+        const id = e.target.id;
+        if (id === "designid") {
+          const divProduction = modal.querySelector("#divProduction");
+          divProduction.classList.add("d-none");
+          const selectedOption = e.target.selectedOptions[0];
+          const designname = selectedOption?.dataset.name;
+          await bindProduction(designname);
+
+          // alert(designname);
+        }
+      });
+
+      // modal.addEventListener("click", (e) => {
+      //   if (e.target.id === "btnSubmitOverrideDisc") {
+      //     modal
+      //       .querySelectorAll(".form-control, .form-select")
+      //       .forEach((el) => {
+      //         el.classList.remove("is-invalid");
+      //       });
+
+      //     submitOverrideDisc(e.target.id);
+      //   }
+      // });
+    },
   },
 };
+
 Object.entries(elModal).forEach(([key, modal]) => {
   if (!modal) return;
 
-  if (modalHandlers[key]) {
-    modalHandlers[key](modal);
+  const handler = modalHandlers[key];
+  if (!handler) return;
+
+  if (handler.init) {
+    handler.init(modal);
+  }
+
+  if (handler.events) {
+    handler.events(modal);
   }
 });
 
@@ -364,14 +449,17 @@ const bindOrderAggregate = async (headerid, ordertype) => {
       throw new Error(data.message);
     }
 
-    console.log(data);
+    console.log(data.other);
 
     handlerHeaderInfo(data.header);
     bindDetails(data.detail);
-    handlerDisplayElement(data.header, data.detail);
-    handlerCheckOrder(data.header.ResCheckOrder);
+    displayElOverall(data.header, data.detail);
+    handlerCheckOrder(data.other.ResCheckOrder);
     handlerChangeStatus(data.header);
-    handlerSetRandomElementValues(data.header, data.detail, data.other);
+    setValmodalQuoteDisc(data.header);
+    setValmodalSendMailQuote(data.other.SendMailQuote);
+    setValmodalLogs(data.other);
+    bindProduct(data.other.Designs.list);
   } catch (error) {
     let msg = `bindOrderAggregate: ${error.message}`;
     catchMessages(msg);
@@ -385,7 +473,6 @@ const bindDetails = (details) => {
     // if ($.fn.DataTable.isDataTable("#tableAjax")) {
     //   $("#tableAjax").DataTable().clear().destroy();
     // }
-
     const columnDefs = [
       {
         width: "5%",
@@ -458,7 +545,7 @@ const bindDetails = (details) => {
     DataTableDetails = $("#tableAjax").DataTable({
       data: details,
       pageLength: 100,
-      responsive: true,
+      responsive: false,
       bPaginate: true,
       bInfo: true,
       bFilter: true,
@@ -479,6 +566,90 @@ const bindDetails = (details) => {
   }
 };
 
+const bindStatus = (params, statusNow) => {
+  if (!params || !statusNow) return;
+  let list = ["Draft"];
+
+  // if(["Pending Price Approval"].includes(statusNow)) {
+  //   list.push("Draft")
+  // }
+
+  if (["Draft"].includes(statusNow)) {
+    list.push("New Order", "Canceled");
+  }
+
+  if (["On Hold"].includes(statusNow)) {
+    list.push("In Production", "On Hold", "Canceled");
+  }
+
+  if (["New Order"].includes(statusNow)) {
+    list.push("New Order", "In Production", "On Hold", "Canceled");
+  }
+
+  if (["In Production"].includes(statusNow)) {
+    list.push("In Production", "On Hold", "Completed", "Canceled");
+  }
+
+  generateOption(params, list);
+};
+
+const bindProduct = (data) => {
+  const sel = document.querySelector("#modalAddItem #designid");
+  sel.innerHTML = ""; // reset
+
+  if (data.length > 0) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
+const bindProduction = async (designname) => {
+  if (!designname) return;
+  try {
+    const response = await fetch(`${URIMETHOD}/BindProduction`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ designname, rolename: ROLENAME }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`${response.status} - ${response.statusText}`);
+    }
+
+    const { d: data } = await response.json();
+
+    if (!data) {
+      throw new Error("No data");
+    }
+    if (data.error) {
+      throw new Error(data.message);
+    }
+
+    generateOption("#modalAddItem #production", data.OptProd, 1);
+    if (data.VisProd) {
+      elModal.modalAddItem
+        .querySelector("#divProduction")
+        .classList.remove("d-none");
+    }
+
+    console.log(data);
+  } catch (error) {
+    const msg = `bindProduction: ${error.message}`;
+    catchMessage(msg);
+  }
+};
 // ----------------------------------------------|| Handler Functions ||-------------------------------------
 const handlerHeaderInfo = (item) => {
   try {
@@ -502,9 +673,12 @@ const handlerHeaderInfo = (item) => {
     spanEl.completedDate.textContent = formatDate(item.CompletedDate);
     spanEl.canceledDate.textContent = formatDate(item.CanceledDate);
 
-    spanEl.joNumber.innerHTML = item.JoNumberId
-      ? `<span class="badge badge-outline text-red">${item.JoNumberId}</span> <a href="javascript:void(0);" id="btnCopyJoNumber" class="btn btn-sm  border-0 bg-transparent" data-jonumber="${item.JoNumberId}"><i class="ti ti-copy fs-2 opacity-50"></i></a>`
+    let JoNumVal = item.JoNumberId
+      ? `<span class="badge badge-outline text-red">${item.JoNumberId}</span>`
       : "-";
+    spanEl.spanJoNumber.innerHTML = JoNumVal;
+    spanEl.spanJoNumber.setAttribute("data-number", item.JoNumberId);
+    spanEl.spanJoNumberMsg.classList.add("d-none");
 
     setText(spanEl.orderType, item.OrderType);
 
@@ -513,205 +687,6 @@ const handlerHeaderInfo = (item) => {
     spanEl.final.innerHTML = formatCurrency(item.FinalTotal);
   } catch (error) {
     const msg = `handlerHeaderInfo : ${error.message}`;
-    catchMessages(msg);
-  }
-};
-
-const handlerDisplayElement = (header, detail) => {
-  try {
-    Object.values(btnEl).forEach((el) => {
-      if (el) el.classList.add("d-none");
-    });
-    if (!header || !detail) return;
-
-    DataTableDetails?.columns(5)?.visible(false);
-    DataTableDetails?.columns(6)?.visible(false);
-
-    btnEl.btnFinish.classList.remove("d-none");
-    btnEl.btnPreviewPrint.classList.remove("d-none");
-    btnEl.btnPreviewPDF.classList.remove("d-none");
-    btnEl.btnConvertToJob.classList.remove("d-none");
-
-    btnEl.dividerPrintQuote.classList.remove("d-none");
-    btnEl.btnPrintQuote.classList.remove("d-none");
-    btnEl.btnEmailQuote.classList.remove("d-none");
-
-    if (header.JoNumberId) {
-      btnEl.btnReprintJobSheet.classList.remove("d-none");
-    }
-
-    if (["Administrator"].includes(ROLENAME)) {
-      btnEl.btnJobSheet.classList.remove("d-none");
-
-      if (["Draft", "Pending Price Approval"].includes(header.Status)) {
-        btnEl.btnSubmit.classList.remove("d-none");
-        btnEl.btnEditHeader.classList.remove("d-none");
-        btnEl.btnDeleteHeader.classList.remove("d-none");
-        btnEl.btnAddItem.classList.remove("d-none");
-      }
-
-      if (!["Completed"].includes(header.Status)) {
-        btnEl.btnAddService.classList.remove("d-none");
-        btnEl.btnQuoteDisc.classList.remove("d-none");
-      }
-      btnEl.btnDownloadBarcode.classList.remove("d-none");
-
-      btnEl.btnQuote.classList.remove("d-none");
-      btnEl.btnQuoteDetail.classList.remove("d-none");
-      btnEl.btnDownloadQuote.classList.remove("d-none");
-
-      if (
-        ["New Order", "In Production", "Completed", "On Hold"].includes(
-          header.Status,
-        )
-      ) {
-        btnEl.btnChangeStatus.classList.remove("d-none");
-        btnEl.btnSendOrderMail.classList.remove("d-none");
-      }
-
-      btnEl.btnMoreAction.classList.remove("d-none");
-
-      btnEl.btnEmailDeposit.classList.remove("d-none");
-      btnEl.dividerEmailDeposit.classList.remove("d-none");
-
-      if (!["Canceled"].includes(header.Status)) {
-        btnEl.btnReloadPricing.classList.remove("d-none");
-      }
-
-      btnEl.dividerLogs.classList.remove("d-none");
-      btnEl.btnLogs.classList.remove("d-none");
-    }
-
-    if (["PPIC & DE", "Customer Service"].includes(ROLENAME)) {
-      btnEl.btnJobSheet.classList.remove("d-none");
-
-      if (["Draft", "Pending Price Approval"].includes(header.Status)) {
-        btnEl.btnSubmit.classList.remove("d-none");
-        btnEl.btnEditHeader.classList.remove("d-none");
-        btnEl.btnDeleteHeader.classList.remove("d-none");
-        btnEl.btnAddItem.classList.remove("d-none");
-      }
-
-      if (!["Completed"].includes(header.Status)) {
-        btnEl.btnAddService.classList.remove("d-none");
-        btnEl.btnQuoteDisc.classList.remove("d-none");
-      }
-      btnEl.btnDownloadBarcode.classList.remove("d-none");
-
-      if (
-        ["New Order", "In Production", "Completed", "On Hold"].includes(
-          header.Status,
-        )
-      ) {
-        btnEl.btnChangeStatus.classList.remove("d-none");
-      }
-
-      btnEl.btnMoreAction.classList.remove("d-none");
-
-      if (!["Canceled"].includes(header.Status)) {
-        btnEl.btnReloadPricing.classList.remove("d-none");
-      }
-    }
-
-    if (["Administrator"].includes(ROLENAME)) {
-      if (["Draft", "Pending Price Approval"].includes(header.Status)) {
-        btnEl.btnSubmit.classList.remove("d-none");
-        btnEl.btnEditHeader.classList.remove("d-none");
-        btnEl.btnDeleteHeader.classList.remove("d-none");
-        btnEl.btnAddItem.classList.remove("d-none");
-      }
-
-      btnEl.btnQuote.classList.remove("d-none");
-      btnEl.btnQuoteDetail.classList.remove("d-none");
-      btnEl.btnDownloadQuote.classList.remove("d-none");
-    }
-
-    // ----------------------------------------------|| Hide Button Datatable ||---------------------------------------
-    Object.values(liEl).forEach((el) => {
-      Array.from(el).forEach((li) => {
-        li.classList.add("d-none");
-      });
-    });
-
-    if (["Draft", "Pending Price Approval"].includes(header.Status)) {
-      ["liEditItem", "liCopyItem", "liDeleteItem"].forEach((key) => {
-        Array.from(liEl[key]).forEach((li) => {
-          li.classList.remove("d-none");
-        });
-      });
-
-      if (
-        ["PPIC & DE", "Customer Service", "Manager", "Account"].includes(
-          ROLENAME,
-        ) &&
-        header.CreatedBy.toUpperCase() !== LOGINID.toUpperCase()
-      ) {
-        ["liEditItem", "liCopyItem", "liDeleteItem"].forEach((key) => {
-          Array.from(liEl[key]).forEach((li) => {
-            li.classList.add("d-none");
-          });
-        });
-
-        ["liDetailItem"].forEach((key) => {
-          Array.from(liEl[key]).forEach((li) => {
-            li.classList.add("d-none");
-          });
-        });
-      }
-    }
-
-    if (["Additional", "Surcharge"].includes(detail.DesignName)) {
-      ["liDeleteItem"].forEach((key) => {
-        Array.from(liEl[key]).forEach((li) => {
-          li.classList.remove("d-none");
-        });
-      });
-    }
-
-    let hideEditPricing = "True";
-    let hidePricing = "True";
-    if (["True", "1"].includes(PRICEACCESS)) {
-      DataTableDetails?.columns(5).visible(true);
-      btnEl.thPrice.classList.remove("d-none");
-      btnEl.divPrice.classList.remove("d-none");
-
-      if (
-        ["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)
-      ) {
-        [
-          "liEditPricingItem",
-          "liDividerBarcode",
-          "liDownloadBarcodeItem",
-        ].forEach((key) => {
-          Array.from(liEl[key]).forEach((li) => {
-            li.classList.remove("d-none");
-          });
-        });
-        hideEditPricing = "False";
-      }
-
-      ["liPricingItem"].forEach((key) => {
-        Array.from(liEl[key]).forEach((li) => {
-          li.classList.remove("d-none");
-        });
-      });
-      hidePricing = "False";
-    }
-
-    if (["True", "1"].includes(MARKUPACCESS)) {
-      DataTableDetails?.columns(6).visible(true);
-      btnEl.thMarkUp.classList.remove("d-none");
-    }
-
-    if (hideEditPricing == "False" && hidePricing == "False") {
-      ["liDivider"].forEach((key) => {
-        Array.from(liEl[key]).forEach((li) => {
-          li.classList.remove("d-none");
-        });
-      });
-    }
-  } catch (error) {
-    const msg = `handlerDisplayElement: ${error.message}`;
     catchMessages(msg);
   }
 };
@@ -1034,133 +1009,10 @@ const handlerChangeStatus = (header) => {
         e.classList.remove("is-invalid");
       });
     bindStatus("#modalChangeStatus #status", header.Status);
-    setValueModalChangeStatus(header);
-    hanlderDisplayElementModalChangeStatus(header.Status);
-    // await handlerShowBSModal("modalChangeStatus");
+    setValmodalChangeStatus(header);
+    displayElmodalChangeStatus(header.Status);
   } catch (error) {
     const msg = `handlerChangeStatus: ${error.message}`;
-    catchMessages(msg);
-  }
-};
-
-const setValueModalChangeStatus = (itemData) => {
-  const mapping = {
-    id: "Id",
-    status: "Status",
-    statusOld: "Status",
-    submitteddate: "SubmittedDate",
-    completeddate: "CompletedDate",
-    canceleddate: "CanceledDate",
-    description: "StatusDescription",
-  };
-
-  Object.keys(mapping).forEach((id) => {
-    const el = document.querySelector("#modalChangeStatus #" + id);
-    if (!el) {
-      console.warn(`Elemen '${id}' tidak ditemukan.`);
-      return;
-    }
-
-    let value = itemData[mapping[id]];
-
-    // Jika kosong/null/undefined, langsung set sebagai empty string
-    if (!value) {
-      el.value = "";
-      return;
-    }
-
-    // Jika input type date dan format tanggal dd/mm/yyyy hh:mm:ss
-    if (el.type === "date" && typeof value === "string") {
-      const datePart = value.split(" ")[0]; // contoh: "16/07/2025"
-      const parts = datePart.split("/"); // hasil: ["16", "07", "2025"]
-      if (parts.length === 3) {
-        value = `${parts[2]}-${parts[1]}-${parts[0]}`;
-      } else {
-        console.warn(`Format tanggal tidak sesuai: ${value}`);
-        value = ""; // fallback kosong agar tidak error
-      }
-    }
-
-    // Khusus untuk description, potong setelah "Notes from the office:<br />"
-    if (id === "description" && typeof value === "string") {
-      const marker = "Notes from the office:<br />";
-      if (value.includes(marker)) {
-        value = value.split(marker)[1] || "";
-        // Hapus tag HTML jika masih ada
-        value = value.replace(/<[^>]*>/g, "");
-      }
-    }
-
-    el.value = value;
-  });
-};
-
-const hanlderDisplayElementModalChangeStatus = (status) => {
-  Object.values(elChangeStatus).forEach((el) => {
-    if (el) el.classList.add("d-none");
-  });
-
-  if (status) {
-    elChangeStatus.divDescription.classList.remove("d-none");
-    switch (status) {
-      case "New Order":
-        elChangeStatus.divSubmittedDate.classList.remove("d-none");
-        break;
-      case "Completed":
-        elChangeStatus.divCompletedDate.classList.remove("d-none");
-        break;
-      case "Canceled":
-        divCanceledDate.removeAttribute("hidden");
-        elChangeStatus.divCanceledDate.classList.remove("d-none");
-        break;
-    }
-  }
-};
-
-const handlerSetRandomElementValues = (header, detail, other) => {
-  try {
-    // Ovveride Customer Discount
-    document.querySelector("#modalQuoteDisc #discount").value =
-      header.QuoteDisc || 0;
-
-    // Send Mail Quote
-    document.querySelector("#modalSendMailQuote #id").value =
-      other.SendMailQuoteId;
-    document.querySelector("#modalSendMailQuote #from").value =
-      other.SendMailQuoteFrom;
-    document.querySelector("#modalSendMailQuote #mailto").value =
-      other.SendMailQuoteTo;
-
-    // Logs
-    const table = document.querySelector("#modalLogs #table-logs tbody");
-    table.innerHTML = "";
-
-    const logs = other?.Logs || [];
-    if (logs.length === 0) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-      <td class="text-center">
-        No logs found
-      </td>
-    `;
-      table.appendChild(tr);
-    }
-
-    if (logs.length > 0) {
-      logs.forEach((log) => {
-        const formattedDate = formatDotNetDate(log.ActionDate);
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>
-            <b>${log.FullName}</b> on ${formattedDate}. Action: ${log.Description}
-          </td>
-        `;
-        table.appendChild(tr);
-      });
-    }
-  } catch (error) {
-    const msg = `handlerSetRandomElementValues: ${error.message}`;
     catchMessages(msg);
   }
 };
@@ -1227,34 +1079,320 @@ const handlerPrintQuote = async (headerid, action) => {
   }
 };
 
-// ----------------------------------------------|| Binding function ||-------------------------------------
-const bindStatus = (params, statusNow) => {
-  if (!params || !statusNow) return;
-  let list = ["Draft"];
+// ----------------------------------------------|| Display Functions ||-------------------------------------
+const displayElOverall = (header, detail) => {
+  try {
+    Object.values(btnEl).forEach((el) => {
+      if (el) el.classList.add("d-none");
+    });
+    if (!header || !detail) return;
 
-  // if(["Pending Price Approval"].includes(statusNow)) {
-  //   list.push("Draft")
-  // }
+    DataTableDetails?.columns(5)?.visible(false);
+    DataTableDetails?.columns(6)?.visible(false);
 
-  if (["Draft"].includes(statusNow)) {
-    list.push("New Order", "Canceled");
+    btnEl.btnFinish.classList.remove("d-none");
+    btnEl.btnPreviewPrint.classList.remove("d-none");
+    btnEl.btnPreviewPDF.classList.remove("d-none");
+    btnEl.btnConvertToJob.classList.remove("d-none");
+
+    btnEl.dividerPrintQuote.classList.remove("d-none");
+    btnEl.btnPrintQuote.classList.remove("d-none");
+    btnEl.btnEmailQuote.classList.remove("d-none");
+
+    if (header.JoNumberId) {
+      btnEl.btnReprintJobSheet.classList.remove("d-none");
+    }
+
+    if (["Administrator"].includes(ROLENAME)) {
+      btnEl.btnJobSheet.classList.remove("d-none");
+
+      if (["Draft", "Pending Price Approval"].includes(header.Status)) {
+        btnEl.btnSubmit.classList.remove("d-none");
+        btnEl.btnEditHeader.classList.remove("d-none");
+        btnEl.btnDeleteHeader.classList.remove("d-none");
+        btnEl.btnAddItem.classList.remove("d-none");
+      }
+
+      if (!["Completed"].includes(header.Status)) {
+        btnEl.btnAddService.classList.remove("d-none");
+        btnEl.btnQuoteDisc.classList.remove("d-none");
+      }
+      btnEl.btnDownloadBarcode.classList.remove("d-none");
+
+      btnEl.btnQuote.classList.remove("d-none");
+      btnEl.btnQuoteDetail.classList.remove("d-none");
+      btnEl.btnDownloadQuote.classList.remove("d-none");
+
+      if (
+        ["New Order", "In Production", "Completed", "On Hold"].includes(
+          header.Status,
+        )
+      ) {
+        btnEl.btnChangeStatus.classList.remove("d-none");
+        btnEl.btnSendOrderMail.classList.remove("d-none");
+      }
+
+      btnEl.btnMoreAction.classList.remove("d-none");
+
+      btnEl.btnEmailDeposit.classList.remove("d-none");
+      btnEl.dividerEmailDeposit.classList.remove("d-none");
+
+      if (!["Canceled"].includes(header.Status)) {
+        btnEl.btnReloadPricing.classList.remove("d-none");
+      }
+
+      btnEl.dividerLogs.classList.remove("d-none");
+      btnEl.btnLogs.classList.remove("d-none");
+    }
+
+    if (["PPIC & DE", "Customer Service"].includes(ROLENAME)) {
+      btnEl.btnJobSheet.classList.remove("d-none");
+
+      if (["Draft", "Pending Price Approval"].includes(header.Status)) {
+        btnEl.btnSubmit.classList.remove("d-none");
+        btnEl.btnEditHeader.classList.remove("d-none");
+        btnEl.btnDeleteHeader.classList.remove("d-none");
+        btnEl.btnAddItem.classList.remove("d-none");
+      }
+
+      if (!["Completed"].includes(header.Status)) {
+        btnEl.btnAddService.classList.remove("d-none");
+        btnEl.btnQuoteDisc.classList.remove("d-none");
+      }
+      btnEl.btnDownloadBarcode.classList.remove("d-none");
+
+      if (
+        ["New Order", "In Production", "Completed", "On Hold"].includes(
+          header.Status,
+        )
+      ) {
+        btnEl.btnChangeStatus.classList.remove("d-none");
+      }
+
+      btnEl.btnMoreAction.classList.remove("d-none");
+
+      if (!["Canceled"].includes(header.Status)) {
+        btnEl.btnReloadPricing.classList.remove("d-none");
+      }
+    }
+
+    if (["Administrator"].includes(ROLENAME)) {
+      if (["Draft", "Pending Price Approval"].includes(header.Status)) {
+        btnEl.btnSubmit.classList.remove("d-none");
+        btnEl.btnEditHeader.classList.remove("d-none");
+        btnEl.btnDeleteHeader.classList.remove("d-none");
+        btnEl.btnAddItem.classList.remove("d-none");
+      }
+
+      btnEl.btnQuote.classList.remove("d-none");
+      btnEl.btnQuoteDetail.classList.remove("d-none");
+      btnEl.btnDownloadQuote.classList.remove("d-none");
+    }
+
+    // ----------------------------------------------|| Hide Button Datatable ||---------------------------------------
+    Object.values(liEl).forEach((el) => {
+      Array.from(el).forEach((li) => {
+        li.classList.add("d-none");
+      });
+    });
+
+    if (["Draft", "Pending Price Approval"].includes(header.Status)) {
+      ["liEditItem", "liCopyItem", "liDeleteItem"].forEach((key) => {
+        Array.from(liEl[key]).forEach((li) => {
+          li.classList.remove("d-none");
+        });
+      });
+
+      if (
+        ["PPIC & DE", "Customer Service", "Manager", "Account"].includes(
+          ROLENAME,
+        ) &&
+        header.CreatedBy.toUpperCase() !== LOGINID.toUpperCase()
+      ) {
+        ["liEditItem", "liCopyItem", "liDeleteItem"].forEach((key) => {
+          Array.from(liEl[key]).forEach((li) => {
+            li.classList.add("d-none");
+          });
+        });
+
+        ["liDetailItem"].forEach((key) => {
+          Array.from(liEl[key]).forEach((li) => {
+            li.classList.add("d-none");
+          });
+        });
+      }
+    }
+
+    if (["Additional", "Surcharge"].includes(detail.DesignName)) {
+      ["liDeleteItem"].forEach((key) => {
+        Array.from(liEl[key]).forEach((li) => {
+          li.classList.remove("d-none");
+        });
+      });
+    }
+
+    let hideEditPricing = "True";
+    let hidePricing = "True";
+    if (["True", "1"].includes(PRICEACCESS)) {
+      DataTableDetails?.columns(5).visible(true);
+      btnEl.thPrice.classList.remove("d-none");
+      btnEl.divPrice.classList.remove("d-none");
+
+      if (
+        ["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)
+      ) {
+        [
+          "liEditPricingItem",
+          "liDividerBarcode",
+          "liDownloadBarcodeItem",
+        ].forEach((key) => {
+          Array.from(liEl[key]).forEach((li) => {
+            li.classList.remove("d-none");
+          });
+        });
+        hideEditPricing = "False";
+      }
+
+      ["liPricingItem"].forEach((key) => {
+        Array.from(liEl[key]).forEach((li) => {
+          li.classList.remove("d-none");
+        });
+      });
+      hidePricing = "False";
+    }
+
+    if (["True", "1"].includes(MARKUPACCESS)) {
+      DataTableDetails?.columns(6).visible(true);
+      btnEl.thMarkUp.classList.remove("d-none");
+    }
+
+    if (hideEditPricing == "False" && hidePricing == "False") {
+      ["liDivider"].forEach((key) => {
+        Array.from(liEl[key]).forEach((li) => {
+          li.classList.remove("d-none");
+        });
+      });
+    }
+  } catch (error) {
+    const msg = `displayElOverall: ${error.message}`;
+    catchMessages(msg);
   }
-
-  if (["On Hold"].includes(statusNow)) {
-    list.push("In Production", "On Hold", "Canceled");
-  }
-
-  if (["New Order"].includes(statusNow)) {
-    list.push("New Order", "In Production", "On Hold", "Canceled");
-  }
-
-  if (["In Production"].includes(statusNow)) {
-    list.push("In Production", "On Hold", "Completed", "Canceled");
-  }
-
-  generateOption(params, list);
 };
 
+const displayElmodalChangeStatus = (status) => {
+  Object.values(elmodalChangeStatus).forEach((el) => {
+    if (el) el.classList.add("d-none");
+  });
+
+  if (status) {
+    elmodalChangeStatus.divDescription.classList.remove("d-none");
+    switch (status) {
+      case "New Order":
+        elmodalChangeStatus.divSubmittedDate.classList.remove("d-none");
+        break;
+      case "Completed":
+        elmodalChangeStatus.divCompletedDate.classList.remove("d-none");
+        break;
+      case "Canceled":
+        divCanceledDate.removeAttribute("hidden");
+        elmodalChangeStatus.divCanceledDate.classList.remove("d-none");
+        break;
+    }
+  }
+};
+// ----------------------------------------------|| SetVal Functions ||--------------------------------------
+const setValmodalChangeStatus = (itemData) => {
+  const mapping = {
+    id: "Id",
+    status: "Status",
+    statusOld: "Status",
+    submitteddate: "SubmittedDate",
+    completeddate: "CompletedDate",
+    canceleddate: "CanceledDate",
+    description: "StatusDescription",
+  };
+
+  Object.keys(mapping).forEach((id) => {
+    const el = document.querySelector("#modalChangeStatus #" + id);
+    if (!el) {
+      console.warn(`Elemen '${id}' tidak ditemukan.`);
+      return;
+    }
+
+    let value = itemData[mapping[id]];
+
+    // Jika kosong/null/undefined, langsung set sebagai empty string
+    if (!value) {
+      el.value = "";
+      return;
+    }
+
+    // Jika input type date dan format tanggal dd/mm/yyyy hh:mm:ss
+    if (el.type === "date" && typeof value === "string") {
+      const datePart = value.split(" ")[0]; // contoh: "16/07/2025"
+      const parts = datePart.split("/"); // hasil: ["16", "07", "2025"]
+      if (parts.length === 3) {
+        value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      } else {
+        console.warn(`Format tanggal tidak sesuai: ${value}`);
+        value = ""; // fallback kosong agar tidak error
+      }
+    }
+
+    // Khusus untuk description, potong setelah "Notes from the office:<br />"
+    if (id === "description" && typeof value === "string") {
+      const marker = "Notes from the office:<br />";
+      if (value.includes(marker)) {
+        value = value.split(marker)[1] || "";
+        // Hapus tag HTML jika masih ada
+        value = value.replace(/<[^>]*>/g, "");
+      }
+    }
+
+    el.value = value;
+  });
+};
+
+const setValmodalQuoteDisc = (header) => {
+  document.querySelector("#modalQuoteDisc #discount").value =
+    header.QuoteDisc || 0;
+};
+
+const setValmodalSendMailQuote = (other) => {
+  document.querySelector("#modalSendMailQuote #id").value = other.MailId;
+  document.querySelector("#modalSendMailQuote #from").value = other.MailFrom;
+  document.querySelector("#modalSendMailQuote #mailto").value = other.MailTo;
+};
+
+const setValmodalLogs = (other) => {
+  const table = document.querySelector("#modalLogs #table-logs tbody");
+  table.innerHTML = "";
+
+  const logs = other?.Logs.LogsData || [];
+  if (logs.length === 0) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="text-center">
+        No logs found
+      </td>
+    `;
+    table.appendChild(tr);
+  }
+
+  if (logs.length > 0) {
+    logs.forEach((log) => {
+      const formattedDate = formatDotNetDate(log.ActionDate);
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+          <td>
+            <b>${log.FullName}</b> on ${formattedDate}. Action: ${log.Description}
+          </td>
+        `;
+      table.appendChild(tr);
+    });
+  }
+};
 // ----------------------------------------------|| Submit Functions ||--------------------------------------
 const submitChangeStatus = async () => {
   document
@@ -1773,6 +1911,42 @@ const handlerShowBSModal = (params) => {
     keyboard: false,
   });
   myModal.show();
+};
+
+const copyToClipboard = async (text) => {
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+
+    document.execCommand("copy");
+    ta.remove();
+
+    return true;
+  } catch (err) {
+    console.error("Copy failed:", err);
+    return false;
+  }
+};
+
+const showCopyMessage = () => {
+  const el = spanEl.spanJoNumberMsg;
+  if (!el) return;
+
+  el.classList.remove("d-none"); // tampilkan
+
+  setTimeout(() => {
+    el.classList.add("d-none"); // sembunyikan lagi
+  }, 1500); // 1.5 detik
 };
 
 const catchMessages = (msg) => {

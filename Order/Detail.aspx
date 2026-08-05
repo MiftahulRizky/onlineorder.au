@@ -250,7 +250,7 @@
                                 <div class="col-lg-4">
                                     <span style="font-size:larger;">Production Date :</span>
                                     <br />
-                                    <span id="spanProductionDate" style="font-size:larger;font-weight:bold;"></span>
+                                    <span id="spanProductionDate" style="font-size:larger;font-weight:bold; cursor: pointer"></span>
                                 </div>
 
                                 <div class="col-lg-4">
@@ -465,6 +465,27 @@
         </div>
     </div>
 
+     <!-- Modal -->
+    <div class="modal fade" id="modalProductionDate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalProductionDateLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title " id="modalProductionDateLabel">Change Production Date</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-12">
+                        <label for="productiondate" class="form-label text-uppercase">Production Date</label>
+                        <input type="date" class="form-control" id="productiondate" name="productiondate">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSubmitProductionDate">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- modalAddItem -->
     <div class="modal fade" id="modalAddItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalAddItemLabel" aria-hidden="true">
@@ -706,7 +727,7 @@
         let REPRINT = '<%= Session("Reprint") %>';
         let URIMETHOD = '/Methods/Order/DetailMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/Detail.js?v=1.0.19"></script>
+    <script src="/Scripts/Order/Detail.js?v=1.0.7"></script>
 
 </asp:Content>
 

@@ -2,6 +2,17 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
 
+    <style>
+        #spanJoNumberMsg {
+            transition: opacity 0.3s ease;
+        }
+
+        .d-none {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+
     <div class="page-header">
         <div class="container-xl">
             <div class="row g-2 align-items-center">
@@ -267,7 +278,8 @@
                                  <div class="col-lg-6">
                                     <span style="font-size:larger;">Job Number :</span>
                                     <br />
-                                    <div  id="spanJoNumber" style="font-size: larger;" ></div>
+                                    <div  id="spanJoNumber" style="font-size: larger; cursor: pointer;"></div>
+                                    <div  id="spanJoNumberMsg"  class="fst-italic text-secondary">Copied</div>
                                 </div>
                                  <div class="col-lg-6">
                                     <span style="font-size:larger;">Order Product Type :</span>
@@ -458,6 +470,28 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="btnSubmitOverrideDisc">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalProductionDate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalProductionDateLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="modalProductionDateLabel">Change Production Date</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-12">
+                        <label for="productiondate" class="form-label text-uppercase">Production Date</label>
+                        <input type="date" class="form-control" id="productiondate" name="productiondate">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSubmitProductionDate">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -706,7 +740,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.1"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.18"></script>
 
 
 </asp:Content>
