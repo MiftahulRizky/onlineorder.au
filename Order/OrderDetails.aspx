@@ -584,49 +584,12 @@
         </div>
     </div>
 
-    <!-- modalEditPricingItem -->
-    <div class="modal fade" id="modalEditPricingItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalEditPricingItemLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+    <!-- modalEditPricing -->
+    <div class="modal fade" id="modalEditPricing" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalEditPricingLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title " id="modalEditPricingItemLabel">Edit Pricing</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class=" col-4 col-lg-4 col-md-4">
-                            <label for="" class="form-label">Base Price</label>
-                             <div class="input-group ">
-                                <span class="input-group-text">$</span>
-                                <input type="text" class="form-control" id="cost" name="cost" readonly>
-                            </div>
-                            <input type="text" class="form-control" id="id" name="id" readonly hidden>
-                            <input type="text" class="form-control" id="designid" name="designid" readonly hidden>
-                            <input type="text" class="form-control" id="blindid" name="blindid" readonly hidden>
-                        </div>
-                        <div class="col-8 col-lg-8 col-md-8">
-                            <label for="" class="form-label">Override Price</label>
-                            <div class="input-group ">
-                                <span class="input-group-text">$</span>
-                                <input type="number" class="form-control" id="newcost" name="newcost" autocomplete="off" placeholder="Example : 107.65">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="submitEditPricingItem">Save Changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- modalEditPricingAllItem -->
-    <div class="modal fade" id="modalEditPricingAllItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalEditPricingAllItemLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title " id="modalEditPricingAllItemLabel">Edit Pricing</h1>
+                    <h1 class="modal-title " id="modalEditPricingLabel">Edit Pricing</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="modalBody">
@@ -634,7 +597,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="submitEditPricingAllItem">Save Changes</button>
+                    <button type="button" class="btn btn-primary" id="btnSubmitEditPricing">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -642,15 +605,15 @@
 
     <!-- modalPricingItem -->
     <div class="modal fade" id="modalPricingItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalPricingItemLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title" id="modalPricingItemLabel">Cost Details</h1>
                     <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" id="modalPricingItemBody">
 
-                    <div id="table-default">
+                    <!-- <div id="table-default">
                         <table class="table table-bordered" id="tablePricingDetail" width="100%">
                             <thead class="fs-3 fw-bold">
                                 <tr>
@@ -665,7 +628,7 @@
                             </thead>
                             <tbody></tbody>
                         </table>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary close-button" data-bs-dismiss="modal">
@@ -729,7 +692,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.16"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.12"></script>
 
 
 </asp:Content>

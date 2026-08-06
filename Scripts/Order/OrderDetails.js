@@ -16,6 +16,7 @@
 
 // ==============================================|| INITIALIZATION ||========================================
 let DataTableDetails;
+let DataTablePricingItem;
 const getById = (id) => document.getElementById(id);
 const getByClass = (cls) => document.getElementsByClassName(cls);
 const btnEl = {
@@ -93,8 +94,8 @@ const elModal = {
   modalAddItem: getById("modalAddItem"),
   modalAddService: getById("modalAddService"),
   modalSendMailQuote: getById("modalSendMailQuote"),
-  modalEditPricingItem: getById("modalEditPricingItem"),
-  modalEditPricingAllItem: getById("modalEditPricingAllItem"),
+  modalEditPricing: getById("modalEditPricing"),
+  modalPricingItem: getById("modalPricingItem"),
   modalLogs: getById("modalLogs"),
 };
 
@@ -437,6 +438,23 @@ const modalHandlers = {
       });
     },
   },
+
+  modalEditPricing: {
+    init: (modal) => {},
+
+    events: (modal) => {
+      modal.addEventListener("input", async (e) => {
+        e.target.classList.remove("is-invalid");
+      });
+
+      modal.addEventListener("click", async (e) => {
+        const id = e.target.id;
+        if (id === "btnSubmitEditPricing") {
+          await submitEditPricing(id);
+        }
+      });
+    },
+  },
 };
 Object.entries(elModal).forEach(([key, modal]) => {
   if (!modal) return;
@@ -453,7 +471,7 @@ Object.entries(elModal).forEach(([key, modal]) => {
   }
 });
 
-document.querySelector("#tableAjax").addEventListener("click", (e) => {
+document.querySelector("#tableAjax").addEventListener("click", async (e) => {
   const id = e.target.id;
   if (e.target.id === "btnDetailItem") {
     const itemid = e.target.dataset.id;
@@ -502,6 +520,19 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const itemid = e.target.dataset.id;
     const product = e.target.dataset.product;
     handlerDeleteItem(itemid, product);
+  }
+
+  if (e.target.id === "btnEditPricingItem") {
+    const id = e.target.dataset.id;
+    const qty = e.target.dataset.qty;
+    await handlerEditPricing(id, qty);
+    handlerShowBSModal("modalEditPricing");
+  }
+
+  if (id === "btnPricingItem") {
+    const itemid = e.target.dataset.id;
+    await bindPricingItem(itemid);
+    handlerShowBSModal("modalPricingItem");
   }
 });
 // ============================================|| FUNCTION ||================================================
@@ -740,6 +771,82 @@ const bindProduction = async (designname) => {
   } catch (error) {
     const msg = `bindProduction: ${error.message}`;
     catchMessage(msg);
+  }
+};
+
+const bindPricingItem = async (id) => {
+  try {
+    const response = await fetch(`${URIMETHOD}/BindPricingItem`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ id, rolename: ROLENAME }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`${response.status} - ${response.statusText}`);
+    }
+
+    const { d: data } = await response.json();
+
+    if (!data || data.length === 0) return;
+    if (data.error) {
+      throw new Error(data.message);
+    }
+
+    const dt = data.price;
+    console.log(dt);
+
+    let html = `
+      <table class="table table-bordered table-vcenter" width="100%">
+        <thead>
+          <tr>
+            <th class="text-center">#</th>
+            <th class="h3 text-center">Qty</th>
+            <th class="h3">Descpription</th>
+            <th class="h3">Cost / Qty</th>
+            <th class="h3">POA / Qty</th>
+            <th class="h3">Discount / Qty</th>
+            <th class="h3 ">Sub Total</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    dt.forEach((item, index) => {
+      if (item.isContinue) {
+        return;
+      }
+      html += `
+          <tr class="${item.isOpacity}">
+            <td class="text-center">${index + 1}</td>
+            <td class="text-center">${item.Qty}</td>
+            <td class="text-left">${item.Description}</td>
+            <td class="text-center">${item.Cost}</td>
+            <td class="text-center">${item.Poa}</td>
+            <td class="text-center">${item.Discount}</td>
+            <td class="text-center">${item.FinalCost}</td>
+          </tr>
+        `;
+    });
+
+    html += `</tbody></table>`;
+
+    const container = elModal.modalPricingItem.querySelector(
+      "#modalPricingItemBody",
+    );
+    container.innerHTML = html;
+
+    const popoverTriggerList = container.querySelectorAll(
+      '[data-bs-toggle="popover"]',
+    );
+    popoverTriggerList.forEach((popoverTriggerEl) => {
+      new bootstrap.Popover(popoverTriggerEl);
+    });
+  } catch (error) {
+    const msg = `bindPricingItem: ${error.message}`;
+    catchMessages(msg);
   }
 };
 // ----------------------------------------------|| Handler Functions ||-------------------------------------
@@ -1320,6 +1427,76 @@ const handlerDeleteItem = async (id, product) => {
     }
   } catch (error) {
     const msg = `handlerDeleteItem: ${error.message}`;
+    catchMessages(msg);
+  }
+};
+
+const handlerEditPricing = async (id, qty) => {
+  try {
+    const response = await fetch(`${URIMETHOD}/BindOrderDetailPrice`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ itemid: id }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`${response.status} - ${response.statusText}`);
+    }
+
+    const { d: res } = await response.json();
+
+    if (!res) {
+      throw new Error("No data");
+    }
+    if (res.error) {
+      throw new Error(res.message);
+    }
+
+    const data = res.odp;
+
+    let html = `
+      <input type="number" min="1" name="itemid" id="itemid" value="${id}" class="form-control " readonly hidden />
+      <input type="number" min="1" name="qty" id="qty" value="${qty}" class="form-control " readonly hidden />
+      <table class="table table-bordered table-vcenter" width="100%">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Qty</th>
+            <th>Description</th>
+            <th>Cost/Qty</th>
+            <th>POA/Qty</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    data.forEach((item, index) => {
+      html += `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${item.Qty}</td>
+            <td>${item.Description}</td>
+            <td>${item.Cost}</td>
+            <td>
+              <div class="input-group">
+                <input type="text" 
+                  value="${item.Poa}" 
+                  class="form-control input-poa" 
+                  data-id="${item.Id}" data-type="${item.Type}"
+                  placeholder="Example: 10.00" />
+              </div>
+            </td>
+          </tr>
+        `;
+    });
+
+    html += `</tbody></table>`;
+
+    elModal.modalEditPricing.querySelector("#modalBody").innerHTML = html;
+  } catch (error) {
+    const msg = `handlerEditPricing: ${error.message}`;
     catchMessages(msg);
   }
 };
@@ -1962,6 +2139,75 @@ const submitSelectProduct = async (designid, production, action, button) => {
   }
 };
 
+const submitEditPricing = async (button) => {
+  const md = elModal.modalEditPricing;
+  md.querySelectorAll(".form-control").forEach((e) =>
+    e.classList.remove("is-invalid"),
+  );
+
+  const poaInputs = md.querySelectorAll(".input-poa");
+
+  let detailList = [];
+
+  poaInputs.forEach((input) => {
+    detailList.push({
+      id: input.dataset.id,
+      type: input.dataset.type,
+      poa: input.value.replace(",", "."),
+    });
+  });
+
+  let itemid = md.querySelector("#itemid").value;
+  let qty = md.querySelector("#qty").value;
+
+  const Params = {
+    loginid: LOGINID,
+    username: USERNAME,
+    rolename: ROLENAME,
+    headerid: HEADERID,
+    itemid: itemid,
+    qty: qty,
+    customerid: document.querySelector("#spanRetailerId").innerHTML,
+    details: detailList,
+  };
+
+  // return console.table(Params);
+
+  try {
+    button.innerHTML = "Proccessing...";
+    swalLoadingShow("Please wait...");
+
+    const response = await fetch(`${URIMETHOD}/OverwritePricing`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: Params }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+    } else if (res.success) {
+      handlerHideBSModal("modalEditPricing");
+      await isSuccess(res.message);
+      location.reload();
+    }
+  } catch (error) {
+    const msg = `submitEditPricing: ${error.message}`;
+    catchMessages(msg);
+  } finally {
+    button.innerHTML = "Save Changes";
+  }
+};
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const orderDetailPageLoaded = async () => {
   try {
@@ -2319,4 +2565,5 @@ const catchMessages = (msg) => {
   if (!["Administrator"].includes(ROLENAME))
     msg = "Please contact our IT team at support@onlineorder.au";
   isError(msg);
+  console.error(msg);
 };

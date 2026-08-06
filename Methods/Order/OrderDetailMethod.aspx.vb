@@ -109,6 +109,22 @@ Partial Class Methods_Order_OrderDetailMethod
         Public Property production As String
     End Class
 
+    Public Class ParamOverwritePricing
+        Public Property loginid  As String
+        Public Property username  As String
+        Public Property rolename  As String
+        Public Property headerid As String
+        Public Property itemid As String
+        Public Property qty As String
+        Public Property customerid As String
+        Public Property details As List(Of PricingDetail)
+    End Class
+    Public Class PricingDetail
+        Public Property id As String
+        Public Property type As String
+        Public Property poa As Decimal
+    End Class
+
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function GetItemData(ByVal query As String) As Object
@@ -270,6 +286,7 @@ Partial Class Methods_Order_OrderDetailMethod
                 WHERE
                     Active=@Active 
                     AND HeaderId=@HeaderId
+                ORDER BY vd.Id, vd.BlindNo, vd.DesignName ASC
             </sql>.Value
 
             Using conn As New SqlConnection(myConn)
@@ -2034,4 +2051,239 @@ Partial Class Methods_Order_OrderDetailMethod
             End Using
         End Using
     End Sub
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindOrderDetailPrice(ByVal itemid As String) As Object
+        Try
+            Dim dt As DataTable = publicCfg.GetListData(String.Format("SELECT Id, Qty, Type, Description, Cost, Poa FROM OrderDetailsPrice WHERE ItemId = '{0}' AND ((Type = 'Charge' AND Description NOT LIKE '%Powder Coating%' AND Description NOT LIKE '%Tracking & Interloock%') OR (Type = 'Matrix')) ORDER BY CASE WHEN Type = 'Matrix' THEN 1 WHEN Type = 'Charge' THEN 2 WHEN Type = 'Discount' THEN 3 ELSE 4 END", itemid)).Tables(0)
+
+            Dim list As New List(Of Object)
+
+            For Each row As DataRow In dt.Rows
+                list.Add(New With {
+                    .Id = row("Id").ToString(),
+                    .Qty = row("Qty").ToString(),
+                    .Type = row("Type").ToString(),
+                    .Description = row("Description").ToString(),
+                    .Cost = CDec(row("Cost")).ToString("C", New CultureInfo("en-US")),
+                    .Poa = row("Poa").ToString().Replace(",", ".")
+                })
+            Next
+
+            Return New With {.success = True, .odp = list}
+
+        Catch ex As Exception
+            Return New With {.success = False, .message = ex.Message}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function OverwritePricing(data As ParamOverwritePricing) As Object
+        Try
+            If data Is Nothing OrElse data.details Is Nothing Then
+               Throw New Exception("Data is null or empty !")
+            End If
+
+            Dim updatedCount As Integer = 0
+            Dim OrderType As String = publicCfg.GetItemData(String.Format("SELECT OrderType FROM OrderHeaders where Id={0}", data.headerid))
+            Dim DetailData As Dataset = publicCfg.GetListData(String.Format("SELECT DesignId, BlindId FROM view_details WHERE Id='{0}'", data.itemid))
+            Dim DesignId As String = DetailData.Tables(0).Rows(0)("DesignId").ToString()
+            Dim BlindId As String = DetailData.Tables(0).Rows(0)("BlindId").ToString()
+
+            For Each item In data.details
+
+                If item.poa = 0 Then
+                    Continue For
+                End If
+
+                Dim guidId As Guid
+                If Not Guid.TryParse(item.id, guidId) Then
+                    Continue For
+                End If
+
+
+                Dim ListParamDiscount As New List(Of Object) From {
+                    data.headerid,
+                    data.customerid,
+                    "",
+                    item.poa,
+                    DesignId,
+                    BlindId
+                }
+                Dim Discount As Decimal = publicCfg.HitungDiscount(ListParamDiscount)
+                Dim DiscountB As Decimal = publicCfg.HitungCustomDiscount(data.headerid, data.itemid, (item.poa - Discount), item.type)
+
+                If item.type = "Charge" Then
+                    Discount = DiscountB
+                End If
+
+                ' Throw New Exception(DiscountB.ToString())
+
+                Dim Res As String = UpdateOverwritePricing(item.id, item.poa, Discount, DiscountB)
+                IF Not Res = "200" Then
+                    Throw New Exception(Res)
+                End If
+            Next
+
+            
+            Dim Matrix As String = publicCfg.GetItemData(String.Format("SELECT SUM(( odp.Cost * odp.Qty ) - ( odp.Qty * ISNULL( odp.Discount, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountB, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountC, 0 ) )) As Matrix FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Matrix' AND od.Active='1'", data.headerid, data.itemid))
+            
+            Dim Charge As String = publicCfg.GetItemData(String.Format("SELECT SUM(( odp.Cost * odp.Qty ) - ( odp.Qty * ISNULL( odp.Discount, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountB, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountC, 0 ) )) As Charge FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Charge' AND odp.Description NOT LIKE '%Powder Coating%' AND odp.Description <> 'Tracking & Interloock' AND od.Active='1'", data.headerid, data.itemid))
+
+            publicCfg.UpdateMatrix(data.itemid, data.qty, If(Matrix = "", 0D, CDec(Matrix)))
+            publicCfg.UpdateCharge(data.itemid, data.qty, If(Charge = "", 0D, CDec(Charge)))
+
+            Dim dataLog As Object() = {data.headerid, data.itemid, OrderType, data.loginid, "Override Pricing"}
+            orderCfg.Log_Orders(dataLog)
+            
+            Return New With { .success = true, .message = "Pricing has been updated successfully."}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("OverwritePricing : {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared Function UpdateOverwritePricing(id As String, newcost As Decimal, disc As Decimal, discB As Decimal) As String
+        Try
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetailsPrice SET Cost=@Cost, Discount=@Disc, DiscountB=@DiscB, Poa=@Poa WHERE Id=@Id", thisConn)
+                    myCmd.Parameters.AddWithValue("@Id", id)
+                    myCmd.Parameters.AddWithValue("@Cost", newcost)
+                    myCmd.Parameters.AddWithValue("@Disc", disc)
+                    myCmd.Parameters.AddWithValue("@DiscB", discB)
+                    myCmd.Parameters.AddWithValue("@Poa", newcost)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return "200"
+        Catch ex As Exception
+            Return   "UpdateOverwritePricing : " & ex.Message
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindPricingItem(ByVal id As String, ByVal rolename As String) As Object
+        Try
+            Dim PricingData As New List(Of Object)()
+
+            Dim Query As String = "SELECT *, FORMAT(Cost, 'C', 'en-US') AS FormatCost, FORMAT(Discount, 'C', 'en-US') AS FormatDiscount, FORMAT(DiscountB, 'C', 'en-US') AS FormatDiscountB, FORMAT ( Poa, 'C', 'en-US' ) AS FormatPoa FROM OrderDetailsPrice WHERE ItemId = @ItemId ORDER BY CASE WHEN Type = 'Matrix' THEN 1 WHEN Type = 'Charge' THEN 2 WHEN Type = 'Discount' THEN 3 ELSE 4 END"
+            Using conn As New SqlConnection(myConn)
+                Using cmd As New SqlCommand(Query, conn)
+                    cmd.Parameters.AddWithValue("@ItemId", id)
+                    conn.Open()
+
+                    Using reader As SqlDataReader = cmd.ExecuteReader()
+                        While reader.Read()
+
+                            Dim Type As String = reader("Type").ToString()
+                            Dim Qty As Integer = reader("Qty").ToString()
+                            Dim Description As String = reader("Description").ToString()
+                            Dim Cost As Decimal = CDec(reader("Cost"))
+                            Dim Discount As Decimal = CDec(reader("Discount"))
+                            Dim DiscountB As Decimal = CDec(reader("DiscountB"))
+                            Dim DiscounCt As Decimal = CDec(reader("DiscountC"))
+                            Dim Poa As Decimal = CDec(reader("Poa"))
+
+                            '#Initialize
+                            Dim isPOA As Integer = InStr(Description, "POA")
+                            Dim markPOA As String = "<span class='badge bg-orange-lt'>POA</span>"
+                            Dim isTrackInterlock As Integer = InStr(Description, "Tracking & Interlock")
+                            Dim isCoating As Integer = InStr(Description, "Powder Coating")
+                            Dim isCharge As Boolean = (Type = "Charge")
+                            Dim isRoles As Boolean = InArray(rolename, "Administrator", "PPIC & DE", "Customer Service")
+                            Dim isContinue As Boolean = false
+                            Dim isOpacity As String = ""
+
+                            '#Find Cost
+                            Dim ThisCost As String = Cost.ToString("C", New CultureInfo("en-US"))
+                            If isPOA > 0 Then ThisCost = markPOA
+                            
+
+                            '#Find POA
+                            Dim ThisPOA As String = ""
+                            If Poa > 0 Then ThisPOA = Poa.ToString("C", New CultureInfo("en-US"))
+
+                            '#Find Final Cost
+                            Dim FinalCost As Decimal = 0.00
+                            Dim DiscountInPercent As Decimal = 0.00
+                            IF Cost > 0 Then 
+                                FinalCost = (Cost - Discount) * Qty
+                                DiscountInPercent = (Discount / Cost) * 100
+                            End If
+
+                            Dim FinalCostB As Decimal = 0
+                            Dim DiscountInPercentB As Decimal = 0
+                            If DiscountB > 0 Then
+                                FinalCostB = (FinalCost - DiscountB) * Qty
+                                DiscountInPercentB = (DiscountB / FinalCost) * 100
+                            End If
+
+                            Dim ThisFinalCost As String = FinalCost.ToString("C", New CultureInfo("en-US"))
+                            If FinalCostB > 0 Then
+                                ThisFinalCost += String.Format("<br/> {0}", FinalCostB.ToString("C", New CultureInfo("en-US")))
+                            End If
+
+                            '#Find Discount
+                            Dim ThisDisc As String = If(Discount > 0, Discount.ToString("C", New CultureInfo("en-US")), "")
+                            Dim ThisDiscB As String = ""
+                            Dim ElDisc As String = String.Format("<button type='button' class='border-0 bg-transparent' data-bs-container='body' data-bs-toggle='popover' data-bs-trigger='hover focus' data-bs-placement='bottom' data-bs-content='Discount in {0}%'>{1}</button>", Math.Round(DiscountInPercent, 0, MidpointRounding.AwayFromZero), ThisDisc)
+                            IF DiscountB > 0 Then
+                                ThisCost += String.Format("<br/> {0}", FinalCost.ToString("C", New CultureInfo("en-US")))
+                                If Type = "Matrix" Then
+                                    ThisDiscB = DiscountB.ToString("C", New CultureInfo("en-US"))
+                                    ElDisc += String.Format("<button type='button' class='border-0 bg-transparent' data-bs-container='body' data-bs-toggle='popover' data-bs-trigger='hover focus' data-bs-placement='bottom' data-bs-content='Discount in {0}%'>{1}</button>", Math.Round(DiscountInPercentB, 0, MidpointRounding.AwayFromZero), ThisDiscB)
+                                End If
+                            End If
+
+
+                            If isCharge AND (isTrackInterlock > 0 Or isCoating > 0) Then 
+                                ThisCost = String.Format("<span class='text-decoration-line-through'>{0}</span>", ThisCost)
+                                ThisFinalCost = String.Format("<span class='text-decoration-line-through'>{0}</span>", ThisFinalCost)
+                                If Not isRoles Then isContinue = true
+                                isOpacity = "opacity-50"
+                            End If
+                            
+
+                            PricingData.Add(New With {
+                                .isContinue = isContinue,
+                                .isOpacity = isOpacity,
+                                .Id = reader("Id").ToString(),
+                                .HeaderId = reader("HeaderId").ToString(),
+                                .ItemId = reader("ItemId").ToString(),
+                                .Qty = reader("Qty").ToString(),
+                                .Description = Description,
+                                .Type = Type,
+                                .Cost = ThisCost,
+                                .Poa = ThisPOA,
+                                .Discount = ElDisc,
+                                .FinalCost = ThisFinalCost
+                            })
+                        End While
+                    End Using
+                End Using
+            End Using
+
+
+            Return New With {
+                .price = PricingData
+            }
+
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("BindPricingItem : {0}", ex.Message)}
+        End Try
+    End Function
+
+    ' Private Shared Function FindCostItem(reader As SqlDataReader) As String
+    '     Try
+          
+    '     Catch ex As Exception
+    '         Return "FindCostItem : " & ex.Message
+    '     End Try
+    ' End Function
 End Class
