@@ -1226,7 +1226,7 @@ const bindColours = async (
     field: "colourtype",
     params: { designid, blindtype, brackettype, tubetype, controltype },
     withDefaultOption: true,
-    lengthDefaultOption: 0,
+    lengthDefaultOption: 1,
 
     onSingle: async (item, select) => {
       const colourtype = item.value;

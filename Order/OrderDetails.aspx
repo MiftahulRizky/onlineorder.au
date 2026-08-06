@@ -1,17 +1,6 @@
-﻿<%@ Page Title="Order Details" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="OrderDetails.aspx.vb" Inherits="Order_OrderDetails" MaintainScrollPositionOnPostback="true" Debug="true"%>
+﻿<%@ Page Title="Order Details" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="OrderDetails.aspx.vb" Inherits="Order_OrderDetails" MaintainScrollPositionOnPostback="true" Debug="true"%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
-
-    <style>
-        #spanJoNumberMsg {
-            transition: opacity 0.3s ease;
-        }
-
-        .d-none {
-            opacity: 0;
-            pointer-events: none;
-        }
-    </style>
 
     <div class="page-header">
         <div class="container-xl">
@@ -740,7 +729,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.9"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.16"></script>
 
 
 </asp:Content>

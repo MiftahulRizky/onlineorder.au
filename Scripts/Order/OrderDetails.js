@@ -16,88 +16,89 @@
 
 // ==============================================|| INITIALIZATION ||========================================
 let DataTableDetails;
+const getById = (id) => document.getElementById(id);
+const getByClass = (cls) => document.getElementsByClassName(cls);
 const btnEl = {
-  btnFinish: document.getElementById("btnFinish"),
-  btnPreviewPrint: document.getElementById("btnPreviewPrint"),
-  btnPreviewPDF: document.getElementById("btnPreviewPDF"),
-  btnJobSheet: document.getElementById("btnJobSheet"),
-  btnConvertToJob: document.getElementById("btnConvertToJob"),
-  btnReprintJobSheet: document.getElementById("btnReprintJobSheet"),
-  btnChangeJobStatus: document.getElementById("btnChangeJobStatus"),
-  btnSubmit: document.getElementById("btnSubmit"),
-  btnEditHeader: document.getElementById("btnEditHeader"),
-  btnDeleteHeader: document.getElementById("btnDeleteHeader"),
-  btnQuote: document.getElementById("btnQuote"),
-  btnQuoteDetail: document.getElementById("btnQuoteDetail"),
-  btnDownloadQuote: document.getElementById("btnDownloadQuote"),
-  btnMoreAction: document.getElementById("btnMoreAction"),
-  btnReloadPricing: document.getElementById("btnReloadPricing"),
-  btnChangeStatus: document.getElementById("btnChangeStatus"),
-  btnSendOrderMail: document.getElementById("btnSendOrderMail"),
-  btnDownloadBarcode: document.getElementById("btnDownloadBarcode"),
-  btnQuoteDisc: document.getElementById("btnQuoteDisc"),
-  dividerPrintQuote: document.getElementById("dividerPrintQuote"),
-  btnPrintQuote: document.getElementById("btnPrintQuote"),
-  btnEmailQuote: document.getElementById("btnEmailQuote"),
-  dividerEmailDeposit: document.getElementById("dividerEmailDeposit"),
-  btnEmailDeposit: document.getElementById("btnEmailDeposit"),
-  dividerLogs: document.getElementById("dividerLogs"),
-  btnLogs: document.getElementById("btnLogs"),
-  btnAddItem: document.getElementById("btnAddItem"),
-  btnAddSurcharge: document.getElementById("btnAddSurcharge"),
-  divPrice: document.getElementById("divPrice"),
-  msgThanks: document.getElementById("msgThanks"),
+  btnFinish: getById("btnFinish"),
+  btnPreviewPrint: getById("btnPreviewPrint"),
+  btnPreviewPDF: getById("btnPreviewPDF"),
+  btnJobSheet: getById("btnJobSheet"),
+  btnConvertToJob: getById("btnConvertToJob"),
+  btnReprintJobSheet: getById("btnReprintJobSheet"),
+  btnChangeJobStatus: getById("btnChangeJobStatus"),
+  btnSubmit: getById("btnSubmit"),
+  btnEditHeader: getById("btnEditHeader"),
+  btnDeleteHeader: getById("btnDeleteHeader"),
+  btnQuote: getById("btnQuote"),
+  btnQuoteDetail: getById("btnQuoteDetail"),
+  btnDownloadQuote: getById("btnDownloadQuote"),
+  btnMoreAction: getById("btnMoreAction"),
+  btnReloadPricing: getById("btnReloadPricing"),
+  btnChangeStatus: getById("btnChangeStatus"),
+  btnSendOrderMail: getById("btnSendOrderMail"),
+  btnDownloadBarcode: getById("btnDownloadBarcode"),
+  btnQuoteDisc: getById("btnQuoteDisc"),
+  dividerPrintQuote: getById("dividerPrintQuote"),
+  btnPrintQuote: getById("btnPrintQuote"),
+  btnEmailQuote: getById("btnEmailQuote"),
+  dividerEmailDeposit: getById("dividerEmailDeposit"),
+  btnEmailDeposit: getById("btnEmailDeposit"),
+  dividerLogs: getById("dividerLogs"),
+  btnLogs: getById("btnLogs"),
+  btnAddItem: getById("btnAddItem"),
+  btnAddSurcharge: getById("btnAddSurcharge"),
+  divPrice: getById("divPrice"),
+  msgThanks: getById("msgThanks"),
   thMarkUp: document.querySelector(".thMarkUp"),
   thPrice: document.querySelector(".thPrice"),
 };
 const spanEl = {
-  retailerName: document.getElementById("spanRetailerName"),
-  retailerId: document.getElementById("spanRetailerId"),
-  orderId: document.getElementById("spanOrderId"),
-  joNumber: document.getElementById("spanJoNumber"),
-  joNumberMsg: document.getElementById("spanJoNumberMsg"),
-  orderType: document.getElementById("spanOrderProductType"),
-  orderNo: document.getElementById("spanOrderNo"),
-  orderCust: document.getElementById("spanOrderCust"),
-  createdDate: document.getElementById("spanCreatedDate"),
-  createdBy: document.getElementById("spanCreatedBy"),
-  note: document.getElementById("spanNote"),
-  statusNote: document.getElementById("spanStatusNote"),
-  statusOrder: document.getElementById("spanStatusOrder"),
-  delivery: document.getElementById("spanDelivery"),
-  submittedDate: document.getElementById("spanSubmittedDate"),
-  productionDate: document.getElementById("spanProductionDate"),
-  completedDate: document.getElementById("spanCompletedDate"),
-  canceledDate: document.getElementById("spanCanceledDate"),
-  total: document.getElementById("spanTotal"),
-  gst: document.getElementById("spanGST"),
-  final: document.getElementById("spanFinalTotal"),
+  retailerName: getById("spanRetailerName"),
+  retailerId: getById("spanRetailerId"),
+  orderId: getById("spanOrderId"),
+  joNumber: getById("spanJoNumber"),
+  joNumberMsg: getById("spanJoNumberMsg"),
+  orderType: getById("spanOrderProductType"),
+  orderNo: getById("spanOrderNo"),
+  orderCust: getById("spanOrderCust"),
+  createdDate: getById("spanCreatedDate"),
+  createdBy: getById("spanCreatedBy"),
+  note: getById("spanNote"),
+  statusNote: getById("spanStatusNote"),
+  statusOrder: getById("spanStatusOrder"),
+  delivery: getById("spanDelivery"),
+  submittedDate: getById("spanSubmittedDate"),
+  productionDate: getById("spanProductionDate"),
+  completedDate: getById("spanCompletedDate"),
+  canceledDate: getById("spanCanceledDate"),
+  total: getById("spanTotal"),
+  gst: getById("spanGST"),
+  final: getById("spanFinalTotal"),
 };
 const liEl = {
-  liDetailItem: document.getElementsByClassName("liDetailItem"),
-  liEditItem: document.getElementsByClassName("liEditItem"),
-  liCopyItem: document.getElementsByClassName("liCopyItem"),
-  liDeleteItem: document.getElementsByClassName("liDeleteItem"),
-  liEditPricingItem: document.getElementsByClassName("liEditPricingItem"),
-  liPricingItem: document.getElementsByClassName("liPricingItem"),
-  liDivider: document.getElementsByClassName("liDivider"),
-  liDividerBarcode: document.getElementsByClassName("liDividerBarcode"),
-  liDownloadBarcodeItem: document.getElementsByClassName(
-    "liDownloadBarcodeItem",
-  ),
+  liDetailItem: getByClass("liDetailItem"),
+  liEditItem: getByClass("liEditItem"),
+  liCopyItem: getByClass("liCopyItem"),
+  liDeleteItem: getByClass("liDeleteItem"),
+  liEditPricingItem: getByClass("liEditPricingItem"),
+  liPricingItem: getByClass("liPricingItem"),
+  liDivider: getByClass("liDivider"),
+  liDividerBarcode: getByClass("liDividerBarcode"),
+  liDownloadBarcodeItem: getByClass("liDownloadBarcodeItem"),
 };
 const elModal = {
-  modalChangeStatus: document.getElementById("modalChangeStatus"),
-  modalQuoteDisc: document.getElementById("modalQuoteDisc"),
-  modalProductionDate: document.getElementById("modalProductionDate"),
-  modalAddItem: document.getElementById("modalAddItem"),
-  modalAddService: document.getElementById("modalAddService"),
-  modalSendMailQuote: document.getElementById("modalSendMailQuote"),
-  modalEditPricingItem: document.getElementById("modalEditPricingItem"),
-  modalEditPricingAllItem: document.getElementById("modalEditPricingAllItem"),
-  modalLogs: document.getElementById("modalLogs"),
+  modalChangeStatus: getById("modalChangeStatus"),
+  modalQuoteDisc: getById("modalQuoteDisc"),
+  modalProductionDate: getById("modalProductionDate"),
+  modalAddItem: getById("modalAddItem"),
+  modalAddService: getById("modalAddService"),
+  modalSendMailQuote: getById("modalSendMailQuote"),
+  modalEditPricingItem: getById("modalEditPricingItem"),
+  modalEditPricingAllItem: getById("modalEditPricingAllItem"),
+  modalLogs: getById("modalLogs"),
 };
 
+const tableBtn = {};
 // ==============================================|| EVENTS ||================================================
 
 Object.values(btnEl).forEach((el) => {
@@ -452,6 +453,57 @@ Object.entries(elModal).forEach(([key, modal]) => {
   }
 });
 
+document.querySelector("#tableAjax").addEventListener("click", (e) => {
+  const id = e.target.id;
+  if (e.target.id === "btnDetailItem") {
+    const itemid = e.target.dataset.id;
+    const designid = e.target.dataset.designid;
+    const production = e.target.dataset.production;
+    const headerid = e.target.dataset.headerid;
+    const ordertype = ORDERTYPE;
+    const designname = e.target.dataset.designname;
+    handlerFindProductForm(
+      itemid,
+      headerid,
+      ordertype,
+      "ViewItem",
+      designid,
+      production,
+      designname,
+    );
+  }
+
+  if (id === "btnEditItem") {
+    const itemid = e.target.dataset.id;
+    const designid = e.target.dataset.designid;
+    const production = e.target.dataset.production;
+    const headerid = e.target.dataset.headerid;
+    const ordertype = ORDERTYPE;
+    const designname = e.target.dataset.designname;
+    handlerFindProductForm(
+      itemid,
+      headerid,
+      ordertype,
+      "EditItem",
+      designid,
+      production,
+      designname,
+    );
+  }
+
+  if (id === "btnCopyItem") {
+    const itemid = e.target.dataset.id;
+    const headerid = e.target.dataset.headerid;
+    const product = e.target.dataset.product;
+    handlerCopyItem(itemid, headerid, product);
+  }
+
+  if (id === "btnDeleteItem") {
+    const itemid = e.target.dataset.id;
+    const product = e.target.dataset.product;
+    handlerDeleteItem(itemid, product);
+  }
+});
 // ============================================|| FUNCTION ||================================================
 // ------------------------------------------||Binding Function ||-------------------------------------------
 const bindOrderAggregate = async (headerid, ordertype) => {
@@ -1120,206 +1172,342 @@ const handlerPrintQuote = async (headerid, action) => {
   }
 };
 
+const handlerFindProductForm = async (
+  id,
+  headerid,
+  ordertype,
+  action,
+  designid,
+  production,
+  designname,
+) => {
+  try {
+    const response = await fetch(`${URIMETHOD}/FindProductForm`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        data: {
+          id,
+          rolename: ROLENAME,
+          headerid,
+          ordertype,
+          action,
+          designid,
+          production,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message?.toUpperCase());
+      if (res.field) {
+        const field = document.querySelector(res.field);
+        field.classList.add("is-invalid");
+      }
+    } else if (res.success) {
+      const findPage = res.page.replace("~", "");
+      window.location.href = findPage;
+    }
+  } catch (error) {
+    const msg = `submitSelectProduct: ${error.message}`;
+    catchMessages(msg);
+  }
+};
+
+const handlerCopyItem = async (id, headerid, product) => {
+  const result = await Swal.fire({
+    title: "Copy this item?",
+    html: product,
+    icon: "question",
+    showCancelButton: true,
+    customClass: {
+      popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+    },
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, copy it!",
+  });
+
+  if (!result.isConfirmed) return;
+
+  swalLoadingShow("Please wait while we copy the item.");
+
+  try {
+    const response = await fetch(`${URIMETHOD}/CopyItem`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ id, headerid, loginid: LOGINID }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    // Swal.close();
+
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+    } else if (res.success) {
+      await isSuccess(res.message);
+      location.reload();
+    }
+  } catch (error) {
+    const msg = `handlerCopyItem: ${error.message}`;
+    catchMessages(msg);
+  }
+};
+
+const handlerDeleteItem = async (id, product) => {
+  const result = await Swal.fire({
+    title: "Sure delete this item ?",
+    html: product,
+    icon: "warning",
+    showCancelButton: true,
+    customClass: {
+      popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+    },
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+  });
+
+  if (!result.isConfirmed) return;
+
+  swalLoadingShow("Please wait while we delete the item.");
+
+  try {
+    const response = await fetch(`${URIMETHOD}/DeleteItem`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    if (!response.ok) {
+      const msg = `${response.status}\n${response.statusText}`;
+      throw new Error(msg);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+    } else if (res.success) {
+      await isSuccess(res.message);
+      location.reload();
+    }
+  } catch (error) {
+    const msg = `handlerDeleteItem: ${error.message}`;
+    catchMessages(msg);
+  }
+};
 // ----------------------------------------------|| Display Functions ||-------------------------------------
 const displayElOverall = (header, detail) => {
   try {
-    Object.values(btnEl).forEach((el) => {
-      if (el) el.classList.add("d-none");
-    });
+    Object.values(btnEl).forEach((el) => toggleShow(el, false));
+
     if (!header || !detail) return;
 
+    // Reset visibilitas kolom data table
     DataTableDetails?.columns(5)?.visible(false);
     DataTableDetails?.columns(6)?.visible(false);
 
-    btnEl.btnFinish.classList.remove("d-none");
-    btnEl.btnPreviewPrint.classList.remove("d-none");
-    btnEl.btnPreviewPDF.classList.remove("d-none");
-    btnEl.btnConvertToJob.classList.remove("d-none");
-
-    btnEl.dividerPrintQuote.classList.remove("d-none");
-    btnEl.btnPrintQuote.classList.remove("d-none");
-    btnEl.btnEmailQuote.classList.remove("d-none");
+    // Button bawaan (Selalu muncul jika header & detail ada)
+    toggleShow(btnEl.btnFinish, true);
+    toggleShow(btnEl.btnPreviewPrint, true);
+    toggleShow(btnEl.btnPreviewPDF, true);
+    toggleShow(btnEl.btnConvertToJob, true);
+    toggleShow(btnEl.dividerPrintQuote, true);
+    toggleShow(btnEl.btnPrintQuote, true);
+    toggleShow(btnEl.btnEmailQuote, true);
 
     if (header.JoNumberId) {
-      btnEl.btnReprintJobSheet.classList.remove("d-none");
+      toggleShow(btnEl.btnReprintJobSheet, true);
     }
 
-    if (["Administrator"].includes(ROLENAME)) {
-      btnEl.btnJobSheet.classList.remove("d-none");
+    // Variabel Penentu Status & Peran
+    const isAdmin = ROLENAME === "Administrator";
+    const isPpicCs = ["PPIC & DE", "Customer Service"].includes(ROLENAME);
+    const isCustomer = ROLENAME === "Customer";
 
-      if (["Draft", "Pending Price Approval"].includes(header.Status)) {
-        btnEl.btnSubmit.classList.remove("d-none");
-        btnEl.btnEditHeader.classList.remove("d-none");
-        btnEl.btnDeleteHeader.classList.remove("d-none");
-        btnEl.btnAddItem.classList.remove("d-none");
+    const isDraftOrPending = ["Draft", "Pending Price Approval"].includes(
+      header.Status,
+    );
+    const isNotCompleted = header.Status !== "Completed";
+    const isNotCanceled = header.Status !== "Canceled";
+    const isOrderActive = [
+      "New Order",
+      "In Production",
+      "Completed",
+      "On Hold",
+    ].includes(header.Status);
+
+    // --- LOGIKA PERMISSION UNTUK ADMIN ---
+    if (isAdmin) {
+      toggleShow(btnEl.btnJobSheet, true);
+
+      if (isDraftOrPending) {
+        toggleShow(btnEl.btnSubmit, true);
+        toggleShow(btnEl.btnEditHeader, true);
+        toggleShow(btnEl.btnDeleteHeader, true);
+        toggleShow(btnEl.btnAddItem, true);
       }
 
-      if (!["Completed"].includes(header.Status)) {
-        btnEl.btnAddSurcharge.classList.remove("d-none");
-        btnEl.btnQuoteDisc.classList.remove("d-none");
-      }
-      btnEl.btnDownloadBarcode.classList.remove("d-none");
-
-      btnEl.btnQuote.classList.remove("d-none");
-      btnEl.btnQuoteDetail.classList.remove("d-none");
-      btnEl.btnDownloadQuote.classList.remove("d-none");
-
-      if (
-        ["New Order", "In Production", "Completed", "On Hold"].includes(
-          header.Status,
-        )
-      ) {
-        btnEl.btnChangeStatus.classList.remove("d-none");
-        btnEl.btnSendOrderMail.classList.remove("d-none");
+      if (isNotCompleted) {
+        toggleShow(btnEl.btnAddSurcharge, true);
+        toggleShow(btnEl.btnQuoteDisc, true);
       }
 
-      btnEl.btnMoreAction.classList.remove("d-none");
+      toggleShow(btnEl.btnDownloadBarcode, true);
+      toggleShow(btnEl.btnQuote, true);
+      toggleShow(btnEl.btnQuoteDetail, true);
+      toggleShow(btnEl.btnDownloadQuote, true);
 
-      btnEl.btnEmailDeposit.classList.remove("d-none");
-      btnEl.dividerEmailDeposit.classList.remove("d-none");
-
-      if (!["Canceled"].includes(header.Status)) {
-        btnEl.btnReloadPricing.classList.remove("d-none");
+      if (isOrderActive) {
+        toggleShow(btnEl.btnChangeStatus, true);
+        toggleShow(btnEl.btnSendOrderMail, true);
       }
 
-      btnEl.dividerLogs.classList.remove("d-none");
-      btnEl.btnLogs.classList.remove("d-none");
+      toggleShow(btnEl.btnMoreAction, true);
+      toggleShow(btnEl.btnEmailDeposit, true);
+      toggleShow(btnEl.dividerEmailDeposit, true);
+
+      if (isNotCanceled) {
+        toggleShow(btnEl.btnReloadPricing, true);
+      }
+
+      toggleShow(btnEl.dividerLogs, true);
+      toggleShow(btnEl.btnLogs, true);
     }
 
-    if (["PPIC & DE", "Customer Service"].includes(ROLENAME)) {
-      btnEl.btnJobSheet.classList.remove("d-none");
+    // --- LOGIKA PERMISSION UNTUK PPIC & CS ---
+    if (isPpicCs) {
+      toggleShow(btnEl.btnJobSheet, true);
 
-      if (["Draft", "Pending Price Approval"].includes(header.Status)) {
-        btnEl.btnSubmit.classList.remove("d-none");
-        btnEl.btnEditHeader.classList.remove("d-none");
-        btnEl.btnDeleteHeader.classList.remove("d-none");
-        btnEl.btnAddItem.classList.remove("d-none");
+      if (isDraftOrPending) {
+        toggleShow(btnEl.btnSubmit, true);
+        toggleShow(btnEl.btnEditHeader, true);
+        toggleShow(btnEl.btnDeleteHeader, true);
+        toggleShow(btnEl.btnAddItem, true);
       }
 
-      if (!["Completed"].includes(header.Status)) {
-        btnEl.btnAddSurcharge.classList.remove("d-none");
-        btnEl.btnQuoteDisc.classList.remove("d-none");
-      }
-      btnEl.btnDownloadBarcode.classList.remove("d-none");
-
-      if (
-        ["New Order", "In Production", "Completed", "On Hold"].includes(
-          header.Status,
-        )
-      ) {
-        btnEl.btnChangeStatus.classList.remove("d-none");
+      if (isNotCompleted) {
+        toggleShow(btnEl.btnAddSurcharge, true);
+        toggleShow(btnEl.btnQuoteDisc, true);
       }
 
-      btnEl.btnMoreAction.classList.remove("d-none");
+      toggleShow(btnEl.btnDownloadBarcode, true);
 
-      if (!["Canceled"].includes(header.Status)) {
-        btnEl.btnReloadPricing.classList.remove("d-none");
+      if (isOrderActive) {
+        toggleShow(btnEl.btnChangeStatus, true);
+      }
+
+      toggleShow(btnEl.btnMoreAction, true);
+
+      if (isNotCanceled) {
+        toggleShow(btnEl.btnReloadPricing, true);
       }
     }
 
-    if (["Administrator"].includes(ROLENAME)) {
-      if (["Draft", "Pending Price Approval"].includes(header.Status)) {
-        btnEl.btnSubmit.classList.remove("d-none");
-        btnEl.btnEditHeader.classList.remove("d-none");
-        btnEl.btnDeleteHeader.classList.remove("d-none");
-        btnEl.btnAddItem.classList.remove("d-none");
+    // --- LOGIKA PERMISSION UNTUK CUSTOMER ---
+    if (isCustomer) {
+      if (isDraftOrPending) {
+        toggleShow(btnEl.btnSubmit, true);
+        toggleShow(btnEl.btnEditHeader, true);
+        toggleShow(btnEl.btnDeleteHeader, true);
+        toggleShow(btnEl.btnAddItem, true);
       }
 
-      btnEl.btnQuote.classList.remove("d-none");
-      btnEl.btnQuoteDetail.classList.remove("d-none");
-      btnEl.btnDownloadQuote.classList.remove("d-none");
+      toggleShow(btnEl.btnQuote, true);
+      toggleShow(btnEl.btnQuoteDetail, true);
+      toggleShow(btnEl.btnDownloadQuote, true);
     }
 
     // ----------------------------------------------|| Hide Button Datatable ||---------------------------------------
+
+    // Reset semua elemen di liEl
     Object.values(liEl).forEach((el) => {
-      Array.from(el).forEach((li) => {
-        li.classList.add("d-none");
-      });
+      Array.from(el).forEach((li) => toggleShow(li, false));
     });
 
-    if (["Draft", "Pending Price Approval"].includes(header.Status)) {
-      ["liEditItem", "liCopyItem", "liDeleteItem"].forEach((key) => {
-        Array.from(liEl[key]).forEach((li) => {
-          li.classList.remove("d-none");
-        });
-      });
+    // Default visibilitas item detail
+    toggleShowList(["liDetailItem"], true);
 
-      if (
-        ["PPIC & DE", "Customer Service", "Manager", "Account"].includes(
-          ROLENAME,
-        ) &&
-        header.CreatedBy.toUpperCase() !== LOGINID.toUpperCase()
-      ) {
-        ["liEditItem", "liCopyItem", "liDeleteItem"].forEach((key) => {
-          Array.from(liEl[key]).forEach((li) => {
-            li.classList.add("d-none");
-          });
-        });
+    if (isDraftOrPending) {
+      toggleShowList(["liEditItem", "liCopyItem", "liDeleteItem"], true);
+      toggleShowList(["liDetailItem"], false);
 
-        ["liDetailItem"].forEach((key) => {
-          Array.from(liEl[key]).forEach((li) => {
-            li.classList.add("d-none");
-          });
-        });
+      const tempRole = ["PPIC & DE", "Customer Service", "Manager", "Account"];
+      const isOtherUser =
+        header.CreatedBy.toUpperCase() !== LOGINID.toUpperCase();
+
+      if (tempRole.includes(ROLENAME) && isOtherUser) {
+        toggleShowList(["liEditItem", "liCopyItem", "liDeleteItem"], false);
+        toggleShowList(["liDetailItem"], true);
       }
     }
 
     if (["Additional", "Surcharge"].includes(detail.DesignName)) {
-      ["liDeleteItem"].forEach((key) => {
-        Array.from(liEl[key]).forEach((li) => {
-          li.classList.remove("d-none");
-        });
-      });
+      toggleShowList(["liDeleteItem"], true);
     }
 
     let hideEditPricing = "True";
     let hidePricing = "True";
+
     if (["True", "1"].includes(PRICEACCESS)) {
       DataTableDetails?.columns(5).visible(true);
-      btnEl.thPrice.classList.remove("d-none");
-      btnEl.divPrice.classList.remove("d-none");
+      toggleShow(btnEl.thPrice, true);
+      toggleShow(btnEl.divPrice, true);
 
       if (
         ["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)
       ) {
-        [
-          "liEditPricingItem",
-          "liDividerBarcode",
-          "liDownloadBarcodeItem",
-        ].forEach((key) => {
-          Array.from(liEl[key]).forEach((li) => {
-            li.classList.remove("d-none");
-          });
-        });
+        toggleShowList(
+          ["liEditPricingItem", "liDividerBarcode", "liDownloadBarcodeItem"],
+          true,
+        );
         hideEditPricing = "False";
       }
 
-      ["liPricingItem"].forEach((key) => {
-        Array.from(liEl[key]).forEach((li) => {
-          li.classList.remove("d-none");
-        });
-      });
+      toggleShowList(["liPricingItem"], true);
       hidePricing = "False";
     }
 
     if (["True", "1"].includes(MARKUPACCESS)) {
       DataTableDetails?.columns(6).visible(true);
-      btnEl.thMarkUp.classList.remove("d-none");
+      toggleShow(btnEl.thMarkUp, true);
     }
 
-    if (hideEditPricing == "False" && hidePricing == "False") {
-      ["liDivider"].forEach((key) => {
-        Array.from(liEl[key]).forEach((li) => {
-          li.classList.remove("d-none");
-        });
-      });
+    if (hideEditPricing === "False" && hidePricing === "False") {
+      toggleShowList(["liDivider"], true);
     }
   } catch (error) {
     const msg = `displayElOverall: ${error.message}`;
     catchMessages(msg);
   }
 };
-
 const displayElmodalChangeStatus = (status) => {
   elModal.modalChangeStatus
     .querySelector("#divDescription")
@@ -1763,8 +1951,8 @@ const submitSelectProduct = async (designid, production, action, button) => {
         field.classList.add("is-invalid");
       }
     } else if (res.success) {
-      var finePage = res.page.replace("~", "");
-      window.location.href = finePage;
+      const findPage = res.page.replace("~", "");
+      window.location.href = findPage;
     }
   } catch (error) {
     const msg = `submitSelectProduct: ${error.message}`;
@@ -2113,6 +2301,20 @@ const showCopyMessage = () => {
   }, 1500); // 1.5 detik
 };
 
+const toggleShow = (el, show) => {
+  if (!el) return;
+  el.classList.toggle("d-none", !show);
+};
+
+const toggleShowList = (keys, show) => {
+  keys.forEach((key) => {
+    if (liEl[key]) {
+      Array.from(liEl[key]).forEach((li) =>
+        li.classList.toggle("d-none", !show),
+      );
+    }
+  });
+};
 const catchMessages = (msg) => {
   if (!["Administrator"].includes(ROLENAME))
     msg = "Please contact our IT team at support@onlineorder.au";

@@ -1097,7 +1097,6 @@ Partial Class Methods_Order_RollerBlindMethod
             End If
 
             
-            
             Dim SoeId As String = publicCfg.GetSoeKitId(data.colourtype)
             Dim DesignName As String = publicCfg.GetDesignName(data.designid)
             Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
@@ -1125,7 +1124,7 @@ Partial Class Methods_Order_RollerBlindMethod
             End If
 
             
-
+            
 
 
             Dim ChainId As String = ""
@@ -1216,6 +1215,8 @@ Partial Class Methods_Order_RollerBlindMethod
             ' If data.trim = "1F" Then
             '     data.accessory = ""
             ' End If
+
+            
             
             ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = data.uniqueid, .field = ""}}
             
@@ -1236,7 +1237,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, UniqueId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, BottomRailId, PriceGroupId, CassetteExtraId, Qty, Location, LouvreSize, LouvrePosition, Mounting, Width, [Drop], RollDirection, ControlPosition, ChainLength, Accessory, TubeSize, Trim, BracketCover, BracketColour, BracketExtension, ChildSafe, MotorStyle, MotorRemote, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @UniqueId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @BottomRailId, @PriceGroupId, @CassetteExtraId, @Qty, @Location, @LouvreSize, @LouvrePosition, @Mounting, @Width, @Drop, @RollDirection, @ControlPosition, @ChainLength, @Accessory, @TubeSize, @Trim, @BracketCover, @BracketColour, @BracketExtension, @ChildSafe, @MotorStyle, @MotorRemote, @MotorBattery, @MotorCharger, @Connector, @AdditionalMotor, @CableExitPoint, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
-                        myCmd.Parameters.AddWithValue("@UniqueId", If( String.IsNullOrEmpty(data.uniqueid), DBNull.Value, data.uniqueid))
+                        myCmd.Parameters.AddWithValue("@UniqueId", If(String.IsNullOrEmpty(data.uniqueid), DBNull.Value, data.uniqueid))
                         myCmd.Parameters.AddWithValue("@BlindNo", data.blindno)
                         myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.colourtype), DBNull.Value, UCase(data.colourtype).ToString()))
                         myCmd.Parameters.AddWithValue("@SoeKitId", If(String.IsNullOrEmpty(SoeId), DBNull.Value, SoeId))

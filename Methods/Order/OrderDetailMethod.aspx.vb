@@ -377,7 +377,7 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim CustomerContactId As String = HttpContext.Current.Session("CustomerContactId").ToString()
 
             Dim detailData As DataSet = publicCfg.GetListData("SELECT Id, UniqueId, DesignName, BracketType, FabricGroups FROM view_details WHERE HeaderId='" + headerid + "' AND Active=1 ORDER BY Id ASC")
-            If detailData.Tables(0).Rows.Count < 1  Then Return Nothing
+            If detailData.Tables(0).Rows.Count < 1  Then Return New With {.error = false, .Action = Action, .Message = "order details not found"}
 
             For i As Integer = 0 To detailData.Tables(0).Rows.Count - 1
                 Dim Id As String = detailData.Tables(0).Rows(i).Item("Id").ToString()
@@ -459,8 +459,8 @@ Partial Class Methods_Order_OrderDetailMethod
     Private Shared Function FindMailQuote(ByVal appid As String, ByVal customerid As String) As Object
         Try
             Dim Mailings As DataSet = publicCfg.GetListData(String.Format("SELECT Id, Server FROM Mailings WHERE ApplicationId ='{0}' AND Name = 'Quote Order Shutters' AND Active = 1", appid))
-            Dim MailId As String = String.Empty
-            Dim MailFrom As String = String.Empty
+            Dim MailId As String = ""
+            Dim MailFrom As String = ""
             Dim MailTo As String = publicCfg.GetItemData(String.Format("SELECT Email FROM CustomerContacts WHERE CustomerId = '{0}' AND [Primary]=1", customerid))
             If Mailings.Tables(0).Rows.Count > 0 Then
                 MailId = Mailings.Tables(0).Rows(0).Item("Id").ToString()
@@ -1870,4 +1870,168 @@ Partial Class Methods_Order_OrderDetailMethod
             Return New With { .error = true, .message = String.Format("FindProductForm: {0}", ex.Message)}
         End Try
     End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function CopyItem(ByVal id As String, ByVal headerid As String, ByVal loginid As String) As Object
+        Try
+            If String.IsNullOrEmpty(id) Then
+                Throw new Exception("id is null or empty !")
+            End If
+
+            Dim detailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE Id='{0}' AND Active='1'",id))
+            If detailData.Tables(0).Rows.Count < 1 Then
+                Throw New Exception("Order not found.")
+            End If
+
+            Dim DesignId As String = detailData.Tables(0).Rows(0).Item("DesignId").ToString()
+            Dim DesignName As String = detailData.Tables(0).Rows(0).Item("DesignName").ToString()
+            Dim BracketType As String = detailData.Tables(0).Rows(0).Item("BracketType").ToString()
+
+            Dim NewItemId As string = publicCfg.CreateOrderItemId()
+            Dim NewBlindNo As String = "Blind 1"
+            Dim NewUniqueId As String = String.Empty
+            If InArray(BracketType, "Double", "Linked 2 Blinds (Ind)", "Linked 2 Blinds (Dep)", "Linked 3 Blinds (Ind)", "Linked 3 Blinds (Dep)", "Double and Link System Ind", "Double and Link System Dep") Then
+                NewUniqueId = GenerateUniqueId()
+            End IF
+
+
+            Dim OngoingFieldWindow As String = "MeshType, FrameColour, Brace, AngleType, AngleLength, AngleQty, PortHole, PlungerPin, SwipelColour, SwipelQty, SwipelQtyB, SpringQty, TopPLasticQty,"
+
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand(String.Format("INSERT INTO OrderDetails SELECT @IdNew, HeaderId, KitId, SoeKitId, ExactId, FabricId, FabricIdB, ChainId, BottomRailId, PriceGroupId, PriceGroupIdB, CassetteExtraId, @UniqueId, BlindNo, Qty, Location, Mounting, Width, WidthB, WidthMiddle, WidthBottom, [Drop], DropB, DropMiddle, DropRight, SemiInsideMount, LouvreSize, LouvrePosition, HingeColour, MidrailHeight1, MidrailHeight2, MidrailCritical, Layout, LayoutSpecial, CustomHeaderLength, FrameType, FrameLeft, FrameRight, FrameTop, FrameBottom, BottomTrackType, BottomTrackRecess, Buildout, BuildoutPosition, PanelQty, TrackQty, PanelSize, NumOfPanel, HingeQtyPerPanel, PanelQtyWithHinge, LocationTPost1, LocationTPost2, LocationTPost3, LocationTPost4, LocationTPost5, HorizontalTPost, HorizontalTPostHeight, JoinedPanels, ReverseHinged, PelmetFlat, ExtraFascia, HingesLoose, TiltrodType, TiltrodSplit, SplitHeight1, SplitHeight2, DoorCutOut, SpecialShape, TemplateProvided, {0} SquareMetre, LinearMetre, StackPosition, TilterPosition, RollDirection, ControlPosition, ControlColour, @ControlLength, ChainLength, MaterialChain, MotorStyle, MotorRemote, MotorRequired, MotorBattery, MotorCharger, Connector, AdditionalMotor, CableExitPoint, TrackType, TrackColour, TrackLength, NumOfWand, WandPosition,  WandColour, WandLength, CordColour, CordLength, MaterialCord, AcornPlasticColour, Accessory, SideBySide, SlatSize, SlatQty, TubeSize, Trim, Batten, BattenColour,  BracketOption, BracketColour, BracketCover, BracketExtension, Fitting, FlatType, ChildSafe, Cleat, BottomHoldDown, HangerType, PelmetType, @PelmetWidth, PelmetSize, PelmetReturn, PelmetReturnPosition, PelmetReturnSize, PelmetReturnSize2, CutOut_LeftTop, CutOut_RightTop, CutOut_LeftBottom, CutOut_RightBottom, LHSWidth_Top, LHSHeight_Top, RHSWidth_Top, RHSHeight_Top, LHSWidth_Bottom, LHSHeight_Bottom, RHSWidth_Bottom, RHSHeight_Bottom, BlindSize, Sloper, InsertInTrack, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active FROM OrderDetails WHERE Id=@Id", OngoingFieldWindow), thisConn)
+                    myCmd.Parameters.AddWithValue("@Id", id)
+                    myCmd.Parameters.AddWithValue("@IdNew", NewItemId)
+                    myCmd.Parameters.AddWithValue("@UniqueId", NewUniqueId)
+                    myCmd.Parameters.AddWithValue("@PelmetWidth", DBNull.Value)
+                    myCmd.Parameters.AddWithValue("@ControlLength", DBNull.Value)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            If Not DesignName = "Roller Blinds" Then
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetailsPrice SELECT	NEWID(), HeaderId, @ItemIdNew, Type, Qty, Description, Cost, Discount, DiscountB, DiscountC, Poa FROM OrderDetailsPrice WHERE ItemId=@ItemId", thisConn)
+                        myCmd.Parameters.AddWithValue("@ItemId", id)
+                        myCmd.Parameters.AddWithValue("@ItemIdNew", NewItemId)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+            End If
+
+
+            publicCfg.ResetPriceDetail(NewItemId)
+            publicCfg.HitungHarga(headerid, NewItemId)
+            publicCfg.HitungSurcharge(headerid, NewItemId)
+            Dim OrderType As String = publicCfg.GetItemData(String.Format("SELECT OrderType FROM OrderHeaders WHERE Id='{0}'", headerid))
+            Dim dataLog As Object() = {headerid, NewItemId, OrderType, loginid, "Copy Item Order"}
+            orderCfg.Log_Orders(dataLog)
+
+            Return New With {.success = true, .message = "Data has been copied successfully, Click <b>OK</b> to reload item list."}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("CopyItem: {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared Function GenerateUniqueId() As String
+        Return Guid.NewGuid().ToString("N")
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function DeleteItem(ByVal id As String) As Object
+        Try
+            If String.IsNullOrEmpty(id) Then
+                Throw New Exception("id is null or empty !")
+            End If
+
+            Dim detailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE Id='{0}' AND Active='1'", id))
+            If detailData.Tables(0).Rows.Count = 0 Then
+                Throw New Exception("Order not found.")
+            End If
+
+            Dim BracketName As String = detailData.Tables(0).Rows(0).Item("BracketType").ToString()
+            Dim BlindNo As String = detailData.Tables(0).Rows(0).Item("BlindNo").ToString()
+            Dim UniqueId As String = detailData.Tables(0).Rows(0).Item("UniqueId").ToString()
+
+            UpdateDetail(id)
+            DeleteDetail(id)
+
+            Dim NewBlindNo As String = String.Empty
+            If BracketName = "Double" Or BracketName = "Linked 2 Blinds (Dep)" Or BracketName = "Linked 2 Blinds (Ind)" Then
+                If BlindNo = "Blind 1" Then
+                    BlindNo = "Blind 2"
+                    NewBlindNo = "Blind 1"
+                    UpdateDetailBlindNo(NewBlindNo, BlindNo, UniqueId)
+                End If
+            End If
+
+            If BracketName = "Linked 3 Blinds (Dep)" Or BracketName = "Linked 3 Blinds (Ind)" Then
+                If BlindNo = "Blind 1" Then
+                    BlindNo = "Blind 2"
+                    NewBlindNo = "Blind 1"
+
+                    UpdateDetailBlindNo(NewBlindNo, BlindNo, UniqueId)
+
+                    BlindNo = "Blind 3"
+                    NewBlindNo = "Blind 2"
+                    UpdateDetailBlindNo(NewBlindNo, BlindNo, UniqueId)
+                End If
+
+                If BlindNo = "Blind 2" Then
+                    BlindNo = "Blind 3"
+                    NewBlindNo = "Blind 2"
+                    UpdateDetailBlindNo(NewBlindNo, BlindNo, UniqueId)
+                End If
+            End If
+
+            Return New With { .success = true, .message = "Data has been deleted successfully, Click <b>OK</b> to reload item list."}
+        Catch ex As Exception
+            Return New With { .error = true, .message = ex.Message}
+        End Try
+    End Function
+
+    Private Shared Sub UpdateDetail(ByVal id As String)
+        Using thisConn As New SqlConnection(myConn)
+            Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=NULL WHERE Id=@Id", thisConn)
+                myCmd.Parameters.AddWithValue("@Id", id)
+                myCmd.Connection = thisConn
+                thisConn.Open()
+                myCmd.ExecuteNonQuery()
+                thisConn.Close()
+            End Using
+        End Using
+    End Sub
+
+     Private Shared Sub DeleteDetail(ByVal id As String)
+        Using thisConn As New SqlConnection(myConn)
+            Using myCmd As New SqlCommand("UPDATE OrderDetails SET Active=0 WHERE Id=@Id", thisConn)
+                myCmd.Parameters.AddWithValue("@Id", id)
+                myCmd.Connection = thisConn
+                thisConn.Open()
+                myCmd.ExecuteNonQuery()
+                thisConn.Close()
+            End Using
+        End Using
+    End Sub
+
+    Private Shared Sub UpdateDetailBlindNo(ByVal newblindno As String, ByVal blindno As String, ByVal uniqueid As String)
+        Using thisConn As New SqlConnection(myConn)
+            Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNoNew WHERE UniqueId=@UniqueId AND BlindNo=@BlindNo AND Active=1", thisConn)
+                myCmd.Parameters.AddWithValue("@BlindNoNew", newblindno)
+                myCmd.Parameters.AddWithValue("@BlindNo", blindno)
+                myCmd.Parameters.AddWithValue("@UniqueId", uniqueid)
+                myCmd.Connection = thisConn
+                thisConn.Open()
+                myCmd.ExecuteNonQuery()
+                thisConn.Close()
+            End Using
+        End Using
+    End Sub
 End Class
