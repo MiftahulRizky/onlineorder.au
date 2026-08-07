@@ -596,7 +596,7 @@ const bindOrderAggregate = async (headerid, ordertype) => {
       throw new Error(data.message);
     }
 
-    console.log(data.other);
+    console.log(data.header);
 
     handlerHeaderInfo(data.header);
     bindDetails(data.detail);
@@ -1819,8 +1819,9 @@ const setValmodalChangeStatus = (itemData) => {
 };
 
 const setValmodalQuoteDisc = (header) => {
-  document.querySelector("#modalQuoteDisc #discount").value =
-    header.QuoteDisc || 0;
+  const disc = header.QuoteDisc.replace(",", ".");
+  elModal.modalQuoteDisc.querySelector("#discount").value = disc || 0;
+  console.log(disc);
 };
 
 const setValmodalSendMailQuote = (other) => {

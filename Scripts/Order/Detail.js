@@ -132,7 +132,7 @@ document.querySelector("#btnQuoteDisc").addEventListener("click", async () => {
     `SELECT QuoteDisc FROM OrderHeaders WHERE Id = '${HEADERID}'`,
   );
   const discount = document.querySelector("#modalQuoteDisc #discount");
-  discount.value = QuoteDisc;
+  discount.value = QuoteDisc.replace(",", ".");
   handlerShowBSModal("modalQuoteDisc");
   swal.close();
 });

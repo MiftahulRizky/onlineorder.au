@@ -223,6 +223,7 @@ Partial Class Methods_Order_OrderDetailMethod
                                 .Status = reader("Status").ToString(),
                                 .Delivery = reader("Delivery").ToString(),
                                 .SubmittedDate = reader("SubmittedDate").ToString(),
+                                .QuoteDisc = reader("QuoteDisc").ToString(),
                                 .JobDate = reader("JobDate").ToString(),
                                 .CompletedDate = reader("CompletedDate").ToString(),
                                 .CanceledDate = reader("CanceledDate").ToString(),
@@ -1232,7 +1233,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
             Return New With {.success = true, .message = "Reload pricing has been updated successfully."}
         Catch ex As Exception
-            Return New With {.error = true, .message = ex.Message}
+            Return New With {.error = true, .message = String.Format("ReloadPricing: {0}", ex.Message)}
         End Try
     End Function
 

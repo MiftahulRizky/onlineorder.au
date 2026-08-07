@@ -1087,7 +1087,7 @@ Public Class MailConfig
         Dim appId As String = GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE Id = '" & loginId & "'")
         If String.IsNullOrEmpty(appId) Then Exit Sub
 
-        Dim mailData As DataSet = GetListData("SELECT * FROM Mailings WHERE ApplicationId = '" & appId & "' AND Name = 'Supplier Shutters' AND Active = 1")
+        Dim mailData As DataSet = GetListData("SELECT * FROM Mailings WHERE ApplicationId = '" & appId & "' AND Name = 'Risong Shutters' AND Active = 1")
         Dim mailDevelopment As DataSet = GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
 
         If mailData.Tables(0).Rows.Count = 0 Then Exit Sub

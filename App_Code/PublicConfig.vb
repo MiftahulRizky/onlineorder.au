@@ -879,31 +879,28 @@ Public Class PublicConfig
         End If
 
         ' 3. Proses perhitungan jika data ditemukan
-         Dim Discount As Integer = 0
-        If thisData IsNot Nothing AndAlso thisData.Tables(0).Rows.Count > 0 Then
+        Dim Discount As Decimal = 0D
+
+        ' Ambil QuoteDisc terlebih dahulu
+        Dim QuoteDisc As String = GetItemData(String.Format("SELECT QuoteDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
+
+        If Not String.IsNullOrEmpty(QuoteDisc) AndAlso QuoteDisc <> "0" Then
+            ' Ubah koma ke titik
+            QuoteDisc = QuoteDisc.Replace(",", ".")
+            
+            ' Konversi menggunakan InvariantCulture agar titik selalu dibaca sebagai desimal
+            Discount = Decimal.Parse(QuoteDisc, System.Globalization.CultureInfo.InvariantCulture)
+        ElseIf thisData IsNot Nothing AndAlso thisData.Tables(0).Rows.Count > 0 Then
             Dim dr As DataRow = thisData.Tables(0).Rows(0)
             
-            ' Menggunakan Convert.ToInt32 agar lebih aman dari format string
-            Discount  = Convert.ToInt32(dr("Discount"))
-            Dim QuoteDisc AS String = GetItemData(String.Format("SELECT QuoteDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
-            If Not String.IsNullOrEmpty(QuoteDisc) AND Not QuoteDisc = "0" Then
-                Discount = Convert.ToInt32(QuoteDisc)
+            ' Pastikan penanganan jika dr("Discount") bernilai DBNull atau String
+            If Not IsDBNull(dr("Discount")) Then
+                Discount = Convert.ToDecimal(dr("Discount"))
             End If
-            
-            ' Rumus perhitungan diskon 
-            ' Catatan: Pastikan Matrix dan result bertipe Double/Decimal karena pembagian 100 menghasilkan pecahan
-            ' result = Matrix * (Discount / 100.0)
-        Else
-            Dim QuoteDisc AS String = GetItemData(String.Format("SELECT QuoteDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
-            If Not String.IsNullOrEmpty(QuoteDisc) AND Not QuoteDisc = "0" Then
-                Discount = Convert.ToInt32(QuoteDisc)
-            End If
-
-            ' result = Matrix * (Discount / 100.0)
         End If
 
         If Not InArray(DesignName, "Surcharge", "Additional") Then
-            result = Matrix * (Discount / 100.0)
+            result = Matrix * (Discount / 100.0D)
         End If
         
         Return result
