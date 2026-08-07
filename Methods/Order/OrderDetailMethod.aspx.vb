@@ -20,9 +20,11 @@ Imports System.Net
 Imports System.Net.Mail
 Imports System.Net.Http
 Imports System.Text
+Imports System.Xml
 Partial Class Methods_Order_OrderDetailMethod
     Inherits System.Web.UI.Page
     Shared orderCfg As New OrderConfig()
+    Shared exactCfg As New ExactConfig()
     Shared publicCfg As New PublicConfig()
     Shared printCfg As New PrintConfig()
     Shared jobsheet As New HalperJobSheetRenderer()
@@ -2267,7 +2269,7 @@ Partial Class Methods_Order_OrderDetailMethod
                                 ThisCost += String.Format("<br/> {0}", FinalCost.ToString("C", New CultureInfo("en-US")))
                                 If Type = "Matrix" Then
                                     ThisDiscB = DiscountB.ToString("C", New CultureInfo("en-US"))
-                                    ElDisc += String.Format("<button type='button' class='border-0 bg-transparent' data-bs-container='body' data-bs-toggle='popover' data-bs-trigger='hover focus' data-bs-placement='bottom' data-bs-content='Discount in {0}%'>{1}</button>", DiscountInPercent.ToString("0.##"), ThisDiscB)
+                                    ElDisc += String.Format("<button type='button' class='border-0 bg-transparent' data-bs-container='body' data-bs-toggle='popover' data-bs-trigger='hover focus' data-bs-placement='bottom' data-bs-content='Discount in {0}%'>{1}</button>", DiscountInPercentB.ToString("0.##"), ThisDiscB)
                                 End If
                             End If
 
@@ -2309,11 +2311,171 @@ Partial Class Methods_Order_OrderDetailMethod
         End Try
     End Function
 
-    ' Private Shared Function FindCostItem(reader As SqlDataReader) As String
-    '     Try
-          
-    '     Catch ex As Exception
-    '         Return "FindCostItem : " & ex.Message
-    '     End Try
-    ' End Function
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function ExactSlip(ByVal headerid As String, ByVal ordertype As String) As Object
+        Try
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id='{0}' AND OrderType='{1}'", headerid, ordertype))
+            If HeaderData.Tables(0).Rows.Count < 1 Then
+                Throw New Exception("Order Header not found.")
+            End If
+            
+            Dim OrderId As String = HeaderData.Tables(0).Rows(0).Item("OrderId").ToString()
+            Dim Status As String = HeaderData.Tables(0).Rows(0).Item("Status").ToString()
+            Dim FileName As String = String.Format("Order-Blinds-{0}.xml", OrderId)
+            Dim FilePath As String = HttpContext.Current.Server.MapPath("~/file/inv/")
+            Dim PathCombine As String = Path.Combine(FilePath, FileName)
+
+            If Not Status = "In Production" Then
+                Return New With {.warning = true, .message = "This order is not in production."}
+            End If
+
+            ' Dim Res As String = CreateXMLB(headerid, FileName, FilePath)
+            ' If Not Res = "200" Then Throw New Exception(Res)
+            exactCfg.CreateXMLB(headerid, FileName, FilePath)
+            ' exactCfg.Connect(PathCombine)
+            
+            Return New With {.success = true, .message = "The Exact Slip was successfully sent."}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("ExactSlip : {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared Function CreateXMLB(Id As String, fileName As String, folderPath As String) As String
+        Try
+            Dim sb As New StringBuilder()
+            sb.AppendLine("<?xml version=""1.0""?>")
+
+            Dim settings As New XmlWriterSettings()
+            settings.Indent = True
+            settings.OmitXmlDeclaration = True
+            settings.Encoding = New UTF8Encoding(False)
+
+            Dim headerData As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE Id = '" + Id + "' AND OrderType = 'Blinds'")
+            If headerData.Tables(0).Rows.Count < 0 Then Throw New Exception("Order Header not found.")
+
+            For h As Integer = 0 To headerData.Tables(0).Rows.Count - 1
+                Dim orderId As String = headerData.Tables(0).Rows(h).Item("OrderId").ToString()
+                Dim orderNumber As String = headerData.Tables(0).Rows(h).Item("OrderNumber").ToString()
+                Dim orderName As String = headerData.Tables(0).Rows(h).Item("OrderName").ToString()
+                Dim customerId As String = headerData.Tables(0).Rows(h).Item("CustomerId").ToString()
+                Dim jobDate As String = Convert.ToDateTime(headerData.Tables(0).Rows(h).Item("JobDate")).ToString("yyyy-MM-dd")
+                Dim shipmentId As String = headerData.Tables(0).Rows(h).Item("ShipmentId").ToString()
+
+                Dim customerAccount As String = publicCfg.GetItemData("SELECT Account FROM Customers WHERE Id = '" + customerId + "'")
+
+                Dim exactCustomer As String = String.Empty
+                If customerAccount = "Master" Or customerAccount = "Regular" Or customerAccount = "REGULAR" Then
+                    exactCustomer = publicCfg.GetItemData("SELECT ExactId FROM Customers WHERE Id='" + customerId + "'")
+                End If
+
+                If customerAccount = "Sub" Then
+                    Dim masterId As String = publicCfg.GetItemData("SELECT MasterId FROM Customers WHERE Id='" + customerId + "'")
+                    exactCustomer = publicCfg.GetItemData("SELECT ExactId FROM Customers WHERE Id='" + masterId + "'")
+                End If
+
+                Dim etaCustomer As String = String.Empty
+                If Not String.IsNullOrEmpty(shipmentId) Then
+                    Dim shipmentData As DataSet = publicCfg.GetListData("SELECT * FROM OrderShipments WHERE Id='" + shipmentId + "'")
+                    etaCustomer = Convert.ToDateTime(shipmentData.Tables(0).Rows(0).Item("ETACustomer")).ToString("yyyy-MM-dd")
+                End If
+
+                Using stringWriter As New StringWriter(sb)
+                    Using writer As XmlWriter = XmlWriter.Create(stringWriter, settings)
+                        writer.WriteStartDocument()
+                        writer.WriteStartElement("eExact")
+                        writer.WriteAttributeString("xmlns", "xsi", Nothing, "http://www.w3.org/2001/XMLSchema-instance")
+                        writer.WriteAttributeString("xsi", "noNamespaceSchemaLocation", "http://www.w3.org/2001/XMLSchema-instance", "eExact-Schema.xsd")
+
+                        writer.WriteStartElement("Orders")
+                        writer.WriteStartElement("Order")
+                        writer.WriteAttributeString("type", "V")
+
+                        writer.WriteElementString("YourRef", Id)
+                        writer.WriteElementString("Description", orderId & " - " & orderNumber & " - " & orderName)
+
+                        writer.WriteStartElement("Resource")
+                        writer.WriteAttributeString("number", "99")
+                        writer.WriteString("")
+                        writer.WriteEndElement()
+
+                        writer.WriteStartElement("OrderedBy")
+                        writer.WriteStartElement("Debtor")
+                        writer.WriteAttributeString("code", exactCustomer)
+                        writer.WriteString("")
+                        writer.WriteEndElement()
+                        writer.WriteElementString("Date", jobDate)
+                        writer.WriteEndElement()
+
+                        Dim detailData As DataSet = publicCfg.GetListData("SELECT * FROM OrderDetails WHERE HeaderId = '" & Id & "' AND Active = 1 ORDER BY Id ASC")
+
+                        For i As Integer = 0 To detailData.Tables(0).Rows.Count - 1
+                            Dim itemId As String = detailData.Tables(0).Rows(i).Item("Id").ToString()
+                            Dim kitId As String = detailData.Tables(0).Rows(i).Item("KitId").ToString()
+                            Dim totalMatrix As Decimal = detailData.Tables(0).Rows(i).Item("TotalMatrix").ToString()
+                            Dim totalCharge As Decimal = detailData.Tables(0).Rows(i).Item("TotalCharge").ToString()
+                            Dim finalCost As Decimal = totalMatrix + totalCharge
+                            Dim finalCostString As String = finalCost.ToString(CultureInfo.InvariantCulture)
+
+                            Dim exactProduct As String = detailData.Tables(0).Rows(i).Item("ExactId").ToString()
+                            If String.IsNullOrEmpty(exactProduct) Then
+                                Dim designId As String = publicCfg.GetItemData("SELECT DesignId FROM HardwareKits WHERE Id='" + UCase(kitId) + "'")
+                                Dim blindId As String = publicCfg.GetItemData("SELECT BlindId FROM HardwareKits WHERE Id='" + UCase(kitId) + "'")
+                                Dim designName As String = publicCfg.GetItemData("SELECT Name FROM Designs WHERE Id = '" + designId + "'")
+                                Dim blindName As String = publicCfg.GetItemData("SELECT Name FROM Blinds WHERE Id = '" + blindId + "'")
+
+                                Dim exactName As String = designName & " - " & blindName
+                                exactProduct = publicCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
+                            End If
+
+                            Dim productName As String = publicCfg.GetItemData("SELECT Name FROM HardwareKits WHERE Id = '" & UCase(kitId) & "'")
+                            Dim width As String = detailData.Tables(0).Rows(i).Item("Width").ToString()
+                            Dim drop As String = detailData.Tables(0).Rows(i).Item("Drop").ToString()
+                            Dim itemDescription As String = productName & " " & width & "x" & drop
+
+                            writer.WriteStartElement("OrderLine")
+
+                            writer.WriteStartElement("Item")
+                            writer.WriteAttributeString("code", exactProduct)
+                            writer.WriteString("")
+                            writer.WriteEndElement()
+
+                            writer.WriteElementString("Quantity", "1")
+
+                            writer.WriteStartElement("Price")
+                            writer.WriteAttributeString("type", "S")
+
+                            writer.WriteStartElement("Currency")
+                            writer.WriteAttributeString("code", "AUD")
+                            writer.WriteString("")
+                            writer.WriteEndElement()
+
+                            writer.WriteElementString("Value", finalCostString)
+                            writer.WriteEndElement() ' Price
+
+                            writer.WriteStartElement("Delivery")
+                            writer.WriteElementString("Date", etaCustomer)
+                            writer.WriteEndElement()
+
+                            writer.WriteElementString("Text", itemDescription)
+                            writer.WriteEndElement() ' OrderLine
+                        Next
+
+                        writer.WriteEndElement() ' Order
+                        writer.WriteEndElement() ' Orders
+                        writer.WriteEndElement() ' eExact
+                        writer.WriteEndDocument()
+                    End Using
+                End Using
+            Next
+
+            Dim filePath As String = Path.Combine(folderPath, fileName)
+            Dim xmlFinal As String = sb.ToString().Replace(" />", "/>")
+            File.WriteAllText(filePath, xmlFinal, New UTF8Encoding(False))
+            Return "200"
+        Catch ex As Exception
+            Return String.Format("CreateXMLB: {0}", ex.Message)
+        End Try
+    End Function
+
 End Class

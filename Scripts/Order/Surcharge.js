@@ -129,6 +129,7 @@ const bindBlinds = async () => {
     field: "blindtype",
     params: { designid: DESIGNID },
     withDefaultOption: true,
+    lengthDefaultOption: 1,
   });
 };
 
@@ -140,6 +141,7 @@ const bindTubes = async (designid, blindtype) => {
     field: "tubetype",
     params: { designid, blindtype },
     withDefaultOption: true,
+    lengthDefaultOption: 1,
 
     onSingle: async (item, select) => {
       const tubetype = item.value;
@@ -158,6 +160,7 @@ const bindControls = async (designid, blindtype, tubetype) => {
     field: "controltype",
     params: { designid, blindtype, tubetype },
     withDefaultOption: true,
+    lengthDefaultOption: 1,
 
     onSingle: async (item, select) => {
       const controltype = item.value;
@@ -404,6 +407,7 @@ const bindSelect = async ({
   field,
   params = {},
   withDefaultOption = true,
+  lengthDefaultOption = 0,
   onSingle = null,
   afterRender = null,
 }) => {
@@ -439,7 +443,7 @@ const bindSelect = async ({
     select.innerHTML = "";
 
     // default option
-    if (withDefaultOption && data.length > 1) {
+    if (withDefaultOption && data.length > lengthDefaultOption) {
       const opt = document.createElement("option");
       opt.value = "";
       opt.text = "";

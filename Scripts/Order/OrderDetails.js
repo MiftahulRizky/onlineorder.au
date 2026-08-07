@@ -180,7 +180,7 @@ Object.values(btnEl).forEach((el) => {
 
       if (id === "btnReloadPricing") {
         const status = document.getElementById("spanStatusOrder").innerHTML;
-        Swal.fire({
+        const result = await Swal.fire({
           title: "Are you sure?",
           text: "Sure to reload the pricing?",
           icon: "warning",
@@ -191,11 +191,10 @@ Object.values(btnEl).forEach((el) => {
           confirmButtonColor: "#3085d6",
           cancelButtonColor: "#d33",
           confirmButtonText: "Yes, reload it!",
-        }).then((result) => {
-          if (!result.isConfirmed) return;
-
-          handlerReloadPricingOnReadyPage(HEADERID, status, "click");
         });
+        if (!result.isConfirmed) return;
+
+        await handlerReloadPricingOnReadyPage(HEADERID, status, "click");
       }
 
       if (id === "btnChangeStatus") {
@@ -211,7 +210,21 @@ Object.values(btnEl).forEach((el) => {
       }
 
       if (id === "btnExactSlip") {
-        alert("This feature is not available yet.");
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "Sure to send the exact slip?",
+          icon: "warning",
+          showCancelButton: true,
+          customClass: {
+            popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+          },
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, send it!",
+        });
+        if (!result.isConfirmed) return;
+
+        await handlerExactSlip();
       }
 
       if (id === "btnQuoteDisc") {
@@ -1270,6 +1283,37 @@ const handlerDownloadBarcode = async (headerid, itemid) => {
     }
   } catch (error) {
     const msg = `handlerDownloadBarcode: ${error.message}`;
+    catchMessages(msg);
+  }
+};
+
+const handlerExactSlip = async () => {
+  swalLoadingShow("Please wait while we exact the slip.");
+  try {
+    const response = await fetch(`${URIMETHOD}/ExactSlip`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ headerid: HEADERID, ordertype: ORDERTYPE }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+    } else if (res.success) {
+      await isSuccess(res.message);
+      location.reload();
+    }
+  } catch (error) {
+    const msg = `handlerExactSlip: ${error.message}`;
     catchMessages(msg);
   }
 };
