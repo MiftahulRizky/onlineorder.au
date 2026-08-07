@@ -38,6 +38,7 @@ const btnEl = {
   btnChangeStatus: getById("btnChangeStatus"),
   btnSendOrderMail: getById("btnSendOrderMail"),
   btnDownloadBarcode: getById("btnDownloadBarcode"),
+  btnExactSlip: getById("btnExactSlip"),
   btnQuoteDisc: getById("btnQuoteDisc"),
   dividerPrintQuote: getById("dividerPrintQuote"),
   btnPrintQuote: getById("btnPrintQuote"),
@@ -207,6 +208,10 @@ Object.values(btnEl).forEach((el) => {
 
       if (id === "btnDownloadBarcode") {
         handlerDownloadBarcode(HEADERID, "");
+      }
+
+      if (id === "btnExactSlip") {
+        alert("This feature is not available yet.");
       }
 
       if (id === "btnQuoteDisc") {
@@ -479,7 +484,6 @@ document.querySelector("#tableAjax").addEventListener("click", async (e) => {
     const production = e.target.dataset.production;
     const headerid = e.target.dataset.headerid;
     const ordertype = ORDERTYPE;
-    const designname = e.target.dataset.designname;
     handlerFindProductForm(
       itemid,
       headerid,
@@ -487,7 +491,6 @@ document.querySelector("#tableAjax").addEventListener("click", async (e) => {
       "ViewItem",
       designid,
       production,
-      designname,
     );
   }
 
@@ -497,7 +500,6 @@ document.querySelector("#tableAjax").addEventListener("click", async (e) => {
     const production = e.target.dataset.production;
     const headerid = e.target.dataset.headerid;
     const ordertype = ORDERTYPE;
-    const designname = e.target.dataset.designname;
     handlerFindProductForm(
       itemid,
       headerid,
@@ -505,7 +507,6 @@ document.querySelector("#tableAjax").addEventListener("click", async (e) => {
       "EditItem",
       designid,
       production,
-      designname,
     );
   }
 
@@ -533,6 +534,29 @@ document.querySelector("#tableAjax").addEventListener("click", async (e) => {
     const itemid = e.target.dataset.id;
     await bindPricingItem(itemid);
     handlerShowBSModal("modalPricingItem");
+  }
+
+  if (id === "btnDownloadBarcodeItem") {
+    const itemid = e.target.dataset.id;
+    handlerDownloadBarcode(HEADERID, itemid);
+  }
+
+  if (e.target.id === "btnNextItem") {
+    const itemid = e.target.dataset.id;
+    const designid = e.target.dataset.designid;
+    const headerid = e.target.dataset.headerid;
+    const ordertype = ORDERTYPE;
+    const production = e.target.dataset.production;
+    const msgbody = e.target.dataset.next;
+    handlerFindProductForm(
+      itemid,
+      headerid,
+      ordertype,
+      "NextItem",
+      designid,
+      production,
+      msgbody,
+    );
   }
 });
 // ============================================|| FUNCTION ||================================================
@@ -1286,8 +1310,24 @@ const handlerFindProductForm = async (
   action,
   designid,
   production,
-  designname,
+  msgbody = "",
 ) => {
+  if (action === "NextItem") {
+    const result = await Swal.fire({
+      title: "Information",
+      html: msgbody,
+      icon: "info",
+      showCancelButton: true,
+      customClass: {
+        popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+      },
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, do it!",
+    });
+
+    if (!result.isConfirmed) return;
+  }
   try {
     const response = await fetch(`${URIMETHOD}/FindProductForm`, {
       method: "POST",
@@ -1327,7 +1367,7 @@ const handlerFindProductForm = async (
       window.location.href = findPage;
     }
   } catch (error) {
-    const msg = `submitSelectProduct: ${error.message}`;
+    const msg = `handlerFindProductForm: ${error.message}`;
     catchMessages(msg);
   }
 };
@@ -1500,6 +1540,7 @@ const handlerEditPricing = async (id, qty) => {
     catchMessages(msg);
   }
 };
+
 // ----------------------------------------------|| Display Functions ||-------------------------------------
 const displayElOverall = (header, detail) => {
   try {
@@ -1558,6 +1599,7 @@ const displayElOverall = (header, detail) => {
       }
 
       toggleShow(btnEl.btnDownloadBarcode, true);
+      toggleShow(btnEl.btnExactSlip, true);
       toggleShow(btnEl.btnQuote, true);
       toggleShow(btnEl.btnQuoteDetail, true);
       toggleShow(btnEl.btnDownloadQuote, true);
@@ -1596,6 +1638,7 @@ const displayElOverall = (header, detail) => {
       }
 
       toggleShow(btnEl.btnDownloadBarcode, true);
+      toggleShow(btnEl.btnExactSlip, true);
 
       if (isOrderActive) {
         toggleShow(btnEl.btnChangeStatus, true);

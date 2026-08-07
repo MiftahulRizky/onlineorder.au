@@ -115,6 +115,9 @@
                         <a href="javascript:void(0)" id="btnDownloadBarcode" class="dropdown-item">
                             <i class="ti ti-file-barcode fs-2 me-2 opacity-50"></i> Download Barcode
                         </a>
+                        <a href="javascript:void(0)" id="btnExactSlip" class="dropdown-item">
+                            <i class="ti ti-file-type-xml fs-2 me-2 opacity-50"></i> Exact Slip
+                        </a>
                         <a href="javascript:void(0)" id="btnQuoteDisc" class="dropdown-item">
                             <i class="ti ti-pencil-discount fs-2 me-2 opacity-50"></i> Override Customer Discount
                         </a>
@@ -692,7 +695,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.12"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.14"></script>
 
 
 </asp:Content>

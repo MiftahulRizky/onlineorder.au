@@ -2000,7 +2000,7 @@ Partial Class Methods_Order_DetailMethod
         Catch ex As Exception
             Dim msg As String = ex.Message
             If Not data.rolename = "Administrator" Then msg = "Please contact our IT team at support@onlineorder.au"
-            Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
+            Return New ErrorResponse With { .error = New ErrorDetail With { .message = msg, .field = ""}}
         End Try
     End Function
 

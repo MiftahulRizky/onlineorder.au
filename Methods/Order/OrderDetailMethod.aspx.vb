@@ -300,12 +300,21 @@ Partial Class Methods_Order_OrderDetailMethod
 
                     Using reader As SqlDataReader = cmd.ExecuteReader()
                         While reader.Read()
+                            Dim Id As String = reader("Id").ToString()
+                            Dim HeaderId As String = reader("HeaderId").ToString()
+                            Dim DesignId As String = reader("DesignId").ToString()
+                            Dim DesignName As String = reader("DesignName").ToString()
                             Dim FabricGroups As String = reader("FabricGroups").ToString()
                             Dim PriceGroupName As String = reader("PriceGroupName").ToString()
 
                             Dim Product As String = FindProduct(reader)
                             Dim HideNext As String = FindHideNext(reader, data.rolename, HeaderData.CreatedByName, data.customercontactid)
                             Dim TextNext As String = FindTextNext(reader)
+                            Dim Production As String = "Sunlight"
+                            If InStr(DesignName, "Global") > 0 Then
+                                Production = "Global"
+                            End If
+                            Product += String.Format("<br><button type='button' class='btn btn-sm btn-outline-success mt-1' id='btnNextItem' data-id='{0}' data-headerid='{1}' data-designid='{2}' data-next='{3}' data-production='{4}' {5}><i class='bi bi-node-plus me-1'></i>Next Item</button>", Id, HeaderId, DesignId, TextNext, Production, HideNext)
 
                             Dim BaseCost As String = FindBaseCost(reader)
                             Dim Cost As String = FindCost(reader)
@@ -316,18 +325,21 @@ Partial Class Methods_Order_OrderDetailMethod
                                     FinalCost = "<span class='badge bg-orange-lt'>POA</span>"
                                 End If
                             End If
+
+
+
                             
                             Dim Markup As String = reader("Markup").ToString()
                             If MarkUp = "0" Then MarkUp = ""
 
                             DetailData.Add(New With {
-                                .Id = reader("Id").ToString(),
-                                .HeaderId = reader("HeaderId").ToString(),
+                                .Id = Id,
+                                .HeaderId = HeaderId,
                                 .CustomerContactId = data.customercontactid,
                                 .StatusHeader = HeaderData.Status,
-                                .DesignId = reader("DesignId").ToString(),
+                                .DesignId = DesignId,
                                 .BlindId = reader("BlindId").ToString(),
-                                .DesignName = reader("DesignName").ToString(),
+                                .DesignName = DesignName,
                                 .Qty = reader("Qty").ToString(),
                                 .Location = reader("Location").ToString(),
                                 .Product = Product,
