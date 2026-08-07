@@ -1081,8 +1081,8 @@ Public Class MailConfig
 
         Dim customerName As String = GetItemData("SELECT Name FROM Customers WHERE Id = '" & customerId & "'")
 
-        Dim addressData As DataSet = GetListData("SELECT Street AS Address1, CONVERT(VARCHAR, Suburb) + ', ' + CONVERT(VARCHAR, States) + ' ' + CONVERT(VARCHAR, PostCode) AS Address2 FROM CustomerAddress WHERE CustomerId = '" & customerId & "' AND [Primary] = 1")
-        If addressData.Tables(0).Rows.Count = 0 Then Exit Sub
+        ' Dim addressData As DataSet = GetListData("SELECT Street AS Address1, CONVERT(VARCHAR, Suburb) + ', ' + CONVERT(VARCHAR, States) + ' ' + CONVERT(VARCHAR, PostCode) AS Address2 FROM CustomerAddress WHERE CustomerId = '" & customerId & "' AND [Primary] = 1")
+        ' If addressData.Tables(0).Rows.Count = 0 Then Exit Sub
 
         Dim appId As String = GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE Id = '" & loginId & "'")
         If String.IsNullOrEmpty(appId) Then Exit Sub
