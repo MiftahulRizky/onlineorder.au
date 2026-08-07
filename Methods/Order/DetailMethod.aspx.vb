@@ -2515,7 +2515,7 @@ Partial Class Methods_Order_DetailMethod
                     sb.AppendLine("^PQ1,0,0,Y")
                     sb.AppendLine("^XZ")
                     sb.AppendLine()
-                    
+
                     sb.AppendLine("^XA")
                     sb.AppendLine("^FO17,50")
                     sb.AppendLine(String.Format("^FO35,10^A0N,45,45^CI13^FH^FD{0}^FS", StoreName))
@@ -3026,8 +3026,8 @@ Partial Class Methods_Order_DetailMethod
                             .Description = Description,
                             .Cost = If(InStr(Description, "POA") > 0, "<span class='badge bg-orange-lt'>POA</span>", Cost.ToString("C", New CultureInfo("en-US"))),
                             .CostB = ResultCostB,
-                            .DiscountInPercent = Math.Round(DiscountInPercent, 0, MidpointRounding.AwayFromZero),
-                            .DiscountInPercentB = Math.Round(DiscountInPercentB, 0, MidpointRounding.AwayFromZero),
+                            .DiscountInPercent = DiscountInPercent.ToString("0.##"),
+                            .DiscountInPercentB = DiscountInPercentB.ToString("0.##"),
                             .Discount = If(CInt(reader("Discount")) > 0, Discount.ToString("C", New CultureInfo("en-US")), ""),
                             .DiscountB = ResutDiscountB,
                             .Poa = If(CInt(reader("Poa")) > 0, Poa.ToString("C", New CultureInfo("en-US")), ""),

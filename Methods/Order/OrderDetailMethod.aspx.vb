@@ -1487,50 +1487,67 @@ Partial Class Methods_Order_OrderDetailMethod
             End If
 
             Dim sb As New StringBuilder()
+
+            ' 1. Hitung total seluruh label yang akan dicetak berdasarkan akumulasi Qty
+            Dim TotalCount As Integer = 0
+            For Each row As DataRow In DetailData.Tables(0).Rows
+                Dim qVal As Integer = 0
+                Integer.TryParse(row("Qty").ToString(), qVal)
+                TotalCount += Math.Max(1, qVal) ' Menjaga agar minimal dihitung 1 jika Qty tidak valid/0
+            Next
+
             Dim PageOf As Integer = 0
             Dim Count As Integer = DetailData.Tables(0).Rows.Count
+
             For i As Integer = 0 To Count - 1
-                Dim Barcode As String = String.Empty
-                Dim Qty As String = DetailData.Tables(0).Rows(i).Item("Qty").ToString()
+                ' Ambil dan konversi Qty ke Integer
+                Dim itemQty As Integer = 0
+                Integer.TryParse(DetailData.Tables(0).Rows(i).Item("Qty").ToString(), itemQty)
+                If itemQty < 1 Then itemQty = 1 ' Minimal cetak 1x
+
                 Dim Location As String = DetailData.Tables(0).Rows(i).Item("Location").ToString()
                 Dim Width As String = DetailData.Tables(0).Rows(i).Item("Width").ToString()
                 Dim Drop As String = DetailData.Tables(0).Rows(i).Item("Drop").ToString()
                 Dim DesignName As String = DetailData.Tables(0).Rows(i).Item("DesignName").ToString()
                 Dim FabricName As String = DetailData.Tables(0).Rows(i).Item("FabricName").ToString()
                 Dim Product As String = String.Format("{0} X {1} {2}", Width, Drop, DesignName)
-                PageOf += 1
 
-                sb.AppendLine("^XA")
-                sb.AppendLine("^FO17,50")
-                sb.AppendLine(String.Format("^FO35,10^A0N,45,45^CI13^FH^FD{0}^FS", StoreName))
-                sb.AppendLine(String.Format("^FO35,50^A0N,40,40^CI13^FH^FD{0}^FS", OrderCust))
-                sb.AppendLine(String.Format("^FO600,90^A0N,40,40^CI13^FH^FD{0}^FS", OrderNo))
-                sb.AppendLine(String.Format("^FO35,90^A0N,45,45^CI13^FH^FD{0}^FS", headerid))
-                sb.AppendLine(String.Format("^FO600,130^A0N,25,25^CI13^FH^FD{0}^FS", Location))
-                sb.AppendLine(String.Format("^FO35,140^A0N,25,25^CI13^FH^FD{0}^FS", FabricName))
-                sb.AppendLine(String.Format("^FO35,173^A0N,25,25^CI13^FH^FD{0}^FS", Product))
-                sb.AppendLine(String.Format("^FO610,155^A0N,30,30^CI13^FH^FD({0} OF {1})^FS", PageOf, Count))
-                sb.AppendLine(String.Format("^FO630,49^A0N,45,45^CI13^FH^FD{0}^FS", Delivery))
-                sb.AppendLine("^PQ1,0,0,Y")
-                sb.AppendLine("^XZ")
-                sb.AppendLine()
-                sb.AppendLine()
-                
-                sb.AppendLine("^XA")
-                sb.AppendLine("^FO17,50")
-                sb.AppendLine(String.Format("^FO35,10^A0N,45,45^CI13^FH^FD{0}^FS", StoreName))
-                sb.AppendLine(String.Format("^FO35,50^A0N,40,40^CI13^FH^FD{0}^FS", OrderCust))
-                sb.AppendLine(String.Format("^FO600,90^A0N,40,40^CI13^FH^FD{0}^FS", OrderNo))
-                sb.AppendLine(String.Format("^FO35,90^A0N,45,45^CI13^FH^FD{0}^FS", headerid))
-                sb.AppendLine(String.Format("^FO600,130^A0N,25,25^CI13^FH^FD{0}^FS", Location))
-                sb.AppendLine(String.Format("^FO35,140^A0N,25,25^CI13^FH^FD{0}^FS", FabricName))
-                sb.AppendLine(String.Format("^FO35,173^A0N,25,25^CI13^FH^FD{0}^FS", Product))
-                sb.AppendLine(String.Format("^FO610,155^A0N,30,30^CI13^FH^FD({0} OF {1})^FS", PageOf, Count))
-                sb.AppendLine(String.Format("^FO630,49^A0N,45,45^CI13^FH^FD{0}^FS", Delivery))
-                sb.AppendLine("^PQ1,0,0,Y")
-                sb.AppendLine("^XZ")
-                sb.AppendLine()
-                sb.AppendLine()
+                ' 2. Loop sebanyak jumlah Qty item tersebut
+                For q As Integer = 1 To itemQty
+                    PageOf += 1 ' Increment nomor halaman aktif
+
+                    sb.AppendLine("^XA")
+                    sb.AppendLine("^FO17,50")
+                    sb.AppendLine(String.Format("^FO35,10^A0N,45,45^CI13^FH^FD{0}^FS", StoreName))
+                    sb.AppendLine(String.Format("^FO35,50^A0N,40,40^CI13^FH^FD{0}^FS", OrderCust))
+                    sb.AppendLine(String.Format("^FO600,90^A0N,40,40^CI13^FH^FD{0}^FS", OrderNo))
+                    sb.AppendLine(String.Format("^FO35,90^A0N,45,45^CI13^FH^FD{0}^FS", headerid))
+                    sb.AppendLine(String.Format("^FO600,130^A0N,25,25^CI13^FH^FD{0}^FS", Location))
+                    sb.AppendLine(String.Format("^FO35,140^A0N,25,25^CI13^FH^FD{0}^FS", FabricName))
+                    sb.AppendLine(String.Format("^FO35,173^A0N,25,25^CI13^FH^FD{0}^FS", Product))
+                    ' Menampilkan nomor urut halaman aktif (PageOf) dari total keseluruhan (TotalCount)
+                    sb.AppendLine(String.Format("^FO610,155^A0N,30,30^CI13^FH^FD({0} OF {1})^FS", PageOf, TotalCount))
+                    sb.AppendLine(String.Format("^FO630,49^A0N,45,45^CI13^FH^FD{0}^FS", Delivery))
+                    sb.AppendLine("^PQ1,0,0,Y")
+                    sb.AppendLine("^XZ")
+                    sb.AppendLine()
+                    
+                    sb.AppendLine("^XA")
+                    sb.AppendLine("^FO17,50")
+                    sb.AppendLine(String.Format("^FO35,10^A0N,45,45^CI13^FH^FD{0}^FS", StoreName))
+                    sb.AppendLine(String.Format("^FO35,50^A0N,40,40^CI13^FH^FD{0}^FS", OrderCust))
+                    sb.AppendLine(String.Format("^FO600,90^A0N,40,40^CI13^FH^FD{0}^FS", OrderNo))
+                    sb.AppendLine(String.Format("^FO35,90^A0N,45,45^CI13^FH^FD{0}^FS", headerid))
+                    sb.AppendLine(String.Format("^FO600,130^A0N,25,25^CI13^FH^FD{0}^FS", Location))
+                    sb.AppendLine(String.Format("^FO35,140^A0N,25,25^CI13^FH^FD{0}^FS", FabricName))
+                    sb.AppendLine(String.Format("^FO35,173^A0N,25,25^CI13^FH^FD{0}^FS", Product))
+                    ' Menampilkan nomor urut halaman aktif (PageOf) dari total keseluruhan (TotalCount)
+                    sb.AppendLine(String.Format("^FO610,155^A0N,30,30^CI13^FH^FD({0} OF {1})^FS", PageOf, TotalCount))
+                    sb.AppendLine(String.Format("^FO630,49^A0N,45,45^CI13^FH^FD{0}^FS", Delivery))
+                    sb.AppendLine("^PQ1,0,0,Y")
+                    sb.AppendLine("^XZ")
+                    sb.AppendLine()
+                Next
             Next
 
             File.WriteAllText(fullPath, sb.ToString(), Encoding.ASCII)
@@ -2245,12 +2262,12 @@ Partial Class Methods_Order_OrderDetailMethod
                             '#Find Discount
                             Dim ThisDisc As String = If(Discount > 0, Discount.ToString("C", New CultureInfo("en-US")), "")
                             Dim ThisDiscB As String = ""
-                            Dim ElDisc As String = String.Format("<button type='button' class='border-0 bg-transparent' data-bs-container='body' data-bs-toggle='popover' data-bs-trigger='hover focus' data-bs-placement='bottom' data-bs-content='Discount in {0}%'>{1}</button>", Math.Round(DiscountInPercent, 0, MidpointRounding.AwayFromZero), ThisDisc)
+                            Dim ElDisc As String = String.Format("<button type='button' class='border-0 bg-transparent' data-bs-container='body' data-bs-toggle='popover' data-bs-trigger='hover focus' data-bs-placement='bottom' data-bs-content='Discount in {0}%'>{1}</button>", DiscountInPercent.ToString("0.##"), ThisDisc)
                             IF DiscountB > 0 Then
                                 ThisCost += String.Format("<br/> {0}", FinalCost.ToString("C", New CultureInfo("en-US")))
                                 If Type = "Matrix" Then
                                     ThisDiscB = DiscountB.ToString("C", New CultureInfo("en-US"))
-                                    ElDisc += String.Format("<button type='button' class='border-0 bg-transparent' data-bs-container='body' data-bs-toggle='popover' data-bs-trigger='hover focus' data-bs-placement='bottom' data-bs-content='Discount in {0}%'>{1}</button>", Math.Round(DiscountInPercentB, 0, MidpointRounding.AwayFromZero), ThisDiscB)
+                                    ElDisc += String.Format("<button type='button' class='border-0 bg-transparent' data-bs-container='body' data-bs-toggle='popover' data-bs-trigger='hover focus' data-bs-placement='bottom' data-bs-content='Discount in {0}%'>{1}</button>", DiscountInPercent.ToString("0.##"), ThisDiscB)
                                 End If
                             End If
 

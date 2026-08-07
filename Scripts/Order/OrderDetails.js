@@ -533,6 +533,8 @@ document.querySelector("#tableAjax").addEventListener("click", async (e) => {
   if (id === "btnPricingItem") {
     const itemid = e.target.dataset.id;
     await bindPricingItem(itemid);
+    elModal.modalPricingItem.querySelector("#modalPricingItemLabel").innerHTML =
+      `Cost Details - ${itemid}`;
     handlerShowBSModal("modalPricingItem");
   }
 
@@ -1607,6 +1609,7 @@ const displayElOverall = (header, detail) => {
       if (isOrderActive) {
         toggleShow(btnEl.btnChangeStatus, true);
         toggleShow(btnEl.btnSendOrderMail, true);
+        toggleShow(btnEl.btnAddItem, true);
       }
 
       toggleShow(btnEl.btnMoreAction, true);
