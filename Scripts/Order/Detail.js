@@ -3288,6 +3288,8 @@ const bindProduction = async (designname) => {
 // --------------------------------------------||Other Function ||-------------------------------------------
 // CHECK SESSION
 const detailPageLoaded = () => {
+  window.location.href = `/order/orderdetails?param=${HEADERID}&ordertype=${ORDERTYPE.toLowerCase()}`;
+
   if (!ULTRON || !ORDERTYPE) window.location.href = "/order";
 
   if (CUSTOMERID == "LS-A224") window.location.href = "/order"; // JPM Direct
