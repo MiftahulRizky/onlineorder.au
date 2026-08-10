@@ -644,7 +644,7 @@
 
     <!-- logs -->
     <div class="modal fade" id="modalLogs" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLogsLabel" aria-hidden="true">
-        <div class="modal-dialog  modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog  modal-dialog-centered modal-dialog-scrollable modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title" id="modalLogsLabel">Changelog</h1>
@@ -695,7 +695,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.7"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.11"></script>
 
 
 </asp:Content>

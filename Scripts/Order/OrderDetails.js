@@ -16,7 +16,6 @@
 
 // ==============================================|| INITIALIZATION ||========================================
 let DataTableDetails;
-let DataTablePricingItem;
 const getById = (id) => document.getElementById(id);
 const getByClass = (cls) => document.getElementsByClassName(cls);
 const btnEl = {
@@ -611,7 +610,7 @@ const bindOrderAggregate = async (headerid, ordertype) => {
       throw new Error(data.message);
     }
 
-    console.log(data.header);
+    // console.log(data.header);
 
     handlerHeaderInfo(data.header);
     bindDetails(data.detail);
@@ -1619,9 +1618,6 @@ const displayElOverall = (header, detail) => {
     const isDraftOrPending = ["Draft", "Pending Price Approval"].includes(
       header.Status,
     );
-    const isOrderProccess = ["New Order", "In Production", "On Hold"].includes(
-      header.Status,
-    );
     const isNotCompleted = header.Status !== "Completed";
     const isNotCanceled = header.Status !== "Canceled";
     const isOrderActive = [
@@ -1722,6 +1718,15 @@ const displayElOverall = (header, detail) => {
       Array.from(el).forEach((li) => toggleShow(li, false));
     });
 
+    const isOrderProccess = ["New Order", "In Production", "On Hold"].includes(
+      header.Status,
+    );
+    const isOverwritePricingUser = [
+      "Administrator",
+      "PPIC & DE",
+      "Customer Service",
+    ].includes(ROLENAME);
+
     // Default visibilitas item detail
     toggleShowList(["liDetailItem"], true);
 
@@ -1729,17 +1734,18 @@ const displayElOverall = (header, detail) => {
       toggleShowList(["liEditItem", "liCopyItem", "liDeleteItem"], true);
       toggleShowList(["liDetailItem"], false);
 
+      // yudi's request
       // const tempRole = ["PPIC & DE", "Customer Service", "Manager", "Account"];
       // const isOtherUser =
       //   header.CreatedBy.toUpperCase() !== LOGINID.toUpperCase();
 
-      // yudi's request
       // if (tempRole.includes(ROLENAME) && isOtherUser) {
       //   toggleShowList(["liEditItem", "liCopyItem", "liDeleteItem"], false);
       //   toggleShowList(["liDetailItem"], true);
       // }
     }
 
+    // yudi's request
     if (isOrderProccess && (isAdmin || isPpicCs)) {
       toggleShowList(["liEditItem", "liCopyItem", "liDeleteItem"], true);
       toggleShowList(["liDetailItem"], false);
@@ -1757,9 +1763,7 @@ const displayElOverall = (header, detail) => {
       toggleShow(btnEl.thPrice, true);
       toggleShow(btnEl.divPrice, true);
 
-      if (
-        ["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)
-      ) {
+      if (isOverwritePricingUser) {
         toggleShowList(
           ["liEditPricingItem", "liDividerBarcode", "liDownloadBarcodeItem"],
           true,
@@ -1906,9 +1910,13 @@ const setValmodalLogs = (other) => {
       const formattedDate = formatDotNetDate(log.ActionDate);
 
       const tr = document.createElement("tr");
+      let itemid = `ID: <b>${log.ItemId}</b>`;
+      if (!log.ItemId || log.ItemId == "0") {
+        itemid = "";
+      }
       tr.innerHTML = `
           <td>
-            <b>${log.FullName}</b> on ${formattedDate}. Action: ${log.Description}
+            <b>${log.FullName}</b> on ${formattedDate}. Action: ${log.Description} ${itemid}
           </td>
         `;
       table.appendChild(tr);

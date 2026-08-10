@@ -507,7 +507,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
     Private Shared Function FindLogs(ByVal headerid As String, ByVal ordertype As String) As Object
         Try
-            Dim Logs As DataSet = publicCfg.GetListData(String.Format("SELECT CustomerLogins.FullName, Log_Orders.ActionDate, Log_Orders.Description FROM Log_Orders INNER JOIN CustomerLogins ON Log_Orders.ActionBy=CustomerLogins.Id WHERE Log_Orders.HeaderId='{0}' AND Log_Orders.Type='{1}'  ORDER BY ActionDate DESC", headerid, ordertype))
+            Dim Logs As DataSet = publicCfg.GetListData(String.Format("SELECT CustomerLogins.FullName, Log_Orders.ItemId, Log_Orders.ActionDate, Log_Orders.Description FROM Log_Orders INNER JOIN CustomerLogins ON Log_Orders.ActionBy=CustomerLogins.Id WHERE Log_Orders.HeaderId='{0}' AND Log_Orders.Type='{1}'  ORDER BY ActionDate DESC", headerid, ordertype))
 
             Dim LogsData As List(Of Dictionary(Of String, Object)) = New List(Of Dictionary(Of String, Object))()
             For Each row As DataRow In Logs.Tables(0).Rows

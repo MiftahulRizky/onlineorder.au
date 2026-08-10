@@ -191,7 +191,7 @@ Partial Class Methods_Order_SurchargeMethod
                 End IF
             End If
 
-            IF BlindName = "Thrid Party Delivery" Then
+            IF BlindName = "Third Party Delivery" Then
                 If Delivery = "Pick Up" Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check delivery/pick up !", .field = "#modalAddService #id"}}
                 End If
@@ -232,7 +232,7 @@ Partial Class Methods_Order_SurchargeMethod
                     End If
                 End If
 
-                ExactName = PriceGroupName
+                ExactName = String.Format("{0} - {1}", DesignName, PriceGroupName)
             End If
 
             If BlindName = "Powder Coating" Then
@@ -249,6 +249,7 @@ Partial Class Methods_Order_SurchargeMethod
                Throw New Exception("price group id not found !")
             End If
 
+            ' Throw New Exception(ExactName)
             Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
             If String.IsNullOrEmpty(ExactId) Then
             '    Throw New Exception("exact id not found !")
