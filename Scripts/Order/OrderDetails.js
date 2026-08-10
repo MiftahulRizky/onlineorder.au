@@ -1619,6 +1619,9 @@ const displayElOverall = (header, detail) => {
     const isDraftOrPending = ["Draft", "Pending Price Approval"].includes(
       header.Status,
     );
+    const isOrderProccess = ["New Order", "In Production", "On Hold"].includes(
+      header.Status,
+    );
     const isNotCompleted = header.Status !== "Completed";
     const isNotCanceled = header.Status !== "Canceled";
     const isOrderActive = [
@@ -1726,14 +1729,20 @@ const displayElOverall = (header, detail) => {
       toggleShowList(["liEditItem", "liCopyItem", "liDeleteItem"], true);
       toggleShowList(["liDetailItem"], false);
 
-      const tempRole = ["PPIC & DE", "Customer Service", "Manager", "Account"];
-      const isOtherUser =
-        header.CreatedBy.toUpperCase() !== LOGINID.toUpperCase();
+      // const tempRole = ["PPIC & DE", "Customer Service", "Manager", "Account"];
+      // const isOtherUser =
+      //   header.CreatedBy.toUpperCase() !== LOGINID.toUpperCase();
 
-      if (tempRole.includes(ROLENAME) && isOtherUser) {
-        toggleShowList(["liEditItem", "liCopyItem", "liDeleteItem"], false);
-        toggleShowList(["liDetailItem"], true);
-      }
+      // yudi's request
+      // if (tempRole.includes(ROLENAME) && isOtherUser) {
+      //   toggleShowList(["liEditItem", "liCopyItem", "liDeleteItem"], false);
+      //   toggleShowList(["liDetailItem"], true);
+      // }
+    }
+
+    if (isOrderProccess && (isAdmin || isPpicCs)) {
+      toggleShowList(["liEditItem", "liCopyItem", "liDeleteItem"], true);
+      toggleShowList(["liDetailItem"], false);
     }
 
     if (["Additional", "Surcharge"].includes(detail.DesignName)) {

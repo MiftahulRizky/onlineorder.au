@@ -251,7 +251,7 @@ Partial Class Methods_Order_SurchargeMethod
 
             Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
             If String.IsNullOrEmpty(ExactId) Then
-            '    Throw New Exception("exact id not found !")
+               Throw New Exception("exact id not found !")
             End If
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then

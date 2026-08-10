@@ -406,7 +406,7 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim url As String = String.Empty
             Dim Action As String = String.Empty
             Dim textSwall As String = String.Empty
-            Dim CustomerContactId As String = HttpContext.Current.Session("CustomerContactId").ToString()
+            Dim CustomerContactId As String = If(HttpContext.Current.Session("CustomerContactId") IsNot Nothing, HttpContext.Current.Session("CustomerContactId").ToString(), String.Empty)
 
             Dim detailData As DataSet = publicCfg.GetListData("SELECT Id, UniqueId, DesignName, BracketType, FabricGroups FROM view_details WHERE HeaderId='" + headerid + "' AND Active=1 ORDER BY Id ASC")
             If detailData.Tables(0).Rows.Count < 1  Then Return New With {.error = false, .Action = Action, .Message = "order details not found"}
