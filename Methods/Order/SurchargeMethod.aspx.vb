@@ -184,6 +184,9 @@ Partial Class Methods_Order_SurchargeMethod
 
                 If BlindName = "Long Length" Then 
                     PriceGroupName = String.Format("{0} {1}", BlindName, ControlName)
+                    If InStr(KitName, "Vertical") > 0 Then
+                        PriceGroupName = String.Format("{0} {1} #Vertical", BlindName, ControlName)
+                    End If
                 End IF
 
                 If BlindName = "Uniline Pelmet" Then 

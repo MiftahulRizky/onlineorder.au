@@ -310,14 +310,18 @@ Partial Class Methods_Order_OrderDetailMethod
                             Dim FabricGroups As String = reader("FabricGroups").ToString()
                             Dim PriceGroupName As String = reader("PriceGroupName").ToString()
 
-                            Dim Product As String = FindProduct(reader)
+                            Dim Product As Object = FindProduct(reader)
+                            If Product.error Then
+                                Throw New Exception(Product.message)
+                            End If
+
                             Dim HideNext As String = FindHideNext(reader, data.rolename, HeaderData.CreatedByName, data.customercontactid)
                             Dim TextNext As String = FindTextNext(reader)
                             Dim Production As String = "Sunlight"
                             If InStr(DesignName, "Global") > 0 Then
                                 Production = "Global"
                             End If
-                            Product += String.Format("<br><button type='button' class='btn btn-sm btn-outline-success mt-1' id='btnNextItem' data-id='{0}' data-headerid='{1}' data-designid='{2}' data-next='{3}' data-production='{4}' {5}><i class='bi bi-node-plus me-1'></i>Next Item</button>", Id, HeaderId, DesignId, TextNext, Production, HideNext)
+                            Product.product += String.Format("<br><button type='button' class='btn btn-sm btn-outline-success mt-1' id='btnNextItem' data-id='{0}' data-headerid='{1}' data-designid='{2}' data-next='{3}' data-production='{4}' {5}><i class='bi bi-node-plus me-1'></i>Next Item</button>", Id, HeaderId, DesignId, TextNext, Production, HideNext)
 
                             Dim BaseCost As String = FindBaseCost(reader)
                             Dim Cost As String = FindCost(reader)
@@ -345,7 +349,7 @@ Partial Class Methods_Order_OrderDetailMethod
                                 .DesignName = DesignName,
                                 .Qty = reader("Qty").ToString(),
                                 .Location = reader("Location").ToString(),
-                                .Product = Product,
+                                .Product = Product.product,
                                 .HideNext = HideNext,
                                 .TextNext = TextNext,
                                 .Cost = FinalCost,
@@ -474,10 +478,6 @@ Partial Class Methods_Order_OrderDetailMethod
                     Action = "No"
                 End If
 
-                ' If rolename = "PPIC & DE" And Not loginid = CustomerContactId Then
-                '     Action = "No"
-                ' End If
-
                 textSwall = "You have an incomplete roller blinds order, which is on the ITEM ID "+ msg +" <br /><br />If you want to complete it, please click the <b>Next Item</b> button on the order line ID."
                 
             Next
@@ -552,301 +552,305 @@ Partial Class Methods_Order_OrderDetailMethod
         End Try
     End Function
 
-    Private Shared Function FindProduct(reader As SqlDataReader) As String
-        Dim Id As String = reader("Id").ToString()
-        Dim HeaderId As String = reader("HeaderId").ToString()
-        Dim DesignId As String = reader("DesignId").ToString()
-        Dim BlindId As String = reader("BlindId").ToString()
-        Dim Mounting As String = reader("Mounting").ToString()
-        Dim DesignName As String = reader("DesignName").ToString()
-        Dim BlindName As String = reader("BlindName").ToString()
-        Dim KitName As String = reader("KitName").ToString()
-        Dim BracketType As String = reader("BracketType").ToString()
-        Dim TubeType As String = reader("TubeType").ToString()
-        Dim ControlType As String = reader("ControlType").ToString()
-        Dim FabricType As String = reader("FabricType").ToString()
-        Dim BlindNo As String = reader("BlindNo").ToString()
-        Dim UniqueId As String = reader("UniqueId").ToString()
-        Dim Width As String = reader("Width").ToString()
-        Dim Drop As String = reader("Drop").ToString()
-        Dim PanelSize As String = reader("PanelSize").ToString()
-        Dim FrameType As String = reader("FrameType").ToString()
-        Dim BottomTrackType As String = reader("BottomTrackType").ToString()
-        Dim PelmetType As String = reader("PelmetType").ToString()
-
-        Dim Size As String = String.Format("({0} x {1})", Width, Drop)
-        Dim Product As String = String.Format("{0} {1}", KitName, Size)
-
-        If DesignName = "Additional" Then
-            Product = String.Format("{0}", KitName)
-            If BlindName = "Long Length Surcharge" Then
-                Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id = '{0}'", HeaderId))
-                Dim States As String = publicCfg.GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId = '{0}'", CustomerId))
-                Product = String.Format("{0} {1}", KitName, States)
-            End IF
-
-            Product = String.Format("Surcharge - {0}", Product)
-        End If
-
-        If DesignName = "Surcharge" Then
-            Product = String.Format("{0}", KitName)
-            If InArray(BlindName, "Thrid Party Delivery", "Overlength Surcharge") Then
-                If TubeType = "Roller" Then
+    Private Shared Function FindProduct(reader As SqlDataReader) As Object
+        Try
+            Dim Id As String = reader("Id").ToString()
+            Dim HeaderId As String = reader("HeaderId").ToString()
+            Dim DesignId As String = reader("DesignId").ToString()
+            Dim BlindId As String = reader("BlindId").ToString()
+            Dim Mounting As String = reader("Mounting").ToString()
+            Dim DesignName As String = reader("DesignName").ToString()
+            Dim BlindName As String = reader("BlindName").ToString()
+            Dim KitName As String = reader("KitName").ToString()
+            Dim BracketType As String = reader("BracketType").ToString()
+            Dim TubeType As String = reader("TubeType").ToString()
+            Dim ControlType As String = reader("ControlType").ToString()
+            Dim FabricType As String = reader("FabricType").ToString()
+            Dim BlindNo As String = reader("BlindNo").ToString()
+            Dim UniqueId As String = reader("UniqueId").ToString()
+            Dim Width As String = reader("Width").ToString()
+            Dim Drop As String = reader("Drop").ToString()
+            Dim PanelSize As String = reader("PanelSize").ToString()
+            Dim FrameType As String = reader("FrameType").ToString()
+            Dim BottomTrackType As String = reader("BottomTrackType").ToString()
+            Dim PelmetType As String = reader("PelmetType").ToString()
+    
+            Dim Size As String = String.Format("({0} x {1})", Width, Drop)
+            Dim Product As String = String.Format("{0} {1}", KitName, Size)
+    
+            If DesignName = "Additional" Then
+                Product = String.Format("{0}", KitName)
+                If BlindName = "Long Length Surcharge" Then
                     Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id = '{0}'", HeaderId))
                     Dim States As String = publicCfg.GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId = '{0}'", CustomerId))
-                    Product = String.Format("{0} {1} #{2}", BlindName, States, TubeType)
-                    
-                    If BlindName = "Overlength Surcharge" Then
-                        Product = String.Format("{0} {3} {1} #{2}", BlindName, States, TubeType, ControlType)
+                    Product = String.Format("{0} {1}", KitName, States)
+                End IF
+    
+                Product = String.Format("Surcharge - {0}", Product)
+            End If
+    
+            If DesignName = "Surcharge" Then
+                Product = String.Format("{0}", KitName)
+                If InArray(BlindName, "Thrid Party Delivery", "Overlength Surcharge") Then
+                    If TubeType = "Roller" Then
+                        Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id = '{0}'", HeaderId))
+                        Dim States As String = publicCfg.GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId = '{0}'", CustomerId))
+                        Product = String.Format("{0} {1} #{2}", BlindName, States, TubeType)
+                        
+                        If BlindName = "Overlength Surcharge" Then
+                            Product = String.Format("{0} {3} {1} #{2}", BlindName, States, TubeType, ControlType)
+                        End If
+                    End If
+                End IF
+    
+                Product = String.Format("Surcharge - {0}", Product)
+            End If
+    
+            If DesignName = "Aluminium Blinds" Or DesignName = "Venetian Blinds" Then
+                Product = String.Format("{0} {1}", KitName, Size)
+            End If
+    
+            If DesignName = "Roller Blinds" Or DesignName = "Global Roller Blinds" Then
+                Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
+    
+                '#Linked 3 Blinds (Dep) & Linked 3 Blinds (Ind)
+                If BracketType = "Linked 3 Blinds (Dep)" Or BracketType = "Linked 3 Blinds (Ind)" Then
+                    '#blind 1
+                    If BlindNo = "Blind 1" Then
+                        Dim getConnectedId As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        Dim getConnectedId2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        If Not getConnectedId2 = "" Then
+                            getConnectedId2 = " & ITEM ID " & getConnectedId2
+                        End If
+                        If Not getConnectedId = "" Then
+                            Product += "<br />"
+                            Product += "<small style='color:red;'>* LINKED ITEM ID " & getConnectedId & getConnectedId2 & "</small>"
+                        End If
+                    End If
+    
+                    '#blind 2
+                    If BlindNo = "Blind 2" Then
+                        Dim getConnectedId As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        Dim getConnectedId2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        If Not getConnectedId2 = "" Then
+                            getConnectedId2 = " & ITEM ID " & getConnectedId2
+                        End If
+                        If Not getConnectedId = "" Then
+                            Product += "<br />"
+                            Product += "<small style='color:red;'>* LINKED ITEM ID " & getConnectedId & getConnectedId2 & "</small>"
+                        End If
+                    End If
+    
+                    '#blind 3
+                    If BlindNo = "Blind 3" Then
+                        Dim getConnectedId As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        Dim getConnectedId2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        If Not getConnectedId2 = "" Then
+                            getConnectedId2 = " & ITEM ID " & getConnectedId2
+                        End If
+                        If Not getConnectedId = "" Then
+                            Product += "<br />"
+                            Product += "<small style='color:red;'>* LINKED ITEM ID " & getConnectedId & getConnectedId2 & "</small>"
+                        End If
                     End If
                 End If
+    
+                '#Double and Link System Dep & Double and Link System Ind
+                If BracketType = "Double and Link System Dep" Or BracketType = "Double and Link System Ind" Then
+                    '#blinds 1
+                    If BlindNo = "Blind 1" Then
+                        Dim blind2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        Dim blind3 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        Dim blind4 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+    
+                        Dim spare As String = ""
+                        If Not blind3 = "" Then
+                            blind3 = "ITEM ID " & blind3
+                            spare = " & "
+                        End If
+                        If Not blind4 = "" Then
+                            blind4 = " & ITEM ID " & blind4
+                            spare = ", "
+                        End If
+                        If Not blind2 = "" Then
+                            Product += "<br />"
+                            Product += "<small style='color:red;'>* LINKED ITEM ID " & blind2 & spare & blind3 & blind4 & "</small>"
+                        End If
+                    End If
+    
+                    '#blinds 2
+                    If BlindNo = "Blind 2" Then
+                        Dim blind1 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        Dim blind3 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        Dim blind4 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+    
+                        Dim spare As String = ""
+                        If Not blind3 = "" Then
+                            blind3 = "ITEM ID " & blind3
+                            spare = " & "
+                        End If
+                        If Not blind4 = "" Then
+                            blind4 = " & ITEM ID " & blind4
+                            spare = ", "
+                        End If
+                        If Not blind1 = "" Then
+                            Product += "<br />"
+                            Product += "<small style='color:red;'>* LINKED ITEM ID " & blind1 & spare & blind3 & blind4 & "</small>"
+                        End If
+                    End If
+    
+                    '#blinds 3
+                    If BlindNo = "Blind 3" Then
+                        Dim blind1 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        Dim blind2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        Dim blind4 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+    
+                        Dim spare As String = ""
+                        If blind4 = "" Then
+                            spare = " & "
+                        End If
+                        If Not blind4 = "" Then
+                            blind4 = " & ITEM ID " & blind4
+                            spare = ", "
+                        End If
+                        If Not blind2 = "" Then
+                            blind2 = "ITEM ID " & blind2
+                        End If
+                        If Not blind1 = "" Then
+                            Product += "<br />"
+                            Product += "<small style='color:red;'>* LINKED ITEM ID " & blind1 & spare & blind2 & blind4 & "</small>"
+                        End If
+                    End If
+    
+                    '#blinds 4
+                    If BlindNo = "Blind 4" Then
+                        Dim blind1 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        Dim blind2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        Dim blind3 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        Product += "<br />"
+                        Product += "<small style='color:red;'>* LINKED ITEM ID " & blind1 & ", ITEM ID " & blind2 & " & " & "ITEM ID" & blind3 & "</small>"
+                    End If
+                End If
+    
+                '#Double, Linked 2 Blinds (Dep), Linked 2 Blinds (Ind)
+                If BracketType = "Double" Or BracketType = "Linked 2 Blinds (Dep)" Or BracketType = "Linked 2 Blinds (Ind)" Then
+                    If BlindNo = "Blind 1" Then
+                        Dim getConnectedId As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        If Not getConnectedId = "" Then
+                            Product += "<br />"
+                            Product += "<small style='color:red;'>* Complete set with ITEM ID " & getConnectedId & "</small>"
+                        End If
+                    End If
+    
+                    If BlindNo = "Blind 2" Then
+                        Dim getConnectedId As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + UniqueId + "' AND Active = 1")
+                        If Not getConnectedId = "" Then
+                            Product += "<br />"
+                            Product += "<small style='color:red;'>* Complete set with ITEM ID " & getConnectedId & "</small>"
+                        End If
+                    End If
+                End If
+    
+                If BracketType = "With Tube & Bottom Included" then
+                    Product = "Roller Skin Only (+Tube & Bottom Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
+                End If
+    
+    
+                If BracketType = "With Bottom Included" then
+                    Product = "Roller Skin Only (+Bottom Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
+                End If
+    
+                If BracketType = "With Tube Included" then
+                    Product = "Roller Skin Only (+Tube Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
+                End If
+    
+            End If
+    
+            If InArray(DesignName, "Veri Shades", "Vertical Blinds", "Global Vertical Blinds") Then
+                Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
+                If BlindName = "Slat Only" Then
+                    Product = String.Format("{0} #{1} (Drop : {2}mm)", KitName, FabricType, Drop)
+                End If
+                If BlindName = "Track Only" Then
+                    Product = String.Format("{0} (Width : {1}mm)", KitName, Width)
+                End If
+            End If
+    
+            If InArray(DesignName, "Panel Glides", "Global Panel Glides", "Roman Blinds", "Global Roman Blinds", "Lumen") Then
+                Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
+                If BlindName = "Track Only" Then
+                    Product = String.Format("{0} (Width : {1}mm)", KitName, Width)
+                End If
+            End If
+    
+            If DesignName = "Cellular Blinds" Then
+                Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
+                If BlindName = "Cellora" Then
+                    Product = String.Format("{0} {1} #{2} {3}", BlindName, controltype, FabricType, Size)
+                End If
+                If BlindName = "Galaxy" Then
+                    Product = String.Format("{0} ({1}) {2} #{3} {4}", BlindName, BracketType, ControlType, FabricType, Size)
+                End If
+                If BlindName = "Potrait" Then
+                    Product = String.Format("{0} ({1}) {2} #{3} {4}", BlindName, BracketType, ControlType, FabricType, Size)
+                End If
+            End If
+    
+            If DesignName = "Window" Then
+                Product = String.Format("{0} - {1} {2} ", BlindName, TubeType, Size)
+    
+                If TubeType = "Flyscreens" Then
+                    Product = String.Format("{0} - {1} #{2} {3} ", BlindName, TubeType, FrameType, Size)
+                End If
+    
+                If TubeType = "Retractable Flyscreen Pleated" Then
+                    Product = String.Format("{0} - {1} #{2} {3}", BlindName, TubeType, BottomTrackType, Size)
+                End If
+            End If
+    
+            If DesignName = "Door" Then
+                Product = String.Format("{0} - {1} #{2} {3}", BlindName, TubeType, ControlType, Size)
+                IF ControlType = "N/A" Then
+                    Product = String.Format("{0} - {1} {2}", BlindName, TubeType, Size)
+                End IF
+    
+                If TubeType = "Retractable Pleated" Then
+                    Product = String.Format("{0} - {1} #{2} {3}", BlindName, TubeType, BottomTrackType, Size)
+                End If
+            End If
+    
+            If DesignName = "Supply Only" Then
+                If BlindName = "Mesh Only" AND NOT TubeType = "Ultra Barrier Mesh" Then
+                    Product = String.Format("{0} - {1} (Width: {2}mm x Length: {3}lm)", DesignName, TubeType, Width, PanelSize)
+                End If
+            End If
+    
+            If InArray(DesignName, "Curtain", "Pelmet") Then
+                Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
+                If BlindName = "Track Only" Then
+                    Product = String.Format("{0} ({1}mm)", KitName, Width)
+                End If
+    
+                If BlindName = "Uniline Pelmet" Then
+                    IF String.IsNullOrEmpty(FabricType) Then FabricType = "No Fabric"
+                    Product = String.Format("{0} {1} #{2} (Width:{3}mm)", KitName, PelmetType, FabricType, Width)
+                End If
+    
+                If BlindName = "Fashade Pelmet" Then
+                    Product = String.Format("{0} {1} (Width:{2}mm)", KitName, Mounting, Width)
+                End If
+            End If
+    
+            '#Final Product Name
+            If InStr(DesignName, "Global") > 0 Then
+                Product = String.Format("Global - {0}", Product)
             End IF
-
-            Product = String.Format("Surcharge - {0}", Product)
-        End If
-
-        If DesignName = "Aluminium Blinds" Or DesignName = "Venetian Blinds" Then
-            Product = String.Format("{0} {1}", KitName, Size)
-        End If
-
-        If DesignName = "Roller Blinds" Or DesignName = "Global Roller Blinds" Then
-            Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
-
-            '#Linked 3 Blinds (Dep) & Linked 3 Blinds (Ind)
-            If BracketType = "Linked 3 Blinds (Dep)" Or BracketType = "Linked 3 Blinds (Ind)" Then
-                '#blind 1
-                If BlindNo = "Blind 1" Then
-                    Dim getConnectedId As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    Dim getConnectedId2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    If Not getConnectedId2 = "" Then
-                        getConnectedId2 = " & ITEM ID " & getConnectedId2
-                    End If
-                    If Not getConnectedId = "" Then
-                        Product += "<br />"
-                        Product += "<small style='color:red;'>* LINKED ITEM ID " & getConnectedId & getConnectedId2 & "</small>"
-                    End If
-                End If
-
-                '#blind 2
-                If BlindNo = "Blind 2" Then
-                    Dim getConnectedId As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    Dim getConnectedId2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    If Not getConnectedId2 = "" Then
-                        getConnectedId2 = " & ITEM ID " & getConnectedId2
-                    End If
-                    If Not getConnectedId = "" Then
-                        Product += "<br />"
-                        Product += "<small style='color:red;'>* LINKED ITEM ID " & getConnectedId & getConnectedId2 & "</small>"
-                    End If
-                End If
-
-                '#blind 3
-                If BlindNo = "Blind 3" Then
-                    Dim getConnectedId As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    Dim getConnectedId2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    If Not getConnectedId2 = "" Then
-                        getConnectedId2 = " & ITEM ID " & getConnectedId2
-                    End If
-                    If Not getConnectedId = "" Then
-                        Product += "<br />"
-                        Product += "<small style='color:red;'>* LINKED ITEM ID " & getConnectedId & getConnectedId2 & "</small>"
-                    End If
-                End If
-            End If
-
-            '#Double and Link System Dep & Double and Link System Ind
-            If BracketType = "Double and Link System Dep" Or BracketType = "Double and Link System Ind" Then
-                '#blinds 1
-                If BlindNo = "Blind 1" Then
-                    Dim blind2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    Dim blind3 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    Dim blind4 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-
-                    Dim spare As String = ""
-                    If Not blind3 = "" Then
-                        blind3 = "ITEM ID " & blind3
-                        spare = " & "
-                    End If
-                    If Not blind4 = "" Then
-                        blind4 = " & ITEM ID " & blind4
-                        spare = ", "
-                    End If
-                    If Not blind2 = "" Then
-                        Product += "<br />"
-                        Product += "<small style='color:red;'>* LINKED ITEM ID " & blind2 & spare & blind3 & blind4 & "</small>"
-                    End If
-                End If
-
-                '#blinds 2
-                If BlindNo = "Blind 2" Then
-                    Dim blind1 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    Dim blind3 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    Dim blind4 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-
-                    Dim spare As String = ""
-                    If Not blind3 = "" Then
-                        blind3 = "ITEM ID " & blind3
-                        spare = " & "
-                    End If
-                    If Not blind4 = "" Then
-                        blind4 = " & ITEM ID " & blind4
-                        spare = ", "
-                    End If
-                    If Not blind1 = "" Then
-                        Product += "<br />"
-                        Product += "<small style='color:red;'>* LINKED ITEM ID " & blind1 & spare & blind3 & blind4 & "</small>"
-                    End If
-                End If
-
-                '#blinds 3
-                If BlindNo = "Blind 3" Then
-                    Dim blind1 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    Dim blind2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    Dim blind4 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-
-                    Dim spare As String = ""
-                    If blind4 = "" Then
-                        spare = " & "
-                    End If
-                    If Not blind4 = "" Then
-                        blind4 = " & ITEM ID " & blind4
-                        spare = ", "
-                    End If
-                    If Not blind2 = "" Then
-                        blind2 = "ITEM ID " & blind2
-                    End If
-                    If Not blind1 = "" Then
-                        Product += "<br />"
-                        Product += "<small style='color:red;'>* LINKED ITEM ID " & blind1 & spare & blind2 & blind4 & "</small>"
-                    End If
-                End If
-
-                '#blinds 4
-                If BlindNo = "Blind 4" Then
-                    Dim blind1 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    Dim blind2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    Dim blind3 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    Product += "<br />"
-                    Product += "<small style='color:red;'>* LINKED ITEM ID " & blind1 & ", ITEM ID " & blind2 & " & " & "ITEM ID" & blind3 & "</small>"
-                End If
-            End If
-
-            '#Double, Linked 2 Blinds (Dep), Linked 2 Blinds (Ind)
-            If BracketType = "Double" Or BracketType = "Linked 2 Blinds (Dep)" Or BracketType = "Linked 2 Blinds (Ind)" Then
-                If BlindNo = "Blind 1" Then
-                    Dim getConnectedId As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    If Not getConnectedId = "" Then
-                        Product += "<br />"
-                        Product += "<small style='color:red;'>* Complete set with ITEM ID " & getConnectedId & "</small>"
-                    End If
-                End If
-
-                If BlindNo = "Blind 2" Then
-                    Dim getConnectedId As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + UniqueId + "' AND Active = 1")
-                    If Not getConnectedId = "" Then
-                        Product += "<br />"
-                        Product += "<small style='color:red;'>* Complete set with ITEM ID " & getConnectedId & "</small>"
-                    End If
-                End If
-            End If
-
-            If BracketType = "With Tube & Bottom Included" then
-                Product = "Roller Skin Only (+Tube & Bottom Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
-            End If
-
-
-            If BracketType = "With Bottom Included" then
-                Product = "Roller Skin Only (+Bottom Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
-            End If
-
-            If BracketType = "With Tube Included" then
-                Product = "Roller Skin Only (+Tube Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
-            End If
-
-        End If
-
-        If InArray(DesignName, "Veri Shades", "Vertical Blinds", "Global Vertical Blinds") Then
-            Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
-            If BlindName = "Slat Only" Then
-                Product = String.Format("{0} #{1} (Drop : {2}mm)", KitName, FabricType, Drop)
-            End If
-            If BlindName = "Track Only" Then
-                Product = String.Format("{0} (Width : {1}mm)", KitName, Width)
-            End If
-        End If
-
-        If InArray(DesignName, "Panel Glides", "Global Panel Glides", "Roman Blinds", "Global Roman Blinds", "Lumen") Then
-            Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
-            If BlindName = "Track Only" Then
-                Product = String.Format("{0} (Width : {1}mm)", KitName, Width)
-            End If
-        End If
-
-        If DesignName = "Cellular Blinds" Then
-            Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
-            If BlindName = "Cellora" Then
-                Product = String.Format("{0} {1} #{2} {3}", BlindName, controltype, FabricType, Size)
-            End If
-            If BlindName = "Galaxy" Then
-                Product = String.Format("{0} ({1}) {2} #{3} {4}", BlindName, BracketType, ControlType, FabricType, Size)
-            End If
-            If BlindName = "Potrait" Then
-                Product = String.Format("{0} ({1}) {2} #{3} {4}", BlindName, BracketType, ControlType, FabricType, Size)
-            End If
-        End If
-
-        If DesignName = "Window" Then
-            Product = String.Format("{0} - {1} {2} ", BlindName, TubeType, Size)
-
-            If TubeType = "Flyscreens" Then
-                Product = String.Format("{0} - {1} #{2} {3} ", BlindName, TubeType, FrameType, Size)
-            End If
-
-            If TubeType = "Retractable Flyscreen Pleated" Then
-                Product = String.Format("{0} - {1} #{2} {3}", BlindName, TubeType, BottomTrackType, Size)
-            End If
-        End If
-
-        If DesignName = "Door" Then
-            Product = String.Format("{0} - {1} #{2} {3}", BlindName, TubeType, ControlType, Size)
-            IF ControlType = "N/A" Then
-                Product = String.Format("{0} - {1} {2}", BlindName, TubeType, Size)
-            End IF
-
-            If TubeType = "Retractable Pleated" Then
-                Product = String.Format("{0} - {1} #{2} {3}", BlindName, TubeType, BottomTrackType, Size)
-            End If
-        End If
-
-        If DesignName = "Supply Only" Then
-            If BlindName = "Mesh Only" AND NOT TubeType = "Ultra Barrier Mesh" Then
-                Product = String.Format("{0} - {1} (Width: {2}mm x Length: {3}lm)", DesignName, TubeType, Width, PanelSize)
-            End If
-        End If
-
-        If InArray(DesignName, "Curtain", "Pelmet") Then
-            Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
-            If BlindName = "Track Only" Then
-                Product = String.Format("{0} ({1}mm)", KitName, Width)
-            End If
-
-            If BlindName = "Uniline Pelmet" Then
-                IF String.IsNullOrEmpty(FabricType) Then FabricType = "No Fabric"
-                Product = String.Format("{0} {1} #{2} (Width:{3}mm)", KitName, PelmetType, FabricType, Width)
-            End If
-
-            If BlindName = "Fashade Pelmet" Then
-                Product = String.Format("{0} {1} (Width:{2}mm)", KitName, Mounting, Width)
-            End If
-        End If
-
-        '#Final Product Name
-        If InStr(DesignName, "Global") > 0 Then
-            Product = String.Format("Global - {0}", Product)
-        End IF
-
-
-        Return Product
+    
+    
+            Return New With {.error = false, .product = Product}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("FindProduct: {0}", ex.Message)}
+        End Try
     End Function
 
     Private Shared Function FindHideNext(reader As SqlDataReader, rolename As String, createdby As String, customercontactid As String) As String
@@ -889,10 +893,6 @@ Partial Class Methods_Order_OrderDetailMethod
             End If
 
         End If
-        
-        ' If InArray(rolename, "PPIC & DE", "Customer Service") And UCase(createdby).ToString() <> UCase(customercontactid).ToString() Then
-        '     HideNext = "hidden"
-        ' End If
 
 
         Return HideNext
