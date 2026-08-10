@@ -2310,9 +2310,9 @@ const orderDetailPageLoaded = async () => {
       window.location.href = "/order";
     }
 
-    if (!["Administrator"].includes(ROLENAME)) {
-      window.location.href = "/order";
-    }
+    // if (!["Administrator"].includes(ROLENAME)) {
+    //   window.location.href = "/order";
+    // }
 
     await bindOrderAggregate(HEADERID, ORDERTYPE);
     await loaderFadeOut();
