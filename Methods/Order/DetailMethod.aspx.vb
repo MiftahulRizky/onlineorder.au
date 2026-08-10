@@ -26,6 +26,7 @@ Partial Class Methods_Order_DetailMethod
     Inherits System.Web.UI.Page
 
     Shared orderCfg As New OrderConfig()
+    Shared exactCfg as New ExactConfig()
     Shared publicCfg As New PublicConfig()
     Shared printCfg As New PrintConfig()
     Shared jobsheet As New HalperJobSheetRenderer()
@@ -3153,6 +3154,37 @@ Partial Class Methods_Order_DetailMethod
             }
         Catch ex As Exception
             Return New ErrorResponse With {.error = New ErrorDetail With {.message = ex.Message}}
+        End Try
+    End Function
+
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function ExactSlip(ByVal headerid As String, ByVal ordertype As String) As Object
+        Try
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id='{0}' AND OrderType='{1}'", headerid, ordertype))
+            If HeaderData.Tables(0).Rows.Count < 1 Then
+                Throw New Exception("Order Header not found.")
+            End If
+            
+            Dim OrderId As String = HeaderData.Tables(0).Rows(0).Item("OrderId").ToString()
+            Dim Status As String = HeaderData.Tables(0).Rows(0).Item("Status").ToString()
+            Dim FileName As String = String.Format("Order-Blinds-{0}.xml", OrderId)
+            Dim FilePath As String = HttpContext.Current.Server.MapPath("~/file/inv/")
+            Dim PathCombine As String = Path.Combine(FilePath, FileName)
+
+            If Not Status = "In Production" Then
+                Return New With {.warning = true, .message = "This order is not in production."}
+            End If
+
+            ' Dim Res As String = CreateXMLB(headerid, FileName, FilePath)
+            ' If Not Res = "200" Then Throw New Exception(Res)
+            exactCfg.CreateXMLB(headerid, FileName, FilePath)
+            exactCfg.Connect(PathCombine)
+            
+            Return New With {.success = true, .message = "The Exact Slip was successfully sent."}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("ExactSlip : {0}", ex.Message)}
         End Try
     End Function
 

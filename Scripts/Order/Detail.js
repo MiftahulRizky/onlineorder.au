@@ -125,6 +125,24 @@ document.querySelector("#btnDownloadBarcode").addEventListener("click", () => {
   handlerDownloadBarcode(HEADERID, "");
 });
 
+document.querySelector("#btnExactSlip").addEventListener("click", async () => {
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "Sure to send the exact slip?",
+    icon: "warning",
+    showCancelButton: true,
+    customClass: {
+      popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+    },
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, send it!",
+  });
+  if (!result.isConfirmed) return;
+
+  await handlerExactSlip();
+});
+
 // BTN OVERRIDE DISCOUNT
 document.querySelector("#btnQuoteDisc").addEventListener("click", async () => {
   swalLoadingShow("Please wait...");
@@ -3081,6 +3099,37 @@ const handlerCheckOrder = async (headerid, status, loginid) => {
   }
 };
 
+const handlerExactSlip = async () => {
+  swalLoadingShow("Please wait while we exact the slip.");
+  try {
+    const response = await fetch(`${URIMETHOD}/ExactSlip`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ headerid: HEADERID, ordertype: ORDERTYPE }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+    } else if (res.success) {
+      await isSuccess(res.message);
+      location.reload();
+    }
+  } catch (error) {
+    const msg = `handlerExactSlip: ${error.message}`;
+    catchMessages(msg);
+  }
+};
+
 // ------------------------------------------||Binding Function ||-------------------------------------------
 // BIND ORDER HEADER
 const bindOrderHeaderByID = async (headerid, ordertype) => {
@@ -3288,7 +3337,7 @@ const bindProduction = async (designname) => {
 // --------------------------------------------||Other Function ||-------------------------------------------
 // CHECK SESSION
 const detailPageLoaded = () => {
-  window.location.href = `/order/orderdetails?param=${HEADERID}&ordertype=${ORDERTYPE.toLowerCase()}`;
+  // window.location.href = `/order/orderdetails?param=${HEADERID}&ordertype=${ORDERTYPE.toLowerCase()}`;
 
   if (!ULTRON || !ORDERTYPE) window.location.href = "/order";
 
