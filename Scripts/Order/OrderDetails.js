@@ -2227,7 +2227,7 @@ const submitSelectProduct = async (designid, production, action, button) => {
     catchMessages(msg);
   } finally {
     let lbl = "Next";
-    if (action === "AddItem") {
+    if (button === "btnAddSurcharge") {
       lbl = `<i class="ti ti-database-dollar fs-2 me-2 opacity-50"></i> Add Surcharge`;
     }
     document.getElementById(button).innerHTML = lbl;

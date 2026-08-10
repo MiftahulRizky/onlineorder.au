@@ -1873,7 +1873,7 @@ Partial Class Methods_Order_OrderDetailMethod
                 Throw New Exception("action is null or empty !")
             End If
             If String.isNullOrEmpty(data.designid) Then
-                Throw New Exception("designid is null or empty !")
+                Return New With { .warning = true, .message = "product is required !", .field = "#modalAddItem #designid"}
             End If
 
             Dim DesignName As String = publicCfg.GetDesignName(data.designid)
@@ -1891,7 +1891,7 @@ Partial Class Methods_Order_OrderDetailMethod
                 Dim GlobalDesigns As String = publicCfg.GetItemData(String.Format("SELECT Id FROM Designs WHERE Name = 'Global {0}' {1} AND Active = 1", DesignName, Env))
                 IF Not String.IsNullOrEmpty(GlobalDesigns) Then
                     If String.isNullOrEmpty(data.production) Then
-                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = "production is required !", .field = "#modalAddItem #production"}}
+                        Return New With { .warning = true, .message = "production is required !", .field = "#modalAddItem #production"}
                     End If
                     If Not String.isNullOrEmpty(data.production) AND data.production = "Global" Then
                         Dim Name As String = String.Format("{0} {1}", data.production, DesignName)

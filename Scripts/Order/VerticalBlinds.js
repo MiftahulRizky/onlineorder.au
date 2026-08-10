@@ -651,15 +651,23 @@ const bindTrackColour = (tubetype) => {
   if (tubetype === "28mm Tiltrack") {
     data.push({ value: "Primrose", text: "Primrose" });
   }
+
   if (["Fairline", "Javaline"].includes(tubetype)) {
+    if (tubetype === "Javaline") {
+      data.push(
+        { value: "White", text: "White" },
+        { value: "Beige", text: "Beige" },
+      );
+    }
     data.push(
-      { value: "White", text: "White" },
-      { value: "Beige", text: "Beige" },
+      // { value: "White", text: "White" },
+      // { value: "Beige", text: "Beige" },
       // { value: "Birch White", text: "Birch White" },
       { value: "Black", text: "Black" },
       { value: "Silver", text: "Silver" },
     );
   }
+
   if (tubetype === "Louvolite") {
     data.push({ value: "Birch White", text: "Birch White" });
     data.push({ value: "White", text: "White" });
