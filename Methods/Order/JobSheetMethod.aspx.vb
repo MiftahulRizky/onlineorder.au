@@ -15982,12 +15982,31 @@ Partial Class Methods_Order_JobSheetMethod
             '#ChainColour
             result+= trDetStart
                 result+= tdTitleStart & fs11Start & "Chain/Wand Colour" & fsEnd & tdDetEnd 
-                result+= tdDetStart & currentData("ChainColour1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainColour2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainColour3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainColour4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainColour5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("ChainColour6").ToString() & tdDetEnd
+                ' result+= tdDetStart & currentData("ChainColour1").ToString() & tdDetEnd
+                ' result+= tdDetStart & currentData("ChainColour2").ToString() & tdDetEnd
+                ' result+= tdDetStart & currentData("ChainColour3").ToString() & tdDetEnd
+                ' result+= tdDetStart & currentData("ChainColour4").ToString() & tdDetEnd
+                ' result+= tdDetStart & currentData("ChainColour5").ToString() & tdDetEnd
+                ' result+= tdDetRight & currentData("ChainColour6").ToString() & tdDetEnd
+                For i As Integer = 1 To 6
+                    Dim controlType As String = currentData("ControlType" & i).ToString()
+                    Dim colourValue As String = ""
+
+                    If controlType = "Chain" Then
+                        colourValue = currentData("ChainColour" & i).ToString()
+                    Else IF controlType = "Wand" Then
+                        colourValue = currentData("WandColour" & i).ToString()
+                    Else
+                        colourValue = ""
+                    End If
+
+                    ' Gunakan tdDetRight untuk kolom terakhir
+                    If i = 6 Then
+                        result += tdDetRight & colourValue & tdDetEnd
+                    Else
+                        result += tdDetStart & colourValue & tdDetEnd
+                    End If
+                Next
             result+= trDetEnd
 
             '#CLength
@@ -16026,12 +16045,31 @@ Partial Class Methods_Order_JobSheetMethod
             '#ChainLength
             result+= trDetStart
                 result+= tdTitleStart & "Control Length" & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("ChainLength6").ToString() & tdDetEnd
+                ' result+= tdDetStart & currentData("ChainLength1").ToString() & tdDetEnd
+                ' result+= tdDetStart & currentData("ChainLength2").ToString() & tdDetEnd
+                ' result+= tdDetStart & currentData("ChainLength3").ToString() & tdDetEnd
+                ' result+= tdDetStart & currentData("ChainLength4").ToString() & tdDetEnd
+                ' result+= tdDetStart & currentData("ChainLength5").ToString() & tdDetEnd
+                ' result+= tdDetRight & currentData("ChainLength6").ToString() & tdDetEnd
+                For i As Integer = 1 To 6
+                    Dim controlType As String = currentData("ControlType" & i).ToString()
+                    Dim colourValue As String = ""
+
+                    If controlType = "Chain" Then
+                        colourValue = currentData("ChainLength" & i).ToString()
+                    Else IF controlType = "Wand" Then
+                        colourValue = currentData("WandLength" & i).ToString()
+                    Else
+                        colourValue = ""
+                    End If
+
+                    ' Gunakan tdDetRight untuk kolom terakhir
+                    If i = 6 Then
+                        result += tdDetRight & colourValue & tdDetEnd
+                    Else
+                        result += tdDetStart & colourValue & tdDetEnd
+                    End If
+                Next
             result+= trDetEnd
 
              '#HangerType
