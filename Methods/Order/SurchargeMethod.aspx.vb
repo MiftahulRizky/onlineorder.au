@@ -157,6 +157,7 @@ Partial Class Methods_Order_SurchargeMethod
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "surcharge type is required !", .field = "controltype"}}
             End If
 
+            Dim DesignName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Designs WHERE Id = '{0}'", data.designid))
             Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.blindtype))
             Dim TubeName As String = publicCfg.GetItemData(String.Format("SELECT TubeType FROM HardwareKits WHERE Id = '{0}'", data.controltype))
             Dim ControlName As String = publicCfg.GetItemData(String.Format("SELECT ControlType FROM HardwareKits WHERE Id = '{0}'", data.controltype))
