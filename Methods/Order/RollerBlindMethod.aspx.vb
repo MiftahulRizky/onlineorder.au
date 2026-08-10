@@ -470,7 +470,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
             End IF
 
-            If String.IsNullOrEmpty(data.mounting) Then
+            If data.sizetype = "Opening Size" AND String.IsNullOrEmpty(data.mounting) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
             End If
             
