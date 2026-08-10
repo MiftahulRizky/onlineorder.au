@@ -116,26 +116,26 @@ document.querySelector("#tableAjax").addEventListener("click", (e) => {
     const live = `${page}?param=${id}&ordertype=${type.toLowerCase()}`;
     const dev = `/order/orderdetails?param=${id}&ordertype=${type.toLowerCase()}`;
 
-    if (ROLENAME === "Administrator") {
-      Swal.fire({
-        title: "Please select one",
-        showDenyButton: true,
-        showCancelButton: false,
-        confirmButtonText: "Production",
-        denyButtonText: "Development",
-        customClass: {
-          popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = live;
-        } else if (result.isDenied) {
-          window.location.href = dev;
-        }
-      });
-    } else {
-      window.location.href = live;
-    }
+    // if (ROLENAME === "Administrator") {
+    //   Swal.fire({
+    //     title: "Please select one",
+    //     showDenyButton: true,
+    //     showCancelButton: false,
+    //     confirmButtonText: "Production",
+    //     denyButtonText: "Development",
+    //     customClass: {
+    //       popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+    //     },
+    //   }).then((result) => {
+    //     if (result.isConfirmed) {
+    //       window.location.href = live;
+    //     } else if (result.isDenied) {
+    //       window.location.href = dev;
+    //     }
+    //   });
+    // } else {
+    window.location.href = live;
+    // }
   }
 });
 

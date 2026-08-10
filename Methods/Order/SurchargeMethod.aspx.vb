@@ -169,6 +169,11 @@ Partial Class Methods_Order_SurchargeMethod
             IF BlindName = "Interim Levy" Then
                 PriceGroupName = BlindName
             End If
+
+            Dim ExactName As String = String.Format("{0} - {1}", DesignName, BlindName)
+            If BlindName = "Long Length" Then
+                ExactName = String.Format("{0} - {1}", DesignName, KitName)
+            End If
             
             IF InArray(BlindName, "Residential Home Address", "Interstate Further Surcharge", "Minimum Blind Surcharge", "Long Length", "NSW Country", "NSW Metro", "QLD", "SA", "VIC", "WA NT", "Fashade Pelmet",  "Uniline Pelmet") Then
                 If Delivery = "Pick Up" Then
@@ -225,11 +230,15 @@ Partial Class Methods_Order_SurchargeMethod
                         PriceGroupName = String.Format("{0} {1} VIC/QLD", BlindName, ControlName)
                     End If
                 End If
+
+                ExactName = PriceGroupName
             End If
 
             If BlindName = "Powder Coating" Then
                 PriceGroupName = kitName
             End If
+
+           
 
             ' Throw new Exception(PriceGroupName)
 

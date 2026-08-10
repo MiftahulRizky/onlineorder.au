@@ -2333,7 +2333,7 @@ Partial Class Methods_Order_OrderDetailMethod
             ' Dim Res As String = CreateXMLB(headerid, FileName, FilePath)
             ' If Not Res = "200" Then Throw New Exception(Res)
             exactCfg.CreateXMLB(headerid, FileName, FilePath)
-            ' exactCfg.Connect(PathCombine)
+            exactCfg.Connect(PathCombine)
             
             Return New With {.success = true, .message = "The Exact Slip was successfully sent."}
         Catch ex As Exception

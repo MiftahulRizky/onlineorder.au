@@ -3337,7 +3337,7 @@ const bindProduction = async (designname) => {
 // --------------------------------------------||Other Function ||-------------------------------------------
 // CHECK SESSION
 const detailPageLoaded = () => {
-  return;
+  // return;
   // window.location.href = `/order/orderdetails?param=${HEADERID}&ordertype=${ORDERTYPE.toLowerCase()}`;
 
   if (!ULTRON || !ORDERTYPE) window.location.href = "/order";
