@@ -6,6 +6,7 @@
     console.log("USERNAME: " + USERNAME);
     console.log("HEADERID: " + HEADERID);
     console.log("PRICEACCESS: " + PRICEACCESS);
+    console.log("LOGINID: " + LOGINID);
     console.log("CUSTOMERCONTACTID: " + CUSTOMERCONTACTID);
     console.log("PREVIEWACCESS: " + PREVIEWACCESS);
     console.log("REPRINT: " + REPRINT);

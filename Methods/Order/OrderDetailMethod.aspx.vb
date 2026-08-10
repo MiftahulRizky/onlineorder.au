@@ -474,9 +474,9 @@ Partial Class Methods_Order_OrderDetailMethod
                     Action = "No"
                 End If
 
-                If rolename = "PPIC & DE" And Not loginid = CustomerContactId Then
-                    Action = "No"
-                End If
+                ' If rolename = "PPIC & DE" And Not loginid = CustomerContactId Then
+                '     Action = "No"
+                ' End If
 
                 textSwall = "You have an incomplete roller blinds order, which is on the ITEM ID "+ msg +" <br /><br />If you want to complete it, please click the <b>Next Item</b> button on the order line ID."
                 
@@ -890,9 +890,9 @@ Partial Class Methods_Order_OrderDetailMethod
 
         End If
         
-        If (rolename = "PPIC & DE" Or rolename = "Customer Service") And UCase(createdby).ToString() <> UCase(customercontactid) Then
-            HideNext = "hidden"
-        End If
+        ' If InArray(rolename, "PPIC & DE", "Customer Service") And UCase(createdby).ToString() <> UCase(customercontactid).ToString() Then
+        '     HideNext = "hidden"
+        ' End If
 
 
         Return HideNext
