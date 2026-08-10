@@ -249,15 +249,21 @@ Partial Class Methods_Order_SurchargeMethod
                Throw New Exception("price group id not found !")
             End If
 
+            Dim ExactId As String = orderCfg.GetItemData(String.Format("SELECT ExactId FROM Exacts WHERE Name = '{0}'", ExactName))
+            If String.IsNullOrEmpty(ExactId) Then
+               Throw New Exception("exact id not found !")
+            End If
+
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim itemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, PriceGroupId, BlindNo, Qty, Width, [Drop], Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @PriceGroupId, 'Blind 1', 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, ExactId, PriceGroupId, BlindNo, Qty, Width, [Drop], Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @ExactId, @PriceGroupId, 'Blind 1', 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
                         myCmd.Parameters.AddWithValue("@SoeKitId", SoeId)
+                        myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(PriceGroupId).ToString())
                         myCmd.Connection = thisConn
                         thisConn.Open()
@@ -280,11 +286,12 @@ Partial Class Methods_Order_SurchargeMethod
             If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
                 Dim itemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId=@KitId, SoeKitId=@SoeKitId, PriceGroupId=@PriceGroupId WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
                         myCmd.Parameters.AddWithValue("@SoeKitId", SoeId)
+                        myCmd.Parameters.AddWithValue("@ExactId", If(String.IsNullOrEmpty(ExactId), DBNull.Value, ExactId))
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(PriceGroupId).ToString())
                         myCmd.Connection = thisConn
                         thisConn.Open()

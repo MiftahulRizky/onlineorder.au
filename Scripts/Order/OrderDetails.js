@@ -2226,7 +2226,11 @@ const submitSelectProduct = async (designid, production, action, button) => {
     const msg = `submitSelectProduct: ${error.message}`;
     catchMessages(msg);
   } finally {
-    document.getElementById(button).innerHTML = "Next";
+    let lbl = "Next";
+    if (action === "AddItem") {
+      lbl = `<i class="ti ti-database-dollar fs-2 me-2 opacity-50"></i> Add Surcharge`;
+    }
+    document.getElementById(button).innerHTML = lbl;
   }
 };
 

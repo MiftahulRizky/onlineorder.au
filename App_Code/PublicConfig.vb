@@ -870,32 +870,33 @@ Public Class PublicConfig
         ' End If
 
 
-        ' 1. Coba ambil data diskon yang spesifik untuk BlindId ini terlebih dahulu
         Dim thisData As DataSet = GetListData(String.Format("SELECT * FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND BlindId='{2}' AND Active='1'", CustomerId, DesignId, BlindId))
 
-        ' 2. Jika tidak ada diskon spesifik, ambil diskon umum untuk Customer & Design tersebut
         If thisData Is Nothing OrElse thisData.Tables(0).Rows.Count = 0 Then
             thisData = GetListData(String.Format("SELECT * FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}' AND BlindId IS NULL AND Active='1'", CustomerId, DesignId))
         End If
 
-        ' 3. Proses perhitungan jika data ditemukan
         Dim Discount As Decimal = 0D
-
-        ' Ambil QuoteDisc terlebih dahulu
-        Dim QuoteDisc As String = GetItemData(String.Format("SELECT QuoteDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
-
-        If Not String.IsNullOrEmpty(QuoteDisc) AndAlso QuoteDisc <> "0" Then
-            ' Ubah koma ke titik
-            QuoteDisc = QuoteDisc.Replace(",", ".")
-            
-            ' Konversi menggunakan InvariantCulture agar titik selalu dibaca sebagai desimal
-            Discount = Decimal.Parse(QuoteDisc, System.Globalization.CultureInfo.InvariantCulture)
-        ElseIf thisData IsNot Nothing AndAlso thisData.Tables(0).Rows.Count > 0 Then
+        If thisData IsNot Nothing AndAlso thisData.Tables(0).Rows.Count > 0 Then
             Dim dr As DataRow = thisData.Tables(0).Rows(0)
             
-            ' Pastikan penanganan jika dr("Discount") bernilai DBNull atau String
+            ' Ambil diskon default dari DataRow
             If Not IsDBNull(dr("Discount")) Then
                 Discount = Convert.ToDecimal(dr("Discount"))
+            End If
+            
+            ' Timpa nilai Discount jika ada QuoteDisc dari header
+            Dim QuoteDisc As String = GetItemData(String.Format("SELECT QuoteDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
+            If Not String.IsNullOrEmpty(QuoteDisc) AndAlso QuoteDisc <> "0" AndAlso QuoteDisc <> "0.00" AndAlso QuoteDisc <> "0,00" Then
+                QuoteDisc = QuoteDisc.Replace(",", ".")
+                Discount = Decimal.Parse(QuoteDisc, System.Globalization.CultureInfo.InvariantCulture)
+            End If
+
+        Else
+            Dim QuoteDisc As String = GetItemData(String.Format("SELECT QuoteDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
+            If Not String.IsNullOrEmpty(QuoteDisc) AndAlso QuoteDisc <> "0" AndAlso QuoteDisc <> "0.00" AndAlso QuoteDisc <> "0,00" Then
+                QuoteDisc = QuoteDisc.Replace(",", ".")
+                Discount = Decimal.Parse(QuoteDisc, System.Globalization.CultureInfo.InvariantCulture)
             End If
         End If
 
