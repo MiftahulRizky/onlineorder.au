@@ -246,7 +246,7 @@ Partial Class Methods_Order_JobSheetMethod
     Private Shared Function CreateJobHeaders(JobId As String, HeaderId As String) As String
         Try 
             Using thisConn As SqlConnection = New SqlConnection(myConn)
-                Using myCmd As SqlCommand = New SqlCommand("INSERT INTO JobHeaders (Id, HeaderId, JoNumber, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, Address, Suburb, States, PostCode, Phone, Email, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, StatusDescription, CreatedDate, SubmittedDate, CompletedDate, Active, OrderId, UserName, StoreName, StoreCompany, StoreType) SELECT @JobId, Id As HeaderId, JoNumber, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, Address, Suburb, States, PostCode, Phone, Email, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, StatusDescription, CreatedDate, SubmittedDate, CompletedDate, Active, OrderId, UserName, StoreName, StoreCompany, StoreType FROM view_headers WHERE Id=@HeaderId", thisConn)
+                Using myCmd As SqlCommand = New SqlCommand("INSERT INTO JobHeaders (Id, HeaderId, JoNumber, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, Address, Suburb, States, PostCode, Phone, Email, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, StatusDescription, CreatedDate, SubmittedDate, JobDate, CompletedDate, Active, OrderId, UserName, StoreName, StoreCompany, StoreType) SELECT @JobId, Id As HeaderId, JoNumber, UserId, StoreId, OrderNo, OrderCust, Delivery, Note, Address, Suburb, States, PostCode, Phone, Email, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, StatusDescription, CreatedDate, SubmittedDate, JobDate, CompletedDate, Active, OrderId, UserName, StoreName, StoreCompany, StoreType FROM view_headers WHERE Id=@HeaderId", thisConn)
                     myCmd.Parameters.AddWithValue("@HeaderId", HeaderId)
                     myCmd.Parameters.AddWithValue("@JobId", JobId)
                     myCmd.Connection = thisConn
@@ -3515,12 +3515,15 @@ Partial Class Methods_Order_JobSheetMethod
             Dim UserName As String = JobHeaderData.Tables(0).Rows(0).Item("UserName").ToString()
             Dim CreatedDateStr As String = JobHeaderData.Tables(0).Rows(0).Item("CreatedDate").ToString()
             Dim SubmittedDateStr As String = JobHeaderData.Tables(0).Rows(0).Item("SubmittedDate").ToString()
+            Dim JobDateStr As String = JobHeaderData.Tables(0).Rows(0).Item("JobDate").ToString()
 
             Dim CreatedDate As DateTime
             Dim SubmittedDate As DateTime
+            Dim JobDate As DateTime
 
             Dim IsCreatedValid As Boolean = DateTime.TryParse(CreatedDateStr, CreatedDate)
             Dim IsSubmittedValid As Boolean = DateTime.TryParse(SubmittedDateStr, SubmittedDate)
+            Dim IsJobDateValid As Boolean = DateTime.TryParse(JobDateStr, JobDate)
 
             ' Ambil data JobDetails
             Dim JobDetailData As DataSet = publicCfg.GetListData("SELECT * FROM JobDetails WHERE JobId='" & JobId & "' ORDER BY BlindName, DesignName, Id")
@@ -3673,7 +3676,8 @@ Partial Class Methods_Order_JobSheetMethod
                             myCmd.Parameters.AddWithValue("@ZoneId", Delivery)
                             myCmd.Parameters.AddWithValue("@UserName", UserName)
                             myCmd.Parameters.AddWithValue("@OrderCreated", If(IsCreatedValid, CreatedDate, DBNull.Value))
-                            myCmd.Parameters.AddWithValue("@ShipDate", If(IsSubmittedValid, SubmittedDate, DBNull.Value))
+                            ' myCmd.Parameters.AddWithValue("@ShipDate", If(IsSubmittedValid, SubmittedDate, DBNull.Value))
+                            myCmd.Parameters.AddWithValue("@ShipDate", If(IsJobDateValid, JobDate, DBNull.Value))
 
 
                             ' Tambahkan parameter untuk setiap field secara dinamis
