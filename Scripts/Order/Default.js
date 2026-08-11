@@ -690,37 +690,47 @@ const handlerSelStatus = (params, statusNow) => {
 
   // === modalChangeStatus => status ===
   if (params === "#modalChangeStatus #status" && statusNow) {
-    switch (statusNow) {
-      case "Pending Price Approval":
-        data = [{ value: "Draft", text: "Draft" }];
-        break;
-      case "Draft":
-        data = [
-          { value: "New Order", text: "New Order" },
-          { value: "Canceled", text: "Canceled" },
-        ];
-        break;
+    data.push({ value: "Draft", text: "Draft" });
 
-      case "New Order":
-        data = [
-          { value: "New Order", text: "New Order" },
-          { value: "In Production", text: "In Production" },
-          { value: "On Hold", text: "On Hold" },
-          { value: "Canceled", text: "Canceled" },
-        ];
-        break;
-
-      case "In Production":
-        data = [
-          { value: "In Production", text: "In Production" },
-          { value: "Completed", text: "Completed" },
-          { value: "Canceled", text: "Canceled" },
-        ];
-        break;
+    if (["Pending Price Approval"].includes(statusNow)) {
+      data.push({
+        value: "Pending Price Approval",
+        text: "Pending Price Approval",
+      });
     }
 
-    if (ROLENAME !== "Customer") {
-      data.unshift({ value: "Draft", text: "Draft / Unsubmitted" });
+    if (["Draft"].includes(statusNow)) {
+      data.push(
+        // { value: "New Order", text: "New Order" },
+        { value: "Canceled", text: "Canceled" },
+      );
+    }
+
+    if (["On Hold"].includes(statusNow)) {
+      data.push(
+        { value: "In Production", text: "In Production" },
+        { value: "On Hold", text: "On Hold" },
+        { value: "Canceled", text: "Canceled" },
+      );
+    }
+
+    if (["New Order"].includes(statusNow)) {
+      data.push(
+        { value: "New Order", text: "New Order" },
+        { value: "In Production", text: "In Production" },
+        { value: "On Hold", text: "On Hold" },
+        { value: "Canceled", text: "Canceled" },
+      );
+    }
+
+    if (["In Production"].includes(statusNow)) {
+      data.push(
+        { value: "New Order", text: "New Order" },
+        { value: "In Production", text: "In Production" },
+        { value: "On Hold", text: "On Hold" },
+        { value: "Completed", text: "Completed" },
+        { value: "Canceled", text: "Canceled" },
+      );
     }
   }
 

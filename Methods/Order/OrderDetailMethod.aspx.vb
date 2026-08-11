@@ -315,20 +315,37 @@ Partial Class Methods_Order_OrderDetailMethod
                                 Throw New Exception(Product.message)
                             End If
 
-                            Dim HideNext As String = FindHideNext(reader, data.rolename, HeaderData.CreatedByName, data.customercontactid)
-                            Dim TextNext As String = FindTextNext(reader)
+                            Dim HideNext As Object = FindHideNext(reader, data.rolename, HeaderData.CreatedByName, data.customercontactid)
+                            If HideNext.error Then
+                                Throw New Exception(HideNext.message)
+                            End If
+
+                            Dim TextNext As Object = FindTextNext(reader)
+                            If TextNext.error Then
+                                Throw New Exception(TextNext.message)
+                            End If
+
                             Dim Production As String = "Sunlight"
                             If InStr(DesignName, "Global") > 0 Then
                                 Production = "Global"
                             End If
-                            Product.product += String.Format("<br><button type='button' class='btn btn-sm btn-outline-success mt-1' id='btnNextItem' data-id='{0}' data-headerid='{1}' data-designid='{2}' data-next='{3}' data-production='{4}' {5}><i class='bi bi-node-plus me-1'></i>Next Item</button>", Id, HeaderId, DesignId, TextNext, Production, HideNext)
 
-                            Dim BaseCost As String = FindBaseCost(reader)
-                            Dim Cost As String = FindCost(reader)
-                            Dim FinalCost As String =  Cost
+                            Product.value += String.Format("<br><button type='button' class='btn btn-sm btn-outline-success mt-1' id='btnNextItem' data-id='{0}' data-headerid='{1}' data-designid='{2}' data-next='{3}' data-production='{4}' {5}><i class='bi bi-node-plus me-1'></i>Next Item</button>", Id, HeaderId, DesignId, TextNext.value, Production, HideNext.value)
+
+                            Dim BaseCost As Object = FindBaseCost(reader)
+                            If BaseCost.error Then
+                                Throw New Exception(BaseCost.message)
+                            End If
+
+                            Dim Cost As Object = FindCost(reader)
+                            If Cost.error Then
+                                Throw New Exception(Cost.message)
+                            End If
+
+                            Dim FinalCost As String =  Cost.value
                             If FabricGroups = "POA" OR InStr(PriceGroupName, "POA") > 0 Then
                                 Dim baseCostValue As Decimal
-                                If Decimal.TryParse(BaseCost, baseCostValue) AndAlso baseCostValue = 0D Then
+                                If Decimal.TryParse(BaseCost.value, baseCostValue) AndAlso baseCostValue = 0D Then
                                     FinalCost = "<span class='badge bg-orange-lt'>POA</span>"
                                 End If
                             End If
@@ -349,7 +366,7 @@ Partial Class Methods_Order_OrderDetailMethod
                                 .DesignName = DesignName,
                                 .Qty = reader("Qty").ToString(),
                                 .Location = reader("Location").ToString(),
-                                .Product = Product.product,
+                                .Product = Product.value,
                                 .HideNext = HideNext,
                                 .TextNext = TextNext,
                                 .Cost = FinalCost,
@@ -847,125 +864,144 @@ Partial Class Methods_Order_OrderDetailMethod
             End IF
     
     
-            Return New With {.error = false, .product = Product}
+            Return New With {.error = false, .value = Product}
         Catch ex As Exception
             Return New With {.error = true, .message = String.Format("FindProduct: {0}", ex.Message)}
         End Try
     End Function
 
-    Private Shared Function FindHideNext(reader As SqlDataReader, rolename As String, createdby As String, customercontactid As String) As String
-        Dim HideNext As String = "hidden"
-
-        Dim DesignName As String = reader("DesignName").ToString()
-        Dim BracketType As String = reader("BracketType").ToString()
-        Dim UniqueId As String = reader("UniqueId").ToString()
-        Dim BlindNo As String = reader("BlindNo").ToString()
-
-        If DesignName = "Roller Blinds" Or DesignName = "Global Roller Blinds" Then
-
-            Dim TotalBlind As Integer = Convert.ToInt32(publicCfg.GetItemData("SELECT COUNT(Id) FROM OrderDetails WHERE UniqueId = '" + UniqueId + "' AND Active = 1"))
-            If BracketType = "Double" Or BracketType = "Linked 2 Blinds (Ind)" Or BracketType = "Linked 2 Blinds (Dep)" Then
-                HideNext = ""
-                If TotalBlind >= 2 Then : HideNext = "hidden" : End If 
+    Private Shared Function FindHideNext(reader As SqlDataReader, rolename As String, createdby As String, customercontactid As String) As Object
+        Try
+            Dim HideNext As String = "hidden"
+    
+            Dim DesignName As String = reader("DesignName").ToString()
+            Dim BracketType As String = reader("BracketType").ToString()
+            Dim UniqueId As String = reader("UniqueId").ToString()
+            Dim BlindNo As String = reader("BlindNo").ToString()
+    
+            If DesignName = "Roller Blinds" Or DesignName = "Global Roller Blinds" Then
+    
+                Dim TotalBlind As Integer = Convert.ToInt32(publicCfg.GetItemData("SELECT COUNT(Id) FROM OrderDetails WHERE UniqueId = '" + UniqueId + "' AND Active = 1"))
+                If BracketType = "Double" Or BracketType = "Linked 2 Blinds (Ind)" Or BracketType = "Linked 2 Blinds (Dep)" Then
+                    HideNext = ""
+                    If TotalBlind >= 2 Then : HideNext = "hidden" : End If 
+                End If
+    
+                If BracketType = "Linked 3 Blinds (Ind)" Or BracketType = "Linked 3 Blinds (Dep)" Then
+                    HideNext = "hidden"
+                    If BlindNo = "Blind 1" And TotalBlind < 2 Then
+                        HideNext = ""
+                    End If
+                    If BlindNo = "Blind 2" And TotalBlind < 3 Then
+                        HideNext = ""
+                    End If
+                End If
+    
+                If BracketType = "Double and Link System Dep" Or BracketType = "Double and Link System Ind" Then 'added 240925
+                    HideNext = "hidden"
+                    If BlindNo = "Blind 1" And TotalBlind < 2 Then
+                        HideNext = ""
+                    End If
+                    If BlindNo = "Blind 2" And TotalBlind < 3 Then
+                        HideNext = ""
+                    End If
+                    If BlindNo = "Blind 3" And TotalBlind < 4 Then
+                        HideNext = ""
+                    End If
+                End If
+    
             End If
 
+            ' Return HideNext
+            Return New With {.error = false, .value = HideNext}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("FindHideNext: {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared Function FindTextNext(reader As SqlDataReader) As Object
+        Try
+            Dim TextNext As String = "Add blind that is doubled to this blind"
+            Dim BracketType As String = reader("BracketType").ToString()
+            Dim BlindNo As String = reader("BlindNo").ToString()
+    
+            If BracketType = "Linked 2 Blinds (Ind)" Or BracketType = "Linked 2 Blinds (Dep)" Then
+                TextNext = "Add 2nd blind that is linked to this blind"
+            End If
+    
             If BracketType = "Linked 3 Blinds (Ind)" Or BracketType = "Linked 3 Blinds (Dep)" Then
-                HideNext = "hidden"
-                If BlindNo = "Blind 1" And TotalBlind < 2 Then
-                    HideNext = ""
-                End If
-                If BlindNo = "Blind 2" And TotalBlind < 3 Then
-                    HideNext = ""
+                TextNext = "Add 2nd blind that is linked to this blind"
+                If BlindNo = "Blind 2" Then
+                    TextNext = "Add to complete blind"
                 End If
             End If
-
+    
             If BracketType = "Double and Link System Dep" Or BracketType = "Double and Link System Ind" Then 'added 240925
-                HideNext = "hidden"
-                If BlindNo = "Blind 1" And TotalBlind < 2 Then
-                    HideNext = ""
+                TextNext = "Add a 2rd blind connected to this blind"
+                If BlindNo = "Blind 2" Then
+                    TextNext = "Add a 3rd blind connected to this blind"
                 End If
-                If BlindNo = "Blind 2" And TotalBlind < 3 Then
-                    HideNext = ""
-                End If
-                If BlindNo = "Blind 3" And TotalBlind < 4 Then
-                    HideNext = ""
+                If BlindNo = "Blind 3" Then
+                    TextNext = "Add to complete blind"
                 End If
             End If
 
-        End If
-
-
-        Return HideNext
+            ' Return TextNext
+            Return New With {.error = false, .value = TextNext}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("FindTextNext: {0}", ex.Message)}
+        End Try
     End Function
 
-    Private Shared Function FindTextNext(reader As SqlDataReader) As String
-        Dim TextNext As String = "Add blind that is doubled to this blind"
-        Dim BracketType As String = reader("BracketType").ToString()
-        Dim BlindNo As String = reader("BlindNo").ToString()
+    Private Shared Function FindBaseCost(reader As SqlDataReader) As Object
+        Try
+            Dim Id As String = reader("Id").ToString()
+            Dim HeaderId As String = reader("HeaderId").ToString()
+            Dim result As String = publicCfg.GetItemData(String.Format("SELECT FORMAT(Cost, 'N2', 'en-US') AS FormatRealCost FROM OrderDetailsPrice WHERE Type ='Matrix' And HeaderId = '{0}' And ItemId = '{1}'", HeaderId, Id))
 
-        If BracketType = "Linked 2 Blinds (Ind)" Or BracketType = "Linked 2 Blinds (Dep)" Then
-            TextNext = "Add 2nd blind that is linked to this blind"
-        End If
+            Return New With {.error = false, .value = result}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("FindBaseCost: {0}", ex.Message)}
+        End Try
 
-        If BracketType = "Linked 3 Blinds (Ind)" Or BracketType = "Linked 3 Blinds (Dep)" Then
-            TextNext = "Add 2nd blind that is linked to this blind"
-            If BlindNo = "Blind 2" Then
-                TextNext = "Add to complete blind"
-            End If
-        End If
-
-        If BracketType = "Double and Link System Dep" Or BracketType = "Double and Link System Ind" Then 'added 240925
-            TextNext = "Add a 2rd blind connected to this blind"
-            If BlindNo = "Blind 2" Then
-                TextNext = "Add a 3rd blind connected to this blind"
-            End If
-            If BlindNo = "Blind 3" Then
-                TextNext = "Add to complete blind"
-            End If
-        End If
-
-
-        Return TextNext
     End Function
 
-    Private Shared Function FindBaseCost(reader As SqlDataReader) As String
-        Dim Id As String = reader("Id").ToString()
-        Dim HeaderId As String = reader("HeaderId").ToString()
-        Dim result As String = publicCfg.GetItemData(String.Format("SELECT FORMAT(Cost, 'N2', 'en-US') AS FormatRealCost FROM OrderDetailsPrice WHERE Type ='Matrix' And HeaderId = '{0}' And ItemId = '{1}'", HeaderId, Id))
-
-        Return result
-    End Function
-
-    Private Shared Function FindCost(reader As SqlDataReader) As String
-        Dim result As String = String.Empty
-        Dim DesignName As String = reader("DesignName").ToString()
-        Dim BlindName As String = reader("BlindName").ToString()
-        Dim Cost As String = reader("Cost").ToString()
-        Dim Charge As String = reader("Charge").ToString()
-        Dim Discount As String = reader("Discount").ToString()
-
-        Dim totalCost As Decimal = 0.00
-        Dim costVal As Decimal = 0
-        Dim chargeVal As Decimal = 0
-        Dim discountVal As Decimal = 0
-
-        Decimal.TryParse(Cost, costVal)
-        Decimal.TryParse(Charge, chargeVal)
-        Decimal.TryParse(Discount, discountVal)
-        If DesignName = "Vertical Blinds" AndAlso BlindName = "Slat Only" Then
-            If costVal = 0 Then
-                totalCost = chargeVal
+    Private Shared Function FindCost(reader As SqlDataReader) As Object
+        Try
+            Dim result As String = String.Empty
+            Dim DesignName As String = reader("DesignName").ToString()
+            Dim BlindName As String = reader("BlindName").ToString()
+            Dim Cost As String = reader("Cost").ToString()
+            Dim Charge As String = reader("Charge").ToString()
+            Dim Discount As String = reader("Discount").ToString()
+    
+            Dim totalCost As Decimal = 0.00
+            Dim costVal As Decimal = 0
+            Dim chargeVal As Decimal = 0
+            Dim discountVal As Decimal = 0
+    
+            Decimal.TryParse(Cost, costVal)
+            Decimal.TryParse(Charge, chargeVal)
+            Decimal.TryParse(Discount, discountVal)
+            If DesignName = "Vertical Blinds" AndAlso BlindName = "Slat Only" Then
+                If costVal = 0 Then
+                    totalCost = chargeVal
+                Else
+                    totalCost = (costVal + chargeVal) - discountVal
+                End If
             Else
-                totalCost = (costVal + chargeVal) - discountVal
+                If costVal > 0 Then
+                    totalCost = (costVal + chargeVal) - discountVal
+                End If
             End If
-        Else
-            If costVal > 0 Then
-                totalCost = (costVal + chargeVal) - discountVal
-            End If
-        End If
+    
+            result = String.Format("${0}", totalCost.ToString("N2", enUS))
 
-        result = String.Format("${0}", totalCost.ToString("N2", enUS))
-        Return result
+            Return New With {.error = false, .value = result}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("FindCost: {0}", ex.Message)}
+        End Try
+
     End Function
 
     <WebMethod()>
