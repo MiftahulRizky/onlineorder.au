@@ -38,6 +38,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const controltype = e.target.value;
       await bindFabrics(DESIGNID);
       await Promise.all([
+        bindSizeType(),
+        bindDropFloor(),
         bindSlatSize(),
         bindTrackColour(tubetype),
         bindStackPosition(),
@@ -49,6 +51,16 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindBottom(),
       ]);
       await handlerElementVisibility(blindtype, tubetype, controltype);
+    }
+
+    if (e.target.id === "sizetype") {
+      const sizetype = e.target.value;
+      const divDropFloor = document.getElementById("divDropFloor");
+      divDropFloor.classList.add("d-none");
+      if (["Opening Size"].includes(sizetype)) {
+        divDropFloor.classList.remove("d-none");
+      }
+      bindDropFloor();
     }
 
     if (e.target.id === "fabrictype") {
@@ -385,6 +397,8 @@ const bindControls = async (designid, blindid, tubetype) => {
         const controltype = select.value;
         await bindFabrics(designid);
         await Promise.all([
+          bindSizeType(),
+          bindDropFloor(),
           bindSlatSize(),
           bindTrackColour(tubetype),
           bindStackPosition(),
@@ -405,6 +419,14 @@ const bindControls = async (designid, blindid, tubetype) => {
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
   }
+};
+
+const bindSizeType = () => {
+  generateOption("sizetype", ["Opening Size", "Make Size"]);
+};
+
+const bindDropFloor = () => {
+  generateOption("dropfloor", ["No", "Yes"]);
 };
 
 const bindFabrics = async (designid) => {
@@ -997,6 +1019,8 @@ const bindItemOrders = async (itemid) => {
       await bindFabricLength(item.DesignId, item.TubeType, item.FabricType);
       await bindFabricColours(item.DesignId, item.FabricType, item.FabricWidth);
       await Promise.all([
+        bindSizeType(),
+        bindDropFloor(),
         bindSlatSize(),
         bindTrackColour(item.TubeType),
         bindStackPosition(),
@@ -1036,6 +1060,8 @@ const handlerElementVisibility = async (
     const divControlType = document.getElementById("divControlType");
 
     const divFormDetail = document.getElementById("divFormDetail");
+    const divSizeType = document.getElementById("divSizeType");
+    const divDropFloor = document.getElementById("divDropFloor");
     const divMounting = document.getElementById("divMounting");
     const lblWd = document.getElementById("lblWd");
     const divWidth = document.getElementById("divWidth");
@@ -1063,6 +1089,8 @@ const handlerElementVisibility = async (
     divControlType.classList.add("d-none");
 
     divFormDetail.classList.add("d-none");
+    divSizeType.classList.add("d-none");
+    divDropFloor.classList.add("d-none");
     divMounting.classList.add("d-none");
     lblWd.innerHTML = "width x drop";
     divWidth.classList.add("d-none");
@@ -1104,6 +1132,7 @@ const handlerElementVisibility = async (
     divFormDetail.classList.remove("d-none");
 
     if (blindname === "Complete") {
+      divSizeType.classList.remove("d-none");
       divMounting.classList.remove("d-none");
       divWidth.classList.remove("d-none");
       divDrop.classList.remove("d-none");
@@ -1164,6 +1193,10 @@ const handlerElementVisibility = async (
     }
 
     if (item) {
+      if (item.LouvreSize === "Opening Size") {
+        divDropFloor.classList.remove("d-none");
+      }
+
       const WandLengthKey = ["", "500", "750", "1100", "1250", "1500", "2000"];
       const WandLengthVal = item.WandLength;
       if (!WandLengthKey.includes(WandLengthVal)) {
@@ -1206,6 +1239,8 @@ const handlerSubmit = async (button) => {
       "controltype",
       "qty",
       "room",
+      "sizetype",
+      "dropfloor",
       "mounting",
       "width",
       "drop",
@@ -1293,6 +1328,8 @@ const handlerSetElementValues = (itemData) => {
     controltype: "KitId",
     qty: "Qty",
     room: "Location",
+    sizetype: "LouvreSize",
+    dropfloor: "LouvrePosition",
     mounting: "Mounting",
     width: "Width",
     drop: "Drop",
@@ -1417,4 +1454,25 @@ const getItemData = async (query) => {
     console.error(err);
     isError(err);
   }
+};
+
+const generateOption = (elementId, list = [], lengthDefaultOption = 0) => {
+  const sel = document.getElementById(elementId);
+  if (!sel) return;
+  sel.innerHTML = ""; // reset
+
+  // Short A-Z
+  list.sort();
+
+  // default option kalau lebih dari 1 data
+  if (list.length > lengthDefaultOption) {
+    const defaultOption = new Option("", "");
+    sel.add(defaultOption);
+  }
+
+  list.forEach((item) => {
+    const option = new Option(item.toUpperCase(), item);
+    option.setAttribute("data-name", item);
+    sel.add(option);
+  });
 };

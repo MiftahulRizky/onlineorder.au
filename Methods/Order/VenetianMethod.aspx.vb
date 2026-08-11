@@ -439,7 +439,7 @@ Partial Class Methods_Order_VenetianMethod
                 data.pelmetsize = ""
             End If
 
-            If Not InArray(BlindName, "50mm Aluminum", "50mm Timberstyle", "63mm Timberstyle") Then
+            If Not InArray(BlindName, "50mm Aluminium", "50mm Timberstyle", "63mm Timberstyle") Then
                 data.sizetype = ""
                 data.dropfloor = ""
             End If
@@ -553,6 +553,8 @@ Partial Class Methods_Order_VenetianMethod
                 data.returnleft = ""
                 returnleft = 0
             End If
+
+            ' Throw New Exception(data.sizetype)
             
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()

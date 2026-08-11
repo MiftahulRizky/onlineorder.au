@@ -820,8 +820,12 @@ const handlerElementVisibility = async (
         divBottomRail.classList.remove("d-none");
       }
 
-      if (item.BracketCover === "Yes") {
-        divBracketCoverColour.classList.remove("d-none");
+      if (item.Trim === "1F") {
+        divBottomRail.classList.remove("d-none");
+      }
+
+      if (item.LouvreSize === "Opening Size") {
+        divDropFloor.classList.remove("d-none");
       }
     }
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
