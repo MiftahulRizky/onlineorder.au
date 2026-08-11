@@ -110,15 +110,28 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       );
     }
 
-    if (e.target.id === "sizetype") {
-      const sizetype = e.target.value;
-      const divDropFloor = document.getElementById("divDropFloor");
-      divDropFloor.classList.add("d-none");
-      if (["Opening Size"].includes(sizetype)) {
-        divDropFloor.classList.remove("d-none");
-      }
-      bindDropFloor();
-    }
+    // if (e.target.id === "sizetype") {
+    //   const sizetype = e.target.value;
+    //   const mounting = document.getElementById("mounting").value;
+    //   const divDropFloor = document.getElementById("divDropFloor");
+    //   divDropFloor.classList.add("d-none");
+    //   if (sizetype == "Opening Size" && mounting == "Face Fit") {
+    //     divDropFloor.classList.remove("d-none");
+    //   }
+    //   bindDropFloor();
+    // }
+
+    // if (e.target.id === "mounting") {
+    //   const sizetype = document.getElementById("sizetype").value;
+    //   const mounting = e.target.value;
+
+    //   const divDropFloor = document.getElementById("divDropFloor");
+    //   divDropFloor.classList.add("d-none");
+    //   if (sizetype == "Opening Size" && mounting == "Face Fit") {
+    //     divDropFloor.classList.remove("d-none");
+    //   }
+    //   bindDropFloor();
+    // }
 
     // ---------------------------------||fabrictype||---------------------------------
     if (e.target.id === "fabrictype") {
@@ -820,13 +833,13 @@ const handlerElementVisibility = async (
         divBottomRail.classList.remove("d-none");
       }
 
-      if (item.Trim === "1F") {
-        divBottomRail.classList.remove("d-none");
+      if (item.BracketCover === "Yes") {
+        divBracketCoverColour.classList.remove("d-none");
       }
 
-      if (item.LouvreSize === "Opening Size") {
-        divDropFloor.classList.remove("d-none");
-      }
+      // if (item.LouvreSize == "Opening Size" && item.Mounting == "Face Fit") {
+      //   divDropFloor.classList.remove("d-none");
+      // }
     }
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
 

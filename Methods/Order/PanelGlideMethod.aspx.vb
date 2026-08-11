@@ -19,6 +19,8 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
         Public Property colourtype As String
         Public Property qty As String
         Public Property room As String
+        Public Property sizetype As String
+        Public Property dropfloor As String
         Public Property mounting As String
         Public Property fabrictype As String
         Public Property fabriccolour As String
@@ -236,6 +238,18 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "room to install is required !", .field = "room"}}
             End If
 
+            If InArray(BlindName, "Completed") Then
+                If String.IsNullOrEmpty(data.sizetype) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
+                End If
+
+                If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
+                    If String.IsNullOrEmpty(data.dropfloor) Then
+                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
+                    End If
+                End If
+            End IF
+
             If String.IsNullOrEmpty(data.mounting) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
             End If
@@ -393,6 +407,8 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
             End If
 
             IF BlindName = "Panel Only" Then
+                data.sizetype = ""
+                data.dropfloor = ""
                 data.layoutcode = ""
                 data.tracktype = ""
                 data.trackcolour = ""
@@ -402,6 +418,8 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
             End If
 
             IF BlindName = "Track Only" Then
+                data.sizetype = ""
+                data.dropfloor = ""
                 data.drop = ""
                 drop = 0
                 data.fabrictype = ""
@@ -409,7 +427,10 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 data.nopanel = ""
                 data.bottomrail = ""
             End If
-
+            
+            If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Face Fit") Then
+                data.dropfloor = ""
+            End If
           
             '#-----------------------|| SUBMIT VALIDATE ||-----------------------#
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
@@ -417,7 +438,7 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 Dim itemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, ExactId, FabricId, PriceGroupId, BlindNo, Qty, Location, Mounting, Width, [Drop], Layout, NumOfPanel, TrackType, TrackColour, NumOfWand, WandPosition, WandLength, WandColour, BottomHoldDown, Batten, BattenColour, Fitting, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @ExactId, @FabricId, @PriceGroupId, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @Layout, @NumOfPanel, @TrackType, @TrackColour, @NumOfWand, @WandPosition, @WandLength, @WandColour, @BottomHoldDown, @Batten, @BattenColour, @Fitting, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, ExactId, FabricId, PriceGroupId, BlindNo, Qty, Location, LouvreSize, LouvrePosition, Mounting, Width, [Drop], Layout, NumOfPanel, TrackType, TrackColour, NumOfWand, WandPosition, WandLength, WandColour, BottomHoldDown, Batten, BattenColour, Fitting, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @ExactId, @FabricId, @PriceGroupId, 'Blind 1', @Qty, @Location, @LouvreSize, @LouvrePosition, @Mounting, @Width, @Drop, @Layout, @NumOfPanel, @TrackType, @TrackColour, @NumOfWand, @WandPosition, @WandLength, @WandColour, @BottomHoldDown, @Batten, @BattenColour, @Fitting, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
@@ -427,6 +448,8 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@LouvreSize", data.sizetype)
+                        myCmd.Parameters.AddWithValue("@LouvrePosition", data.dropfloor)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
@@ -468,7 +491,7 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 Dim itemId As String = data.itemid
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET  KitId = @KitId, SoeKitId = @SoeKitId, ExactId = @ExactId, FabricId = @FabricId, PriceGroupId = @PriceGroupId, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, Layout = @Layout, NumOfPanel = @NumOfPanel, TrackType = @TrackType, TrackColour = @TrackColour, NumOfWand = @NumOfWand, WandPosition = @WandPosition, WandLength = @WandLength, WandColour = @WandColour, BottomHoldDown = @BottomHoldDown, Batten = @Batten, BattenColour = @BattenColour, Fitting = @Fitting, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET  KitId = @KitId, SoeKitId = @SoeKitId, ExactId = @ExactId, FabricId = @FabricId, PriceGroupId = @PriceGroupId, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, LouvreSize = @LouvreSize, LouvrePosition = @LouvrePosition, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, Layout = @Layout, NumOfPanel = @NumOfPanel, TrackType = @TrackType, TrackColour = @TrackColour, NumOfWand = @NumOfWand, WandPosition = @WandPosition, WandLength = @WandLength, WandColour = @WandColour, BottomHoldDown = @BottomHoldDown, Batten = @Batten, BattenColour = @BattenColour, Fitting = @Fitting, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.colourtype).ToString())
@@ -478,6 +501,8 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                         myCmd.Parameters.AddWithValue("@PriceGroupId", UCase(priceGroupId).ToString())
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@LouvreSize", data.sizetype)
+                        myCmd.Parameters.AddWithValue("@LouvrePosition", data.dropfloor)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)

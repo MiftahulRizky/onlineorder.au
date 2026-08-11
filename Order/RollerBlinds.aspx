@@ -139,13 +139,6 @@
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divDropFloor">
-                                        <label for="dropfloor" class="col-lg-3 text-uppercase fw-bold" >drop to the floor</label>
-                                        <div class="col-lg-4">
-                                            <select name="dropfloor" id="dropfloor" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
                                     <div class="mb-3 row" id="divMounting">
                                         <label for="mounting" class="col-lg-3 text-uppercase fw-bold" >mounting</label>
                                         <div class="col-lg-4">
@@ -156,6 +149,14 @@
                                             </select>
                                         </div>  
                                     </div>
+
+                                    <div class="mb-3 row" id="divDropFloor">
+                                        <label for="dropfloor" class="col-lg-3 text-uppercase fw-bold" >drop to the floor</label>
+                                        <div class="col-lg-4">
+                                            <select name="dropfloor" id="dropfloor" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
 
                                     <div class="mb-3 row">
                                         <label for="width" class="col-lg-3 text-uppercase fw-bold">width x drop</label>
@@ -447,5 +448,5 @@
         let URIMETHOD = "/Methods/Order/RollerBlindMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/RollerBlinds.js?v=1.0.3"></script>
+    <script type="text/javascript" src="/Scripts/Order/RollerBlinds.js?v=1.0.5"></script>
 </asp:Content>

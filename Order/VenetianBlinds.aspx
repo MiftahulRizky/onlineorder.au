@@ -96,6 +96,13 @@
                                         </div>  
                                     </div>
 
+                                    <div class="mb-3 row" id="divMounting">
+                                        <label for="mounting" class="col-lg-3 text-uppercase fw-bold" >mounting</label>
+                                        <div class="col-lg-4">
+                                            <select name="mounting" id="mounting" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
                                     <div class="mb-3 row" id="divDropFloor">
                                         <label for="dropfloor" class="col-lg-3 text-uppercase fw-bold" >drop to the floor</label>
                                         <div class="col-lg-4">
@@ -103,12 +110,7 @@
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divMounting">
-                                        <label for="mounting" class="col-lg-3 text-uppercase fw-bold" >mounting</label>
-                                        <div class="col-lg-4">
-                                            <select name="mounting" id="mounting" class="form-select"></select>
-                                        </div>  
-                                    </div>
+                                    
 
                                     <div class="mb-3 row">
                                         <label for="width" class="col-lg-3 text-uppercase fw-bold" id="lblWd">width x drop</label>

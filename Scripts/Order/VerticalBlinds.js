@@ -55,9 +55,22 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     if (e.target.id === "sizetype") {
       const sizetype = e.target.value;
+      const mounting = document.getElementById("mounting").value;
       const divDropFloor = document.getElementById("divDropFloor");
       divDropFloor.classList.add("d-none");
-      if (["Opening Size"].includes(sizetype)) {
+      if (sizetype == "Opening Size" && mounting == "Face Fit") {
+        divDropFloor.classList.remove("d-none");
+      }
+      bindDropFloor();
+    }
+
+    if (e.target.id === "mounting") {
+      const sizetype = document.getElementById("sizetype").value;
+      const mounting = e.target.value;
+
+      const divDropFloor = document.getElementById("divDropFloor");
+      divDropFloor.classList.add("d-none");
+      if (sizetype == "Opening Size" && mounting == "Face Fit") {
         divDropFloor.classList.remove("d-none");
       }
       bindDropFloor();
@@ -153,8 +166,8 @@ const bindFormAction = (itemaction) => {
   const actionMap = {
     AddItem: "ADD ITEM",
     NextItem: "NEXT ITEM",
-    EditItem: "EDIT ITEM",
-    ViewItem: "VIEW ITEM",
+    EditItem: "EDIT ITEM ID: " + ITEMID,
+    ViewItem: "VIEW ITEM ID: " + ITEMID,
     CopyItem: "COPY ITEM",
   };
   cardTitle.innerText = actionMap[itemaction] || "";
@@ -1193,7 +1206,7 @@ const handlerElementVisibility = async (
     }
 
     if (item) {
-      if (item.LouvreSize === "Opening Size") {
+      if (item.LouvreSize == "Opening Size" && item.Mounting == "Face Fit") {
         divDropFloor.classList.remove("d-none");
       }
 

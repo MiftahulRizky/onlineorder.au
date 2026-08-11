@@ -201,8 +201,10 @@ Partial Class Methods_Order_VenetianMethod
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
                 End If
 
-                If data.sizetype = "Opening Size" AND String.IsNullOrEmpty(data.dropfloor) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
+                If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
+                    If String.IsNullOrEmpty(data.dropfloor) Then
+                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
+                    End If
                 End If
             End IF
 
@@ -552,6 +554,10 @@ Partial Class Methods_Order_VenetianMethod
             If data.pelmettype = "Single Right Return" Then
                 data.returnleft = ""
                 returnleft = 0
+            End If
+
+            If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Face Fit") Then
+                data.dropfloor = ""
             End If
 
             ' Throw New Exception(data.sizetype)

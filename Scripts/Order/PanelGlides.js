@@ -34,7 +34,11 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindtype = blind.value;
       const blindname = blind.selectedOptions[0].dataset.name;
       const colourtype = e.target.value;
-      await Promise.all([bindMounting()]);
+      await Promise.all([
+        bindSizeType(),
+        bindDropFloor(),
+        bindMounting(blindname),
+      ]);
       await bindFabrics(DESIGNID);
       await Promise.all([
         bindLayoutCode(),
@@ -46,6 +50,29 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindBattenColour(),
       ]);
       await handlerElementVisibility(blindtype, colourtype);
+    }
+
+    if (e.target.id === "sizetype") {
+      const sizetype = e.target.value;
+      const mounting = document.getElementById("mounting").value;
+      const divDropFloor = document.getElementById("divDropFloor");
+      divDropFloor.classList.add("d-none");
+      if (sizetype == "Opening Size" && mounting == "Face Fit") {
+        divDropFloor.classList.remove("d-none");
+      }
+      bindDropFloor();
+    }
+
+    if (e.target.id === "mounting") {
+      const sizetype = document.getElementById("sizetype").value;
+      const mounting = e.target.value;
+
+      const divDropFloor = document.getElementById("divDropFloor");
+      divDropFloor.classList.add("d-none");
+      if (sizetype == "Opening Size" && mounting == "Face Fit") {
+        divDropFloor.classList.remove("d-none");
+      }
+      bindDropFloor();
     }
 
     if (e.target.id === "fabrictype") {
@@ -308,7 +335,11 @@ const bindColours = async (designid, blindid) => {
           `SELECT Name FROM Blinds WHERE Id = '${blindid}'`,
         );
         const colourtype = select.value;
-        await Promise.all([bindMounting()]);
+        await Promise.all([
+          bindSizeType(),
+          bindDropFloor(),
+          bindMounting(blindname),
+        ]);
         await bindFabrics(designid);
         await Promise.all([
           bindLayoutCode(),
@@ -331,16 +362,28 @@ const bindColours = async (designid, blindid) => {
   }
 };
 
-const bindMounting = () => {
+const bindSizeType = () => {
+  generateOption("sizetype", ["Opening Size", "Make Size"]);
+};
+
+const bindDropFloor = () => {
+  generateOption("dropfloor", ["No", "Yes"]);
+};
+
+const bindMounting = (blindname) => {
+  if (!blindname) return;
+
   const sel = document.getElementById("mounting");
   sel.innerHTML = ""; //reset
 
-  let data = [];
-  data.push(
-    { value: "Make Size", text: "Make Size" },
+  let data = [
     { value: "Face Fit", text: "Face Fit" },
     { value: "Reveal fit", text: "Reveal fit" },
-  );
+  ];
+
+  if (!["Completed"].includes(blindname)) {
+    data.push({ value: "Make Size", text: "Make Size" });
+  }
 
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
@@ -755,7 +798,7 @@ const bindItemOrders = async (itemid) => {
     for (const item of data) {
       await bindBlinds(item.DesignId);
       await bindColours(item.DesignId, item.BlindId);
-      await Promise.all([bindMounting()]);
+      await Promise.all([bindMounting(item.BlindName)]);
       await bindFabrics(item.DesignId);
       await bindFabricColours(item.DesignId, item.FabricType);
       await Promise.all([
@@ -784,6 +827,8 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     const lblItemId = document.getElementById("lblItemId");
     const divColourType = document.getElementById("divColourType");
     const divFormDetail = document.getElementById("divFormDetail");
+    const divSizeType = document.getElementById("divSizeType");
+    const divDropFloor = document.getElementById("divDropFloor");
     const lblWidthDrop = document.getElementById("lblWidthDrop");
     const divWidth = document.getElementById("divWidth");
     const divDrop = document.getElementById("divDrop");
@@ -803,6 +848,9 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     // return;
     lblItemId.classList.add("d-none");
     divColourType.classList.add("d-none");
+    divFormDetail.classList.add("d-none");
+    divSizeType.classList.add("d-none");
+    divDropFloor.classList.add("d-none");
     lblWidthDrop.innerHTML = "width x drop";
     divWidth.classList.add("d-none");
     divDrop.classList.add("d-none");
@@ -816,8 +864,6 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     // divBatten.classList.add("d-none");
     // divBattenColour.classList.add("d-none");
     divFitting.classList.add("d-none");
-
-    divFormDetail.classList.add("d-none");
 
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
@@ -838,6 +884,7 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     divFormDetail.classList.remove("d-none");
 
     if (["Completed"].includes(blindname)) {
+      divSizeType.classList.remove("d-none");
       divWidth.classList.remove("d-none");
       divDrop.classList.remove("d-none");
       divFabric.classList.remove("d-none");
@@ -869,6 +916,12 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
       divWand.classList.remove("d-none");
     }
 
+    if (item) {
+      if (item.LouvreSize == "Opening Size" && item.Mounting == "Face Fit") {
+        divDropFloor.classList.remove("d-none");
+      }
+    }
+
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
 
     if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
@@ -896,6 +949,8 @@ const handlerSubmit = async (button) => {
       "colourtype", // as Kit Id
       "qty", // as Qty
       "room", // as Location
+      "sizetype",
+      "dropfloor",
       "mounting", // as Mounting
       "fabrictype", // as FabricId
       "fabriccolour", // as FabricId
@@ -976,6 +1031,8 @@ const handlerSetElementValues = (itemData) => {
     colourtype: "KitId",
     qty: "Qty",
     room: "Location",
+    sizetype: "LouvreSize",
+    dropfloor: "LouvrePosition",
     mounting: "Mounting",
     fabrictype: "FabricType",
     fabriccolour: "FabricId",
@@ -1089,4 +1146,25 @@ const handlerShowBSModal = (params) => {
     keyboard: false,
   });
   myModal.show();
+};
+
+const generateOption = (elementId, list = [], lengthDefaultOption = 0) => {
+  const sel = document.getElementById(elementId);
+  if (!sel) return;
+  sel.innerHTML = ""; // reset
+
+  // Short A-Z
+  list.sort();
+
+  // default option kalau lebih dari 1 data
+  if (list.length > lengthDefaultOption) {
+    const defaultOption = new Option("", "");
+    sel.add(defaultOption);
+  }
+
+  list.forEach((item) => {
+    const option = new Option(item.toUpperCase(), item);
+    option.setAttribute("data-name", item);
+    sel.add(option);
+  });
 };
