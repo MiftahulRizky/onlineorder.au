@@ -732,19 +732,15 @@ const bindStatus = (params, statusNow) => {
   if (!params || !statusNow) return;
   let list = ["Draft"];
 
-  // if(["Pending Price Approval"].includes(statusNow)) {
-  //   list.push("Draft")
-  // }
+  if (["Pending Price Approval"].includes(statusNow)) {
+    list.push("Pending Price Approval");
+  }
 
   if (["Draft"].includes(statusNow)) {
-    list.push("New Order", "Canceled");
+    list.push("Canceled");
   }
 
-  if (["On Hold"].includes(statusNow)) {
-    list.push("In Production", "On Hold", "Canceled");
-  }
-
-  if (["New Order"].includes(statusNow)) {
+  if (["On Hold", "New Order"].includes(statusNow)) {
     list.push("New Order", "In Production", "On Hold", "Canceled");
   }
 
@@ -1650,8 +1646,8 @@ const displayElOverall = (header, detail) => {
       toggleShow(btnEl.btnQuoteDetail, true);
       toggleShow(btnEl.btnDownloadQuote, true);
 
+      toggleShow(btnEl.btnChangeStatus, true);
       if (isOrderActive) {
-        toggleShow(btnEl.btnChangeStatus, true);
         toggleShow(btnEl.btnSendOrderMail, true);
         toggleShow(btnEl.btnAddItem, true);
       }
@@ -1687,9 +1683,9 @@ const displayElOverall = (header, detail) => {
       toggleShow(btnEl.btnDownloadBarcode, true);
       toggleShow(btnEl.btnExactSlip, true);
 
-      if (isOrderActive) {
-        toggleShow(btnEl.btnChangeStatus, true);
-      }
+      toggleShow(btnEl.btnChangeStatus, true);
+      // if (isOrderActive) {
+      // }
 
       toggleShow(btnEl.btnMoreAction, true);
 

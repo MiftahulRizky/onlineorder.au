@@ -706,15 +706,7 @@ const handlerSelStatus = (params, statusNow) => {
       );
     }
 
-    if (["On Hold"].includes(statusNow)) {
-      data.push(
-        { value: "In Production", text: "In Production" },
-        { value: "On Hold", text: "On Hold" },
-        { value: "Canceled", text: "Canceled" },
-      );
-    }
-
-    if (["New Order"].includes(statusNow)) {
+    if (["New Order", "On Hold"].includes(statusNow)) {
       data.push(
         { value: "New Order", text: "New Order" },
         { value: "In Production", text: "In Production" },
@@ -725,7 +717,6 @@ const handlerSelStatus = (params, statusNow) => {
 
     if (["In Production"].includes(statusNow)) {
       data.push(
-        { value: "New Order", text: "New Order" },
         { value: "In Production", text: "In Production" },
         { value: "On Hold", text: "On Hold" },
         { value: "Completed", text: "Completed" },
