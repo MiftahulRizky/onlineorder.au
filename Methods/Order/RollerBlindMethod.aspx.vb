@@ -460,7 +460,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
             End If
 
-            If InArray(BlindName, "Standard", "Motorised") Then
+            If InArray(BlindName, "Standard", "Motorised", "Cassette") Then
                 If String.IsNullOrEmpty(data.sizetype) Then
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
                 End If
@@ -1207,7 +1207,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
             End If
 
-            If Not InArray(BlindName, "Standard", "Motorised") Then
+            If Not InArray(BlindName, "Standard", "Motorised", "Cassette") Then
                 data.sizetype = ""
                 data.dropfloor = ""
             End If

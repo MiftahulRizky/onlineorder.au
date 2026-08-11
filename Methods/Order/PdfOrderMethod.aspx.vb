@@ -2151,6 +2151,7 @@ Partial Class Methods_Order_PdfOrderMethod
             result += thStart & "Chain Length" & thEnd
             result += thStart & "Trim" & thEnd
             result += thStart & "Bottom" & thEnd
+            result += thStart & "Tube" & thEnd
             result += thStart & "ChildSafe" & thEnd
             result += thStart & "Accessory" & thEnd
             result += thStart & "Bracket Covers" & thEnd
@@ -2173,6 +2174,7 @@ Partial Class Methods_Order_PdfOrderMethod
                 result += tdStart & thisData.Tables(0).Rows(i).Item("ChainLength").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("Trim").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("BottomName").ToString() & tdEnd
+                result += tdStart & thisData.Tables(0).Rows(i).Item("TubeSize").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("ChildSafe").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("Accessory").ToString() & tdEnd
                 result += tdStart & thisData.Tables(0).Rows(i).Item("BracketCover").ToString() & tdEnd

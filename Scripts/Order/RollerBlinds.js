@@ -519,6 +519,7 @@ const handlerElementVisibility = async (
     if (!colourtype) return;
     divFormDetail.classList.remove("d-none");
     if (blindname === "Cassette") {
+      divSizeType.classList.remove("d-none");
       if (tubetype === "Motorised") {
         divMotorStyle.classList.remove("d-none");
         divMotorRemote.classList.remove("d-none");
@@ -555,7 +556,6 @@ const handlerElementVisibility = async (
 
     if (blindname === "Motorised") {
       divSizeType.classList.remove("d-none");
-      divDropFloor.classList.remove("d-none");
       divMotorStyle.classList.remove("d-none");
       divMotorRemote.classList.remove("d-none");
       if (["Alpha WF", "Somfy WF"].includes(controltype)) {
@@ -576,7 +576,6 @@ const handlerElementVisibility = async (
 
     if (blindname === "Standard") {
       divSizeType.classList.remove("d-none");
-      divDropFloor.classList.remove("d-none");
       if (tubetype !== "Spring Operated") {
         divRoll.classList.remove("d-none");
         divControlPosition.classList.remove("d-none");
