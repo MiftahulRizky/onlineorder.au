@@ -706,7 +706,7 @@ Partial Class Methods_Order_JobSheetMethod
             
         End If
 
-        If InArray(DesignName, "Venetian Blinds", "Roller Blinds", "Vertical Blinds", "Panel Glides") Then
+        If InArray(DesignName, "Venetian Blinds", "Roller Blinds", "Vertical Blinds", "Panel Glides", "Veri Shades") Then
             If LouvreSize = "Opening Size" Then
                 Dim DeducWidth As String = publicCfg.GetItemData(String.Format("SELECT Width FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", DesignId, BlindId, Mounting))
                 result = result + CInt(DeducWidth)
@@ -756,7 +756,7 @@ Partial Class Methods_Order_JobSheetMethod
                 End If
         End Select
 
-       If InArray(DesignName, "Venetian Blinds", "Roller Blinds", "Vertical Blinds", "Panel Glides") Then
+       If InArray(DesignName, "Venetian Blinds", "Roller Blinds", "Vertical Blinds", "Panel Glides", "Veri Shades") Then
             If LouvreSize = "Opening Size" Then
                 Dim DropDeduc As String = publicCfg.GetItemData(String.Format("SELECT [Drop] FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", DesignId, BlindId, Mounting))
 
@@ -3616,7 +3616,7 @@ Partial Class Methods_Order_JobSheetMethod
                                 tableName = "JobSheet_Venetian"
 
                             Case "Veri Shades"
-                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "StackPosition", "TrackType", "TrackColour", "WandColour", "WandLength", "BracketOption", "BracketColour", "LouvreSize", "LouvrePosition", "Layout", "LayoutSpecial", "SlatSize", "SlatQty", "TubeSize", "Notes", "KitName", "Spacer", "CarrierQty", "BracketType", "FabricName", "FabricType", "FabricColour"})
+                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "StackPosition", "TrackType", "TrackColour", "WandColour", "WandLength", "BracketOption", "BracketColour", "FrameType", "FrameLeft", "Layout", "LayoutSpecial", "SlatSize", "SlatQty", "TubeSize", "Notes", "KitName", "Spacer", "CarrierQty", "TubeSkinSize", "NumBoldNuts", "BracketType", "FabricName", "FabricType", "FabricColour"})
 
                                 tableName = "JobSheet_VeriShades"
 
@@ -14133,24 +14133,24 @@ Partial Class Methods_Order_JobSheetMethod
         Next
 
         Dim inCarrier As String() = {
-            currentData("LouvreSize1").ToString(),
-            currentData("LouvreSize2").ToString(),
-            currentData("LouvreSize3").ToString(),
-            currentData("LouvreSize4").ToString(),
-            currentData("LouvreSize5").ToString(),
-            currentData("LouvreSize6").ToString()
+            currentData("FrameType1").ToString(),
+            currentData("FrameType2").ToString(),
+            currentData("FrameType3").ToString(),
+            currentData("FrameType4").ToString(),
+            currentData("FrameType5").ToString(),
+            currentData("FrameType6").ToString()
         }
         For i As Integer = 0 To inCarrier.Length - 1
             inCarrier(i) = GetJsonValue(inCarrier(i))
         Next
 
         Dim inSpacer As String() = {
-            currentData("LouvrePosition1").ToString(),
-            currentData("LouvrePosition2").ToString(),
-            currentData("LouvrePosition3").ToString(),
-            currentData("LouvrePosition4").ToString(),
-            currentData("LouvrePosition5").ToString(),
-            currentData("LouvrePosition6").ToString()
+            currentData("FrameLeft1").ToString(),
+            currentData("FrameLeft2").ToString(),
+            currentData("FrameLeft3").ToString(),
+            currentData("FrameLeft4").ToString(),
+            currentData("FrameLeft5").ToString(),
+            currentData("FrameLeft6").ToString()
         }
         For i As Integer = 0 To inSpacer.Length - 1
             inSpacer(i) = GetJsonValue(inSpacer(i))
@@ -14248,23 +14248,35 @@ Partial Class Methods_Order_JobSheetMethod
             '#Width
             result+= trDetStart
                 result+= tdTitleStart & "Blind Width (mm)" & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width1").ToString()), "0", currentData("Width1").ToString()) & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width2").ToString()), "0", currentData("Width2").ToString()) & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width3").ToString()), "0", currentData("Width3").ToString()) & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width4").ToString()), "0", currentData("Width4").ToString()) & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width5").ToString()), "0", currentData("Width5").ToString()) & tdDetEnd
-                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Width6").ToString()), "0", currentData("Width6").ToString()) & tdDetEnd
+                ' result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width1").ToString()), "0", currentData("Width1").ToString()) & tdDetEnd
+                ' result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width2").ToString()), "0", currentData("Width2").ToString()) & tdDetEnd
+                ' result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width3").ToString()), "0", currentData("Width3").ToString()) & tdDetEnd
+                ' result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width4").ToString()), "0", currentData("Width4").ToString()) & tdDetEnd
+                ' result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width5").ToString()), "0", currentData("Width5").ToString()) & tdDetEnd
+                ' result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Width6").ToString()), "0", currentData("Width6").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize1").ToString()), "0", currentData("TubeSkinSize1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize2").ToString()), "0", currentData("TubeSkinSize2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize3").ToString()), "0", currentData("TubeSkinSize3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize4").ToString()), "0", currentData("TubeSkinSize4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TubeSkinSize5").ToString()), "0", currentData("TubeSkinSize5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("TubeSkinSize6").ToString()), "0", currentData("TubeSkinSize6").ToString()) & tdDetEnd
             result+= trDetEnd
 
             '#Drop
             result+= trDetStart
                 result+= tdTitleStart & "Blind Drop (mm)" & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop1").ToString()), "0", currentData("Drop1").ToString()) & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop2").ToString()), "0", currentData("Drop2").ToString()) & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop3").ToString()), "0", currentData("Drop3").ToString()) & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop4").ToString()), "0", currentData("Drop4").ToString()) & tdDetEnd
-                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop5").ToString()), "0", currentData("Drop5").ToString()) & tdDetEnd
-                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Drop6").ToString()), "0", currentData("Drop6").ToString()) & tdDetEnd
+                ' result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop1").ToString()), "0", currentData("Drop1").ToString()) & tdDetEnd
+                ' result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop2").ToString()), "0", currentData("Drop2").ToString()) & tdDetEnd
+                ' result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop3").ToString()), "0", currentData("Drop3").ToString()) & tdDetEnd
+                ' result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop4").ToString()), "0", currentData("Drop4").ToString()) & tdDetEnd
+                ' result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop5").ToString()), "0", currentData("Drop5").ToString()) & tdDetEnd
+                ' result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Drop6").ToString()), "0", currentData("Drop6").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts1").ToString()), "0", currentData("NumBoldNuts1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts2").ToString()), "0", currentData("NumBoldNuts2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts3").ToString()), "0", currentData("NumBoldNuts3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts4").ToString()), "0", currentData("NumBoldNuts4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("NumBoldNuts5").ToString()), "0", currentData("NumBoldNuts5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("NumBoldNuts6").ToString()), "0", currentData("NumBoldNuts6").ToString()) & tdDetEnd
             result+= trDetEnd
 
             '#TrackType

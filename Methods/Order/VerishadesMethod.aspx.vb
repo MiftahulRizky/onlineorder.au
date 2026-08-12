@@ -21,6 +21,8 @@ Partial Class Methods_VerishadesMethod
         Public Property tubetype As String
         Public Property qty As String
         Public Property room As String
+        Public Property sizetype As String
+        Public Property dropfloor As String
         Public Property mounting As String
         Public Property width As String
         Public Property drop As String
@@ -209,6 +211,18 @@ Partial Class Methods_VerishadesMethod
                 End If
             End If
 
+            If InArray(BlindName, "Single") Then
+                If String.IsNullOrEmpty(data.sizetype) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
+                End If
+
+                If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
+                    If String.IsNullOrEmpty(data.dropfloor) Then
+                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
+                    End If
+                End If
+            End IF
+
             If String.IsNullOrEmpty(data.mounting) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting type is required !", .field = "mounting"}}
             End If
@@ -390,13 +404,30 @@ Partial Class Methods_VerishadesMethod
                 Throw New Exception("Something went wrong !")
             End If
 
+            Dim WidthDeduc As Integer = 0
+            Dim DropDeduc As Integer = 0
+            If data.sizetype = "Opening Size" Then
+                Dim DeducWidth As String = publicCfg.GetItemData(String.Format("SELECT Width FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", data.designid, data.blindtype, data.mounting))
+
+                Dim DeducDrop As String = publicCfg.GetItemData(String.Format("SELECT [Drop] FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", data.designid, data.blindtype, data.mounting))
+
+                Dim DropFloor As String = "0"
+                If data.dropfloor = "Yes" Then
+                    DropFloor = publicCfg.GetItemData(String.Format("SELECT DropFloor FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", data.designid, data.blindtype, data.mounting))
+                End If
+
+                WidthDeduc = width + CInt(DeducWidth)
+                DropDeduc = drop + CInt(DeducDrop) + CInt(DropFloor)
+            End If
+
+
             '#Carrier Qty
             If data.carrieroverride = "True" Then
                 Dim CreateJSON = New With { .value = carrier, .checked = True}
                 data.carrier = Newtonsoft.Json.JsonConvert.SerializeObject({CreateJSON})
             Else If data.carrieroverride = "False" Then
                 For Each item In SpacerVerishades
-                    If width >= item.MinWidth AndAlso width <= item.MaxWidth Then
+                    If WidthDeduc >= item.MinWidth AndAlso WidthDeduc <= item.MaxWidth Then
                         carrier = item.CarriersQty
                         Exit For
                     End If
@@ -412,7 +443,7 @@ Partial Class Methods_VerishadesMethod
                 data.spacer = Newtonsoft.Json.JsonConvert.SerializeObject({CreateJSON})
             Else If data.spaceroverride = "False" Then
                 For Each item In SpacerVerishades
-                    If width >= item.MinWidth AndAlso width <= item.MaxWidth Then
+                    If WidthDeduc >= item.MinWidth AndAlso WidthDeduc <= item.MaxWidth Then
                         spacer = item.Spacer1Type
                         Exit For
                     End If
@@ -431,7 +462,7 @@ Partial Class Methods_VerishadesMethod
                     BlindName,
                     data.mounting,
                     data.tracktype,
-                    drop
+                    DropDeduc
                 }
                 slat = FindSlatSize(ListParam)
 
@@ -487,7 +518,7 @@ Partial Class Methods_VerishadesMethod
                     BlindName,
                     slat,
                     data.totalslats,
-                    drop
+                    DropDeduc
                 }
                 fabricqty = FindFabricQty(ListParam)
 
@@ -500,6 +531,8 @@ Partial Class Methods_VerishadesMethod
             End If
 
             If BlindName = "Slat Only" Then
+                data.sizetype = ""
+                data.dropfloor = ""
                 data.width = ""
                 width = 0
                 ' data.stack = ""
@@ -512,6 +545,8 @@ Partial Class Methods_VerishadesMethod
             End If
 
             If BlindName = "Track Only" Then
+                data.sizetype = ""
+                data.dropfloor = ""
                 data.drop = ""
                 drop = 0
                 data.fabrictype = ""
@@ -528,14 +563,18 @@ Partial Class Methods_VerishadesMethod
                 data.wandsize = data.customsize
             End IF
 
+            If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Face Fit") Then
+                data.dropfloor = ""
+            End If
+
             ' throw New Exception(data.rolename)
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
             
-                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], BlindSize,  StackPosition, TrackType, TrackColour, WandLength, WandColour, BracketOption, BracketColour, LouvreSize, LouvrePosition, Layout, LayoutSpecial, SlatSize, SlatQty, TubeSize, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
+                Dim Field As String = "Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, PriceGroupId, Qty, Location, LouvreSize, LouvrePosition, Mounting, Width, [Drop], BlindSize,  StackPosition, TrackType, TrackColour, WandLength, WandColour, BracketOption, BracketColour, FrameType, FrameLeft, Layout, LayoutSpecial, SlatSize, SlatQty, TubeSize, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active"
 
-                Dim Values As String = "@Id, @HeaderId, 'Blind 1', @KitId, @SoeKitId, @ExactId, @FabricId, @PriceGroupId,  @Qty, @Location, @Mounting, @Width, @Drop, @BlindSize, @StackPosition, @TrackType, @TrackColour, @WandLength, @WandColour, @BracketOption, @BracketColour, @LouvreSize, @LouvrePosition, @Layout, @LayoutSpecial, @SlatSize, @SlatQty, @TubeSize, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
+                Dim Values As String = "@Id, @HeaderId, 'Blind 1', @KitId, @SoeKitId, @ExactId, @FabricId, @PriceGroupId,  @Qty, @Location,  @LouvreSize, @LouvrePosition, @Mounting, @Width, @Drop, @BlindSize, @StackPosition, @TrackType, @TrackColour, @WandLength, @WandColour, @BracketOption, @BracketColour, @FrameType, @FrameLeft, @Layout, @LayoutSpecial, @SlatSize, @SlatQty, @TubeSize, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1"
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand(String.Format("INSERT INTO OrderDetails({0}) VALUES ({1})", Field, Values), thisConn)
@@ -549,6 +588,8 @@ Partial Class Methods_VerishadesMethod
                         myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(PriceGroupId), DBNull.Value, PriceGroupId))
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@LouvreSize", data.sizetype)
+                        myCmd.Parameters.AddWithValue("@LouvrePosition", data.dropfloor)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
@@ -560,8 +601,8 @@ Partial Class Methods_VerishadesMethod
                         myCmd.Parameters.AddWithValue("@WandColour", data.wandcolour)
                         myCmd.Parameters.AddWithValue("@BracketOption", data.bracket)
                         myCmd.Parameters.AddWithValue("@BracketColour", data.tape)
-                        myCmd.Parameters.AddWithValue("@LouvreSize", data.carrier)
-                        myCmd.Parameters.AddWithValue("@LouvrePosition", data.spacer)
+                        myCmd.Parameters.AddWithValue("@FrameType", data.carrier)
+                        myCmd.Parameters.AddWithValue("@FrameLeft", data.spacer)
                         myCmd.Parameters.AddWithValue("@Layout", data.slat)
                         myCmd.Parameters.AddWithValue("@LayoutSpecial", data.slatqty)
                         myCmd.Parameters.AddWithValue("@SlatSize", data.endslats)
@@ -591,7 +632,7 @@ Partial Class Methods_VerishadesMethod
 
                 Dim ItemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@width, [Drop]=@Drop, BlindSize=@BlindSize, StackPosition=@StackPosition, TrackType=@TrackType, TrackColour=@TrackColour, WandLength=@WandLength, WandColour=@WandColour, BracketOption=@BracketOption, BracketColour=@BracketColour, LouvreSize=@LouvreSize, LouvrePosition=@LouvrePosition, Layout=@Layout, LayoutSpecial=@LayoutSpecial, SlatSize=@SlatSize, SlatQty=@SlatQty, TubeSize=@TubeSize, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, LouvreSize=@LouvreSize, LouvrePosition=@LouvrePosition, Mounting=@Mounting, Width=@width, [Drop]=@Drop, BlindSize=@BlindSize, StackPosition=@StackPosition, TrackType=@TrackType, TrackColour=@TrackColour, WandLength=@WandLength, WandColour=@WandColour, BracketOption=@BracketOption, BracketColour=@BracketColour, FrameType=@FrameType, FrameLeft=@FrameLeft, Layout=@Layout, LayoutSpecial=@LayoutSpecial, SlatSize=@SlatSize, SlatQty=@SlatQty, TubeSize=@TubeSize, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -602,6 +643,8 @@ Partial Class Methods_VerishadesMethod
                         myCmd.Parameters.AddWithValue("@PriceGroupId", If(String.IsNullOrEmpty(PriceGroupId), DBNull.Value, PriceGroupId))
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@LouvreSize", data.sizetype)
+                        myCmd.Parameters.AddWithValue("@LouvrePosition", data.dropfloor)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
@@ -613,8 +656,8 @@ Partial Class Methods_VerishadesMethod
                         myCmd.Parameters.AddWithValue("@WandColour", data.wandcolour)
                         myCmd.Parameters.AddWithValue("@BracketOption", data.bracket)
                         myCmd.Parameters.AddWithValue("@BracketColour", data.tape)
-                        myCmd.Parameters.AddWithValue("@LouvreSize", data.carrier)
-                        myCmd.Parameters.AddWithValue("@LouvrePosition", data.spacer)
+                        myCmd.Parameters.AddWithValue("@FrameType", data.carrier)
+                        myCmd.Parameters.AddWithValue("@FrameLeft", data.spacer)
                         myCmd.Parameters.AddWithValue("@Layout", data.slat)
                         myCmd.Parameters.AddWithValue("@LayoutSpecial", data.slatqty)
                         myCmd.Parameters.AddWithValue("@SlatSize", data.endslats)

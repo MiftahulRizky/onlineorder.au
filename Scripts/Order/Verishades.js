@@ -51,6 +51,29 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       }
       bindWandColour(wandsize);
     }
+
+    if (e.target.id === "sizetype") {
+      const sizetype = e.target.value;
+      const mounting = document.getElementById("mounting").value;
+      const divDropFloor = document.getElementById("divDropFloor");
+      divDropFloor.classList.add("d-none");
+      if (sizetype == "Opening Size" && mounting == "Face Fit") {
+        divDropFloor.classList.remove("d-none");
+      }
+      bindDropFloor();
+    }
+
+    if (e.target.id === "mounting") {
+      const sizetype = document.getElementById("sizetype").value;
+      const mounting = e.target.value;
+
+      const divDropFloor = document.getElementById("divDropFloor");
+      divDropFloor.classList.add("d-none");
+      if (sizetype == "Opening Size" && mounting == "Face Fit") {
+        divDropFloor.classList.remove("d-none");
+      }
+      bindDropFloor();
+    }
   });
   el.addEventListener("input", (e) => {
     e.target.classList.remove("is-invalid");
@@ -179,9 +202,23 @@ const bindTubes = async (designid, blindtype) => {
       await handlerElementVisibility(blindtype, tubetype);
       await bindFabrics(DESIGNID);
       await bindTape(fabriccolour);
-      await Promise.all([bindStack(), bindTrackType(), bindWandSize()]);
+      await Promise.all([
+        bindSizeType(),
+        bindDropFloor(),
+        bindStack(),
+        bindTrackType(),
+        bindWandSize(),
+      ]);
     },
   });
+};
+
+const bindSizeType = () => {
+  generateOption("sizetype", ["Opening Size", "Make Size"]);
+};
+
+const bindDropFloor = () => {
+  generateOption("dropfloor", ["No", "Yes"]);
 };
 
 const bindFabrics = async (designid) => {
@@ -432,6 +469,8 @@ const bindItemOrders = async (itemid) => {
       await bindTape(item.FabricId);
       await handlerElementVisibility(item.BlindId, item.TubeType, item);
       await Promise.all([
+        bindSizeType(),
+        bindDropFloor(),
         bindStack(),
         bindTrackType(),
         bindTrackColour(item.TrackType),
@@ -455,6 +494,8 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     const lblItemId = document.getElementById("lblItemId");
     const divTubeType = document.getElementById("divTubeType");
     const divFormDetail = document.getElementById("divFormDetail");
+    const divSizeType = document.getElementById("divSizeType");
+    const divDropFloor = document.getElementById("divDropFloor");
     const lblWd = document.getElementById("lblWd");
     const divWidth = document.getElementById("divWidth");
     const divDrop = document.getElementById("divDrop");
@@ -479,6 +520,8 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     lblItemId.classList.add("d-none");
     divTubeType.classList.add("d-none");
     divFormDetail.classList.add("d-none");
+    divSizeType.classList.add("d-none");
+    divDropFloor.classList.add("d-none");
     lblWd.innerHTML = "width x drop";
     divWidth.classList.add("d-none");
     divDrop.classList.add("d-none");
@@ -510,6 +553,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
 
     if (["Single"].includes(blindname)) {
       lblWd.innerHTML = "width x drop";
+      divSizeType.classList.remove("d-none");
       divWidth.classList.remove("d-none");
       divDrop.classList.remove("d-none");
       divFabric.classList.remove("d-none");
@@ -557,6 +601,10 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     }
 
     if (item) {
+      if (item.LouvreSize == "Opening Size" && item.Mounting == "Face Fit") {
+        divDropFloor.classList.remove("d-none");
+      }
+
       if (!["500", "750", "1100", "1500", "2000"].includes(item.WandLength)) {
         divWandCustomSize.classList.remove("d-none");
       }
@@ -589,6 +637,8 @@ const handlerSubmit = async (button) => {
       "tubetype",
       "qty",
       "room",
+      "sizetype",
+      "dropfloor",
       "mounting",
       "width",
       "drop",
@@ -687,6 +737,8 @@ const handlerSetElementValues = (itemData) => {
     tubetype: "KitId",
     qty: "Qty",
     room: "Location",
+    sizetype: "LouvreSize",
+    dropfloor: "LouvrePosition",
     mounting: "Mounting",
     widthinput: "Width",
     width: "Width",
@@ -711,12 +763,12 @@ const handlerSetElementValues = (itemData) => {
     {
       inputId: "carrier",
       checkboxId: "carrieroverride",
-      dataKey: "LouvreSize",
+      dataKey: "FrameType",
     },
     {
       inputId: "spacer",
       checkboxId: "spaceroverride",
-      dataKey: "LouvrePosition",
+      dataKey: "FrameLeft",
     },
     {
       inputId: "slat",

@@ -81,6 +81,13 @@
                                         </div>  
                                     </div>
 
+                                    <div class="mb-3 row" id="divSizeType">
+                                        <label for="sizetype" class="col-lg-3 text-uppercase fw-bold" >size type</label>
+                                        <div class="col-lg-4">
+                                            <select name="sizetype" id="sizetype" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
                                     <div class="mb-3 row" id="divMounting">
                                         <label for="mounting" class="col-lg-3 text-uppercase fw-bold" >mounting</label>
                                         <div class="col-lg-4">
@@ -89,6 +96,13 @@
                                                 <option value="Face Fit">FACE FIT</option>
                                                 <option value="Reveal Fit">REVEAL FIT</option>
                                             </select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divDropFloor">
+                                        <label for="dropfloor" class="col-lg-3 text-uppercase fw-bold" >drop to the floor</label>
+                                        <div class="col-lg-4">
+                                            <select name="dropfloor" id="dropfloor" class="form-select"></select>
                                         </div>  
                                     </div>
 
