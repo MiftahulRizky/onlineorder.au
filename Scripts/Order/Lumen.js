@@ -30,6 +30,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const controlname = e.target.selectedOptions[0].dataset.name;
       await bindFabrics(DESIGNID);
       await Promise.all([
+        bindSizeType(),
+        bindDropFloor(),
         bindRailColour(),
         bindChainColour(controlname),
         bindMotorOptions(),
@@ -38,6 +40,29 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindHeadboxType(controlname),
       ]);
       await handlerElementVisibility(blindtype, controltype);
+    }
+
+    if (e.target.id === "sizetype") {
+      const sizetype = e.target.value;
+      const mounting = document.getElementById("mounting").value;
+      const divDropFloor = document.getElementById("divDropFloor");
+      divDropFloor.classList.add("d-none");
+      if (sizetype == "Opening Size" && mounting == "Face Fit") {
+        divDropFloor.classList.remove("d-none");
+      }
+      bindDropFloor();
+    }
+
+    if (e.target.id === "mounting") {
+      const sizetype = document.getElementById("sizetype").value;
+      const mounting = e.target.value;
+
+      const divDropFloor = document.getElementById("divDropFloor");
+      divDropFloor.classList.add("d-none");
+      if (sizetype == "Opening Size" && mounting == "Face Fit") {
+        divDropFloor.classList.remove("d-none");
+      }
+      bindDropFloor();
     }
 
     if (e.target.id === "fabrictype") {
@@ -307,6 +332,14 @@ const bindControls = async (designid, blindid) => {
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
   }
+};
+
+const bindSizeType = () => {
+  generateOption("sizetype", ["Opening Size", "Make Size"]);
+};
+
+const bindDropFloor = () => {
+  generateOption("dropfloor", ["No", "Yes"]);
 };
 
 const bindFabrics = async (designid) => {
@@ -693,6 +726,8 @@ const bindItemOrders = async (itemid) => {
       await bindFabrics(item.DesignId);
       await bindFabricColours(item.DesignId, item.FabricType);
       await Promise.all([
+        bindSizeType(),
+        bindDropFloor(),
         bindRailColour(),
         bindChainColour(item.ControlType),
         bindMotorOptions(),
@@ -718,6 +753,7 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
     const divControlType = document.getElementById("divControlType");
 
     const divFormDetail = document.getElementById("divFormDetail");
+
     const divMounting = document.getElementById("divMounting");
     const divWidth = document.getElementById("divWidth");
     const divDrop = document.getElementById("divDrop");
@@ -738,6 +774,8 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
     divControlType.classList.add("d-none");
 
     divFormDetail.classList.add("d-none");
+    divSizeType.classList.add("d-none");
+    divDropFloor.classList.add("d-none");
     // divMounting.classList.add("d-none");
     // divWidth.classList.add("d-none");
     // divDrop.classList.add("d-none");
@@ -761,6 +799,7 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
     );
 
     divFormDetail.classList.remove("d-none");
+    divSizeType.classList.remove("d-none");
 
     if (["Cord", "Chain"].includes(controlname)) {
       lblChain.innerHTML = `${controlname} colour x length`;
@@ -770,6 +809,12 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
     if (["Motorised"].includes(controlname)) {
       divChain.classList.add("d-none");
       divMotor.classList.remove("d-none");
+    }
+
+    if (item) {
+      if (item.LouvreSize == "Opening Size" && item.Mounting == "Face Fit") {
+        divDropFloor.classList.remove("d-none");
+      }
     }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
@@ -799,6 +844,8 @@ const handlerSubmit = async (button) => {
       "controltype",
       "qty",
       "room",
+      "sizetype",
+      "dropfloor",
       "mounting",
       "width",
       "drop",
@@ -878,6 +925,8 @@ const handlerSetElementValues = (itemData) => {
     controltype: "KitId",
     qty: "Qty",
     room: "Location",
+    sizetype: "LouvreSize",
+    dropfloor: "LouvrePosition",
     mounting: "Mounting",
     width: "Width",
     drop: "Drop",
@@ -983,4 +1032,25 @@ const getItemData = async (query) => {
     console.error(err);
     isError(err);
   }
+};
+
+const generateOption = (elementId, list = [], lengthDefaultOption = 0) => {
+  const sel = document.getElementById(elementId);
+  if (!sel) return;
+  sel.innerHTML = ""; // reset
+
+  // Short A-Z
+  list.sort();
+
+  // default option kalau lebih dari 1 data
+  if (list.length > lengthDefaultOption) {
+    const defaultOption = new Option("", "");
+    sel.add(defaultOption);
+  }
+
+  list.forEach((item) => {
+    const option = new Option(item.toUpperCase(), item);
+    option.setAttribute("data-name", item);
+    sel.add(option);
+  });
 };

@@ -563,7 +563,7 @@ Partial Class Methods_VerishadesMethod
                 data.wandsize = data.customsize
             End IF
 
-            If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Face Fit") Then
+            If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Reveal Fit") Then
                 data.dropfloor = ""
             End If
 

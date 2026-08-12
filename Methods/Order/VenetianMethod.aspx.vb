@@ -556,7 +556,7 @@ Partial Class Methods_Order_VenetianMethod
                 returnleft = 0
             End If
 
-            If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Face Fit") Then
+            If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Reveal Fit") Then
                 data.dropfloor = ""
             End If
 

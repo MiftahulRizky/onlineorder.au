@@ -19,6 +19,8 @@ Partial Class Methods_Order_LumenMethod
         Public Property controltype As String
         Public Property qty As String
         Public Property room As String
+        Public Property sizetype As String
+        Public Property dropfloor As String 
         Public Property mounting As String
         Public Property width As String
         Public Property drop As String
@@ -219,6 +221,16 @@ Partial Class Methods_Order_LumenMethod
                 End If
             End If
 
+            If String.IsNullOrEmpty(data.sizetype) Then
+                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
+            End If
+
+            If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
+                If String.IsNullOrEmpty(data.dropfloor) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
+                End If
+            End If
+
             If String.IsNullOrEmpty(data.mounting) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
             End If
@@ -393,6 +405,10 @@ Partial Class Methods_Order_LumenMethod
                 ChainId = ""
             End If
 
+            If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Reveal Fit") Then
+                data.dropfloor = ""
+            End If
+
             Dim squareMetre As Decimal = Math.Round(width * drop / 1000000, 4)
             Dim linearMetre As Decimal = Math.Round(width / 1000, 4)
 
@@ -403,7 +419,7 @@ Partial Class Methods_Order_LumenMethod
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, Mounting, Width, [Drop], SwipelColour, ControlPosition, ChainLength, CordColour, CordLength, MotorStyle, MotorRemote, MotorCharger, TrackType, TrackColour, Fitting, SideBySide, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @Mounting, @Width, @Drop, @SwipelColour, @ControlPosition, @ChainLength, @CordColour, @CordLength, @MotorStyle, @MotorRemote, @MotorCharger, @TrackType, @TrackColour, @Fitting, @SideBySide, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, LouvreSize, LouvrePosition,  Mounting, Width, [Drop], SwipelColour, ControlPosition, ChainLength, CordColour, CordLength, MotorStyle, MotorRemote, MotorCharger, TrackType, TrackColour, Fitting, SideBySide, SquareMetre, LinearMetre, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @LouvreSize, @LouvrePosition, @Mounting, @Width, @Drop, @SwipelColour, @ControlPosition, @ChainLength, @CordColour, @CordLength, @MotorStyle, @MotorRemote, @MotorCharger, @TrackType, @TrackColour, @Fitting, @SideBySide, @SquareMetre, @LinearMetre, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -415,6 +431,8 @@ Partial Class Methods_Order_LumenMethod
                         myCmd.Parameters.AddWithValue("@PriceGroupId", PriceGroupId)
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@LouvreSize", data.sizetype)
+                        myCmd.Parameters.AddWithValue("@LouvrePosition", data.dropfloor)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
@@ -457,7 +475,7 @@ Partial Class Methods_Order_LumenMethod
 
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, SwipelColour=@SwipelColour, ControlPosition=@ControlPosition, ChainLength=@ChainLength, CordColour=@CordColour, CordLength=@CordLength, MotorStyle=@MotorStyle, MotorRemote=@MotorRemote, MotorCharger=@MotorCharger, TrackType=@TrackType, TrackColour=@TrackColour, Fitting=@Fitting, SideBySide=@SideBySide, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, LouvreSize=@LouvreSize, LouvrePosition=@LouvrePosition, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, SwipelColour=@SwipelColour, ControlPosition=@ControlPosition, ChainLength=@ChainLength, CordColour=@CordColour, CordLength=@CordLength, MotorStyle=@MotorStyle, MotorRemote=@MotorRemote, MotorCharger=@MotorCharger, TrackType=@TrackType, TrackColour=@TrackColour, Fitting=@Fitting, SideBySide=@SideBySide, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -469,6 +487,8 @@ Partial Class Methods_Order_LumenMethod
                         myCmd.Parameters.AddWithValue("@PriceGroupId", PriceGroupId)
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@LouvreSize", data.sizetype)
+                        myCmd.Parameters.AddWithValue("@LouvrePosition", data.dropfloor)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)

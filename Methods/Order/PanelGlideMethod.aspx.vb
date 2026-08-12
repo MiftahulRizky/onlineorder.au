@@ -428,7 +428,7 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 data.bottomrail = ""
             End If
             
-            If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Face Fit") Then
+            If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Reveal Fit") Then
                 data.dropfloor = ""
             End If
           
