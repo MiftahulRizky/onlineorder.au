@@ -465,11 +465,11 @@ Partial Class Methods_Order_RollerBlindMethod
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
                 End If
 
-                 If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
-                    If String.IsNullOrEmpty(data.dropfloor) Then
-                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
-                    End If
-                End If
+                ' If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
+                '     If String.IsNullOrEmpty(data.dropfloor) Then
+                '         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
+                '     End If
+                ' End If
             End IF
 
             If data.sizetype = "Opening Size" AND String.IsNullOrEmpty(data.mounting) Then

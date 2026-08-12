@@ -20,6 +20,8 @@ Partial Class Methods_Order_CellularBlindMethod
         Public Property controltype As String
         Public Property qty As String
         Public Property room As String
+        Public Property sizetype As String
+        Public Property dropfloor As String
         Public Property mounting As String
         Public Property fabrictype As String
         Public Property fabriccolour As String
@@ -206,6 +208,18 @@ Partial Class Methods_Order_CellularBlindMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "room to install is required !",.field = "room"}}
             End If
 
+            If InArray(BlindName, "Cellora", "Galaxy") Then
+                If String.IsNullOrEmpty(data.sizetype) Then
+                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
+                End If
+
+                '  If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
+                '     If String.IsNullOrEmpty(data.dropfloor) Then
+                '         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
+                '     End If
+                ' End If
+            End IF
+
             If String.IsNullOrEmpty(data.mounting) Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "mounting is required !",.field = "mounting"}}
             End If
@@ -341,6 +355,12 @@ Partial Class Methods_Order_CellularBlindMethod
                 controlSystemValue = String.Join(",", data.controlsystem)
             End If
 
+            If Not InArray(BlindName, "Cellora", "Galaxy") Then
+                data.sizetype = ""
+                data.dropfloor = ""
+            End If
+            data.dropfloor = ""
+
 
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
@@ -348,7 +368,7 @@ Partial Class Methods_Order_CellularBlindMethod
 
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, ExactId, FabricId, FabricIdB, PriceGroupId, PriceGroupIdB, BlindNo, Qty, Location, Mounting, Width, [Drop], MaterialCord, HangerType, ControlPosition, ChainLength, MotorStyle, AdditionalMotor, BottomHoldDown, DoorCutOut, Accessory, SquareMetre, LinearMetre, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @ExactId, @FabricId, @FabricIdB, @PriceGroupId, @PriceGroupIdB, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @MaterialCord, @HangerType, @ControlPosition, @ChainLength, @MotorStyle, @AdditionalMotor, @BottomHoldDown, @DoorCutOut, @Accessory, @SquareMetre, @LinearMetre, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, ExactId, FabricId, FabricIdB, PriceGroupId, PriceGroupIdB, BlindNo, Qty, Location, LouvreSize, LouvrePosition, Mounting, Width, [Drop], MaterialCord, HangerType, ControlPosition, ChainLength, MotorStyle, AdditionalMotor, BottomHoldDown, DoorCutOut, Accessory, SquareMetre, LinearMetre, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @ExactId, @FabricId, @FabricIdB, @PriceGroupId, @PriceGroupIdB, 'Blind 1', @Qty, @Location, @LouvreSize, @LouvrePosition, @Mounting, @Width, @Drop, @MaterialCord, @HangerType, @ControlPosition, @ChainLength, @MotorStyle, @AdditionalMotor, @BottomHoldDown, @DoorCutOut, @Accessory, @SquareMetre, @LinearMetre, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
@@ -360,6 +380,8 @@ Partial Class Methods_Order_CellularBlindMethod
                         myCmd.Parameters.AddWithValue("@PriceGroupIdB", If(String.IsNullOrEmpty(PriceGroupId2), DBNull.Value, UCase(PriceGroupId2).ToString()))
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@LouvreSize", data.sizetype)
+                        myCmd.Parameters.AddWithValue("@LouvrePosition", data.dropfloor)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)
@@ -399,7 +421,7 @@ Partial Class Methods_Order_CellularBlindMethod
 
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId = @KitId, SoeKitId = @SoeKitId, ExactId = @ExactId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, MaterialCord = @MaterialCord, HangerType = @HangerType, ControlPosition = @ControlPosition, ChainLength = @ChainLength,  MotorStyle = @MotorStyle, AdditionalMotor = @AdditionalMotor, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, Accessory = @Accessory, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId = @KitId, SoeKitId = @SoeKitId, ExactId = @ExactId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, LouvreSize = @LouvreSize, LouvrePosition = @LouvrePosition, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, MaterialCord = @MaterialCord, HangerType = @HangerType, ControlPosition = @ControlPosition, ChainLength = @ChainLength,  MotorStyle = @MotorStyle, AdditionalMotor = @AdditionalMotor, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, Accessory = @Accessory, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
@@ -411,6 +433,8 @@ Partial Class Methods_Order_CellularBlindMethod
                         myCmd.Parameters.AddWithValue("@PriceGroupIdB", If(String.IsNullOrEmpty(PriceGroupId2), DBNull.Value, UCase(PriceGroupId2).ToString()))
                         myCmd.Parameters.AddWithValue("@Qty", qty)
                         myCmd.Parameters.AddWithValue("@Location", data.room)
+                        myCmd.Parameters.AddWithValue("@LouvreSize", data.sizetype)
+                        myCmd.Parameters.AddWithValue("@LouvrePosition", data.dropfloor)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
                         myCmd.Parameters.AddWithValue("@Width", width)
                         myCmd.Parameters.AddWithValue("@Drop", drop)

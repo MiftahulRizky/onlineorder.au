@@ -178,113 +178,7 @@ Inherits="SiteMaster" %>
         </Scripts>
       </asp:ScriptManager>
 
-      <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", () => {
-          setSessionAlive();
-        });
-        const colourTablerTheme = () => {
-          const theme = localStorage.getItem("tablerTheme") == "dark";
-          return theme;
-        };
-
-        const isDark = colourTablerTheme();
-
-        let isSuccess = (msg) => {
-          return Swal.fire({
-            title: "Success",
-            html: msg,
-            icon: "success",
-            customClass: {
-              popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-            },
-          });
-        };
-
-        let isWarning = (msg) => {
-          return Swal.fire({
-            title: "Warning!",
-            html: msg,
-            icon: "warning",
-            customClass: {
-              popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-            },
-          });
-        };
-
-        let isInfo = (msg) => {
-          return Swal.fire({
-            title: "Information",
-            html: msg,
-            icon: "info",
-            customClass: {
-              popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-            },
-          });
-        };
-
-        let isError = (msg) => {
-          return Swal.fire({
-            title: "Oops!",
-            html: msg,
-            icon: "error",
-            customClass: {
-              popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-            },
-          });
-        };
-
-        const swalLoadingShow = (msg) => {
-          Swal.fire({
-            title: "Processing...",
-            html: msg,
-            customClass: {
-              popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-            },
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          });
-        };
-
-        const loaderFadeOut = () => {
-          const overlay = document.getElementById("loading-overlay");
-          overlay.classList.add("fade-out"); // mulai fade-out
-          setTimeout(() => {
-            overlay.classList.add("d-none");
-            overlay.classList.remove("d-flex", "fade-out");
-          }, 500); // waktu harus sama dengan di CSS
-        };
-
-        const setSessionAlive = () => {
-          setInterval(() => {
-            fetch("/Account/KeepSessionAlive.aspx", {
-              method: "POST",
-              credentials: "include",
-            }).then((res) => {
-              if (res.status === 401) {
-                // session expired, redirect to login?
-                window.location.href = "/Account/Login.aspx";
-              }
-              console.log(res.status);
-            });
-          }, 180000); // 3 menit
-        };
-
-        var showMessageError = (msg, input) => {
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            html: msg,
-            customClass: {
-              popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-            },
-          }).then(() => {
-            document.getElementById(input).focus();
-          });
-        };
-      </script>
+     
 
       <div class="page">
         <div class="sticky-top">
@@ -424,11 +318,9 @@ Inherits="SiteMaster" %>
 
                     <li runat="server" id="liOrder" class="nav-item">
                       <a
-                        runat="server"
                         class="nav-link"
                         href="javascript:void(0)"
-                        ID="linkOrder"
-                        OnServerClick="linkOrder_Click"
+                        id="linkOrder"
                       >
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
                           <svg
@@ -1459,6 +1351,142 @@ Inherits="SiteMaster" %>
           </footer>
         </div>
       </div>
+
+       <script type="text/javascript">
+         
+        document.addEventListener("DOMContentLoaded", () => {
+          setSessionAlive();
+        });
+
+        document.getElementById("linkOrder").addEventListener("click", (e) => {
+          const live = `/order`;
+          const dev = `/orders`;
+          const role = '<%= Session("RoleName") %>';
+          if (role === "Administrator") {
+            Swal.fire({
+              title: "Please select one",
+              showDenyButton: true,
+              showCancelButton: false,
+              confirmButtonText: "Production",
+              denyButtonText: "Development",
+              customClass: {
+                popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+              },
+            }).then((result) => {
+              if (result.isConfirmed) {
+                window.location.href = live;
+              } else if (result.isDenied) {
+                window.location.href = dev;
+              }
+            });
+          }else{
+            window.location.href = live;
+          }
+        })
+        
+        const colourTablerTheme = () => {
+          const theme = localStorage.getItem("tablerTheme") == "dark";
+          return theme;
+        };
+
+        const isDark = colourTablerTheme();
+
+        let isSuccess = (msg) => {
+          return Swal.fire({
+            title: "Success",
+            html: msg,
+            icon: "success",
+            customClass: {
+              popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+            },
+          });
+        };
+
+        let isWarning = (msg) => {
+          return Swal.fire({
+            title: "Warning!",
+            html: msg,
+            icon: "warning",
+            customClass: {
+              popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+            },
+          });
+        };
+
+        let isInfo = (msg) => {
+          return Swal.fire({
+            title: "Information",
+            html: msg,
+            icon: "info",
+            customClass: {
+              popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+            },
+          });
+        };
+
+        let isError = (msg) => {
+          return Swal.fire({
+            title: "Oops!",
+            html: msg,
+            icon: "error",
+            customClass: {
+              popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+            },
+          });
+        };
+
+        const swalLoadingShow = (msg) => {
+          Swal.fire({
+            title: "Processing...",
+            html: msg,
+            customClass: {
+              popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+            },
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+        };
+
+        const loaderFadeOut = () => {
+          const overlay = document.getElementById("loading-overlay");
+          overlay.classList.add("fade-out"); // mulai fade-out
+          setTimeout(() => {
+            overlay.classList.add("d-none");
+            overlay.classList.remove("d-flex", "fade-out");
+          }, 500); // waktu harus sama dengan di CSS
+        };
+
+        const setSessionAlive = () => {
+          setInterval(() => {
+            fetch("/Account/KeepSessionAlive.aspx", {
+              method: "POST",
+              credentials: "include",
+            }).then((res) => {
+              if (res.status === 401) {
+                // session expired, redirect to login?
+                window.location.href = "/Account/Login.aspx";
+              }
+              console.log(res.status);
+            });
+          }, 180000); // 3 menit
+        };
+
+        var showMessageError = (msg, input) => {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            html: msg,
+            customClass: {
+              popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+            },
+          }).then(() => {
+            document.getElementById(input).focus();
+          });
+        };
+      </script>
 
       <div runat="server" visible="false">
         <asp:Label runat="server" ID="lblUserId"></asp:Label>

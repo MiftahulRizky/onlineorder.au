@@ -41,7 +41,9 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       await bindFabrics2(DESIGNID, blindtype, brackettype, controltype);
       await bindControlSystem(controltype);
       await Promise.all([
-        bindMounting(),
+        bindSizeType(),
+        bindDropFloor(),
+        bindMounting(blindname),
         bindCordType(),
         bindControlPosition(),
         bindMotorType(),
@@ -51,6 +53,29 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindAdditional(),
       ]);
     }
+
+    // if (e.target.id === "sizetype") {
+    //   const sizetype = e.target.value;
+    //   const mounting = document.getElementById("mounting").value;
+    //   const divDropFloor = document.getElementById("divDropFloor");
+    //   divDropFloor.classList.add("d-none");
+    //   if (sizetype == "Opening Size" && mounting == "Face Fit") {
+    //     divDropFloor.classList.remove("d-none");
+    //   }
+    //   bindDropFloor();
+    // }
+
+    // if (e.target.id === "mounting") {
+    //   const sizetype = document.getElementById("sizetype").value;
+    //   const mounting = e.target.value;
+
+    //   const divDropFloor = document.getElementById("divDropFloor");
+    //   divDropFloor.classList.add("d-none");
+    //   if (sizetype == "Opening Size" && mounting == "Face Fit") {
+    //     divDropFloor.classList.remove("d-none");
+    //   }
+    //   bindDropFloor();
+    // }
 
     if (e.target.id === "fabrictype") {
       const fabrictype = e.target.value;
@@ -205,8 +230,22 @@ const bindControls = async (designid, blindtype, brackettype) => {
   });
 };
 
-const bindMounting = () => {
-  generateOption("mounting", ["Reveal Fit", "Face Fit", "Make Size"]);
+const bindSizeType = () => {
+  generateOption("sizetype", ["Opening Size", "Make Size"]);
+};
+
+const bindDropFloor = () => {
+  generateOption("dropfloor", ["No", "Yes"]);
+};
+
+const bindMounting = (blindname) => {
+  if (!blindname) return;
+
+  const list = ["Reveal Fit", "Face Fit"];
+  if (["Potrait"].includes(blindname)) {
+    list.push("Make Size");
+  }
+  generateOption("mounting", list);
 };
 
 const bindFabrics = async (designid, blindtype, brackettype, controltype) => {
@@ -413,7 +452,9 @@ const bindItemOrders = async (itemid) => {
       await bindFabricColours2(item.DesignId, item.FabricTypeB);
       await bindControlSystem(item.KitId);
       await Promise.all([
-        bindMounting(),
+        bindSizeType(),
+        bindDropFloor(),
+        bindMounting(item.BlindName),
         bindCordType(),
         bindControlPosition(),
         bindMotorType(),
@@ -444,6 +485,8 @@ const handlerElementVisibility = async (
     const lblBracketType = document.getElementById("lblBracketType");
     const divControlType = document.getElementById("divControlType");
     const divFormDetail = document.getElementById("divFormDetail");
+    const divSizeType = document.getElementById("divSizeType");
+    const divDropFloor = document.getElementById("divDropFloor");
     const divFabricDay = document.getElementById("divFabricDay");
     const lblFabricDay = document.getElementById("lblFabricDay");
     const divFabricNight = document.getElementById("divFabricNight");
@@ -462,6 +505,8 @@ const handlerElementVisibility = async (
     divControlType.classList.add("d-none");
     lblControlType.innerHTML = "control type";
     divFormDetail.classList.add("d-none");
+    divSizeType.classList.add("d-none");
+    divDropFloor.classList.add("d-none");
     divFabricDay.classList.add("d-none");
     lblFabricDay.innerHTML = "fabric type x colour";
     divFabricNight.classList.add("d-none");
@@ -496,10 +541,12 @@ const handlerElementVisibility = async (
     divFormDetail.classList.remove("d-none");
 
     if (["Cellora"].includes(blindname)) {
+      divSizeType.classList.remove("d-none");
       divFabricDay.classList.remove("d-none");
     }
 
     if (["Galaxy"].includes(blindname)) {
+      divSizeType.classList.remove("d-none");
       divFabricDay.classList.remove("d-none");
       if (controlname.includes("DN")) {
         divFabricNight.classList.remove("d-none");
@@ -552,6 +599,8 @@ const handlerSubmit = async (button) => {
       "controltype",
       "qty",
       "room",
+      "sizetype",
+      "dropfloor",
       "mounting",
       "width",
       "drop",
@@ -641,6 +690,8 @@ const handlerSetElementValues = (itemData) => {
     controltype: "KitId",
     qty: "Qty",
     room: "Location",
+    sizetype: "LouvreSize",
+    dropfloor: "LouvrePosition",
     mounting: "Mounting",
     fabrictype: "FabricType",
     fabriccolour: "FabricId",
