@@ -211,17 +211,17 @@ Partial Class Methods_VerishadesMethod
                 End If
             End If
 
-            If InArray(BlindName, "Single") Then
-                If String.IsNullOrEmpty(data.sizetype) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
-                End If
+            ' If InArray(BlindName, "Single") Then
+            '     If String.IsNullOrEmpty(data.sizetype) Then
+            '         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
+            '     End If
 
-                If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
-                    If String.IsNullOrEmpty(data.dropfloor) Then
-                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
-                    End If
-                End If
-            End IF
+            '     If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
+            '         If String.IsNullOrEmpty(data.dropfloor) Then
+            '             Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
+            '         End If
+            '     End If
+            ' End IF
 
             If String.IsNullOrEmpty(data.mounting) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting type is required !", .field = "mounting"}}
@@ -404,8 +404,8 @@ Partial Class Methods_VerishadesMethod
                 Throw New Exception("Something went wrong !")
             End If
 
-            Dim WidthDeduc As Integer = 0
-            Dim DropDeduc As Integer = 0
+            Dim WidthDeduc As Integer = width
+            Dim DropDeduc As Integer = drop
             If data.sizetype = "Opening Size" Then
                 Dim DeducWidth As String = publicCfg.GetItemData(String.Format("SELECT Width FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", data.designid, data.blindtype, data.mounting))
 
@@ -416,8 +416,8 @@ Partial Class Methods_VerishadesMethod
                     DropFloor = publicCfg.GetItemData(String.Format("SELECT DropFloor FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", data.designid, data.blindtype, data.mounting))
                 End If
 
-                WidthDeduc = width + CInt(DeducWidth)
-                DropDeduc = drop + CInt(DeducDrop) + CInt(DropFloor)
+                WidthDeduc = WidthDeduc + CInt(DeducWidth)
+                DropDeduc = DropDeduc + CInt(DeducDrop) + CInt(DropFloor)
             End If
 
 
@@ -566,6 +566,8 @@ Partial Class Methods_VerishadesMethod
             If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Reveal Fit") Then
                 data.dropfloor = ""
             End If
+            data.sizetype = ""
+            data.dropfloor = ""
 
             ' throw New Exception(data.rolename)
 

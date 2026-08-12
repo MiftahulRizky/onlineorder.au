@@ -221,15 +221,15 @@ Partial Class Methods_Order_LumenMethod
                 End If
             End If
 
-            If String.IsNullOrEmpty(data.sizetype) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
-            End If
+            ' If String.IsNullOrEmpty(data.sizetype) Then
+            '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
+            ' End If
 
-            If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
-                If String.IsNullOrEmpty(data.dropfloor) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
-                End If
-            End If
+            ' If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
+            '     If String.IsNullOrEmpty(data.dropfloor) Then
+            '         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
+            '     End If
+            ' End If
 
             If String.IsNullOrEmpty(data.mounting) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
@@ -408,6 +408,8 @@ Partial Class Methods_Order_LumenMethod
             If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Reveal Fit") Then
                 data.dropfloor = ""
             End If
+            data.sizetype = ""
+            data.dropfloor = ""
 
             Dim squareMetre As Decimal = Math.Round(width * drop / 1000000, 4)
             Dim linearMetre As Decimal = Math.Round(width / 1000, 4)

@@ -553,7 +553,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
 
     if (["Single"].includes(blindname)) {
       lblWd.innerHTML = "width x drop";
-      divSizeType.classList.remove("d-none");
+      // divSizeType.classList.remove("d-none");
       divWidth.classList.remove("d-none");
       divDrop.classList.remove("d-none");
       divFabric.classList.remove("d-none");

@@ -559,7 +559,7 @@ const handlerElementVisibility = async (
 
     if (["25mm Aluminium", "50mm Aluminium"].includes(blindname)) {
       if (["50mm Aluminium"].includes(blindname)) {
-        divSizeType.classList.remove("d-none");
+        // divSizeType.classList.remove("d-none");
       }
       divControl.classList.remove("d-none");
       divBracket.classList.remove("d-none");
@@ -577,7 +577,7 @@ const handlerElementVisibility = async (
     }
 
     if (["50mm Timberstyle", "63mm Timberstyle"].includes(blindname)) {
-      divSizeType.classList.remove("d-none");
+      // divSizeType.classList.remove("d-none");
       divControl.classList.remove("d-none");
       divBracket.classList.remove("d-none");
       divBottom.classList.remove("d-none");

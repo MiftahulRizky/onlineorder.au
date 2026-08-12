@@ -799,7 +799,7 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
     );
 
     divFormDetail.classList.remove("d-none");
-    divSizeType.classList.remove("d-none");
+    // divSizeType.classList.remove("d-none");
 
     if (["Cord", "Chain"].includes(controlname)) {
       lblChain.innerHTML = `${controlname} colour x length`;

@@ -238,17 +238,17 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "room to install is required !", .field = "room"}}
             End If
 
-            If InArray(BlindName, "Completed") Then
-                If String.IsNullOrEmpty(data.sizetype) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
-                End If
+            ' If InArray(BlindName, "Completed") Then
+            '     If String.IsNullOrEmpty(data.sizetype) Then
+            '         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
+            '     End If
 
-                If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
-                    If String.IsNullOrEmpty(data.dropfloor) Then
-                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
-                    End If
-                End If
-            End IF
+            '     If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
+            '         If String.IsNullOrEmpty(data.dropfloor) Then
+            '             Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
+            '         End If
+            '     End If
+            ' End IF
 
             If String.IsNullOrEmpty(data.mounting) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
@@ -431,6 +431,8 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
             If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Reveal Fit") Then
                 data.dropfloor = ""
             End If
+            data.sizetype = ""
+            data.dropfloor = ""
           
             '#-----------------------|| SUBMIT VALIDATE ||-----------------------#
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then

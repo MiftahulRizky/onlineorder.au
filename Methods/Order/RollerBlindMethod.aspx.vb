@@ -461,9 +461,9 @@ Partial Class Methods_Order_RollerBlindMethod
             End If
 
             If InArray(BlindName, "Standard", "Motorised", "Cassette") Then
-                If String.IsNullOrEmpty(data.sizetype) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
-                End If
+                ' If String.IsNullOrEmpty(data.sizetype) Then
+                '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
+                ' End If
 
                 ' If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
                 '     If String.IsNullOrEmpty(data.dropfloor) Then
@@ -1213,6 +1213,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 data.sizetype = ""
                 data.dropfloor = ""
             End If
+            data.sizetype = ""
             data.dropfloor = ""
 
             ' If data.trim = "1F" Then

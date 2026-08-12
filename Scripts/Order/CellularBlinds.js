@@ -541,12 +541,12 @@ const handlerElementVisibility = async (
     divFormDetail.classList.remove("d-none");
 
     if (["Cellora"].includes(blindname)) {
-      divSizeType.classList.remove("d-none");
+      // divSizeType.classList.remove("d-none");
       divFabricDay.classList.remove("d-none");
     }
 
     if (["Galaxy"].includes(blindname)) {
-      divSizeType.classList.remove("d-none");
+      // divSizeType.classList.remove("d-none");
       divFabricDay.classList.remove("d-none");
       if (controlname.includes("DN")) {
         divFabricNight.classList.remove("d-none");

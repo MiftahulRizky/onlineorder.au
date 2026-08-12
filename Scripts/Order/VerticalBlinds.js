@@ -1145,7 +1145,7 @@ const handlerElementVisibility = async (
     divFormDetail.classList.remove("d-none");
 
     if (blindname === "Complete") {
-      divSizeType.classList.remove("d-none");
+      // divSizeType.classList.remove("d-none");
       divMounting.classList.remove("d-none");
       divWidth.classList.remove("d-none");
       divDrop.classList.remove("d-none");

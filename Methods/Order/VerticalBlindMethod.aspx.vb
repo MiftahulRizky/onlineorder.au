@@ -276,17 +276,17 @@ Partial Class Methods_Order_VerticalBlindMethod
                 End If
             End If
 
-            If InArray(BlindName, "Complete") Then
-                If String.IsNullOrEmpty(data.sizetype) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
-                End If
+            ' If InArray(BlindName, "Complete") Then
+            '     If String.IsNullOrEmpty(data.sizetype) Then
+            '         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
+            '     End If
 
-                If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
-                    If String.IsNullOrEmpty(data.dropfloor) Then
-                        Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
-                    End If
-                End If
-            End IF
+            '     If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
+            '         If String.IsNullOrEmpty(data.dropfloor) Then
+            '             Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
+            '         End If
+            '     End If
+            ' End IF
 
             If String.IsNullOrEmpty(data.mounting) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
@@ -553,6 +553,8 @@ Partial Class Methods_Order_VerticalBlindMethod
             If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Reveal Fit") Then
                 data.dropfloor = ""
             End If
+            data.sizetype = ""
+            data.dropfloor = ""
 
             ' Throw New Exception(SlatSize)
 

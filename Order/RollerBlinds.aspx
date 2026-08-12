@@ -448,5 +448,5 @@
         let URIMETHOD = "/Methods/Order/RollerBlindMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/RollerBlinds.js?v=1.0.5"></script>
+    <script type="text/javascript" src="/Scripts/Order/RollerBlinds.js?v=1.0.6"></script>
 </asp:Content>
