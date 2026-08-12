@@ -168,7 +168,7 @@ Inherits="Account_Login" %>
               <div class="mb-4">
                 <label class="form-label" runat="server" visible="true">
                   Password
-                  <span class="form-label-description">
+                  <span class="form-label-description d-none">
                     <a runat="server" href="~/account/forgot"
                       >FORGOT PASSWORD</a
                     >
