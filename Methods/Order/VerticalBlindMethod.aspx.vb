@@ -288,7 +288,7 @@ Partial Class Methods_Order_VerticalBlindMethod
             '     End If
             ' End IF
 
-            If String.IsNullOrEmpty(data.mounting) Then
+            If Not BlindName = "Slat Only" AND String.IsNullOrEmpty(data.mounting) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
             End If
 
