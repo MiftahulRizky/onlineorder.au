@@ -3591,7 +3591,7 @@ Partial Class Methods_Order_JobSheetMethod
                                 tableName = "JobSheet_GlobalPanelGlides"
 
                             Case "Roller Blinds"
-                                fieldsToProcess.AddRange({"Line", "BlindNo", "LinkBlind", "Qty", "Location", "Mounting", "Width", "Drop", "RollDirection", "ControlPosition", "ControlLength", "MotorStyle", "MotorRemote", "MotorCharger", "Connector", "Accessory", "TubeSize", "Trim", "ChildSafe", "BracketCover", "BracketColour", "BracketExtension", "Notes", "KitName", "BracketType", "TubeType", "TubeSkinSize", "NumBoldNuts",  "ControlType",  "ColourType", "ChainName", "ChainColour", "ChainLength","BottomName", "BottomType", "BottomColour","FabricName", "FabricType", "FabricColour", "FabricWidth"})
+                                fieldsToProcess.AddRange({"Line", "BlindNo", "LinkBlind", "Qty", "Location", "Mounting", "Width", "Drop", "RollDirection", "AdditionalMotor", "ControlPosition", "ControlLength", "MotorStyle", "MotorRemote", "MotorCharger", "Connector", "Accessory", "TubeSize", "Trim", "ChildSafe", "BracketCover", "BracketColour", "BracketExtension", "Notes", "KitName", "BracketType", "TubeType", "TubeSkinSize", "NumBoldNuts",  "ControlType",  "ColourType", "ChainName", "ChainColour", "ChainLength","BottomName", "BottomType", "BottomColour","FabricName", "FabricType", "FabricColour", "FabricWidth"})
 
                                 tableName = "JobSheet_RollerBlinds"
 
@@ -7565,6 +7565,17 @@ Partial Class Methods_Order_JobSheetMethod
                 result+= tdDetStart & boldStart & currentData("MotorCharger4").ToString() & boldEnd & tdDetEnd
                 result+= tdDetStart & boldStart & currentData("MotorCharger5").ToString() & boldEnd & tdDetEnd
                 result+= tdDetRight & boldStart & currentData("MotorCharger6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#AdditionalMotor
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "Extra" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("AdditionalMotor1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("AdditionalMotor2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("AdditionalMotor3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("AdditionalMotor4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("AdditionalMotor5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("AdditionalMotor6").ToString() & boldEnd & tdDetEnd
             result+= trDetEnd
 
             '#Connector
