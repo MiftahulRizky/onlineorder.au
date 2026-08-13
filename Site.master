@@ -1360,7 +1360,7 @@ Inherits="SiteMaster" %>
 
         document.getElementById("linkOrder").addEventListener("click", (e) => {
           const live = `/order`;
-          const dev = `/orders`;
+          const dev = `/order/orderheaders`;
           const role = '<%= Session("RoleName") %>';
           if (role === "Administrator") {
             Swal.fire({

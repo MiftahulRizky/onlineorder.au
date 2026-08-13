@@ -724,7 +724,7 @@ const bindDetails = (details) => {
     });
   } catch (error) {
     const msg = `bindDetails: ${error.message}`;
-    catchMessage(msg);
+    catchMessages(msg);
   }
 };
 

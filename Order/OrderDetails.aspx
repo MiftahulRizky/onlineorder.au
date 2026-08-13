@@ -86,16 +86,6 @@
                             <i class="ti ti-file-download fs-2 me-2 opacity-50"></i> Download
                         </a>
                     </div>
-                    <!-- button administrator -->
-                    <!-- <button class="btn  btn-dark dropdown-toggle" data-bs-toggle="dropdown" id="btnAdministrator">Admin</button>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:void(0)" id="btnChangeStatus" class="dropdown-item">
-                            <i class="bi bi-clipboard-check me-2 opacity-50"></i> Change Status
-                        </a>
-                        <a href="javascript:void(0)" id="btnSendOrderMail" class="dropdown-item">
-                            <i class="bi bi-send-fill me-2 opacity-50"></i> Send Manual Order
-                        </a>
-                    </div> -->
 
                     <!-- button refresh pricing -->
                      <button class="btn  btn-purple dropdown-toggle" data-bs-toggle="dropdown" id="btnMoreAction">
