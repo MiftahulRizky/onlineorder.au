@@ -692,6 +692,7 @@ const bindTrackColour = (tubetype) => {
       data.push(
         { value: "White", text: "White" },
         { value: "Beige", text: "Beige" },
+        { value: "Birch White", text: "Birch White" },
       );
     }
     data.push(
@@ -899,6 +900,7 @@ const bindBracketColour = (tubetype) => {
     );
   } else {
     data.push(
+      { value: "Birch White", text: "Birch White" },
       { value: "Black", text: "Black" },
       { value: "White", text: "White" },
       { value: "Silver", text: "Silver" },
