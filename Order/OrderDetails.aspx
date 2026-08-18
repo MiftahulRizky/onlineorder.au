@@ -378,7 +378,7 @@
         <div class="modal-dialog modal-sm modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title" id="modalChangeStatusLabel">Update Status Order</h1>
+                    <h1 class="modal-title" id="modalChangeStatusLabel">Change Status Order</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body row">
@@ -685,7 +685,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.17"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.18"></script>
 
 
 </asp:Content>

@@ -60,12 +60,12 @@
                                  <thead class="h1">
                                      <tr>
                                          <th class="text-center">#</th>
-                                         <th class="h3 column-id">ID</th>
+                                         <th class="h3 columnId">ID</th>
                                          <th class="h3">ORDER ID</th>
-                                         <th class="h3 column-retailer">RETAILER NAME</th>
+                                         <th class="h3 columnRetailer">RETAILER NAME</th>
                                          <th class="h3">ORDER NUMBER</th>
                                          <th class="h3">ORDER NAME</th>
-                                         <th class="h3 column-type">ORDER TYPE</th>
+                                         <th class="h3 columnType">ORDER TYPE</th>
                                          <th class="h3">DELIVERY</th>
                                          <th class="h3">STATUS</th>
                                          <th class="h3 text-center">CREATED</th>
@@ -74,22 +74,6 @@
                                      </tr>
                                  </thead>
                                  <tbody></tbody>
-                                 <thead>
-                                     <tr>
-                                         <th class="text-center">#</th>
-                                         <th class="h3 column-id">ID</th>
-                                         <th class="h3">ORDER ID</th>
-                                         <th class="h3 column-retailer">RETAILER NAME</th>
-                                         <th class="h3">ORDER NUMBER</th>
-                                         <th class="h3">ORDER NAME</th>
-                                         <th class="h3 column-type">ORDER TYPE</th>
-                                         <th class="h3 ">DELIVERY</th>
-                                         <th class="h3 ">STATUS</th>
-                                         <th class="h3 text-center">CREATED</th>
-                                         <th class="h3 text-center">SUBMITTED</th>
-                                         <th class="text-center">ACTIONS</th>
-                                     </tr>
-                                 </thead>
                                 </table>
                             </div>
                         </div>
@@ -101,7 +85,7 @@
                                         <option value="1">ACTIVE DATA</option>
                                         <option value="0">NON ACTIVE</option>
                                     </select>
-                                    <small class="form-hint">* Sort Data</small>
+                                    <small class="form-hint" id="lblactive">* Sort Data</small>
                                 </div>
                                 <div class="col-2">
                                     <select name="storetype" id="storetype" class="form-select">
@@ -109,11 +93,93 @@
                                         <option value="REGULAR">REGULAR</option>
                                         <option value="PRO FORMA">PRO FORMA</option>
                                     </select>
-                                    <small class="form-hint">* Store Type</small>
+                                    <small class="form-hint" id="lblstoretype">* Store Type</small>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modalChangeStatus -->
+    <div class="modal fade" id="modalChangeStatus" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalChangeStatusLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="modalChangeStatusLabel">Change Status Order</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body row">
+
+                    <div class="col-12 mb-3">
+                        <label for="status" class="form-label text-uppercase">Status</label>
+                        <select name="status" id="status" class="form-select"></select>
+
+                        <input type="text" class="form-control " id="statusOld" name="statusOld"readonly hidden>
+
+                        <input type="text" class="form-control " id="id" name="id" placeholder="id for edit" readonly hidden>
+                    </div>
+
+                    <div class="col-12 mb-3" id="divSubmittedDate">
+                        <label for="submitteddate" class="form-label text-uppercase">Submitted Date</label>
+                        <input type="date" class="form-control" id="submitteddate" name="submitteddate">
+                    </div>
+
+                    <div class="col-12 mb-3" id="divCompletedDate">
+                        <label for="completeddate" class="form-label text-uppercase">Completed Date</label>
+                        <input type="date" class="form-control " id="completeddate" name="completeddate">
+                    </div>
+
+                    <div class="col-12 mb-3" id="divCanceledDate">
+                        <label for="canceleddate" class="form-label text-uppercase">Canceled Date</label>
+                        <input type="date" class="form-control " id="canceleddate" name="canceleddate">
+                    </div>
+
+                    <div class="col-12 mb-3" id="divDescription">
+                        <label for="description" class="form-label text-uppercase d-flex justify-content-between">
+                            Description
+                            <i class="bi bi-question-circle" style="cursor: pointer;" id="tooltipDescription"></i>
+                        </label>
+                        <textarea name="description" class="form-control" id="description" rows="3" ></textarea>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-xmark me-2"></i>Close
+                    </button>
+                    <button type="button" class="btn btn-primary" id="submitChangeStatus">
+                        <i class="fa-solid fa-cloud-arrow-up me-2"></i>Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- logs -->
+    <div class="modal fade" id="modalLogs" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLogsLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="modalLogsLabel">Change Log</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table" width="100%" id="table-logs">
+                        <tbody></tbody>
+                        <!-- <tr>
+                            <td>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</td>
+                        </tr>
+                        <tr>
+                            <td>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</td>
+                        </tr> -->
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -132,6 +198,6 @@
         let LEVELNAME = '<%= Session("LevelName") %>';
         let URIMETHOD = '/Methods/Order/OrderHeaderMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderHeaders.js?v=1.0.10"></script>
+    <script src="/Scripts/Order/OrderHeaders.js?v=1.0.7"></script>
 </asp:Content>
 
