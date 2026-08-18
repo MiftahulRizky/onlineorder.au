@@ -318,8 +318,9 @@ Inherits="SiteMaster" %>
 
                     <li runat="server" id="liOrder" class="nav-item">
                       <a
+                        runat="server"
                         class="nav-link"
-                        href="javascript:void(0)"
+                        href="~/order"
                         id="linkOrder"
                       >
                         <span class="nav-link-icon d-md-none d-lg-inline-block">
@@ -1358,31 +1359,31 @@ Inherits="SiteMaster" %>
           setSessionAlive();
         });
 
-        document.getElementById("linkOrder").addEventListener("click", (e) => {
-          const live = `/order`;
-          const dev = `/order/orderheaders`;
-          const role = '<%= Session("RoleName") %>';
-          if (role === "Administrator") {
-            Swal.fire({
-              title: "Please select one",
-              showDenyButton: true,
-              showCancelButton: false,
-              confirmButtonText: "Production",
-              denyButtonText: "Development",
-              customClass: {
-                popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
-              },
-            }).then((result) => {
-              if (result.isConfirmed) {
-                window.location.href = live;
-              } else if (result.isDenied) {
-                window.location.href = dev;
-              }
-            });
-          }else{
-            window.location.href = live;
-          }
-        })
+        // document.getElementById("linkOrder").addEventListener("click", (e) => {
+        //   const live = `/order`;
+        //   const dev = `/order/orderheaders`;
+        //   const role = '<%= Session("RoleName") %>';
+        //   if (role === "Administrator") {
+        //     Swal.fire({
+        //       title: "Please select one",
+        //       showDenyButton: true,
+        //       showCancelButton: false,
+        //       confirmButtonText: "Production",
+        //       denyButtonText: "Development",
+        //       customClass: {
+        //         popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+        //       },
+        //     }).then((result) => {
+        //       if (result.isConfirmed) {
+        //         window.location.href = live;
+        //       } else if (result.isDenied) {
+        //         window.location.href = dev;
+        //       }
+        //     });
+        //   }else{
+        //     window.location.href = live;
+        //   }
+        // })
         
         const colourTablerTheme = () => {
           const theme = localStorage.getItem("tablerTheme") == "dark";
