@@ -199,7 +199,7 @@ Partial Class Setting_Price_Matrix
             gvList.DataBind()
 
             btnAdd.Visible = False : btnImport.Visible = False
-            If Session("RoleName") = "Administrator" And Session("LevelName") = "Leader" Then
+            If Session("RoleName") = "Administrator" And (Session("LevelName") = "Leader" Or Session("LevelName") = "Super Admin") Then
                 btnAdd.Visible = True : btnImport.Visible = True
             End If
         Catch ex As Exception

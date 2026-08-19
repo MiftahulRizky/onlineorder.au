@@ -1025,6 +1025,7 @@ const bindItemOrders = async (itemid) => {
     if (!data || data.length === 0) {
       throw isError("No data returned from server : bindItemOrders");
     }
+    console.log(data);
 
     for (const item of data) {
       await bindBlinds(item.DesignId);
@@ -1360,7 +1361,6 @@ const handlerSetElementValues = (itemData) => {
     chainlength: "ChainLength",
     wandcolour: "WandColour",
     wandlength: "WandLength",
-    wandlength: "WandLength",
     wandcustomlength: "WandLength",
     bracket: "BracketOption",
     bracketcolour: "BracketColour",
@@ -1372,6 +1372,7 @@ const handlerSetElementValues = (itemData) => {
     markup: "MarkUp",
   };
 
+  console.log(itemData);
   // Set nilai ke input sesuai mapping
   Object.entries(mapping).forEach(([id, key]) => {
     const el = document.getElementById(id);
