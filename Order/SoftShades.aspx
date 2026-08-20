@@ -344,6 +344,6 @@
         let URIMETHOD = "/Methods/Order/SoftShadeMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/SoftShades.js?v=1.0.13"></script>
+    <script type="text/javascript" src="/Scripts/Order/SoftShades.js?v=1.0.2"></script>
 </asp:Content>
 

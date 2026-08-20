@@ -499,7 +499,7 @@ const bindBottom = () => {
   ]);
 };
 
-const bindSelect = async ({
+const bindSelect = ({
   data,
   elementId,
   withDefaultOption = true,
@@ -532,13 +532,13 @@ const bindSelect = async ({
 
     // callback setelah render
     if (afterRender) {
-      await afterRender(data, select);
+      afterRender(data, select);
     }
 
     // kalau cuma 1 data
     if (data.length === 1 && onSingle) {
       select.selectedIndex = 0;
-      await onSingle(data[0], select);
+      onSingle(data[0], select);
     }
   } catch (err) {
     const msg = `bindSelect: ${err.message}`;
@@ -595,6 +595,20 @@ const bindListData = async ({
   }
 };
 
+const bindSelectPayload = (data, el, def = true, leng = 0) => {
+  try {
+    bindSelect({
+      data: data,
+      elementId: el,
+      withDefaultOption: def,
+      lengthDefaultOption: leng,
+    });
+  } catch (error) {
+    const msg = `bindSelectPayload: ${error.message}`;
+    catchMessages(msg);
+  }
+};
+
 const bindItemOrders = async () => {
   try {
     const response = await fetch(`${URIMETHOD}/BindItemOrder`, {
@@ -623,47 +637,11 @@ const bindItemOrders = async () => {
       throw new Error(data.message);
     }
 
-    bindSelect({
-      data: data.Tubes,
-      elementId: "tubetype",
-      withDefaultOption: true,
-      lengthDefaultOption: 1,
-    });
-
-    bindSelect({
-      data: data.Controls,
-      elementId: "controltype",
-      withDefaultOption: true,
-      lengthDefaultOption: 1,
-    });
-
-    bindSelect({
-      data: data.Fabrics,
-      elementId: "fabrictype",
-      withDefaultOption: true,
-      lengthDefaultOption: 1,
-    });
-
-    bindSelect({
-      data: data.FabricLength,
-      elementId: "fabriclength",
-      withDefaultOption: true,
-      lengthDefaultOption: 1,
-    });
-
-    bindSelect({
-      data: data.FabricLength,
-      elementId: "fabriclength",
-      withDefaultOption: true,
-      lengthDefaultOption: 1,
-    });
-
-    bindSelect({
-      data: data.FabricColour,
-      elementId: "fabriccolour",
-      withDefaultOption: true,
-      lengthDefaultOption: 1,
-    });
+    bindSelectPayload(data.Tubes, "tubetype", true, 1);
+    bindSelectPayload(data.Controls, "controltype", true, 1);
+    bindSelectPayload(data.Fabrics, "fabrictype", true, 1);
+    bindSelectPayload(data.FabricLength, "fabriclength", true, 1);
+    bindSelectPayload(data.FabricColour, "fabriccolour", true, 1);
 
     console.log(data.DetailData);
 

@@ -445,8 +445,8 @@
         let ROLENAME = '<%= Session("RoleName") %>';
         let LEVELNAME = '<%= Session("LevelName") %>';
         let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
-        let URIMETHOD = "/Methods/Order/RollerBlindMethod.aspx";
+        let URIMETHOD = "/Methods/Order/Hold/RollerBlindMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/RollerBlinds.js?v=1.0.0"></script>
+    <script type="text/javascript" src="/Scripts/Order/Hold/RollerBlinds.js?v=1.0.0"></script>
 </asp:Content>

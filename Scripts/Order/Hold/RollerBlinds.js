@@ -338,11 +338,6 @@ const rollerPageLoaded = async () => {
     return;
   }
 
-  if (!["Administrator"].includes(ROLENAME)) {
-    window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
-    return;
-  }
-
   await bindDesigns(DESIGNID);
   await bindHeaders(HEADERID);
   bindFormAction(ITEMACTION, ITEMID);
