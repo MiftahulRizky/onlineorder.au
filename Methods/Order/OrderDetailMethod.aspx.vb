@@ -1009,7 +1009,7 @@ Partial Class Methods_Order_OrderDetailMethod
     Public Shared Function SubmitOrder(ByVal headerid As String, ByVal loginid As String, ByVal rolename As String) As Object
         Try
             If String.IsNullOrEmpty(headerid) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "This order is missing !" }}
+                Throw New Exception("headerid is null or empty !")
             End If
             Dim detailData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + headerid + "' AND Active='1'")
 
@@ -1018,11 +1018,11 @@ Partial Class Methods_Order_OrderDetailMethod
             End If
 
             If rolename = "Administrator" Then
-                ' Dim ResApi As String = SendOrderGlobal(headerid)
-                ' If Not ResApi = "OK" Then
-                '     Throw New Exception("API Error: " + ResApi)
-                ' End If
-                ' Throw New Exception("API Success")
+                Dim ResApi As Object = SendOrderGlobal(headerid)
+                If ResApi.error Then
+                    Throw New Exception(ResApi.message)
+                End If
+                Throw New Exception("API Success")
             End If
             
             
@@ -1043,6 +1043,120 @@ Partial Class Methods_Order_OrderDetailMethod
             Return New With { .success = true, .message = "Order has been submitted successfully."}
         Catch ex As Exception
            Return New With { .error = true, .message = ex.Message}
+        End Try
+    End Function
+
+    Private Shared Function SendOrderGlobal(headerid As String) As Object
+        Try
+            '#HeaderData sudah fix ada tidak perlu validasi
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT OrderId, OrderNote FROM view_order_headers WHERE Id = '{0}' AND OrderType='Blinds'", headerid))
+            Dim Rows As DataRow = HeaderData.Tables(0).Rows(0)
+
+            Dim order As New Dictionary(Of String, Object) From {
+                {"OrderId", Rows("OrderId").ToString()},
+                {"OrderNote", Rows("OrderNote").ToString()},
+                {"Details", New List(Of Object)()}
+            }
+
+            Dim GlobalProduct As String = "AND (DesignName LIKE '%Global%' OR BlindName IN ('25mm Aluminium', '50mm Mockwood', '63mm Mockwood', '50mm Wooden', '63mm Wooden'))"
+
+            Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT*FROM view_details WHERE HeaderId = '{0}' {1} AND Active=1 ORDER BY Id ASC", headerid, GlobalProduct))
+            Dim DetailCount As Integer = DetailData.Tables(0).Rows.Count
+
+            If DetailCount = 0 Then
+                Return New With { .error = false, .message = "Ok"}
+            End If
+
+            If DetailCount > 0 Then
+                For Each dr As DataRow In DetailData.Tables(0).Rows
+                    Dim BlindName As String = dr("BlindName").ToString()
+                    Dim ControlPosition As String = dr("ControlPosition").ToString()
+                    
+
+                    Dim Parts As String() = ControlPosition.Split("|"c)
+                    Dim ControlLift As String = ""
+                    Dim ControlTilt As String = ""
+
+                    If Parts.Length >= 2 Then
+                        ControlLift = Parts(0).Trim()
+                        ControlTilt = Parts(1).Trim()
+                    End If
+                    
+                    If InArray(BlindName, "50mm Mockwood", "63mm Mockwood", "50mm Wooden", "63mm Wooden") Then
+                        ControlPosition = ""
+                    End If
+
+                    CType(order("Details"), List(Of Object)).Add(New With {
+                        .KitName = dr("KitName").ToString(),
+                        .BracketType = dr("BracketType").ToString(),
+                        .TubeType = dr("TubeType").ToString(),
+                        .ControlType = dr("ControlType").ToString(),
+                        .ColourType = dr("ColourType").ToString(),
+                        .DesignName = dr("DesignName").ToString(),
+                        .BlindName = dr("BlindName").ToString(),
+                        .FabricType = dr("FabricType").ToString(),
+                        .FabricColour = dr("FabricColour").ToString(),
+                        .Qty = If(IsDBNull(dr("Qty")), 0, CInt(dr("Qty"))),
+                        .Room = dr("Location").ToString(),
+                        .Mounting = dr("Mounting").ToString(),
+                        .Width = If(IsDBNull(dr("Width")), 0, CInt(dr("Width"))),
+                        .Drop = If(IsDBNull(dr("Drop")), 0, CInt(dr("Drop"))),
+                        .Layout = dr("Layout").ToString(),
+                        .NumOfPanel = If(IsDBNull(dr("NumOfPanel")), 0, CInt(dr("NumOfPanel"))),
+                        .TwoOnOneHeadreal = dr("DoorCutOut").ToString(),
+                        .ControlPosition = ControlPosition,
+                        .ControlLift = ControlLift,
+                        .ControlTilt = ControlTilt,
+                        .ChainLength = If(IsDBNull(dr("ChainLength")), 0, CInt(dr("ChainLength"))),
+                        .MaterialChain = dr("MaterialChain").ToString(),
+                        .ChainColour = dr("ChainColour").ToString(),
+                        .TrackType = dr("TrackType").ToString(),
+                        .TrackColour = dr("TrackColour").ToString(),
+                        .NumOfWand = If(IsDBNull(dr("NumOfWand")), 0, CInt(dr("NumOfWand"))),
+                        .WandPosition = dr("WandPosition").ToString(),
+                        .WandColour = dr("WandColour").ToString(),
+                        .WandLength = If(IsDBNull(dr("WandLength")), 0, CInt(dr("WandLength"))),
+                        .CordColour = dr("CordColour").ToString(),
+                        .CordLength = If(IsDBNull(dr("CordLength")), 0, CInt(dr("CordLength"))),
+                        .AcornPlasticColour = dr("AcornPlasticColour").ToString(),
+                        .Batten = dr("Batten").ToString(),
+                        .BattenColour = dr("BattenColour").ToString(),
+                        .BracketOption = dr("BracketOption").ToString(),
+                        .BracketColour = dr("BracketColour").ToString(),
+                        .Fitting = dr("Fitting").ToString(),
+                        .Cleat = dr("Cleat").ToString(),
+                        .BottomHoldDown = dr("BottomHoldDown").ToString(),
+                        .PelmetType = dr("PelmetType").ToString(),
+                        .PelmetWidth = If(IsDBNull(dr("PelmetWidth")), 0, CInt(dr("PelmetWidth"))),
+                        .PelmetReturnLeft = If(IsDBNull(dr("PelmetReturnSize")), 0, CInt(dr("PelmetReturnSize"))),
+                        .PelmetReturnRight = If(IsDBNull(dr("PelmetReturnSize2")), 0, CInt(dr("PelmetReturnSize2"))),
+                        .CutOut_LeftTop = If(IsDBNull(dr("CutOut_LeftTop")), 0, CInt(dr("CutOut_LeftTop"))),
+                        .CutOut_RightTop = If(IsDBNull(dr("CutOut_RightTop")), 0, CInt(dr("CutOut_RightTop"))),
+                        .CutOut_LeftBottom = If(IsDBNull(dr("CutOut_LeftBottom")), 0, CInt(dr("CutOut_LeftBottom"))),
+                        .CutOut_RightBottom = If(IsDBNull(dr("CutOut_RightBottom")), 0, CInt(dr("CutOut_RightBottom"))),
+                        .LHSWidth_Top = If(IsDBNull(dr("LHSWidth_Top")), 0, CInt(dr("LHSWidth_Top"))),
+                        .LHSHeight_Top = If(IsDBNull(dr("LHSHeight_Top")), 0, CInt(dr("LHSHeight_Top"))),
+                        .RHSWidth_Top = If(IsDBNull(dr("RHSWidth_Top")), 0, CInt(dr("RHSWidth_Top"))),
+                        .RHSHeight_Top = If(IsDBNull(dr("RHSHeight_Top")), 0, CInt(dr("RHSHeight_Top"))),
+                        .LHSWidth_Bottom = If(IsDBNull(dr("LHSWidth_Bottom")), 0, CInt(dr("LHSWidth_Bottom"))),
+                        .LHSHeight_Bottom = If(IsDBNull(dr("LHSHeight_Bottom")), 0, CInt(dr("LHSHeight_Bottom"))),
+                        .RHSWidth_Bottom = If(IsDBNull(dr("RHSWidth_Bottom")), 0, CInt(dr("RHSWidth_Bottom"))),
+                        .RHSHeight_Bottom = If(IsDBNull(dr("RHSHeight_Bottom")), 0, CInt(dr("RHSHeight_Bottom"))),
+                        .Notes = dr("Notes").ToString()
+                    })
+                Next
+
+                Dim json As String = JsonConvert.SerializeObject(order)
+                
+                Dim client As New HttpClient()
+                ' client.DefaultRequestHeaders.Add("x-api-key", "YOUR_API_KEY")
+                Dim content As New StringContent(json, Encoding.UTF8, "application/json")
+                Dim response = client.PostAsync("https://webhook.site/2b67abaa-7ee9-4efa-8865-3ef8b6527924", content).Result
+                Return New With { .error = false, .message = response.StatusCode.ToString()}
+            End If
+
+        Catch ex As Exception
+            Return New With { .error = true, .message = String.Format("SendOrderGlobal: {0}", ex.Message)}
         End Try
     End Function
 
