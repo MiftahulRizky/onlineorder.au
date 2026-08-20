@@ -325,7 +325,7 @@ Partial Class Methods_Order_OrderHeaderMethod
                 End If
             ElseIf params.customercompany = "LOOP" Then
                 Select Case params.rolename
-                    Case "Administrator", "Customer Service", "params Entry", "PPIC & DE", "Account"
+                    Case "Administrator", "Customer Service", "Data Entry", "PPIC & DE", "Account"
                         whereRole = ""
                     Case "Representative"
                         whereRole = String.Format(" AND CustomerId = '{0}' AND CreatedBy = '{1}'", params.customerid, params.loginid)
@@ -361,7 +361,7 @@ Partial Class Methods_Order_OrderHeaderMethod
                     customOrderBy = " ORDER BY CreatedDate, CASE WHEN Status = 'New Order' THEN 1 WHEN Status = 'In Production' THEN 2 WHEN Status = 'Completed' THEN 3 WHEN Status = 'Unsubmitted' THEN 4 WHEN Status = 'Draft' THEN 4 WHEN Status = 'Canceled' THEN 5 END DESC"
                 End If
 
-                If params.rolename = "Customer Service" Or params.rolename = "params Entry" Or params.rolename = "PPIC & DE" Then
+                If params.rolename = "Customer Service" Or params.rolename = "Data Entry" Or params.rolename = "PPIC & DE" Then
                     customOrderBy = " ORDER BY CreatedDate, CASE WHEN Status = 'New Order' THEN 1 WHEN Status = 'In Production' THEN 2 WHEN Status = 'Completed' THEN 3 WHEN Status = 'Unsubmitted' THEN 4 WHEN Status = 'Draft' THEN 4 WHEN Status = 'Canceled' THEN 5 END DESC"
                 End If
 
