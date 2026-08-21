@@ -155,7 +155,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         FindBracket = "With Tube &amp; Bottom Included"
                     End If
 
-                    query = String.Format("SELECT Type FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Company = 'SP' AND Trim ='{1}' AND Active ='1' GROUP BY Type ORDER BY Type ASC", FindBracket, data.trim)
+                    query = String.Format("SELECT Type FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Company = 'SG' AND Trim ='{1}' AND Active ='1' GROUP BY Type ORDER BY Type ASC", FindBracket, data.trim)
                     Return GetFormattedData(query, "Type", "Type")
 
                 Case Else
