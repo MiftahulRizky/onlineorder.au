@@ -820,6 +820,9 @@ const displayElOverall = (api) => {
       toggleShow(mainEl.ordertype, true);
       toggleShow(mainEl.btnCreateNewOrder, true);
       DataTableOrders.columns(6).visible(true);
+      if (["accathom-wart", "sydbli-wart"].includes(USERNAME)) {
+        DataTableOrders.columns(3).visible(true);
+      }
     }
   } catch (error) {
     const msg = `displayElOverall: ${error.message}`;
