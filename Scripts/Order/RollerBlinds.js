@@ -1165,7 +1165,7 @@ const handlerElementVisibility = async (
 
     if (ROLENAME === "Administrator" && LEVELNAME === "Super Admin") {
       // lblItemId.classList.remove("d-none");
-      // lblBlindNo.classList.remove("d-none");
+      lblBlindNo.classList.remove("d-none");
       // lblUniqueId.classList.remove("d-none");
     }
 
@@ -1593,6 +1593,7 @@ const rollerPageLoaded = async () => {
 
   await bindFormAggregate();
   if (ITEMACTION === "AddItem") {
+    getById("lblBlindNo").innerHTML = "Blind 1";
     await handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
