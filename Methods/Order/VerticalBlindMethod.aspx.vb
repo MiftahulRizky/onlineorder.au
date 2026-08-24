@@ -436,6 +436,10 @@ Partial Class Methods_Order_VerticalBlindMethod
             If BlindName = "Slat Only" And data.bottom = "Top Hanger Only" Then
                 PriceGroupName = String.Format("{0} With Hanger - {1}", BlindName, FabricGroup)
             End If
+            If BlindName = "Slat Only" And InStr(data.fabricType, "Builder") Then
+                PriceGroupName = String.Format("Complete - {1}", BlindName, FabricGroup)
+            End If
+            
 
             Dim PriceGroupId As String = publicCfg.GetPriceGroupId(data.designid, PriceGroupName)
             If PriceGroupId = "" Then

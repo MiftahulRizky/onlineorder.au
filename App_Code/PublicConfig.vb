@@ -851,6 +851,7 @@ Public Class PublicConfig
         Dim Matrix As Decimal = CDec(ListParam(3))
         Dim DesignId As String = CStr(ListParam(4))
         Dim BlindId As String = CStr(ListParam(5))
+        Dim FabricType As String = CStr(ListParam(6))
         Dim DesignName As String = GetItemData(String.Format("SELECT Name FROM Designs WHERE Id='{0}'", DesignId))
 
         Dim result As Decimal = 0.00
@@ -898,6 +899,10 @@ Public Class PublicConfig
                 QuoteDisc = QuoteDisc.Replace(",", ".")
                 Discount = Decimal.Parse(QuoteDisc, System.Globalization.CultureInfo.InvariantCulture)
             End If
+        End If
+
+        If InStr(FabricType, "Builder") > 0 Then
+            Discount = 0
         End If
 
         If Not InArray(DesignName, "Surcharge", "Additional") Then
@@ -1108,7 +1113,8 @@ Public Class PublicConfig
                     priceGroupId,
                     getMatrix,
                     designId,
-                    blindId
+                    blindId,
+                    fabricType
                 }
                 Dim thisDiscount As Decimal = HitungDiscount(ListParamDiscount) 'HitungDiscount(storeId, priceGroupId, getMatrix)
                 thisMatrix = getMatrix - thisDiscount
@@ -1212,7 +1218,8 @@ Public Class PublicConfig
                     priceGroupIdB,
                     getMatrixB,
                     designId,
-                    blindId
+                    blindId,
+                    fabricTypeB
                 }
                 Dim thisDiscountB As Decimal = HitungDiscount(ListParamDiscountB) 'HitungDiscount(storeId, priceGroupIdB, getMatrixB)
                 thisMatrixB = getMatrixB - thisDiscountB
