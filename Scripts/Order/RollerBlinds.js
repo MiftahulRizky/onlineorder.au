@@ -449,6 +449,14 @@ const bindActionInfo = (itemaction) => {
       CopyItem: "COPY ITEM",
     };
     cardTitle.innerText = actionMap[itemaction] || "";
+
+    if (["NextItem", "EditItem", "ViewItem"].includes(itemaction)) {
+      const blindtype = document.getElementById("blindtype");
+      const brackettype = document.getElementById("brackettype");
+
+      blindtype.setAttribute("disabled", true);
+      brackettype.setAttribute("disabled", true);
+    }
   } catch (error) {
     const msg = `bindActionInfo: ${error.message}`;
     catchMessages(msg);
