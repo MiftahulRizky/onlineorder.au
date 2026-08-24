@@ -26,7 +26,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     if (e.target.id === "blindtype") {
       const blindtype = e.target.value;
       const blindname = e.target.selectedOptions[0].dataset.name;
-      await handlerElementVisibility(blindtype);
+      await handlerElementVisibility(blindname);
       await bindTubes(DESIGNID, blindtype);
     }
 

@@ -13,6 +13,27 @@ Partial Class Methods_Order_RollerBlindMethod
     Shared orderCfg As New OrderConfig()
     Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
+    Public Class ParamBindFormAggregate
+        Public Property headerid As String
+        Public Property ordertype As String
+        Public Property designid As String
+        Public Property itemid As String
+        Public Property itemaction As String
+    End Class
+
+    Public Class ParamListData
+        Public Property field As String
+        Public Property designid As String
+        Public Property blindtype As String
+        Public Property brackettype As String
+        Public Property tubetype As String
+        Public Property controltype As String
+        Public Property fabrictype As String
+        Public Property fabriclength As String
+        Public Property trim As String
+        Public Property railtype As String
+    End Class
+
     Public Class ParamSubmit
         '#Submit OrderHeader
         Public Property blindtype As String
@@ -64,48 +85,59 @@ Partial Class Methods_Order_RollerBlindMethod
         Public Property isConfirmed As Boolean
     End Class
 
-    Public Class ParamListData
-        Public Property field As String
+    Public Class ParamBindItemOrder
+        Public Property headerid As String
+        Public Property ordertype As String
         Public Property designid As String
-        Public Property blindtype As String
-        Public Property brackettype As String
-        Public Property tubetype As String
-        Public Property controltype As String
-        Public Property fabrictype As String
-        Public Property trim As String
+        Public Property itemid As String
+        Public Property itemaction As String
     End Class
 
-    '#--- Kelas Output WebMethod ---#
-    Public Class ErrorDetail
-        Public Property message As String
-        Public Property field As String
-    End Class
-
-    Public Class ErrorResponse
-        Public Property [error] As ErrorDetail
-    End Class
-
-    Public Class SuccessResponse
-        Public Property success As String
-    End Class
-
-    Public Class ConfirmDetail
-        Public Property message As String
-    End Class
-
-    Public Class ConfirmResponse
-        Public Property confirm As ConfirmDetail
-        ' Public Property message As String
-    End Class
+    Private Shared Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
+    End Function
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function GetItemData(ByVal query As String) As Object
+    Public Shared Function BindFormAggregate(ByVal data As ParamBindFormAggregate) As Object
         Try
-            Dim Item As String = publicCfg.GetItemData(query)
-            Return Item
+            Dim DesignName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Designs WHERE Id = '{0}'", data.designid))
+
+            Dim HeaderData As Object
+            Using conn As New SqlConnection(myConn)
+                Using cmd As New SqlCommand("SELECT OrderId, OrderNumber, OrderName FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = @Id", conn)
+                    cmd.Parameters.AddWithValue("@Id", data.headerid)
+                    ' cmd.Parameters.AddWithValue("@OrderType", data.ordertype)
+
+                    conn.Open()
+                    Using reader As SqlDataReader = cmd.ExecuteReader()
+                        If reader.Read() Then
+
+                            HeaderData = New With {
+                                .OrderId = reader("OrderId").ToString(),
+                                .OrderNumber = reader("OrderNumber").ToString(),
+                                .OrderName = reader("OrderName").ToString()
+                            }
+                        End If
+                    End Using
+                End Using
+            End Using
+
+            Dim Blinds As Object  = BindListData(New ParamListData With {
+                .field = "blindtype",
+                .designid = data.designid
+            })
+            If Blinds.error Then
+                Throw New Exception(Blinds.message)
+            End If
+
+            Return New With {
+                .DesignName = DesignName,
+                .HeaderData = HeaderData,
+                .Blinds = Blinds.list
+            }
         Catch ex As Exception
-            Return "ERROR: " & ex.Message ' biar kelihatan errornya
+            Return New With {.error = True, .message = String.Format("BindFormAggregate: {0}", ex.Message)}
         End Try
     End Function
 
@@ -119,31 +151,31 @@ Partial Class Methods_Order_RollerBlindMethod
             Select Case data.field.ToLower()
                 Case "blindtype"
                     query = String.Format("SELECT Id, Name FROM Blinds WHERE DesignId='{0}' AND Active=1 ORDER BY Name ASC", data.designid)
-                    Return GetFormattedData(query, "Id", "Name")
+                    resultList = GetFormattedData(query, "Id", "Name")
 
                 Case "brackettype"
                     query = String.Format("SELECT BracketType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND Active=1 GROUP BY BracketType ORDER BY BracketType ASC", data.designid, UCase(data.blindtype).ToString())
-                    Return GetFormattedData(query, "BracketType", "BracketType")
+                    resultList = GetFormattedData(query, "BracketType", "BracketType")
 
                 Case "tubetype"
                     query = String.Format("SELECT TubeType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND BracketType='{2}' AND Active=1 GROUP BY TubeType ORDER BY TubeType ASC", data.designid, UCase(data.blindtype).ToString(), data.brackettype)
-                    Return GetFormattedData(query, "TubeType", "TubeType")
+                    resultList = GetFormattedData(query, "TubeType", "TubeType")
 
                 Case "controltype"
                     query = String.Format("SELECT ControlType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND BracketType='{2}' AND TubeType='{3}' AND Active=1 GROUP BY ControlType ORDER BY ControlType ASC", data.designid, UCase(data.blindtype).ToString(), data.brackettype, data.tubetype)
-                    Return GetFormattedData(query, "ControlType", "ControlType")
+                    resultList = GetFormattedData(query, "ControlType", "ControlType")
 
                 Case "colourtype"
                     query = String.Format("SELECT Id, ColourType FROM HardwareKits WHERE BlindId = '{1}' AND BracketType = '{2}' AND TubeType = '{3}' AND ControlType='{4}' AND Active=1 ORDER BY Name ASC", data.designid, UCase(data.blindtype).ToString(), data.brackettype, data.tubetype, data.controltype)
-                    Return GetFormattedData(query, "Id", "ColourType")
+                    resultList = GetFormattedData(query, "Id", "ColourType")
 
                 Case "fabrictype"
                     query = String.Format("SELECT Type FROM Fabrics WHERE DesignId='{0}' AND Active='1' GROUP BY Type ORDER BY Type ASC", data.designid)
-                    Return GetFormattedData(query, "Type", "Type")
+                    resultList = GetFormattedData(query, "Type", "Type")
 
                 Case "fabriccolour"
                     query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId='{0}' AND Active='1' AND Type='{1}' ORDER BY Name ASC", data.designid, data.fabrictype)
-                    Return GetFormattedData(query, "Id", "Colour")
+                    resultList = GetFormattedData(query, "Id", "Colour")
 
                 Case "railtype"
                     Dim FindBracket As String = data.brackettype
@@ -155,15 +187,32 @@ Partial Class Methods_Order_RollerBlindMethod
                         FindBracket = "With Tube &amp; Bottom Included"
                     End If
 
-                    query = String.Format("SELECT Type FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Company = 'SG' AND Trim ='{1}' AND Active ='1' GROUP BY Type ORDER BY Type ASC", FindBracket, data.trim)
-                    Return GetFormattedData(query, "Type", "Type")
+                    query = String.Format("SELECT Type FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Company = 'SP' AND Trim ='{1}' AND Active ='1' GROUP BY Type ORDER BY Type ASC", FindBracket, data.trim)
+                    resultList = GetFormattedData(query, "Type", "Type")
+
+                Case "railcolour"
+                    Dim FindBracket As String = data.brackettype
+                    If data.brackettype = "Headbox & Side Channels" Then
+                        FindBracket = "Headbox &amp; Side Channels"
+                    End If
+                    
+                    If data.brackettype = "With Tube & Bottom Included" Then
+                        FindBracket = "With Tube &amp; Bottom Included"
+                    End If
+
+                    query = String.Format("SELECT Id, Colour FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Type='{1}' AND Company = 'SP' AND Trim ='{2}' AND Active ='1' ORDER BY Name ASC", FindBracket, data.railtype, data.trim)
+                    resultList = GetFormattedData(query, "Id", "Colour")
 
                 Case Else
-                    Return New With {.error = "Invalid field"}
+                    Return New With {.error = true, .message = "Invalid field"}
             End Select
 
+            Return New With {
+                .error = false,
+                .list = resultList
+            }
         Catch ex As Exception
-            Return New With {.error = ex.Message}
+            Return New With {.error = true, .message = String.Format("BindListData: {0}", ex.Message)}
         End Try
     End Function
 
@@ -184,355 +233,98 @@ Partial Class Methods_Order_RollerBlindMethod
         Return list
     End Function
 
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindBlindType(ByVal designid As String) As Object
-        Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT * FROM Blinds WHERE DesignId='" + designid + "' AND Active=1 ORDER BY Name ASC")
-            Dim list As New List(Of Dictionary(Of String, String))()
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-                For Each row As DataRow In datas.Tables(0).Rows
-                    Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("Id").ToString()},
-                        {"text", row("Name").ToString()}
-                    }
-                    list.Add(result)
-                Next
-            End If
-            Return list
-        Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
-            Return New With {.error = ex.Message}
-        End Try
-    End Function
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindBracketType(ByVal designid As String, ByVal blindid As String) As Object
-        Try
-            Dim datas As DataSet = publicCfg.GetListData("SELECT BracketType FROM HardwareKits WHERE DesignId = '" + designid + "' AND BlindId='" + UCase(blindid).ToString() + "' AND Active=1 GROUP BY BracketType ORDER BY BracketType ASC")
-            Dim list As New List(Of Dictionary(Of String, String))()
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-                For Each row As DataRow In datas.Tables(0).Rows
-                    Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("BracketType").ToString()},
-                        {"text", row("BracketType").ToString()}
-                    }
-                    list.Add(result)
-                Next
-            End If
-            Return list
-        Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
-            Return New With {.error = ex.Message}
-        End Try
-    End Function
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindTubeType(ByVal designid As String, ByVal blindid As String, ByVal brackettype As String) As Object
-        Try
-            Dim MyQuery As String = String.Format("SELECT TubeType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND BracketType='{2}' AND Active=1 GROUP BY TubeType ORDER BY TubeType ASC", designid, UCase(blindid).ToString(), brackettype)
-            Dim datas As DataSet = publicCfg.GetListData(MyQuery)
-            Dim list As New List(Of Dictionary(Of String, String))()
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-                For Each row As DataRow In datas.Tables(0).Rows
-                    Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("TubeType").ToString()},
-                        {"text", row("TubeType").ToString()}
-                    }
-                    list.Add(result)
-                Next
-            End If
-            Return list
-        Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
-            Return New With {.error = ex.Message}
-        End Try
-    End Function
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindControlType(ByVal designid As String, ByVal blindid As String, ByVal brackettype As String, ByVal tubetype As String) As Object
-        Try
-            Dim MyQuery As String = String.Format("SELECT ControlType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND BracketType='{2}' AND TubeType='{3}' AND Active=1 GROUP BY ControlType ORDER BY ControlType ASC", designid, UCase(blindid).ToString(), brackettype, tubetype)
-            Dim datas As DataSet = publicCfg.GetListData(MyQuery)
-            Dim list As New List(Of Dictionary(Of String, String))()
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-                For Each row As DataRow In datas.Tables(0).Rows
-                    Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("ControlType").ToString()},
-                        {"text", row("ControlType").ToString()}
-                    }
-                    list.Add(result)
-                Next
-            End If
-            Return list
-        Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
-            Return New With {.error = ex.Message}
-        End Try
-    End Function
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindColourType(ByVal designid As String, ByVal blindid As String, ByVal brackettype As String, ByVal tubetype As String, ByVal controltype As String) As Object
-        Try
-            ' Dim MyQuery As String = String.Format("SELECT Id, ColourType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND BracketType='{2}' AND TubeType='{3}' AND Active=1 GROUP BY ColourType ORDER BY ColourType ASC", designid, UCase(blindid).ToString(), brackettype, tubetype, controltype)
-            Dim MyQuery As String = String.Format("SELECT *, UPPER(ColourType) AS ColourText FROM HardwareKits WHERE BlindId = '{1}' AND BracketType = '{2}' AND TubeType = '{3}' AND ControlType='{4}' AND Active=1 ORDER BY Name ASC", designid, UCase(blindid).ToString(), brackettype, tubetype, controltype)
-            Dim datas As DataSet = publicCfg.GetListData(MyQuery)
-            Dim list As New List(Of Dictionary(Of String, String))()
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-                For Each row As DataRow In datas.Tables(0).Rows
-                    Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("Id").ToString()},
-                        {"text", row("ColourType").ToString()}
-                    }
-                    list.Add(result)
-                Next
-            End If
-            Return list
-        Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
-            Return New With {.error = ex.Message}
-        End Try
-    End Function
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindFabricType(ByVal designid As String) As Object
-        Try
-            Dim MyQuery As String = String.Format("SELECT Type FROM Fabrics WHERE DesignId='{0}' AND Active='1' GROUP BY Type ORDER BY Type ASC", designid)
-            Dim datas As DataSet = publicCfg.GetListData(MyQuery)
-            Dim list As New List(Of Dictionary(Of String, String))()
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-                For Each row As DataRow In datas.Tables(0).Rows
-                    Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("Type").ToString()},
-                        {"text", row("Type").ToString()}
-                    }
-                    list.Add(result)
-                Next
-            End If
-            Return list
-        Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
-            Return New With {.error = ex.Message}
-        End Try
-    End Function
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindFabricColour(ByVal designid As String, ByVal fabrictype As String) As Object
-        Try
-            Dim MyQuery As String = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId='{0}' AND Active='1' AND Type='{1}' ORDER BY Name ASC", designid, fabrictype)
-            Dim datas As DataSet = publicCfg.GetListData(MyQuery)
-            Dim list As New List(Of Dictionary(Of String, String))()
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-                For Each row As DataRow In datas.Tables(0).Rows
-                    Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("Id").ToString()},
-                        {"text", row("Colour").ToString()}
-                    }
-                    list.Add(result)
-                Next
-            End If
-            Return list
-        Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
-            Return New With {.error = ex.Message}
-        End Try
-    End Function
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindRailType(ByVal brackettype As String, ByVal trim As String) As Object
-        Try
-            Dim FindBracket As String = brackettype
-
-            If brackettype = "Headbox & Side Channels" Then
-                FindBracket = "Headbox &amp; Side Channels"
-            End If
-            
-            If brackettype = "With Tube & Bottom Included" Then
-                FindBracket = "With Tube &amp; Bottom Included"
-            End If
-
-            Dim AdditionalQuery As String =  ""
-
-            Dim MyQuery As String = String.Format("SELECT UPPER(Type) AS TypeText, Type AS TypeValue FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Company = 'SP' AND Trim ='{2}' AND Active ='1' GROUP BY Type ORDER BY Type ASC", FindBracket, AdditionalQuery, trim)
-            Dim datas As DataSet = publicCfg.GetListData(MyQuery)
-            Dim list As New List(Of Dictionary(Of String, String))()
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-                For Each row As DataRow In datas.Tables(0).Rows
-                    Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("TypeValue").ToString()},
-                        {"text", row("TypeText").ToString()}
-                    }
-                    list.Add(result)
-                Next
-            End If
-            Return list
-        Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
-            Return New With {.error = ex.Message}
-        End Try
-    End Function
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindRailColour(ByVal brackettype As String, ByVal railtype As String, ByVal trim As String) As Object
-        Try
-            Dim FindBracket As String = brackettype
-
-            If brackettype = "Headbox & Side Channels" Then
-                FindBracket = "Headbox &amp; Side Channels"
-            End If
-            
-            If brackettype = "With Tube & Bottom Included" Then
-                FindBracket = "With Tube &amp; Bottom Included"
-            End If
-
-             Dim AdditionalQuery As String =  ""
-
-            Dim MyQuery As String = String.Format("SELECT Id, UPPER(Colour) AS Colour, VALUE Product FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Type='{1}' AND Company = 'SP' AND Trim ='{3}' AND Active ='1' ORDER BY Name ASC", FindBracket, railtype, AdditionalQuery, trim)
-            Dim datas As DataSet = publicCfg.GetListData(MyQuery)
-            Dim list As New List(Of Dictionary(Of String, String))()
-            If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
-                For Each row As DataRow In datas.Tables(0).Rows
-                    Dim result As New Dictionary(Of String, String) From {
-                        {"value", row("Id").ToString()},
-                        {"text", row("Colour").ToString()}
-                    }
-                    list.Add(result)
-                Next
-            End If
-            Return list
-        Catch ex As Exception
-            ' Return sebagai objek error agar bisa ditangani di sisi client
-            Return New With {.error = ex.Message}
-        End Try
-    End Function
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindItemOrder(ByVal itemid As String) As Object
-        Try
-            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE Id = '{0}'", itemid))
-
-            Dim data As DataSet = DirectCast(datas, DataSet)
-
-            Dim resultList As New List(Of Dictionary(Of String, String))()
-
-            If data IsNot Nothing AndAlso data.Tables.Count > 0 Then
-                For Each row As DataRow In data.Tables(0).Rows
-                    Dim dict As New Dictionary(Of String, String)()
-                    For Each col As DataColumn In data.Tables(0).Columns
-                        dict(col.ColumnName) = row(col).ToString()
-                    Next
-                    resultList.Add(dict)
-                Next
-            End If
-
-            Return resultList
-        Catch ex As Exception
-            ' Tangani error agar bisa dikenali di JavaScript
-            Return New With {.error = True, .message = ex.Message}
-        End Try
-    End Function
-
-    <WebMethod()>
+     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Submit(ByVal data As ParamSubmit) As Object
         Try
             Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.blindtype))
             Dim qty As Integer
             If String.IsNullOrEmpty(data.qty) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "qty type is required !", .field = "qty"}}
+                Return New With { .warning = true, .message = "qty type is required !", .field = "qty"}
             End If
             If Not Integer.TryParse(data.qty, qty) OrElse qty <= 0 Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "please check your qty !", .field = "qty"}}
+                Return New With { .warning = true, .message = "please check your qty !", .field = "qty"}
             End If
 
             If Not String.IsNullOrEmpty(data.room) Then
                 If InStr(data.room, "&") > 0 Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "character [&] is not allowed !", .field = "room"}}
+                    Return New With { .warning = true, .message = "character [&] is not allowed !", .field = "room"}
                 End If
             End If
 
             If InArray(BlindName, "Standard", "Motorised", "Cassette") Then
                 ' If String.IsNullOrEmpty(data.sizetype) Then
-                '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
+                '     Return New With { .warning = true, .message = "size type is required !", .field = "sizetype"}
                 ' End If
 
                 ' If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
                 '     If String.IsNullOrEmpty(data.dropfloor) Then
-                '         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
+                '         Return New With { .warning = true, .message = "drop to the floor is required !", .field = "dropfloor"}
                 '     End If
                 ' End If
             End IF
 
             If data.sizetype = "Opening Size" AND String.IsNullOrEmpty(data.mounting) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "mounting is required !", .field = "mounting"}}
+                Return New With { .warning = true, .message = "mounting is required !", .field = "mounting"}
             End If
             
             Dim width As Integer
             If String.IsNullOrEmpty(data.width) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width is required !",.field = "width"}}
+                Return New With {.warning = true, .message = "width is required !",.field = "width"}
             End If
             If Not Integer.TryParse(data.width, width) OrElse width <= 0 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be a positive integer !",.field = "width"}}
+                Return New With {.warning = true, .message = "width must be a positive integer !",.field = "width"}
             End If
             If width < 150 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 150 !",.field = "width"}}
+                Return New With {.warning = true, .message = "width must be less than or equal to 150 !",.field = "width"}
             End If
             If width > 6000 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 6000 !",.field = "width"}}
+                Return New With {.warning = true, .message = "width must be less than or equal to 6000 !",.field = "width"}
             End If
 
             Dim drop As Integer
             If String.IsNullOrEmpty(data.drop) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop is required !",.field = "drop"}}
+                Return New With {.warning = true, .message = "drop is required !",.field = "drop"}
             End If
             If Not Integer.TryParse(data.drop, drop) OrElse drop <= 0 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be a positive integer !",.field = "drop"}}
+                Return New With {.warning = true, .message = "drop must be a positive integer !",.field = "drop"}
             End If
             If drop < 150 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be greater than or equal to 150 !",.field = "drop"}}
+                Return New With {.warning = true, .message = "drop must be greater than or equal to 150 !",.field = "drop"}
             End If
             If drop > 3200 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3200 !",.field = "drop"}}
+                Return New With {.warning = true, .message = "drop must be less than or equal to 3200 !",.field = "drop"}
             End If
 
             If String.IsNullOrEmpty(data.fabrictype) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
+                Return New With {.warning = true, .message = "fabric type is required !",.field = "fabrictype"}
             End If
             If String.IsNullOrEmpty(data.fabriccolour) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
+                Return New With {.warning = true, .message = "fabric colour is required !",.field = "fabriccolour"}
             End If
 
             If (BlindName = "Cassette" AND data.tubetype = "Motorised") OR BlindName = "Motorised" Then
 
                 If Not InArray(data.brackettype, "Linked 2 Blinds (Dep)", "Linked 3 Blinds (Dep)") Then
                     If String.IsNullOrEmpty(data.motorstyle) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor style is required !",.field = "motorstyle"}}
+                        Return New With {.warning = true, .message = "motor style is required !",.field = "motorstyle"}
                     End If
                 End If
                 ' If String.IsNullOrEmpty(data.motorremote) Then
-                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "motor remote is required !",.field = "motorremote"}}
+                '     Return New With {.warning = true, .message = "motor remote is required !",.field = "motorremote"}
                 ' End If
             End If
 
             If Not (data.tubetype = "Spring Operated" OR data.tubetype = "N/A") Then
                 If Not BlindName = "Skin Only" Then
                     If String.IsNullOrEmpty(data.roll) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "roll direction is required !",.field = "roll"}}
+                        Return New With {.warning = true, .message = "roll direction is required !",.field = "roll"}
                     End If
                 End If
 
                 ' If InArray(data.brackettype, "Single", "Double", "Linked 2 Blinds (Ind)", "Headbox Only", "Headbox & Side Channels") Then
                 '     If String.IsNullOrEmpty(data.controlposition) Then
-                '         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position / side is required !",.field = "controlposition"}}
+                '         Return New With {.warning = true,.message = "control position / side is required !",.field = "controlposition"}
                 '     End If
                 ' End If
             End IF
@@ -540,32 +332,32 @@ Partial Class Methods_Order_RollerBlindMethod
             If data.controltype = "Chain" Then
                 If InArray(data.brackettype, "Single", "Double") Then
                     If String.IsNullOrEmpty(data.controlposition) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                        Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                     End If
 
                     If String.IsNullOrEmpty(data.chaincolour) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                        Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                     End If
                     Dim chainlength As Integer
                     If Not String.IsNullOrEmpty(data.chainlength) Then
                         If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                            Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                         End If
                     End If
                 End If
 
                 If data.brackettype = "Linked 2 Blinds (Ind)" Then
                     If String.IsNullOrEmpty(data.controlposition) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                        Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                     End If
 
                     If String.IsNullOrEmpty(data.chaincolour) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                        Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                     End If
                     Dim chainlength As Integer
                     If Not String.IsNullOrEmpty(data.chainlength) Then
                         If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                            Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                         End If
                     End If
 
@@ -573,7 +365,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then
                             Dim ControlB2 As String = FindControlPosition(data.uniqueid, "Blind 2")
                             If data.controlposition = ControlB2 AndAlso Not data.isConfirmed Then
-                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 2 blinds independent: <b>The control position cannot be the same as the second blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}}
+                                Return New With { .confirm = true, .message = "For linked 2 blinds independent: <b>The control position cannot be the same as the second blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}
                             End If
                         End If
                     End If
@@ -582,7 +374,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
                             Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
                             If data.controlposition = ControlB1 AndAlso Not data.isConfirmed Then
-                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 2 blinds independent: <b>The control position cannot be the same as the first blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}}
+                                Return New With { .confirm = true, .message = "For linked 2 blinds independent: <b>The control position cannot be the same as the first blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}
                             End If
                         End If
                     End If
@@ -592,10 +384,10 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.blindno = "Blind 1" Then
                         If data.itemaction = "AddItem" Then
                             If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
                         End If
 
@@ -603,21 +395,21 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim ControlB2 As String = FindControlPosition(data.uniqueid, "Blind 2")
                             IF Not String.IsNullOrEmpty(ControlB2) Then
                                 If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmed Then
-                                    Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 2 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 must remain empty.<br/> Alternatively, Blind 2 may have a control side → then Blind 1 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}}
+                                    Return New With { .confirm = true, .message = "For linked 2 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 must remain empty.<br/> Alternatively, Blind 2 may have a control side → then Blind 1 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
                                 End If
                             End If
 
                             IF String.IsNullOrEmpty(ControlB2) Then
                                 If String.IsNullOrEmpty(data.controlposition) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                    Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                                 End If
                                 If String.IsNullOrEmpty(data.chaincolour) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                    Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                                 End If
                                 Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                        Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                     End If
                                 End If
                             End If
@@ -628,21 +420,21 @@ Partial Class Methods_Order_RollerBlindMethod
                         Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
                         If Not String.IsNullOrEmpty(ControlB1) Then
                             If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmed Then
-                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 2 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 must remain empty.<br/> Alternatively, Blind 2 may have a control side → then Blind 1 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}}
+                                Return New With { .confirm = true, .message = "For linked 2 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 must remain empty.<br/> Alternatively, Blind 2 may have a control side → then Blind 1 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
                             End If
                         End If
 
                         IF String.IsNullOrEmpty(ControlB1) Then
                             If String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                Return New With {.warning = true,.message = "control position is required !",.field = "controlposition"}
                             End If
                             If String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                 End If
                             End If
                         End if
@@ -655,10 +447,10 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.blindno = "Blind 1" Then
                         If data.itemaction = "AddItem" Then
                             If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
                         End If
 
@@ -666,21 +458,21 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim ControlB3 As String = FindControlPosition(data.uniqueid, "Blind 3")
                             IF Not String.IsNullOrEmpty(ControlB3) Then
                                 If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmed Then
-                                    Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 3 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 and Blind 3 must remain empty.<br/> Alternatively, Blind 3 may have a control side → then Blind 1 and Blind 2 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}}
+                                    Return New With { .confirm = true, .message = "For linked 3 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 and Blind 3 must remain empty.<br/> Alternatively, Blind 3 may have a control side → then Blind 1 and Blind 2 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
                                 End If
                             End If
 
                             IF String.IsNullOrEmpty(ControlB3) Then
                                 If String.IsNullOrEmpty(data.controlposition) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                    Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                                 End If
                                 If String.IsNullOrEmpty(data.chaincolour) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                    Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                                 End If
                                 Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                        Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                     End If
                                 End If
                             End If
@@ -689,13 +481,13 @@ Partial Class Methods_Order_RollerBlindMethod
 
                     If data.blindno = "Blind 2" Then
                         If Not String.IsNullOrEmpty(data.controlposition) Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
+                            Return New With {.warning = true, .message = "control position not required !",.field = "controlposition"}
                         End If
                         If Not String.IsNullOrEmpty(data.chaincolour) Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour not required !",.field = "chaincolour"}}
+                            Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
                         End If
                         If Not String.IsNullOrEmpty(data.chainlength) Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length not required !",.field = "chainlength"}}
+                            Return New With {.warning = true, .message = "chain length not required !",.field = "chainlength"}
                         End If
                     End If
 
@@ -703,21 +495,21 @@ Partial Class Methods_Order_RollerBlindMethod
                         Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
                         If Not String.IsNullOrEmpty(ControlB1) Then
                             If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmed Then
-                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 3 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 and Blind 3 must remain empty.<br/> Alternatively, Blind 3 may have a control side → then Blind 1 and Blind 2 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}}
+                                Return New With { .confirm = true, .message = "For linked 3 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 and Blind 3 must remain empty.<br/> Alternatively, Blind 3 may have a control side → then Blind 1 and Blind 2 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
                             End If
                         End If
 
                         IF String.IsNullOrEmpty(ControlB1) Then
                             If String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                 End If
                             End If
                         End if
@@ -726,17 +518,17 @@ Partial Class Methods_Order_RollerBlindMethod
 
                 If data.brackettype = "Linked 3 Blinds (Ind)" Then
                     If String.IsNullOrEmpty(data.controlposition) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                        Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                     End If
 
                     If InArray(data.blindno, "Blind 1", "Blind 3") Then
                         If String.IsNullOrEmpty(data.chaincolour) Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                            Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                         End If
                         Dim chainlength As Integer
                         If Not String.IsNullOrEmpty(data.chainlength) Then
                             If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                             End If
                         End If
                     End If
@@ -745,7 +537,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then
                             Dim ControlB3 As String = FindControlPosition(data.uniqueid, "Blind 3")
                             If data.controlposition = ControlB3 AndAlso Not data.isConfirmed Then
-                                Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 3 blinds independent: <b>The control position cannot be the same as the third blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}}
+                                Return New With { .confirm = true, .message = "For linked 3 blinds independent: <b>The control position cannot be the same as the third blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}
                             End If
                         End If
                     End If
@@ -754,7 +546,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
                             Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
                             If data.controlposition = ControlB1 AndAlso Not data.isConfirmed Then
-                                 Return New ConfirmResponse With { .confirm = New ConfirmDetail With { .message = "For linked 3 blinds independent: <b>The control position cannot be the same as the first blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}}
+                                 Return New With { .confirm = true, .message = "For linked 3 blinds independent: <b>The control position cannot be the same as the first blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}
                             End If                    
                         End If
                     End If
@@ -764,15 +556,15 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.blindno = "Blind 1" Then
                         If data.itemaction = "AddItem" Then
                             If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                 End If
                             End If
                         End If
@@ -781,27 +573,27 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             IF Not controlposition = "" Then
                                 If Not String.IsNullOrEmpty(data.controlposition) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
+                                    Return New With {.warning = true, .message = "control position not required !",.field = "controlposition"}
                                 End If
                                 If Not String.IsNullOrEmpty(data.chaincolour) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour not required !",.field = "chaincolour"}}
+                                    Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
                                 End If
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length not required !",.field = "chainlength"}}
+                                    Return New With {.warning = true, .message = "chain length not required !",.field = "chainlength"}
                                 End If
                             End If
 
                             If controlposition = "" Then
                                 If String.IsNullOrEmpty(data.controlposition) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                    Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                                 End If
                                 If String.IsNullOrEmpty(data.chaincolour) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                    Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                                 End If
                                 Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                        Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                     End If
                                 End If
                             End If
@@ -813,27 +605,27 @@ Partial Class Methods_Order_RollerBlindMethod
                         Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                         If Not controlposition = "" Then
                             If Not String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position not required !",.field = "controlposition"}
                             End If
                             If Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour not required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
                             End If
                             If Not String.IsNullOrEmpty(data.chainlength) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length not required !",.field = "chainlength"}}
+                                Return New With {.warning = true, .message = "chain length not required !",.field = "chainlength"}
                             End If
                         End If
 
                         If controlposition = "" Then
                             If String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                 End If
                             End If
                         End If
@@ -843,10 +635,10 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.blindno = "Blind 3" Then
                         If data.itemaction = "AddItem" Then
                             If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
                         End If
 
@@ -854,27 +646,27 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             If Not controlposition = "" Then
                                 If Not String.IsNullOrEmpty(data.controlposition) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
+                                    Return New With {.warning = true, .message = "control position not required !",.field = "controlposition"}
                                 End If
                                 If Not String.IsNullOrEmpty(data.chaincolour) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour not required !",.field = "chaincolour"}}
+                                    Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
                                 End If
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length not required !",.field = "chainlength"}}
+                                    Return New With {.warning = true, .message = "chain length not required !",.field = "chainlength"}
                                 End If
                             End If
 
                             If controlposition = "" Then
                                 If String.IsNullOrEmpty(data.controlposition) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                    Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                                 End If
                                 If String.IsNullOrEmpty(data.chaincolour) Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                    Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                                 End If
                                 Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                        Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                     End If
                                 End If
                             End If
@@ -886,27 +678,27 @@ Partial Class Methods_Order_RollerBlindMethod
                         Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                         If Not controlposition = "" Then
                             If Not String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position not required !",.field = "controlposition"}
                             End If
                             If Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour not required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
                             End If
                             If Not String.IsNullOrEmpty(data.chainlength) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length not required !",.field = "chainlength"}}
+                                Return New With {.warning = true, .message = "chain length not required !",.field = "chainlength"}
                             End If
                         End If
 
                         If controlposition = "" Then
                             If String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                 End If
                             End If
                         End If
@@ -917,15 +709,15 @@ Partial Class Methods_Order_RollerBlindMethod
                     If data.blindno = "Blind 1" Then
                         If data.itemaction = "AddItem" Then
                             If String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                 End If
                             End If
                         End If
@@ -934,20 +726,20 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             Dim controlpositionVar As String = data.controlposition
                             If String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                 End If
                             End If
                             If Not controlposition = "" Then
                                 If controlposition = controlpositionVar Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not allowed to change !",.field = "controlposition"}}
+                                    Return New With {.warning = true, .message = "control position not allowed to change !",.field = "controlposition"}
                                 End If
                             End If
                         End If
@@ -958,20 +750,20 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             Dim controlpositionVar As String = data.controlposition
                             If String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                 End If
                             End If
                             If Not controlposition = "" Then
                                 If controlposition = controlpositionVar Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not allowed to change !",.field = "controlposition"}}
+                                    Return New With {.warning = true, .message = "control position not allowed to change !",.field = "controlposition"}
                                 End If
                             End If
                         End If
@@ -982,20 +774,20 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             Dim controlpositionVar As String = data.controlposition
                             If String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                 End If
                             End If
                             If Not controlposition = "" Then
                                 If controlposition = controlpositionVar Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not allowed to change !",.field = "controlposition"}}
+                                    Return New With {.warning = true, .message = "control position not allowed to change !",.field = "controlposition"}
                                 End If
                             End If
                         End If
@@ -1006,20 +798,20 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
                             Dim controlpositionVar As String = data.controlposition
                             If String.IsNullOrEmpty(data.controlposition) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position is required !",.field = "controlposition"}}
+                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain colour is required !",.field = "chaincolour"}}
+                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "chain length must be a positive integer !",.field = "chainlength"}}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                                 End If
                             End If
                             If Not controlposition = "" Then
                                 If controlposition = controlpositionVar Then
-                                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control position not allowed to change !",.field = "controlposition"}}
+                                    Return New With {.warning = true, .message = "control position not allowed to change !",.field = "controlposition"}
                                 End If
                             End If
                         End If
@@ -1029,34 +821,34 @@ Partial Class Methods_Order_RollerBlindMethod
 
             If InArray(data.brackettype, "With Tube & Bottom Included", "With Bottom Included") Then
                 If String.IsNullOrEmpty(data.trim) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "trim is required !",.field = "trim"}}
+                    Return New With {.warning = true, .message = "trim is required !",.field = "trim"}
                 End If
 
                 If Not String.IsNullOrEmpty(data.trim) AND data.trim = "1F" Then
                     If String.IsNullOrEmpty(data.railtype) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail type is required !",.field = "railtype"}}
+                        Return New With {.warning = true, .message = "bottom rail type is required !",.field = "railtype"}
                     End If
                     If String.IsNullOrEmpty(data.railcolour) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail colour is required !",.field = "railcolour"}}
+                        Return New With {.warning = true, .message = "bottom rail colour is required !",.field = "railcolour"}
                     End If
                 End If
             End If
 
             If Not data.tubetype = "N/A" Then
                 If Not BlindName = "Skin Only" AND String.IsNullOrEmpty(data.trim) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "trim is required !",.field = "trim"}}
+                    Return New With {.warning = true, .message = "trim is required !",.field = "trim"}
                 End If
                 
                 If data.trim = "1F" AND data.tubetype = "Spring Operated" Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "trim 1f is not allowed for spring operated !",.field = "trim"}}
+                    Return New With {.warning = true, .message = "trim 1f is not allowed for spring operated !",.field = "trim"}
                 End If
 
                 If Not String.IsNullOrEmpty(data.trim) AND data.trim = "1F" Then
                     If String.IsNullOrEmpty(data.railtype) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail type is required !",.field = "railtype"}}
+                        Return New With {.warning = true, .message = "bottom rail type is required !",.field = "railtype"}
                     End If
                     If String.IsNullOrEmpty(data.railcolour) Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom rail colour is required !",.field = "railcolour"}}
+                        Return New With {.warning = true, .message = "bottom rail colour is required !",.field = "railcolour"}
                     End If
                 End If
             End If
@@ -1065,30 +857,30 @@ Partial Class Methods_Order_RollerBlindMethod
 
             If (BlindName = "Skin Only" AND InStr(data.brackettype, "Tube") > 0 ) OR BlindName = "Standard" OR (BlindName = "Cassette" AND Not data.tubetype = "Motorised") Then
                 If String.IsNullOrEmpty(data.tubesize) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "tube size is required !",.field = "tubesize"}}
+                    Return New With {.warning = true, .message = "tube size is required !",.field = "tubesize"}
                 End If
             End If
 
             If Not String.IsNullOrEmpty(data.bracketcovers) Then
                 If String.IsNullOrEmpty(data.bracketcovercolours) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bracket cover colour is required !",.field = "bracketcovercolours"}}
+                    Return New With {.warning = true, .message = "bracket cover colour is required !",.field = "bracketcovercolours"}
                 End If
             End If
 
             If Not String.IsNullOrEmpty(data.notes) Then
                 If InStr(data.notes, "&") > 0 Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must not contain [&] character !",.field = "notes"}}
+                    Return New With {.warning = true, .message = "notes must not contain [&] character !",.field = "notes"}
                 End If
 
                 If data.notes.Trim().Length > 1000 Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must be less than 1000 characters !",.field = "notes"}}
+                    Return New With {.warning = true, .message = "notes must be less than 1000 characters !",.field = "notes"}
                 End If
             End If
 
             Dim markup As Integer
             If Not String.IsNullOrEmpty(data.markup) Then
                 If Not Integer.TryParse(data.markup, markup) OrElse markup < 0 Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check your markup !",.field = "markup"}}
+                    Return New With {.warning = true,.message = "please check your markup !",.field = "markup"}
                 End If
             End If
 
@@ -1382,7 +1174,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResNext As String = SdsNext(ListNext)
                     IF Not ResNext = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResNext, .field = ""}}
+                        Throw New Exception(ResNext)
                     End If
 
                     '#SdsSize
@@ -1393,7 +1185,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResSize As String = SdsSize(ListSize)
                     IF Not ResSize = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResSize, .field = ""}}
+                        Throw New Exception(ResSize)
                     End If
                 End If
 
@@ -1405,7 +1197,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResDrop As String = SdsDrop(ListDrop)
                     IF Not ResDrop = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDrop, .field = ""}}
+                        Throw New Exception(ResDrop)
                     End If
 
                     '#SdsRollDep
@@ -1415,7 +1207,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResRollDep As String = SdsRollDep(ListRollDep)
                     IF Not ResRollDep = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResRollDep, .field = ""}}
+                        Throw New Exception(ResRollDep)
                     End If
 
                     '#SdsFabric
@@ -1426,7 +1218,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResFabric As String = SdsFabric(ListFabric)
                     IF Not ResFabric = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResFabric, .field = ""}}
+                        Throw New Exception(ResFabric)
                     End If
 
                     '#SdsNext
@@ -1444,7 +1236,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResNext As String = SdsNext(ListNext)
                     IF Not ResNext = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResNext, .field = ""}}
+                        Throw New Exception(ResNext)
                     End If
 
                     If data.brackettype = "Linked 2 Blinds (Dep)" AndAlso data.isConfirmed Then
@@ -1457,7 +1249,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         
                         Dim ResControl As String = SdsControlLink2Dep(ListControl)
                         IF Not ResControl = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                            Throw New Exception(ResControl)
                         End If
                     End If
 
@@ -1471,7 +1263,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         
                         Dim ResControl As String = SdsControlLink3Dep(ListControl)
                         IF Not ResControl = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                            Throw New Exception(ResControl)
                         End If
                     End If
 
@@ -1494,7 +1286,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResNext As String = SdsNext(ListNext)
                     IF Not ResNext = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResNext, .field = ""}}
+                        Throw New Exception(ResNext)
                     End If
 
                     '#SdsFabric
@@ -1505,7 +1297,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResFabric As String = SdsFabric(ListFabric)
                     IF Not ResFabric = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResFabric, .field = ""}}
+                        Throw New Exception(ResFabric)
                     End If
 
                     If data.brackettype = "Linked 2 Blinds (Ind)" AndAlso data.isConfirmed Then
@@ -1518,7 +1310,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         
                         Dim ResControl As String = SdsControlLink2Ind(ListControl)
                         IF Not ResControl = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                            Throw New Exception(ResControl)
                         End If
                     End If
 
@@ -1532,7 +1324,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         
                         Dim ResControl As String = SdsControlLink3Ind(ListControl)
                         IF Not ResControl = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                            Throw New Exception(ResControl)
                         End If
                     End If
 
@@ -1546,7 +1338,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResDrop As String = SdsDrop(ListDrop)
                     IF Not ResDrop = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDrop, .field = ""}}
+                        Throw New Exception(ResDrop)
                     End If
 
                     If data.blindno = "Blind 2" Then
@@ -1559,7 +1351,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         }
                         Dim ResDB2DepFirst As String = SdsDB2First(ListDB2DepFirst)
                         IF Not ResDB2DepFirst = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDB2DepFirst, .field = ""}}
+                            Throw New Exception(ResDB2DepFirst)
                         End If
                     End If
 
@@ -1573,7 +1365,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         }
                         Dim ResDB2DepSecond As String = SdsDB2Second(ListDB2DepSecond)
                         IF Not ResDB2DepSecond = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDB2DepSecond, .field = ""}}
+                            Throw New Exception(ResDB2DepSecond)
                         End If
                     End If
                     
@@ -1592,7 +1384,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResNext As String = SdsNext(ListNext)
                     IF Not ResNext = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResNext, .field = ""}}
+                        Throw New Exception(ResNext)
                     End If
 
                 End If
@@ -1609,7 +1401,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         }
                         Dim ResDB2IndFirst As String = SdsDB2First(ListDB2IndFirst)
                         IF Not ResDB2IndFirst = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDB2IndFirst, .field = ""}}
+                            Throw New Exception(ResDB2IndFirst)
                         End If
                     End If
 
@@ -1623,7 +1415,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         }
                         Dim ResDB2DepSecond As String = SdsDB2Second(ListDB2DepSecond)
                         IF Not ResDB2DepSecond = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDB2DepSecond, .field = ""}}
+                            Throw New Exception(ResDB2DepSecond)
                         End If
                     End If
                     
@@ -1642,7 +1434,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResNext As String = SdsNext(ListNext)
                     IF Not ResNext = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResNext, .field = ""}}
+                        Throw New Exception(ResNext)
                     End If
 
                 End If
@@ -1735,7 +1527,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResNext As String = SdsNext(ListNext)
                     IF Not ResNext = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResNext, .field = ""}}
+                        Throw New Exception(ResNext)
                     End If
 
                     '#SdsSize
@@ -1746,7 +1538,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResSize As String = SdsSize(ListSize)
                     IF Not ResSize = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResSize, .field = ""}}
+                        Throw New Exception(ResSize)
                     End If
                 End If
 
@@ -1758,7 +1550,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResDrop As String = SdsDrop(ListDrop)
                     IF Not ResDrop = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDrop, .field = ""}}
+                        Throw New Exception(ResDrop)
                     End If
 
                     '#SdsRollDep
@@ -1768,7 +1560,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResRollDep As String = SdsRollDep(ListRollDep)
                     IF Not ResRollDep = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResRollDep, .field = ""}}
+                        Throw New Exception(ResRollDep)
                     End If
 
                     '#SdsFabric
@@ -1779,7 +1571,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResFabric As String = SdsFabric(ListFabric)
                     IF Not ResFabric = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResFabric, .field = ""}}
+                        Throw New Exception(ResFabric)
                     End If
 
                     '#SdsNext
@@ -1797,7 +1589,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResNext As String = SdsNext(ListNext)
                     IF Not ResNext = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResNext, .field = ""}}
+                        Throw New Exception(ResNext)
                     End If
 
                     If data.brackettype = "Linked 2 Blinds (Dep)" AndAlso data.isConfirmed Then
@@ -1810,7 +1602,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         
                         Dim ResControl As String = SdsControlLink2Dep(ListControl)
                         IF Not ResControl = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                            Throw New Exception(ResControl)
                         End If
                     End If
 
@@ -1824,7 +1616,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         
                         Dim ResControl As String = SdsControlLink3Dep(ListControl)
                         IF Not ResControl = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                            Throw New Exception(ResControl)
                         End If
                     End If
 
@@ -1846,7 +1638,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResNext As String = SdsNext(ListNext)
                     IF Not ResNext = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResNext, .field = ""}}
+                        Throw New Exception(ResNext)
                     End If
 
                     '#SdsTubeSize
@@ -1856,7 +1648,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResTube As String = SdsTubeSize(ListTube)
                     IF Not ResTube = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResTube, .field = ""}}
+                        Throw New Exception(ResTube)
                     End If
 
                     '#SdsFabric
@@ -1867,7 +1659,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResFabric As String = SdsFabric(ListFabric)
                     IF Not ResFabric = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResFabric, .field = ""}}
+                        Throw New Exception(ResFabric)
                     End If
 
                     If data.brackettype = "Linked 2 Blinds (Ind)" AndAlso data.isConfirmed Then
@@ -1880,7 +1672,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         
                         Dim ResControl As String = SdsControlLink2Ind(ListControl)
                         IF Not ResControl = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                            Throw New Exception(ResControl)
                         End If
                     End If
 
@@ -1894,7 +1686,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         
                         Dim ResControl As String = SdsControlLink3Ind(ListControl)
                         IF Not ResControl = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResControl, .field = ""}}
+                            Throw New Exception(ResControl)
                         End If
                     End If
 
@@ -1908,7 +1700,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     }
                     Dim ResDrop As String = SdsDrop(ListDrop)
                     IF Not ResDrop = "200" Then
-                        Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDrop, .field = ""}}
+                        Throw New Exception(ResDrop)
                     End If
 
                     If InArray(data.blindno, "Blind 1", "Blind 2") Then
@@ -1921,7 +1713,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         }
                         Dim ResDB2IndFirst As String = SdsDB2First(ListDB2IndFirst)
                         IF Not ResDB2IndFirst = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDB2IndFirst, .field = ""}}
+                            Throw New Exception(ResDB2IndFirst)
                         End If
                     End If
 
@@ -1935,7 +1727,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         }
                         Dim ResDB2DepSecond As String = SdsDB2Second(ListDB2DepSecond)
                         IF Not ResDB2DepSecond = "200" Then
-                            Return New ErrorResponse With {.error = New ErrorDetail With {.message = ResDB2DepSecond, .field = ""}}
+                            Throw New Exception(ResDB2DepSecond)
                         End If
                     End If
 
@@ -1959,42 +1751,11 @@ Partial Class Methods_Order_RollerBlindMethod
 
             End If
 
-            Return New SuccessResponse With {.success = msg}
+            Return New With {.success = true, .message = msg}
         Catch ex As Exception
-            Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
+            Return New With { .error = true, .message = String.Format("Submit: {0}", ex.Message)}
         End Try
     End Function
-
-    Private Shared Function InArray(value As String, ParamArray list() As String) As Boolean
-        Return list.Contains(value)
-    End Function
-
-    ' Private Shared Function GenerateUniqueId() As String
-    '     Try
-    '         Dim result As String = String.Empty
-
-    '         Dim alphabets As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    '         Dim small_alphabets As String = "abcdefghijklmnopqrstuvwxyz"
-    '         Dim numbers As String = "1234567890"
-
-    '         Dim characters As String = Convert.ToString(alphabets & small_alphabets) & numbers
-    '         Dim length As Integer = Integer.Parse(20)
-    '         Dim uniqueId As String = String.Empty
-    '         For i As Integer = 0 To length - 1
-    '             Dim character As String = String.Empty
-    '             Do
-    '                 Dim index As Integer = New Random().Next(0, characters.Length)
-    '                 character = characters.ToCharArray()(index).ToString()
-    '             Loop While uniqueId.IndexOf(character) <> -1
-    '             uniqueId += character
-    '         Next
-    '         result = uniqueId
-
-    '         Return result
-    '     Catch ex As Exception
-    '         Return "500"
-    '     End Try
-    ' End Function
 
     Private Shared Function GenerateUniqueId() As String
         Return Guid.NewGuid().ToString("N") ' tanpa dash
@@ -2528,6 +2289,245 @@ Partial Class Methods_Order_RollerBlindMethod
             Return result
         Catch ex As Exception
             Return ""
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function BindItemOrder(ByVal data As ParamBindItemOrder) As Object
+        Try
+
+            Dim DetailData As New Dictionary(Of String, Object)()
+            Using conn As New SqlConnection(myConn)
+                Using cmd As New SqlCommand("SELECT * FROM view_details WHERE Id = @Id", conn)
+                    cmd.Parameters.AddWithValue("@Id", data.itemid)
+                    ' cmd.Parameters.AddWithValue("@OrderType", data.ordertype)
+
+                    conn.Open()
+                    Using reader As SqlDataReader = cmd.ExecuteReader()
+                        If reader.Read() Then
+
+                            For i As Integer = 0 To reader.FieldCount - 1
+                                Dim columnName As String = reader.GetName(i)
+
+                                If reader.IsDBNull(i) Then
+                                    DetailData(columnName) = Nothing
+                                Else
+                                    DetailData(columnName) = reader.GetValue(i)
+                                End If
+                            Next
+                            
+                        End If
+                    End Using
+                End Using
+            End Using
+
+            Dim Brackets As Object  = BindListData(New ParamListData With {
+                .field = "brackettype",
+                .designid = data.designid,
+                .blindtype = DetailData("BlindId").ToString()
+            })
+            If Brackets.error Then
+                Throw New Exception(Brackets.message)
+            End If
+
+            Dim Tubes As Object  = BindListData(New ParamListData With {
+                .field = "tubetype",
+                .designid = data.designid,
+                .blindtype = DetailData("BlindId").ToString(),
+                .brackettype = DetailData("BracketType").ToString()
+            })
+            If Tubes.error Then
+                Throw New Exception(Tubes.message)
+            End If
+
+            Dim Controls As Object  = BindListData(New ParamListData With {
+                .field = "controltype",
+                .designid = data.designid,
+                .blindtype = DetailData("BlindId").ToString(),
+                .brackettype = DetailData("BracketType").ToString(),
+                .tubetype = DetailData("TubeType").ToString()
+            })
+            If Controls.error Then
+                Throw New Exception(Controls.message)
+            End If
+
+            Dim Colours As Object  = BindListData(New ParamListData With {
+                .field = "colourtype",
+                .designid = data.designid,
+                .blindtype = DetailData("BlindId").ToString(),
+                .brackettype = DetailData("BracketType").ToString(),
+                .tubetype = DetailData("TubeType").ToString(),
+                .controltype = DetailData("ControlType").ToString()
+            })
+            If Colours.error Then
+                Throw New Exception(Colours.message)
+            End If
+
+            Dim Fabrics As Object  = BindListData(New ParamListData With {
+                .field = "fabrictype",
+                .designid = data.designid
+            })
+            If Fabrics.error Then
+                Throw New Exception(Fabrics.message)
+            End If
+
+            Dim FabricColours As Object  = BindListData(New ParamListData With {
+                .field = "fabriccolour",
+                .designid = data.designid,
+                .fabrictype = DetailData("FabricType").ToString()
+            })
+            If FabricColours.error Then
+                Throw New Exception(FabricColours.message)
+            End If
+
+            Dim Rails As Object  = BindListData(New ParamListData With {
+                .field = "railtype",
+                .brackettype = DetailData("BracketType").ToString(),
+                .trim = DetailData("Trim").ToString()
+            })
+            If Rails.error Then
+                Throw New Exception(Rails.message)
+            End If
+
+            Dim RailColours As Object  = BindListData(New ParamListData With {
+                .field = "railcolour",
+                .brackettype = DetailData("BracketType").ToString(),
+                .trim = DetailData("Trim").ToString(),
+                .railtype = DetailData("BottomType").ToString()
+            })
+            If RailColours.error Then
+                Throw New Exception(RailColours.message)
+            End If
+            
+            Dim NextDesc As Object = FindNextDescription(DetailData)
+            If NextDesc.error Then
+                Throw New Exception(NextDesc.message)
+            End If
+            DetailData("NextDescText") = NextDesc.text
+            DetailData("NextDescVisible") = NextDesc.visible
+
+
+            Return New With {
+                .DetailData = DetailData,
+                .Brackets = Brackets.list,
+                .Tubes = Tubes.list,
+                .Controls = Controls.list,
+                .Colours = Colours.list,
+                .Fabrics = Fabrics.list,
+                .FabricColours = FabricColours.list,
+                .Rails = Rails.list,
+                .RailColours = RailColours.list
+            }
+        Catch ex As Exception
+            Return New With {.error = True, .message = String.Format("BindItemOrder: {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared Function FindNextDescription(DetailData As Dictionary(Of String, Object)) As Object
+        Try
+            Dim Text As String = ""
+            Dim Visible As Boolean = False
+            Dim blinds As String = "first blind"
+            Dim BlindNo As String = If(
+                DetailData.ContainsKey("BlindNo") AndAlso DetailData("BlindNo") IsNot Nothing,
+                DetailData("BlindNo").ToString(),
+                String.Empty
+            )
+
+            Dim UniqueId As String = If(
+                DetailData.ContainsKey("UniqueId") AndAlso DetailData("UniqueId") IsNot Nothing,
+                DetailData("UniqueId").ToString(),
+                String.Empty
+            )
+
+            Dim BracketType As String = If(
+                DetailData.ContainsKey("BracketType") AndAlso DetailData("BracketType") IsNot Nothing,
+                DetailData("BracketType").ToString(),
+                String.Empty
+            )
+            If BlindNo = "Blind 2" Then blinds = "second blind"
+            If BlindNo = "Blind 3" Then blinds = "third blind"
+            If BlindNo = "Blind 4" Then blinds = "fourth blind"
+
+            Dim totalBlind As Integer = publicCfg.GetItemData(String.Format("SELECT COUNT(*) FROM OrderDetails WHERE UniqueId = '{0}' AND Active = 1", UniqueId))
+
+            If InArray(BracketType, "Double", "Linked 2 Blinds (Dep)", "Linked 2 Blinds (Ind)") Then
+                Visible = True
+                If totalBlind > 1 Then
+                    Dim connectId As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    If BlindNo = "Blind 2" Then
+                        connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    End If
+                    Text = String.Format("This is the <b><u>{0}</u></b> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID {1}</u></b>  blind will automatically be changed according to this data.", blinds, connectId)
+                End If
+            End If
+
+            If InArray(BracketType, "Linked 3 Blinds (Dep)", "Linked 3 Blinds (Ind)") Then
+                If totalBlind > 1 Then
+                    Visible = True
+                    Dim connectId As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    Dim connectId2 As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+
+                    If BlindNo = "Blind 2" then
+                        connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    End If
+
+                    If BlindNo = "Blind 3" then
+                        connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    End If
+
+                    Dim blindid As String = connectId
+                    If Not String.IsNullOrEmpty(connectId2) Then
+                        blindid = String.Format("{0} AND ITEM ID {1}", blindid, connectId2)
+                    End If
+
+                    Text = String.Format("This is the <b><u>{0}</u></b> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID {1}</u></b>  blind will automatically be changed according to this data.", blinds, blindid)
+                End If
+            End If
+
+            If InArray(BracketType, "Double and Link System Dep","Double and Link System Ind") Then
+                If totalBlind > 1 Then
+                    Visible = True
+                    Dim connectId As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    Dim connectId2 As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    Dim connectId3 As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+
+                    If BlindNo = "Blind 2" then
+                        connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        connectId3 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    End If
+
+                    If BlindNo = "Blind 3" then
+                        connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        connectId3 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    End If
+
+                    If BlindNo = "Blind 4" then
+                        connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        connectId3 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    End If
+
+                    Dim blindid As String = connectId
+                    If Not String.IsNullOrEmpty(connectId2) Then
+                        blindid = String.Format("{0}, ITEM ID {1} AND ITEM ID {2}", blindid, connectId2, connectId3)
+                    End If
+
+                    Text = String.Format("This is the <b><u>{0}</u></b> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID {1}</u></b>  blind will automatically be changed according to this data.", blinds, blindid)
+
+                End If
+
+            End If
+
+
+            Return New With {.error = False, .visible = Visible, .text = Text}
+        Catch ex As Exception
+            Return New With {.error = True, .message = String.Format("FindNextDescription: {0}", ex.Message)}
         End Try
     End Function
 
