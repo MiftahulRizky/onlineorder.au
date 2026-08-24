@@ -1356,12 +1356,13 @@ Public Class PublicConfig
                                 Else
                                     If CustomDiscountName = "SBS/ACCENT 15%" Then
                                         customDiscount = HitungCustomDiscount(headerId, itemId, thisCharge, type)
-                                        If InArray(fieldName, "BracketType", "BottomType") Then
-                                            customDiscount = 0
-                                        End If
                                     End If
                                 End If
                             Next
+                        End If
+
+                        If InArray(fieldName, "BracketType", "BottomType") Then
+                            customDiscount = 0
                         End If
 
                         Dim ListParam As New List(Of Object) From {

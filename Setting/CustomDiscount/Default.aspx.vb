@@ -86,6 +86,7 @@ Partial Class Setting_CustomDiscount_Default
         Try
             Dim rowIndex As Integer = Convert.ToInt32(TryCast(TryCast(sender, LinkButton).NamingContainer, GridViewRow).RowIndex)
             Dim row As GridViewRow = gvList.Rows(rowIndex)
+            
 
             lblId.Text = UCase(row.Cells(1).Text)
             sdsPage.Insert()

@@ -374,7 +374,7 @@ MaintainScrollPositionOnPostback="true" Debug="true" %>
       runat="server"
       ID="sdsPage"
       ConnectionString="<%$ ConnectionStrings:DefaultConnection %>"
-      InsertCommand="INSERT INTO CustomDiscounts SELECT NEWID(), DesignId, BlindId, '', Name + ' - Copy', FieldName, Formula, Charge, FromDate, ToDate, Description, Active FROM CustomDiscounts WHERE Id=@Id"
+      InsertCommand="INSERT INTO CustomDiscounts SELECT NEWID(), DesignId, BlindId, '', Name + ' - Copy', Type, FieldName, Formula, Charge, FromDate, ToDate, Description, Active FROM CustomDiscounts WHERE Id=@Id"
       UpdateCommand="UPDATE CustomDiscounts SET Active=@Active WHERE Id=@Id"
       DeleteCommand="DELETE FROM CustomDiscounts WHERE Id=@Id"
     >
