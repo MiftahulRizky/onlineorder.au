@@ -1022,7 +1022,7 @@ Partial Class Methods_Order_OrderDetailMethod
                 If ResApi.error Then
                     Throw New Exception(ResApi.message)
                 End If
-                Throw New Exception("API Success")
+                ' Throw New Exception("API Success")
             End If
             
             

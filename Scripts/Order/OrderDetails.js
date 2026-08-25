@@ -1045,7 +1045,7 @@ const handlerCreateJOBOrder = async (headerid, action, msgloading) => {
 };
 
 const handlerSubmitOrder = async (headerid, action, msgloading) => {
-  Swal.fire({
+  const result = await Swal.fire({
     title: "Are you sure?",
     html: `Sure to ${action} this order? <br/>You won't be able to revert this!`,
     icon: "question",
@@ -1055,42 +1055,72 @@ const handlerSubmitOrder = async (headerid, action, msgloading) => {
     },
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, " + action + " it!",
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        const response = await fetch(`${URIMETHOD}/SubmitOrder`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json; charset=utf-8",
-          },
-          body: JSON.stringify({
-            headerid: headerid,
-            loginid: LOGINID,
-            rolename: ROLENAME,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const res = data.d || data;
-
-        if (res.warning) {
-          await isWarning(res.message.toUpperCase());
-        } else if (res.error) {
-          throw new Error(res.message);
-        } else if (res.success) {
-          handlerCreatePDFOrder(headerid, action, msgloading);
-        }
-      } catch (error) {
-        const msg = `handlerSubmitOrder: ${error.message}`;
-        catchMessages(msg);
-      }
-    }
+    confirmButtonText: `Yes, ${action} it!`,
   });
+
+  if (!result.isConfirmed) return;
+
+  swalLoadingShow(msgloading);
+
+  try {
+    const [responseOrder, responsePdf] = await Promise.all([
+      fetch(`${URIMETHOD}/SubmitOrder`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          headerid: headerid,
+          loginid: LOGINID,
+          rolename: ROLENAME,
+        }),
+      }),
+      fetch(`${PDFORDERMETHOD}/CreatePDFOrder`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({ headerid, action }),
+      }),
+    ]);
+
+    if (!responseOrder.ok) {
+      throw new Error(
+        `SubmitOrder HTTP Error! Status: ${responseOrder.status}`,
+      );
+    }
+    if (!responsePdf.ok) {
+      throw new Error(
+        `CreatePDFOrder HTTP Error! Status: ${responsePdf.status}`,
+      );
+    }
+
+    const [jsonOrder, jsonPdf] = await Promise.all([
+      responseOrder.json(),
+      responsePdf.json(),
+    ]);
+
+    const parseResponseData = (data) =>
+      typeof data === "string" ? JSON.parse(data) : data;
+
+    const resOrder = parseResponseData(jsonOrder.d ?? jsonOrder);
+    const resPdf = parseResponseData(jsonPdf.d ?? jsonPdf);
+
+    if (resOrder.error || resPdf.error) {
+      const errorMsg = resOrder.message || resPdf.message || "Proses gagal.";
+      throw new Error(errorMsg);
+    }
+
+    if (resOrder.warning || resPdf.warning) {
+      const warnMsg = resOrder.message || resPdf.message;
+      await isWarning(warnMsg.toUpperCase());
+      return;
+    }
+
+    if (resOrder.success && resPdf.success) {
+      await isSuccess(resOrder.message || resPdf.message);
+      location.reload();
+    }
+  } catch (error) {
+    const msg = `handlerSubmitOrder: ${error.message}`;
+    catchMessages(msg);
+  }
 };
 
 const handlerDeleteHeader = async (headerid) => {
