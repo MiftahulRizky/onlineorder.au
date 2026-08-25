@@ -706,12 +706,12 @@ Partial Class Methods_Order_JobSheetMethod
             
         End If
 
-        If InArray(DesignName, "Venetian Blinds", "Roller Blinds", "Vertical Blinds", "Panel Glides", "Veri Shades", "Lumen", "Cellular Blinds") Then
-            If LouvreSize = "Opening Size" Then
-                Dim DeducWidth As String = publicCfg.GetItemData(String.Format("SELECT Width FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", DesignId, BlindId, Mounting))
-                result = result + CInt(DeducWidth)
-            End If
-        End If
+        ' If InArray(DesignName, "Venetian Blinds", "Roller Blinds", "Vertical Blinds", "Panel Glides", "Veri Shades", "Lumen", "Cellular Blinds") Then
+        '     If LouvreSize = "Opening Size" Then
+        '         Dim DeducWidth As String = publicCfg.GetItemData(String.Format("SELECT Width FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", DesignId, BlindId, Mounting))
+        '         result = result + CInt(DeducWidth)
+        '     End If
+        ' End If
 
 
         Return result
@@ -730,46 +730,75 @@ Partial Class Methods_Order_JobSheetMethod
         Dim TubeSize As String = row("TubeSize").ToString()
         Dim Drop As Integer = CInt(row("Drop").ToString())
         Dim Trim As String = row("Trim").ToString()
-        Dim result As Integer = Drop
+
+        Dim isFlatType As Boolean = If(BottomType IsNot Nothing, BottomType.Contains("Flat"), False)
+        Dim isCondition1 As Boolean = (Trim = "1F") AndAlso (BottomType = "Oval" OrElse isFlatType)
+        Dim isCondition2 As Boolean = (Trim = "1P") OrElse String.IsNullOrEmpty(BottomType) OrElse BottomType = "Oval Bumper"
+        Dim offset As Integer = 0
 
         Select Case TubeSize
             Case "40"
-                If Trim = "1F" AndAlso (BottomType = "Oval" OrElse (InStr(BottomType, "Flat") > 0 AndAlso BottomType <> "Flat Wrapped")) Then
-                    result = Drop + 200
-                End If
-                If Trim = "1P" OrElse String.IsNullOrEmpty(BottomType) OrElse BottomType = "Flat Wrapped" OrElse BottomType = "Oval Bumper" Then
-                    result = Drop + 250
-                End If
-            Case "45","45H","50"
-                If Trim = "1F" AndAlso (BottomType = "Oval" OrElse (InStr(BottomType, "Flat") > 0 AndAlso BottomType <> "Flat Wrapped")) Then
-                    result = Drop + 300
-                End If
-                If Trim = "1P" OrElse String.IsNullOrEmpty(BottomType) OrElse BottomType = "Flat Wrapped" OrElse BottomType = "Oval Bumper" Then
-                    result = Drop + 350
-                End If
+                If isCondition1 Then offset = 200
+                If isCondition2 Then offset = 250
+
+            Case "45", "45H", "50"
+                If isCondition1 Then offset = 300
+                If isCondition2 Then offset = 300
+
             Case "63"
-                If Trim = "1F" AndAlso (BottomType = "Oval" OrElse (InStr(BottomType, "Flat") > 0 AndAlso BottomType <> "Flat Wrapped")) Then
-                    result = Drop + 350
-                End If
-                If Trim = "1P" OrElse String.IsNullOrEmpty(BottomType) OrElse BottomType = "Flat Wrapped" OrElse BottomType = "Oval Bumper" Then
-                    result = Drop + 400
-                End If
+                If isCondition1 Then offset = 350
+                If isCondition2 Then offset = 400
         End Select
 
-       If InArray(DesignName, "Venetian Blinds", "Roller Blinds", "Vertical Blinds", "Panel Glides", "Veri Shades", "Lumen", "Cellular Blinds") Then
-            If LouvreSize = "Opening Size" Then
-                Dim DropDeduc As String = publicCfg.GetItemData(String.Format("SELECT [Drop] FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", DesignId, BlindId, Mounting))
+        Return Drop + offset
 
-                Dim DropFloor As String = "0"
-                If LouvrePosition = "Yes" Then
-                    DropFloor = publicCfg.GetItemData(String.Format("SELECT DropFloor FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", DesignId, BlindId, Mounting))
-                End If
+
+
+
+
+        ' Dim result As Integer = Drop
+
+        ' Select Case TubeSize
+        '     Case "40"
+        '         If Trim = "1F" AndAlso (BottomType = "Oval" OrElse (InStr(BottomType, "Flat") > 0 AndAlso BottomType <> "Flat Wrapped")) Then
+        '             result = Drop + 200
+        '         End If
+        '         If Trim = "1P" OrElse String.IsNullOrEmpty(BottomType) OrElse BottomType = "Flat Wrapped" OrElse BottomType = "Oval Bumper" Then
+        '             result = Drop + 250
+        '         End If
+        '     Case "45","45H","50"
+        '         If Trim = "1F" AndAlso (BottomType = "Oval" OrElse (InStr(BottomType, "Flat") > 0 AndAlso BottomType <> "Flat Wrapped")) Then
+        '             result = Drop + 300
+        '         End If
                 
-                result = result + CInt(DropDeduc) + CInt(DropFloor)
-            End If
-        End If
+        '         If Trim = "1P" OrElse String.IsNullOrEmpty(BottomType) OrElse BottomType = "Flat Wrapped" OrElse BottomType = "Oval Bumper" Then
+        '             result = Drop + 10 '350
+        '         End If
+        '     Case "63"
+        '         If Trim = "1F" AndAlso (BottomType = "Oval" OrElse (InStr(BottomType, "Flat") > 0 AndAlso BottomType <> "Flat Wrapped")) Then
+        '             result = Drop + 350
+        '         End If
+        '         If Trim = "1P" OrElse String.IsNullOrEmpty(BottomType) OrElse BottomType = "Flat Wrapped" OrElse BottomType = "Oval Bumper" Then
+        '             result = Drop + 400
+        '         End If
+        ' End Select
 
-        Return result
+        ' Return result
+
+    '    If InArray(DesignName, "Venetian Blinds", "Roller Blinds", "Vertical Blinds", "Panel Glides", "Veri Shades", "Lumen", "Cellular Blinds") Then
+    '         If LouvreSize = "Opening Size" Then
+    '             Dim DropDeduc As String = publicCfg.GetItemData(String.Format("SELECT [Drop] FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", DesignId, BlindId, Mounting))
+
+    '             Dim DropFloor As String = "0"
+    '             If LouvrePosition = "Yes" Then
+    '                 DropFloor = publicCfg.GetItemData(String.Format("SELECT DropFloor FROM Deduc WHERE DesignId = '{0}' AND BlindId = '{1}' AND Mounting ='{2}'", DesignId, BlindId, Mounting))
+    '             End If
+                
+    '             result = result + CInt(DropDeduc) + CInt(DropFloor)
+    '         End If
+    '     End If
+
+        ' Return result
     End Function
 
     Private Shared Function GetCarrierSpacer(row As DataRow, param As String) As String

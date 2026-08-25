@@ -1001,6 +1001,12 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
             End If
 
+            If BlindName = "Motorised" Then
+                If data.tubetype = "45 JAI" Then data.tubesize = "45"
+                If data.tubetype = "45H JAI" Then data.tubesize = "45H"
+                If data.tubetype = "63 Acmeda" Then data.tubesize = "63"
+            End If
+
             If Not InArray(BlindName, "Standard", "Motorised", "Cassette") Then
                 data.sizetype = ""
                 data.dropfloor = ""
@@ -1015,7 +1021,7 @@ Partial Class Methods_Order_RollerBlindMethod
             
             
             ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = data.uniqueid, .field = ""}}
-            
+            ' throw New Exception(data.tubesize)
             
             Dim msg As String = "200"
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
