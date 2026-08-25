@@ -440,7 +440,7 @@ const bindHeaderInfo = (header) => {
 
 const bindActionInfo = (itemaction) => {
   try {
-    const cardTitle = document.getElementById("cardTitle");
+    const cardTitle = getById("cardTitle");
     const actionMap = {
       AddItem: "ADD ITEM",
       NextItem: "NEXT ITEM",
@@ -451,8 +451,8 @@ const bindActionInfo = (itemaction) => {
     cardTitle.innerText = actionMap[itemaction] || "";
 
     if (["NextItem", "EditItem", "ViewItem"].includes(itemaction)) {
-      const blindtype = document.getElementById("blindtype");
-      const brackettype = document.getElementById("brackettype");
+      const blindtype = getById("blindtype");
+      const brackettype = getById("brackettype");
 
       blindtype.setAttribute("disabled", true);
       brackettype.setAttribute("disabled", true);
