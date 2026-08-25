@@ -1596,7 +1596,9 @@ const rollerPageLoaded = async () => {
     elForm.lblBlindNo.innerHTML = "Blind 1";
     await handlerElementVisibility();
     loaderFadeOut();
-  } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
+  } else if (
+    ["NextItem", "EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)
+  ) {
     await bindItemOrders();
     loaderFadeOut();
   }
