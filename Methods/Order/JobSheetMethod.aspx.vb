@@ -787,10 +787,13 @@ Partial Class Methods_Order_JobSheetMethod
                 Select Case SlatSize
                     Case "127", "127mm"
                         If TubeType.Contains("Tiltrack") Then
+                            ' Dim selected = Spacer127Tiltrack _
+                            ' .Where(Function(x) Width <= x.MaxWidth) _
+                            ' .OrderBy(Function(x) x.MaxWidth) _
+                            ' .FirstOrDefault()
+
                             Dim selected = Spacer127Tiltrack _
-                            .Where(Function(x) Width <= x.MaxWidth) _
-                            .OrderBy(Function(x) x.MaxWidth) _
-                            .FirstOrDefault()
+                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -800,10 +803,12 @@ Partial Class Methods_Order_JobSheetMethod
                                 End If
                             End If
                         ElseIf TubeType.Contains("Louvolite") Then
+                            ' Dim selected = Spacer127Louvolite _
+                            ' .Where(Function(x) Width <= x.MaxWidth) _
+                            ' .OrderBy(Function(x) x.MaxWidth) _
+                            ' .FirstOrDefault()
                             Dim selected = Spacer127Louvolite _
-                            .Where(Function(x) Width <= x.MaxWidth) _
-                            .OrderBy(Function(x) x.MaxWidth) _
-                            .FirstOrDefault()
+                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -813,10 +818,12 @@ Partial Class Methods_Order_JobSheetMethod
                                 End If
                             End If
                         ElseIf TubeType.Contains("Javaline") Then
+                            ' Dim selected = Spacer127Javaline _
+                            ' .Where(Function(x) Width <= x.MaxWidth) _
+                            ' .OrderBy(Function(x) x.MaxWidth) _
+                            ' .FirstOrDefault()
                             Dim selected = Spacer127Javaline _
-                            .Where(Function(x) Width <= x.MaxWidth) _
-                            .OrderBy(Function(x) x.MaxWidth) _
-                            .FirstOrDefault()
+                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -826,10 +833,13 @@ Partial Class Methods_Order_JobSheetMethod
                                 End If
                             End If
                         Else
-                             Dim selected = Spacer127Metal _
-                            .Where(Function(x) Width <= x.MaxWidth) _
-                            .OrderBy(Function(x) x.MaxWidth) _
-                            .FirstOrDefault()
+                            ' Dim selected = Spacer127Metal _
+                            ' .Where(Function(x) Width <= x.MaxWidth) _
+                            ' .OrderBy(Function(x) x.MaxWidth) _
+                            ' .FirstOrDefault()
+
+                            Dim selected = Spacer127Metal _
+                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -841,10 +851,13 @@ Partial Class Methods_Order_JobSheetMethod
                         End If
                     Case "100", "100mm"
                         If TubeType.Contains("Tiltrack") Then
+                            ' Dim selected = Spacer100Tiltrack _
+                            ' .Where(Function(x) Width <= x.MaxWidth) _
+                            ' .OrderBy(Function(x) x.MaxWidth) _
+                            ' .FirstOrDefault()
+
                             Dim selected = Spacer100Tiltrack _
-                            .Where(Function(x) Width <= x.MaxWidth) _
-                            .OrderBy(Function(x) x.MaxWidth) _
-                            .FirstOrDefault()
+                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -854,10 +867,13 @@ Partial Class Methods_Order_JobSheetMethod
                                 End If
                             End If
                         Else
+                            ' Dim selected = Spacer100Metal _
+                            ' .Where(Function(x) Width <= x.MaxWidth) _
+                            ' .OrderBy(Function(x) x.MaxWidth) _
+                            ' .FirstOrDefault()
+
                             Dim selected = Spacer100Metal _
-                            .Where(Function(x) Width <= x.MaxWidth) _
-                            .OrderBy(Function(x) x.MaxWidth) _
-                            .FirstOrDefault()
+                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -869,10 +885,13 @@ Partial Class Methods_Order_JobSheetMethod
                         End If
                     Case "89", "89mm"
                         If TubeType.Contains("Tiltrack") Then
+                            ' Dim selected = Spacer89Tiltrack _
+                            ' .Where(Function(x) Width <= x.MaxWidth) _
+                            ' .OrderBy(Function(x) x.MaxWidth) _
+                            ' .FirstOrDefault()
+
                             Dim selected = Spacer89Tiltrack _
-                            .Where(Function(x) Width <= x.MaxWidth) _
-                            .OrderBy(Function(x) x.MaxWidth) _
-                            .FirstOrDefault()
+                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -890,10 +909,12 @@ Partial Class Methods_Order_JobSheetMethod
                                 Spacers = Spacer89LouvoliteB
                             End If
 
+                            ' Dim selected = Spacers _
+                            ' .Where(Function(x) Width <= x.MaxWidth) _
+                            ' .OrderBy(Function(x) x.MaxWidth) _
+                            ' .FirstOrDefault()
                             Dim selected = Spacers _
-                            .Where(Function(x) Width <= x.MaxWidth) _
-                            .OrderBy(Function(x) x.MaxWidth) _
-                            .FirstOrDefault()
+                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -903,10 +924,13 @@ Partial Class Methods_Order_JobSheetMethod
                                 End If
                             End If
                         ElseIf TubeType.Contains("Javaline") Then
+                            ' Dim selected = Spacer89Javaline _
+                            ' .Where(Function(x) Width <= x.MaxWidth) _
+                            ' .OrderBy(Function(x) x.MaxWidth) _
+                            ' .FirstOrDefault()
+
                             Dim selected = Spacer89Javaline _
-                            .Where(Function(x) Width <= x.MaxWidth) _
-                            .OrderBy(Function(x) x.MaxWidth) _
-                            .FirstOrDefault()
+                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -916,10 +940,13 @@ Partial Class Methods_Order_JobSheetMethod
                                 End If
                             End If
                         Else
+                            ' Dim selected = Spacer89Metal _
+                            ' .Where(Function(x) Width <= x.MaxWidth) _
+                            ' .OrderBy(Function(x) x.MaxWidth) _
+                            ' .FirstOrDefault()
+
                             Dim selected = Spacer89Metal _
-                            .Where(Function(x) Width <= x.MaxWidth) _
-                            .OrderBy(Function(x) x.MaxWidth) _
-                            .FirstOrDefault()
+                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -931,10 +958,13 @@ Partial Class Methods_Order_JobSheetMethod
                         End If
                     Case "63", "63mm"
                         If TubeType.Contains("Tiltrack") Then
+                            ' Dim selected = Spacer63Tiltrack _
+                            ' .Where(Function(x) Width <= x.MaxWidth) _
+                            ' .OrderBy(Function(x) x.MaxWidth) _
+                            ' .FirstOrDefault()
+
                             Dim selected = Spacer63Tiltrack _
-                            .Where(Function(x) Width <= x.MaxWidth) _
-                            .OrderBy(Function(x) x.MaxWidth) _
-                            .FirstOrDefault()
+                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -944,10 +974,13 @@ Partial Class Methods_Order_JobSheetMethod
                                 End If
                             End If
                         Else
+                            ' Dim selected = Spacer63Metal _
+                            ' .Where(Function(x) Width <= x.MaxWidth) _
+                            ' .OrderBy(Function(x) x.MaxWidth) _
+                            ' .FirstOrDefault()
+
                             Dim selected = Spacer63Metal _
-                            .Where(Function(x) Width <= x.MaxWidth) _
-                            .OrderBy(Function(x) x.MaxWidth) _
-                            .FirstOrDefault()
+                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -16485,12 +16518,12 @@ Partial Class Methods_Order_JobSheetMethod
             '#
             result+= trDetStart
                 result+= tdTitleStart & "Carries Qty" & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("SlatQty6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("CarrierQty6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#
