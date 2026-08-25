@@ -146,7 +146,7 @@ Partial Class Methods_Order_RollerBlindMethod
     Public Shared Function BindListData(ByVal data As ParamListData) As Object
         Try
             Dim query As String = ""
-            Dim resultList As New List(Of Dictionary(Of String, String))()
+            Dim resultList As New List(Of Dictionary(Of String, String))() 
 
             Select Case data.field.ToLower()
                 Case "blindtype"
@@ -2297,6 +2297,10 @@ Partial Class Methods_Order_RollerBlindMethod
     Public Shared Function BindItemOrder(ByVal data As ParamBindItemOrder) As Object
         Try
 
+            If data Is Nothing Then
+                Throw New Exception("Data parameter input bernilai null.")
+            End If
+
             Dim DetailData As New Dictionary(Of String, Object)()
             Using conn As New SqlConnection(myConn)
                 Using cmd As New SqlCommand("SELECT * FROM view_details WHERE Id = @Id", conn)
@@ -2416,8 +2420,8 @@ Partial Class Methods_Order_RollerBlindMethod
                 .Colours = Colours.list,
                 .Fabrics = Fabrics.list,
                 .FabricColours = FabricColours.list,
-                .Rails = Rails.list,
-                .RailColours = RailColours.list
+                .Rails = If(Rails IsNot Nothing, Rails.list, Nothing),
+                .RailColours = If(RailColours IsNot Nothing, RailColours.list, Nothing)
             }
         Catch ex As Exception
             Return New With {.error = True, .message = String.Format("BindItemOrder: {0}", ex.Message)}

@@ -780,6 +780,7 @@ Partial Class Methods_Order_JobSheetMethod
         Dim BlindName As String = row("BlindName").ToString()
         Dim Width As Integer = CInt(row("Width").ToString())
         Dim ControlPosition As String = row("ControlPosition").ToString()
+        Dim StackPosition As String = row("StackPosition").ToString()
 
         If DesignName = "Vertical Blinds" Then
             If BlindName = "Complete" OR BlindName = "Track Only" Then
@@ -882,11 +883,10 @@ Partial Class Methods_Order_JobSheetMethod
                             End If
                         ElseIf TubeType.Contains("Louvolite") Then
                             Dim Spacers = Spacer89Louvolite
-                            If InArray(ControlPosition, "Left", "Right", "Centre Stack", "Fix") Then
+                            If InArray(StackPosition, "Left", "Right", "Centre", "Fix") Then
                                 Spacers = Spacer89LouvoliteA
                             End If
-
-                            If InArray(ControlPosition, "Split Stack", "RHC", "LHC", "Twin Wand") Then
+                            If InStr(StackPosition, "Split") > 0 AND InArray(ControlPosition, "Right", "Left", "Twin Wand") Then
                                 Spacers = Spacer89LouvoliteB
                             End If
 
@@ -17571,12 +17571,12 @@ Partial Class Methods_Order_JobSheetMethod
             '#
             result+= trDetStart
                 result+= tdTitleStart & "Carries Qty" & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("SlatQty5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("SlatQty6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CarrierQty5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("CarrierQty6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#

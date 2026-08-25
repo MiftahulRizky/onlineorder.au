@@ -519,7 +519,8 @@ Partial Class Methods_Order_VerticalBlindMethod
                     BlindName,
                     width,
                     "CarrierQty",
-                    data.controlposition
+                    data.controlposition,
+                    data.stackposition
                 }
                 
 
@@ -540,7 +541,8 @@ Partial Class Methods_Order_VerticalBlindMethod
                     BlindName,
                     width,
                     "CarrierQty",
-                    data.controlposition
+                    data.controlposition,
+                    data.stackposition
                 }
                 If String.IsNullOrEmpty(data.slatqty) Then 
                     data.slatqty = GetCarrierSpacer(ListParamCarriers)
@@ -694,6 +696,7 @@ Partial Class Methods_Order_VerticalBlindMethod
         Dim Width As Integer = CStr(ListParam(4))
         Dim param As String = CStr(ListParam(5))
         Dim ControlPosition As String = CStr(ListParam(6))
+        Dim StackPosition As String = CStr(ListParam(7))
 
         If DesignName = "Vertical Blinds" Then
             If BlindName = "Complete" OR BlindName = "Track Only" Then
@@ -796,10 +799,10 @@ Partial Class Methods_Order_VerticalBlindMethod
                             End If
                         ElseIf TubeType.Contains("Louvolite") Then
                             Dim Spacers = Spacer89Louvolite
-                            If InArray(ControlPosition, "Left", "Right", "Centre Stack", "Fix") Then
+                            If InArray(StackPosition, "Left", "Right", "Centre", "Fix") Then
                                 Spacers = Spacer89LouvoliteA
                             End If
-                            If InArray(ControlPosition, "Split Stack", "RHC", "LHC", "Twin Wand") Then
+                            If InStr(StackPosition, "Split") > 0 AND InArray(ControlPosition, "Right", "Left", "Twin Wand") Then
                                 Spacers = Spacer89LouvoliteB
                             End If
 
