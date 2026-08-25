@@ -1716,6 +1716,10 @@ const displayElOverall = (header, detail) => {
       toggleShow(btnEl.btnDownloadQuote, true);
     }
 
+    if (isOrderActive) {
+      toggleShow(btnEl.msgThanks, true);
+    }
+
     // ----------------------------------------------|| Hide Button Datatable ||---------------------------------------
 
     // Reset semua elemen di liEl

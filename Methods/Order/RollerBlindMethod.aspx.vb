@@ -2326,6 +2326,11 @@ Partial Class Methods_Order_RollerBlindMethod
                 End Using
             End Using
 
+            Dim SafeString = Function(val As Object) As String
+                If val Is Nothing OrElse IsDBNull(val) Then Return String.Empty
+                Return val.ToString()
+            End Function
+
             Dim Brackets As Object  = BindListData(New ParamListData With {
                 .field = "brackettype",
                 .designid = data.designid,
@@ -2387,8 +2392,8 @@ Partial Class Methods_Order_RollerBlindMethod
 
             Dim Rails As Object  = BindListData(New ParamListData With {
                 .field = "railtype",
-                .brackettype = DetailData("BracketType").ToString(),
-                .trim = DetailData("Trim").ToString()
+                .brackettype = SafeString(DetailData("BracketType")),
+                .trim = SafeString(DetailData("Trim"))
             })
             If Rails.error Then
                 Throw New Exception(Rails.message)
@@ -2396,15 +2401,15 @@ Partial Class Methods_Order_RollerBlindMethod
 
             Dim RailColours As Object  = BindListData(New ParamListData With {
                 .field = "railcolour",
-                .brackettype = DetailData("BracketType").ToString(),
-                .trim = DetailData("Trim").ToString(),
-                .railtype = DetailData("BottomType").ToString()
+                .brackettype = SafeString(DetailData("BracketType")),
+                .trim = SafeString(DetailData("Trim")),
+                .railtype = SafeString(DetailData("BottomType"))
             })
             If RailColours.error Then
                 Throw New Exception(RailColours.message)
             End If
             
-            Dim NextDesc As Object = FindNextDescription(DetailData)
+            Dim NextDesc As Object = FindNextDescription(DetailData, data.itemaction)
             If NextDesc.error Then
                 Throw New Exception(NextDesc.message)
             End If
@@ -2420,19 +2425,19 @@ Partial Class Methods_Order_RollerBlindMethod
                 .Colours = Colours.list,
                 .Fabrics = Fabrics.list,
                 .FabricColours = FabricColours.list,
-                .Rails = If(Rails IsNot Nothing, Rails.list, Nothing),
-                .RailColours = If(RailColours IsNot Nothing, RailColours.list, Nothing)
+                .Rails = Rails.list,
+                .RailColours = RailColours.list
             }
         Catch ex As Exception
             Return New With {.error = True, .message = String.Format("BindItemOrder: {0}", ex.Message)}
         End Try
     End Function
 
-    Private Shared Function FindNextDescription(DetailData As Dictionary(Of String, Object)) As Object
+    Private Shared Function FindNextDescription(DetailData As Dictionary(Of String, Object), itemaction As String) As Object
         Try
             Dim Text As String = ""
             Dim Visible As Boolean = False
-            Dim blinds As String = "first blind"
+
             Dim BlindNo As String = If(
                 DetailData.ContainsKey("BlindNo") AndAlso DetailData("BlindNo") IsNot Nothing,
                 DetailData("BlindNo").ToString(),
@@ -2450,83 +2455,124 @@ Partial Class Methods_Order_RollerBlindMethod
                 DetailData("BracketType").ToString(),
                 String.Empty
             )
-            If BlindNo = "Blind 2" Then blinds = "second blind"
-            If BlindNo = "Blind 3" Then blinds = "third blind"
-            If BlindNo = "Blind 4" Then blinds = "fourth blind"
 
-            Dim totalBlind As Integer = publicCfg.GetItemData(String.Format("SELECT COUNT(*) FROM OrderDetails WHERE UniqueId = '{0}' AND Active = 1", UniqueId))
+            If itemaction = "EditItem" Then
+                Dim blinds As String = "first blind"
+                If BlindNo = "Blind 2" Then blinds = "second blind"
+                If BlindNo = "Blind 3" Then blinds = "third blind"
+                If BlindNo = "Blind 4" Then blinds = "fourth blind"
+    
+                Dim totalBlind As Integer = publicCfg.GetItemData(String.Format("SELECT COUNT(*) FROM OrderDetails WHERE UniqueId = '{0}' AND Active = 1", UniqueId))
 
-            If InArray(BracketType, "Double", "Linked 2 Blinds (Dep)", "Linked 2 Blinds (Ind)") Then
+                If InArray(BracketType, "Double", "Linked 2 Blinds (Dep)", "Linked 2 Blinds (Ind)") Then
+                    Visible = True
+                    If totalBlind > 1 Then
+                        Dim connectId As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        If BlindNo = "Blind 2" Then
+                            connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        End If
+                        Text = String.Format("This is the <b><u>{0}</u></b> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID {1}</u></b>  blind will automatically be changed according to this data.", blinds, connectId)
+                    End If
+                End If
+    
+                If InArray(BracketType, "Linked 3 Blinds (Dep)", "Linked 3 Blinds (Ind)") Then
+                    If totalBlind > 1 Then
+                        Visible = True
+                        Dim connectId As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        Dim connectId2 As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+    
+                        If BlindNo = "Blind 2" then
+                            connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                            connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        End If
+    
+                        If BlindNo = "Blind 3" then
+                            connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                            connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        End If
+    
+                        Dim blindid As String = connectId
+                        If Not String.IsNullOrEmpty(connectId2) Then
+                            blindid = String.Format("{0} AND ITEM ID {1}", blindid, connectId2)
+                        End If
+    
+                        Text = String.Format("This is the <b><u>{0}</u></b> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID {1}</u></b>  blind will automatically be changed according to this data.", blinds, blindid)
+                    End If
+                End If
+    
+                If InArray(BracketType, "Double and Link System Dep","Double and Link System Ind") Then
+                    If totalBlind > 1 Then
+                        Visible = True
+                        Dim connectId As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        Dim connectId2 As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        Dim connectId3 As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+    
+                        If BlindNo = "Blind 2" then
+                            connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                            connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                            connectId3 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        End If
+    
+                        If BlindNo = "Blind 3" then
+                            connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                            connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                            connectId3 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        End If
+    
+                        If BlindNo = "Blind 4" then
+                            connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                            connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                            connectId3 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                        End If
+    
+                        Dim blindid As String = connectId
+                        If Not String.IsNullOrEmpty(connectId2) Then
+                            blindid = String.Format("{0}, ITEM ID {1} AND ITEM ID {2}", blindid, connectId2, connectId3)
+                        End If
+    
+                        Text = String.Format("This is the <b><u>{0}</u></b> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID {1}</u></b>  blind will automatically be changed according to this data.", blinds, blindid)
+    
+                    End If
+    
+                End If
+
+            End If
+
+            If itemaction = "NextItem" Then
                 Visible = True
-                If totalBlind > 1 Then
-                    Dim connectId As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                    If BlindNo = "Blind 2" Then
-                        connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                    End If
-                    Text = String.Format("This is the <b><u>{0}</u></b> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID {1}</u></b>  blind will automatically be changed according to this data.", blinds, connectId)
-                End If
-            End If
+                Dim blinds As String = "second blind"
+                If BlindNo = "Blind 3" Then blinds = "third blind"
+                If BlindNo = "Blind 4" Then blinds = "fourth blind"
 
-            If InArray(BracketType, "Linked 3 Blinds (Dep)", "Linked 3 Blinds (Ind)") Then
-                If totalBlind > 1 Then
-                    Visible = True
-                    Dim connectId As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                    Dim connectId2 As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-
-                    If BlindNo = "Blind 2" then
-                        connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                        connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                    End If
-
-                    If BlindNo = "Blind 3" then
-                        connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                        connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                    End If
-
-                    Dim blindid As String = connectId
-                    If Not String.IsNullOrEmpty(connectId2) Then
-                        blindid = String.Format("{0} AND ITEM ID {1}", blindid, connectId2)
-                    End If
-
-                    Text = String.Format("This is the <b><u>{0}</u></b> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID {1}</u></b>  blind will automatically be changed according to this data.", blinds, blindid)
-                End If
-            End If
-
-            If InArray(BracketType, "Double and Link System Dep","Double and Link System Ind") Then
-                If totalBlind > 1 Then
-                    Visible = True
-                    Dim connectId As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                    Dim connectId2 As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                    Dim connectId3 As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-
-                    If BlindNo = "Blind 2" then
-                        connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                        connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                        connectId3 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                    End If
-
-                    If BlindNo = "Blind 3" then
-                        connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                        connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                        connectId3 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                    End If
-
-                    If BlindNo = "Blind 4" then
-                        connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                        connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                        connectId3 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
-                    End If
-
-                    Dim blindid As String = connectId
-                    If Not String.IsNullOrEmpty(connectId2) Then
-                        blindid = String.Format("{0}, ITEM ID {1} AND ITEM ID {2}", blindid, connectId2, connectId3)
-                    End If
-
-                    Text = String.Format("This is the <b><u>{0}</u></b> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID {1}</u></b>  blind will automatically be changed according to this data.", blinds, blindid)
-
+                Dim connectId As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                Dim connectId2 As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                Dim connectId3 As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                
+                If BlindNo = "Blind 3" Then
+                    connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    connectId3 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId ='{0}' AND Active = 1", UniqueId))
                 End If
 
+                If BlindNo = "Blind 4" Then
+                    connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    connectId2 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                    connectId3 = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId ='{0}' AND Active = 1", UniqueId))
+                End If
+
+                Dim blindid As String = connectId
+                If Not String.IsNullOrEmpty(connectId2) Then
+                    blindid = String.Format("{0} AND ITEM ID {1}", blindid, connectId2)
+                End If
+                If Not String.IsNullOrEmpty(connectId3) Then
+                    blindid = String.Format("{0} ,ITEM ID {1} AND ITEM ID {2}", blindid, connectId2, connectId3)
+                End If
+
+
+                Text = String.Format("This is the <b><u>{0}</u></b> for your order. If you change the location, mounting, blind size, tube size, childsafe, accessory, then the data on the <b><u>ITEM ID {1}</u></b>  blind will automatically be changed according to this data.", blinds, blindid)
+
             End If
+
 
 
             Return New With {.error = False, .visible = Visible, .text = Text}
