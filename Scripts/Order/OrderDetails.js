@@ -1630,9 +1630,13 @@ const displayElOverall = (header, detail) => {
 
       if (isDraftOrPending) {
         toggleShow(btnEl.btnSubmit, true);
-        toggleShow(btnEl.btnEditHeader, true);
+        // toggleShow(btnEl.btnEditHeader, true);
         toggleShow(btnEl.btnDeleteHeader, true);
         toggleShow(btnEl.btnAddItem, true);
+      }
+
+      if (isNotCompleted || isNotCanceled) {
+        toggleShow(btnEl.btnEditHeader, true);
       }
 
       if (isNotCompleted) {
@@ -1670,9 +1674,13 @@ const displayElOverall = (header, detail) => {
 
       if (isDraftOrPending) {
         toggleShow(btnEl.btnSubmit, true);
-        toggleShow(btnEl.btnEditHeader, true);
+        // toggleShow(btnEl.btnEditHeader, true);
         toggleShow(btnEl.btnDeleteHeader, true);
         toggleShow(btnEl.btnAddItem, true);
+      }
+
+      if (isNotCompleted || isNotCanceled) {
+        toggleShow(btnEl.btnEditHeader, true);
       }
 
       if (isNotCompleted) {
