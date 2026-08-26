@@ -315,7 +315,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 ' End If
             End If
 
-            If Not (data.tubetype = "Spring Operated" OR data.tubetype = "N/A") Then
+            If Not data.tubetype = "N/A" Then
                 If Not BlindName = "Skin Only" Then
                     If String.IsNullOrEmpty(data.roll) Then
                         Return New With {.warning = true, .message = "roll direction is required !",.field = "roll"}

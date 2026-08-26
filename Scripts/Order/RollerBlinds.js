@@ -1305,8 +1305,8 @@ const handlerElementVisibility = async (
 
     if (isStandard) {
       // divSizeType.classList.remove("d-none");
+      toggleShow(elForm.divRoll, true);
       if (!isSpringOperated) {
-        toggleShow(elForm.divRoll, true);
         toggleShow(elForm.divControlPosition, true);
         toggleShow(elForm.lblControlPosition, true);
         toggleShow(elForm.divChain, true);
