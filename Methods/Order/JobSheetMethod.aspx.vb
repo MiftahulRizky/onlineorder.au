@@ -731,30 +731,25 @@ Partial Class Methods_Order_JobSheetMethod
         Dim Drop As Integer = CInt(row("Drop").ToString())
         Dim Trim As String = row("Trim").ToString()
 
-        Dim isFlatType As Boolean = If(BottomType IsNot Nothing, BottomType.Contains("Flat"), False)
-        Dim isCondition1 As Boolean = (Trim = "1F") AndAlso (BottomType = "Oval" OrElse isFlatType)
-        Dim isCondition2 As Boolean = (Trim = "1P") OrElse String.IsNullOrEmpty(BottomType) OrElse BottomType = "Oval Bumper"
+        Dim is1F As Boolean = (Trim = "1F")
+        Dim isNot1F As Boolean = Not is1F
         Dim offset As Integer = 0
 
         Select Case TubeSize
             Case "40"
-                If isCondition1 Then offset = 200
-                If isCondition2 Then offset = 250
+                If is1F Then offset = 200
+                If isNot1F Then offset = 250
 
             Case "45", "45H", "50"
-                If isCondition1 Then offset = 300
-                If isCondition2 Then offset = 300
+                If is1F Then offset = 300
+                If isNot1F Then offset = 350
 
             Case "63"
-                If isCondition1 Then offset = 350
-                If isCondition2 Then offset = 400
+                If is1F Then offset = 350
+                If isNot1F Then offset = 400
         End Select
 
         Return Drop + offset
-
-
-
-
 
         ' Dim result As Integer = Drop
 
@@ -816,13 +811,13 @@ Partial Class Methods_Order_JobSheetMethod
                 Select Case SlatSize
                     Case "127", "127mm"
                         If TubeType.Contains("Tiltrack") Then
-                            ' Dim selected = Spacer127Tiltrack _
-                            ' .Where(Function(x) Width <= x.MaxWidth) _
-                            ' .OrderBy(Function(x) x.MaxWidth) _
-                            ' .FirstOrDefault()
-
                             Dim selected = Spacer127Tiltrack _
-                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            ' Dim selected = Spacer127Tiltrack _
+                            ' .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -832,12 +827,21 @@ Partial Class Methods_Order_JobSheetMethod
                                 End If
                             End If
                         ElseIf TubeType.Contains("Louvolite") Then
+                            Dim Spacers = Spacer127Louvolite
+                            If InArray(StackPosition, "Left", "Right", "Centre", "Fix") Then
+                                Spacers = Spacer127LouvoliteA
+                            End If
+                            If InStr(StackPosition, "Split") > 0 AND InArray(ControlPosition, "Right", "Left", "Twin Wand") Then
+                                Spacers = Spacer127LouvoliteB
+                            End If
+
+                            Dim selected = Spacers _
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
                             ' Dim selected = Spacer127Louvolite _
-                            ' .Where(Function(x) Width <= x.MaxWidth) _
-                            ' .OrderBy(Function(x) x.MaxWidth) _
-                            ' .FirstOrDefault()
-                            Dim selected = Spacer127Louvolite _
-                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
+                            ' .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -847,12 +851,12 @@ Partial Class Methods_Order_JobSheetMethod
                                 End If
                             End If
                         ElseIf TubeType.Contains("Javaline") Then
-                            ' Dim selected = Spacer127Javaline _
-                            ' .Where(Function(x) Width <= x.MaxWidth) _
-                            ' .OrderBy(Function(x) x.MaxWidth) _
-                            ' .FirstOrDefault()
                             Dim selected = Spacer127Javaline _
-                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+                            ' Dim selected = Spacer127Javaline _
+                            ' .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -862,13 +866,13 @@ Partial Class Methods_Order_JobSheetMethod
                                 End If
                             End If
                         Else
-                            ' Dim selected = Spacer127Metal _
-                            ' .Where(Function(x) Width <= x.MaxWidth) _
-                            ' .OrderBy(Function(x) x.MaxWidth) _
-                            ' .FirstOrDefault()
-
                             Dim selected = Spacer127Metal _
-                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            ' Dim selected = Spacer127Metal _
+                            ' .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -880,13 +884,13 @@ Partial Class Methods_Order_JobSheetMethod
                         End If
                     Case "100", "100mm"
                         If TubeType.Contains("Tiltrack") Then
-                            ' Dim selected = Spacer100Tiltrack _
-                            ' .Where(Function(x) Width <= x.MaxWidth) _
-                            ' .OrderBy(Function(x) x.MaxWidth) _
-                            ' .FirstOrDefault()
-
                             Dim selected = Spacer100Tiltrack _
-                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            ' Dim selected = Spacer100Tiltrack _
+                            ' .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -914,13 +918,13 @@ Partial Class Methods_Order_JobSheetMethod
                         End If
                     Case "89", "89mm"
                         If TubeType.Contains("Tiltrack") Then
-                            ' Dim selected = Spacer89Tiltrack _
-                            ' .Where(Function(x) Width <= x.MaxWidth) _
-                            ' .OrderBy(Function(x) x.MaxWidth) _
-                            ' .FirstOrDefault()
-
                             Dim selected = Spacer89Tiltrack _
-                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            ' Dim selected = Spacer89Tiltrack _
+                            ' .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -938,12 +942,12 @@ Partial Class Methods_Order_JobSheetMethod
                                 Spacers = Spacer89LouvoliteB
                             End If
 
-                            ' Dim selected = Spacers _
-                            ' .Where(Function(x) Width <= x.MaxWidth) _
-                            ' .OrderBy(Function(x) x.MaxWidth) _
-                            ' .FirstOrDefault()
                             Dim selected = Spacers _
-                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+                            ' Dim selected = Spacers _
+                            ' .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -953,13 +957,13 @@ Partial Class Methods_Order_JobSheetMethod
                                 End If
                             End If
                         ElseIf TubeType.Contains("Javaline") Then
-                            ' Dim selected = Spacer89Javaline _
-                            ' .Where(Function(x) Width <= x.MaxWidth) _
-                            ' .OrderBy(Function(x) x.MaxWidth) _
-                            ' .FirstOrDefault()
-
                             Dim selected = Spacer89Javaline _
-                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            ' Dim selected = Spacer89Javaline _
+                            ' .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -969,13 +973,13 @@ Partial Class Methods_Order_JobSheetMethod
                                 End If
                             End If
                         Else
-                            ' Dim selected = Spacer89Metal _
-                            ' .Where(Function(x) Width <= x.MaxWidth) _
-                            ' .OrderBy(Function(x) x.MaxWidth) _
-                            ' .FirstOrDefault()
-
                             Dim selected = Spacer89Metal _
-                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            ' Dim selected = Spacer89Metal _
+                            ' .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -987,13 +991,13 @@ Partial Class Methods_Order_JobSheetMethod
                         End If
                     Case "63", "63mm"
                         If TubeType.Contains("Tiltrack") Then
-                            ' Dim selected = Spacer63Tiltrack _
-                            ' .Where(Function(x) Width <= x.MaxWidth) _
-                            ' .OrderBy(Function(x) x.MaxWidth) _
-                            ' .FirstOrDefault()
-
                             Dim selected = Spacer63Tiltrack _
-                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            ' Dim selected = Spacer63Tiltrack _
+                            ' .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -1003,13 +1007,13 @@ Partial Class Methods_Order_JobSheetMethod
                                 End If
                             End If
                         Else
-                            ' Dim selected = Spacer63Metal _
-                            ' .Where(Function(x) Width <= x.MaxWidth) _
-                            ' .OrderBy(Function(x) x.MaxWidth) _
-                            ' .FirstOrDefault()
-
                             Dim selected = Spacer63Metal _
-                            .FirstOrDefault(Function(x) Width <= x.MaxWidth)
+                            .Where(Function(x) Width <= x.MaxWidth) _
+                            .OrderBy(Function(x) x.MaxWidth) _
+                            .FirstOrDefault()
+
+                            ' Dim selected = Spacer63Metal _
+                            ' .FirstOrDefault(Function(x) Width <= x.MaxWidth)
 
                             If selected IsNot Nothing Then
                                 If param = "Spacer1Type" Then
@@ -3095,6 +3099,302 @@ Partial Class Methods_Order_JobSheetMethod
         New SpacerInfo With {.MaxWidth = 4080, .Spacer1Type = "125", .CarriersQty = 36},
         New SpacerInfo With {.MaxWidth = 4143, .Spacer1Type = "127", .CarriersQty = 36},
         New SpacerInfo With {.MaxWidth = 4217, .Spacer1Type = "129", .CarriersQty = 36}
+    }
+
+    Private Shared ReadOnly Spacer127LouvoliteA As New List(Of SpacerInfo) From {
+        New SpacerInfo With {.MaxWidth = 253, .Spacer1Type = "123", .CarriersQty = 2},
+        New SpacerInfo With {.MaxWidth = 255, .Spacer1Type = "125", .CarriersQty = 2},
+        New SpacerInfo With {.MaxWidth = 257, .Spacer1Type = "127", .CarriersQty = 2},
+        New SpacerInfo With {.MaxWidth = 264, .Spacer1Type = "129", .CarriersQty = 2},
+        New SpacerInfo With {.MaxWidth = 363, .Spacer1Type = "123", .CarriersQty = 3},
+        New SpacerInfo With {.MaxWidth = 367, .Spacer1Type = "125", .CarriersQty = 3},
+        New SpacerInfo With {.MaxWidth = 371, .Spacer1Type = "127", .CarriersQty = 3},
+        New SpacerInfo With {.MaxWidth = 380, .Spacer1Type = "129", .CarriersQty = 3},
+        New SpacerInfo With {.MaxWidth = 473, .Spacer1Type = "123", .CarriersQty = 4},
+        New SpacerInfo With {.MaxWidth = 480, .Spacer1Type = "125", .CarriersQty = 4},
+        New SpacerInfo With {.MaxWidth = 486, .Spacer1Type = "127", .CarriersQty = 4},
+        New SpacerInfo With {.MaxWidth = 497, .Spacer1Type = "129", .CarriersQty = 4},
+        New SpacerInfo With {.MaxWidth = 583, .Spacer1Type = "123", .CarriersQty = 5},
+        New SpacerInfo With {.MaxWidth = 592, .Spacer1Type = "125", .CarriersQty = 5},
+        New SpacerInfo With {.MaxWidth = 600, .Spacer1Type = "127", .CarriersQty = 5},
+        New SpacerInfo With {.MaxWidth = 613, .Spacer1Type = "129", .CarriersQty = 5},
+        New SpacerInfo With {.MaxWidth = 694, .Spacer1Type = "123", .CarriersQty = 6},
+        New SpacerInfo With {.MaxWidth = 705, .Spacer1Type = "125", .CarriersQty = 6},
+        New SpacerInfo With {.MaxWidth = 714, .Spacer1Type = "127", .CarriersQty = 6},
+        New SpacerInfo With {.MaxWidth = 729, .Spacer1Type = "129", .CarriersQty = 6},
+        New SpacerInfo With {.MaxWidth = 804, .Spacer1Type = "123", .CarriersQty = 7},
+        New SpacerInfo With {.MaxWidth = 817, .Spacer1Type = "125", .CarriersQty = 7},
+        New SpacerInfo With {.MaxWidth = 829, .Spacer1Type = "127", .CarriersQty = 7},
+        New SpacerInfo With {.MaxWidth = 845, .Spacer1Type = "129", .CarriersQty = 7},
+        New SpacerInfo With {.MaxWidth = 914, .Spacer1Type = "123", .CarriersQty = 8},
+        New SpacerInfo With {.MaxWidth = 930, .Spacer1Type = "125", .CarriersQty = 8},
+        New SpacerInfo With {.MaxWidth = 943, .Spacer1Type = "127", .CarriersQty = 8},
+        New SpacerInfo With {.MaxWidth = 962, .Spacer1Type = "129", .CarriersQty = 8},
+        New SpacerInfo With {.MaxWidth = 1024, .Spacer1Type = "123", .CarriersQty = 9},
+        New SpacerInfo With {.MaxWidth = 1042, .Spacer1Type = "125", .CarriersQty = 9},
+        New SpacerInfo With {.MaxWidth = 1057, .Spacer1Type = "127", .CarriersQty = 9},
+        New SpacerInfo With {.MaxWidth = 1078, .Spacer1Type = "129", .CarriersQty = 9},
+        New SpacerInfo With {.MaxWidth = 1134, .Spacer1Type = "123", .CarriersQty = 10},
+        New SpacerInfo With {.MaxWidth = 1155, .Spacer1Type = "125", .CarriersQty = 10},
+        New SpacerInfo With {.MaxWidth = 1171, .Spacer1Type = "127", .CarriersQty = 10},
+        New SpacerInfo With {.MaxWidth = 1194, .Spacer1Type = "129", .CarriersQty = 10},
+        New SpacerInfo With {.MaxWidth = 1244, .Spacer1Type = "123", .CarriersQty = 11},
+        New SpacerInfo With {.MaxWidth = 1267, .Spacer1Type = "125", .CarriersQty = 11},
+        New SpacerInfo With {.MaxWidth = 1286, .Spacer1Type = "127", .CarriersQty = 11},
+        New SpacerInfo With {.MaxWidth = 1310, .Spacer1Type = "129", .CarriersQty = 11},
+        New SpacerInfo With {.MaxWidth = 1355, .Spacer1Type = "123", .CarriersQty = 12},
+        New SpacerInfo With {.MaxWidth = 1380, .Spacer1Type = "125", .CarriersQty = 12},
+        New SpacerInfo With {.MaxWidth = 1400, .Spacer1Type = "127", .CarriersQty = 12},
+        New SpacerInfo With {.MaxWidth = 1427, .Spacer1Type = "129", .CarriersQty = 12},
+        New SpacerInfo With {.MaxWidth = 1465, .Spacer1Type = "123", .CarriersQty = 13},
+        New SpacerInfo With {.MaxWidth = 1492, .Spacer1Type = "125", .CarriersQty = 13},
+        New SpacerInfo With {.MaxWidth = 1514, .Spacer1Type = "127", .CarriersQty = 13},
+        New SpacerInfo With {.MaxWidth = 1543, .Spacer1Type = "129", .CarriersQty = 13},
+        New SpacerInfo With {.MaxWidth = 1575, .Spacer1Type = "123", .CarriersQty = 14},
+        New SpacerInfo With {.MaxWidth = 1605, .Spacer1Type = "125", .CarriersQty = 14},
+        New SpacerInfo With {.MaxWidth = 1629, .Spacer1Type = "127", .CarriersQty = 14},
+        New SpacerInfo With {.MaxWidth = 1659, .Spacer1Type = "129", .CarriersQty = 14},
+        New SpacerInfo With {.MaxWidth = 1685, .Spacer1Type = "123", .CarriersQty = 15},
+        New SpacerInfo With {.MaxWidth = 1717, .Spacer1Type = "125", .CarriersQty = 15},
+        New SpacerInfo With {.MaxWidth = 1743, .Spacer1Type = "127", .CarriersQty = 15},
+        New SpacerInfo With {.MaxWidth = 1775, .Spacer1Type = "129", .CarriersQty = 15},
+        New SpacerInfo With {.MaxWidth = 1795, .Spacer1Type = "123", .CarriersQty = 16},
+        New SpacerInfo With {.MaxWidth = 1830, .Spacer1Type = "125", .CarriersQty = 16},
+        New SpacerInfo With {.MaxWidth = 1857, .Spacer1Type = "127", .CarriersQty = 16},
+        New SpacerInfo With {.MaxWidth = 1892, .Spacer1Type = "129", .CarriersQty = 16},
+        New SpacerInfo With {.MaxWidth = 1905, .Spacer1Type = "123", .CarriersQty = 17},
+        New SpacerInfo With {.MaxWidth = 1942, .Spacer1Type = "125", .CarriersQty = 17},
+        New SpacerInfo With {.MaxWidth = 1972, .Spacer1Type = "127", .CarriersQty = 17},
+        New SpacerInfo With {.MaxWidth = 2008, .Spacer1Type = "129", .CarriersQty = 17},
+        New SpacerInfo With {.MaxWidth = 2015, .Spacer1Type = "123", .CarriersQty = 18},
+        New SpacerInfo With {.MaxWidth = 2055, .Spacer1Type = "125", .CarriersQty = 18},
+        New SpacerInfo With {.MaxWidth = 2086, .Spacer1Type = "127", .CarriersQty = 18},
+        New SpacerInfo With {.MaxWidth = 2124, .Spacer1Type = "129", .CarriersQty = 18},
+        New SpacerInfo With {.MaxWidth = 2126, .Spacer1Type = "123", .CarriersQty = 19},
+        New SpacerInfo With {.MaxWidth = 2167, .Spacer1Type = "125", .CarriersQty = 19},
+        New SpacerInfo With {.MaxWidth = 2200, .Spacer1Type = "127", .CarriersQty = 19},
+        New SpacerInfo With {.MaxWidth = 2240, .Spacer1Type = "129", .CarriersQty = 19},
+        New SpacerInfo With {.MaxWidth = 2236, .Spacer1Type = "123", .CarriersQty = 20},
+        New SpacerInfo With {.MaxWidth = 2280, .Spacer1Type = "125", .CarriersQty = 20},
+        New SpacerInfo With {.MaxWidth = 2314, .Spacer1Type = "127", .CarriersQty = 20},
+        New SpacerInfo With {.MaxWidth = 2357, .Spacer1Type = "129", .CarriersQty = 20},
+        New SpacerInfo With {.MaxWidth = 2346, .Spacer1Type = "123", .CarriersQty = 21},
+        New SpacerInfo With {.MaxWidth = 2392, .Spacer1Type = "125", .CarriersQty = 21},
+        New SpacerInfo With {.MaxWidth = 2429, .Spacer1Type = "127", .CarriersQty = 21},
+        New SpacerInfo With {.MaxWidth = 2473, .Spacer1Type = "129", .CarriersQty = 21},
+        New SpacerInfo With {.MaxWidth = 2456, .Spacer1Type = "123", .CarriersQty = 22},
+        New SpacerInfo With {.MaxWidth = 2505, .Spacer1Type = "125", .CarriersQty = 22},
+        New SpacerInfo With {.MaxWidth = 2543, .Spacer1Type = "127", .CarriersQty = 22},
+        New SpacerInfo With {.MaxWidth = 2589, .Spacer1Type = "129", .CarriersQty = 22},
+        New SpacerInfo With {.MaxWidth = 2566, .Spacer1Type = "123", .CarriersQty = 23},
+        New SpacerInfo With {.MaxWidth = 2617, .Spacer1Type = "125", .CarriersQty = 23},
+        New SpacerInfo With {.MaxWidth = 2657, .Spacer1Type = "127", .CarriersQty = 23},
+        New SpacerInfo With {.MaxWidth = 2705, .Spacer1Type = "129", .CarriersQty = 23},
+        New SpacerInfo With {.MaxWidth = 2676, .Spacer1Type = "123", .CarriersQty = 24},
+        New SpacerInfo With {.MaxWidth = 2730, .Spacer1Type = "125", .CarriersQty = 24},
+        New SpacerInfo With {.MaxWidth = 2772, .Spacer1Type = "127", .CarriersQty = 24},
+        New SpacerInfo With {.MaxWidth = 2822, .Spacer1Type = "129", .CarriersQty = 24},
+        New SpacerInfo With {.MaxWidth = 2786, .Spacer1Type = "123", .CarriersQty = 25},
+        New SpacerInfo With {.MaxWidth = 2842, .Spacer1Type = "125", .CarriersQty = 25},
+        New SpacerInfo With {.MaxWidth = 2886, .Spacer1Type = "127", .CarriersQty = 25},
+        New SpacerInfo With {.MaxWidth = 2938, .Spacer1Type = "129", .CarriersQty = 25},
+        New SpacerInfo With {.MaxWidth = 2897, .Spacer1Type = "123", .CarriersQty = 26},
+        New SpacerInfo With {.MaxWidth = 2955, .Spacer1Type = "125", .CarriersQty = 26},
+        New SpacerInfo With {.MaxWidth = 3000, .Spacer1Type = "127", .CarriersQty = 26},
+        New SpacerInfo With {.MaxWidth = 3054, .Spacer1Type = "129", .CarriersQty = 26},
+        New SpacerInfo With {.MaxWidth = 3007, .Spacer1Type = "123", .CarriersQty = 27},
+        New SpacerInfo With {.MaxWidth = 3067, .Spacer1Type = "125", .CarriersQty = 27},
+        New SpacerInfo With {.MaxWidth = 3115, .Spacer1Type = "127", .CarriersQty = 27},
+        New SpacerInfo With {.MaxWidth = 3170, .Spacer1Type = "129", .CarriersQty = 27},
+        New SpacerInfo With {.MaxWidth = 3117, .Spacer1Type = "123", .CarriersQty = 28},
+        New SpacerInfo With {.MaxWidth = 3180, .Spacer1Type = "125", .CarriersQty = 28},
+        New SpacerInfo With {.MaxWidth = 3229, .Spacer1Type = "127", .CarriersQty = 28},
+        New SpacerInfo With {.MaxWidth = 3287, .Spacer1Type = "129", .CarriersQty = 28},
+        New SpacerInfo With {.MaxWidth = 3227, .Spacer1Type = "123", .CarriersQty = 29},
+        New SpacerInfo With {.MaxWidth = 3292, .Spacer1Type = "125", .CarriersQty = 29},
+        New SpacerInfo With {.MaxWidth = 3343, .Spacer1Type = "127", .CarriersQty = 29},
+        New SpacerInfo With {.MaxWidth = 3403, .Spacer1Type = "129", .CarriersQty = 29},
+        New SpacerInfo With {.MaxWidth = 3337, .Spacer1Type = "123", .CarriersQty = 30},
+        New SpacerInfo With {.MaxWidth = 3405, .Spacer1Type = "125", .CarriersQty = 30},
+        New SpacerInfo With {.MaxWidth = 3457, .Spacer1Type = "127", .CarriersQty = 30},
+        New SpacerInfo With {.MaxWidth = 3519, .Spacer1Type = "129", .CarriersQty = 30},
+        New SpacerInfo With {.MaxWidth = 3447, .Spacer1Type = "123", .CarriersQty = 31},
+        New SpacerInfo With {.MaxWidth = 3517, .Spacer1Type = "125", .CarriersQty = 31},
+        New SpacerInfo With {.MaxWidth = 3572, .Spacer1Type = "127", .CarriersQty = 31},
+        New SpacerInfo With {.MaxWidth = 3635, .Spacer1Type = "129", .CarriersQty = 31},
+        New SpacerInfo With {.MaxWidth = 3558, .Spacer1Type = "123", .CarriersQty = 32},
+        New SpacerInfo With {.MaxWidth = 3630, .Spacer1Type = "125", .CarriersQty = 32},
+        New SpacerInfo With {.MaxWidth = 3686, .Spacer1Type = "127", .CarriersQty = 32},
+        New SpacerInfo With {.MaxWidth = 3752, .Spacer1Type = "129", .CarriersQty = 32},
+        New SpacerInfo With {.MaxWidth = 3668, .Spacer1Type = "123", .CarriersQty = 33},
+        New SpacerInfo With {.MaxWidth = 3742, .Spacer1Type = "125", .CarriersQty = 33},
+        New SpacerInfo With {.MaxWidth = 3800, .Spacer1Type = "127", .CarriersQty = 33},
+        New SpacerInfo With {.MaxWidth = 3868, .Spacer1Type = "129", .CarriersQty = 33},
+        New SpacerInfo With {.MaxWidth = 3778, .Spacer1Type = "123", .CarriersQty = 34},
+        New SpacerInfo With {.MaxWidth = 3855, .Spacer1Type = "125", .CarriersQty = 34},
+        New SpacerInfo With {.MaxWidth = 3915, .Spacer1Type = "127", .CarriersQty = 34},
+        New SpacerInfo With {.MaxWidth = 3984, .Spacer1Type = "129", .CarriersQty = 34},
+        New SpacerInfo With {.MaxWidth = 3888, .Spacer1Type = "123", .CarriersQty = 35},
+        New SpacerInfo With {.MaxWidth = 3967, .Spacer1Type = "125", .CarriersQty = 35},
+        New SpacerInfo With {.MaxWidth = 4029, .Spacer1Type = "127", .CarriersQty = 35},
+        New SpacerInfo With {.MaxWidth = 4100, .Spacer1Type = "129", .CarriersQty = 35},
+        New SpacerInfo With {.MaxWidth = 3998, .Spacer1Type = "123", .CarriersQty = 36},
+        New SpacerInfo With {.MaxWidth = 4080, .Spacer1Type = "125", .CarriersQty = 36},
+        New SpacerInfo With {.MaxWidth = 4143, .Spacer1Type = "127", .CarriersQty = 36},
+        New SpacerInfo With {.MaxWidth = 4217, .Spacer1Type = "129", .CarriersQty = 36},
+        New SpacerInfo With {.MaxWidth = 4108, .Spacer1Type = "123", .CarriersQty = 37},
+        New SpacerInfo With {.MaxWidth = 4192, .Spacer1Type = "125", .CarriersQty = 37},
+        New SpacerInfo With {.MaxWidth = 4258, .Spacer1Type = "127", .CarriersQty = 37},
+        New SpacerInfo With {.MaxWidth = 4333, .Spacer1Type = "129", .CarriersQty = 37},
+        New SpacerInfo With {.MaxWidth = 4218, .Spacer1Type = "123", .CarriersQty = 38},
+        New SpacerInfo With {.MaxWidth = 4305, .Spacer1Type = "125", .CarriersQty = 38},
+        New SpacerInfo With {.MaxWidth = 4372, .Spacer1Type = "127", .CarriersQty = 38},
+        New SpacerInfo With {.MaxWidth = 4449, .Spacer1Type = "129", .CarriersQty = 38},
+        New SpacerInfo With {.MaxWidth = 4329, .Spacer1Type = "123", .CarriersQty = 39},
+        New SpacerInfo With {.MaxWidth = 4417, .Spacer1Type = "125", .CarriersQty = 39},
+        New SpacerInfo With {.MaxWidth = 4486, .Spacer1Type = "127", .CarriersQty = 39},
+        New SpacerInfo With {.MaxWidth = 4565, .Spacer1Type = "129", .CarriersQty = 39},
+        New SpacerInfo With {.MaxWidth = 4439, .Spacer1Type = "123", .CarriersQty = 40},
+        New SpacerInfo With {.MaxWidth = 4530, .Spacer1Type = "125", .CarriersQty = 40},
+        New SpacerInfo With {.MaxWidth = 4600, .Spacer1Type = "127", .CarriersQty = 40},
+        New SpacerInfo With {.MaxWidth = 4682, .Spacer1Type = "129", .CarriersQty = 40},
+        New SpacerInfo With {.MaxWidth = 4549, .Spacer1Type = "123", .CarriersQty = 41},
+        New SpacerInfo With {.MaxWidth = 4642, .Spacer1Type = "125", .CarriersQty = 41},
+        New SpacerInfo With {.MaxWidth = 4715, .Spacer1Type = "127", .CarriersQty = 41},
+        New SpacerInfo With {.MaxWidth = 4798, .Spacer1Type = "129", .CarriersQty = 41},
+        New SpacerInfo With {.MaxWidth = 4659, .Spacer1Type = "123", .CarriersQty = 42},
+        New SpacerInfo With {.MaxWidth = 4755, .Spacer1Type = "125", .CarriersQty = 42},
+        New SpacerInfo With {.MaxWidth = 4829, .Spacer1Type = "127", .CarriersQty = 42},
+        New SpacerInfo With {.MaxWidth = 4914, .Spacer1Type = "129", .CarriersQty = 42},
+        New SpacerInfo With {.MaxWidth = 4769, .Spacer1Type = "123", .CarriersQty = 43},
+        New SpacerInfo With {.MaxWidth = 4867, .Spacer1Type = "125", .CarriersQty = 43},
+        New SpacerInfo With {.MaxWidth = 4943, .Spacer1Type = "127", .CarriersQty = 43},
+        New SpacerInfo With {.MaxWidth = 5030, .Spacer1Type = "129", .CarriersQty = 43},
+        New SpacerInfo With {.MaxWidth = 4879, .Spacer1Type = "123", .CarriersQty = 44},
+        New SpacerInfo With {.MaxWidth = 4980, .Spacer1Type = "125", .CarriersQty = 44},
+        New SpacerInfo With {.MaxWidth = 5058, .Spacer1Type = "127", .CarriersQty = 44},
+        New SpacerInfo With {.MaxWidth = 5147, .Spacer1Type = "129", .CarriersQty = 44},
+        New SpacerInfo With {.MaxWidth = 4989, .Spacer1Type = "123", .CarriersQty = 45},
+        New SpacerInfo With {.MaxWidth = 5092, .Spacer1Type = "125", .CarriersQty = 45},
+        New SpacerInfo With {.MaxWidth = 5172, .Spacer1Type = "127", .CarriersQty = 45},
+        New SpacerInfo With {.MaxWidth = 5263, .Spacer1Type = "129", .CarriersQty = 45},
+        New SpacerInfo With {.MaxWidth = 5100, .Spacer1Type = "123", .CarriersQty = 46},
+        New SpacerInfo With {.MaxWidth = 5205, .Spacer1Type = "125", .CarriersQty = 46},
+        New SpacerInfo With {.MaxWidth = 5286, .Spacer1Type = "127", .CarriersQty = 46},
+        New SpacerInfo With {.MaxWidth = 5379, .Spacer1Type = "129", .CarriersQty = 46},
+        New SpacerInfo With {.MaxWidth = 5210, .Spacer1Type = "123", .CarriersQty = 47},
+        New SpacerInfo With {.MaxWidth = 5317, .Spacer1Type = "125", .CarriersQty = 47},
+        New SpacerInfo With {.MaxWidth = 5401, .Spacer1Type = "127", .CarriersQty = 47},
+        New SpacerInfo With {.MaxWidth = 5495, .Spacer1Type = "129", .CarriersQty = 47},
+        New SpacerInfo With {.MaxWidth = 5320, .Spacer1Type = "123", .CarriersQty = 48},
+        New SpacerInfo With {.MaxWidth = 5430, .Spacer1Type = "125", .CarriersQty = 48},
+        New SpacerInfo With {.MaxWidth = 5515, .Spacer1Type = "127", .CarriersQty = 48},
+        New SpacerInfo With {.MaxWidth = 5612, .Spacer1Type = "129", .CarriersQty = 48},
+        New SpacerInfo With {.MaxWidth = 5430, .Spacer1Type = "123", .CarriersQty = 49},
+        New SpacerInfo With {.MaxWidth = 5542, .Spacer1Type = "125", .CarriersQty = 49},
+        New SpacerInfo With {.MaxWidth = 5629, .Spacer1Type = "127", .CarriersQty = 49},
+        New SpacerInfo With {.MaxWidth = 5728, .Spacer1Type = "129", .CarriersQty = 49},
+        New SpacerInfo With {.MaxWidth = 5540, .Spacer1Type = "123", .CarriersQty = 50},
+        New SpacerInfo With {.MaxWidth = 5655, .Spacer1Type = "125", .CarriersQty = 50},
+        New SpacerInfo With {.MaxWidth = 5743, .Spacer1Type = "127", .CarriersQty = 50},
+        New SpacerInfo With {.MaxWidth = 5650, .Spacer1Type = "123", .CarriersQty = 51},
+        New SpacerInfo With {.MaxWidth = 5767, .Spacer1Type = "125", .CarriersQty = 51},
+        New SpacerInfo With {.MaxWidth = 5761, .Spacer1Type = "123", .CarriersQty = 52}
+    }
+
+    Private Shared ReadOnly Spacer127LouvoliteB As New List(Of SpacerInfo) From {
+        New SpacerInfo With {.MaxWidth = 234, .Spacer1Type = "123", .CarriersQty = 2},
+        New SpacerInfo With {.MaxWidth = 236, .Spacer1Type = "125", .CarriersQty = 2},
+        New SpacerInfo With {.MaxWidth = 238, .Spacer1Type = "127", .CarriersQty = 2},
+        New SpacerInfo With {.MaxWidth = 240, .Spacer1Type = "129", .CarriersQty = 2},
+        New SpacerInfo With {.MaxWidth = 454, .Spacer1Type = "123", .CarriersQty = 4},
+        New SpacerInfo With {.MaxWidth = 458, .Spacer1Type = "125", .CarriersQty = 4},
+        New SpacerInfo With {.MaxWidth = 467, .Spacer1Type = "127", .CarriersQty = 4},
+        New SpacerInfo With {.MaxWidth = 471, .Spacer1Type = "129", .CarriersQty = 4},
+        New SpacerInfo With {.MaxWidth = 674, .Spacer1Type = "123", .CarriersQty = 6},
+        New SpacerInfo With {.MaxWidth = 683, .Spacer1Type = "125", .CarriersQty = 6},
+        New SpacerInfo With {.MaxWidth = 696, .Spacer1Type = "127", .CarriersQty = 6},
+        New SpacerInfo With {.MaxWidth = 703, .Spacer1Type = "129", .CarriersQty = 6},
+        New SpacerInfo With {.MaxWidth = 894, .Spacer1Type = "123", .CarriersQty = 8},
+        New SpacerInfo With {.MaxWidth = 907, .Spacer1Type = "125", .CarriersQty = 8},
+        New SpacerInfo With {.MaxWidth = 924, .Spacer1Type = "127", .CarriersQty = 8},
+        New SpacerInfo With {.MaxWidth = 935, .Spacer1Type = "129", .CarriersQty = 8},
+        New SpacerInfo With {.MaxWidth = 1114, .Spacer1Type = "123", .CarriersQty = 10},
+        New SpacerInfo With {.MaxWidth = 1132, .Spacer1Type = "125", .CarriersQty = 10},
+        New SpacerInfo With {.MaxWidth = 1153, .Spacer1Type = "127", .CarriersQty = 10},
+        New SpacerInfo With {.MaxWidth = 1168, .Spacer1Type = "129", .CarriersQty = 10},
+        New SpacerInfo With {.MaxWidth = 1334, .Spacer1Type = "123", .CarriersQty = 12},
+        New SpacerInfo With {.MaxWidth = 1357, .Spacer1Type = "125", .CarriersQty = 12},
+        New SpacerInfo With {.MaxWidth = 1382, .Spacer1Type = "127", .CarriersQty = 12},
+        New SpacerInfo With {.MaxWidth = 1400, .Spacer1Type = "129", .CarriersQty = 12},
+        New SpacerInfo With {.MaxWidth = 1554, .Spacer1Type = "123", .CarriersQty = 14},
+        New SpacerInfo With {.MaxWidth = 1581, .Spacer1Type = "125", .CarriersQty = 14},
+        New SpacerInfo With {.MaxWidth = 1610, .Spacer1Type = "127", .CarriersQty = 14},
+        New SpacerInfo With {.MaxWidth = 1633, .Spacer1Type = "129", .CarriersQty = 14},
+        New SpacerInfo With {.MaxWidth = 1774, .Spacer1Type = "123", .CarriersQty = 16},
+        New SpacerInfo With {.MaxWidth = 1806, .Spacer1Type = "125", .CarriersQty = 16},
+        New SpacerInfo With {.MaxWidth = 1839, .Spacer1Type = "127", .CarriersQty = 16},
+        New SpacerInfo With {.MaxWidth = 1865, .Spacer1Type = "129", .CarriersQty = 16},
+        New SpacerInfo With {.MaxWidth = 1994, .Spacer1Type = "123", .CarriersQty = 18},
+        New SpacerInfo With {.MaxWidth = 2031, .Spacer1Type = "125", .CarriersQty = 18},
+        New SpacerInfo With {.MaxWidth = 2067, .Spacer1Type = "127", .CarriersQty = 18},
+        New SpacerInfo With {.MaxWidth = 2097, .Spacer1Type = "129", .CarriersQty = 18},
+        New SpacerInfo With {.MaxWidth = 2214, .Spacer1Type = "123", .CarriersQty = 20},
+        New SpacerInfo With {.MaxWidth = 2256, .Spacer1Type = "125", .CarriersQty = 20},
+        New SpacerInfo With {.MaxWidth = 2296, .Spacer1Type = "127", .CarriersQty = 20},
+        New SpacerInfo With {.MaxWidth = 2330, .Spacer1Type = "129", .CarriersQty = 20},
+        New SpacerInfo With {.MaxWidth = 2434, .Spacer1Type = "123", .CarriersQty = 22},
+        New SpacerInfo With {.MaxWidth = 2480, .Spacer1Type = "125", .CarriersQty = 22},
+        New SpacerInfo With {.MaxWidth = 2525, .Spacer1Type = "127", .CarriersQty = 22},
+        New SpacerInfo With {.MaxWidth = 2562, .Spacer1Type = "129", .CarriersQty = 22},
+        New SpacerInfo With {.MaxWidth = 2654, .Spacer1Type = "123", .CarriersQty = 24},
+        New SpacerInfo With {.MaxWidth = 2705, .Spacer1Type = "125", .CarriersQty = 24},
+        New SpacerInfo With {.MaxWidth = 2753, .Spacer1Type = "127", .CarriersQty = 24},
+        New SpacerInfo With {.MaxWidth = 2795, .Spacer1Type = "129", .CarriersQty = 24},
+        New SpacerInfo With {.MaxWidth = 2874, .Spacer1Type = "123", .CarriersQty = 26},
+        New SpacerInfo With {.MaxWidth = 2930, .Spacer1Type = "125", .CarriersQty = 26},
+        New SpacerInfo With {.MaxWidth = 2982, .Spacer1Type = "127", .CarriersQty = 26},
+        New SpacerInfo With {.MaxWidth = 3027, .Spacer1Type = "129", .CarriersQty = 26},
+        New SpacerInfo With {.MaxWidth = 3094, .Spacer1Type = "123", .CarriersQty = 28},
+        New SpacerInfo With {.MaxWidth = 3154, .Spacer1Type = "125", .CarriersQty = 28},
+        New SpacerInfo With {.MaxWidth = 3210, .Spacer1Type = "127", .CarriersQty = 28},
+        New SpacerInfo With {.MaxWidth = 3259, .Spacer1Type = "129", .CarriersQty = 28},
+        New SpacerInfo With {.MaxWidth = 3314, .Spacer1Type = "123", .CarriersQty = 30},
+        New SpacerInfo With {.MaxWidth = 3379, .Spacer1Type = "125", .CarriersQty = 30},
+        New SpacerInfo With {.MaxWidth = 3439, .Spacer1Type = "127", .CarriersQty = 30},
+        New SpacerInfo With {.MaxWidth = 3492, .Spacer1Type = "129", .CarriersQty = 30},
+        New SpacerInfo With {.MaxWidth = 3534, .Spacer1Type = "123", .CarriersQty = 32},
+        New SpacerInfo With {.MaxWidth = 3604, .Spacer1Type = "125", .CarriersQty = 32},
+        New SpacerInfo With {.MaxWidth = 3668, .Spacer1Type = "127", .CarriersQty = 32},
+        New SpacerInfo With {.MaxWidth = 3724, .Spacer1Type = "129", .CarriersQty = 32},
+        New SpacerInfo With {.MaxWidth = 3754, .Spacer1Type = "123", .CarriersQty = 34},
+        New SpacerInfo With {.MaxWidth = 3828, .Spacer1Type = "125", .CarriersQty = 34},
+        New SpacerInfo With {.MaxWidth = 3896, .Spacer1Type = "127", .CarriersQty = 34},
+        New SpacerInfo With {.MaxWidth = 3957, .Spacer1Type = "129", .CarriersQty = 34},
+        New SpacerInfo With {.MaxWidth = 3974, .Spacer1Type = "123", .CarriersQty = 36},
+        New SpacerInfo With {.MaxWidth = 4053, .Spacer1Type = "125", .CarriersQty = 36},
+        New SpacerInfo With {.MaxWidth = 4125, .Spacer1Type = "127", .CarriersQty = 36},
+        New SpacerInfo With {.MaxWidth = 4189, .Spacer1Type = "129", .CarriersQty = 36},
+        New SpacerInfo With {.MaxWidth = 4194, .Spacer1Type = "123", .CarriersQty = 38},
+        New SpacerInfo With {.MaxWidth = 4278, .Spacer1Type = "125", .CarriersQty = 38},
+        New SpacerInfo With {.MaxWidth = 4353, .Spacer1Type = "127", .CarriersQty = 38},
+        New SpacerInfo With {.MaxWidth = 4421, .Spacer1Type = "129", .CarriersQty = 38},
+        New SpacerInfo With {.MaxWidth = 4414, .Spacer1Type = "123", .CarriersQty = 40},
+        New SpacerInfo With {.MaxWidth = 4502, .Spacer1Type = "125", .CarriersQty = 40},
+        New SpacerInfo With {.MaxWidth = 4582, .Spacer1Type = "127", .CarriersQty = 40},
+        New SpacerInfo With {.MaxWidth = 4654, .Spacer1Type = "129", .CarriersQty = 40},
+        New SpacerInfo With {.MaxWidth = 4634, .Spacer1Type = "123", .CarriersQty = 42},
+        New SpacerInfo With {.MaxWidth = 4727, .Spacer1Type = "125", .CarriersQty = 42},
+        New SpacerInfo With {.MaxWidth = 4811, .Spacer1Type = "127", .CarriersQty = 42},
+        New SpacerInfo With {.MaxWidth = 4886, .Spacer1Type = "129", .CarriersQty = 42},
+        New SpacerInfo With {.MaxWidth = 4854, .Spacer1Type = "123", .CarriersQty = 44},
+        New SpacerInfo With {.MaxWidth = 4952, .Spacer1Type = "125", .CarriersQty = 44},
+        New SpacerInfo With {.MaxWidth = 5039, .Spacer1Type = "127", .CarriersQty = 44},
+        New SpacerInfo With {.MaxWidth = 5119, .Spacer1Type = "129", .CarriersQty = 44},
+        New SpacerInfo With {.MaxWidth = 5074, .Spacer1Type = "123", .CarriersQty = 46},
+        New SpacerInfo With {.MaxWidth = 5176, .Spacer1Type = "125", .CarriersQty = 46},
+        New SpacerInfo With {.MaxWidth = 5268, .Spacer1Type = "127", .CarriersQty = 46},
+        New SpacerInfo With {.MaxWidth = 5351, .Spacer1Type = "129", .CarriersQty = 46}
     }
 
     Private Shared ReadOnly Spacer89Louvolite As New List(Of SpacerInfo) From {
