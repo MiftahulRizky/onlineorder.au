@@ -170,9 +170,9 @@ Partial Class Console_ReminderOrderDraft
             Dim mailDefaultCredentials As Boolean = CBool(mailData.Tables(0).Rows(0)("DefaultCredentials"))
             Dim mailEnableSSL As Boolean = CBool(mailData.Tables(0).Rows(0)("EnableSSL"))
 
-            Dim mailBody As String = "Thank you for placing your order."
+            Dim mailBody As String = "Thank you for entering your order."
             mailBody += "<br>"
-            mailBody += "You may have forgotten that you have entered your order, here we just want to remind you that you have not submitted your order with the following information:"
+            mailBody += "Currently your order is still in draft and if you would like to go ahead you will need to submit it."
             mailBody += "<br>"
             mailBody += "<br /><br />"
             mailBody += "Store Order No : <b>" & OrderNumber & "</b>"
