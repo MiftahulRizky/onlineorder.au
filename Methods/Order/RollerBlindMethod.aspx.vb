@@ -233,7 +233,7 @@ Partial Class Methods_Order_RollerBlindMethod
         Return list
     End Function
 
-     <WebMethod()>
+    <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function Submit(ByVal data As ParamSubmit) As Object
         Try
@@ -2471,8 +2471,8 @@ Partial Class Methods_Order_RollerBlindMethod
                 Dim totalBlind As Integer = publicCfg.GetItemData(String.Format("SELECT COUNT(*) FROM OrderDetails WHERE UniqueId = '{0}' AND Active = 1", UniqueId))
 
                 If InArray(BracketType, "Double", "Linked 2 Blinds (Dep)", "Linked 2 Blinds (Ind)") Then
-                    Visible = True
                     If totalBlind > 1 Then
+                        Visible = True
                         Dim connectId As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId ='{0}' AND Active = 1", UniqueId))
                         If BlindNo = "Blind 2" Then
                             connectId = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId ='{0}' AND Active = 1", UniqueId))

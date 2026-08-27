@@ -109,8 +109,8 @@ Partial Class Methods_Order_PdfOrderMethod
             Dim fileName As String = (String.Format("-ORDER-{0}-{1}.pdf", OrderNumber, CustomerId)).Replace(" ", "")
 
             Dim CreatedBy As String = headerData.Tables(0).Rows(0).Item("CreatedBy").ToString()
-            Dim CreatedByname As String = publicCfg.GetItemData(String.Format("SELECT FullName FROM CustomerLogins WHERE Id='{0}'", UCase(CreatedBy).ToString()))
-            Dim SubmittedBy As String = publicCfg.GetItemData(String.Format("SELECT FullName FROM CustomerLogins WHERE Id='{0}'", UCase(loginid).ToString()))
+            Dim CreatedByname As String = publicCfg.GetItemData(String.Format("SELECT clr.Name FROM CustomerLogins cl INNER JOIN CustomerLoginRoles clr ON clr.id=cl.RoleId WHERE cl.Id='{0}'", UCase(CreatedBy).ToString()))
+            Dim SubmittedBy As String = publicCfg.GetItemData(String.Format("SELECT clr.Name FROM CustomerLogins cl INNER JOIN CustomerLoginRoles clr ON clr.id=cl.RoleId WHERE cl.Id='{0}'", UCase(loginid).ToString()))
             Dim isCustomer As Boolean = (CreatedByname = "Customer") AND (SubmittedBy = "Customer")
 
             If action = "preview" Or action = "download" Then
@@ -141,8 +141,8 @@ Partial Class Methods_Order_PdfOrderMethod
             End If
 
 
-            ' If (action = "mail" Or action = "submit") And (isCustomer = False) Then
-            If action = "mail" Or action = "submit"Then
+            If (action = "mail" Or action = "submit") And isCustomer Then
+            ' If action = "mail" Or action = "submit"Then
                 fileDirectory = HttpContext.Current.Server.MapPath("~/file/order/mail")
                 
                 If action = "submit" Then
@@ -227,9 +227,9 @@ Partial Class Methods_Order_PdfOrderMethod
             mailBody += "<br />"
             mailBody += String.Format("Order Name : {0}", OrderName)
             mailBody += "<br />"
-            ' mailBody += String.Format("Order Created By : <b>{0}</b>", CreatedByName)
-            ' mailBody += "<br />"
-            ' mailBody += String.Format("Submitted By : <b>{0} - {1}</b>", SubmittedBy, Roles)
+            mailBody += String.Format("Order Created By : <b>{0}</b>", CreatedByName)
+            mailBody += "<br />"
+            mailBody += String.Format("Submitted By : <b>{0} - {1}</b>", SubmittedBy, Roles)
             mailBody += "<br />"
             mailBody += "<br /> Detail order as attached PDF."
 

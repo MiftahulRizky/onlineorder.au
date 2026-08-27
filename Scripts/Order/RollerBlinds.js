@@ -1321,9 +1321,10 @@ const handlerElementVisibility = async (
     }
 
     if (item) {
-      elForm.lblNextDesc.innerHTML = item.NextDescText;
+      console.log(item.NextDescText);
       toggleShow(elForm.divAttention, item.NextDescVisible);
       toggleShow(elForm.lblNextDesc, item.NextDescVisible);
+      elForm.lblNextDesc.innerHTML = item.NextDescText;
 
       if (item.Trim === "1F") {
         toggleShow(elForm.divBottomRail, true);
