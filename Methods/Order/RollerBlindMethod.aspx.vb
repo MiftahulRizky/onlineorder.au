@@ -1449,7 +1449,7 @@ Partial Class Methods_Order_RollerBlindMethod
                 publicCfg.HitungHarga(data.headerid, ItemId)
                 publicCfg.HitungSurcharge(data.headerid, ItemId)
 
-                Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Add Item Order"}
+                Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Next Item Order"}
                 orderCfg.Log_Orders(dataLog)
 
                 If data.blindno = "Blind 2" AND InArray(data.brackettype, "Linked 3 Blinds (Dep)", "Linked 3 Blinds (Ind)", "Double and Link System Dep", "Double and Link System Ind") Then

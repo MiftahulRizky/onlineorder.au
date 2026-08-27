@@ -79,7 +79,7 @@ Partial Class Methods_Order_PdfOrderMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function CreatePDFOrder(ByVal headerid As String, ByVal action As String) As Object
+    Public Shared Function CreatePDFOrder(ByVal headerid As String, ByVal action As String, ByVal loginid As String) As Object
         Try
             Dim msg As String = ""
             Dim url As String = ""
@@ -90,23 +90,28 @@ Partial Class Methods_Order_PdfOrderMethod
                 Return New With { .warning = true, .message = "Please add item first !"}
             End If
 
-            Dim headerData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_headers WHERE Id='{0}'", headerid))
-            Dim status As String = headerData.Tables(0).Rows(0).Item("Status").ToString()
+            Dim headerData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id='{0}' AND OrderType IN ('Blinds', 'Door and Window')", headerid))
             if headerData.Tables(0).Rows.Count < 1 Then
                 Throw New Exception("Order Header not found.")
             End If
-
-
+            
+            
+            Dim Status As String = headerData.Tables(0).Rows(0).Item("Status").ToString()
             If action = "mail" Then
-                If status = "Draft" Or Status = "Cenceled" Then
+                If Status = "Draft" Or Status = "Cenceled" Then
                     Return New With { .warning = true, .message = "You can't send an email for a draft or canceled order."}
                 End If
             End If
 
             '# --------------------------|| Prepare Generate PDF ||-------------------------------
-            Dim orderNo As String = headerData.Tables(0).Rows(0).Item("OrderNo").ToString()
-            Dim storeId As String = headerData.Tables(0).Rows(0).Item("StoreId").ToString()
-            Dim fileName As String = (String.Format("-ORDER-{0}-{1}.pdf", orderNo, storeId)).Replace(" ", "")
+            Dim OrderNumber As String = headerData.Tables(0).Rows(0).Item("OrderNumber").ToString()
+            Dim CustomerId As String = headerData.Tables(0).Rows(0).Item("CustomerId").ToString()
+            Dim fileName As String = (String.Format("-ORDER-{0}-{1}.pdf", OrderNumber, CustomerId)).Replace(" ", "")
+
+            Dim CreatedBy As String = headerData.Tables(0).Rows(0).Item("CreatedBy").ToString()
+            Dim CreatedByname As String = publicCfg.GetItemData(String.Format("SELECT FullName FROM CustomerLogins WHERE Id='{0}'", UCase(CreatedBy).ToString()))
+            Dim SubmittedBy As String = publicCfg.GetItemData(String.Format("SELECT FullName FROM CustomerLogins WHERE Id='{0}'", UCase(loginid).ToString()))
+            Dim isCustomer As Boolean = (CreatedByname = "Customer") AND (SubmittedBy = "Customer")
 
             If action = "preview" Or action = "download" Then
                 fileDirectory = HttpContext.Current.Server.MapPath("~/file/order/preview")
@@ -136,7 +141,8 @@ Partial Class Methods_Order_PdfOrderMethod
             End If
 
 
-            If action = "mail" Or action = "submit" Then
+            ' If (action = "mail" Or action = "submit") And (isCustomer = False) Then
+            If action = "mail" Or action = "submit"Then
                 fileDirectory = HttpContext.Current.Server.MapPath("~/file/order/mail")
                 
                 If action = "submit" Then
@@ -159,7 +165,7 @@ Partial Class Methods_Order_PdfOrderMethod
                 ' If currentDomain.Contains("onlineorder.au") Then
                     ' publicCfg.MailOrder(headerid, fileDirectory)
                 ' Else
-                    Dim Res As String = MailSubmitOrder(headerid, fileDirectory)
+                    Dim Res As String = MailSubmitOrder(headerid, loginid, fileDirectory)
                     IF Not Res = "200" Then
                         Throw New Exception(Res)
                     End If
@@ -174,7 +180,7 @@ Partial Class Methods_Order_PdfOrderMethod
         End Try
     End Function
 
-    Private Shared Function MailSubmitOrder(headerid As String, directory As String) As String
+    Private Shared Function MailSubmitOrder(headerid As String, loginid As String, directory As String) As String
         Try
             Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType IN ('Blinds', 'Door and Window') ", headerid))
             If OrderData.Tables(0).Rows.Count = 0 Then Return "invalid orders"
@@ -183,6 +189,11 @@ Partial Class Methods_Order_PdfOrderMethod
             Dim OrderNumber As String = OrderData.Tables(0).Rows(0).Item("OrderNumber").ToString()
             Dim OrderName As String = OrderData.Tables(0).Rows(0).Item("OrderName").ToString()
             Dim Delivery As String = OrderData.Tables(0).Rows(0).Item("Delivery").ToString()
+            Dim CreatedBy As String = OrderData.Tables(0).Rows(0).Item("CreatedBy").ToString()
+
+            Dim CreatedByName As String = publicCfg.GetItemData(String.Format("SELECT FullName FROM CustomerLogins  WHERE Id ='{0}'", UCase(CreatedBy).ToString()))
+            Dim SubmittedBy As String = publicCfg.GetItemData(String.Format("SELECT FullName FROM CustomerLogins  WHERE Id ='{0}'", UCase(loginid).ToString()))
+            Dim Roles As String = publicCfg.GetItemData(String.Format("SELECT clr.Name FROM CustomerLogins cl INNER JOIN CustomerLoginRoles clr ON clr.id=cl.RoleId WHERE cl.Id='{0}'", UCase(loginid).ToString()))
 
             Dim AppId As String = publicCfg.GetItemData(String.Format("SELECT ApplicationId FROM CustomerLogins WHERE CustomerId = '{0}'", CustomerId))
             Dim mailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM Mailings WHERE ApplicationId = '{0}' AND Name = 'Submit Order Blinds' AND Active = '1' ", AppId))
@@ -210,13 +221,17 @@ Partial Class Methods_Order_PdfOrderMethod
             mailBody += "<br />"
             mailBody += "This is an automated message confirming the receipt of your order. Your order has been successfully registered and has been forwarded directly to our production system for processing. Please note that due to this streamlined process, we regret to inform you that we are unable to accept cancellations or modifications for this order. For any inquiries or assistance, kindly contact our office.<br /><b>Please do not reply to this email as it is unattended. We appreciate your understanding and trust in our products & services</b>."
             mailBody += "<br /><br />"
-            mailBody += "Customer Name : " & CustomerName
+            mailBody += String.Format("Customer Name : {0}", CustomerName)
             mailBody += "<br />"
-            mailBody += "Order Number : " & OrderNumber
+            mailBody += String.Format("Order Number : {0}", OrderNumber)
             mailBody += "<br />"
-            mailBody += "Order Name : " & OrderName
-            mailBody += "<br /><br />"
-            mailBody += "Detail order as attached PDF."
+            mailBody += String.Format("Order Name : {0}", OrderName)
+            mailBody += "<br />"
+            ' mailBody += String.Format("Order Created By : <b>{0}</b>", CreatedByName)
+            ' mailBody += "<br />"
+            ' mailBody += String.Format("Submitted By : <b>{0} - {1}</b>", SubmittedBy, Roles)
+            mailBody += "<br />"
+            mailBody += "<br /> Detail order as attached PDF."
 
             mailBody += "<br /><br />"
             mailBody += "Kind regards,"

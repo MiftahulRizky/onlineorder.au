@@ -36,8 +36,13 @@ Partial Class Console_ReminderOrderDraft
                 Dim CreatedDate As String = SafeGet(row, "CreatedDate")
 
                 If OrderNumber.ToLower().Contains("test") Or OrderNumber.ToLower().Contains("tes") Or OrderName.ToLower().Contains("test") Or OrderName.ToLower().Contains("tes") Then
-                     Continue For
+                    Continue For
                 End If
+
+                ' Dim Roles As String = publicCfg.GetItemData(String.Format("SELECT clr.Name FROM CustomerLogins cl INNER JOIN CustomerLoginRoles clr ON clr.id=cl.RoleId WHERE cl.Id='{0}'", UCase(CreatedBy).ToString()))
+                ' If Not Roles.ToLower().Contains("customer") Then
+                '     Continue For
+                ' End If
 
                 Dim ThisTime As DateTime
                 If DateTime.TryParse(CreatedDate, ThisTime) Then
