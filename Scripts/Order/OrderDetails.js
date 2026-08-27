@@ -970,6 +970,7 @@ const handlerCreatePDFOrder = async (headerid, action) => {
       body: JSON.stringify({
         headerid,
         action,
+        loginid: LOGINID,
       }),
     });
     Swal.close();
@@ -1076,7 +1077,7 @@ const handlerSubmitOrder = async (headerid, action, msgloading) => {
       fetch(`${PDFORDERMETHOD}/CreatePDFOrder`, {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({ headerid, action }),
+        body: JSON.stringify({ headerid, action, loginid: LOGINID }),
       }),
     ]);
 
