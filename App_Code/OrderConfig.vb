@@ -1334,7 +1334,7 @@ Public Class OrderConfig
                         thisGridMatrix = gridMatrix * sqm
                        
                         If sqm < 0.5 Then
-                            thisGridMatrix = gridMatrix
+                            thisGridMatrix = gridMatrix * 0.5
                             descriptionPrice = "Minimum Opening Size Charge (" & priceGroupName & ")"
                         End If
 
