@@ -320,14 +320,14 @@ const bindDropFloor = () => {
 
 const bindMounting = (blindname) => {
   if (!blindname) return;
-  let list = ["Face Fit", "Reveal Fit"];
-  if (
-    !["50mm Aluminium", "50mm Timberstyle", "63mm Timberstyle"].includes(
-      blindname,
-    )
-  ) {
-    list.push("Make Size");
-  }
+  let list = ["Face Fit", "Reveal Fit", "Make Size"];
+  // if (
+  //   !["50mm Aluminium", "50mm Timberstyle", "63mm Timberstyle"].includes(
+  //     blindname,
+  //   )
+  // ) {
+  //   list.push("Make Size");
+  // }
   generateOption("mounting", list);
 };
 
