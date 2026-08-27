@@ -271,7 +271,7 @@ Partial Class Methods_Order_VenetianMethod
 
             If InArray(BlindName, "25mm Aluminium", "50mm Aluminium", "50mm Timberstyle", "63mm Timberstyle") Then
                 If String.IsNullOrEmpty(data.bottom) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom is required !",.field = "bottom"}}
+                    ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bottom is required !",.field = "bottom"}}
                 End If
             End If
 
