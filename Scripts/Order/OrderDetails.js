@@ -2326,7 +2326,7 @@ const submitEditPricing = async (button) => {
 
   try {
     button.innerHTML = "Proccessing...";
-    swalLoadingShow("Please wait...");
+    swalLoadingShow("Please wait while we change the pricing.");
 
     const response = await fetch(`${URIMETHOD}/OverwritePricing`, {
       method: "POST",

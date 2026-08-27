@@ -2270,9 +2270,10 @@ Partial Class Methods_Order_OrderDetailMethod
 
             Dim updatedCount As Integer = 0
             Dim OrderType As String = publicCfg.GetItemData(String.Format("SELECT OrderType FROM OrderHeaders where Id={0}", data.headerid))
-            Dim DetailData As Dataset = publicCfg.GetListData(String.Format("SELECT DesignId, BlindId FROM view_details WHERE Id='{0}'", data.itemid))
+            Dim DetailData As Dataset = publicCfg.GetListData(String.Format("SELECT DesignId, BlindId, FabricType FROM view_details WHERE Id='{0}'", data.itemid))
             Dim DesignId As String = DetailData.Tables(0).Rows(0)("DesignId").ToString()
             Dim BlindId As String = DetailData.Tables(0).Rows(0)("BlindId").ToString()
+            Dim FabricType As String = DetailData.Tables(0).Rows(0)("FabricType").ToString()
 
             For Each item In data.details
 
@@ -2292,7 +2293,8 @@ Partial Class Methods_Order_OrderDetailMethod
                     "",
                     item.poa,
                     DesignId,
-                    BlindId
+                    BlindId,
+                    FabricType
                 }
                 Dim Discount As Decimal = publicCfg.HitungDiscount(ListParamDiscount)
                 Dim DiscountB As Decimal = publicCfg.HitungCustomDiscount(data.headerid, data.itemid, (item.poa - Discount), item.type)
