@@ -611,7 +611,7 @@ const bindOrderAggregate = async (headerid, ordertype) => {
       throw new Error(data.message);
     }
 
-    console.log(data);
+    // console.log(data);
 
     handlerHeaderInfo(data.header);
     bindDetails(data.detail);

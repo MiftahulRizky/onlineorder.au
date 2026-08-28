@@ -387,7 +387,7 @@ const bindFormAggregate = async () => {
       throw new Error(data.message);
     }
 
-    console.log(data);
+    // console.log(data);
 
     bindPageTitle(data.DesignName);
     bindHeaderInfo(data.HeaderData);
@@ -1079,7 +1079,7 @@ const bindItemOrders = async () => {
     if (data.error) {
       throw new Error(data.message);
     }
-    console.log(data);
+    // console.log(data);
     const detail = data.DetailData;
 
     bindSelectPayload(data.Brackets, "brackettype", true, 1);
@@ -1321,7 +1321,6 @@ const handlerElementVisibility = async (
     }
 
     if (item) {
-      console.log(item.NextDescText);
       toggleShow(elForm.divAttention, item.NextDescVisible);
       toggleShow(elForm.lblNextDesc, item.NextDescVisible);
       elForm.lblNextDesc.innerHTML = item.NextDescText;

@@ -140,11 +140,7 @@
                                     <div class="mb-3 row" id="divMounting">
                                         <label for="mounting" class="col-lg-3 text-uppercase fw-bold" >mounting</label>
                                         <div class="col-lg-4">
-                                            <select name="mounting" id="mounting" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Face Fit">FACE FIT</option>
-                                                <option value="Reveal Fit">REVEAL FIT</option>
-                                            </select>
+                                            <select name="mounting" id="mounting" class="form-select"></select>
                                         </div>  
                                     </div>
 
@@ -205,10 +201,7 @@
                                     <div class="mb-3 row" id="divMotorBattery">
                                         <label for="externalbattery" class="col-lg-3 text-uppercase fw-bold">external battery</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="externalbattery" id="externalbattery" class="form-select">
-                                                <!-- <option value=""></option> -->
-                                                <option value="Yes">YES</option>
-                                            </select>
+                                            <select type="text" name="externalbattery" id="externalbattery" class="form-select"></select>
                                         </div>  
                                     </div>
 
@@ -222,21 +215,14 @@
                                     <div class="mb-3 row" id="divCableExitPoint">
                                         <label for="cableexitpoint" class="col-lg-3 text-uppercase fw-bold">cable exit point</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="cableexitpoint" id="cableexitpoint" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Side">SIDE</option>
-                                                <option value="Top">TOP</option>
-                                            </select>
+                                            <select type="text" name="cableexitpoint" id="cableexitpoint" class="form-select"></select>
                                         </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divConnector">
                                         <label for="connector" class="col-lg-3 text-uppercase fw-bold">flush connect</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="connector" id="connector" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Yes">YES</option>
-                                            </select>
+                                            <select type="text" name="connector" id="connector" class="form-select"></select>
                                             <small class="form-hint">* Flush Connector Housing</small>
                                         </div>  
                                     </div>
@@ -244,11 +230,7 @@
                                     <div class="mb-3 row" id="divRoll">
                                         <label for="roll" class="col-lg-3 text-uppercase fw-bold">roll direction</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="roll" id="roll" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Reverse Roll">REVERSE ROLL</option>
-                                                <option value="Standard">STANDARD</option>
-                                            </select>
+                                            <select type="text" name="roll" id="roll" class="form-select"></select>
                                         </div>  
                                     </div>
 
@@ -256,11 +238,7 @@
                                         <label for="controlposition" class="col-lg-3 text-uppercase fw-bold" id="lblControlPosition">control position</label>
                                         <div class="col-lg-4">
                                             <div class="input-group">
-                                                <select type="text" name="controlposition" id="controlposition" class="form-select">
-                                                    <option value=""></option>
-                                                    <option value="Left">LEFT</option>
-                                                    <option value="Right">RIGHT</option>
-                                                </select>
+                                                <select type="text" name="controlposition" id="controlposition" class="form-select"></select>
                                                 <button class="btn btn-primary btn-information" type="button" id="btnInfoControlPosition">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
@@ -351,20 +329,14 @@
                                     <div class="mb-3 row" id="divBracketCover">
                                         <label for="bracketcovers" class="col-lg-3 text-uppercase fw-bold" >bracket covers</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="bracketcovers" id="bracketcovers" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Yes">YES</option>
-                                            </select>
+                                            <select type="text" name="bracketcovers" id="bracketcovers" class="form-select"></select>
                                         </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divBracketExt">
                                         <label for="bracketext" class="col-lg-3 text-uppercase fw-bold" >bracket extension</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="bracketext" id="bracketext" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Yes">YES</option>
-                                            </select>
+                                            <select type="text" name="bracketext" id="bracketext" class="form-select"></select>
                                         </div>  
                                     </div>
 
@@ -421,7 +393,7 @@
 
     <!-- Modal Infro Trim -->
     <div class="modal fade" id="modalInfoTrim" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalInfoTrimLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content ">
                 <div class="modal-header">
                     <h1 class="modal-title" id="modalInfoTrimLabel">Information</h1>
