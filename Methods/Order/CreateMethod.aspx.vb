@@ -24,6 +24,7 @@ Partial Class Methods_Order_CreateMethod
         Public Property shipmentid As String
         Public Property ordertype As String
         Public Property customer As String
+        Public Property customerold As String
         Public Property createdby As String
         Public Property createddate As String
         Public Property ordernumber As String
@@ -218,7 +219,11 @@ Partial Class Methods_Order_CreateMethod
 
                     Dim OrderNumber As String = data.ordernumber.Trim()
                     Dim FindOrderNumberAllCust As String = publicCfg.GetItemData(String.Format("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '{0}' AND CustomerId <> '{1}' AND Active = 1", OrderNumber, data.customer))
-                    If String.Equals(OrderNumber.Trim(), FindOrderNumberAllCust, StringComparison.OrdinalIgnoreCase) Then
+                    Dim OtherCustomerId As String = publicCfg.GetItemData(String.Format("SELECT CustomerId FROM view_order_headers WHERE OrderNumber = '{0}'", FindOrderNumberAllCust))
+
+                    Dim OrderNumberSame As boolean = String.Equals(OrderNumber.Trim(), FindOrderNumberAllCust, StringComparison.OrdinalIgnoreCase)
+                    Dim CustomerOldSame As boolean = String.Equals(data.customerold, OtherCustomerId, StringComparison.OrdinalIgnoreCase)
+                    If OrderNumberSame And CustomerOldSame = False Then
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "order number already exist !", .field = "ordernumber"}}
                     End If
                 End If

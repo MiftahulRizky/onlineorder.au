@@ -583,6 +583,7 @@ const handlerSetElementValues = (itemData) => {
     ordertype: "OrderType",
     id: "Id",
     customer: "CustomerId",
+    customerold: "CustomerId",
     createdby: "CreatedBy",
     createddate: "CreatedDate",
     ordernumber: "OrderNumber",

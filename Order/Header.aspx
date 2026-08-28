@@ -37,6 +37,7 @@
                                     <label for="customer" class="col-lg-4 form-label text-uppercase required" id="lblcustomer">customer name</label>
                                     <div class="col-lg-8">
                                         <select name="customer" id="customer" class="form-select "></select>
+                                        <input type="text" name="customerold" id="customerold" class="form-control" readonly hidden >
                                     </div>
                                 </div>
 
