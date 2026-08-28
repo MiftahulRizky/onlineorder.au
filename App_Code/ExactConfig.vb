@@ -294,7 +294,11 @@ Public Class ExactConfig
                         Dim kitId As String = detailData.Tables(0).Rows(i).Item("KitId").ToString()
                         Dim totalMatrix As Decimal = detailData.Tables(0).Rows(i).Item("TotalMatrix").ToString()
                         Dim totalCharge As Decimal = detailData.Tables(0).Rows(i).Item("TotalCharge").ToString()
-                        Dim finalCost As Decimal = totalMatrix + totalCharge
+                        Dim Matrix As String = GetItemData(String.Format("SELECT SUM(( odp.Cost * odp.Qty ) - ( odp.Qty * ISNULL( odp.Discount, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountB, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountC, 0 ) )) As Matrix FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Matrix' AND od.Active='1'", Id, itemId))
+                        Dim Charge As String = GetItemData(String.Format("SELECT SUM(( odp.Cost * odp.Qty ) - ( odp.Qty * ISNULL( odp.Discount, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountB, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountC, 0 ) )) As Charge FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.Id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Charge' AND odp.Description NOT LIKE '%Powder Coating%' AND odp.Description NOT LIKE '%Tracking & Interlock%' AND od.Active='1'", Id, itemId))
+                        
+                        ' Dim finalCost As Decimal = totalMatrix + totalCharge
+                        Dim finalCost As Decimal = If(Matrix = "", 0D, CDec(Matrix)) + If(Charge = "", 0D, CDec(Charge))
                         Dim finalCostString As String = finalCost.ToString(CultureInfo.InvariantCulture)
 
                         Dim exactProduct As String = detailData.Tables(0).Rows(i).Item("ExactId").ToString()

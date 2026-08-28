@@ -1214,7 +1214,7 @@ Partial Class Methods_Order_OrderDetailMethod
             End If
 
             ' Ambil semua detail sekaligus
-            Dim query As String = "SELECT Id, Mounting, KitName, BlindName, BracketType, TubeType, ControlType, FabricId, FabricIdB, DesignId, BlindId, DesignName, BottomHoldDown, PelmetType, OrderDelivery FROM view_details WHERE HeaderId='" & headerid & "' AND Active='1' ORDER BY Id, BlindNo, DesignName ASC"
+            Dim query As String = "SELECT Id, Mounting, KitName, BlindName, BracketType, TubeType, ControlType, FabricId, FabricType, FabricIdB, FabricTypeB, DesignId, BlindId, DesignName, BottomHoldDown, PelmetType, OrderDelivery FROM view_details WHERE HeaderId='" & headerid & "' AND Active='1' ORDER BY Id, BlindNo, DesignName ASC"
             Dim detailData As DataSet = publicCfg.GetListData(query)
 
             If detailData.Tables(0).Rows.Count < 1 Then
@@ -1230,7 +1230,9 @@ Partial Class Methods_Order_OrderDetailMethod
                 Dim controlType = row("ControlType").ToString()
                 Dim tubeType = row("TubeType").ToString()
                 Dim fabricId = row("FabricId").ToString()
+                Dim FabricType = row("FabricType").ToString()
                 Dim fabricIdB = row("FabricIdB").ToString()
+                Dim FabricTypeB = row("FabricTypeB").ToString()
                 Dim designId = row("DesignId").ToString()
                 Dim blindId = row("BlindId").ToString()
                 Dim designName = row("DesignName").ToString()
@@ -1344,7 +1346,8 @@ Partial Class Methods_Order_OrderDetailMethod
                                 "",
                                 Poa,
                                 designId,
-                                blindId
+                                blindId,
+                                FabricType
                             }
                             Dim Discount As Decimal = publicCfg.HitungDiscount(ListParamDiscount)
                             Dim DiscountB As Decimal = publicCfg.HitungCustomDiscount(headerid, itemId, (Poa - Discount), Type)
