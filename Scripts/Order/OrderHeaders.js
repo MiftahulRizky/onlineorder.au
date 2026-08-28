@@ -316,7 +316,7 @@ const bindProductType = async () => {
       throw new Error(data.message);
     }
 
-    console.log(data);
+    // console.log(data);
     generateOption("#ordertype", data.list, 10);
   } catch (error) {
     let msg = `bindProductType: ${error.message}`;
