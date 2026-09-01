@@ -263,7 +263,8 @@ Partial Class Methods_Order_VenetianMethod
                 End If
             End If
 
-            If InArray(BlindName, "25mm Aluminium", "50mm Aluminium", "50mm Timberstyle", "63mm Timberstyle") Then
+            ' If InArray(BlindName, "25mm Aluminium", "50mm Aluminium", "50mm Timberstyle", "63mm Timberstyle") Then
+            If InArray(BlindName, "25mm Aluminium", "50mm Aluminium") Then
                 If String.IsNullOrEmpty(data.bracket) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bracket is required !",.field = "bracket"}}
                 End If
