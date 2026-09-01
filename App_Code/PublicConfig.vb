@@ -1090,7 +1090,7 @@ Public Class PublicConfig
                 If designName = "Vertical Blinds" AndAlso blindName = "Slat Only" Then
                     Dim getMatrixSlat As Decimal = getMatrix * Convert.ToDecimal(SlatQty)
                     getMatrix = getMatrixSlat
-                    If getMatrixSlat < 10 Then : getMatrix = 0.00 : End If
+                    ' If getMatrixSlat < 10 Then : getMatrix = 0.00 : End If
                 End If
 
                 If designName = "Cellular Blinds" And blindName = "Potrait" Then
@@ -1185,15 +1185,16 @@ Public Class PublicConfig
                     thisDiscount,
                     thisCustomDiscount
                 }
-                If designName = "Vertical Blinds" AndAlso blindName = "Slat Only" Then
-                    If thisMatrix > 0 Then
-                        ' Call PriceDetail(HeaderId, ItemId, Type, qty, description, realMatrix, thisMatrix, thisDiscount, thisCustomDiscount)
-                        Call PriceDetail(ListParam)
-                    End If
-                Else
+
+                ' If designName = "Vertical Blinds" AndAlso blindName = "Slat Only" Then
+                '     If thisMatrix > 0 Then
+                '         ' Call PriceDetail(HeaderId, ItemId, Type, qty, description, realMatrix, thisMatrix, thisDiscount, thisCustomDiscount)
+                '         Call PriceDetail(ListParam)
+                '     End If
+                ' Else
                     ' Call PriceDetail(HeaderId, ItemId, Type, qty, description, realMatrix, thisMatrix, thisDiscount, thisCustomDiscount)
                     Call PriceDetail(ListParam)
-                End If
+                ' End If
 
             End If
 

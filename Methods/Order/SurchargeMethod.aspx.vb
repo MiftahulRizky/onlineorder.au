@@ -176,7 +176,7 @@ Partial Class Methods_Order_SurchargeMethod
                 ExactName = String.Format("{0} - {1}", DesignName, KitName)
             End If
             
-            IF InArray(BlindName, "Residential Home Address", "Interstate Further Surcharge", "Minimum Blind Surcharge", "Long Length", "NSW Country", "NSW Metro", "QLD", "SA", "VIC", "WA NT", "Fashade Pelmet",  "Uniline Pelmet") Then
+            IF InArray(BlindName, "Residential Home Address", "Interstate Further Surcharge", "Long Length", "NSW Country", "NSW Metro", "QLD", "SA", "VIC", "WA NT", "Fashade Pelmet",  "Uniline Pelmet") Then
                 If Delivery = "Pick Up" Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check delivery/pick up !", .field = "#modalAddService #id"}}
                 End If
@@ -189,7 +189,16 @@ Partial Class Methods_Order_SurchargeMethod
                 If BlindName = "Uniline Pelmet" Then 
                     PriceGroupName = String.Format("{0} - POA", BlindName)
                 End IF
+
             End If
+
+            If BlindName = "Minimum Surcharge" Then 
+                If InStr(KitName, "Roller") > 0 AND Delivery = "Pick Up" Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check delivery/pick up !", .field = "#modalAddService #id"}}
+                End If
+
+                PriceGroupName = KitName
+            End IF
 
             IF BlindName = "Third Party Delivery" Then
                 If Delivery = "Pick Up" Then
