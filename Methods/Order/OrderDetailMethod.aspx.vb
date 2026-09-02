@@ -186,6 +186,7 @@ Partial Class Methods_Order_OrderDetailMethod
                 WHERE h.Id = @Id 
                 AND h.OrderType = @OrderType 
                 AND h.Active = 1
+                AND odp.Description NOT LIKE @Description
 
                 GROUP BY 
                     h.Id, h.CustomerName, h.CustomerId, h.OrderId,
@@ -199,6 +200,7 @@ Partial Class Methods_Order_OrderDetailMethod
                 Using cmd As New SqlCommand(QueryHeader, conn)
                     cmd.Parameters.AddWithValue("@Id", data.headerid)
                     cmd.Parameters.AddWithValue("@OrderType", data.ordertype)
+                    cmd.Parameters.AddWithValue("@Description", "%Under $10%")
 
                     conn.Open()
 
@@ -283,7 +285,7 @@ Partial Class Methods_Order_OrderDetailMethod
                         SUM(CASE WHEN Type = @Matrix THEN Qty * Cost ELSE 0 END) AS Cost,
                         SUM(CASE WHEN Type = @Charge THEN Qty * Cost ELSE 0 END) AS Charge,
                         SUM((Discount + DiscountB + DiscountC) * Qty) AS Discount
-                    FROM OrderDetailsPrice
+                    FROM OrderDetailsPrice WHERE Description NOT LIKE @Description
                     GROUP BY ItemId
                 ) odp ON vd.Id = odp.ItemId
                 WHERE
@@ -298,6 +300,7 @@ Partial Class Methods_Order_OrderDetailMethod
                     cmd.Parameters.AddWithValue("@Active", "1")
                     cmd.Parameters.AddWithValue("@Matrix", "Matrix")
                     cmd.Parameters.AddWithValue("@Charge", "Charge")
+                    cmd.Parameters.AddWithValue("@Description", "%Under $10%")
 
                     conn.Open()
 
@@ -957,7 +960,7 @@ Partial Class Methods_Order_OrderDetailMethod
         Try
             Dim Id As String = reader("Id").ToString()
             Dim HeaderId As String = reader("HeaderId").ToString()
-            Dim result As String = publicCfg.GetItemData(String.Format("SELECT FORMAT(Cost, 'N2', 'en-US') AS FormatRealCost FROM OrderDetailsPrice WHERE Type ='Matrix' And HeaderId = '{0}' And ItemId = '{1}'", HeaderId, Id))
+            Dim result As String = publicCfg.GetItemData(String.Format("SELECT FORMAT(Cost, 'N2', 'en-US') AS FormatRealCost FROM OrderDetailsPrice WHERE Type ='Matrix' AND Description NOT LIKE '%Under $10%' AND HeaderId = '{0}' AND ItemId = '{1}'", HeaderId, Id))
 
             Return New With {.error = false, .value = result}
         Catch ex As Exception
@@ -1386,9 +1389,39 @@ Partial Class Methods_Order_OrderDetailMethod
                 End If
             Next
 
+            Dim AmountSlatOnly As Decimal = GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty) - (odp.Discount + odp.DiscountB + odp.DiscountC)) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId='{0}' AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1", headerid))
+
+            Dim UpdateAllDescriptionSlat As object = UpdateAllDescriptionPricingSlat(headerid, AmountSlatOnly)
+            If UpdateAllDescriptionSlat.error Then
+                Throw New Exception(UpdateAllDescriptionSlat.error.message)
+            End If
+
             Return New With {.success = true, .message = "Reload pricing has been updated successfully."}
         Catch ex As Exception
             Return New With {.error = true, .message = String.Format("ReloadPricing: {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared function UpdateAllDescriptionPricingSlat(headerid As String, amount As Decimal) As Object
+        Try
+            Dim Query As String = "UPDATE odp SET odp.Description = odp.Description + ' Under $10' FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId=@HeaderId AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1"
+
+            If amount > 10 Then
+                Query = "UPDATE odp SET odp.Description = REPLACE(odp.Description, ' Under $10', '') FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId=@HeaderId AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1"
+            End if
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand(Query, thisConn)
+                    myCmd.Parameters.AddWithValue("@HeaderId", headerid)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return New With {.error = False, .message = "Success"}
+        Catch ex As Exception
+           Return New With {.error = True, .message = ex.Message}
         End Try
     End Function
 
@@ -2135,6 +2168,12 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim dataLog As Object() = {headerid, NewItemId, OrderType, loginid, "Copy Item Order"}
             orderCfg.Log_Orders(dataLog)
 
+            Dim AmountSlatOnly As Decimal = GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty) - (odp.Discount + odp.DiscountB + odp.DiscountC)) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId='{0}' AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1", headerid))
+            Dim UpdateAllDescriptionSlat As object = UpdateAllDescriptionPricingSlat(headerid, AmountSlatOnly)
+            If UpdateAllDescriptionSlat.error Then
+                Throw New Exception(UpdateAllDescriptionSlat.error.message)
+            End If
+
             Return New With {.success = true, .message = "Data has been copied successfully, Click <b>OK</b> to reload item list."}
         Catch ex As Exception
             Return New With {.error = true, .message = String.Format("CopyItem: {0}", ex.Message)}
@@ -2147,7 +2186,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function DeleteItem(ByVal id As String) As Object
+    Public Shared Function DeleteItem(ByVal id As String, ByVal headerid As String) As Object
         Try
             If String.IsNullOrEmpty(id) Then
                 Throw New Exception("id is null or empty !")
@@ -2164,6 +2203,8 @@ Partial Class Methods_Order_OrderDetailMethod
 
             UpdateDetail(id)
             DeleteDetail(id)
+            DeletePrices(id)
+
 
             Dim NewBlindNo As String = String.Empty
             If BracketName = "Double" Or BracketName = "Linked 2 Blinds (Dep)" Or BracketName = "Linked 2 Blinds (Ind)" Then
@@ -2193,6 +2234,12 @@ Partial Class Methods_Order_OrderDetailMethod
                 End If
             End If
 
+            Dim AmountSlatOnly As Decimal = GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty) - (odp.Discount + odp.DiscountB + odp.DiscountC)) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId='{0}' AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1", headerid))
+            Dim UpdateAllDescriptionSlat As object = UpdateAllDescriptionPricingSlat(headerid, AmountSlatOnly)
+            If UpdateAllDescriptionSlat.error Then
+                Throw New Exception(UpdateAllDescriptionSlat.error.message)
+            End If
+
             Return New With { .success = true, .message = "Data has been deleted successfully, Click <b>OK</b> to reload item list."}
         Catch ex As Exception
             Return New With { .error = true, .message = ex.Message}
@@ -2211,9 +2258,21 @@ Partial Class Methods_Order_OrderDetailMethod
         End Using
     End Sub
 
-     Private Shared Sub DeleteDetail(ByVal id As String)
+    Private Shared Sub DeleteDetail(ByVal id As String)
         Using thisConn As New SqlConnection(myConn)
             Using myCmd As New SqlCommand("UPDATE OrderDetails SET Active=0 WHERE Id=@Id", thisConn)
+                myCmd.Parameters.AddWithValue("@Id", id)
+                myCmd.Connection = thisConn
+                thisConn.Open()
+                myCmd.ExecuteNonQuery()
+                thisConn.Close()
+            End Using
+        End Using
+    End Sub
+
+    Private Shared Sub DeletePrices(ByVal id As String)
+        Using thisConn As New SqlConnection(myConn)
+            Using myCmd As New SqlCommand("DELETE OrderDetailsPrice WHERE ItemId=@Id", thisConn)
                 myCmd.Parameters.AddWithValue("@Id", id)
                 myCmd.Connection = thisConn
                 thisConn.Open()
@@ -2438,12 +2497,12 @@ Partial Class Methods_Order_OrderDetailMethod
                                 isOpacity = "opacity-50"
                             End If
 
-                            ' If isMatrix AND  isUnder10 > 0 Then 
-                            '     ThisCost = String.Format("<span class='text-decoration-line-through'>{0}</span>", ThisCost)
-                            '     ThisFinalCost = String.Format("<span class='text-decoration-line-through'>{0}</span>", ThisFinalCost)
-                            '     If Not isRoles Then isContinue = true
-                            '     isOpacity = "opacity-50"
-                            ' End If
+                            If isMatrix AND  isUnder10 > 0 Then 
+                                ThisCost = String.Format("<span class='text-decoration-line-through'>{0}</span>", ThisCost)
+                                ThisFinalCost = String.Format("<span class='text-decoration-line-through'>{0}</span>", ThisFinalCost)
+                                If Not isRoles Then isContinue = true
+                                isOpacity = "opacity-50"
+                            End If
                             
 
                             PricingData.Add(New With {

@@ -1523,7 +1523,7 @@ const handlerDeleteItem = async (id, product) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ id, headerid: HEADERID }),
     });
 
     if (!response.ok) {

@@ -676,6 +676,19 @@ Partial Class Methods_Order_VerticalBlindMethod
                 msg = "Item updated successfully !"
             End If
 
+            
+            If BlindName = "Slat Only" Then
+                Dim AmountSlatOnly As Decimal = GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty) - (odp.Discount + odp.DiscountB + odp.DiscountC)) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId='{0}' AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1", data.headerid))
+
+                Dim UpdateAllDescriptionSlat As object = UpdateAllDescriptionPricingSlat(data.headerid, AmountSlatOnly)
+                If UpdateAllDescriptionSlat.error Then
+                   Throw New Exception(UpdateAllDescriptionSlat.error.message)
+                End If
+              
+            End If
+
+
+
 
 
             Return New SuccessResponse With {.success = msg}
@@ -685,6 +698,29 @@ Partial Class Methods_Order_VerticalBlindMethod
             Return New ErrorResponse With { .error = New ErrorDetail With { .message = msg, .field = ""}}
         End Try
     End Function  
+
+    Private Shared function UpdateAllDescriptionPricingSlat(headerid As String, amount As Decimal) As Object
+        Try
+            Dim Query As String = "UPDATE odp SET odp.Description = odp.Description + ' Under $10' FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId=@HeaderId AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1"
+
+            If amount > 10 Then
+                Query = "UPDATE odp SET odp.Description = REPLACE(odp.Description, ' Under $10', '') FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId=@HeaderId AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1"
+            End if
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand(Query, thisConn)
+                    myCmd.Parameters.AddWithValue("@HeaderId", headerid)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return New With {.error = False, .message = "Success"}
+        Catch ex As Exception
+           Return New With {.error = True, .message = ex.Message}
+        End Try
+    End Function
 
 
     Private Shared Function GetCarrierSpacer(ListParam As List(Of Object)) As String
