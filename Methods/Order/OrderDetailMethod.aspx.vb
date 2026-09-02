@@ -2477,7 +2477,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function ExactSlip(ByVal headerid As String, ByVal ordertype As String) As Object
+    Public Shared Function ExactSlip(ByVal headerid As String, ByVal ordertype As String, ByVal rolename As String) As Object
         Try
             Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id='{0}' AND OrderType='{1}'", headerid, ordertype))
             If HeaderData.Tables(0).Rows.Count < 1 Then
@@ -2490,7 +2490,7 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim FilePath As String = HttpContext.Current.Server.MapPath("~/file/inv/")
             Dim PathCombine As String = Path.Combine(FilePath, FileName)
 
-            If Not Status = "In Production" Then
+            If Not Status = "In Production" AND Not rolename = "Administrator" Then
                 Return New With {.warning = true, .message = "This order is not in production."}
             End If
 

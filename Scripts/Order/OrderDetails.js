@@ -1322,7 +1322,11 @@ const handlerExactSlip = async () => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ headerid: HEADERID, ordertype: ORDERTYPE }),
+      body: JSON.stringify({
+        headerid: HEADERID,
+        ordertype: ORDERTYPE,
+        rolename: ROLENAME,
+      }),
     });
 
     if (!response.ok) {
