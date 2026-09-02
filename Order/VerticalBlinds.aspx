@@ -287,6 +287,39 @@
                                         </div>  
                                     </div>
 
+                                    <div class="mb-3 row" id="divCarriers">
+                                        <label for="carrier" class="col-lg-3 text-uppercase fw-bold" >carrier qty</label>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <input type="number" min="0" name="carrier" id="carrier" class="form-control "  autocomplete="off">
+                                                <span class="input-group-text">
+                                                    <input class="form-check-input m-0" type="checkbox" name="carrieroverride" id="carrieroverride" >
+                                                    <label class="form-check-label ms-2" for="carrieroverride">Override</label>
+                                                </span>
+                                            </div>  
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divSpacer">
+                                        <label for="spacer" class="col-lg-3 text-uppercase fw-bold" >spacer size</label>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <input type="number" min="0" name="spacer" id="spacer" class="form-control "  autocomplete="off">
+                                                <span class="input-group-text">
+                                                    <input class="form-check-input m-0" type="checkbox" name="spaceroverride" id="spaceroverride" >
+                                                    <label class="form-check-label ms-2" for="spaceroverride">Override</label>
+                                                </span>
+                                            </div>  
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divFabricDrop">
+                                        <label for="tape" class="col-lg-3 text-uppercase fw-bold" >fabric cut drop</label>
+                                        <div class="col-lg-4">
+                                            <input type="number" min="0" name="fabricdrop" id="fabricdrop" class="form-control "  autocomplete="off" readonly>
+                                        </div>  
+                                    </div>
+
                                     <div class="mb-3 row" >
                                         <label for="notes" class="col-lg-3 text-uppercase fw-bold">special information</label>
                                         <div class="col-lg-8">

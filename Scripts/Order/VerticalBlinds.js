@@ -1097,6 +1097,9 @@ const handlerElementVisibility = async (
     const divBottom = document.getElementById("divBottom");
     const divInsertInTrack = document.getElementById("divInsertInTrack");
     const divSloper = document.getElementById("divSloper");
+    const divCarriers = document.getElementById("divCarriers");
+    const divSpacer = document.getElementById("divSpacer");
+    const divFabricDrop = document.getElementById("divFabricDrop");
     const divMarkUp = document.getElementById("divMarkUp");
 
     const btnSubmit = document.querySelector("#btnSubmit");
@@ -1126,6 +1129,9 @@ const handlerElementVisibility = async (
     divBottom.classList.add("d-none");
     divInsertInTrack.classList.add("d-none");
     divSloper.classList.add("d-none");
+    divCarriers.classList.add("d-none");
+    divSpacer.classList.add("d-none");
+    divFabricDrop.classList.add("d-none");
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
 
@@ -1160,6 +1166,9 @@ const handlerElementVisibility = async (
       divHangerType.classList.remove("d-none");
       divBottom.classList.remove("d-none");
       divSloper.classList.remove("d-none");
+      divCarriers.classList.remove("d-none");
+      divSpacer.classList.remove("d-none");
+      divFabricDrop.classList.remove("d-none");
 
       if (tubetype === "Fairline") {
         divInsertInTrack.classList.remove("d-none");
@@ -1195,6 +1204,9 @@ const handlerElementVisibility = async (
       divBrackets.classList.remove("d-none");
       divHangerType.classList.remove("d-none");
       divSloper.classList.remove("d-none");
+      divCarriers.classList.remove("d-none");
+      divSpacer.classList.remove("d-none");
+      // divFabricDrop.classList.remove("d-none");
 
       if (tubetype === "Fairline") {
         divInsertInTrack.classList.remove("d-none");
@@ -1279,6 +1291,11 @@ const handlerSubmit = async (button) => {
       "bottom",
       "inserttrack",
       "sloper",
+      "carrier",
+      "carrieroverride",
+      "spacer",
+      "spaceroverride",
+      "fabricdrop",
       "notes",
       "markup",
     ];
@@ -1292,8 +1309,18 @@ const handlerSubmit = async (button) => {
       rolename: ROLENAME,
     };
 
+    // fields.forEach((field) => {
+    //   formData[field] = document.getElementById(field).value;
+    // });
+
     fields.forEach((field) => {
-      formData[field] = document.getElementById(field).value;
+      const el = document.getElementById(field);
+
+      if (el.type === "checkbox") {
+        formData[field] = el.checked; // true / false
+      } else {
+        formData[field] = el.value;
+      }
     });
 
     // return console.table(formData);
@@ -1368,11 +1395,25 @@ const handlerSetElementValues = (itemData) => {
     bottom: "BottomHoldDown",
     inserttrack: "InsertInTrack",
     sloper: "Sloper",
+    fabricdrop: "CustomHeaderLength",
     notes: "Notes",
     markup: "MarkUp",
   };
 
-  console.log(itemData);
+  const jsonFields = [
+    {
+      inputId: "carrier",
+      checkboxId: "carrieroverride",
+      dataKey: "FrameType",
+    },
+    {
+      inputId: "spacer",
+      checkboxId: "spaceroverride",
+      dataKey: "FrameLeft",
+    },
+    // tinggal tambah di sini nanti
+  ];
+
   // Set nilai ke input sesuai mapping
   Object.entries(mapping).forEach(([id, key]) => {
     const el = document.getElementById(id);
@@ -1411,6 +1452,14 @@ const handlerSetElementValues = (itemData) => {
 
     // jika nilainya "0" → kosong
     if (el.value === "0") el.value = "";
+  });
+
+  jsonFields.forEach(({ inputId, checkboxId, dataKey }) => {
+    setJsonField({
+      inputId,
+      checkboxId,
+      rawValue: itemData[dataKey],
+    });
   });
 
   const maxLength = 1000;
@@ -1491,4 +1540,23 @@ const generateOption = (elementId, list = [], lengthDefaultOption = 0) => {
     option.setAttribute("data-name", item);
     sel.add(option);
   });
+};
+const setJsonField = ({ inputId, checkboxId, rawValue }) => {
+  const inputEl = document.getElementById(inputId);
+  const checkboxEl = document.getElementById(checkboxId);
+
+  if (!inputEl || !checkboxEl || !rawValue) return;
+
+  try {
+    const parsed = JSON.parse(rawValue);
+
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const { value, checked } = parsed[0];
+
+      inputEl.value = value ?? "";
+      checkboxEl.checked = checked ?? false;
+    }
+  } catch (err) {
+    console.error(`JSON parse error (${inputId})`, err);
+  }
 };

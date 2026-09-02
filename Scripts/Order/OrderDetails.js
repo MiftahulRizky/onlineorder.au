@@ -533,7 +533,8 @@ document.querySelector("#tableAjax").addEventListener("click", async (e) => {
   if (id === "btnDeleteItem") {
     const itemid = e.target.dataset.id;
     const product = e.target.dataset.product;
-    handlerDeleteItem(itemid, product);
+    const headerid = e.target.dataset.headerid;
+    handlerDeleteItem(itemid, headerid, product);
   }
 
   if (e.target.id === "btnEditPricingItem") {
@@ -676,7 +677,7 @@ const bindDetails = (details) => {
                   </a>
                 </li>
                 <li class="liDeleteItem">
-                  <a class="dropdown-item text-danger" href="javascript:void(0);" id="btnDeleteItem" data-id="${row.Id}" data-product="${row.Product}">
+                  <a class="dropdown-item text-danger" href="javascript:void(0);" id="btnDeleteItem" data-id="${row.Id}" data-product="${row.Product}" data-headerid="${row.HeaderId}">
                     <i class="ti ti-trash-x me-1 opacity-50 fs-2"></i>Delete
                   </a>
                 </li>
@@ -1499,7 +1500,7 @@ const handlerCopyItem = async (id, headerid, product) => {
   }
 };
 
-const handlerDeleteItem = async (id, product) => {
+const handlerDeleteItem = async (id, headerid, product) => {
   const result = await Swal.fire({
     title: "Sure delete this item ?",
     html: product,
@@ -1523,7 +1524,7 @@ const handlerDeleteItem = async (id, product) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ id, headerid: HEADERID }),
+      body: JSON.stringify({ id, headerid }),
     });
 
     if (!response.ok) {

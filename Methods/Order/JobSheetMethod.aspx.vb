@@ -4453,7 +4453,7 @@ Partial Class Methods_Order_JobSheetMethod
                                 tableName = "JobSheet_VeriShades"
 
                             Case "Vertical Blinds"
-                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "StackPosition", "ControlPosition", "ChainLength", "TrackColour", "WandColour", "WandLength", "SlatSize", "SlatQty", "BracketOption", "BracketColour", "BottomHoldDown", "HangerType", "Sloper", "InsertInTrack", "Notes", "KitName", "TubeType", "Spacer", "CarrierQty", "TubeSkinSize", "NumBoldNuts", "FabricCutDrop", "ControlType", "ChainName", "ChainColour", "CLength", "FabricName", "FabricType", "FabricColour", "FabricWidth"})
+                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "StackPosition", "ControlPosition", "ChainLength", "TrackColour", "WandColour", "WandLength", "SlatSize", "SlatQty", "BracketOption", "BracketColour", "BottomHoldDown", "HangerType", "Sloper", "InsertInTrack", "FrameType", "FrameLeft", "CustomHeaderLength", "Notes", "KitName", "TubeType", "Spacer", "CarrierQty", "TubeSkinSize", "NumBoldNuts", "FabricCutDrop", "ControlType", "ChainName", "ChainColour", "CLength", "FabricName", "FabricType", "FabricColour", "FabricWidth"})
 
                                 tableName = "JobSheet_Verticals"
 
@@ -16081,6 +16081,30 @@ Partial Class Methods_Order_JobSheetMethod
             End If
         Next
 
+        Dim inCarrier As String() = {
+            currentData("FrameType1").ToString(),
+            currentData("FrameType2").ToString(),
+            currentData("FrameType3").ToString(),
+            currentData("FrameType4").ToString(),
+            currentData("FrameType5").ToString(),
+            currentData("FrameType6").ToString()
+        }
+        For i As Integer = 0 To inCarrier.Length - 1
+            inCarrier(i) = GetJsonValue(inCarrier(i))
+        Next
+
+        Dim inSpacer As String() = {
+            currentData("FrameLeft1").ToString(),
+            currentData("FrameLeft2").ToString(),
+            currentData("FrameLeft3").ToString(),
+            currentData("FrameLeft4").ToString(),
+            currentData("FrameLeft5").ToString(),
+            currentData("FrameLeft6").ToString()
+        }
+        For i As Integer = 0 To inSpacer.Length - 1
+            inSpacer(i) = GetJsonValue(inSpacer(i))
+        Next
+
 
         
         '#Line Option
@@ -16143,26 +16167,48 @@ Partial Class Methods_Order_JobSheetMethod
                 result+= tdDetRight & currentData("SlatSize6").ToString() & tdDetEnd
             result+= trDetEnd
 
+            ' '#
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Carries Qty" & tdDetEnd
+            '     result+= tdDetStart & currentData("CarrierQty1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CarrierQty2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CarrierQty3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CarrierQty4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CarrierQty5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CarrierQty6").ToString() & tdDetEnd
+            ' result+= trDetEnd
+
+            ' '#
+            ' result+= trDetStart
+            '     result+= tdTitleStart & fs12Start & "Spacer Size (mm)" & fsEnd & tdDetEnd
+            '     result+= tdDetStart & currentData("Spacer1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Spacer2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Spacer3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Spacer4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Spacer5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("Spacer6").ToString() & tdDetEnd
+            ' result+= trDetEnd
+
             '#
             result+= trDetStart
-                result+= tdTitleStart & "Carries Qty" & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CarrierQty6").ToString() & tdDetEnd
+                result+= tdTitleStart & "Carrier Qty" & tdDetEnd
+                result+= tdDetStart & inCarrier(0) & tdDetEnd
+                result+= tdDetStart & inCarrier(1) & tdDetEnd
+                result+= tdDetStart & inCarrier(2) & tdDetEnd
+                result+= tdDetStart & inCarrier(3) & tdDetEnd
+                result+= tdDetStart & inCarrier(4) & tdDetEnd
+                result+= tdDetRight & inCarrier(5) & tdDetEnd
             result+= trDetEnd
 
             '#
             result+= trDetStart
-                result+= tdTitleStart & fs12Start & "Spacer Size (mm)" & fsEnd & tdDetEnd
-                result+= tdDetStart & currentData("Spacer1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Spacer2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Spacer3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Spacer4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Spacer5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("Spacer6").ToString() & tdDetEnd
+                result+= tdTitleStart & "Spacer (mm)" & tdDetEnd
+                result+= tdDetStart & inSpacer(0) & tdDetEnd
+                result+= tdDetStart & inSpacer(1) & tdDetEnd
+                result+= tdDetStart & inSpacer(2) & tdDetEnd
+                result+= tdDetStart & inSpacer(3) & tdDetEnd
+                result+= tdDetStart & inSpacer(4) & tdDetEnd
+                result+= tdDetRight & inSpacer(5) & tdDetEnd
             result+= trDetEnd
 
             '#Width
@@ -16325,14 +16371,23 @@ Partial Class Methods_Order_JobSheetMethod
             result+= trDetEnd
 
             '#FabricCutDrop
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Fabric Qty (M)" & tdDetEnd
+            '     result+= tdDetStart & currentData("FabricCutDrop1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("FabricCutDrop2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("FabricCutDrop3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("FabricCutDrop4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("FabricCutDrop5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("FabricCutDrop6").ToString() & tdDetEnd
+            ' result+= trDetEnd
             result+= trDetStart
                 result+= tdTitleStart & "Fabric Qty (M)" & tdDetEnd
-                result+= tdDetStart & currentData("FabricCutDrop1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("FabricCutDrop2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("FabricCutDrop3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("FabricCutDrop4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("FabricCutDrop5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("FabricCutDrop6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CustomHeaderLength1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CustomHeaderLength2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CustomHeaderLength3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CustomHeaderLength4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CustomHeaderLength5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("CustomHeaderLength6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#HangerType
@@ -16783,6 +16838,30 @@ Partial Class Methods_Order_JobSheetMethod
             End If
         Next
 
+        Dim inCarrier As String() = {
+            currentData("FrameType1").ToString(),
+            currentData("FrameType2").ToString(),
+            currentData("FrameType3").ToString(),
+            currentData("FrameType4").ToString(),
+            currentData("FrameType5").ToString(),
+            currentData("FrameType6").ToString()
+        }
+        For i As Integer = 0 To inCarrier.Length - 1
+            inCarrier(i) = GetJsonValue(inCarrier(i))
+        Next
+
+        Dim inSpacer As String() = {
+            currentData("FrameLeft1").ToString(),
+            currentData("FrameLeft2").ToString(),
+            currentData("FrameLeft3").ToString(),
+            currentData("FrameLeft4").ToString(),
+            currentData("FrameLeft5").ToString(),
+            currentData("FrameLeft6").ToString()
+        }
+        For i As Integer = 0 To inSpacer.Length - 1
+            inSpacer(i) = GetJsonValue(inSpacer(i))
+        Next
+
         
         '#Line Option
         result += LineOptions(currentData)
@@ -16844,26 +16923,48 @@ Partial Class Methods_Order_JobSheetMethod
                 result+= tdDetRight & currentData("SlatSize6").ToString() & tdDetEnd
             result+= trDetEnd
 
+            ' '#
+            ' result+= trDetStart
+            '     result+= tdTitleStart & "Carries Qty" & tdDetEnd
+            '     result+= tdDetStart & currentData("CarrierQty1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CarrierQty2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CarrierQty3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CarrierQty4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("CarrierQty5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("CarrierQty6").ToString() & tdDetEnd
+            ' result+= trDetEnd
+
+            ' '#
+            ' result+= trDetStart
+            '     result+= tdTitleStart & fs12Start & "Spacer Size (mm)" & fsEnd & tdDetEnd
+            '     result+= tdDetStart & currentData("Spacer1").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Spacer2").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Spacer3").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Spacer4").ToString() & tdDetEnd
+            '     result+= tdDetStart & currentData("Spacer5").ToString() & tdDetEnd
+            '     result+= tdDetRight & currentData("Spacer6").ToString() & tdDetEnd
+            ' result+= trDetEnd
+
             '#
             result+= trDetStart
-                result+= tdTitleStart & "Carries Qty" & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("CarrierQty5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("CarrierQty6").ToString() & tdDetEnd
+                result+= tdTitleStart & "Carrier Qty" & tdDetEnd
+                result+= tdDetStart & inCarrier(0) & tdDetEnd
+                result+= tdDetStart & inCarrier(1) & tdDetEnd
+                result+= tdDetStart & inCarrier(2) & tdDetEnd
+                result+= tdDetStart & inCarrier(3) & tdDetEnd
+                result+= tdDetStart & inCarrier(4) & tdDetEnd
+                result+= tdDetRight & inCarrier(5) & tdDetEnd
             result+= trDetEnd
 
             '#
             result+= trDetStart
-                result+= tdTitleStart & fs12Start & "Spacer Size (mm)" & fsEnd & tdDetEnd
-                result+= tdDetStart & currentData("Spacer1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Spacer2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Spacer3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Spacer4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("Spacer5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("Spacer6").ToString() & tdDetEnd
+                result+= tdTitleStart & "Spacer (mm)" & tdDetEnd
+                result+= tdDetStart & inSpacer(0) & tdDetEnd
+                result+= tdDetStart & inSpacer(1) & tdDetEnd
+                result+= tdDetStart & inSpacer(2) & tdDetEnd
+                result+= tdDetStart & inSpacer(3) & tdDetEnd
+                result+= tdDetStart & inSpacer(4) & tdDetEnd
+                result+= tdDetRight & inSpacer(5) & tdDetEnd
             result+= trDetEnd
 
             '#Width

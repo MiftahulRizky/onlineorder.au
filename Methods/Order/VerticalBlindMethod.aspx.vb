@@ -44,6 +44,11 @@ Partial Class Methods_Order_VerticalBlindMethod
         Public Property bottom As String
         Public Property inserttrack As String
         Public Property sloper As String
+        Public Property carrier As String
+        Public Property carrieroverride As String
+        Public Property spacer As String
+        Public Property spaceroverride As String
+        Public Property fabricdrop As String
         Public Property notes As String
         Public Property markup As String
         
@@ -401,6 +406,28 @@ Partial Class Methods_Order_VerticalBlindMethod
                 End If
             End If
 
+            Dim carrier As Integer
+            If data.carrieroverride = "True" Then
+                If String.IsNullOrEmpty(data.carrier) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "carrier qty is required !",.field = "carrier"}}
+                End If
+
+                If Not Integer.TryParse(data.carrier, carrier) OrElse carrier <= 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "carrier qty must be a positive integer !",.field = "carrier"}}
+                End If
+            End If
+
+            Dim spacer As Integer
+            If data.spaceroverride = "True" Then
+                If String.IsNullOrEmpty(data.spacer) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "spacer is required !",.field = "spacer"}}
+                End If
+
+                If Not Integer.TryParse(data.spacer, spacer) OrElse spacer <= 0 Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "spacer must be a positive integer !",.field = "spacer"}}
+                End If
+            End If
+
             If Not String.IsNullOrEmpty(data.notes) Then
                 If InStr(data.notes, "&") > 0 Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must not contain [&] character !",.field = "notes"}}
@@ -564,13 +591,65 @@ Partial Class Methods_Order_VerticalBlindMethod
             data.sizetype = ""
             data.dropfloor = ""
 
-            ' Throw New Exception(SlatSize)
+            '#Carrier Qty
+            If data.carrieroverride = "True" Then
+                Dim CreateJSON = New With { .value = carrier, .checked = True}
+                data.carrier = Newtonsoft.Json.JsonConvert.SerializeObject({CreateJSON})
+            Else If data.carrieroverride = "False" Then
+                Dim ListParamCarriers As New List(Of Object) From {
+                    SlatSize,
+                    data.tubetype,
+                    DesignName,
+                    BlindName,
+                    width,
+                    "CarrierQty",
+                    data.controlposition,
+                    data.stackposition
+                }
+                carrier = GetCarrierSpacer(ListParamCarriers)
+
+                Dim CreateJSON = New With { .value = carrier, .checked = False}
+                data.carrier = Newtonsoft.Json.JsonConvert.SerializeObject({CreateJSON})
+            End If
+
+            '#Spacer Size
+            If data.spaceroverride = "True" Then
+                Dim CreateJSON = New With { .value = spacer, .checked = True}
+                data.spacer = Newtonsoft.Json.JsonConvert.SerializeObject({CreateJSON})
+            Else If data.spaceroverride = "False" Then
+                Dim ListParamSpacer As New List(Of Object) From {
+                    SlatSize,
+                    data.tubetype,
+                    DesignName,
+                    BlindName,
+                    width,
+                    "Spacer1Type",
+                    data.controlposition,
+                    data.stackposition
+                }
+                spacer = GetCarrierSpacer(ListParamSpacer)
+
+                Dim CreateJSON = New With { .value = spacer, .checked = False}
+                data.spacer = Newtonsoft.Json.JsonConvert.SerializeObject({CreateJSON})
+            End If
+
+            Dim ListParamFabricDrop As New List(Of Object) From {
+                drop,
+                qty,
+                BlindName,
+                carrier
+            }
+            data.fabricdrop = GetFabricCutDrop(ListParamFabricDrop)
+
+
+
+            ' Throw New Exception(String.Format("Carrier Qty : {0} | Spacer : {1} | Fabric Drop : {2}", carrier, spacer, data.fabricdrop))
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, LouvreSize, LouvrePosition, Mounting, SlatSize, SlatQty, Width, [Drop], StackPosition, ControlPosition, TrackColour, ChainLength, WandColour, WandLength, BracketOption, BracketColour, HangerType, BottomHoldDown, InsertInTrack, Sloper, Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @LouvreSize, @LouvrePosition, @Mounting, @SlatSize, @SlatQty, @Width, @Drop, @StackPosition, @ControlPosition, @TrackColour, @ChainLength, @WandColour, @WandLength, @BracketOption, @BracketColour, @HangerType, @BottomHoldDown, @InsertInTrack, @Sloper, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, LouvreSize, LouvrePosition, Mounting, SlatSize, SlatQty, Width, [Drop], StackPosition, ControlPosition, TrackColour, ChainLength, WandColour, WandLength, BracketOption, BracketColour, HangerType, BottomHoldDown, InsertInTrack, Sloper, FrameType, FrameLeft, CustomHeaderLength,  Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @LouvreSize, @LouvrePosition, @Mounting, @SlatSize, @SlatQty, @Width, @Drop, @StackPosition, @ControlPosition, @TrackColour, @ChainLength, @WandColour, @WandLength, @BracketOption, @BracketColour, @HangerType, @BottomHoldDown, @InsertInTrack, @Sloper, @FrameType, @FrameLeft, @CustomHeaderLength, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -601,6 +680,9 @@ Partial Class Methods_Order_VerticalBlindMethod
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.bottom)
                         myCmd.Parameters.AddWithValue("@InsertInTrack", data.inserttrack)
                         myCmd.Parameters.AddWithValue("@Sloper", data.sloper)
+                        myCmd.Parameters.AddWithValue("@FrameType", data.carrier)
+                        myCmd.Parameters.AddWithValue("@FrameLeft", data.spacer)
+                        myCmd.Parameters.AddWithValue("@CustomHeaderLength", data.fabricdrop)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
                         myCmd.Connection = thisConn
@@ -625,7 +707,7 @@ Partial Class Methods_Order_VerticalBlindMethod
 
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, LouvreSize=@LouvreSize, LouvrePosition=@LouvrePosition, Mounting=@Mounting, SlatSize=@SlatSize, SlatQty=@SlatQty, Width=@Width, [Drop]=@Drop, StackPosition=@StackPosition, ControlPosition=@ControlPosition, TrackColour=@TrackColour, ChainLength=@ChainLength, WandColour=@WandColour, WandLength=@WandLength, BracketOption=@BracketOption, BracketColour=@BracketColour, HangerType=@HangerType, BottomHoldDown=@BottomHoldDown, InsertInTrack=@InsertInTrack, Sloper=@Sloper, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, LouvreSize=@LouvreSize, LouvrePosition=@LouvrePosition, Mounting=@Mounting, SlatSize=@SlatSize, SlatQty=@SlatQty, Width=@Width, [Drop]=@Drop, StackPosition=@StackPosition, ControlPosition=@ControlPosition, TrackColour=@TrackColour, ChainLength=@ChainLength, WandColour=@WandColour, WandLength=@WandLength, BracketOption=@BracketOption, BracketColour=@BracketColour, HangerType=@HangerType, BottomHoldDown=@BottomHoldDown, InsertInTrack=@InsertInTrack, Sloper=@Sloper, FrameType=@FrameType, FrameLeft=@FrameLeft, CustomHeaderLength=@CustomHeaderLength, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -656,6 +738,9 @@ Partial Class Methods_Order_VerticalBlindMethod
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.bottom)
                         myCmd.Parameters.AddWithValue("@InsertInTrack", data.inserttrack)
                         myCmd.Parameters.AddWithValue("@Sloper", data.sloper)
+                        myCmd.Parameters.AddWithValue("@FrameType", data.carrier)
+                        myCmd.Parameters.AddWithValue("@FrameLeft", data.spacer)
+                        myCmd.Parameters.AddWithValue("@CustomHeaderLength", data.fabricdrop)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
                         myCmd.Connection = thisConn
@@ -687,10 +772,6 @@ Partial Class Methods_Order_VerticalBlindMethod
               
             End If
 
-
-
-
-
             Return New SuccessResponse With {.success = msg}
         Catch ex As Exception
             Dim msg As String = "Please contact our IT team at support@onlineorder.au"
@@ -703,7 +784,7 @@ Partial Class Methods_Order_VerticalBlindMethod
         Try
             Dim Query As String = "UPDATE odp SET odp.Description = odp.Description + ' Under $10' FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId=@HeaderId AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1"
 
-            If amount > 10 Then
+            If amount >= 10 Then
                 Query = "UPDATE odp SET odp.Description = REPLACE(odp.Description, ' Under $10', '') FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId=@HeaderId AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1"
             End if
             Using thisConn As New SqlConnection(myConn)
@@ -720,6 +801,23 @@ Partial Class Methods_Order_VerticalBlindMethod
         Catch ex As Exception
            Return New With {.error = True, .message = ex.Message}
         End Try
+    End Function
+
+    Private Shared Function GetFabricCutDrop(ListParam As List(Of Object)) As Integer
+        Dim result As Integer = 0
+        Dim Drop As Integer = CInt(ListParam(0))
+        Dim Qty As Integer = CInt(ListParam(1))
+        Dim BlindName As String = CStr(ListParam(2))
+        Dim CarrierQty As Integer = CInt(ListParam(3))
+
+        Dim tempValue As Double = (((Drop + 92) * CarrierQty * Qty) / 1000)
+        result = CInt(Math.Floor(tempValue)) + If(tempValue Mod 1 > 0, 1, 0)
+
+        If BlindName.Contains("Slat") Then
+            result = 0
+        End If
+
+        Return result
     End Function
 
 
