@@ -181,12 +181,11 @@ Partial Class Methods_Order_OrderDetailMethod
                 FROM view_order_headers h
                 LEFT JOIN CustomerLogins cl ON h.CreatedBy = cl.Id
                 LEFT JOIN OrderDetails od ON od.HeaderId = h.Id AND od.Active = 1
-                LEFT JOIN OrderDetailsPrice odp ON odp.ItemId = od.Id AND odp.HeaderId = h.Id
+                LEFT JOIN OrderDetailsPrice odp ON odp.ItemId = od.Id AND odp.HeaderId = h.Id AND (odp.Description IS NULL OR odp.Description NOT LIKE @Description)
 
                 WHERE h.Id = @Id 
                 AND h.OrderType = @OrderType 
                 AND h.Active = 1
-                AND (odp.Description IS NULL OR odp.Description NOT LIKE @Description)
 
                 GROUP BY 
                     h.Id, h.CustomerName, h.CustomerId, h.OrderId,
@@ -1406,7 +1405,7 @@ Partial Class Methods_Order_OrderDetailMethod
         Try
             Dim Query As String = "UPDATE odp SET odp.Description = odp.Description + ' Under $10' FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId=@HeaderId AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1"
 
-            If amount > 10 Then
+            If amount >= 10 Then
                 Query = "UPDATE odp SET odp.Description = REPLACE(odp.Description, ' Under $10', '') FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId=@HeaderId AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1"
             End if
             Using thisConn As New SqlConnection(myConn)

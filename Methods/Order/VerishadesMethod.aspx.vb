@@ -426,12 +426,18 @@ Partial Class Methods_VerishadesMethod
                 Dim CreateJSON = New With { .value = carrier, .checked = True}
                 data.carrier = Newtonsoft.Json.JsonConvert.SerializeObject({CreateJSON})
             Else If data.carrieroverride = "False" Then
-                For Each item In SpacerVerishades
-                    If WidthDeduc >= item.MinWidth AndAlso WidthDeduc <= item.MaxWidth Then
-                        carrier = item.CarriersQty
-                        Exit For
-                    End If
-                Next
+                ' For Each item In SpacerVerishades
+                '     If WidthDeduc >= item.MinWidth AndAlso WidthDeduc <= item.MaxWidth Then
+                '         carrier = item.CarriersQty
+                '         Exit For
+                '     End If
+                ' Next
+                Dim selected = SpacerVerishades _
+                .Where(Function(x) Width <= x.MaxWidth) _
+                .OrderBy(Function(x) x.MaxWidth) _
+                .FirstOrDefault()
+
+                carrier = selected.CarriersQty
 
                 Dim CreateJSON = New With { .value = carrier, .checked = False}
                 data.carrier = Newtonsoft.Json.JsonConvert.SerializeObject({CreateJSON})
@@ -442,12 +448,19 @@ Partial Class Methods_VerishadesMethod
                 Dim CreateJSON = New With { .value = spacer, .checked = True}
                 data.spacer = Newtonsoft.Json.JsonConvert.SerializeObject({CreateJSON})
             Else If data.spaceroverride = "False" Then
-                For Each item In SpacerVerishades
-                    If WidthDeduc >= item.MinWidth AndAlso WidthDeduc <= item.MaxWidth Then
-                        spacer = item.Spacer1Type
-                        Exit For
-                    End If
-                Next
+                ' For Each item In SpacerVerishades
+                '     If WidthDeduc >= item.MinWidth AndAlso WidthDeduc <= item.MaxWidth Then
+                '         spacer = item.Spacer1Type
+                '         Exit For
+                '     End If
+                ' Next
+
+                Dim selected = SpacerVerishades _
+                .Where(Function(x) Width <= x.MaxWidth) _
+                .OrderBy(Function(x) x.MaxWidth) _
+                .FirstOrDefault()
+
+                spacer = selected.Spacer1Type
 
                 Dim CreateJSON = New With { .value = spacer, .checked = False}
                 data.spacer = Newtonsoft.Json.JsonConvert.SerializeObject({CreateJSON})
