@@ -186,7 +186,7 @@ Partial Class Methods_Order_OrderDetailMethod
                 WHERE h.Id = @Id 
                 AND h.OrderType = @OrderType 
                 AND h.Active = 1
-                AND odp.Description NOT LIKE @Description
+                AND (odp.Description IS NULL OR odp.Description NOT LIKE @Description)
 
                 GROUP BY 
                     h.Id, h.CustomerName, h.CustomerId, h.OrderId,
@@ -420,7 +420,7 @@ Partial Class Methods_Order_OrderDetailMethod
                 .other = OtherData
             }
         Catch ex As Exception
-            Return New With {.error = True, .message = ex.Message}
+            Return New With {.error = True, .message = String.Format("BindOrderAggregate: {0}", ex.Message)}
         End Try
     End Function
 
