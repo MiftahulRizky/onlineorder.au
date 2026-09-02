@@ -407,6 +407,8 @@ const bindPelmetType = (blindname, mounting) => {
       list.push("No Return");
     } else {
       list.push(
+        "With Return",
+        "No Return",
         "Bay Left",
         "Bay Right",
         "Main Bay",
