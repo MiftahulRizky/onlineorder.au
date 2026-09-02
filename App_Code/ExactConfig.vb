@@ -292,6 +292,7 @@ Public Class ExactConfig
                     For i As Integer = 0 To detailData.Tables(0).Rows.Count - 1
                         Dim itemId As String = detailData.Tables(0).Rows(i).Item("Id").ToString()
                         Dim kitId As String = detailData.Tables(0).Rows(i).Item("KitId").ToString()
+                        Dim Qty As String = detailData.Tables(0).Rows(i).Item("Qty").ToString()
                         Dim totalMatrix As Decimal = detailData.Tables(0).Rows(i).Item("TotalMatrix").ToString()
                         Dim totalCharge As Decimal = detailData.Tables(0).Rows(i).Item("TotalCharge").ToString()
                         Dim Matrix As String = GetItemData(String.Format("SELECT SUM(( odp.Cost * odp.Qty ) - ( odp.Qty * ISNULL( odp.Discount, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountB, 0 ) ) - ( odp.Qty * ISNULL( odp.DiscountC, 0 ) )) As Matrix FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON odp.ItemId=od.id WHERE odp.HeaderId='{0}' AND odp.ItemId='{1}' AND odp.Type='Matrix' AND od.Active='1'", Id, itemId))
@@ -333,7 +334,7 @@ Public Class ExactConfig
                         writer.WriteString("")
                         writer.WriteEndElement()
 
-                        writer.WriteElementString("Quantity", "1")
+                        writer.WriteElementString("Quantity", Qty)
 
                         writer.WriteStartElement("Price")
                         writer.WriteAttributeString("type", "S")

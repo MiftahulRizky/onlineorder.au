@@ -2241,7 +2241,7 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindOrderDetailPrice(ByVal itemid As String) As Object
         Try
-            Dim dt As DataTable = publicCfg.GetListData(String.Format("SELECT Id, Qty, Type, Description, Cost, Poa FROM OrderDetailsPrice WHERE ItemId = '{0}' AND ((Type = 'Charge' AND Description NOT LIKE '%Powder Coating%' AND Description NOT LIKE '%Tracking & Interloock%') OR (Type = 'Matrix')) ORDER BY CASE WHEN Type = 'Matrix' THEN 1 WHEN Type = 'Charge' THEN 2 WHEN Type = 'Discount' THEN 3 ELSE 4 END", itemid)).Tables(0)
+            Dim dt As DataTable = publicCfg.GetListData(String.Format("SELECT Id, Qty, Type, Description, Cost, Poa FROM OrderDetailsPrice WHERE ItemId = '{0}' AND ((Type = 'Charge' AND Description NOT LIKE '%Powder Coating%' AND Description NOT LIKE '%Tracking & Interloock%') OR (Type = 'Matrix' )) ORDER BY CASE WHEN Type = 'Matrix' THEN 1 WHEN Type = 'Charge' THEN 2 WHEN Type = 'Discount' THEN 3 ELSE 4 END", itemid)).Tables(0)
 
             Dim list As New List(Of Object)
 
@@ -2382,7 +2382,9 @@ Partial Class Methods_Order_OrderDetailMethod
                             Dim markPOA As String = "<span class='badge bg-orange-lt'>POA</span>"
                             Dim isTrackInterlock As Integer = InStr(Description, "Tracking & Interlock")
                             Dim isCoating As Integer = InStr(Description, "Powder Coating")
+                            Dim isUnder10 As Integer = InStr(Description, "Under $10")
                             Dim isCharge As Boolean = (Type = "Charge")
+                            Dim isMatrix As Boolean = (Type = "Matrix")
                             Dim isRoles As Boolean = InArray(rolename, "Administrator", "PPIC & DE", "Customer Service")
                             Dim isContinue As Boolean = false
                             Dim isOpacity As String = ""
@@ -2429,12 +2431,19 @@ Partial Class Methods_Order_OrderDetailMethod
                             End If
 
 
-                            If isCharge AND (isTrackInterlock > 0 Or isCoating > 0) Then 
+                            If isCharge AND (isTrackInterlock > 0 Or isCoating > 0 ) Then 
                                 ThisCost = String.Format("<span class='text-decoration-line-through'>{0}</span>", ThisCost)
                                 ThisFinalCost = String.Format("<span class='text-decoration-line-through'>{0}</span>", ThisFinalCost)
                                 If Not isRoles Then isContinue = true
                                 isOpacity = "opacity-50"
                             End If
+
+                            ' If isMatrix AND  isUnder10 > 0 Then 
+                            '     ThisCost = String.Format("<span class='text-decoration-line-through'>{0}</span>", ThisCost)
+                            '     ThisFinalCost = String.Format("<span class='text-decoration-line-through'>{0}</span>", ThisFinalCost)
+                            '     If Not isRoles Then isContinue = true
+                            '     isOpacity = "opacity-50"
+                            ' End If
                             
 
                             PricingData.Add(New With {
