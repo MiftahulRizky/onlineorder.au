@@ -94,7 +94,12 @@ document.querySelectorAll(".form-check-input").forEach((el) => {
     if (e.target.id.endsWith("override")) {
       const targetId = e.target.id.replace("override", "");
       document.getElementById(targetId).value = "";
-      document.getElementById(targetId).removeAttribute("readonly", true);
+
+      if (e.target.checked) {
+        document.getElementById(targetId).removeAttribute("readonly", true);
+      } else {
+        document.getElementById(targetId).setAttribute("readonly", true);
+      }
     }
   });
 });
@@ -1012,6 +1017,10 @@ const setJsonField = ({ inputId, checkboxId, rawValue }) => {
 
       inputEl.value = value ?? "";
       checkboxEl.checked = checked ?? false;
+
+      if (checked) {
+        inputEl.removeAttribute("readonly", true);
+      }
     }
   } catch (err) {
     console.error(`JSON parse error (${inputId})`, err);
