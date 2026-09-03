@@ -763,13 +763,10 @@ Partial Class Methods_Order_VerticalBlindMethod
 
             
             If BlindName = "Slat Only" Then
-                Dim AmountSlatOnly As Decimal = GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty) - (odp.Discount + odp.DiscountB + odp.DiscountC)) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId='{0}' AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1", data.headerid))
-
-                Dim UpdateAllDescriptionSlat As object = UpdateAllDescriptionPricingSlat(data.headerid, AmountSlatOnly)
-                If UpdateAllDescriptionSlat.error Then
-                   Throw New Exception(UpdateAllDescriptionSlat.error.message)
-                End If
-              
+                Dim BasePriceSlat As Object = FindBasePriceVerticalSlat(data.headerid)
+                If BasePriceSlat.error Then Throw New Exception(BasePriceSlat.error.message)
+                Dim ChangeSlat As object = ChangePricingVerticalSlat(data.headerid, BasePriceSlat.val)
+                If ChangeSlat.error Then Throw New Exception(ChangeSlat.message)
             End If
 
             Return New SuccessResponse With {.success = msg}
@@ -780,12 +777,26 @@ Partial Class Methods_Order_VerticalBlindMethod
         End Try
     End Function  
 
-    Private Shared function UpdateAllDescriptionPricingSlat(headerid As String, amount As Decimal) As Object
+    Private Shared Function FindBasePriceVerticalSlat(ByVal headerid As String) As Object
         Try
-            Dim Query As String = "UPDATE odp SET odp.Description = odp.Description + ' Under $10' FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId=@HeaderId AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1"
+            ' Dim Amount As String = publicCfg.GetItemData(String.Format("SELECT SUM((odp.Cost*odp.Qty) - (odp.Discount + odp.DiscountB + odp.DiscountC)) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId='{0}' AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1", headerid))
+            Dim Amount As String = publicCfg.GetItemData(String.Format("SELECT SUM(odp.Cost*odp.Qty) FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId='{0}' AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1", headerid))
 
+            if Amount = "" Then
+                Amount = "0"
+            End If
+
+            Return New With {.error = false, .val = Amount}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("FindBasePriceVerticalSlat: {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared Function ChangePricingVerticalSlat(headerid As String, amount As Decimal) As Object
+        Try
+            Dim Query As String = "UPDATE odp SET odp.Description = odp.Description + ' Under $10' FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId=@HeaderId AND odp.Type='Matrix' AND odp.Description LIKE '%Vertical Slat Only%' AND od.Active=1"
             If amount >= 10 Then
-                Query = "UPDATE odp SET odp.Description = REPLACE(odp.Description, ' Under $10', '') FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId=@HeaderId AND odp.Type='Matrix' AND odp.Description LIKE '%Slat Only%' AND od.Active=1"
+                Query = "UPDATE odp SET odp.Description = REPLACE(odp.Description, ' Under $10', '') FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId=@HeaderId AND odp.Type='Matrix' AND odp.Description LIKE '%Vertical Slat Only%' AND od.Active=1"
             End if
             Using thisConn As New SqlConnection(myConn)
                 Using myCmd As New SqlCommand(Query, thisConn)
@@ -796,6 +807,43 @@ Partial Class Methods_Order_VerticalBlindMethod
                     thisConn.Close()
                 End Using
             End Using
+
+            If amount = 10 Then
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("UPDATE odp SET odp.Discount=0, odp.DiscountB=0, odp.DiscountC=0 FROM OrderDetailsPrice odp INNER JOIN OrderDetails od ON od.Id=odp.ItemId WHERE odp.HeaderId=@HeaderId AND odp.Type='Matrix' AND odp.Description LIKE '%Vertical Slat Only%' AND od.Active=1", thisConn)
+                        myCmd.Parameters.AddWithValue("@HeaderId", headerid)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+            End If
+
+            If amount > 10 Then
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("SELECT Id, DesignName, BlindName FROM view_details WHERE HeaderId=@HeaderId AND Active=1 AND DesignName='Vertical Blinds' AND BlindName='Slat Only'", thisConn)
+                        myCmd.Parameters.AddWithValue("@HeaderId", headerid)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+
+                        Using reader As SqlDataReader = myCmd.ExecuteReader()
+                            While reader.Read()
+                                Dim itemId As String = reader("Id").ToString()
+                                Dim DesignName As String = reader("DesignName").ToString()
+                                Dim BlindName As String = reader("BlindName").ToString()
+
+                                publicCfg.ResetPriceDetail(itemId)
+                                publicCfg.HitungHarga(headerid, itemId)
+                                publicCfg.HitungSurcharge(headerid, itemId)
+
+
+                            End While
+                        End Using
+                       
+                    End Using
+                End Using
+            End If
 
             Return New With {.error = False, .message = "Success"}
         Catch ex As Exception
