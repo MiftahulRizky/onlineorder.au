@@ -142,6 +142,18 @@ document.querySelectorAll(".btn-information").forEach((el) => {
   });
 });
 
+document.querySelectorAll(".form-check-input").forEach((el) => {
+  el.addEventListener("click", (e) => {
+    e.target.classList.remove("is-invalid");
+
+    if (e.target.id.endsWith("override")) {
+      const targetId = e.target.id.replace("override", "");
+      document.getElementById(targetId).value = "";
+      document.getElementById(targetId).removeAttribute("readonly", true);
+    }
+  });
+});
+
 // button submit
 document.querySelector("#btnSubmit").addEventListener("click", (e) => {
   e.preventDefault();
@@ -1034,6 +1046,12 @@ const bindItemOrders = async (itemid) => {
       await bindFabrics(item.DesignId);
       await bindFabricLength(item.DesignId, item.TubeType, item.FabricType);
       await bindFabricColours(item.DesignId, item.FabricType, item.FabricWidth);
+      await handlerElementVisibility(
+        item.BlindId,
+        item.TubeType,
+        item.KitId,
+        item,
+      );
       await Promise.all([
         bindSizeType(),
         bindDropFloor(),
@@ -1049,12 +1067,6 @@ const bindItemOrders = async (itemid) => {
         bindBottom(),
         handlerSetElementValues(item),
       ]);
-      await handlerElementVisibility(
-        item.BlindId,
-        item.TubeType,
-        item.KitId,
-        item,
-      );
     }
 
     return true; // ✅ success
@@ -1134,6 +1146,15 @@ const handlerElementVisibility = async (
     divFabricDrop.classList.add("d-none");
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
+
+    document.querySelectorAll(".form-check-input").forEach((el) => {
+      el.checked = false;
+
+      if (el.id.endsWith("override")) {
+        const Id = el.id.replace("override", "");
+        document.getElementById(Id).setAttribute("readonly", true);
+      }
+    });
 
     if (!blindtype) return;
     const blindname = await getItemData(

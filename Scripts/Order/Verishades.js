@@ -94,6 +94,7 @@ document.querySelectorAll(".form-check-input").forEach((el) => {
     if (e.target.id.endsWith("override")) {
       const targetId = e.target.id.replace("override", "");
       document.getElementById(targetId).value = "";
+      document.getElementById(targetId).removeAttribute("readonly", true);
     }
   });
 });
@@ -542,6 +543,15 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     divFabricQty.classList.add("d-none");
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
+
+    document.querySelectorAll(".form-check-input").forEach((el) => {
+      el.checked = false;
+
+      if (el.id.endsWith("override")) {
+        const Id = el.id.replace("override", "");
+        document.getElementById(Id).setAttribute("readonly", true);
+      }
+    });
 
     if (!blindtype) return;
     const blindname = await getItemData(
