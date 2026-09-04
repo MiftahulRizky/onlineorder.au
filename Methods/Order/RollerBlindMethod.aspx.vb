@@ -1812,7 +1812,7 @@ Partial Class Methods_Order_RollerBlindMethod
             Dim Drop As String = CStr(ListParam(2))
 
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderDetails SET Width=@Width, [Drop]=@Drop WHERE UniqueId=@UniqueId AND Active=1", thisConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetails SET Width=@Width WHERE UniqueId=@UniqueId AND Active=1", thisConn)
                     myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
                     myCmd.Parameters.AddWithValue("@Width", Width)
                     myCmd.Parameters.AddWithValue("@Drop", Drop)
