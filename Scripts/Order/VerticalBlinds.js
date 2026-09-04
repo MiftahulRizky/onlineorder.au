@@ -726,6 +726,11 @@ const bindTrackColour = (tubetype) => {
     data.push({ value: "White", text: "White" });
   }
 
+  if (tubetype === "Phoenixline") {
+    data.push({ value: "Birch", text: "Birch" });
+    data.push({ value: "White", text: "White" });
+  }
+
   if (data.length > 1) {
     const defaultOption = document.createElement("option");
     defaultOption.text = "";
@@ -962,7 +967,7 @@ const bindHanger = (blindname, tubetype) => {
         { value: "White", text: "White" },
       );
     }
-    if (["Fairline", "Javaline"].includes(tubetype)) {
+    if (["Fairline", "Javaline", "Phoenixline"].includes(tubetype)) {
       data.push({ value: "Standard", text: "Standard" });
     }
   }
