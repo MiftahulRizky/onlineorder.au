@@ -1201,7 +1201,7 @@ const handlerElementVisibility = async (
       divSpacer.classList.remove("d-none");
       divFabricDrop.classList.remove("d-none");
 
-      if (tubetype === "Fairline") {
+      if (["Fairline", "Javaline"].includes(tubetype)) {
         divInsertInTrack.classList.remove("d-none");
       }
       if (controlname === "Chain") {
@@ -1239,7 +1239,7 @@ const handlerElementVisibility = async (
       divSpacer.classList.remove("d-none");
       // divFabricDrop.classList.remove("d-none");
 
-      if (tubetype === "Fairline") {
+      if (["Fairline", "Javaline"].includes(tubetype)) {
         divInsertInTrack.classList.remove("d-none");
       }
 

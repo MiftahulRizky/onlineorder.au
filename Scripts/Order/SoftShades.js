@@ -481,12 +481,12 @@ const bindHanger = (blindname, tubetype) => {
     if (["Louvolite"].includes(tubetype)) {
       list.push("Opaque", "White");
     }
-    if (["Fairline", "Javaline"].includes(tubetype)) {
+    if (["Standard"].includes(tubetype)) {
       list.push("Standard");
     }
   }
 
-  generateOption("hangertype", list);
+  generateOption("hangertype", list, 1);
 };
 
 const bindBottom = () => {

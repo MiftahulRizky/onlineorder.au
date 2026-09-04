@@ -168,7 +168,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <table class="table" width="100%" id="table-logs">
+                    <table class="table table-bordered" width="100%" id="table-logs">
                         <tbody></tbody>
                         <!-- <tr>
                             <td>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</td>

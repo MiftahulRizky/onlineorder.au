@@ -372,6 +372,9 @@ Partial Class Methods_Order_PdfOrderMethod
             result += Print_Door(headerid)
             result += Print_Window(headerid)
 
+            'VERTICAL
+            result += Print_SoftShade_Complete(headerid)
+
             'ROLLER
             result += PrintPDFGlobalGearReduction(headerid)
             result += Print_Global_Roller_Motorised(headerid)
@@ -2593,6 +2596,100 @@ Partial Class Methods_Order_PdfOrderMethod
         Return result
     End Function
 
+    Private Shared Function Print_SoftShade_Complete(HeaderId As String) As String
+        Dim result As String = String.Empty
+        Try
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Soft Shades' AND BlindName='Complete' AND Active=1 ORDER BY Id, BlindNo ASC")
+            If Not thisData.Tables(0).Rows.Count = 0 Then
+                Dim tdNotes As String = "<td colspan='21' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
+                result += spanStart & "COMPLETE SOFT SHADES" & spanEnd
+                result += tableStart
+
+                result += trStart
+                result += thStart & "No" & thEnd
+                result += thStart & "ID" & thEnd
+                result += thStart & "Qty" & thEnd
+                result += thStart & "Mounting" & thEnd
+                result += thStart & "Location" & thEnd
+                result += thStart & "Product" & thEnd
+                result += thStart & "Width" & thEnd
+                result += thStart & "Drop" & thEnd
+                result += thStart & "Fabric" & thEnd
+                result += thStart & "Fabric/Slat Size" & thEnd
+                result += thStart & "Stack" & thEnd
+                result += thStart & "Control" & thEnd
+                result += thStart & "Chain/Wand Colour" & thEnd
+                result += thStart & "Control Length" & thEnd
+                result += thStart & "Track" & thEnd
+                result += thStart & "Brackets" & thEnd
+                result += thStart & "Bracket Colour" & thEnd
+                result += thStart & "Hanger Type" & thEnd
+                result += thStart & "Bottom" & thEnd
+                result += thStart & "Insert In Track" & thEnd
+                result += thStart & "Sloper" & thEnd
+                result += trEnd
+
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                    Dim controlType As String = thisData.Tables(0).Rows(i).Item("ControlType").ToString()
+
+                    Dim chainwandColour As String = thisData.Tables(0).Rows(i).Item("WandColour").ToString()
+                    Dim chainwandLength As String = thisData.Tables(0).Rows(i).Item("WandLength").ToString()
+                    If controlType = "Chain" Then
+                        chainwandColour = thisData.Tables(0).Rows(i).Item("ChainColour").ToString()
+                        chainwandLength = thisData.Tables(0).Rows(i).Item("ChainLength").ToString()
+                    End If
+
+                    Dim insertInTrack As String = "No"
+                    Dim sloper As String = "No"
+                    If thisData.Tables(0).Rows(i).Item("InsertInTrack").ToString() = "1" Then
+                        insertInTrack = "Yes"
+                    End If
+                    If thisData.Tables(0).Rows(i).Item("Sloper").ToString() = "1" Then
+                        sloper = "Yes"
+                    End If
+
+                    result += trStart
+                    result += tdStart & i + 1 & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("SlatSize").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("StackPosition").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
+                    result += tdStart & chainwandColour & tdEnd
+                    result += tdStart & chainwandLength & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("TrackColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BracketOption").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BracketColour").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("HangerType").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
+                    result += tdStart & insertInTrack & tdEnd
+                    result += tdStart & sloper & tdEnd
+                    result += trEnd
+
+                    If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
+                        result += trStart
+                        result += tdNotes
+                        result += bNotesStart
+                        result += thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        result += bNotesEnd
+                        result += tdEnd
+                        result += trEnd
+                    End If
+                Next
+                result += tableEnd
+            End If
+        Catch ex As Exception
+            result = "ERROR CREATE PDF SOFT SHADE COMPLETE"
+        End Try
+        Return result
+    End Function
+
 
 
     Private Shared Function PrintPDFGlobalGearReduction(HeaderId As String) As String
@@ -3307,6 +3404,7 @@ Partial Class Methods_Order_PdfOrderMethod
         Dim totalVertical As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Vertical Blinds' AND Active=1")
         Dim totalDoor As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Door' AND Active=1")
         Dim totalWindow As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Window' AND Active=1")
+        Dim totalSoftShade As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Soft Shades' AND Active=1")
 
         If totalAluminium = "" Then : totalAluminium = "-" : End If
         If totalCellular = "" Then : totalCellular = "-" : End If
@@ -3321,6 +3419,7 @@ Partial Class Methods_Order_PdfOrderMethod
         If totalVertical = "" Then : totalVertical = "-" : End If
         If totalDoor = "" Then : totalDoor = "-" : End If
         If totalWindow = "" Then : totalWindow = "-" : End If
+        If totalSoftShade = "" Then : totalSoftShade = "-" : End If
 
         Dim aluminiumblinds As String = "<b>Aluminium Blinds: " & totalAluminium & "</b>"
         Dim celloraBlinds As String = "<b>Cellular Blinds: " & totalCellular & "</b>"
@@ -3335,9 +3434,10 @@ Partial Class Methods_Order_PdfOrderMethod
         Dim verticalblinds As String = "<b>Vertical Blinds: " & totalVertical & "</b>"
         Dim door As String = "<b>Door: " & totalDoor & "</b>"
         Dim window As String = "<b>Window: " & totalWindow & "</b>"
+        Dim soft As String = "<b>Soft Shades: " & totalSoftShade & "</b>"
 
         ' result = celloraBlinds & separted & lumen & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & rollerglobalblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
-        result = String.Format("{0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} | {8} | {9} | {10} | {11}",celloraBlinds, lumen, panelGlides, venetianblinds, rollerblinds, rollerglobalblinds, romanBlinds, romanGlobalBlinds, verishades, verticalblinds, door, window)
+        result = String.Format("{0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} | {8} | {9} | {10} | {11} | {12}",celloraBlinds, lumen, panelGlides, venetianblinds, rollerblinds, rollerglobalblinds, romanBlinds, romanGlobalBlinds, verishades, verticalblinds, door, window, soft)
         Return result
     End Function
 
