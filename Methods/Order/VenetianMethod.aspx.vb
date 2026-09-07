@@ -423,7 +423,7 @@ Partial Class Methods_Order_VenetianMethod
                 data.controllength = ""
                 controllength = 0
                 data.bracket = ""
-                data.bottom = ""
+                ' data.bottom = ""
                 data.pelmetsize = ""
             End If
 
@@ -438,7 +438,7 @@ Partial Class Methods_Order_VenetianMethod
                 data.controllength = ""
                 controllength = 0
                 data.bracket = ""
-                data.bottom = ""
+                ' data.bottom = ""
                 data.pelmetsize = ""
             End If
 
