@@ -184,7 +184,7 @@ Partial Class Methods_Order_VerticalBlindMethod
         Try
             Dim Width As String = ""
             Select Case tubetype
-                Case "Louvolite", "Javaline"
+                Case "Louvolite", "Javaline", "Phoenixline"
                     Width = "AND Width IN ('89', '127')"
             End Select
 

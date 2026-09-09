@@ -130,6 +130,7 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
           await Promise.all([
             bindMotorStyle(controltype),
             bindMotorRemote(controltype),
+            bindCableExitPoint(),
             bindConnector(),
           ]);
         }
@@ -555,6 +556,7 @@ const bindColours = async (
         await Promise.all([
           bindMotorStyle(controltype),
           bindMotorRemote(controltype),
+          bindCableExitPoint(),
           bindConnector(),
         ]);
       }
@@ -1098,6 +1100,7 @@ const bindItemOrders = async () => {
       await Promise.all([
         bindMotorStyle(detail.ControlType),
         bindMotorRemote(detail.ControlType),
+        bindCableExitPoint(),
         bindConnector(),
         bindExternalBattery(),
         bindMotorCharger(detail.ControlType, detail.MotorStyle),
