@@ -465,6 +465,9 @@ Partial Class Methods_Order_VerticalBlindMethod
             End If
             If BlindName = "Slat Only" And InStr(data.fabricType, "Builder") Then
                 PriceGroupName = String.Format("{0} - Group 1", BlindName, FabricGroup)
+                If data.bottom = "Top Hanger Only" Then
+                    PriceGroupName = String.Format("{0} With Hanger - Group 1", BlindName, FabricGroup)
+                End If
             End If
             
 
