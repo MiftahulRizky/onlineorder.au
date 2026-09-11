@@ -143,6 +143,18 @@
                                         </div>
                                     </div>
 
+                                    <div class="mb-3 row" id="divTrackType">
+                                        <label for="tracktype" class="col-lg-3 text-uppercase fw-bold">track type</label>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <select type="text" name="tracktype" id="tracktype" class="form-select"></select>
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoTrackType">
+                                                    <i class="ti ti-info-square-rounded fs-2"></i>
+                                                </button>
+                                            </div>
+                                        </div>  
+                                    </div>
+
                                     <div class="mb-3 row" id="divSlatSize">
                                         <label for="slatsize" class="col-lg-3 text-uppercase fw-bold">slat size</label>
                                         <div class="col-lg-4">

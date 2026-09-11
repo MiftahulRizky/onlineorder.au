@@ -40,6 +40,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       await Promise.all([
         bindSizeType(),
         bindDropFloor(),
+        bindTrackType(),
         bindSlatSize(),
         bindTrackColour(tubetype),
         bindStackPosition(),
@@ -126,6 +127,9 @@ document.querySelectorAll(".btn-information").forEach((el) => {
       case "btnInfoWD":
         msg =
           "Very long tracks are not recommended. Butting shorter tracks will work more effectively.";
+        break;
+      case "btnInfoTrackType":
+        msg = "For the “Other” option, a 45mm cut for the track will be made.";
         break;
       case "btnInfoSlatQty":
         msg = "If left blank, the system will calculate it.";
@@ -311,7 +315,7 @@ const bindTubes = async (designid, blindid) => {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ designid, blindid }),
+      body: JSON.stringify({ designid, blindid, headerid: HEADERID }),
     });
 
     if (!response.ok) {
@@ -429,6 +433,7 @@ const bindControls = async (designid, blindid, tubetype) => {
         await Promise.all([
           bindSizeType(),
           bindDropFloor(),
+          bindTrackType(),
           bindSlatSize(),
           bindTrackColour(tubetype),
           bindStackPosition(),
@@ -663,11 +668,38 @@ const bindFabricColours = async (designid, fabrictype, fabriclength) => {
   }
 };
 
+const bindTrackType = () => {
+  const sel = document.getElementById("tracktype");
+  sel.innerHTML = ""; //reset
+
+  let data = [];
+  data.push(
+    { value: "Louvolite", text: "Louvolite" },
+    { value: "Fairline", text: "Fairline" },
+    { value: "40mm Sunlight", text: "40mm Sunlight" },
+    { value: "Phoenixline", text: "Phoenixline" },
+    { value: "Other", text: "Other" },
+  );
+
+  if (data.length > 1) {
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "";
+    defaultOption.value = "";
+    sel.add(defaultOption);
+  }
+
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
+    sel.add(option);
+  });
+};
+
 const bindSlatSize = () => {
   const sel = document.getElementById("slatsize");
   sel.innerHTML = ""; //reset
-
-  if (!tubetype) return;
 
   let data = [];
   data.push(
@@ -851,6 +883,8 @@ const bindWandColour = (tubetype, wandlength) => {
   } else {
     if (tubetype === "Louvolite") {
       data.push({ value: "White", text: "White" });
+    } else if (tubetype === "Phoneixline") {
+      data.push({ value: "Clear", text: "Clear" });
     } else {
       data.push(
         { value: "Birch", text: "Birch" },
@@ -920,6 +954,8 @@ const bindBracketColour = (tubetype) => {
       { value: "White", text: "White" },
       { value: "Grey", text: "Grey" },
     );
+  } else if (tubetype === "Phoenixline") {
+    data.push({ value: "Silver", text: "Silver" });
   } else {
     data.push(
       { value: "Birch White", text: "Birch White" },
@@ -1065,6 +1101,7 @@ const bindItemOrders = async (itemid) => {
       await Promise.all([
         bindSizeType(),
         bindDropFloor(),
+        bindTrackType(),
         bindSlatSize(),
         bindTrackColour(item.TubeType),
         bindStackPosition(),
@@ -1107,6 +1144,7 @@ const handlerElementVisibility = async (
     const divInfoWD = document.getElementById("divInfoWD");
     const divSlatSize = document.getElementById("divSlatSize");
     const divSlatQty = document.getElementById("divSlatQty");
+    const divTrackType = document.getElementById("divTrackType");
     const divFabric = document.getElementById("divFabric");
     const divTrackColour = document.getElementById("divTrackColour");
     const divStackPosition = document.getElementById("divStackPosition");
@@ -1138,6 +1176,7 @@ const handlerElementVisibility = async (
     divDrop.classList.add("d-none");
     divInfoWD.classList.add("d-none");
     divSlatSize.classList.add("d-none");
+    divTrackType.classList.add("d-none");
     divSlatQty.classList.add("d-none");
     divFabric.classList.add("d-none");
     divTrackColour.classList.add("d-none");
@@ -1215,6 +1254,7 @@ const handlerElementVisibility = async (
     if (blindname === "Slat Only") {
       lblWd.innerHTML = "drop exact";
       divDrop.classList.remove("d-none");
+      divTrackType.classList.remove("d-none");
       divSlatQty.classList.remove("d-none");
       divFabric.classList.remove("d-none");
       divHangerType.classList.remove("d-none");
@@ -1304,6 +1344,7 @@ const handlerSubmit = async (button) => {
       "width",
       "drop",
       "slatsize",
+      "tracktype",
       "slatqty",
       "fabrictype",
       "fabriclength",
@@ -1408,6 +1449,7 @@ const handlerSetElementValues = (itemData) => {
     width: "Width",
     drop: "Drop",
     slatsize: "SlatSize",
+    tracktype: "TrackType",
     slatqty: "SlatQty",
     fabrictype: "FabricType",
     fabriclength: "FabricWidth",

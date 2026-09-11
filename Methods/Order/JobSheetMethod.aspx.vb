@@ -4454,7 +4454,7 @@ Partial Class Methods_Order_JobSheetMethod
                                 tableName = "JobSheet_VeriShades"
 
                             Case "Vertical Blinds"
-                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "StackPosition", "ControlPosition", "ChainLength", "TrackColour", "WandColour", "WandLength", "SlatSize", "SlatQty", "BracketOption", "BracketColour", "BottomHoldDown", "HangerType", "Sloper", "InsertInTrack", "FrameType", "FrameLeft", "CustomHeaderLength", "Notes", "KitName", "TubeType", "Spacer", "CarrierQty", "TubeSkinSize", "NumBoldNuts", "FabricCutDrop", "ControlType", "ChainName", "ChainColour", "CLength", "FabricName", "FabricType", "FabricColour", "FabricWidth"})
+                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "StackPosition", "ControlPosition", "ChainLength", "TrackType", "TrackColour", "TrackLength", "WandColour", "WandLength", "SlatSize", "SlatQty", "BracketOption", "BracketColour", "BottomHoldDown", "HangerType", "Sloper", "InsertInTrack", "FrameType", "FrameLeft", "CustomHeaderLength", "Notes", "KitName", "TubeType", "Spacer", "CarrierQty", "TubeSkinSize", "NumBoldNuts", "FabricCutDrop", "ControlType", "ChainName", "ChainColour", "CLength", "FabricName", "FabricType", "FabricColour", "FabricWidth"})
 
                                 tableName = "JobSheet_Verticals"
 
@@ -16300,6 +16300,17 @@ Partial Class Methods_Order_JobSheetMethod
                 result+= tdDetRight & If(String.IsNullOrEmpty(currentData("NumBoldNuts6").ToString()), "0", currentData("NumBoldNuts6").ToString()) & tdDetEnd
             result+= trDetEnd
 
+            '#TrackLength
+            result+= trDetStart
+                result+= tdTitleStart & "Cut Length (mm)" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TrackLength1").ToString()), "0", currentData("TrackLength1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TrackLength2").ToString()), "0", currentData("TrackLength2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TrackLength3").ToString()), "0", currentData("TrackLength3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TrackLength4").ToString()), "0", currentData("TrackLength4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TrackLength5").ToString()), "0", currentData("TrackLength5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("TrackLength6").ToString()), "0", currentData("TrackLength6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
             '#
             result+= trDetStart
                 result+= tdTitleStart & "Track Option" & tdDetEnd
@@ -16625,29 +16636,6 @@ Partial Class Methods_Order_JobSheetMethod
             initTubeType(i) = initTubeType(i)
         Next
 
-        Dim initDropBlind As String() = {
-            currentData("Drop1").ToString(),
-            currentData("Drop2").ToString(),
-            currentData("Drop3").ToString(),
-            currentData("Drop4").ToString(),
-            currentData("Drop5").ToString(),
-            currentData("Drop6").ToString()
-        }
-        For i As Integer = 0 To initDropBlind.Length - 1
-            If Not String.IsNullOrEmpty(initDropBlind(i).ToString()) OR Not initDropBlind(i).ToString() = "0" Then
-                initDropBlind(i) = initDropBlind(i)
-            Else
-                initDropBlind(i) = String.Empty
-            End If
-        Next
-
-        Dim FindDropBlind1 As String = If(initTubeType(0) <> "Exact Size", initDropBlind(0), String.Empty)   
-        Dim FindDropBlind2 As String = If(initTubeType(1) <> "Exact Size", initDropBlind(1), String.Empty)   
-        Dim FindDropBlind3 As String = If(initTubeType(2) <> "Exact Size", initDropBlind(2), String.Empty)   
-        Dim FindDropBlind4 As String = If(initTubeType(3) <> "Exact Size", initDropBlind(3), String.Empty)   
-        Dim FindDropBlind5 As String = If(initTubeType(4) <> "Exact Size", initDropBlind(4), String.Empty)   
-        Dim FindDropBlind6 As String = If(initTubeType(5) <> "Exact Size", initDropBlind(5), String.Empty)
-
 
         
         '#Line Option
@@ -16677,26 +16665,27 @@ Partial Class Methods_Order_JobSheetMethod
                 result+= tdDetRight & boldStart & currentData("SlatQty6").ToString() & boldEnd & tdDetEnd
             result+= trDetEnd
 
-             '#Drop
-            result+= trDetStart
-                result+= tdTitleStart & "Drop Blind (mm)" & tdDetEnd
-                result+= tdDetStart & FindDropBlind1 & tdDetEnd
-                result+= tdDetStart & FindDropBlind2 & tdDetEnd
-                result+= tdDetStart & FindDropBlind3 & tdDetEnd
-                result+= tdDetStart & FindDropBlind4 & tdDetEnd
-                result+= tdDetStart & FindDropBlind5 & tdDetEnd
-                result+= tdDetRight & FindDropBlind6 & tdDetEnd
-            result+= trDetEnd
 
-             '#Drop
+            '#Drop
             result+= trDetStart
-                result+= tdTitleStart & "Drop Exact (mm)" & tdDetEnd
+                result+= tdTitleStart & "Drop (mm)" & tdDetEnd
                 result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop1").ToString()), "0", currentData("Drop1").ToString()) & tdDetEnd
                 result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop2").ToString()), "0", currentData("Drop2").ToString()) & tdDetEnd
                 result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop3").ToString()), "0", currentData("Drop3").ToString()) & tdDetEnd
                 result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop4").ToString()), "0", currentData("Drop4").ToString()) & tdDetEnd
                 result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop5").ToString()), "0", currentData("Drop5").ToString()) & tdDetEnd
                 result+= tdDetRight & If(String.IsNullOrEmpty(currentData("Drop6").ToString()), "0", currentData("Drop6").ToString()) & tdDetEnd
+            result+= trDetEnd
+
+            '#TrackLength
+            result+= trDetStart
+                result+= tdTitleStart & "Cut Length (mm)" & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TrackLength1").ToString()), "0", currentData("TrackLength1").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TrackLength2").ToString()), "0", currentData("TrackLength2").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TrackLength3").ToString()), "0", currentData("TrackLength3").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TrackLength4").ToString()), "0", currentData("TrackLength4").ToString()) & tdDetEnd
+                result+= tdDetStart & If(String.IsNullOrEmpty(currentData("TrackLength5").ToString()), "0", currentData("TrackLength5").ToString()) & tdDetEnd
+                result+= tdDetRight & If(String.IsNullOrEmpty(currentData("TrackLength6").ToString()), "0", currentData("TrackLength6").ToString()) & tdDetEnd
             result+= trDetEnd
 
             '#FabricType
@@ -16789,13 +16778,24 @@ Partial Class Methods_Order_JobSheetMethod
 
             '#TubeType
             result+= trDetStart
-                result+= tdTitleStart & "Track Type" & tdDetEnd
+                result+= tdTitleStart & "Slat Type" & tdDetEnd
                 result+= tdDetStart & boldStart & currentData("TubeType1").ToString() & boldEnd & tdDetEnd
                 result+= tdDetStart & boldStart & currentData("TubeType2").ToString() & boldEnd & tdDetEnd
                 result+= tdDetStart & boldStart & currentData("TubeType3").ToString() & boldEnd & tdDetEnd
                 result+= tdDetStart & boldStart & currentData("TubeType4").ToString() & boldEnd & tdDetEnd
                 result+= tdDetStart & boldStart & currentData("TubeType5").ToString() & boldEnd & tdDetEnd
                 result+= tdDetRight & boldStart & currentData("TubeType6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#TrackType
+            result+= trDetStart
+                result+= tdTitleStart & "Track Type" & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TrackType1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TrackType2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TrackType3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TrackType4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("TrackType5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("TrackType6").ToString() & boldEnd & tdDetEnd
             result+= trDetEnd
 
             result+= BlankLineEachRow(15)

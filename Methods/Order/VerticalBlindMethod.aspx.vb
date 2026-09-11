@@ -26,6 +26,7 @@ Partial Class Methods_Order_VerticalBlindMethod
         Public Property width As String
         Public Property drop As String
         Public Property slatsize As String
+        Public Property tracktype As String
         Public Property slatqty As String
         Public Property fabrictype As String
         Public Property fabriclength As String
@@ -111,9 +112,14 @@ Partial Class Methods_Order_VerticalBlindMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function BindTubeType(ByVal designid As String, ByVal blindid As String) As Object
+    Public Shared Function BindTubeType(ByVal designid As String, ByVal blindid As String, ByVal headerid As String) As Object
         Try
-            Dim MyQuery As String = String.Format("SELECT TubeType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' AND Active=1 GROUP BY TubeType ORDER BY TubeType ASC", designid, UCase(blindid).ToString())
+            Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id='{0}'", headerid))
+            Dim WhereTube As String = "AND TubeType <> 'Phoenixline'"
+            If InArray(CustomerId, "LS-A110326061139", "LS-A040226074223", "LS-A100326044643", "LS-A250226114410", "LS-A060226125426") Then
+                WhereTube = ""
+            End If
+            Dim MyQuery As String = String.Format("SELECT TubeType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' {2} AND Active=1 GROUP BY TubeType ORDER BY TubeType ASC", designid, UCase(blindid).ToString(), WhereTube)
             Dim datas As DataSet = publicCfg.GetListData(MyQuery)
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
@@ -267,6 +273,7 @@ Partial Class Methods_Order_VerticalBlindMethod
         Try
             Dim msg As String = "200"
             Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.blindtype))
+            Dim TubeName As String = publicCfg.GetItemData(String.Format("SELECT TubeType FROM HardwareKits WHERE Id = '{0}'", data.controltype))
             Dim qty As Integer
             If String.IsNullOrEmpty(data.qty) Then
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "qty type is required !", .field = "qty"}}
@@ -329,6 +336,10 @@ Partial Class Methods_Order_VerticalBlindMethod
             End If
 
             If BlindName = "Slat Only" Then
+                If TubeName = "Blind Size" And String.IsNullOrEmpty(data.tracktype) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "track type is required !",.field = "tracktype"}}
+                End If
+
                 If Not String.IsNullOrEmpty(data.slatqty) Then
                     If Not IsNumeric(data.slatqty) Then
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "slat qty is required !",.field = "slatqty"}}
@@ -526,8 +537,19 @@ Partial Class Methods_Order_VerticalBlindMethod
                 End If
             End If
 
+            Dim CutLength As Integer = 0
             If BlindName = "Complete" Then
                 data.slatsize = "" : data.slatqty = ""
+                data.tracktype = ""
+
+                Select Case TubeName
+                    Case "Louvolite"
+                        CutLength = drop - 45
+                    Case "Fairline"
+                        CutLength = drop - 40
+                    Case "Phoenixline"
+                        CutLength = drop - 35
+                End Select
             End If
 
             If BlindName = "Slat Only" Then
@@ -557,10 +579,20 @@ Partial Class Methods_Order_VerticalBlindMethod
                 If String.IsNullOrEmpty(data.slatqty) Then 
                     data.slatqty = "1" 'GetCarrierSpacer(ListParamCarriers)
                 End If
+
+                Select Case data.tracktype
+                    Case "Louvolite", "Other"
+                        CutLength = drop - 45
+                    Case "Fairline", "40mm Sunlight"
+                        CutLength = drop - 40
+                    Case "Phoenixline"
+                        CutLength = drop - 35
+                End Select
             End If
 
 
             If BlindName = "Track Only" Then
+                data.tracktype = ""
                 data.fabriccolour = ""
                 drop = "0"
 
@@ -652,7 +684,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, LouvreSize, LouvrePosition, Mounting, SlatSize, SlatQty, Width, [Drop], StackPosition, ControlPosition, TrackColour, ChainLength, WandColour, WandLength, BracketOption, BracketColour, HangerType, BottomHoldDown, InsertInTrack, Sloper, FrameType, FrameLeft, CustomHeaderLength,  Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @LouvreSize, @LouvrePosition, @Mounting, @SlatSize, @SlatQty, @Width, @Drop, @StackPosition, @ControlPosition, @TrackColour, @ChainLength, @WandColour, @WandLength, @BracketOption, @BracketColour, @HangerType, @BottomHoldDown, @InsertInTrack, @Sloper, @FrameType, @FrameLeft, @CustomHeaderLength, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, BlindNo, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, Qty, Location, LouvreSize, LouvrePosition, Mounting, TrackType, SlatSize, SlatQty, Width, [Drop], StackPosition, ControlPosition, TrackColour, TrackLength, ChainLength, WandColour, WandLength, BracketOption, BracketColour, HangerType, BottomHoldDown, InsertInTrack, Sloper, FrameType, FrameLeft, CustomHeaderLength,  Notes, Matrix, Charge, TotalMatrix, TotalCharge, MarkUp, Active) VALUES (@Id, @HeaderId, @BlindNo, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, @Qty, @Location, @LouvreSize, @LouvrePosition, @Mounting, @TrackType, @SlatSize, @SlatQty, @Width, @Drop, @StackPosition, @ControlPosition, @TrackColour, @TrackLength, @ChainLength, @WandColour, @WandLength, @BracketOption, @BracketColour, @HangerType, @BottomHoldDown, @InsertInTrack, @Sloper, @FrameType, @FrameLeft, @CustomHeaderLength, @Notes, 0.00, 0.00, 0.00, 0.00, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -667,6 +699,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                         myCmd.Parameters.AddWithValue("@LouvreSize", data.sizetype)
                         myCmd.Parameters.AddWithValue("@LouvrePosition", data.dropfloor)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
+                        myCmd.Parameters.AddWithValue("@TrackType", data.tracktype)
                         myCmd.Parameters.AddWithValue("@SlatSize", SlatSize)
                         myCmd.Parameters.AddWithValue("@SlatQty", data.slatqty)
                         myCmd.Parameters.AddWithValue("@Width", width)
@@ -674,6 +707,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                         myCmd.Parameters.AddWithValue("@StackPosition", data.stackposition)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@TrackColour", data.trackcolour)
+                        myCmd.Parameters.AddWithValue("@TrackLength", CutLength)
                         myCmd.Parameters.AddWithValue("@ChainLength", If(String.IsNullOrEmpty(CLength), DBNull.Value, CLength))
                         myCmd.Parameters.AddWithValue("@WandColour", data.wandcolour)
                         myCmd.Parameters.AddWithValue("@WandLength", data.wandlength)
@@ -710,7 +744,7 @@ Partial Class Methods_Order_VerticalBlindMethod
 
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, LouvreSize=@LouvreSize, LouvrePosition=@LouvrePosition, Mounting=@Mounting, SlatSize=@SlatSize, SlatQty=@SlatQty, Width=@Width, [Drop]=@Drop, StackPosition=@StackPosition, ControlPosition=@ControlPosition, TrackColour=@TrackColour, ChainLength=@ChainLength, WandColour=@WandColour, WandLength=@WandLength, BracketOption=@BracketOption, BracketColour=@BracketColour, HangerType=@HangerType, BottomHoldDown=@BottomHoldDown, InsertInTrack=@InsertInTrack, Sloper=@Sloper, FrameType=@FrameType, FrameLeft=@FrameLeft, CustomHeaderLength=@CustomHeaderLength, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, LouvreSize=@LouvreSize, LouvrePosition=@LouvrePosition, Mounting=@Mounting, TrackType=@TrackType, SlatSize=@SlatSize, SlatQty=@SlatQty, Width=@Width, [Drop]=@Drop, StackPosition=@StackPosition, ControlPosition=@ControlPosition, TrackColour=@TrackColour, TrackLength=@TrackLength, ChainLength=@ChainLength, WandColour=@WandColour, WandLength=@WandLength, BracketOption=@BracketOption, BracketColour=@BracketColour, HangerType=@HangerType, BottomHoldDown=@BottomHoldDown, InsertInTrack=@InsertInTrack, Sloper=@Sloper, FrameType=@FrameType, FrameLeft=@FrameLeft, CustomHeaderLength=@CustomHeaderLength, Notes=@Notes, Matrix=0.00, Charge=0.00, TotalMatrix=0.00, TotalCharge=0.00, MarkUp=@MarkUp WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -725,6 +759,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                         myCmd.Parameters.AddWithValue("@LouvreSize", data.sizetype)
                         myCmd.Parameters.AddWithValue("@LouvrePosition", data.dropfloor)
                         myCmd.Parameters.AddWithValue("@Mounting", data.mounting)
+                        myCmd.Parameters.AddWithValue("@TrackType", data.tracktype)
                         myCmd.Parameters.AddWithValue("@SlatSize",SlatSize)
                         myCmd.Parameters.AddWithValue("@SlatQty", data.slatqty)
                         myCmd.Parameters.AddWithValue("@Width", width)
@@ -732,6 +767,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                         myCmd.Parameters.AddWithValue("@StackPosition", data.stackposition)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
                         myCmd.Parameters.AddWithValue("@TrackColour", data.trackcolour)
+                        myCmd.Parameters.AddWithValue("@TrackLength", CutLength)
                         myCmd.Parameters.AddWithValue("@ChainLength", If(String.IsNullOrEmpty(CLength), DBNull.Value, CLength))
                         myCmd.Parameters.AddWithValue("@WandColour", data.wandcolour)
                         myCmd.Parameters.AddWithValue("@WandLength", data.wandlength)
