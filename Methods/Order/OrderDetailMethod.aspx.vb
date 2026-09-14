@@ -124,7 +124,7 @@ Partial Class Methods_Order_OrderDetailMethod
     Public Class PricingDetail
         Public Property id As String
         Public Property type As String
-        Public Property poa As Decimal
+        Public Property poa As string
     End Class
 
     <WebMethod()>
@@ -2401,7 +2401,10 @@ Partial Class Methods_Order_OrderDetailMethod
 
             For Each item In data.details
 
-                If item.poa = 0 Then
+                ' If item.poa = 0 Then
+                '     Continue For
+                ' End If
+                If String.IsNullOrEmpty(item.poa) Then
                     Continue For
                 End If
 

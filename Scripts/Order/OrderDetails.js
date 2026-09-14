@@ -1591,6 +1591,13 @@ const handlerEditPricing = async (id, qty) => {
     `;
 
     data.forEach((item, index) => {
+      let poa = parseInt(item.Poa);
+      if (poa === 0) {
+        poa = "";
+      }
+      if (poa > 0) {
+        poa = poa.toFixed(2);
+      }
       html += `
           <tr>
             <td>${index + 1}</td>
@@ -1600,7 +1607,7 @@ const handlerEditPricing = async (id, qty) => {
             <td>
               <div class="input-group">
                 <input type="text" 
-                  value="${item.Poa}" 
+                  value="${poa}" 
                   class="form-control input-poa" 
                   data-id="${item.Id}" data-type="${item.Type}"
                   placeholder="Example: 10.00" />
@@ -2342,7 +2349,9 @@ const submitEditPricing = async (button) => {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error: ${response.status}`);
+      throw new Error(
+        `HTTP error: ${response.status} || ${response.statusText}`,
+      );
     }
 
     const data = await response.json();
