@@ -8509,15 +8509,15 @@ Partial Class Methods_Order_JobSheetMethod
                 result+= tdDetRight & currentData("LinkBlind6").ToString() & tdDetEnd
             result+= trDetEnd
 
-            '#
+            '#BracketColour
             result+= trDetStart
                 result+= tdTitleStart & "Bkt Cover Colour" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetStart & "" & tdDetEnd
-                result+= tdDetRight & "" & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("BracketColour5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("BracketColour6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#Trim
