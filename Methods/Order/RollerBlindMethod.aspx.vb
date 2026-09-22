@@ -1781,7 +1781,7 @@ Partial Class Methods_Order_RollerBlindMethod
             Dim Markup As String = CStr(ListParam(9))
 
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderDetails SET TubeSize=@TubeSize, Mounting=@Mounting, Location=@Location, ChildSafe=@ChildSafe, Accessory=@Accessory, BracketCover=@BracketCover, BracketExtension=@BracketExtension, MotorStyle=@MotorStyle, MarkUp=@MarkUp WHERE UniqueId=@UniqueId AND Active=1", thisConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetails SET TubeSize=@TubeSize, Mounting=@Mounting,  ChildSafe=@ChildSafe, Accessory=@Accessory, BracketCover=@BracketCover, BracketExtension=@BracketExtension, MotorStyle=@MotorStyle, MarkUp=@MarkUp WHERE UniqueId=@UniqueId AND Active=1", thisConn)
                     myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
                     myCmd.Parameters.AddWithValue("@TubeSize", TubeSize)
                     myCmd.Parameters.AddWithValue("@Mounting", Mounting)
