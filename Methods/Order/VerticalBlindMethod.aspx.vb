@@ -941,7 +941,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                             End If
                         ElseIf TubeType.Contains("Louvolite") Then
                             Dim Spacers = Spacer127Louvolite
-                            If InArray(StackPosition, "Left", "Right", "Centre", "Fix") Then
+                            If InArray(StackPosition, "Left", "Right", "Center", "Fix") Then
                                 Spacers = Spacer127LouvoliteA
                             End If
                             If InStr(StackPosition, "Split") > 0 AND InArray(ControlPosition, "Right", "Left", "Twin Wand") Then
@@ -1048,7 +1048,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                             End If
                         ElseIf TubeType.Contains("Louvolite") Then
                             Dim Spacers = Spacer89Louvolite
-                            If InArray(StackPosition, "Left", "Right", "Centre", "Fix") Then
+                            If InArray(StackPosition, "Left", "Right", "Center", "Fix") Then
                                 Spacers = Spacer89LouvoliteA
                             End If
                             If InStr(StackPosition, "Split") > 0 AND InArray(ControlPosition, "Right", "Left", "Twin Wand") Then
