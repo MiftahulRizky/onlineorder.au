@@ -307,6 +307,11 @@ Partial Class Methods_Order_VerticalBlindMethod
             Dim width As Integer
             Dim drop As Integer
             If BlindName = "Complete" Or BlindName = "Track Only" Then
+                Dim MaxWidth As Integer = 6000
+                If BlindName = "Track Only" AND TubeName = "Louvolite" Then
+                    MaxWidth = 4000
+                End If
+
                 If String.IsNullOrEmpty(data.width) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width is required !",.field = "width"}}
                 End If
@@ -316,7 +321,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                 If width < 150 Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 150 !",.field = "width"}}
                 End If
-                If width > 6000 Then
+                If width > MaxWidth Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 6000 !",.field = "width"}}
                 End If
             End If
