@@ -1594,8 +1594,15 @@ Partial Class Methods_Order_PdfOrderMethod
                     If insertInTrack = "1" OR insertInTrack = "True" Then
                         insertInTrack = "Yes"
                     End If
+                    If insertInTrack = "0" OR insertInTrack = "False" Then
+                        insertInTrack = "No"
+                    End If
+
                     If sloper = "1" OR sloper = "True" Then
                         sloper = "Yes"
+                    End If
+                    If sloper = "0" OR sloper = "False" Then
+                        sloper = "No"
                     End If
 
                     result += trStart
