@@ -1581,6 +1581,8 @@ Partial Class Methods_Order_PdfOrderMethod
 
                 For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
                     Dim controlType As String = thisData.Tables(0).Rows(i).Item("ControlType").ToString()
+                    Dim insertInTrack As String = thisData.Tables(0).Rows(i).Item("InsertInTrack").ToString()
+                    Dim sloper As String = thisData.Tables(0).Rows(i).Item("Sloper").ToString()
 
                     Dim chainwandColour As String = thisData.Tables(0).Rows(i).Item("WandColour").ToString()
                     Dim chainwandLength As String = thisData.Tables(0).Rows(i).Item("WandLength").ToString()
@@ -1589,12 +1591,10 @@ Partial Class Methods_Order_PdfOrderMethod
                         chainwandLength = thisData.Tables(0).Rows(i).Item("ChainLength").ToString()
                     End If
 
-                    Dim insertInTrack As String = "No"
-                    Dim sloper As String = "No"
-                    If thisData.Tables(0).Rows(i).Item("InsertInTrack").ToString() = "1" Then
+                    If insertInTrack = "1" OR insertInTrack = "True" Then
                         insertInTrack = "Yes"
                     End If
-                    If thisData.Tables(0).Rows(i).Item("Sloper").ToString() = "1" Then
+                    If sloper = "1" OR sloper = "True" Then
                         sloper = "Yes"
                     End If
 
