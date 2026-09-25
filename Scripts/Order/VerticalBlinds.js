@@ -736,20 +736,23 @@ const bindTrackColour = (tubetype) => {
     data.push({ value: "Primrose", text: "Primrose" });
   }
 
-  if (["Fairline", "Javaline"].includes(tubetype)) {
-    if (tubetype === "Javaline") {
-      data.push(
-        { value: "White", text: "White" },
-        { value: "Beige", text: "Beige" },
-        { value: "Birch White", text: "Birch White" },
-      );
-    }
+  if (["Fairline"].includes(tubetype)) {
     data.push(
       // { value: "White", text: "White" },
       // { value: "Beige", text: "Beige" },
       // { value: "Birch White", text: "Birch White" },
       { value: "Black", text: "Black" },
       { value: "Silver", text: "Silver" },
+    );
+  }
+
+  if (tubetype === "Javaline") {
+    data.push(
+      { value: "White", text: "White" },
+      { value: "Beige", text: "Beige" },
+      { value: "Ivory", text: "Ivory" },
+      { value: "Black", text: "Black" },
+      { value: "Grey", text: "Grey" },
     );
   }
 

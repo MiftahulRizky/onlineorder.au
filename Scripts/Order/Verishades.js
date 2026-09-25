@@ -286,7 +286,7 @@ const bindWandColour = (size) => {
   let list = [];
   list.push("White");
   if (!["Custom"].includes(size)) {
-    list.push("Birch", "Black");
+    list.push("Silver", "Black");
   }
   generateOption("wandcolour", list);
 };
