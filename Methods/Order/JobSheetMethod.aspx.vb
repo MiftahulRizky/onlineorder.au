@@ -16097,7 +16097,7 @@ Partial Class Methods_Order_JobSheetMethod
             currentData("InsertInTrack6").ToString()
         }
         For i As Integer = 0 To initTrackOption.Length - 1
-            If InArray(initTrackOption(i).ToString(), "Yes", "1") Then
+            If InArray(initTrackOption(i).ToString(), "Yes", "1", "True") Then
                 initTrackOption(i) = "Insert"
             Else
                 initTrackOption(i) = "Plain"
