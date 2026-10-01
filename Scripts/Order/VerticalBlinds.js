@@ -881,12 +881,13 @@ const bindWandColour = (tubetype, wandlength) => {
   if (!wandlength) return;
 
   let data = [];
+
   if (wandlength === "custom") {
     data.push({ value: "White", text: "White" });
   } else {
     if (tubetype === "Louvolite") {
       data.push({ value: "White", text: "White" });
-    } else if (tubetype === "Phoneixline") {
+    } else if (tubetype === "Phoenixline") {
       data.push({ value: "Clear", text: "Clear" });
     } else {
       data.push(
@@ -1243,7 +1244,7 @@ const handlerElementVisibility = async (
       divSpacer.classList.remove("d-none");
       divFabricDrop.classList.remove("d-none");
 
-      if (["Fairline", "Javaline"].includes(tubetype)) {
+      if (["Fairline", "Javaline", "Phoenixline"].includes(tubetype)) {
         divInsertInTrack.classList.remove("d-none");
       }
       if (controlname === "Chain") {
@@ -1282,7 +1283,7 @@ const handlerElementVisibility = async (
       divSpacer.classList.remove("d-none");
       // divFabricDrop.classList.remove("d-none");
 
-      if (["Fairline", "Javaline"].includes(tubetype)) {
+      if (["Fairline", "Javaline", "Phoenixline"].includes(tubetype)) {
         divInsertInTrack.classList.remove("d-none");
       }
 

@@ -286,7 +286,7 @@ const bindWandColour = (size) => {
   let list = [];
   list.push("White");
   if (!["Custom"].includes(size)) {
-    list.push("Silver", "Black");
+    list.push("Clear Anodize", "Black");
   }
   generateOption("wandcolour", list);
 };
