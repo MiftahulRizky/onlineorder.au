@@ -268,7 +268,7 @@
         let LOGINID = '<%= Session("LoginId") %>';
         let URIMETHOD = '/Methods/Order/CreateOrderMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/CreateOrders.js?v=1.0.3"></script>
+    <script src="/Scripts/Order/CreateOrders.js?v=1.0.6"></script>
 
 </asp:Content>
 

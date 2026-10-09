@@ -335,6 +335,8 @@ const bindSelect = ({
       option.text = item.text.toUpperCase();
       option.setAttribute("data-name", item.text);
       option.setAttribute("data-delivery", item.delivery);
+      option.setAttribute("data-company", item.company);
+      option.setAttribute("data-upload", item.upload);
       select.add(option);
     });
 
@@ -672,7 +674,7 @@ const displayElOverall = async (ordertype, header) => {
 
     if (isBlinds) {
       if (isAdd) {
-        toggleShow(elForm.divCreateType, true);
+        // toggleShow(elForm.divCreateType, true);
         const createtype = getById("createtype").value;
         if (createtype === "Create New") {
           toggleShow(elForm.divOrderNumber, true);
@@ -699,10 +701,18 @@ const displayElOverall = async (ordertype, header) => {
     }
 
     const isDelivery = getById("customer").selectedOptions[0]?.dataset.delivery;
+    const isUpload = getById("customer").selectedOptions[0]?.dataset.upload;
     if (!isDelivery && isBlinds) {
       getById("delivery").value = "";
       getById("deliverytype").value = "";
       toggleShow(elForm.divDelivery, true);
+    }
+
+    if (isUpload === "True" && isBlinds) {
+      if (isAdd) {
+        getById("createtype").value = "Create New";
+        toggleShow(elForm.divCreateType, true);
+      }
     }
 
     if (isEdit) {

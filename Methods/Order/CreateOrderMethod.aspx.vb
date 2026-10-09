@@ -118,7 +118,7 @@ Partial Class Methods_Order_CreateOrderMethod
 
                 Case "customer"
 
-                    query = "SELECT Id, Name, Company, Delivery, Active FROM Customers WHERE Active='1' AND Id <> 'DEFAULT' ORDER BY Name ASC"
+                    query = "SELECT Id, Name, Company, Delivery, Upload, Active FROM Customers WHERE Active='1' AND Id <> 'DEFAULT' ORDER BY Name ASC"
                     resultList = GetFormattedData(query, "Id", "Name", data.field)
 
                 Case "createdby"
@@ -159,6 +159,7 @@ Partial Class Methods_Order_CreateOrderMethod
                 If field = "customer" Then
                     list(list.Count - 1).Add("company", row("Company").ToString())
                     list(list.Count - 1).Add("delivery", row("Delivery").ToString())
+                    list(list.Count - 1).Add("upload", row("Upload").ToString())
                 End If
                 
             Next
@@ -187,10 +188,13 @@ Partial Class Methods_Order_CreateOrderMethod
                 End If
             End If
 
-            If data.createtype = "Create New" Then
-                Dim ValidatedCreate As Object = Validate(data.ordernumber, data.ordername, data)
+            If data.createtype = "Create New" OR data.action = "edit" Then    
+                Dim ValidatedCreate As Object = ValidateSave(data.ordernumber, data.ordername, data)
+                If ValidatedCreate.warning Then 
+                    Return New With { .warning = ValidatedCreate.warning, .message = ValidatedCreate.message, .field = ValidatedCreate.field}
+                End If
                 If ValidatedCreate.error Then 
-                    Return New With { .warning = ValidatedCreate.error, .message = ValidatedCreate.message, .field = ValidatedCreate.field}
+                    Throw New Exception(ValidatedCreate.message)
                 End If
             End If
 
@@ -226,9 +230,12 @@ Partial Class Methods_Order_CreateOrderMethod
                     csvOrderNumber = GetColValue(headerValues, 1)
                     csvOrderName = GetColValue(headerValues, 2)
     
-                    Dim ValidatedOrder As Object = Validate(csvOrderNumber, csvOrderName, data)
+                    Dim ValidatedOrder As Object = ValidateSave(csvOrderNumber, csvOrderName, data)
+                    If ValidatedOrder.warning Then 
+                        Return New With { .warning = ValidatedOrder.warning, .message = String.Format("CSV : {0}", ValidatedOrder.message), .field = ValidatedOrder.field}
+                    End If
                     If ValidatedOrder.error Then 
-                        Return New With { .warning = ValidatedOrder.error, .message = String.Format("CSV : {0}", ValidatedOrder.message), .field = ValidatedOrder.field}
+                        Throw New Exception(String.Format("CSV : {0}", ValidatedOrder.message))
                     End If
     
     
@@ -383,6 +390,7 @@ Partial Class Methods_Order_CreateOrderMethod
                                 If ResDetail IsNot Nothing AndAlso ResDetail.error Then
                                     Throw New Exception(ResDetail.message)
                                 End If
+
 
                                 trans.Commit()
 
@@ -653,19 +661,19 @@ Partial Class Methods_Order_CreateOrderMethod
         Return ""
     End Function
 
-    Private Shared Function Validate(ByVal number As String, ByVal ordername As String, ByVal data As ParamSave) As Object
+    Private Shared Function ValidateSave(ByVal number As String, ByVal ordername As String, ByVal data As ParamSave) As Object
         Try
             If String.IsNullOrEmpty(number) Then
-                Return New With { .error = true, .message = "order number is required !", .field = "ordernumber"}
+                Return New With { .warning = true, .message = "order number is required !", .field = "ordernumber"}
             End If
 
             If Not String.IsNullOrEmpty(number)Then
                 If InStr(number, "\") > 0 Or  InStr(number, "/") > 0 Or  InStr(number, "|") > 0 Or  InStr(number, ",") > 0 Or  InStr(number, "&") > 0 Or  InStr(number, "#") > 0 Or  InStr(number, "'") > 0 Or  InStr(number, ".") > 0 Or  InStr(number, "`") > 0 Then
-                    Return New With { .error = true, .message = "order number do not use special character !", .field = "ordernumber"}
+                    Return New With { .warning = true, .message = "order number do not use special character !", .field = "ordernumber"}
                 End If
 
                 If number.Length > 20 Then
-                    Return New With { .error = true, .message = "order number max length is 20 !", .field = "ordernumber"}
+                    Return New With { .warning = true, .message = "order number max length is 20 !", .field = "ordernumber"}
                 End If
 
                 If data.action = "add" Then
@@ -675,11 +683,11 @@ Partial Class Methods_Order_CreateOrderMethod
                     Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT CustomerId FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '{0}' AND OrderType='{2}' AND Active = '1'", OrderNumber, data.customer, data.ordertype))
                     If String.Equals(OrderNumber.Trim(), FindOrderNumberByCust, StringComparison.OrdinalIgnoreCase) Then
                         If data.customer <> CustomerId AND data.createtype = "Upload CSV" Then
-                            Return New With { .error = true, .message = "The order number in the CSV is already in use or available. The customer does not match.", .field = "ordernumber"}
+                            Return New With { .warning = true, .message = "The order number in the CSV is already in use or available. The customer does not match.", .field = "ordernumber"}
                         End If
 
                         If data.createtype = "Create New" Then
-                            Return New With { .error = true, .message = "order number already exist !", .field = "ordernumber"}
+                            Return New With { .warning = true, .message = "order number already exist !", .field = "ordernumber"}
                         End If
                     End If
 
@@ -688,25 +696,25 @@ Partial Class Methods_Order_CreateOrderMethod
                     If String.Equals(OrderNumber.Trim(), FindOrderNumberAllCust, StringComparison.OrdinalIgnoreCase) Then
                         
                         If data.customer <> CustomerId AND data.createtype = "Upload CSV" Then
-                            Return New With { .error = true, .message = "The order number in the CSV is already in use or available. The customer does not match.", .field = "ordernumber"}
+                            Return New With { .warning = true, .message = "The order number in the CSV is already in use or available. The customer does not match.", .field = "ordernumber"}
                         End If
 
                         If data.createtype = "Create New" Then
-                            Return New With { .error = true, .message = "order number already exist !", .field = "ordernumber"}
+                            Return New With { .warning = true, .message = "order number already exist !", .field = "ordernumber"}
                         End If
 
                     End If
                 End If
 
                 If data.action = "edit" Then
-                    Dim OrderNumber As String = ordernumber.Trim()
+                    Dim OrderNumber As String = number.Trim()
                     Dim FindOrderNumberAllCust As String = publicCfg.GetItemData(String.Format("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '{0}' AND CustomerId <> '{1}' AND Active = 1", OrderNumber, data.customer))
                     Dim OtherCustomerId As String = publicCfg.GetItemData(String.Format("SELECT CustomerId FROM view_order_headers WHERE OrderNumber = '{0}'", FindOrderNumberAllCust))
 
                     Dim OrderNumberSame As boolean = String.Equals(OrderNumber.Trim(), FindOrderNumberAllCust, StringComparison.OrdinalIgnoreCase)
                     Dim CustomerOldSame As boolean = String.Equals(data.customerold, OtherCustomerId, StringComparison.OrdinalIgnoreCase)
                     If OrderNumberSame And CustomerOldSame = False Then
-                        Return New With { .error = true, .message = "order number already exist !", .field = "ordernumber"}
+                        Return New With { .warning = true, .message = "order number already exist !", .field = "ordernumber"}
                     End If
                 End If
 
@@ -721,9 +729,9 @@ Partial Class Methods_Order_CreateOrderMethod
                 End If
             End If
 
-            Return New With {.error = False, .message = String.Empty, .field = String.Empty}
+            Return New With {.error = False, .warning = False, .message = "", .field = ""}
         Catch ex As Exception
-            Return New With { .error = True, .message = String.Format("ValidateOrder: {0}", ex.Message)}
+            Return New With { .error = True, .warning = False, .message = String.Format("ValidateSave: {0}", ex.Message)}
         End Try
     End Function
 
