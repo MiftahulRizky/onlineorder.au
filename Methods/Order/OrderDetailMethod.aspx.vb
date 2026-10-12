@@ -70,6 +70,7 @@ Partial Class Methods_Order_OrderDetailMethod
         Public Property canceleddate As String
         Public Property description As String
 
+        Public Property rolename As String
         Public Property username As String
         Public Property loginid As String
     End Class
@@ -125,6 +126,11 @@ Partial Class Methods_Order_OrderDetailMethod
         Public Property id As String
         Public Property type As String
         Public Property poa As string
+    End Class
+
+    Public Class OrderSendingItem
+        Public Property name As String
+        Public Property status As Boolean
     End Class
 
     <WebMethod()>
@@ -1019,13 +1025,13 @@ Partial Class Methods_Order_OrderDetailMethod
                 Return New With { .warning = true, .message = "Please add item first."}
             End If
 
-            If rolename = "Administrator" Then
-                Dim ResApi As Object = SendOrderGlobal(headerid)
-                If ResApi.error Then
-                    Throw New Exception(ResApi.message)
-                End If
-                ' Throw New Exception("API Success")
-            End If
+            ' If rolename = "Administrator" Then
+            '     Dim ResApi As Object = SendOrderGlobal(headerid)
+            '     If ResApi.error Then
+            '         Throw New Exception(ResApi.message)
+            '     End If
+            '     Throw New Exception("API Success")
+            ' End If
             
             
             ' Throw New Exception("Debug")
@@ -1051,11 +1057,13 @@ Partial Class Methods_Order_OrderDetailMethod
     Private Shared Function SendOrderGlobal(headerid As String) As Object
         Try
             '#HeaderData sudah fix ada tidak perlu validasi
-            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT OrderId, OrderNote FROM view_order_headers WHERE Id = '{0}' AND OrderType='Blinds'", headerid))
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT OrderId, OrderNumber, OrderName, OrderNote FROM view_order_headers WHERE Id = '{0}' AND OrderType='Blinds'", headerid))
             Dim Rows As DataRow = HeaderData.Tables(0).Rows(0)
 
             Dim order As New Dictionary(Of String, Object) From {
                 {"OrderId", Rows("OrderId").ToString()},
+                {"OrderNumber", Rows("OrderNumber").ToString()},
+                {"OrderName", Rows("OrderName").ToString()},
                 {"OrderNote", Rows("OrderNote").ToString()},
                 {"Details", New List(Of Object)()}
             }
@@ -1070,7 +1078,14 @@ Partial Class Methods_Order_OrderDetailMethod
             End If
 
             If DetailCount > 0 Then
+
+                If IsOrderSendingActive(headerid, "BIG") Then
+                    Return New With { .error = false, .message = "Ok"}
+                End If
+
+
                 For Each dr As DataRow In DetailData.Tables(0).Rows
+                    Dim DesignName As String = dr("DesignName").ToString()
                     Dim BlindName As String = dr("BlindName").ToString()
                     Dim ControlPosition As String = dr("ControlPosition").ToString()
                     
@@ -1088,13 +1103,17 @@ Partial Class Methods_Order_OrderDetailMethod
                         ControlPosition = ""
                     End If
 
+                    If BlindName = "25mm Aluminium" Then
+                        DesignName = "Aluminium Blinds"
+                    End If
+
                     CType(order("Details"), List(Of Object)).Add(New With {
                         .KitName = dr("KitName").ToString(),
                         .BracketType = dr("BracketType").ToString(),
                         .TubeType = dr("TubeType").ToString(),
                         .ControlType = dr("ControlType").ToString(),
                         .ColourType = dr("ColourType").ToString(),
-                        .DesignName = dr("DesignName").ToString(),
+                        .DesignName = DesignName,
                         .BlindName = dr("BlindName").ToString(),
                         .FabricType = dr("FabricType").ToString(),
                         .FabricColour = dr("FabricColour").ToString(),
@@ -1107,6 +1126,7 @@ Partial Class Methods_Order_OrderDetailMethod
                         .NumOfPanel = If(IsDBNull(dr("NumOfPanel")), 0, CInt(dr("NumOfPanel"))),
                         .TwoOnOneHeadreal = dr("DoorCutOut").ToString(),
                         .ControlPosition = ControlPosition,
+                        .ControlLength = If(IsDBNull(dr("ControlLength")), 0, CInt(dr("ControlLength"))),
                         .ControlLift = ControlLift,
                         .ControlTilt = ControlTilt,
                         .ChainLength = If(IsDBNull(dr("ChainLength")), 0, CInt(dr("ChainLength"))),
@@ -1148,18 +1168,120 @@ Partial Class Methods_Order_OrderDetailMethod
                     })
                 Next
 
+                Dim Res As Object = UpdateOrderSending(headerid, "BIG", True)
+                If Res.error Then Throw New Exception(Res.message)
+
                 Dim json As String = JsonConvert.SerializeObject(order)
-                
                 Dim client As New HttpClient()
-                ' client.DefaultRequestHeaders.Add("x-api-key", "YOUR_API_KEY")
+                ' client.DefaultRequestHeaders.Add("X-API-KEY", "hidupjokowi")
                 Dim content As New StringContent(json, Encoding.UTF8, "application/json")
-                Dim response = client.PostAsync("https://webhook.site/2b67abaa-7ee9-4efa-8865-3ef8b6527924", content).Result
+                ' Dim response = client.PostAsync("http://10.0.209.65:2302/handler/Sunlight.ashx", content).Result
+                Dim response = client.PostAsync("https://fvq6m64blm.rbmock.dev", content).Result
+
                 Return New With { .error = false, .message = response.StatusCode.ToString()}
             End If
 
         Catch ex As Exception
             Return New With { .error = true, .message = String.Format("SendOrderGlobal: {0}", ex.Message)}
         End Try
+    End Function
+
+    Private Shared Function UpdateOrderSending(id As String, name As String, status As Boolean) As Object
+        Try
+            Using thisConn As New SqlConnection(myConn)
+
+                Dim currentJson As String = Nothing
+
+                Using getCmd As New SqlCommand("SELECT OrderSending FROM OrderHeaders WHERE Id = @Id",thisConn)
+                    getCmd.Parameters.AddWithValue("@Id", id)
+                    thisConn.Open()
+
+                    Dim result = getCmd.ExecuteScalar()
+                    If result IsNot Nothing AndAlso result IsNot DBNull.Value Then
+                        currentJson = result.ToString()
+                    End If
+                End Using
+
+                '#Get Old data
+                Dim sendingList As New List(Of OrderSendingItem)
+                If Not String.IsNullOrWhiteSpace(currentJson) Then
+                    sendingList = JsonConvert.DeserializeObject(Of List(Of OrderSendingItem))(currentJson)
+                    If sendingList Is Nothing Then
+                        sendingList = New List(Of OrderSendingItem)
+                    End If
+                End If
+
+                '#Find By Name
+                Dim existingItem = sendingList.FirstOrDefault(
+                    Function(x) x.name.Equals(name, StringComparison.OrdinalIgnoreCase)
+                )
+
+                If existingItem IsNot Nothing Then
+                    '#Update
+                    existingItem.status = status
+                Else
+                    '#Insert
+                    sendingList.Add(New OrderSendingItem With {
+                        .name = name,
+                        .status = status
+                    })
+                End If
+
+                Dim newJson As String = JsonConvert.SerializeObject(sendingList)
+                Using updateCmd As New SqlCommand("UPDATE OrderHeaders SET OrderSending = @OrderSending WHERE Id = @Id",thisConn)
+                    updateCmd.Parameters.AddWithValue("@Id", id)
+                    updateCmd.Parameters.AddWithValue("@OrderSending", newJson)
+                    updateCmd.ExecuteNonQuery()
+                End Using
+
+                thisConn.Close()
+            End Using
+           
+            Return New With { .error = false, .message = "Order has been updated successfully."}
+        Catch ex As Exception
+            Return New With { .error = true, .message = String.Format("UpdateOrderSending: {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared Function IsOrderSendingActive(headerid As Integer, sendingName As String) As Boolean
+
+        Using conn As New SqlConnection(myConn)
+            Using cmd As New SqlCommand("SELECT OrderSending FROM OrderHeaders WHERE Id = @Id", conn)
+
+                cmd.Parameters.AddWithValue("@Id", headerid)
+                conn.Open()
+
+                Dim result = cmd.ExecuteScalar()
+
+                If result Is Nothing OrElse result Is DBNull.Value Then
+                    Return False
+                End If
+
+                Dim orderSending As String = result.ToString()
+
+                If String.IsNullOrWhiteSpace(orderSending) Then
+                    Return False
+                End If
+
+                Dim sendingList = JsonConvert.DeserializeObject(Of List(Of OrderSendingItem))(orderSending)
+
+                If sendingList Is Nothing Then
+                    Return False
+                End If
+
+                Dim item = sendingList.FirstOrDefault(
+                    Function(x) x.name.Equals(sendingName, StringComparison.OrdinalIgnoreCase)
+                )
+
+                If item Is Nothing Then
+                    Return False
+                End If
+
+                Return item.status
+
+            End Using
+        End Using
+
     End Function
 
     <WebMethod()>
@@ -1643,6 +1765,15 @@ Partial Class Methods_Order_OrderDetailMethod
                         query = "UPDATE OrderHeaders SET Status='New Order', StatusDescription=@StatusDescription, SubmittedDate=@SubmittedDate WHERE Id=@Id"
                     Case "In Production"
                         query = "UPDATE OrderHeaders SET Status='In Production', StatusDescription=@StatusDescription, JobDate=GETDATE() WHERE Id=@Id"
+                        If data.rolename = "Administrator" Then
+                            ' Throw New Exception(data.rolename)
+                            Dim ResApi As Object = SendOrderGlobal(data.id)
+                            If ResApi.error Then
+                                Throw New Exception(ResApi.message)
+                            End If
+                            ' Throw New Exception("API Success")
+                        End If
+                        
                     Case "On Hold"
                         query = "UPDATE OrderHeaders SET Status='On Hold', StatusDescription=@StatusDescription WHERE Id=@Id"
                     Case "Completed"
@@ -1650,6 +1781,7 @@ Partial Class Methods_Order_OrderDetailMethod
                     Case "Canceled"
                         query = "UPDATE OrderHeaders SET Status='Canceled', StatusDescription=@StatusDescription, CanceledDate=@CanceledDate WHERE Id=@Id"
                 End Select
+
 
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand(query, thisConn)
@@ -2056,6 +2188,29 @@ Partial Class Methods_Order_OrderDetailMethod
                 errorMessage &= " Inner Exception: " & ex.InnerException.Message
             End If
             Return errorMessage
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function SendToBig(ByVal headerid As String, ByVal status As String) As Object
+        Try
+            If String.IsNullOrEmpty(headerid) Then
+                Throw new Exception("id is null or empty !")
+            End If  
+
+            If NOT Status = "In Production" Then
+                Throw New Exception("Status is not In Production !")
+            End If
+
+            Dim ResApi As Object = SendOrderGlobal(headerid)
+            If ResApi.error Then
+                Throw New Exception(ResApi.message)
+            End If
+
+            Return New With {.success = true, .message = "Order has been sent to BIG Order successfully."}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("SendToBig: {0}", ex.Message)}
         End Try
     End Function
 

@@ -44,13 +44,13 @@ Partial Class Export_XMLExact
                 Dim id As String = headerBlindsData.Tables(0).Rows(i).Item("Id").ToString()
                 Dim orderId As String = "SP-" & id
 
-                Dim fileName As String = String.Format("Order-Blinds-{0}.xml", orderId)
+                Dim fileName As String = String.Format("-SPOD-Order-Blinds-{0}.xml", orderId)
                 Dim filePath As String = Server.MapPath("~/file/inv/")
 
                 Dim finalPath As String = Path.Combine(filePath, fileName)
 
                 exactCfg.CreateXMLB(id, fileName, filePath)
-                ' exactCfg.Connect(finalPath)
+                exactCfg.Connect(finalPath)
             Next
         End If
 
