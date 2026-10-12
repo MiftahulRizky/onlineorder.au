@@ -369,26 +369,28 @@ Partial Class Methods_Order_CreateOrderMethod
                                     data.headerid = HeaderData
                                 End If
 
-                                Dim ResDetail As Object = Nothing
-                                Select Case csvOrderProduct.Trim()
-                                    Case "Roller Blinds"
-                                        ResDetail = InsertRollerBlinds(data.headerid, listDetail, thisConn, trans)
+                                If data.createtype = "Upload CSV" Then
+                                    Dim ResDetail As Object = Nothing
+                                    Select Case csvOrderProduct.Trim()
+                                        Case "Roller Blinds"
+                                            ResDetail = InsertRollerBlinds(data.headerid, listDetail, thisConn, trans)
 
-                                    Case "Venetian Blinds"
-                                        ResDetail = InsertVenetianBlinds(data.headerid, listDetail, thisConn, trans)
+                                        Case "Venetian Blinds"
+                                            ResDetail = InsertVenetianBlinds(data.headerid, listDetail, thisConn, trans)
 
-                                    Case "Veri Shades"
-                                        ResDetail = InsertVeriShades(data.headerid, listDetail, thisConn, trans)
-                                    
-                                    Case "Vertical Blinds"
-                                        ResDetail = InsertVerticalBlinds(data.headerid, data.customer, listDetail, thisConn, trans)
+                                        Case "Veri Shades"
+                                            ResDetail = InsertVeriShades(data.headerid, listDetail, thisConn, trans)
+                                        
+                                        Case "Vertical Blinds"
+                                            ResDetail = InsertVerticalBlinds(data.headerid, data.customer, listDetail, thisConn, trans)
 
-                                    Case Else
-                                        Throw New Exception("Product not found")
-                                End Select
+                                        Case Else
+                                            Throw New Exception("Product not found")
+                                    End Select
 
-                                If ResDetail IsNot Nothing AndAlso ResDetail.error Then
-                                    Throw New Exception(ResDetail.message)
+                                    If ResDetail IsNot Nothing AndAlso ResDetail.error Then
+                                        Throw New Exception(ResDetail.message)
+                                    End If
                                 End If
 
 
@@ -451,6 +453,7 @@ Partial Class Methods_Order_CreateOrderMethod
 
             If data.action = "edit" Then
                 IF InArray(data.ordertype, "Blinds", "Door and Window") Then
+                    Dim DeliveryOrder As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM OrderHeaders WHERE Id={0}", data.headerid))
                     Using thisConn As New SqlConnection(myConn)
                         Using myCmd As New SqlCommand("UPDATE OrderHeaders SET UserId=@UserId, StoreId=@StoreId, OrderNo=LTRIM(RTRIM(@OrderNo)), OrderCust=LTRIM(RTRIM(@OrderCust)), Delivery=@Delivery, DeliveryType=@DeliveryType, OrderSourceType=@OrderSourceType, Note=@Note, Active=1 WHERE Id=@Id", thisConn)
                             myCmd.Parameters.AddWithValue("@Id", data.headerid)
@@ -468,6 +471,26 @@ Partial Class Methods_Order_CreateOrderMethod
                             thisConn.Close()
                         End Using
                     End Using
+
+                    If Not DeliveryOrder = FinalDelivery Then
+                        Using thisConn As New SqlConnection(myConn)
+                            Using myCmd As New SqlCommand("SELECT Id FROM OrderDetails WHERE HeaderId=@HeaderId", thisConn)
+                                myCmd.Parameters.AddWithValue("@HeaderId", data.headerid)
+                                myCmd.Connection = thisConn
+                                thisConn.Open()
+                                Dim reader As SqlDataReader = myCmd.ExecuteReader()
+                                While reader.Read()
+                                    Dim itemId As Integer = reader.GetInt32(0)
+                                    publicCfg.ResetPriceDetail(itemId)
+                                    publicCfg.HitungHarga(data.headerid, itemId)
+                                    publicCfg.HitungSurcharge(data.headerid, itemId)
+                                End While
+                                reader.Close()  
+                                thisConn.Close()
+                            End Using
+                        End Using
+                    End If
+                    
                     url = String.Format("/order/orderdetails?param={0}&ordertype={1}", data.headerid, data.ordertype.ToLower())
                 End If
 

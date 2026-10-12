@@ -713,7 +713,12 @@ const bindMotorRemote = (controltype) => {
   let list = [];
 
   if (controltype == "Somfy RTS" || controltype == "Somfy WF") {
-    list.push("1 Situo (1 ch)", "4 Situo (5ch)", "Telis (16 ch)");
+    list.push(
+      "1 Situo (1 ch)",
+      "2 Situo (2 ch)",
+      "4 Situo (5ch)",
+      "Telis (16 ch)",
+    );
 
     if (controltype == "Somfy RTS") {
       list.push("Sm O (w+frame)", "Sm O 2ch (w+frame)", "Sm O 4ch (w+frame)");
