@@ -2765,7 +2765,7 @@ Partial Class Methods_Order_OrderDetailMethod
             
             Dim OrderId As String = HeaderData.Tables(0).Rows(0).Item("OrderId").ToString()
             Dim Status As String = HeaderData.Tables(0).Rows(0).Item("Status").ToString()
-            Dim FileName As String = String.Format("Order-Blinds-{0}.xml", OrderId)
+            Dim FileName As String = String.Format("-SPOD-Order-Blinds-{0}.xml", OrderId)
             Dim FilePath As String = HttpContext.Current.Server.MapPath("~/file/inv/")
             Dim PathCombine As String = Path.Combine(FilePath, FileName)
 
