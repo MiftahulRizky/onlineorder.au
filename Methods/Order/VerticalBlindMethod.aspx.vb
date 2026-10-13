@@ -322,7 +322,7 @@ Partial Class Methods_Order_VerticalBlindMethod
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 150 !",.field = "width"}}
                 End If
                 If width > MaxWidth Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 6000 !",.field = "width"}}
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = String.Format("width must be less than or equal to {0} !", MaxWidth),.field = "width"}}
                 End If
             End If
             If BlindName = "Complete" Or BlindName = "Slat Only" Then    
