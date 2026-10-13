@@ -488,7 +488,7 @@ Partial Class Methods_Order_VenetianMethod
                 CutOut_RightBottom = 1
             End If
 
-            If data.pelmetwidth = "" Or data.pelmetwidth = "0" Then
+            If NOT InStr(BlindName, "Aluminium") > 0 AND (data.pelmetwidth = "" Or data.pelmetwidth = "0") Then
                 If data.mounting = "Face Fit" Then
                     pelmetwidth = width + 20
                     If InStr(BlindName, "Timber") > 0 Then
