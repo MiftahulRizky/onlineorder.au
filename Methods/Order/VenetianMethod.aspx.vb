@@ -201,7 +201,7 @@ Partial Class Methods_Order_VenetianMethod
             '         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
             '     End If
 
-            '     If data.sizetype = "Opening Size" AND data.mounting = "Face Fit"
+            '     If data.sizetype = "Opening Size" AND InStr(BlindName, "Face Fit") > 0
             '         If String.IsNullOrEmpty(data.dropfloor) Then
             '             Return New ErrorResponse With { .error = New ErrorDetail With { .message = "drop to the floor is required !", .field = "dropfloor"}}
             '         End If
@@ -489,13 +489,13 @@ Partial Class Methods_Order_VenetianMethod
             End If
 
             If NOT InStr(BlindName, "Aluminium") > 0 AND (data.pelmetwidth = "" Or data.pelmetwidth = "0") Then
-                If data.mounting = "Face Fit" Then
+                If InStr(BlindName, "Face Fit") > 0 Then
                     pelmetwidth = width + 20
                     If InStr(BlindName, "Timber") > 0 Then
                         pelmetwidth = width + 20
                     End If
                 End If
-                If data.mounting = "Reveal Fit" Then
+                If InStr(BlindName, "Reveal Fit") > 0 Then
                     pelmetwidth = width + 10
                     If InStr(BlindName, "Timber") > 0 Then
                         pelmetwidth = width + 8
@@ -505,7 +505,7 @@ Partial Class Methods_Order_VenetianMethod
 
             If data.pelmettype = "With Return" Then
                 ' returnleft = "67" : returnright = "67"
-                If data.mounting = "Face Fit" Then
+                If InStr(BlindName, "Face Fit") > 0 Then
                     returnleft = 100 : returnright = 100
                     If InStr(BlindName, "Wooden") > 0 Then
                         returnleft = 70 : returnright = 70
@@ -517,25 +517,25 @@ Partial Class Methods_Order_VenetianMethod
                         returnleft = 67 : returnright = 67
                     End If
                 End If
-                If data.mounting = "Reveal Fit" Then
+                If InStr(BlindName, "Reveal Fit") > 0 Then
                     returnleft = 0 : returnright = 0
                 End If
             End If
 
             If data.pelmettype = "Single Left Return" Then
-                If data.mounting = "Face Fit" Then
+                If InStr(BlindName, "Face Fit") > 0 Then
                     returnleft = 77 : returnright = 0
                 End If
-                If data.mounting = "Reveal Fit" Then
+                If InStr(BlindName, "Reveal Fit") > 0 Then
                     returnleft = 0 : returnright = 0
                 End If
             End If
 
             If data.pelmettype = "Single Right Return" Then
-                If data.mounting = "Face Fit" Then
+                If InStr(BlindName, "Face Fit") > 0 Then
                     returnleft = 0 : returnright = 77
                 End If    
-                If data.mounting = "Reveal Fit" Then
+                If InStr(BlindName, "Reveal Fit") > 0 Then
                     returnleft = 0 : returnright = 0
                 End If
             End If
@@ -557,7 +557,7 @@ Partial Class Methods_Order_VenetianMethod
                 returnleft = 0
             End If
 
-            If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND data.mounting = "Reveal Fit") Then
+            If data.sizetype = "Make Size" OR (data.sizetype = "Opening Size" AND InStr(BlindName, "Reveal Fit") > 0) Then
                 data.dropfloor = ""
             End If
 

@@ -320,14 +320,25 @@ const bindDropFloor = () => {
 
 const bindMounting = (blindname) => {
   if (!blindname) return;
-  let list = ["Face Fit", "Reveal Fit", "Make Size"];
-  // if (
-  //   !["50mm Aluminium", "50mm Timberstyle", "63mm Timberstyle"].includes(
-  //     blindname,
-  //   )
-  // ) {
-  //   list.push("Make Size");
-  // }
+  const isBig = [
+    "25mm Aluminium",
+    "50mm Mockwood",
+    "63mm Mockwood",
+    "50mm Wooden",
+    "63mm Wooden",
+  ].includes(blindname);
+
+  let list = [];
+  if (isBig) {
+    list.push(
+      "Make Size Face Fit",
+      "Make Size Reveal Fit",
+      "Opening Size Face Fit",
+      "Opening Size Reveal Fit",
+    );
+  } else {
+    list.push("Face Fit", "Reveal Fit", "Make Size");
+  }
   generateOption("mounting", list);
 };
 
@@ -336,10 +347,10 @@ const bindControlPosition = () => {
 };
 
 const bindControlLift = () => {
-  generateOption("controllift", ["Left", "Right", "Left Right"]);
+  generateOption("controllift", ["Left", "Right"]);
 };
 const bindControlTilt = () => {
-  generateOption("controltilt", ["Left", "Right", "Left Right"]);
+  generateOption("controltilt", ["Left", "Right"]);
 };
 
 const bindBracket = (blindname) => {
@@ -398,6 +409,7 @@ const bindHoldDownBracket = (blindname) => {
 
 const bindPelmetType = (blindname, mounting) => {
   if (!blindname) return;
+
   let list = [];
 
   if (blindname.includes("Mockwood") || blindname.includes("Wooden")) {
@@ -409,10 +421,6 @@ const bindPelmetType = (blindname, mounting) => {
       list.push(
         "With Return",
         "No Return",
-        "Bay Left",
-        "Bay Right",
-        "Main Bay",
-        "Common (1 Pelmet Cover 2 or 3 blinds)",
         "Single Left Return",
         "Single Right Return",
       );
