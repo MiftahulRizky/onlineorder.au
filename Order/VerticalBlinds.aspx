@@ -107,6 +107,7 @@
                                             <select name="mounting" id="mounting" class="form-select">
                                                 <option value=""></option>
                                                 <option value="Face Fit">FACE FIT</option>
+                                                <option value="Make Size">MAKE SIZE</option>
                                                 <option value="Reveal Fit">REVEAL FIT</option>
                                             </select>
                                         </div>  
