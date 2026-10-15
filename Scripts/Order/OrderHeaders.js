@@ -331,7 +331,7 @@ const bindStatus = (params, statusNow = null) => {
   if (params === "#cardOrder #status") {
     data.push(
       "ALL",
-      "Pending Price Approval",
+      // "Pending Price Approval",
       "Draft",
       "New Order",
       "In Production",
