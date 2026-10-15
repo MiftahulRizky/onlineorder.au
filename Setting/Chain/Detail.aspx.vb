@@ -71,8 +71,7 @@ Partial Class Setting_Chain_Detail
             If msgError.InnerText = "" Then
                 sdsPage.Update()
 
-                Dim userId As String = UCase(Session("UserId")).ToString()
-                publicCfg.InsertActivity(userId, Page.Title, "UPDATE CHAIN. NAME : " & txtName.Text)
+                
 
                 Response.Redirect("~/setting/chain", False)
             End If
