@@ -125,6 +125,11 @@
                             <i class="ti ti-mail-dollar fs-2 me-2 opacity-50"></i> Email Deposite Request
                         </a>
 
+                        <div class="dropdown-divider" id="dividerSendToBig"></div>
+                        <a href="javascript:void(0)" id="btnSendToBig" class="dropdown-item">
+                            <i class="ti ti-package-export fs-2 me-2 opacity-50"></i> Send To BIG
+                        </a>
+
                         <div class="dropdown-divider" id="dividerLogs"></div>
                         <a href="javascript:void(0)" id="btnLogs" class="dropdown-item">
                             <i class="ti ti-logout fs-2 me-2 opacity-50"></i> Logs
@@ -685,7 +690,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.3"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.10"></script>
 
 
 </asp:Content>

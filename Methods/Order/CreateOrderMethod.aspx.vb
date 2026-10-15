@@ -407,6 +407,24 @@ Partial Class Methods_Order_CreateOrderMethod
 
                         thisConn.Close()
                     End Using
+                    
+                    Using thisConn As New SqlConnection(myConn)
+                        Using myCmd As New SqlCommand("SELECT Id FROM OrderDetails WHERE HeaderId=@HeaderId", thisConn)
+                            myCmd.Parameters.AddWithValue("@HeaderId", data.headerid)
+                            myCmd.Connection = thisConn
+                            thisConn.Open()
+                            Dim reader As SqlDataReader = myCmd.ExecuteReader()
+                            While reader.Read()
+                                Dim itemId As Integer = reader.GetInt32(0)
+                                publicCfg.ResetPriceDetail(itemId)
+                                publicCfg.HitungHarga(data.headerid, itemId)
+                                publicCfg.HitungSurcharge(data.headerid, itemId)
+                            End While
+                            reader.Close()  
+                            thisConn.Close()
+                        End Using
+                    End Using
+
                     url = String.Format("/order/orderdetails?param={0}&ordertype={1}", data.headerid, data.ordertype.ToLower())
 
                     Dim dataLog As Object() = {data.headerid, "", data.ordertype, data.loginid, "Create Order"}

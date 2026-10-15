@@ -45,6 +45,8 @@ const btnEl = {
   btnEmailQuote: getById("btnEmailQuote"),
   dividerEmailDeposit: getById("dividerEmailDeposit"),
   btnEmailDeposit: getById("btnEmailDeposit"),
+  dividerSendToBig: getById("dividerSendToBig"),
+  btnSendToBig: getById("btnSendToBig"),
   dividerLogs: getById("dividerLogs"),
   btnLogs: getById("btnLogs"),
   btnAddItem: getById("btnAddItem"),
@@ -135,8 +137,7 @@ Object.values(btnEl).forEach((el) => {
           confirmButtonText: "Yes, convert it!",
         }).then((result) => {
           if (!result.isConfirmed) return;
-          const StatusOrder =
-            document.getElementById("spanStatusOrder").innerHTML;
+          const StatusOrder = spanEl.statusOrder.innerHTML;
           if (!StatusOrder) throw new Error("Status Order not found.");
 
           if (["Completed", "Canceled"].includes(StatusOrder.trim())) {
@@ -179,7 +180,7 @@ Object.values(btnEl).forEach((el) => {
       }
 
       if (id === "btnReloadPricing") {
-        const status = document.getElementById("spanStatusOrder").innerHTML;
+        const status = spanEl.statusOrder.innerHTML;
         const result = await Swal.fire({
           title: "Are you sure?",
           text: "Sure to reload the pricing?",
@@ -198,7 +199,7 @@ Object.values(btnEl).forEach((el) => {
       }
 
       if (id === "btnChangeStatus") {
-        handlerShowBSModal("modalChangeStatus");
+        showBSModal("modalChangeStatus");
       }
 
       if (id === "btnSendOrderMail") {
@@ -228,7 +229,7 @@ Object.values(btnEl).forEach((el) => {
       }
 
       if (id === "btnQuoteDisc") {
-        handlerShowBSModal("modalQuoteDisc");
+        showBSModal("modalQuoteDisc");
       }
 
       if (id === "btnPrintQuote") {
@@ -243,11 +244,15 @@ Object.values(btnEl).forEach((el) => {
           .forEach((e) => {
             e.classList.remove("is-invalid");
           });
-        handlerShowBSModal("modalSendMailQuote");
+        showBSModal("modalSendMailQuote");
+      }
+
+      if (id === "btnSendToBig") {
+        handlerSendToBig(HEADERID);
       }
 
       if (id === "btnLogs") {
-        handlerShowBSModal("modalLogs");
+        showBSModal("modalLogs");
       }
 
       if (id === "btnAddItem") {
@@ -256,7 +261,7 @@ Object.values(btnEl).forEach((el) => {
           e.value = "";
         });
 
-        handlerShowBSModal("modalAddItem");
+        showBSModal("modalAddItem");
       }
 
       if (id === "btnAddSurcharge") {
@@ -312,7 +317,7 @@ Object.values(spanEl).forEach((el) => {
 
         elModal.modalProductionDate.querySelector("#productiondate").value =
           formatted;
-        handlerShowBSModal("modalProductionDate");
+        showBSModal("modalProductionDate");
       }
     } catch (error) {
       const msg = `Event spanEl: ${error.message}`;
@@ -321,7 +326,7 @@ Object.values(spanEl).forEach((el) => {
   });
 });
 
-const modalHandlers = {
+const modalEvents = {
   modalChangeStatus: {
     init: (modal) => {},
 
@@ -474,20 +479,6 @@ const modalHandlers = {
     },
   },
 };
-Object.entries(elModal).forEach(([key, modal]) => {
-  if (!modal) return;
-
-  const handler = modalHandlers[key];
-  if (!handler) return;
-
-  if (handler.init) {
-    handler.init(modal);
-  }
-
-  if (handler.events) {
-    handler.events(modal);
-  }
-});
 
 document.querySelector("#tableAjax").addEventListener("click", async (e) => {
   const id = e.target.id;
@@ -541,7 +532,7 @@ document.querySelector("#tableAjax").addEventListener("click", async (e) => {
     const id = e.target.dataset.id;
     const qty = e.target.dataset.qty;
     await handlerEditPricing(id, qty);
-    handlerShowBSModal("modalEditPricing");
+    showBSModal("modalEditPricing");
   }
 
   if (id === "btnPricingItem") {
@@ -549,7 +540,7 @@ document.querySelector("#tableAjax").addEventListener("click", async (e) => {
     await bindPricingItem(itemid);
     elModal.modalPricingItem.querySelector("#modalPricingItemLabel").innerHTML =
       `Cost Details - ${itemid}`;
-    handlerShowBSModal("modalPricingItem");
+    showBSModal("modalPricingItem");
   }
 
   if (id === "btnDownloadBarcodeItem") {
@@ -1381,6 +1372,60 @@ const handlerPrintQuote = async (headerid, action) => {
   }
 };
 
+const handlerSendToBig = async (headerid) => {
+  const result = await Swal.fire({
+    title: "Send to BIG?",
+    html: "Are you sure you want to send this order to BIG?",
+    icon: "question",
+    showCancelButton: true,
+    customClass: {
+      popup: isDark ? "bg-dark text-white" : "bg-white text-dark",
+    },
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, send it!",
+  });
+
+  if (!result.isConfirmed) return;
+
+  swalLoadingShow("Please wait while we send the order to BIG.");
+
+  try {
+    const response = await fetch(`${URIMETHOD}/SendToBig`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ headerid, status: spanEl.statusOrder.innerHTML }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    // Swal.close();
+
+    if (res.error) {
+      throw new Error(res.message);
+    }
+
+    if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+    }
+
+    if (res.success) {
+      await isSuccess(res.message);
+      location.reload();
+    }
+  } catch (error) {
+    const msg = `handlerSendToBig: ${error.message}`;
+    catchMessages(msg);
+  }
+};
+
 const handlerFindProductForm = async (
   id,
   headerid,
@@ -1700,8 +1745,10 @@ const displayElOverall = (header, detail) => {
       }
 
       toggleShow(btnEl.btnMoreAction, true);
-      toggleShow(btnEl.btnEmailDeposit, true);
       toggleShow(btnEl.dividerEmailDeposit, true);
+      toggleShow(btnEl.btnEmailDeposit, true);
+      toggleShow(btnEl.dividerSendToBig, true);
+      toggleShow(btnEl.btnSendToBig, true);
 
       if (isNotCanceled) {
         toggleShow(btnEl.btnReloadPricing, true);
@@ -1994,7 +2041,11 @@ const submitChangeStatus = async () => {
     "description",
   ];
 
-  const paramsChangeStatus = { username: USERNAME, loginid: LOGINID };
+  const paramsChangeStatus = {
+    username: USERNAME,
+    loginid: LOGINID,
+    rolename: ROLENAME,
+  };
 
   fields.forEach((field) => {
     const el = document.querySelector(`#modalChangeStatus #${field}`);
@@ -2032,7 +2083,7 @@ const submitChangeStatus = async () => {
       }
     } else if (res.success) {
       await isSuccess(res.message);
-      handlerHideBSModal("modalChangeStatus");
+      hideBSModal("modalChangeStatus");
       location.reload();
     }
   } catch (error) {
@@ -2091,7 +2142,7 @@ const submitOverrideDisc = async (button) => {
     } else if (res.success) {
       let msg = res.message;
       msg += `<br/> <br/> Do you want to reload the pricing?`;
-      const statusOrder = document.getElementById("spanStatusOrder").innerHTML;
+      const statusOrder = spanEl.statusOrder.innerHTML;
 
       Swal.fire({
         title: "Success!",
@@ -2111,7 +2162,7 @@ const submitOverrideDisc = async (button) => {
         } else {
           location.reload();
         }
-        handlerHideBSModal("modalQuoteDisc");
+        hideBSModal("modalQuoteDisc");
       });
     }
   } catch (error) {
@@ -2235,7 +2286,7 @@ const submitSendMailQuote = async () => {
         fieldElement.classList.add("is-invalid");
       }
     } else if (res.success) {
-      handlerHideBSModal("modalSendMailQuote");
+      hideBSModal("modalSendMailQuote");
       await isSuccess(res.message);
     }
   } catch (error) {
@@ -2362,7 +2413,7 @@ const submitEditPricing = async (button) => {
     } else if (res.warning) {
       await isWarning(res.message.toUpperCase());
     } else if (res.success) {
-      handlerHideBSModal("modalEditPricing");
+      hideBSModal("modalEditPricing");
       await isSuccess(res.message);
       location.reload();
     }
@@ -2655,7 +2706,7 @@ const stylingColumnSearchAndPaging = (params) => {
   });
 };
 
-const handlerHideBSModal = (id) => {
+const hideBSModal = (id) => {
   var modalEl = document.getElementById(id);
   var modalInstance = bootstrap.Modal.getInstance(modalEl);
 
@@ -2669,7 +2720,7 @@ const handlerHideBSModal = (id) => {
 };
 
 // HANDLER SHOW BOOTSTRAP MODAL
-const handlerShowBSModal = (params) => {
+const showBSModal = (params) => {
   var myModal = new bootstrap.Modal(document.getElementById(params), {
     keyboard: false,
   });
@@ -2726,6 +2777,21 @@ const toggleShowList = (keys, show) => {
     }
   });
 };
+
+Object.entries(elModal).forEach(([key, modal]) => {
+  if (!modal) return;
+
+  const handler = modalEvents[key];
+  if (!handler) return;
+
+  if (handler.init) {
+    handler.init(modal);
+  }
+
+  if (handler.events) {
+    handler.events(modal);
+  }
+});
 const catchMessages = (msg) => {
   if (!["Administrator"].includes(ROLENAME))
     msg = "Please contact our IT team at support@onlineorder.au";
