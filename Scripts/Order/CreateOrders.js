@@ -289,6 +289,8 @@ const bindOrderAggregate = async () => {
     const isProduction = ["In Production", "Canceled", "Completed"].includes(
       header.Status,
     );
+    setState("delivery_edit", header.Delivery);
+    setState("status_edit", header.Status);
     if (["Panorama", "Evolve"].includes(header.OrderType)) {
       if (isCustomer && isProduction) {
         window.location.href = `/order/shutters/detail?ultron=${header.Id}&infinity=panorama`;
@@ -299,7 +301,7 @@ const bindOrderAggregate = async () => {
     bindSelectPayload(data.Users, "createdby", true, 1);
     bindSelectPayload(data.Shipment, "shipmentid", true, 1);
 
-    displayElOverall(header.OrderType, header);
+    displayElOverall(header.OrderType);
     setValHeader(header);
     setValShipping(data.Shipping);
   } catch (error) {
@@ -646,7 +648,7 @@ const saveDataShipping = async (button) => {
   }
 };
 // ----------------------------------------------|| Display Functions ||---------------------------------------
-const displayElOverall = async (ordertype, header) => {
+const displayElOverall = async (ordertype) => {
   try {
     Object.values(elForm).forEach((el) => toggleShow(el, false));
     const isAdministrator = ROLENAME === "Administrator";
@@ -700,8 +702,10 @@ const displayElOverall = async (ordertype, header) => {
       }
     }
 
-    const isDelivery = getById("customer").selectedOptions[0]?.dataset.delivery;
-    const isUpload = getById("customer").selectedOptions[0]?.dataset.upload;
+    let isDelivery = selectorEl("#formDetail #customer").selectedOptions[0]
+      ?.dataset.delivery;
+    const isUpload = selectorEl("#formDetail #customer").selectedOptions[0]
+      ?.dataset.upload;
     if (!isDelivery && isBlinds) {
       getById("delivery").value = "";
       getById("deliverytype").value = "";
@@ -727,7 +731,8 @@ const displayElOverall = async (ordertype, header) => {
         toggleShow(elForm.divOrderName, true);
         toggleShow(elForm.divDelivery, true);
         if (!isCustomer) {
-          if (header.Delivery === "Delivery") {
+          isDelivery = getState("delivery_edit");
+          if (isDelivery === "Delivery") {
             toggleShow(elForm.divDeliveryType, true);
           }
           toggleShow(elForm.divSource, true);
@@ -744,7 +749,7 @@ const displayElOverall = async (ordertype, header) => {
         if (isAdministrator) {
           toggleShow(elForm.divShipping, true);
 
-          const status = header.Status;
+          const status = getState("status_edit");
           if (status === "In Production") {
             toggleShow(elForm.divJobId, true);
             toggleShow(elForm.divJobDate, true);
@@ -883,6 +888,8 @@ const createOrderPageLoaded = async () => {
   await bindProductType();
 
   if (ACTION === "add") {
+    setState("delivery_edit", "");
+    setState("status_edit", "");
     getById("titleCard").textContent = "Create New Order";
     await displayElOverall();
     await loaderFadeOut();
@@ -966,6 +973,16 @@ Object.entries(elModal).forEach(([key, modal]) => {
     handle.events(modal);
   }
 });
+
+const setState = (name, value) => {
+  if (!name && !value) return console.warn("setState: name and value required");
+  localStorage.setItem(name, value);
+};
+
+const getState = (name) => {
+  if (!name) return console.warn("getState: name required");
+  return localStorage.getItem(name);
+};
 
 const catchMessages = (msg) => {
   if (!["Administrator"].includes(ROLENAME))
