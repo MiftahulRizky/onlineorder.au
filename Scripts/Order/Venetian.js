@@ -321,7 +321,6 @@ const bindDropFloor = () => {
 const bindMounting = (blindname) => {
   if (!blindname) return;
   const isBig = [
-    "25mm Aluminium",
     "50mm Mockwood",
     "63mm Mockwood",
     "50mm Wooden",
