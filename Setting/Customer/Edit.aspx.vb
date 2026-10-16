@@ -59,7 +59,7 @@ Partial Class Setting_Customer_Edit
                 End If
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As SqlCommand = New SqlCommand("UPDATE Customers SET Account=@Account, MasterId=@MasterId, ExactId=@ExactId, Name=@Name, Type=@Type, [Group]=NULL, Pricing=@PriceGroup, SalesPerson='Office', OnStop=@OnStop, CashSale=@CashSale, Newsletter=@Newsletter, MinimumOrderSurcharge=@MinimumOrderSurcharge, Delivery=@Delivery, Active=@Active WHERE Id=@Id")
+                    Using myCmd As SqlCommand = New SqlCommand("UPDATE Customers SET Account=@Account, MasterId=@MasterId, ExactId=@ExactId, Name=@Name, Type=@Type, [Group]=NULL, Pricing=@PriceGroup, SalesPerson='Office', OnStop=@OnStop, CashSale=@CashSale, Newsletter=@Newsletter, MinimumOrderSurcharge=@MinimumOrderSurcharge, Delivery=@Delivery, Upload=@Upload, Active=@Active WHERE Id=@Id")
                         myCmd.Parameters.AddWithValue("@Id", txtId.Text.Trim())
                         myCmd.Parameters.AddWithValue("@Account", ddlAccount.SelectedValue)
                         myCmd.Parameters.AddWithValue("@MasterId", ddlMaster.SelectedValue)
@@ -72,6 +72,7 @@ Partial Class Setting_Customer_Edit
                         myCmd.Parameters.AddWithValue("@Newsletter", ddlNewsletter.SelectedValue)
                         myCmd.Parameters.AddWithValue("@MinimumOrderSurcharge", ddlMinimumOrderSurcharge.SelectedValue)
                         myCmd.Parameters.AddWithValue("@Delivery", ddlDelivery.SelectedValue)
+                        myCmd.Parameters.AddWithValue("@Upload", ddlUpload.SelectedValue)
                         myCmd.Parameters.AddWithValue("@Active", ddlActive.SelectedValue)
 
                         myCmd.Connection = thisConn
@@ -137,6 +138,21 @@ Partial Class Setting_Customer_Edit
             ddlNewsletter.SelectedValue = Convert.ToInt32(myData.Tables(0).Rows(0).Item("Newsletter"))
             ddlMinimumOrderSurcharge.SelectedValue = Convert.ToInt32(myData.Tables(0).Rows(0).Item("MinimumOrderSurcharge"))
             ddlDelivery.SelectedValue = myData.Tables(0).Rows(0).Item("Delivery").ToString()
+            Dim Upload As String = myData.Tables(0).Rows(0).Item("Upload").ToString()
+            If Upload = "1" OR Upload = "True" Then
+                Upload = "1"
+            Else
+                Upload = "0"
+            End If
+            ddlUpload.SelectedValue = Upload
+
+            Dim Active As String = myData.Tables(0).Rows(0).Item("Active").ToString()
+            If Active = "1" OR Active = "True" Then
+                Active = "1"
+            Else
+                Active = "0"
+            End If
+            ddlActive.SelectedValue = Active
 
 
             BindComponentForm(ddlAccount.SelectedValue)

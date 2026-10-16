@@ -124,6 +124,12 @@
                         <a href="javascript:void(0)" id="btnEmailDeposit" class="dropdown-item">
                             <i class="ti ti-mail-dollar fs-2 me-2 opacity-50"></i> Email Deposite Request
                         </a>
+                        <a href="javascript:void(0)" id="btnAddStatus" class="dropdown-item">
+                            <i class="ti ti-pencil-plus fs-2 me-2 opacity-50"></i> Additional Status
+                        </a>
+                        <a href="javascript:void(0)" id="btnInternalNote" class="dropdown-item">
+                            <i class="ti ti-file-text fs-2 me-2 opacity-50"></i> Internal Note
+                        </a>
 
                         <div class="dropdown-divider" id="dividerSendToBig"></div>
                         <a href="javascript:void(0)" id="btnSendToBig" class="dropdown-item">
@@ -462,7 +468,7 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- modalProductionDate -->
     <div class="modal fade" id="modalProductionDate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalProductionDateLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm modal-dialog-centered">
             <div class="modal-content">
@@ -483,7 +489,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- modalAddItem -->
     <div class="modal fade" id="modalAddItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalAddItemLabel" aria-hidden="true">
@@ -545,14 +550,12 @@
         </div>
     </div>
 
-    
-
     <!-- modalSendMailQuote -->
     <div class="modal fade" id="modalSendMailQuote" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalSendMailQuoteLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title " id="modalSendMailQuoteLabel">Send Mail Quote</h1>
+                    <h1 class="modal-title " id="modalSendMailQuoteLabel">Email Quote</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -577,6 +580,91 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="btnSendMailQuote">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modalAddStatus -->
+    <div class="modal fade" id="modalAddStatus" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalAddStatusLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title " id="modalAddStatusLabel">Additional Status</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-12 col-md-12 mb-3">
+                            <label for="from" class="form-label text-uppercase required">status</label>
+                            <select name="addstatus" id="addstatus" class="form-select"></select>
+                            <input type="text" name="id" id="id" class="form-control"  hidden>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSave">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modalInternalNote -->
+    <div class="modal fade" id="modalInternalNote" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalInternalNoteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title " id="modalInternalNoteLabel">Internal Note</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-12 col-md-12 mb-3">
+                            <label for="from" class="form-label text-uppercase required">note</label>
+                            <textarea class="form-control" name="internalnote" id="internalnote" cols="1" rows="1"></textarea>
+                            <input type="text" name="id" id="id" class="form-control"  hidden>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSave">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modalSendMailDeposit -->
+    <div class="modal fade" id="modalSendMailDeposit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalSendMailDepositLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title " id="modalSendMailDepositLabel">Email Deposit Request</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-12 col-md-12 mb-3">
+                            <label for="from" class="form-label text-uppercase required">from</label>
+                            <input type="text" name="from" id="from" class="form-control" readonly>
+                            <input type="text" name="id" id="id" class="form-control"  hidden>
+                        </div>
+                        <div class="col-12 col-lg-12 col-md-12 mb-3">
+                            <label for="mailto" class="form-label text-uppercase required">to</label>
+                            <input type="text" name="mailto" id="mailto" class="form-control" >
+                            <small class="form-hint">This is taken from customers primary contact email address if available.</small>
+                        </div>
+                        <div class="col-12 col-lg-12 col-md-12 mb-3">
+                            <label for="cc" class="form-label text-uppercase required">cc</label>
+                            <input type="text" name="cc" id="cc" class="form-control" >
+                            <small class="form-hint">Will be cc'ed to <b>Customer Service</b> and <b>Accounts</b> by default.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSendMailDeposit">Send</button>
                 </div>
             </div>
         </div>
@@ -690,7 +778,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.10"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.16"></script>
 
 
 </asp:Content>

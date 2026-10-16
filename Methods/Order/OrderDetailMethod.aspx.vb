@@ -171,8 +171,10 @@ Partial Class Methods_Order_OrderDetailMethod
                     h.CreatedBy,
                     cl.FullName AS CreatedByName,
                     h.OrderNote,
-                    h.StatusAdditional,
                     h.Status,
+                    h.StatusDescription,
+                    h.StatusAdditional,
+                    h.InternalNote,
                     h.Delivery,
                     h.QuoteDisc,
                     h.SubmittedDate,
@@ -197,7 +199,10 @@ Partial Class Methods_Order_OrderDetailMethod
                     h.Id, h.CustomerName, h.CustomerId, h.OrderId,
                     h.JoNumberId, h.OrderType, h.OrderNumber, h.OrderName,
                     h.CreatedDate, h.CreatedBy, cl.FullName,
-                    h.OrderNote, h.StatusAdditional, h.Status, h.Delivery, h.QuoteDisc,
+                    h.OrderNote, h.Status,
+                    h.StatusDescription,
+                    h.StatusAdditional,
+                    h.InternalNote, h.Delivery, h.QuoteDisc,
                     h.SubmittedDate, h.JobDate, h.CompletedDate, h.CanceledDate
             </sql>.Value
 
@@ -228,8 +233,10 @@ Partial Class Methods_Order_OrderDetailMethod
                                 .CreatedByName = reader("CreatedByName").ToString(),
                                 .CreatedBy = reader("CreatedBy").ToString(),
                                 .OrderNote = reader("OrderNote").ToString(),
-                                .StatusAdditional = reader("StatusAdditional").ToString(),
                                 .Status = reader("Status").ToString(),
+                                .StatusDescription = reader("StatusDescription").ToString(),
+                                .StatusAdditional = reader("StatusAdditional").ToString(),
+                                .InternalNote = reader("InternalNote").ToString(),
                                 .Delivery = reader("Delivery").ToString(),
                                 .SubmittedDate = reader("SubmittedDate").ToString(),
                                 .QuoteDisc = reader("QuoteDisc").ToString(),
@@ -398,6 +405,11 @@ Partial Class Methods_Order_OrderDetailMethod
                 Throw New Exception(SendMailQuote.message)
             End If
 
+            Dim SendMailDeposit As Object = FindMailDeposit(data.applicationid, HeaderData.CustomerId)
+            If SendMailDeposit.error Then 
+                Throw New Exception(SendMailDeposit.message)
+            End If
+
             Dim Logs As Object = FindLogs(data.headerid, data.ordertype)
             If Logs.error Then 
                 Throw New Exception(Logs.message)
@@ -407,13 +419,11 @@ Partial Class Methods_Order_OrderDetailMethod
             If Designs.error Then 
                 Throw New Exception(Designs.message)
             End If
-           
-
-           
 
             OtherData = New With {
                 .ResCheckOrder = ResCheckOrder,
                 .SendMailQuote = SendMailQuote,
+                .SendMailDeposit = SendMailDeposit,
                 .Logs = Logs,
                 .Designs = Designs
             }
@@ -516,6 +526,23 @@ Partial Class Methods_Order_OrderDetailMethod
     Private Shared Function FindMailQuote(ByVal appid As String, ByVal customerid As String) As Object
         Try
             Dim Mailings As DataSet = publicCfg.GetListData(String.Format("SELECT Id, Server FROM Mailings WHERE ApplicationId ='{0}' AND Name = 'Quote Order Shutters' AND Active = 1", appid))
+            Dim MailId As String = ""
+            Dim MailFrom As String = ""
+            Dim MailTo As String = publicCfg.GetItemData(String.Format("SELECT Email FROM CustomerContacts WHERE CustomerId = '{0}' AND [Primary]=1", customerid))
+            If Mailings.Tables(0).Rows.Count > 0 Then
+                MailId = Mailings.Tables(0).Rows(0).Item("Id").ToString()
+                MailFrom = Mailings.Tables(0).Rows(0).Item("Server").ToString()
+            End If
+
+            Return New With {.error = false, .MailId = MailId, .MailFrom = MailFrom, .MailTo = MailTo}
+        Catch ex As Exception
+            Return New With {.error = true, .message = String.Format("FindMailQuote: {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared Function FindMailDeposit(ByVal appid As String, ByVal customerid As String) As Object
+        Try
+            Dim Mailings As DataSet = publicCfg.GetListData(String.Format("SELECT Id, Server FROM Mailings WHERE ApplicationId ='{0}' AND Name = 'Deposit Request Shutters' AND Active = 1", appid))
             Dim MailId As String = ""
             Dim MailFrom As String = ""
             Dim MailTo As String = publicCfg.GetItemData(String.Format("SELECT Email FROM CustomerContacts WHERE CustomerId = '{0}' AND [Primary]=1", customerid))

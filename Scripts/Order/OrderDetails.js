@@ -19,6 +19,8 @@
 let DataTableDetails;
 const getById = (id) => document.getElementById(id);
 const getByClass = (cls) => document.getElementsByClassName(cls);
+const selectorEl = (selector) => document.querySelector(selector);
+const selectorElAll = (selector) => document.querySelectorAll(selector);
 const btnEl = {
   btnFinish: getById("btnFinish"),
   btnPreviewPrint: getById("btnPreviewPrint"),
@@ -45,6 +47,8 @@ const btnEl = {
   btnEmailQuote: getById("btnEmailQuote"),
   dividerEmailDeposit: getById("dividerEmailDeposit"),
   btnEmailDeposit: getById("btnEmailDeposit"),
+  btnAddStatus: getById("btnAddStatus"),
+  btnInternalNote: getById("btnInternalNote"),
   dividerSendToBig: getById("dividerSendToBig"),
   btnSendToBig: getById("btnSendToBig"),
   dividerLogs: getById("dividerLogs"),
@@ -97,6 +101,9 @@ const elModal = {
   modalAddItem: getById("modalAddItem"),
   modalAddService: getById("modalAddService"),
   modalSendMailQuote: getById("modalSendMailQuote"),
+  modalSendMailDeposit: getById("modalSendMailDeposit"),
+  modalAddStatus: getById("modalAddStatus"),
+  modalInternalNote: getById("modalInternalNote"),
   modalEditPricing: getById("modalEditPricing"),
   modalPricingItem: getById("modalPricingItem"),
   modalLogs: getById("modalLogs"),
@@ -237,14 +244,42 @@ Object.values(btnEl).forEach((el) => {
       }
 
       if (id === "btnEmailQuote") {
-        document
-          .querySelectorAll(
-            "#modalSendMailQuote .form-control, #modalSendMailQuote .form-select",
-          )
+        elModal.modalSendMailQuote
+          .querySelectorAll(".form-control, .form-select")
           .forEach((e) => {
             e.classList.remove("is-invalid");
           });
         showBSModal("modalSendMailQuote");
+      }
+
+      if (id === "btnEmailDeposit") {
+        elModal.modalSendMailDeposit
+          .querySelectorAll(".form-control, .form-select")
+          .forEach((e) => {
+            e.classList.remove("is-invalid");
+          });
+
+        showBSModal("modalSendMailDeposit");
+      }
+
+      if (id === "btnAddStatus") {
+        elModal.modalAddStatus
+          .querySelectorAll(".form-control, .form-select")
+          .forEach((e) => {
+            e.classList.remove("is-invalid");
+          });
+
+        showBSModal("modalAddStatus");
+      }
+
+      if (id === "btnInternalNote") {
+        elModal.modalInternalNote
+          .querySelectorAll(".form-control, .form-select")
+          .forEach((e) => {
+            e.classList.remove("is-invalid");
+          });
+
+        showBSModal("modalInternalNote");
       }
 
       if (id === "btnSendToBig") {
@@ -603,7 +638,7 @@ const bindOrderAggregate = async (headerid, ordertype) => {
       throw new Error(data.message);
     }
 
-    // console.log(data);
+    console.log(data);
 
     handlerHeaderInfo(data.header);
     bindDetails(data.detail);
@@ -612,6 +647,9 @@ const bindOrderAggregate = async (headerid, ordertype) => {
     handlerChangeStatus(data.header);
     setValmodalQuoteDisc(data.header);
     setValmodalSendMailQuote(data.other.SendMailQuote);
+    setValmodalSendMailDeposit(data.other.SendMailDeposit);
+    handlerAdditionalStatus(data.header);
+    handlerInternalNote(data.header);
     setValmodalLogs(data.other);
     bindProduct(data.other.Designs.list);
   } catch (error) {
@@ -887,7 +925,7 @@ const handlerHeaderInfo = (item) => {
     setText(spanEl.orderNo, item.OrderNumber);
     setText(spanEl.orderCust, item.OrderName);
     setText(spanEl.note, item.OrderNote);
-    setText(spanEl.statusNote, item.StatusAdditional);
+    setText(spanEl.statusNote, item.StatusDescription);
     setText(spanEl.statusOrder, item.Status);
     setText(spanEl.delivery, item.Delivery);
 
@@ -1372,6 +1410,40 @@ const handlerPrintQuote = async (headerid, action) => {
   }
 };
 
+const handlerAdditionalStatus = (header) => {
+  try {
+    elModal.modalAddStatus
+      .querySelectorAll(".form-control, .form-select")
+      .forEach((e) => {
+        e.classList.remove("is-invalid");
+      });
+
+    let list = ["Waiting For Deposit", "On Hold - Pending Price Approval"];
+    generateOption("#modalAddStatus #addstatus", list);
+    elModal.modalAddStatus.querySelector("#addstatus").value =
+      header.StatusAdditional;
+  } catch (error) {
+    const msg = `handlerAdditionalStatus: ${error.message}`;
+    catchMessages(msg);
+  }
+};
+
+const handlerInternalNote = (header) => {
+  try {
+    elModal.modalInternalNote
+      .querySelectorAll(".form-control, .form-select")
+      .forEach((e) => {
+        e.classList.remove("is-invalid");
+      });
+
+    elModal.modalInternalNote.querySelector("#internalnote").value =
+      header.InternalNote;
+  } catch (error) {
+    const msg = `handlerInternalNote: ${error.message}`;
+    catchMessages(msg);
+  }
+};
+
 const handlerSendToBig = async (headerid) => {
   const result = await Swal.fire({
     title: "Send to BIG?",
@@ -1747,6 +1819,8 @@ const displayElOverall = (header, detail) => {
       toggleShow(btnEl.btnMoreAction, true);
       toggleShow(btnEl.dividerEmailDeposit, true);
       toggleShow(btnEl.btnEmailDeposit, true);
+      toggleShow(btnEl.btnAddStatus, true);
+      toggleShow(btnEl.btnInternalNote, true);
       toggleShow(btnEl.dividerSendToBig, true);
       toggleShow(btnEl.btnSendToBig, true);
 
@@ -1983,9 +2057,15 @@ const setValmodalQuoteDisc = (header) => {
 };
 
 const setValmodalSendMailQuote = (other) => {
-  document.querySelector("#modalSendMailQuote #id").value = other.MailId;
-  document.querySelector("#modalSendMailQuote #from").value = other.MailFrom;
-  document.querySelector("#modalSendMailQuote #mailto").value = other.MailTo;
+  elModal.modalSendMailQuote.querySelector("#id").value = other.MailId;
+  elModal.modalSendMailQuote.querySelector("#from").value = other.MailFrom;
+  elModal.modalSendMailQuote.querySelector("#mailto").value = other.MailTo;
+};
+
+const setValmodalSendMailDeposit = (other) => {
+  elModal.modalSendMailDeposit.querySelector("#id").value = other.MailId;
+  elModal.modalSendMailDeposit.querySelector("#from").value = other.MailFrom;
+  elModal.modalSendMailDeposit.querySelector("#mailto").value = other.MailTo;
 };
 
 const setValmodalLogs = (other) => {

@@ -760,12 +760,12 @@ const displayElOverall = async (ordertype, header) => {
             getById("jobdate").setAttribute("disabled", true);
           }
         }
-      }
 
-      if (isPpicDeCs) {
-        toggleShow(elForm.divCreatedBy, true);
-        toggleShow(elForm.divCreatedDate, true);
-        toggleShow(elForm.divShipping, true);
+        if (isPpicDeCs) {
+          toggleShow(elForm.divCreatedBy, true);
+          toggleShow(elForm.divCreatedDate, true);
+          toggleShow(elForm.divShipping, true);
+        }
       }
     }
 
