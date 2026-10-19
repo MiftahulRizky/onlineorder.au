@@ -152,7 +152,7 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
     if (e.target.id === "trim") {
       toggleShow(elForm.divBottomRail, false);
       toggleShow(elForm.btnInfoTrim, false);
-      toggleShow(elForm.divAccessory, false);
+      // toggleShow(elForm.divAccessory, false);
       toggleShow(elForm.divRailColour, false);
       toggleShow(elForm.lblBotomRail, false);
       elForm.lblBotomRail.innerHTM = "bottom rail type x colour";
@@ -179,7 +179,7 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
           toggleShow(elForm.btnInfoTrim, true);
           // divRailColour.classList.remove("d-none");
         }
-        toggleShow(elForm.divAccessory, true);
+        // toggleShow(elForm.divAccessory, true);
       }
     }
 
