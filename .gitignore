@@ -2,3 +2,5 @@ Web.config
 *.pdf
 *.xml
 *.csv
+*.xls
+*.xlsx
