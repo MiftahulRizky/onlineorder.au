@@ -116,7 +116,7 @@ Partial Class Methods_Order_VerticalBlindMethod
         Try
             Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id='{0}'", headerid))
             Dim WhereTube As String = "AND TubeType <> 'Phoenixline'"
-            If InArray(CustomerId, "LS-A110326061139", "LS-A040226074223", "LS-A100326044643", "LS-A250226114410", "LS-A060226125426") Then
+            If InArray(CustomerId, "LS-A110326061139", "LS-A040226074223", "LS-A100326044643", "LS-A250226114410", "LS-A060226125426", "LS-A160226121718") Then
                 WhereTube = ""
             End If
             Dim MyQuery As String = String.Format("SELECT TubeType FROM HardwareKits WHERE DesignId = '{0}' AND BlindId='{1}' {2} AND Active=1 GROUP BY TubeType ORDER BY TubeType ASC", designid, UCase(blindid).ToString(), WhereTube)
