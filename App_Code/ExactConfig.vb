@@ -328,7 +328,7 @@ Public Class ExactConfig
                         Dim productName As String = GetItemData("SELECT Name FROM HardwareKits WHERE Id = '" & UCase(kitId) & "'")
                         Dim width As String = detailData.Tables(0).Rows(i).Item("Width").ToString()
                         Dim drop As String = detailData.Tables(0).Rows(i).Item("Drop").ToString()
-                        Dim itemDescription As String = productName & " " & width & "x" & drop
+                        Dim itemDescription As String = FindDescription(itemId)
 
                         writer.WriteStartElement("OrderLine")
 
@@ -370,4 +370,66 @@ Public Class ExactConfig
         Dim xmlFinal As String = sb.ToString().Replace(" />", "/>")
         File.WriteAllText(filePath, xmlFinal, New UTF8Encoding(False))
     End Sub
+
+    Private Function FindDescription(id As String) As string
+        Try
+            Dim result As String = ""
+            Dim Data As Dataset = GetListData(String.Format("SELECT Width, [Drop], SlatSize, DesignId, KitName, BracketType, TubeType, DesignName, BlindName, FabricName, FabricType, FabricColour, CustomerId FROM view_details WHERE Id ='{0}' AND Active=1", id))
+            Dim DataCount As Integer = Data.Tables(0).Rows.Count
+            Dim DataRow As DataRow = Data.Tables(0).Rows(0)
+            IF DataCount > 0 Then
+
+                Dim Width As String = DataRow.Item("Width").ToString()
+                Dim Drop As String = DataRow.Item("Drop").ToString()
+                Dim SlatSize As String = DataRow.Item("SlatSize").ToString()
+                Dim FabricName As String = DataRow.Item("FabricName").ToString()
+                Dim FabricType As String = DataRow.Item("FabricType").ToString()
+                Dim FabricColour As String = DataRow.Item("FabricColour").ToString()
+                Dim DesignId As String = DataRow.Item("DesignId").ToString()
+                Dim KitName As String = DataRow.Item("KitName").ToString()
+                Dim BracketType As String = DataRow.Item("BracketType").ToString()
+                Dim TubeType As String = DataRow.Item("TubeType").ToString()
+                Dim DesignName As String = DataRow.Item("DesignName").ToString()
+                Dim BlindName As String = DataRow.Item("BlindName").ToString()
+                Dim CustomerId As String = DataRow.Item("CustomerId").ToString()
+
+                Dim CustDiscValue As Double = 0
+                Dim CustDisc As String = GetItemData(String.Format("SELECT Discount FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}'", CustomerId, DesignId))
+
+                If Not String.IsNullOrWhiteSpace(CustDisc) Then
+                    Double.TryParse(CustDisc, CustDiscValue)
+                End If
+
+                Dim Disc As String = String.Format("(Inc {0}% Disc. Plus Additional 0% Disc.)", CustDiscValue.ToString("0.##"))
+                Dim Size As String = String.Format("{0}x{1}", Width, Drop)
+
+                result = String.Format("{0} {1} {2}", KitName, Size, Disc)
+
+                If DesignName = "Roller Blinds" Then
+                    result = String.Format("{0} - {1} #{2} {3} {4}", BlindName, KitName, FabricName, Size, Disc)
+                End If
+
+                If DesignName = "Venetian Blinds" Or DesignName = "Veri Shades" Then
+                    result = String.Format("{0} {1} {2}", KitName, Size, Disc)
+                End If
+
+                If DesignName = "Vertical Blinds" Then
+                    SlatSize = SlatSize.Replace("mm", "")
+
+                    result = String.Format("{0}mm {1} #{2} {3} {4}", SlatSize, KitName, FabricName, Size, Disc)
+                    If BlindName = "Slat Only" Then
+                        result = String.Format("{0}mm {1} #{2} (Drop : {3}mm) {4}", SlatSize, KitName, FabricName, Drop, Disc)
+                    End If
+                    If BlindName = "Track Only" Then
+                        result = String.Format("{0}mm {1} (Width : {2}mm) {3}", SlatSize, KitName, Width, Disc)
+                    End If
+
+                End If
+            End If
+
+            Return result
+        Catch ex As Exception
+            Return "Oops... something went wrong"
+        End Try
+    End Function
 End Class
