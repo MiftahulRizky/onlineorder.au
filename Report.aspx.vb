@@ -56,7 +56,8 @@ Partial Class Report
                 End If
             End If
 
-            If ddlReportType.SelectedValue = "BlindsDaily" Or ddlReportType.SelectedValue = "ShuttersDaily" Or ddlReportType.SelectedValue = "ShuttersOrder" Then
+            ' If ddlReportType.SelectedValue = "BlindsDaily" Or ddlReportType.SelectedValue = "ShuttersDaily" Or ddlReportType.SelectedValue = "ShuttersOrder"  Then
+            If InArray(ddlReportType.SelectedValue, "BlindsDaily", "BlindsOrder", "ShuttersDaily", "ShuttersOrder") Then
                 If txtEndDate.Text = "" Then
                     MessageError(True, "DATE TO IS REQUIRED !")
                     txtEndDate.Focus()
@@ -72,9 +73,14 @@ Partial Class Report
                 End If
             End If
 
+
             If msgError.InnerText = "" Then
                 If ddlReportType.SelectedValue = "BlindsDaily" Then
                     BlindsDailyAction()
+                End If
+
+                 If ddlReportType.SelectedValue = "BlindsOrder" Then
+                    BlindsOrdersAction()
                 End If
 
                 If ddlReportType.SelectedValue = "ShuttersDaily" Then
@@ -132,9 +138,9 @@ Partial Class Report
         Try
             If Not Report = "" Then
                 ddlFileType.Items.Add(New ListItem("PDF", "pdf"))
-                If Report = "Fabric" Then
-                    ddlFileType.Items.Clear()
-                    ddlFileType.Items.Add(New ListItem("EXCEL / XLSX", "xls"))
+                If InArray(Report, "BlindsOrder", "BlindsDaily") Then
+                    ' ddlFileType.Items.Clear()
+                    ddlFileType.Items.Add(New ListItem("EXCEL / XLSX", "xlsx"))
                 End If
             End If
         Catch ex As Exception
@@ -143,17 +149,54 @@ Partial Class Report
     End Sub
 
     Private Sub BlindsDailyAction()
+        Dim filetype As String = ddlFileType.SelectedValue
+        Dim FileName As String = String.Format("Blinds Daily Report - {1}.{0}", filetype, ddlStatus.SelectedValue)
         Dim startDate As String = DateTime.Parse(txtEndDate.Text).ToString("yyyy-MM-01")
         Dim endDate As String = DateTime.Parse(txtEndDate.Text).ToString("yyyy-MM-dd")
 
         lblPeriod.Text = startDate & " - " & endDate
 
-        Dim pdfFilePath As String = Server.MapPath("~/file/report/Blinds Daily Report.pdf")
-        reportCfg.BlindsDaily(pdfFilePath, txtEndDate.Text, lblPeriod.Text)
+        Dim FilePath As String = Server.MapPath(String.Format("~/file/report/{0}", FileName))
 
-        Response.ContentType = "application/pdf"
-        Response.AddHeader("Content-Disposition", "attachment; filename=Blinds Daily Report.pdf")
-        Response.TransmitFile(pdfFilePath)
+        If filetype = "xlsx" Then
+            reportCfg.BlindsDailyExcel(FilePath, ddlStatus.SelectedValue, txtEndDate.Text, lblPeriod.Text)
+            Response.Clear()
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            Response.AddHeader("Content-Disposition", "attachment; filename=" & FileName)
+        End If
+
+        If filetype = "pdf" Then
+            reportCfg.BlindsDaily(FilePath, ddlStatus.SelectedValue, txtEndDate.Text, lblPeriod.Text)
+            Response.ContentType = "application/pdf"
+            Response.AddHeader("Content-Disposition", "attachment; filename=" & FileName)
+        End If
+
+        Response.TransmitFile(FilePath)
+        Response.End()
+    End Sub
+
+    Private Sub BlindsOrdersAction()
+        Dim filetype As String = ddlFileType.SelectedValue
+        Dim FileName As String = String.Format("Blinds Orders - {1}.{0}", filetype, ddlStatus.SelectedValue)
+        Dim FilePath As String = Server.MapPath(String.Format("~/file/report/{0}", FileName))
+
+        Dim dateFrom As DateTime = DateTime.Parse(txtStartDate.Text)
+        Dim dateTo As DateTime = DateTime.Parse(txtEndDate.Text)
+
+
+        If filetype = "xlsx" Then
+            reportCfg.BlindsOrdersExcel(FilePath, ddlStatus.SelectedValue, dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"))
+            Response.Clear()
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            Response.AddHeader("Content-Disposition", "attachment; filename=" & FileName)
+        End If
+
+        If filetype = "pdf" Then
+            reportCfg.BlindsOrders(FilePath, ddlStatus.SelectedValue, dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"))
+            Response.ContentType = "application/pdf"
+            Response.AddHeader("Content-Disposition", "attachment; filename=" & FileName)
+        End If
+        Response.TransmitFile(FilePath)
         Response.End()
     End Sub
 
@@ -349,6 +392,7 @@ Partial Class Report
 
     Private Sub BindComponentForm(ReportType As String)
         Try
+            divStatus.Visible = False
             divAdditional.Visible = False
             divStartDate.Visible = False
             divEndDate.Visible = False
@@ -357,9 +401,13 @@ Partial Class Report
                 divEndDate.Visible = True
             End If
 
-            If ReportType = "ShuttersOrder" Or ReportType = "ShuttersMonth" Or ReportType = "EvolveOrder" Then
+            If ReportType = "ShuttersOrder" Or ReportType = "ShuttersMonth" Or ReportType = "EvolveOrder" Or ReportType = "BlindsOrder" Then
                 divStartDate.Visible = True
                 divEndDate.Visible = True
+            End If
+
+            If InArray(ReportType, "BlindsDaily", "BlindsOrder") Then
+                divStatus.Visible = True
             End If
 
             If ReportType = "Customer" Then
@@ -371,7 +419,15 @@ Partial Class Report
         End Try
     End Sub
 
+    Private Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
+    End Function
+
     Private Sub MessageError(Show As Boolean, Msg As String)
+        Dim RoleName As String = Session("RoleName").ToString
+        If Not RoleName = "Administrator" Then
+            Msg = "Please contact our IT team at support@onlineorder.au"
+        End If
         divError.Visible = Show : msgError.InnerText = Msg
     End Sub
 End Class

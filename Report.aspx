@@ -25,15 +25,13 @@
                                 <div class="col-lg-7 col-md-12 col-sm-12">
                                     <asp:DropDownList runat="server" ID="ddlReportType" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlReportType_SelectedIndexChanged">
                                         <asp:ListItem Value="" Text=""></asp:ListItem>
-                                        <asp:ListItem Value="BlindsDaily" Text="BLINDS DAILY" hidden></asp:ListItem>
                                         <asp:ListItem Value="ShuttersDaily" Text="PANORAMA & EVOLVE DAILY"></asp:ListItem>
                                         <asp:ListItem Value="ShuttersOrder" Text="PANORAMA ORDERS"></asp:ListItem>
-                                        <asp:ListItem Value="ShuttersMonth" Text="SHUTTERS MONTH TO MONTH" hidden></asp:ListItem>
                                         <asp:ListItem Value="" Text="" ></asp:ListItem>
                                         <asp:ListItem Value="EvolveOrder" Text="EVOLVE ORDERS"></asp:ListItem>
-                                        <asp:ListItem Value="Customer" Text="CUSTOMERS" hidden></asp:ListItem>
-                                        <asp:ListItem Value="Fabric" Text="FABRICS" hidden></asp:ListItem>
-                                        <asp:ListItem Value="Newsletter" Text="NEWSLETTER" hidden></asp:ListItem>
+                                        <asp:ListItem Value="" Text="" ></asp:ListItem>
+                                        <asp:ListItem Value="BlindsDaily" Text="BLINDS DAILY"></asp:ListItem>
+                                        <asp:ListItem Value="BlindsOrder" Text="BLINDS ORDERS"></asp:ListItem>
                                     </asp:DropDownList>
                                 </div>
                             </div>
@@ -42,6 +40,16 @@
                                 <label class="col-lg-3 col-form-label required">FILE TYPE</label>
                                 <div class="col-lg-4 col-md-12 col-sm-12">
                                     <asp:DropDownList runat="server" ID="ddlFileType" CssClass="form-select"></asp:DropDownList>
+                                </div>
+                            </div>
+
+                            <div class="mb-6 row" id="divStatus" runat="server">
+                                <label class="col-lg-3 col-form-label required">STATUS</label>
+                                <div class="col-lg-4 col-md-12 col-sm-12">
+                                    <asp:DropDownList runat="server" ID="ddlStatus" CssClass="form-select">
+                                        <asp:ListItem Value="Pending" Text="PENDING"></asp:ListItem>
+                                        <asp:ListItem Value="Production" Text="PRODUCTION"></asp:ListItem>
+                                    </asp:DropDownList>
                                 </div>
                             </div>
 

@@ -24,6 +24,26 @@ Public Class ReportConfig
         End Using
     End Function
 
+    Public Function GetItemData(thisString As String) As String
+        Dim result As String = String.Empty
+        Try
+            Using thisConn As New SqlConnection(myConn)
+                thisConn.Open()
+                Using myCmd As New SqlCommand(thisString, thisConn)
+                    Using rdResult = myCmd.ExecuteReader
+                        While rdResult.Read
+                            result = rdResult.Item(0).ToString()
+                        End While
+                    End Using
+                End Using
+                thisConn.Close()
+            End Using
+        Catch ex As Exception
+            result = String.Empty
+        End Try
+        Return result
+    End Function
+
     Public Function GetItemData_Integer(thisString As String) As Integer
         Dim result As Integer = 0
         Try
@@ -44,329 +64,710 @@ Public Class ReportConfig
         Return result
     End Function
 
-    Public Sub BlindsDaily(Files As String, Tanggal As DateTime, Period As String)
+    Public Sub BlindsDaily(Files As String, Status As String, Tanggal As DateTime, Period As String)
         Try
             Dim startDate As String = DateTime.Parse(Tanggal).ToString("yyyy-MM-01")
             Dim endDate As String = DateTime.Parse(Tanggal).ToString("yyyy-MM-dd")
 
-            Dim thisQuery As String = "SELECT OrderHeaders_Shutters.CustomerId AS CustomerId, Customers.Name AS CustomerName FROM OrderHeaders_Shutters LEFT JOIN Customers ON OrderHeaders_Shutters.CustomerId = Customers.Id WHERE OrderHeaders_Shutters.Active = 1 AND CONVERT(DATE, OrderHeaders_Shutters.JobDate) >= '" + startDate + "' AND CONVERT(DATE, OrderHeaders_Shutters.JobDate) <= '" + endDate + "' AND (OrderHeaders_Shutters.Status = 'In Production' OR OrderHeaders_Shutters.Status = 'Completed') GROUP BY OrderHeaders_Shutters.CustomerId, Customers.Name ORDER BY Customers.Name ASC"
+            Dim StatusAdditional As String = "AND OrderHeaders.StatusAdditional = 'Waiting For Deposit'"
+            If Status = "Production" Then
+                StatusAdditional = "AND OrderHeaders.StatusAdditional IS NULL"
+            End IF
+            Dim thisQuery As String = String.Format("SELECT OrderHeaders.StoreId AS CustomerId, Customers.Name AS CustomerName FROM OrderHeaders INNER JOIN Customers ON OrderHeaders.StoreId = Customers.Id LEFT JOIN OrderDetails ON OrderHeaders.Id = OrderDetails.HeaderId LEFT JOIN HardwareKits ON OrderDetails.KitId = HardwareKits.Id WHERE OrderHeaders.Active = 1 AND CONVERT ( DATE, OrderHeaders.SubmittedDate ) >= '{0}' AND CONVERT ( DATE, OrderHeaders.SubmittedDate ) <= '{1}' {2} GROUP BY OrderHeaders.StoreId, Customers.Name ORDER BY Customers.Name ASC", startDate, endDate, StatusAdditional)
+            ' Throw New Exception(thisQuery)
             Dim thisData As DataSet = GetListData(thisQuery)
 
-            If thisData.Tables(0).Rows.Count > 0 Then
-                Dim doc As New Document(PageSize.A4.Rotate(), 36, 36, 80, 72)
-                Dim pdfFilePath As String = Files
-                Using fs As New FileStream(pdfFilePath, FileMode.Create)
-                    Dim writer As PdfWriter = PdfWriter.GetInstance(doc, fs)
-                    Dim pageEvent As New ReportEvents() With {
-                        .PageTitle = "Blinds Daily Report",
-                        .PagePeriod = Period
-                    }
-                    writer.PageEvent = pageEvent
+            Dim Products As DataSet = GetListData("SELECT Id, Name FROM Designs WHERE Type ='Blinds' AND Description LIKE '%Production%' AND Active = 1 ORDER BY Name ASC")
 
-                    doc.Open()
+            Dim doc As New Document(PageSize.A4.Rotate(), 36, 36, 80, 72)
+            Dim pdfFilePath As String = Files
 
-                    Dim data As String() = {}
+            Using fs As New FileStream(pdfFilePath, FileMode.Create)
+                Dim writer As PdfWriter = PdfWriter.GetInstance(doc, fs)
 
-                    Dim tableOne As New PdfPTable(13)
-                    tableOne.WidthPercentage = 100
-                    tableOne.SetWidths(New Single() {0.2F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F})
+                Dim pageEvent As New ReportEvents() With {
+                    .PageTitle = String.Format("Blinds Daily Report - {0}", Status),
+                    .PagePeriod = Period
+                }
 
-                    tableOne.AddCell(HeaderCell("CUSTOMER NAME"))
-                    tableOne.AddCell(HeaderCellProduct("ROLLER O"))
-                    tableOne.AddCell(HeaderCellProduct("ROMAN O"))
-                    tableOne.AddCell(HeaderCellProduct("PANEL GLIDE O"))
-                    tableOne.AddCell(HeaderCellProduct("PELMET O"))
-                    tableOne.AddCell(HeaderCellProduct("VENETIAN O"))
-                    tableOne.AddCell(HeaderCellProduct("VERTICAL O"))
+                writer.PageEvent = pageEvent
+                doc.Open()
 
-                    tableOne.AddCell(HeaderCellTanggal("Today"))
-                    tableOne.AddCell(HeaderCellTanggal("MTD"))
-                    tableOne.AddCell(HeaderCellTanggal("Today"))
-                    tableOne.AddCell(HeaderCellTanggal("MTD"))
-                    tableOne.AddCell(HeaderCellTanggal("Today"))
-                    tableOne.AddCell(HeaderCellTanggal("MTD"))
-                    tableOne.AddCell(HeaderCellTanggal("Today"))
-                    tableOne.AddCell(HeaderCellTanggal("MTD"))
-                    tableOne.AddCell(HeaderCellTanggal("Today"))
-                    tableOne.AddCell(HeaderCellTanggal("MTD"))
-                    tableOne.AddCell(HeaderCellTanggal("Today"))
-                    tableOne.AddCell(HeaderCellTanggal("MTD"))
+                Dim data As String() = {}
 
-                    For partTwo As Integer = 0 To thisData.Tables(0).Rows.Count - 1
-                        Dim customerId As String = thisData.Tables(0).Rows(partTwo)("CustomerId").ToString()
-                        Dim customerName As String = thisData.Tables(0).Rows(partTwo)("CustomerName").ToString()
+                Dim productCount As Integer = Products.Tables(0).Rows.Count
+                Dim totalColumns As Integer = 1 + (productCount * 2)
+                Dim table As New PdfPTable(totalColumns)
+                table.WidthPercentage = 100
 
-                        tableOne.AddCell(ContentCell(customerName))
-                        ' ROLLER
-                        data = {customerId, "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2", endDate, endDate, "Orion"}
-                        tableOne.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2", startDate, endDate, "Orion"}
-                        tableOne.AddCell(ContentCell(GetPerCustomerBlinds(data)))
+                Dim widths(totalColumns - 1) As Single
+                widths(0) = 0.4F
+                For i As Integer = 1 To totalColumns - 1
+                    widths(i) = 0.15F
+                Next
+                table.SetWidths(widths)
 
-                        ' ROMAN
-                        data = {customerId, "B594C6C7-452D-4CB6-8A20-6914BD97B830", endDate, endDate, "Orion"}
-                        tableOne.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "B594C6C7-452D-4CB6-8A20-6914BD97B830", startDate, endDate, "Orion"}
-                        tableOne.AddCell(ContentCell(GetPerCustomerBlinds(data)))
+                table.AddCell(HeaderCell("CUSTOMER NAME"))
 
-                        ' PANEL GLIDE
-                        data = {customerId, "E7959750-5CF8-48E5-9171-CD71B53CDC2F", endDate, endDate, "Orion"}
-                        tableOne.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "E7959750-5CF8-48E5-9171-CD71B53CDC2F", startDate, endDate, "Orion"}
-                        tableOne.AddCell(ContentCell(GetPerCustomerBlinds(data)))
+                ' PRODUCT
+                For a As Integer = 0 To productCount - 1
+                    Dim ProductName As String =Products.Tables(0).Rows(a)("Name").ToString()
+                    table.AddCell(HeaderCellProduct(ProductName))
+                Next
 
-                        ' PELMET
-                        data = {customerId, "3734E56C-9FBE-4897-9424-410833B1A1D3", endDate, endDate, "Orion"}
-                        tableOne.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "3734E56C-9FBE-4897-9424-410833B1A1D3", startDate, endDate, "Orion"}
-                        tableOne.AddCell(ContentCell(GetPerCustomerBlinds(data)))
+                ' TODAY / MTD
+                For b As Integer = 0 To productCount - 1
+                    table.AddCell(HeaderCellTanggal("Today"))
+                    table.AddCell(HeaderCellTanggal("MTD"))
+                Next
 
-                        ' VENETIAN
-                        data = {customerId, "83C7039F-4A2E-4D6A-9389-761664FD9449", endDate, endDate, "Orion"}
-                        tableOne.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "83C7039F-4A2E-4D6A-9389-761664FD9449", startDate, endDate, "Orion"}
-                        tableOne.AddCell(ContentCell(GetPerCustomerBlinds(data)))
 
-                        ' VERTICAL
-                        data = {customerId, "B556E35C-CEAC-40F8-A6CF-156601BD57DA", endDate, endDate, "Orion"}
-                        tableOne.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "B556E35C-CEAC-40F8-A6CF-156601BD57DA", startDate, endDate, "Orion"}
-                        tableOne.AddCell(ContentCell(GetPerCustomerBlinds(data)))
+                If thisData.Tables(0).Rows.Count > 0 Then
+
+                    For c As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                        Dim customerId As String = thisData.Tables(0).Rows(c)("CustomerId").ToString()
+                        Dim customerName As String = thisData.Tables(0).Rows(c)("CustomerName").ToString()
+
+                        table.AddCell(ContentCell(customerName))
+
+                        For d As Integer = 0 To productCount - 1
+                            Dim ProductId As String =Products.Tables(0).Rows(d)("Id").ToString()
+
+                            ' TODAY
+                            data = {customerId, ProductId, endDate, endDate,""}
+                            table.AddCell(ContentCell(GetPerCustomerBlinds2(data)))
+
+                            ' MTD
+                            data = {customerId, ProductId, startDate, endDate, ""}
+                            table.AddCell(ContentCell(GetPerCustomerBlinds2(data)))
+
+                        Next
+
                     Next
 
-                    ' FOOTER TOTAL
-                    tableOne.AddCell(FooterCell("TOTAL"))
+                    table.AddCell(FooterCell("TOTAL"))
+                    For e As Integer = 0 To productCount - 1
+                        Dim ProductId As String = Products.Tables(0).Rows(e)("Id").ToString()
 
-                    ' ROLLER
-                    data = {"50CE8EDF-E106-414C-BDE3-D7AA8F8046D2", endDate, endDate, "Orion"}
-                    tableOne.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"50CE8EDF-E106-414C-BDE3-D7AA8F8046D2", startDate, endDate, "Orion"}
-                    tableOne.AddCell(FooterCell(GetPerDesignBlinds(data)))
+                        ' TODAY TOTAL
+                        data = { ProductId, endDate, endDate, ""}
+                        table.AddCell(ContentCell(GetPerDesignBlinds2(data)))
 
-                    ' ROMAN
-                    data = {"B594C6C7-452D-4CB6-8A20-6914BD97B830", endDate, endDate, "Orion"}
-                    tableOne.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"B594C6C7-452D-4CB6-8A20-6914BD97B830", startDate, endDate, "Orion"}
-                    tableOne.AddCell(FooterCell(GetPerDesignBlinds(data)))
+                        ' MTD TOTAL
+                        data = { ProductId, startDate, endDate, ""}
+                        table.AddCell(ContentCell(GetPerDesignBlinds2(data)))
 
-                    ' PANEL GLIDE
-                    data = {"E7959750-5CF8-48E5-9171-CD71B53CDC2F", endDate, endDate, "Orion"}
-                    tableOne.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"E7959750-5CF8-48E5-9171-CD71B53CDC2F", startDate, endDate, "Orion"}
-                    tableOne.AddCell(FooterCell(GetPerDesignBlinds(data)))
-
-                    ' PELMET
-                    data = {"3734E56C-9FBE-4897-9424-410833B1A1D3", endDate, endDate, "Orion"}
-                    tableOne.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"3734E56C-9FBE-4897-9424-410833B1A1D3", startDate, endDate, "Orion"}
-                    tableOne.AddCell(FooterCell(GetPerDesignBlinds(data)))
-
-                    ' VENETIAN
-                    data = {"83C7039F-4A2E-4D6A-9389-761664FD9449", endDate, endDate, "Orion"}
-                    tableOne.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"83C7039F-4A2E-4D6A-9389-761664FD9449", startDate, endDate, "Orion"}
-                    tableOne.AddCell(FooterCell(GetPerDesignBlinds(data)))
-
-                    ' VERTICAL
-                    data = {"B556E35C-CEAC-40F8-A6CF-156601BD57DA", endDate, endDate, "Orion"}
-                    tableOne.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"B556E35C-CEAC-40F8-A6CF-156601BD57DA", startDate, endDate, "Orion"}
-                    tableOne.AddCell(FooterCell(GetPerDesignBlinds(data)))
-
-                    doc.Add(tableOne)
-                    doc.NewPage()
-
-                    Dim tableTwo As New PdfPTable(13)
-                    tableTwo.WidthPercentage = 100
-                    tableTwo.SetWidths(New Single() {0.2F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F, 0.066F})
-
-                    tableTwo.AddCell(HeaderCell("CUSTOMER NAME"))
-                    tableTwo.AddCell(HeaderCellProduct("ROLLER J"))
-                    tableTwo.AddCell(HeaderCellProduct("ROMAN J"))
-                    tableTwo.AddCell(HeaderCellProduct("PANEL GLIDE J"))
-                    tableTwo.AddCell(HeaderCellProduct("PELMET J"))
-                    tableTwo.AddCell(HeaderCellProduct("VENETIAN J"))
-                    tableTwo.AddCell(HeaderCellProduct("VERTICAL"))
-
-                    tableTwo.AddCell(HeaderCellTanggal("Today"))
-                    tableTwo.AddCell(HeaderCellTanggal("MTD"))
-                    tableTwo.AddCell(HeaderCellTanggal("Today"))
-                    tableTwo.AddCell(HeaderCellTanggal("MTD"))
-                    tableTwo.AddCell(HeaderCellTanggal("Today"))
-                    tableTwo.AddCell(HeaderCellTanggal("MTD"))
-                    tableTwo.AddCell(HeaderCellTanggal("Today"))
-                    tableTwo.AddCell(HeaderCellTanggal("MTD"))
-                    tableTwo.AddCell(HeaderCellTanggal("Today"))
-                    tableTwo.AddCell(HeaderCellTanggal("MTD"))
-                    tableTwo.AddCell(HeaderCellTanggal("Today"))
-                    tableTwo.AddCell(HeaderCellTanggal("MTD"))
-
-                    For partThree As Integer = 0 To thisData.Tables(0).Rows.Count - 1
-                        Dim customerId As String = thisData.Tables(0).Rows(partThree)("CustomerId").ToString()
-                        Dim customerName As String = thisData.Tables(0).Rows(partThree)("CustomerName").ToString()
-
-                        tableTwo.AddCell(ContentCell(customerName))
-                        ' ROLLER
-                        data = {customerId, "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2", endDate, endDate, "JKT"}
-                        tableTwo.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "50CE8EDF-E106-414C-BDE3-D7AA8F8046D2", startDate, endDate, "JKT"}
-                        tableTwo.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-
-                        ' ROMAN
-                        data = {customerId, "B594C6C7-452D-4CB6-8A20-6914BD97B830", endDate, endDate, "JKT"}
-                        tableTwo.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "B594C6C7-452D-4CB6-8A20-6914BD97B830", startDate, endDate, "JKT"}
-                        tableTwo.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-
-                        ' PANEL GLIDE
-                        data = {customerId, "E7959750-5CF8-48E5-9171-CD71B53CDC2F", endDate, endDate, "JKT"}
-                        tableTwo.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "E7959750-5CF8-48E5-9171-CD71B53CDC2F", startDate, endDate, "JKT"}
-                        tableTwo.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-
-                        ' PELMET
-                        data = {customerId, "3734E56C-9FBE-4897-9424-410833B1A1D3", endDate, endDate, "JKT"}
-                        tableTwo.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "3734E56C-9FBE-4897-9424-410833B1A1D3", startDate, endDate, "JKT"}
-                        tableTwo.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-
-                        ' VENETIAN
-                        data = {customerId, "83C7039F-4A2E-4D6A-9389-761664FD9449", endDate, endDate, "JKT"}
-                        tableTwo.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "83C7039F-4A2E-4D6A-9389-761664FD9449", startDate, endDate, "JKT"}
-                        tableTwo.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-
-                        ' VERTICAL
-                        data = {customerId, "B556E35C-CEAC-40F8-A6CF-156601BD57DA", endDate, endDate, "JKT"}
-                        tableTwo.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "B556E35C-CEAC-40F8-A6CF-156601BD57DA", startDate, endDate, "JKT"}
-                        tableTwo.AddCell(ContentCell(GetPerCustomerBlinds(data)))
                     Next
 
-                    tableTwo.AddCell(FooterCell("TOTAL"))
+                Else
 
-                    ' ROLLER
-                    data = {"50CE8EDF-E106-414C-BDE3-D7AA8F8046D2", endDate, endDate, "JKT"}
-                    tableTwo.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"50CE8EDF-E106-414C-BDE3-D7AA8F8046D2", startDate, endDate, "JKT"}
-                    tableTwo.AddCell(FooterCell(GetPerDesignBlinds(data)))
+                    Dim noDataCell As PdfPCell = ContentCell("No data Found")
 
-                    ' ROMAN
-                    data = {"B594C6C7-452D-4CB6-8A20-6914BD97B830", endDate, endDate, "JKT"}
-                    tableTwo.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"B594C6C7-452D-4CB6-8A20-6914BD97B830", startDate, endDate, "JKT"}
-                    tableTwo.AddCell(FooterCell(GetPerDesignBlinds(data)))
+                    noDataCell.Colspan = totalColumns
+                    noDataCell.HorizontalAlignment = Element.ALIGN_CENTER
 
-                    ' PANEL GLIDE
-                    data = {"E7959750-5CF8-48E5-9171-CD71B53CDC2F", endDate, endDate, "JKT"}
-                    tableTwo.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"E7959750-5CF8-48E5-9171-CD71B53CDC2F", startDate, endDate, "JKT"}
-                    tableTwo.AddCell(FooterCell(GetPerDesignBlinds(data)))
+                    noDataCell.VerticalAlignment = Element.ALIGN_MIDDLE
+                    table.AddCell(noDataCell)
 
-                    ' PELMET
-                    data = {"3734E56C-9FBE-4897-9424-410833B1A1D3", endDate, endDate, "JKT"}
-                    tableTwo.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"3734E56C-9FBE-4897-9424-410833B1A1D3", startDate, endDate, "JKT"}
-                    tableTwo.AddCell(FooterCell(GetPerDesignBlinds(data)))
+                End If
 
-                    ' VENETIAN
-                    data = {"83C7039F-4A2E-4D6A-9389-761664FD9449", endDate, endDate, "JKT"}
-                    tableTwo.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"83C7039F-4A2E-4D6A-9389-761664FD9449", startDate, endDate, "JKT"}
-                    tableTwo.AddCell(FooterCell(GetPerDesignBlinds(data)))
 
-                    ' VERTICAL
-                    data = {"B556E35C-CEAC-40F8-A6CF-156601BD57DA", endDate, endDate, "JKT"}
-                    tableTwo.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"B556E35C-CEAC-40F8-A6CF-156601BD57DA", startDate, endDate, "JKT"}
-                    tableTwo.AddCell(FooterCell(GetPerDesignBlinds(data)))
+                doc.Add(table)
 
-                    doc.Add(tableTwo)
-                    doc.NewPage()
+                doc.Close()
 
-                    Dim tableThree As New PdfPTable(9)
-                    tableThree.WidthPercentage = 100
-                    tableThree.SetWidths(New Single() {0.2F, 0.1F, 0.1F, 0.1F, 0.1F, 0.1F, 0.1F, 0.1F, 0.1F})
-
-                    tableThree.AddCell(HeaderCell("CUSTOMER NAME"))
-                    tableThree.AddCell(HeaderCellProduct("CURTAIN"))
-                    tableThree.AddCell(HeaderCellProduct("VERI SHADES"))
-                    tableThree.AddCell(HeaderCellProduct("ZEBRA"))
-                    tableThree.AddCell(HeaderCellProduct("CELLULAR SHADES"))
-
-                    tableThree.AddCell(HeaderCellTanggal("Today"))
-                    tableThree.AddCell(HeaderCellTanggal("MTD"))
-                    tableThree.AddCell(HeaderCellTanggal("Today"))
-                    tableThree.AddCell(HeaderCellTanggal("MTD"))
-                    tableThree.AddCell(HeaderCellTanggal("Today"))
-                    tableThree.AddCell(HeaderCellTanggal("MTD"))
-                    tableThree.AddCell(HeaderCellTanggal("Today"))
-                    tableThree.AddCell(HeaderCellTanggal("MTD"))
-                    For partOne As Integer = 0 To thisData.Tables(0).Rows.Count - 1
-                        Dim customerId As String = thisData.Tables(0).Rows(partOne)("CustomerId").ToString()
-                        Dim customerName As String = thisData.Tables(0).Rows(partOne)("CustomerName").ToString()
-
-                        tableThree.AddCell(ContentCell(customerName))
-
-                        ' CURTAIN
-                        data = {customerId, "992EF755-D9A4-4423-8C88-687CD935DF11", endDate, endDate, "Orion"}
-                        tableThree.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "992EF755-D9A4-4423-8C88-687CD935DF11", startDate, endDate, "Orion"}
-                        tableThree.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-
-                        ' VERI SHADES
-                        data = {customerId, "68359197-6083-4489-863E-EBB1AF056D92", endDate, endDate, "Orion"}
-                        tableThree.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "68359197-6083-4489-863E-EBB1AF056D92", startDate, endDate, "Orion"}
-                        tableThree.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-
-                        ' ZEBRA BLIND
-                        data = {customerId, "78400FAF-BA6D-4E8F-923B-68A4CE30C0DD", endDate, endDate, "Orion"}
-                        tableThree.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "78400FAF-BA6D-4E8F-923B-68A4CE30C0DD", startDate, endDate, "Orion"}
-                        tableThree.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-
-                        ' CELLULAR SHADES
-                        data = {customerId, "0FCA2BF9-2849-4E2A-B04D-DF8519DC536F", endDate, endDate, "JKT"}
-                        tableThree.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                        data = {customerId, "0FCA2BF9-2849-4E2A-B04D-DF8519DC536F", startDate, endDate, "JKT"}
-                        tableThree.AddCell(ContentCell(GetPerCustomerBlinds(data)))
-                    Next
-
-                    tableThree.AddCell(FooterCell("TOTAL"))
-
-                    ' CURTAIN
-                    data = {"992EF755-D9A4-4423-8C88-687CD935DF11", endDate, endDate, "Orion"}
-                    tableThree.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"992EF755-D9A4-4423-8C88-687CD935DF11", startDate, endDate, "Orion"}
-                    tableThree.AddCell(FooterCell(GetPerDesignBlinds(data)))
-
-                    ' VERI SHADES
-                    data = {"68359197-6083-4489-863E-EBB1AF056D92", endDate, endDate, "Orion"}
-                    tableThree.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"68359197-6083-4489-863E-EBB1AF056D92", startDate, endDate, "Orion"}
-                    tableThree.AddCell(FooterCell(GetPerDesignBlinds(data)))
-
-                    ' ZEBRA BLIND
-                    data = {"78400FAF-BA6D-4E8F-923B-68A4CE30C0DD", endDate, endDate, "Orion"}
-                    tableThree.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"78400FAF-BA6D-4E8F-923B-68A4CE30C0DD", startDate, endDate, "Orion"}
-                    tableThree.AddCell(FooterCell(GetPerDesignBlinds(data)))
-
-                    ' CELLULAR SHADES
-                    data = {"0FCA2BF9-2849-4E2A-B04D-DF8519DC536F", endDate, endDate, "JKT"}
-                    tableThree.AddCell(FooterCell(GetPerDesignBlinds(data)))
-                    data = {"0FCA2BF9-2849-4E2A-B04D-DF8519DC536F", startDate, endDate, "JKT"}
-                    tableThree.AddCell(FooterCell(GetPerDesignBlinds(data)))
-
-                    doc.Add(tableThree)
-
-                    doc.Close()
-                End Using
-            End If
+            End Using
         Catch ex As Exception
+            Throw
         End Try
     End Sub
+
+    Public Sub BlindsDailyExcel(Files As String, Status As String, Tanggal As DateTime, Period As String)
+        Try
+            Dim startDate As String = DateTime.Parse(Tanggal).ToString("yyyy-MM-01")
+            Dim endDate As String = DateTime.Parse(Tanggal).ToString("yyyy-MM-dd")
+
+            Dim StatusAdditional As String = "AND OrderHeaders.StatusAdditional = 'Waiting For Deposit'"
+            If Status = "Production" Then
+                StatusAdditional = "AND OrderHeaders.StatusAdditional IS NULL"
+            End IF
+            Dim thisQuery As String = String.Format("SELECT OrderHeaders.StoreId AS CustomerId, Customers.Name AS CustomerName FROM OrderHeaders INNER JOIN Customers ON OrderHeaders.StoreId = Customers.Id LEFT JOIN OrderDetails ON OrderHeaders.Id = OrderDetails.HeaderId LEFT JOIN HardwareKits ON OrderDetails.KitId = HardwareKits.Id WHERE OrderHeaders.Active = 1 AND CONVERT ( DATE, OrderHeaders.SubmittedDate ) >= '{0}' AND CONVERT ( DATE, OrderHeaders.SubmittedDate ) <= '{1}' {2} GROUP BY OrderHeaders.StoreId, Customers.Name ORDER BY Customers.Name ASC", startDate, endDate, StatusAdditional)
+
+            Dim thisData As DataSet = GetListData(thisQuery)
+
+            Dim Products As DataSet = GetListData("SELECT Id, Name FROM Designs WHERE Type ='Blinds' AND Description LIKE '%Production%' AND Active = 1 ORDER BY Name ASC")
+
+
+            If Products Is Nothing OrElse Products.Tables.Count = 0 OrElse Products.Tables(0).Rows.Count = 0 Then
+                Return
+            End If
+
+
+            Using package As New OfficeOpenXml.ExcelPackage()
+
+                Dim worksheet As OfficeOpenXml.ExcelWorksheet = package.Workbook.Worksheets.Add("Blinds Daily")
+                Dim productCount As Integer = Products.Tables(0).Rows.Count
+
+                Dim totalColumns As Integer = 1 + (productCount * 2)
+
+                worksheet.Cells(1, 1).Value = "CUSTOMER NAME"
+
+                ' Merge customer 
+                worksheet.Cells(1, 1, 2, 1).Merge = True
+
+
+                Dim currentColumn As Integer = 2
+                For a As Integer = 0 To productCount - 1
+                    Dim ProductName As String = Products.Tables(0).Rows(a)("Name").ToString()
+
+                    ' Each product occupies 2 columns:
+                    ' Today + MTD
+                    worksheet.Cells(1, currentColumn).Value = ProductName
+                    worksheet.Cells(1, currentColumn, 1, currentColumn + 1).Merge = True
+
+                    currentColumn += 2
+                Next
+
+                currentColumn = 2
+                For b As Integer = 0 To productCount - 1
+                    worksheet.Cells(2, currentColumn).Value = "Today"
+                    worksheet.Cells(2, currentColumn + 1).Value = "MTD"
+                    currentColumn += 2
+                Next
+
+
+                Using headerRange As OfficeOpenXml.ExcelRange = worksheet.Cells(1, 1, 2, totalColumns)
+
+                    headerRange.Style.Font.Bold = True
+                    headerRange.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center
+                    headerRange.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center
+                    headerRange.Style.WrapText = True
+                    headerRange.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    headerRange.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    headerRange.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    headerRange.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+
+                End Using
+
+
+                Dim rowIndex As Integer = 3
+                If thisData IsNot Nothing AndAlso thisData.Tables.Count > 0 AndAlso thisData.Tables(0).Rows.Count > 0 Then
+                    For c As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+
+                        Dim customerId As String = thisData.Tables(0).Rows(c)("CustomerId").ToString()
+                        Dim customerName As String = thisData.Tables(0).Rows(c)("CustomerName").ToString()
+
+                        ' Customer name
+                        worksheet.Cells(rowIndex, 1).Value = customerName
+
+                        currentColumn = 2
+                        For d As Integer = 0 To productCount - 1
+
+                            Dim ProductId As String = Products.Tables(0).Rows(d)("Id").ToString()
+
+                            Dim data As String() = {customerId, ProductId, endDate, endDate, ""}
+                            Dim todayValue As String = GetPerCustomerBlinds2(data)
+                            worksheet.Cells(rowIndex, currentColumn).Value = todayValue
+
+                            data = {customerId, ProductId, startDate, endDate, ""}
+                            Dim mtdValue As String =GetPerCustomerBlinds2(data)
+                            worksheet.Cells(rowIndex,currentColumn + 1).Value = mtdValue
+                            currentColumn += 2
+
+                        Next
+
+                        rowIndex += 1
+
+                    Next
+
+                    worksheet.Cells(rowIndex, 1).Value = "TOTAL"
+                    currentColumn = 2
+    
+                    For e As Integer = 0 To productCount - 1
+                        Dim ProductId As String = Products.Tables(0).Rows(e)("Id").ToString()
+    
+                        Dim data As String() = {ProductId, endDate, endDate, ""}
+                        Dim todayTotal As String = GetPerDesignBlinds2(data)
+    
+                        worksheet.Cells(rowIndex,currentColumn).Value = todayTotal
+    
+                        data = {ProductId, startDate, endDate,""}
+                        Dim mtdTotal As String = GetPerDesignBlinds2(data)
+    
+                        worksheet.Cells(rowIndex, currentColumn + 1).Value = mtdTotal
+    
+                        currentColumn += 2
+    
+                    Next
+    
+    
+                    Using totalRange As OfficeOpenXml.ExcelRange = worksheet.Cells(rowIndex, 1, rowIndex, totalColumns)
+    
+                        totalRange.Style.Font.Bold = True
+                        totalRange.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                        totalRange.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                        totalRange.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                        totalRange.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+    
+                    End Using
+
+                Else
+                    worksheet.Cells(rowIndex, 1).Value = "No data Found"
+                    worksheet.Cells(rowIndex, 1, rowIndex, totalColumns).Merge = True
+                    worksheet.Cells(rowIndex, 1).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center
+                    worksheet.Cells(rowIndex, 1).Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center
+                    worksheet.Cells(rowIndex, 1).Style.Font.Bold = True
+                    worksheet.Cells(rowIndex, 1).Style.WrapText = True
+                End If
+
+    
+                Using dataRange As OfficeOpenXml.ExcelRange = worksheet.Cells(1, 1, rowIndex, totalColumns)
+
+                    dataRange.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    dataRange.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    dataRange.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    dataRange.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    dataRange.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center
+
+                End Using
+
+                worksheet.Column(1).Width = 30
+
+                For i As Integer = 2 To totalColumns
+                    worksheet.Column(i).Width = 12
+                Next
+
+                worksheet.Cells(1, 1, rowIndex, totalColumns).Style.WrapText = True
+
+                worksheet.View.FreezePanes(3, 2)
+
+
+
+                If rowIndex > 3 Then
+                    worksheet.Cells(2, 1, rowIndex, totalColumns).AutoFilter = True
+                End If
+
+
+                Dim excelFilePath As String = Files
+                Dim fileInfo As New System.IO.FileInfo(excelFilePath)
+                package.SaveAs(fileInfo)
+
+            End Using
+
+        Catch ex As Exception
+            Throw
+        End Try
+    End Sub
+
+    Public Sub BlindsOrders(Files As String, Status As String, StartDate As DateTime, EndDate As DateTime)
+        Try
+            Dim startDateStr As String = StartDate.ToString("yyyy-MM-dd")
+            Dim endDateStr As String = EndDate.ToString("yyyy-MM-dd")
+
+            Dim StatusAdditional As String = "AND StatusAdditional = 'Waiting For Deposit'"
+            If Status = "Production" Then
+                StatusAdditional = "AND StatusAdditional IS NULL"
+            End IF
+            Dim thisQuery As String = String.Format("SELECT Id, HeaderId, Qty, Width, [Drop], SubmittedDate, JobDate, CustomerName, OrderNumber, OrderName, DesignName, KitName, FabricName, FabricType, FabricColour, Notes FROM view_details WHERE Active = 1 AND HeaderActive = 1 AND CONVERT ( DATE, SubmittedDate ) >= '{0}' AND CONVERT ( DATE, SubmittedDate ) <= '{1}' AND Status IN ( 'New Order', 'In Production', 'Completed' ) {2} ORDER BY HeaderId ASC", startDateStr, endDateStr, StatusAdditional)
+
+            Dim thisData As DataSet = GetListData(thisQuery)
+
+           
+            Dim doc As New Document(PageSize.A4.Rotate(), 36, 36, 80, 72)
+            Dim pdfFilePath As String = Files
+            Using fs As New FileStream(pdfFilePath, FileMode.Create)
+                Dim period As String = StartDate.ToString("MMM yyyy") & " - " & EndDate.ToString("MMM yyyy")
+
+                Dim writer As PdfWriter = PdfWriter.GetInstance(doc, fs)
+                Dim pageEvent As New ReportEvents() With {
+                    .PageTitle = String.Format("Blinds Orders Report - {0}", Status),
+                    .PagePeriod = period
+                }
+                writer.PageEvent = pageEvent
+                doc.Open()
+
+                Dim data As String() = {}
+
+                Dim table As New PdfPTable(9)
+                table.WidthPercentage = 100
+                table.SetWidths(New Single() {0.05F, 0.1F, 0.1F, 0.2F, 0.15F, 0.1F, 0.1F, 0.1F, 0.1F})
+
+                ' table.AddCell(HeaderCellOriginal("No"))
+                table.AddCell(HeaderCellOriginal("ID"))
+                table.AddCell(HeaderCellOriginal("Received"))
+                table.AddCell(HeaderCellOriginal("Ship Date"))
+                table.AddCell(HeaderCellOriginal("Store Name"))
+                table.AddCell(HeaderCellOriginal("Store Order No"))
+                table.AddCell(HeaderCellOriginal("Store Customer"))
+                table.AddCell(HeaderCellOriginal("Description"))
+                table.AddCell(HeaderCellOriginal("Fabric"))
+                table.AddCell(HeaderCellOriginal("Reason for hold"))
+
+                If thisData IsNot Nothing AndAlso thisData.Tables.Count > 0 AndAlso thisData.Tables(0).Rows.Count > 0 Then
+
+                    For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                        Dim Id As String = thisData.Tables(0).Rows(i).Item("Id").ToString()
+                        Dim HeaderId As String = thisData.Tables(0).Rows(i).Item("HeaderId").ToString()
+                        Dim Qty As String = thisData.Tables(0).Rows(i).Item("Qty").ToString()
+                        Dim SubmittedDate As String = thisData.Tables(0).Rows(i).Item("SubmittedDate").ToString()
+                        Dim JobDate As String = thisData.Tables(0).Rows(i).Item("JobDate").ToString()
+                        Dim CustomerName As String = thisData.Tables(0).Rows(i).Item("CustomerName").ToString()
+                        Dim OrderNumber As String = thisData.Tables(0).Rows(i).Item("OrderNumber").ToString()
+                        Dim OrderName As String = thisData.Tables(0).Rows(i).Item("OrderName").ToString()
+                        Dim Width As String = thisData.Tables(0).Rows(i).Item("Width").ToString()
+                        Dim Drop As String = thisData.Tables(0).Rows(i).Item("Drop").ToString()
+                        Dim FabricType As String = thisData.Tables(0).Rows(i).Item("FabricType").ToString()
+                        Dim FabricColour As String = thisData.Tables(0).Rows(i).Item("FabricColour").ToString()
+                        Dim DesignName As String = thisData.Tables(0).Rows(i).Item("DesignName").ToString()
+                        Dim KitName As String = thisData.Tables(0).Rows(i).Item("KitName").ToString()
+                        Dim FabricName As String = thisData.Tables(0).Rows(i).Item("FabricName").ToString()
+                        Dim Notes As String = thisData.Tables(0).Rows(i).Item("Notes").ToString()
+                        ' table.AddCell(ContentCell(i + 1))
+                        table.AddCell(ContentCell(HeaderId))
+                        table.AddCell(ContentCell(SubmittedDate))
+                        table.AddCell(ContentCell(JobDate))
+                        table.AddCell(ContentCell(CustomerName))
+                        table.AddCell(ContentCell(OrderNumber))
+                        table.AddCell(ContentCell(OrderName))
+                        table.AddCell(ContentCell(FindDescription(Id)))
+                        table.AddCell(ContentCell(FabricName))
+                        table.AddCell(ContentCell(Notes))
+                    Next
+
+                    ' Dim totalItemCount As Integer = GetItemData_Integer("SELECT COUNT(*) FROM OrderDetails_Shutters INNER JOIN OrderHeaders_Shutters ON OrderDetails_Shutters.HeaderId = OrderHeaders_Shutters.Id LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id WHERE CONVERT(DATE, OrderHeaders_Shutters.JobDate) >= '" + startDateStr + "' AND CONVERT(DATE, OrderHeaders_Shutters.JobDate) <= '" + endDateStr + "' AND (Products.DesignId = '0CB7C37F-D478-49BA-94CB-DCDE83FB84C8' OR Products.DesignId = '28FFCB2E-F966-4D4B-BFBB-1E541BAB1BC7') AND OrderHeaders_Shutters.Active = 1 AND OrderDetails_Shutters.Active=1")
+                    ' Dim totalPanelQty As Integer = GetItemData_Integer("SELECT SUM(OrderDetails_Shutters.PanelQty) FROM OrderDetails_Shutters INNER JOIN OrderHeaders_Shutters ON OrderDetails_Shutters.HeaderId = OrderHeaders_Shutters.Id LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id WHERE CONVERT(DATE, OrderHeaders_Shutters.JobDate) >= '" + startDateStr + "' AND CONVERT(DATE, OrderHeaders_Shutters.JobDate) <= '" + endDateStr + "' AND (Products.DesignId = '0CB7C37F-D478-49BA-94CB-DCDE83FB84C8' OR Products.DesignId = '28FFCB2E-F966-4D4B-BFBB-1E541BAB1BC7') AND OrderHeaders_Shutters.Active = 1 AND OrderDetails_Shutters.Active=1")
+                    ' Dim totalSquareMetre As Integer = GetItemData_Integer("SELECT SUM(OrderDetails_Shutters.SquareMetre) FROM OrderDetails_Shutters INNER JOIN OrderHeaders_Shutters ON OrderDetails_Shutters.HeaderId = OrderHeaders_Shutters.Id LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id WHERE CONVERT(DATE, OrderHeaders_Shutters.JobDate) >= '" + startDateStr + "' AND CONVERT(DATE, OrderHeaders_Shutters.JobDate) <= '" + endDateStr + "' AND (Products.DesignId = '0CB7C37F-D478-49BA-94CB-DCDE83FB84C8' OR Products.DesignId = '28FFCB2E-F966-4D4B-BFBB-1E541BAB1BC7') AND OrderHeaders_Shutters.Active = 1 AND OrderDetails_Shutters.Active=1")
+
+                    ' table.AddCell(FooterCellCol4("TOTAL"))
+                    ' table.AddCell(FooterCell(totalItemCount))
+                    ' table.AddCell(FooterCell(totalPanelQty))
+                    ' table.AddCell(FooterCell(totalSquareMetre))
+                Else
+                    Dim noDataCell As PdfPCell =ContentCell("No data Found")
+                    noDataCell.Colspan = 9
+                    noDataCell.HorizontalAlignment = Element.ALIGN_CENTER
+                    noDataCell.VerticalAlignment = Element.ALIGN_MIDDLE
+
+                    table.AddCell(noDataCell)
+                End If
+
+                doc.Add(table)
+
+                doc.Close()
+            End Using
+           
+        Catch ex As Exception
+            Throw
+        End Try
+    End Sub
+
+    Public Sub BlindsOrdersExcel(Files As String, Status As String, StartDate As DateTime, EndDate As DateTime)
+        Try
+            Dim startDateStr As String = StartDate.ToString("yyyy-MM-dd")
+            Dim endDateStr As String = EndDate.ToString("yyyy-MM-dd")
+
+            Dim StatusAdditional As String = "AND StatusAdditional = 'Waiting For Deposit'"
+
+            If Status = "Production" Then
+                StatusAdditional = "AND StatusAdditional IS NULL"
+            End If
+            Dim thisQuery As String = String.Format("SELECT Id, HeaderId, Qty, Width, [Drop], SubmittedDate, JobDate, CustomerName, OrderNumber, OrderName, DesignName, KitName, FabricName, FabricType, FabricColour, Notes FROM view_details WHERE Active = 1 AND HeaderActive = 1 AND CONVERT ( DATE, SubmittedDate ) >= '{0}' AND CONVERT ( DATE, SubmittedDate ) <= '{1}' AND Status IN ( 'New Order', 'In Production', 'Completed' ) {2} ORDER BY HeaderId ASC", startDateStr, endDateStr, StatusAdditional)
+            Dim thisData As DataSet =GetListData(thisQuery)
+
+
+            Using package As New OfficeOpenXml.ExcelPackage()
+                Dim worksheet As OfficeOpenXml.ExcelWorksheet = package.Workbook.Worksheets.Add("Blinds Orders")
+
+                worksheet.Cells(1, 1).Value = "ID"
+                worksheet.Cells(1, 2).Value = "Received"
+                worksheet.Cells(1, 3).Value = "Ship Date"
+                worksheet.Cells(1, 4).Value = "Store Name"
+                worksheet.Cells(1, 5).Value = "Store Order No"
+                worksheet.Cells(1, 6).Value = "Store Customer"
+                worksheet.Cells(1, 7).Value = "Description"
+                worksheet.Cells(1, 8).Value = "Fabric"
+                worksheet.Cells(1, 9).Value = "Reason for hold"
+
+
+                Using headerRange As OfficeOpenXml.ExcelRange = worksheet.Cells(1, 1, 1, 9)
+
+                    headerRange.Style.Font.Bold = True
+                    headerRange.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center
+                    headerRange.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center
+                    headerRange.Style.WrapText = True
+                    headerRange.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    headerRange.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    headerRange.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    headerRange.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+
+                End Using
+
+
+                Dim rowIndex As Integer = 2
+                If thisData IsNot Nothing AndAlso thisData.Tables.Count > 0 AndAlso thisData.Tables(0).Rows.Count > 0 Then
+
+                    For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+                        Dim Id As String =thisData.Tables(0).Rows(i).Item("Id").ToString()
+                        Dim HeaderId As String = thisData.Tables(0).Rows(i).Item("HeaderId").ToString()
+                        Dim SubmittedDate As String = thisData.Tables(0).Rows(i).Item("SubmittedDate").ToString()
+                        Dim JobDate As String = thisData.Tables(0).Rows(i).Item("JobDate").ToString()
+                        Dim CustomerName As String = thisData.Tables(0).Rows(i).Item("CustomerName").ToString()
+                        Dim OrderNumber As String = thisData.Tables(0).Rows(i).Item("OrderNumber").ToString()
+                        Dim OrderName As String = thisData.Tables(0).Rows(i).Item("OrderName").ToString()
+                        Dim FabricName As String = thisData.Tables(0).Rows(i).Item("FabricName").ToString()
+                        Dim Notes As String = thisData.Tables(0).Rows(i).Item("Notes").ToString()
+
+
+                        worksheet.Cells(rowIndex, 1 ).Value = HeaderId
+                        worksheet.Cells(rowIndex, 2).Value = SubmittedDate
+                        worksheet.Cells(rowIndex, 3).Value = JobDate
+                        worksheet.Cells(rowIndex, 4).Value = CustomerName
+                        worksheet.Cells(rowIndex, 5).Value = OrderNumber
+                        worksheet.Cells(rowIndex, 6).Value = OrderName
+                        worksheet.Cells(rowIndex, 7).Value = FindDescription(Id)
+                        worksheet.Cells(rowIndex, 8).Value = FabricName
+                        worksheet.Cells(rowIndex, 9).Value = Notes
+
+                        rowIndex += 1
+
+                    Next
+
+                Else
+
+                    worksheet.Cells(rowIndex, 1).Value = "No data Found"
+                    worksheet.Cells(rowIndex, 1, rowIndex, 9).Merge = True
+                    worksheet.Cells(rowIndex, 1).Style.Font.Bold = True
+                    worksheet.Cells(rowIndex, 1).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center
+                    worksheet.Cells(rowIndex, 1).Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center
+                    worksheet.Cells(rowIndex, 1).Style.WrapText = True
+
+                End If
+
+
+                Using dataRange As OfficeOpenXml.ExcelRange = worksheet.Cells(1, 1, rowIndex, 9)
+
+                    dataRange.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    dataRange.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    dataRange.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    dataRange.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    dataRange.Style.VerticalAlignment =OfficeOpenXml.Style.ExcelVerticalAlignment.Top
+
+                End Using
+
+
+                worksheet.Column(1).Width = 10
+                worksheet.Column(2).Width = 18
+                worksheet.Column(3).Width = 18
+                worksheet.Column(4).Width = 50
+                worksheet.Column(5).Width = 20
+                worksheet.Column(6).Width = 25
+                worksheet.Column(7).Width = 100
+                worksheet.Column(8).Width = 25
+                worksheet.Column(9).Width = 35
+
+
+                worksheet.Cells(1, 1, rowIndex, 9).Style.WrapText = True
+                worksheet.View.FreezePanes(2, 1)
+
+                If thisData IsNot Nothing AndAlso thisData.Tables.Count > 0 AndAlso thisData.Tables(0).Rows.Count > 0 Then
+                    worksheet.Cells( 1, 1, rowIndex - 1, 9).AutoFilter = True
+                End If
+
+                Dim excelFilePath As String = Files
+
+                Dim fileInfo As New System.IO.FileInfo(excelFilePath)
+                package.SaveAs(fileInfo)
+
+
+            End Using
+
+
+        Catch ex As Exception
+
+            Throw
+
+        End Try
+
+    End Sub
+
+    Public Sub BlindsOrdersExcels(Files As String, Status As String, StartDate As DateTime, EndDate As DateTime)
+        Try
+            Dim startDateStr As String = StartDate.ToString("yyyy-MM-dd")
+            Dim endDateStr As String = EndDate.ToString("yyyy-MM-dd")
+
+            Dim StatusAdditional As String = "AND StatusAdditional = 'Waiting For Deposit'"
+            If Status = "Production" Then
+                StatusAdditional = "AND StatusAdditional IS NULL"
+            End IF
+            Dim thisQuery As String = String.Format("SELECT Id, HeaderId, Qty, Width, [Drop], SubmittedDate, JobDate, CustomerName, OrderNumber, OrderName, DesignName, KitName, FabricName, FabricType, FabricColour, Notes FROM view_details WHERE Active = 1 AND HeaderActive = 1 AND CONVERT ( DATE, SubmittedDate ) >= '{0}' AND CONVERT ( DATE, SubmittedDate ) <= '{1}' AND Status IN ( 'New Order', 'In Production', 'Completed' ) {2} ORDER BY HeaderId ASC", startDateStr, endDateStr, StatusAdditional)
+
+            Dim thisData As DataSet = GetListData(thisQuery)
+
+            ' If thisData Is Nothing OrElse thisData.Tables.Count = 0 OrElse thisData.Tables(0).Rows.Count = 0 Then
+            '     Return
+            ' End If
+
+            Using package As New OfficeOpenXml.ExcelPackage()
+                Dim worksheet As OfficeOpenXml.ExcelWorksheet = package.Workbook.Worksheets.Add("Blinds Orders")
+
+                worksheet.Cells(1, 1).Value = "ID"
+                worksheet.Cells(1, 2).Value = "Received"
+                worksheet.Cells(1, 3).Value = "Ship Date"
+                worksheet.Cells(1, 4).Value = "Store Name"
+                worksheet.Cells(1, 5).Value = "Store Order No"
+                worksheet.Cells(1, 6).Value = "Store Customer"
+                worksheet.Cells(1, 7).Value = "Description"
+                worksheet.Cells(1, 8).Value = "Fabric"
+                worksheet.Cells(1, 9).Value = "Reason for hold"
+
+
+                Using headerRange As OfficeOpenXml.ExcelRange = worksheet.Cells(1, 1, 1, 9)
+
+                    headerRange.Style.Font.Bold = True
+                    headerRange.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center
+                    headerRange.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center
+                    headerRange.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    headerRange.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    headerRange.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                    headerRange.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+
+                End Using
+
+                Dim rowIndex As Integer = 2
+                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
+
+                    Dim Id As String = thisData.Tables(0).Rows(i).Item("Id").ToString()
+                    Dim HeaderId As String = thisData.Tables(0).Rows(i).Item("HeaderId").ToString()
+                    Dim SubmittedDate As String = thisData.Tables(0).Rows(i).Item("SubmittedDate").ToString()
+                    Dim JobDate As String = thisData.Tables(0).Rows(i).Item("JobDate").ToString()
+                    Dim CustomerName As String = thisData.Tables(0).Rows(i).Item("CustomerName").ToString()
+                    Dim OrderNumber As String = thisData.Tables(0).Rows(i).Item("OrderNumber").ToString()
+                    Dim OrderName As String = thisData.Tables(0).Rows(i).Item("OrderName").ToString()
+                    Dim FabricName As String = thisData.Tables(0).Rows(i).Item("FabricName").ToString()
+                    Dim Notes As String = thisData.Tables(0).Rows(i).Item("Notes").ToString()
+
+                    worksheet.Cells(rowIndex, 1).Value = HeaderId
+                    worksheet.Cells(rowIndex, 2).Value = SubmittedDate
+                    worksheet.Cells(rowIndex, 3).Value = JobDate
+                    worksheet.Cells(rowIndex, 4).Value = CustomerName
+                    worksheet.Cells(rowIndex, 5).Value = OrderNumber
+                    worksheet.Cells(rowIndex, 6).Value = OrderName
+                    worksheet.Cells(rowIndex, 7).Value = FindDescription(Id)
+                    worksheet.Cells(rowIndex, 8).Value = FabricName
+                    worksheet.Cells(rowIndex, 9).Value = Notes
+
+                    rowIndex += 1
+
+                Next
+
+                If rowIndex > 2 Then
+
+                    Using dataRange As OfficeOpenXml.ExcelRange = worksheet.Cells(1, 1, rowIndex - 1, 9)
+
+                        dataRange.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                        dataRange.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                        dataRange.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                        dataRange.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
+                        dataRange.Style.VerticalAlignment =OfficeOpenXml.Style.ExcelVerticalAlignment.Top
+
+                    End Using
+
+                End If
+
+                worksheet.Column(1).Width = 10
+                worksheet.Column(2).Width = 18
+                worksheet.Column(3).Width = 18
+                worksheet.Column(4).Width = 25
+                worksheet.Column(5).Width = 20
+                worksheet.Column(6).Width = 25
+                worksheet.Column(7).Width = 50
+                worksheet.Column(8).Width = 25
+                worksheet.Column(9).Width = 35
+
+                worksheet.Cells(1, 1, rowIndex - 1, 9).Style.WrapText = True
+
+                worksheet.View.FreezePanes(2, 1)
+
+
+                If rowIndex > 2 Then
+                    worksheet.Cells(1, 1, rowIndex - 1, 9).AutoFilter = True
+                End If
+
+
+                Dim excelFilePath As String = Files
+
+                Dim fileInfo As New System.IO.FileInfo(excelFilePath)
+
+                package.SaveAs(fileInfo)
+
+            End Using
+
+        Catch ex As Exception
+            Throw
+        End Try
+    End Sub
+
+    Private Function FindDescription(id As String) As string
+        Try
+            Dim result As String = ""
+            Dim Data As Dataset = GetListData(String.Format("SELECT Width, [Drop], SlatSize, DesignId, KitName, BracketType, TubeType, DesignName, BlindName, FabricName, FabricType, FabricColour, CustomerId FROM view_details WHERE Id ='{0}' AND Active=1", id))
+            Dim DataCount As Integer = Data.Tables(0).Rows.Count
+            Dim DataRow As DataRow = Data.Tables(0).Rows(0)
+            IF DataCount > 0 Then
+
+                Dim Width As String = DataRow.Item("Width").ToString()
+                Dim Drop As String = DataRow.Item("Drop").ToString()
+                Dim SlatSize As String = DataRow.Item("SlatSize").ToString()
+                Dim FabricName As String = DataRow.Item("FabricName").ToString()
+                Dim FabricType As String = DataRow.Item("FabricType").ToString()
+                Dim FabricColour As String = DataRow.Item("FabricColour").ToString()
+                Dim DesignId As String = DataRow.Item("DesignId").ToString()
+                Dim KitName As String = DataRow.Item("KitName").ToString()
+                Dim BracketType As String = DataRow.Item("BracketType").ToString()
+                Dim TubeType As String = DataRow.Item("TubeType").ToString()
+                Dim DesignName As String = DataRow.Item("DesignName").ToString()
+                Dim BlindName As String = DataRow.Item("BlindName").ToString()
+                Dim CustomerId As String = DataRow.Item("CustomerId").ToString()
+
+                Dim CustDiscValue As Double = 0
+                Dim CustDisc As String = GetItemData(String.Format("SELECT Discount FROM CustomerDiscounts WHERE CustomerData='{0}' AND DesignId='{1}'", CustomerId, DesignId))
+
+                If Not String.IsNullOrWhiteSpace(CustDisc) Then
+                    Double.TryParse(CustDisc, CustDiscValue)
+                End If
+
+                Dim Disc As String = String.Format("(Inc {0}% Disc. Plus Additional 0% Disc.)", CustDiscValue.ToString("0.##"))
+                Dim Size As String = String.Format("{0}x{1}", Width, Drop)
+
+                result = String.Format("{0} {1} {2}", KitName, Size, Disc)
+
+                If DesignName = "Roller Blinds" Then
+                    result = String.Format("{0} - {1} #{2} {3} {4}", BlindName, KitName, FabricName, Size, Disc)
+                End If
+
+                If DesignName = "Venetian Blinds" Or DesignName = "Veri Shades" Then
+                    result = String.Format("{0} {1} {2}", KitName, Size, Disc)
+                End If
+
+                If DesignName = "Vertical Blinds" Then
+                    SlatSize = SlatSize.Replace("mm", "")
+
+                    result = String.Format("{0}mm {1} #{2} {3} {4}", SlatSize, KitName, FabricName, Size, Disc)
+                    If BlindName = "Slat Only" Then
+                        result = String.Format("{0}mm {1} #{2} (Drop : {3}mm) {4}", SlatSize, KitName, FabricName, Drop, Disc)
+                    End If
+                    If BlindName = "Track Only" Then
+                        result = String.Format("{0}mm {1} (Width : {2}mm) {3}", SlatSize, KitName, Width, Disc)
+                    End If
+
+                End If
+            End If
+
+            Return result
+        Catch ex As Exception
+            Return "Oops... something went wrong"
+        End Try
+    End Function
 
     Public Sub ShuttersDaily(Files As String, Tanggal As DateTime, Period As String)
         Try
@@ -986,7 +1387,7 @@ Public Class ReportConfig
     End Function
 
     Private Function GetPerCustomerBlinds(Data As String()) As Integer
-        Dim result As Integer = 0
+        Dim result As Integer = 500
         Try
             Dim customerId As String = Data(0)
             Dim designId As String = Data(1)
@@ -1014,7 +1415,25 @@ Public Class ReportConfig
 
             result = GetItemData_Integer(thisQuery)
         Catch ex As Exception
-            result = 0
+            result = 500
+        End Try
+        Return result
+    End Function
+
+    Private Function GetPerCustomerBlinds2(Data As String()) As Integer
+        Dim result As Integer = 500
+        Try
+            Dim customerId As String = Data(0)
+            Dim designId As String = Data(1)
+            Dim startDate As String = Data(2)
+            Dim endDate As String = Data(3)
+            Dim factory As String = Data(4)
+
+            Dim thisQuery As String = String.Format("SELECT SUM(Qty) FROM view_details WHERE CustomerId = '{0}' AND DesignId = '{1}' AND CONVERT ( DATE, SubmittedDate ) >= '{2}' AND CONVERT ( DATE, SubmittedDate ) <= '{3}' AND Active = 1", customerId, designId, startDate, endDate)
+
+            result = GetItemData_Integer(thisQuery)
+        Catch ex As Exception
+            result = 500
         End Try
         Return result
     End Function
@@ -1050,6 +1469,23 @@ Public Class ReportConfig
             result = GetItemData_Integer(thisQuery)
         Catch ex As Exception
             result = 0
+        End Try
+        Return result
+    End Function
+
+    Private Function GetPerDesignBlinds2(Data As String()) As Integer
+        Dim result As Integer = 500
+        Try
+            Dim designId As String = Data(0)
+            Dim startDate As String = Data(1)
+            Dim endDate As String = Data(2)
+            Dim factory As String = Data(3)
+
+            Dim thisQuery As String = String.Format("SELECT SUM(Qty) FROM view_details WHERE DesignId = '{0}' AND CONVERT ( DATE, SubmittedDate ) >= '{1}' AND CONVERT ( DATE, SubmittedDate ) <= '{2}' AND Active = 1", designId, startDate, endDate)
+
+            result = GetItemData_Integer(thisQuery)
+        Catch ex As Exception
+            result = 00
         End Try
         Return result
     End Function
