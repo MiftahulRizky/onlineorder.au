@@ -960,8 +960,8 @@ Partial Class Methods_Order_RollerBlindMethod
                 ChainId = ""
                 CLength = ""
                 data.chainlength = ""
-
             End If
+            data.accessory = ""
 
 
             Dim squareMetre As Decimal = Math.Round(width * drop / 1000000, 4)
