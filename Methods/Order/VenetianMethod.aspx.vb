@@ -489,13 +489,13 @@ Partial Class Methods_Order_VenetianMethod
             End If
 
             If NOT InStr(BlindName, "Aluminium") > 0 AND (data.pelmetwidth = "" Or data.pelmetwidth = "0") Then
-                If InStr(BlindName, "Face Fit") > 0 Then
+                If InStr(data.mounting, "Face Fit") > 0 Then
                     pelmetwidth = width + 20
                     If InStr(BlindName, "Timber") > 0 Then
                         pelmetwidth = width + 20
                     End If
                 End If
-                If InStr(BlindName, "Reveal Fit") > 0 Then
+                If InStr(data.mounting, "Reveal Fit") > 0 Then
                     pelmetwidth = width + 10
                     If InStr(BlindName, "Timber") > 0 Then
                         pelmetwidth = width + 8
@@ -505,7 +505,7 @@ Partial Class Methods_Order_VenetianMethod
 
             If data.pelmettype = "With Return" Then
                 ' returnleft = "67" : returnright = "67"
-                If InStr(BlindName, "Face Fit") > 0 Then
+                If InStr(data.mounting, "Face Fit") > 0 Then
                     returnleft = 100 : returnright = 100
                     If InStr(BlindName, "Wooden") > 0 Then
                         returnleft = 70 : returnright = 70
@@ -517,25 +517,25 @@ Partial Class Methods_Order_VenetianMethod
                         returnleft = 67 : returnright = 67
                     End If
                 End If
-                If InStr(BlindName, "Reveal Fit") > 0 Then
+                If InStr(data.mounting, "Reveal Fit") > 0 Then
                     returnleft = 0 : returnright = 0
                 End If
             End If
 
             If data.pelmettype = "Single Left Return" Then
-                If InStr(BlindName, "Face Fit") > 0 Then
+                If InStr(data.mounting, "Face Fit") > 0 Then
                     returnleft = 77 : returnright = 0
                 End If
-                If InStr(BlindName, "Reveal Fit") > 0 Then
+                If InStr(data.mounting, "Reveal Fit") > 0 Then
                     returnleft = 0 : returnright = 0
                 End If
             End If
 
             If data.pelmettype = "Single Right Return" Then
-                If InStr(BlindName, "Face Fit") > 0 Then
+                If InStr(data.mounting, "Face Fit") > 0 Then
                     returnleft = 0 : returnright = 77
                 End If    
-                If InStr(BlindName, "Reveal Fit") > 0 Then
+                If InStr(data.mounting, "Reveal Fit") > 0 Then
                     returnleft = 0 : returnright = 0
                 End If
             End If
