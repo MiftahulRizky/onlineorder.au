@@ -117,7 +117,8 @@
     End Function
 
     Protected Function Descpription(Desc As String) As String
-        Dim result As String = "<span class='badge badge-outline text-green'>Production</span>"
+        Dim result As String = ""
+        If InStr(Desc, "Production") Then : Return "<span class='badge badge-outline text-green'>Production</span>" : End If
         If InStr(Desc, "Development") Then : Return "<span class='badge badge-outline text-red'>Development</span>" : End If
         If InStr(Desc, "Testing") Then : Return "<span class='badge badge-outline text-warning'>Testing</span>" : End If
         Return result

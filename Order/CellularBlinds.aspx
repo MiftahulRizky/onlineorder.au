@@ -283,7 +283,7 @@
         let URIMETHOD = "/Methods/Order/CellularBlindMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/CellularBlinds.js?<%= DateTime.Now.Ticks %>"></script>
+    <script type="text/javascript" src="/Scripts/Order/CellularBlinds.js?v=1.0.0"></script>
 
 </asp:Content>
 

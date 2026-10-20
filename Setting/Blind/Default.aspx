@@ -172,6 +172,10 @@ MaintainScrollPositionOnPostback="true" Debug="true" Title="Blind Type" %>
                     ItemStyle-CssClass="hiddencol"
                   />
 
+                  <asp:TemplateField HeaderText="Description">
+                    <ItemTemplate><%# Descpription(Eval("Description").ToString()) %></ItemTemplate>
+                  </asp:TemplateField>
+
                   <asp:TemplateField
                     ItemStyle-HorizontalAlign="Center"
                     ItemStyle-Width="200px"
