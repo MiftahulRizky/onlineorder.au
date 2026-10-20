@@ -582,7 +582,7 @@ Partial Class Methods_VerishadesMethod
             data.sizetype = ""
             data.dropfloor = ""
 
-            ' throw New Exception(data.rolename)
+            ' throw New Exception(data.fabriccolour)
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
                 Dim ItemId As String = publicCfg.CreateOrderItemId()
@@ -647,7 +647,7 @@ Partial Class Methods_VerishadesMethod
 
                 Dim ItemId As String = data.itemid
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, LouvreSize=@LouvreSize, LouvrePosition=@LouvrePosition, Mounting=@Mounting, Width=@width, [Drop]=@Drop, BlindSize=@BlindSize, StackPosition=@StackPosition, TrackType=@TrackType, TrackColour=@TrackColour, WandLength=@WandLength, WandColour=@WandColour, BracketOption=@BracketOption, BracketColour=@BracketColour, FrameType=@FrameType, FrameLeft=@FrameLeft, Layout=@Layout, LayoutSpecial=@LayoutSpecial, SlatSize=@SlatSize, SlatQty=@SlatQty, TubeSize=@TubeSize, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET BlindNo=@BlindNo, KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, PriceGroupId=@PriceGroupId, Qty=@Qty, Location=@Location, LouvreSize=@LouvreSize, LouvrePosition=@LouvrePosition, Mounting=@Mounting, Width=@width, [Drop]=@Drop, BlindSize=@BlindSize, StackPosition=@StackPosition, TrackType=@TrackType, TrackColour=@TrackColour, WandLength=@WandLength, WandColour=@WandColour, BracketOption=@BracketOption, BracketColour=@BracketColour, FrameType=@FrameType, FrameLeft=@FrameLeft, Layout=@Layout, LayoutSpecial=@LayoutSpecial, SlatSize=@SlatSize, SlatQty=@SlatQty, TubeSize=@TubeSize, Notes=@Notes, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", ItemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@BlindNo", "Blind 1")
@@ -695,7 +695,7 @@ Partial Class Methods_VerishadesMethod
                 Dim dataLog As Object() = {data.headerid, ItemId, "Blinds", data.loginid, "Update Item Order"}
                 orderCfg.Log_Orders(dataLog)
 
-                msg = "Item updated successfully !"
+                msg = "Item updated successfully ! "
 
             End If
 
