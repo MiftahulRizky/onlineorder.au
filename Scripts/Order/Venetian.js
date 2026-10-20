@@ -45,6 +45,8 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindControlPosition(),
         bindControlLift(),
         bindControlTilt(),
+        bindTilterPosition(),
+        bindWandLength(),
         bindBracket(blindname),
         bindBottomHoldDown(blindname),
         bindHoldDownBracket(blindname),
@@ -352,6 +354,14 @@ const bindControlTilt = () => {
   generateOption("controltilt", ["Left", "Right"]);
 };
 
+const bindTilterPosition = () => {
+  generateOption("tilterposition", ["Left", "Right"]);
+};
+
+const bindWandLength = () => {
+  generateOption("wandlength", ["610", "1000"]);
+};
+
 const bindBracket = (blindname) => {
   if (!blindname) return;
   let list = [];
@@ -489,6 +499,8 @@ const bindItemOrders = async (itemid) => {
         bindControlPosition(),
         bindControlLift(),
         bindControlTilt(),
+        bindTilterPosition(),
+        bindWandLength(),
         bindBracket(item.BlindName),
         bindBottomHoldDown(item.BlindName),
         bindHoldDownBracket(item.BlindName),
@@ -521,6 +533,8 @@ const handlerElementVisibility = async (
     const divDropFloor = document.getElementById("divDropFloor");
     const divControl = document.getElementById("divControl");
     const divControlMock = document.getElementById("divControlMock");
+    const divTilter = document.getElementById("divTilter");
+    const divWandLength = document.getElementById("divWandLength");
     const divBracket = document.getElementById("divBracket");
     const divBottom = document.getElementById("divBottom");
     const divHoldBracket = document.getElementById("divHoldBracket");
@@ -540,6 +554,8 @@ const handlerElementVisibility = async (
     divDropFloor.classList.add("d-none");
     divControl.classList.add("d-none");
     divControlMock.classList.add("d-none");
+    divTilter.classList.add("d-none");
+    divWandLength.classList.add("d-none");
     divBracket.classList.add("d-none");
     divBottom.classList.add("d-none");
     divHoldBracket.classList.add("d-none");
@@ -580,6 +596,14 @@ const handlerElementVisibility = async (
     if (["50mm Mockwood", "63mm Mockwood"].includes(blindname)) {
       divControlMock.classList.remove("d-none");
       // divHoldBracket.classList.remove("d-none");
+      divBottom.classList.remove("d-none");
+      div2on1Headreal.classList.remove("d-none");
+      divPelmetDetail.classList.remove("d-none");
+    }
+
+    if (["50mm Mockwood (Cordless)"].includes(blindname)) {
+      divTilter.classList.remove("d-none");
+      divWandLength.classList.remove("d-none");
       divBottom.classList.remove("d-none");
       div2on1Headreal.classList.remove("d-none");
       divPelmetDetail.classList.remove("d-none");
@@ -661,6 +685,8 @@ const handlerSubmit = async (button) => {
       "controllength",
       "controllift",
       "controltilt",
+      "tilterposition",
+      "wandlength",
       "bracket",
       "bottom",
       "holdbracket",
@@ -754,6 +780,8 @@ const handlerSetElementValues = (itemData) => {
     controllength: "ControlLength",
     controllift: "ControlPosition",
     controltilt: "ControlPosition",
+    tilterposition: "TilterPosition",
+    wandlength: "WandLength",
     bracket: "BracketOption",
     bottom: "BottomHoldDown",
     holdbracket: "BracketColour",

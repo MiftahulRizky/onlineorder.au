@@ -457,31 +457,31 @@ Partial Class Methods_Order_OrderDetailMethod
                 Dim BracketType As String = detailData.Tables(0).Rows(i).Item("BracketType").ToString()
                 Dim FabricGroups As String = detailData.Tables(0).Rows(i).Item("FabricGroups").ToString()
 
-                ' If FabricGroups = "POA" Then
-                '     Dim Poa As Integer = publicCfg.GetItemData(String.Format("SELECT Poa FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, Id))
-                '     If Poa = 0 Then
-                '         Using thisConn As New SqlConnection(myConn)
-                '             Using myCmd As New SqlCommand("UPDATE OrderHeaders SET Status='Pending Price Approval' WHERE Id = @Id")
-                '                 myCmd.Parameters.AddWithValue("@Id", headerid)
-                '                 myCmd.Connection = thisConn
-                '                 thisConn.Open()
-                '                 myCmd.ExecuteNonQuery()
-                '                 thisConn.Close()
-                '             End Using
-                '         End Using
-                '     End If
-                '     If Poa > 0  Then
-                '         Using thisConn As New SqlConnection(myConn)
-                '             Using myCmd As New SqlCommand("UPDATE OrderHeaders SET Status='Draft' WHERE Id = @Id")
-                '                 myCmd.Parameters.AddWithValue("@Id", headerid)
-                '                 myCmd.Connection = thisConn
-                '                 thisConn.Open()
-                '                 myCmd.ExecuteNonQuery()
-                '                 thisConn.Close()
-                '             End Using
-                '         End Using
-                '     End If
-                ' End If
+                If FabricGroups = "POA" Then
+                    Dim Poa As Integer = publicCfg.GetItemData(String.Format("SELECT Poa FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, Id))
+                    If Poa = 0 Then
+                        Using thisConn As New SqlConnection(myConn)
+                            Using myCmd As New SqlCommand("UPDATE OrderHeaders SET StatusAdditional='On Hold - Pending Price Approval' WHERE Id = @Id")
+                                myCmd.Parameters.AddWithValue("@Id", headerid)
+                                myCmd.Connection = thisConn
+                                thisConn.Open()
+                                myCmd.ExecuteNonQuery()
+                                thisConn.Close()
+                            End Using
+                        End Using
+                    End If
+                    If Poa > 0  Then
+                        Using thisConn As New SqlConnection(myConn)
+                            Using myCmd As New SqlCommand("UPDATE OrderHeaders SET StatusAdditional='' WHERE Id = @Id")
+                                myCmd.Parameters.AddWithValue("@Id", headerid)
+                                myCmd.Connection = thisConn
+                                thisConn.Open()
+                                myCmd.ExecuteNonQuery()
+                                thisConn.Close()
+                            End Using
+                        End Using
+                    End If
+                End If
 
                 Dim TotalBlind As Integer = publicCfg.GetItemData("SELECT COUNT(*) FROM view_details WHERE UniqueId = '" + UniqueId + "' AND Active = 1")
                 If DesignName = "Roller Blinds" or DesignName = "Global Roller Blinds" Then
@@ -1041,16 +1041,21 @@ Partial Class Methods_Order_OrderDetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function SubmitOrder(ByVal headerid As String, ByVal loginid As String, ByVal rolename As String) As Object
+    Public Shared Function SubmitOrder(ByVal headerid As String, ByVal customerid As String, ByVal loginid As String, ByVal rolename As String) As Object
         Try
             If String.IsNullOrEmpty(headerid) Then
                 Throw New Exception("headerid is null or empty !")
             End If
             Dim detailData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + headerid + "' AND Active='1'")
-
             If detailData.Tables(0).Rows.Count < 1 Then
                 Return New With { .warning = true, .message = "Please add item first."}
             End If
+
+            If String.IsNullOrEmpty(customerid) Then
+                Throw New Exception("customerid is null or empty !")
+            End If
+
+            
 
             ' If rolename = "Administrator" Then
             '     Dim ResApi As Object = SendOrderGlobal(headerid)
@@ -1060,17 +1065,25 @@ Partial Class Methods_Order_OrderDetailMethod
             '     Throw New Exception("API Success")
             ' End If
             
-            
-            ' Throw New Exception("Debug")
+            Dim StatusAdditional As string = ""
+            Dim CahshSale As String = publicCfg.GetItemData(String.Format("SELECT CashSale FROM Customers WHERE Id='{0}'", customerid))
+            If CahshSale = "1" Then
+                StatusAdditional = "Waiting for Deposit"
+            End If
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET Status='New Order',  SubmittedDate=GETDATE() WHERE Id=@Id")
+                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET Status='New Order', StatusAdditional=@StatusAdditional,  SubmittedDate=GETDATE() WHERE Id=@Id")
                     myCmd.Parameters.AddWithValue("@Id", headerid)
+                    myCmd.Parameters.AddWithValue("@StatusAdditional", StatusAdditional)
                     myCmd.Connection = thisConn
                     thisConn.Open()
                     myCmd.ExecuteNonQuery()
                     thisConn.Close()
                 End Using
             End Using
+
+            
+
+
 
             Dim dataLog As Object() = {headerid, "", "Blinds", loginid, "Submit Order"}
             orderCfg.Log_Orders(dataLog)
@@ -1095,7 +1108,7 @@ Partial Class Methods_Order_OrderDetailMethod
                 {"Details", New List(Of Object)()}
             }
 
-            Dim GlobalProduct As String = "AND (DesignName LIKE '%Global%' OR BlindName IN ('25mm Aluminium', '50mm Mockwood', '63mm Mockwood', '50mm Wooden', '63mm Wooden'))"
+            Dim GlobalProduct As String = "AND (DesignName LIKE '%Global%' OR BlindName IN ('25mm Aluminium', '50mm Mockwood', '50mm Mockwood (Cordless)', '63mm Mockwood', '50mm Wooden', '63mm Wooden'))"
 
             Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT*FROM view_details WHERE HeaderId = '{0}' {1} AND Active=1 ORDER BY Id ASC", headerid, GlobalProduct))
             Dim DetailCount As Integer = DetailData.Tables(0).Rows.Count
@@ -1126,7 +1139,7 @@ Partial Class Methods_Order_OrderDetailMethod
                         ControlTilt = Parts(1).Trim()
                     End If
                     
-                    If InArray(BlindName, "50mm Mockwood", "63mm Mockwood", "50mm Wooden", "63mm Wooden") Then
+                    If InArray(BlindName, "50mm Mockwood", "50mm Mockwood (Cordless)", "63mm Mockwood", "50mm Wooden", "63mm Wooden") Then
                         ControlPosition = ""
                     End If
 
@@ -1144,6 +1157,8 @@ Partial Class Methods_Order_OrderDetailMethod
                         .BlindName = dr("BlindName").ToString(),
                         .FabricType = dr("FabricType").ToString(),
                         .FabricColour = dr("FabricColour").ToString(),
+                        .UniqueId = dr("UniqueId").ToString(),
+                        .BlindNo = dr("BlindNo").ToString(),
                         .Qty = If(IsDBNull(dr("Qty")), 0, CInt(dr("Qty"))),
                         .Room = dr("Location").ToString(),
                         .Mounting = dr("Mounting").ToString(),
@@ -1156,6 +1171,7 @@ Partial Class Methods_Order_OrderDetailMethod
                         .ControlLength = If(IsDBNull(dr("ControlLength")), 0, CInt(dr("ControlLength"))),
                         .ControlLift = ControlLift,
                         .ControlTilt = ControlTilt,
+                        .TilterPosition = dr("TilterPosition").ToString(),
                         .ChainLength = If(IsDBNull(dr("ChainLength")), 0, CInt(dr("ChainLength"))),
                         .MaterialChain = dr("MaterialChain").ToString(),
                         .ChainColour = dr("ChainColour").ToString(),
@@ -1195,8 +1211,8 @@ Partial Class Methods_Order_OrderDetailMethod
                     })
                 Next
 
-                ' Dim Res As Object = UpdateOrderSending(headerid, "BIG", True)
-                ' If Res.error Then Throw New Exception(Res.message)
+                Dim Res As Object = UpdateOrderSending(headerid, "BIG", True)
+                If Res.error Then Throw New Exception(Res.message)
 
                 Dim json As String = JsonConvert.SerializeObject(order)
                 Dim client As New HttpClient()
@@ -2803,7 +2819,7 @@ Partial Class Methods_Order_OrderDetailMethod
             ' Dim Res As String = CreateXMLB(headerid, FileName, FilePath)
             ' If Not Res = "200" Then Throw New Exception(Res)
             exactCfg.CreateXMLB(headerid, FileName, FilePath)
-            exactCfg.Connect(PathCombine)
+            ' exactCfg.Connect(PathCombine)
             
             Return New With {.success = true, .message = "The Exact Slip was successfully sent."}
         Catch ex As Exception

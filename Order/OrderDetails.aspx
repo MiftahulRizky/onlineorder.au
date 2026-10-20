@@ -216,10 +216,16 @@
                                     <span id="spanProduction" style="font-size:larger;font-weight:bold;">-</span>
                                 </div>
 
-                                <div class="col-lg-8">
+                                <div class="col-lg-4">
                                     <span style="font-size:larger;">Status Note :</span>
                                     <br />
                                     <span id="spanStatusNote" style="font-size:small;font-weight:bold;"></span>
+                                </div>
+
+                                <div class="col-lg-4" id="divInternalNote">
+                                    <span style="font-size:larger;">Internal Note :</span>
+                                    <br />
+                                    <span id="spanInternalNote" style="font-size:small;font-weight:bold;"></span>
                                 </div>
 
 
@@ -778,7 +784,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.16"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.20"></script>
 
 
 </asp:Content>

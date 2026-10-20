@@ -69,7 +69,7 @@ Public Class ReportConfig
             Dim startDate As String = DateTime.Parse(Tanggal).ToString("yyyy-MM-01")
             Dim endDate As String = DateTime.Parse(Tanggal).ToString("yyyy-MM-dd")
 
-            Dim StatusAdditional As String = "AND OrderHeaders.StatusAdditional = 'Waiting For Deposit'"
+            Dim StatusAdditional As String = "AND OrderHeaders.StatusAdditional = 'Waiting for Deposit'"
             If Status = "Production" Then
                 StatusAdditional = "AND OrderHeaders.StatusAdditional IS NULL"
             End IF
@@ -187,7 +187,7 @@ Public Class ReportConfig
             Dim startDate As String = DateTime.Parse(Tanggal).ToString("yyyy-MM-01")
             Dim endDate As String = DateTime.Parse(Tanggal).ToString("yyyy-MM-dd")
 
-            Dim StatusAdditional As String = "AND OrderHeaders.StatusAdditional = 'Waiting For Deposit'"
+            Dim StatusAdditional As String = "AND OrderHeaders.StatusAdditional = 'Waiting for Deposit'"
             If Status = "Production" Then
                 StatusAdditional = "AND OrderHeaders.StatusAdditional IS NULL"
             End IF
@@ -364,7 +364,7 @@ Public Class ReportConfig
             Dim startDateStr As String = StartDate.ToString("yyyy-MM-dd")
             Dim endDateStr As String = EndDate.ToString("yyyy-MM-dd")
 
-            Dim StatusAdditional As String = "AND StatusAdditional = 'Waiting For Deposit'"
+            Dim StatusAdditional As String = "AND StatusAdditional = 'Waiting for Deposit'"
             If Status = "Production" Then
                 StatusAdditional = "AND StatusAdditional IS NULL"
             End IF
@@ -466,7 +466,7 @@ Public Class ReportConfig
             Dim startDateStr As String = StartDate.ToString("yyyy-MM-dd")
             Dim endDateStr As String = EndDate.ToString("yyyy-MM-dd")
 
-            Dim StatusAdditional As String = "AND StatusAdditional = 'Waiting For Deposit'"
+            Dim StatusAdditional As String = "AND StatusAdditional = 'Waiting for Deposit'"
 
             If Status = "Production" Then
                 StatusAdditional = "AND StatusAdditional IS NULL"
@@ -595,7 +595,7 @@ Public Class ReportConfig
             Dim startDateStr As String = StartDate.ToString("yyyy-MM-dd")
             Dim endDateStr As String = EndDate.ToString("yyyy-MM-dd")
 
-            Dim StatusAdditional As String = "AND StatusAdditional = 'Waiting For Deposit'"
+            Dim StatusAdditional As String = "AND StatusAdditional = 'Waiting for Deposit'"
             If Status = "Production" Then
                 StatusAdditional = "AND StatusAdditional IS NULL"
             End IF

@@ -160,6 +160,20 @@
                                         </div> 
                                     </div>
 
+                                    <div class="mb-3 row" id="divTilter">
+                                        <label for="tilterposition" class="col-lg-3 text-uppercase fw-bold" >tilter position</label>
+                                        <div class="col-lg-4">
+                                            <select name="tilterposition" id="tilterposition" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divWandLength">
+                                        <label for="wandlength" class="col-lg-3 text-uppercase fw-bold" >wand length</label>
+                                        <div class="col-lg-4">
+                                            <select name="wandlength" id="wandlength" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
                                     <div class="mb-3 row" id="divBracket">
                                         <label for="bracket" class="col-lg-3 text-uppercase fw-bold" >bracket</label>
                                         <div class="col-lg-4">

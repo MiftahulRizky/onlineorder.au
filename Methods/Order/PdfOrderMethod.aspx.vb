@@ -313,6 +313,7 @@ Partial Class Methods_Order_PdfOrderMethod
     
     Private Shared Function ThisCreatePDFOrder(headerid As String, directory As String, filename As String) As String
         Try
+            
             Dim result As String = String.Empty
             result = Print_HeaderTemplate(headerid)
 
@@ -1227,7 +1228,7 @@ Partial Class Methods_Order_PdfOrderMethod
     Private Shared Function Print_VenetianBlinds(HeaderId As String) As String
         Dim result As String = String.Empty
         Try
-            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName ='Venetian Blinds' AND Active=1 ORDER BY Id, BlindNo ASC")
+            Dim thisData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_details WHERE HeaderId='{0}' AND DesignName ='Venetian Blinds' AND Active=1 ORDER BY Id, BlindNo ASC", HeaderId))
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim tdNotes As String = "<td colspan='25' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
                 result += spanStart & "VENETIAN BLINDS" & spanEnd
@@ -1244,7 +1245,7 @@ Partial Class Methods_Order_PdfOrderMethod
                 result += thStartRowSpan2 & "Drop" & thEnd
                 result += thStartRowSpan2 & "Bracket" & thEnd
                 result += thStartRowSpan2 & "Hold Down" & thEnd
-                result += thStartColSpan2 & "Control" & thEnd
+                result += thStartColSpan2 & "Control, Tilter" & thEnd
                 result += thStartColSpan3 & "Pelmet" & thEnd
                 result += thStartColSpan2 & "Pelmet Return" & thEnd
                 result += thStartColSpan2 & "Top LHS" & thEnd
@@ -1254,8 +1255,8 @@ Partial Class Methods_Order_PdfOrderMethod
                 result += trEnd
 
                 result += trStart
-                result += thStart & "Position Lift, Tilt" & thEnd
-                result += thStart & "Length" & thEnd
+                result += thStart & "Position / Lift, Tilt" & thEnd
+                result += thStart & "Length / Wand" & thEnd
                 result += thStart & "Type" & thEnd
                 result += thStart & "Width" & thEnd
                 result += thStart & "Size" & thEnd
@@ -1279,6 +1280,8 @@ Partial Class Methods_Order_PdfOrderMethod
                     Dim PelmetSize As String = thisData.Tables(0).Rows(i).Item("PelmetSize").ToString()
                     Dim PelmetReturnSize As String = thisData.Tables(0).Rows(i).Item("PelmetReturnSize").ToString()
                     Dim PelmetReturnSize2 As String = thisData.Tables(0).Rows(i).Item("PelmetReturnSize2").ToString()
+                    Dim TilterPosition As String = thisData.Tables(0).Rows(i).Item("TilterPosition").ToString()
+                    Dim WandLength As String = thisData.Tables(0).Rows(i).Item("WandLength").ToString()
 
                     If InStr(BlindName, "Alum") > 0 Then
                         PelmetType = ""
@@ -1312,8 +1315,14 @@ Partial Class Methods_Order_PdfOrderMethod
                         CPosition = CPosition.Replace("|", ", ")
                     End If
 
+                    
                     Dim CLength As String = thisData.Tables(0).Rows(i).Item("ControlLength").ToString()
                     If String.IsNullOrEmpty(CLength) Or CLength = "0" Then CLength = "Standard"
+
+                    If BlindName = "50mm Mockwood (Cordless)" Then
+                        CPosition = TilterPosition
+                        CLength = WandLength
+                    End If
 
                     result += trStart
                     result += tdStart & i + 1 & tdEnd
@@ -3402,7 +3411,7 @@ Partial Class Methods_Order_PdfOrderMethod
         Dim totalCellular As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Cellular Blinds' AND Active=1")
         Dim totalLumen As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Lumen' AND Active=1")
         Dim totalPG As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Panel Glides' AND Active=1")
-        Dim totalVenetian As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Venetian Blinds' AND Active=1")
+        Dim totalVenetian As String = publicCfg.GetItemData(String.Format("SELECT SUM(Qty) FROM view_details WHERE HeaderId='{0}' AND DesignName = 'Venetian Blinds' AND Active=1", HeaderId))
         Dim totalRoller As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roller Blinds' AND Active=1")
         Dim totalGlobalRoller As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Global Roller Blinds' AND Active=1")
         Dim totalRoman As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roman Blinds' AND Active=1")
@@ -3444,7 +3453,23 @@ Partial Class Methods_Order_PdfOrderMethod
         Dim soft As String = "<b>Soft Shades: " & totalSoftShade & "</b>"
 
         ' result = celloraBlinds & separted & lumen & separted & panelGlides & separted & venetianblinds & separted & rollerblinds & separted & rollerglobalblinds & separted & romanBlinds & separted & verishades & separted & verticalblinds
-        result = String.Format("{0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} | {8} | {9} | {10} | {11} | {12}",celloraBlinds, lumen, panelGlides, venetianblinds, rollerblinds, rollerglobalblinds, romanBlinds, romanGlobalBlinds, verishades, verticalblinds, door, window, soft)
+        ' result = String.Format("{0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} | {8} | {9} | {10} | {11} | {12}",celloraBlinds, lumen, panelGlides, venetianblinds, venetianGlobalBlinds, rollerblinds, rollerglobalblinds, romanBlinds, romanGlobalBlinds, verishades, verticalblinds, door, window, soft)
+
+        result = String.Join(" | ", {
+            celloraBlinds,
+            lumen,
+            panelGlides,
+            venetianblinds,
+            rollerblinds,
+            rollerglobalblinds,
+            romanBlinds,
+            romanGlobalBlinds,
+            verishades,
+            verticalblinds,
+            door,
+            window,
+            soft
+        })
         Return result
     End Function
 

@@ -72,6 +72,7 @@ const spanEl = {
   createdDate: getById("spanCreatedDate"),
   createdBy: getById("spanCreatedBy"),
   note: getById("spanNote"),
+  internalNote: getById("spanInternalNote"),
   statusNote: getById("spanStatusNote"),
   statusOrder: getById("spanStatusOrder"),
   delivery: getById("spanDelivery"),
@@ -82,6 +83,9 @@ const spanEl = {
   total: getById("spanTotal"),
   gst: getById("spanGST"),
   final: getById("spanFinalTotal"),
+};
+const divEl = {
+  divInternalNote: getById("divInternalNote"),
 };
 const liEl = {
   liDetailItem: getByClass("liDetailItem"),
@@ -926,7 +930,11 @@ const handlerHeaderInfo = (item) => {
     setText(spanEl.orderCust, item.OrderName);
     setText(spanEl.note, item.OrderNote);
     setText(spanEl.statusNote, item.StatusDescription);
-    setText(spanEl.statusOrder, item.Status);
+    setText(spanEl.internalNote, item.InternalNote);
+    let status = item.Status;
+    if (item.StatusAdditional)
+      status += `<br><span class="text-secondary">${item.StatusAdditional}</span>`;
+    setText(spanEl.statusOrder, status);
     setText(spanEl.delivery, item.Delivery);
 
     setText(spanEl.createdBy, item.CreatedByName);
@@ -1028,7 +1036,7 @@ const handlerCreatePDFOrder = async (headerid, action) => {
     }
   } catch (error) {
     const msg = `handlerCreatePDFOrder: ${error.message}`;
-    cathcMessages(msg);
+    catchMessages(msg);
   }
 };
 
@@ -1100,6 +1108,7 @@ const handlerSubmitOrder = async (headerid, action, msgloading) => {
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
           headerid: headerid,
+          customerid: spanEl.retailerId.textContent,
           loginid: LOGINID,
           rolename: ROLENAME,
         }),
@@ -1418,7 +1427,7 @@ const handlerAdditionalStatus = (header) => {
         e.classList.remove("is-invalid");
       });
 
-    let list = ["Waiting For Deposit", "On Hold - Pending Price Approval"];
+    let list = ["Waiting for Deposit", "On Hold - Pending Price Approval"];
     generateOption("#modalAddStatus #addstatus", list);
     elModal.modalAddStatus.querySelector("#addstatus").value =
       header.StatusAdditional;
@@ -1747,6 +1756,7 @@ const handlerEditPricing = async (id, qty) => {
 const displayElOverall = (header, detail) => {
   try {
     Object.values(btnEl).forEach((el) => toggleShow(el, false));
+    Object.values(divEl).forEach((el) => toggleShow(el, false));
 
     if (!header || !detail) return;
 
@@ -1830,6 +1840,7 @@ const displayElOverall = (header, detail) => {
 
       toggleShow(btnEl.dividerLogs, true);
       toggleShow(btnEl.btnLogs, true);
+      toggleShow(divEl.divInternalNote, true);
     }
 
     // --- LOGIKA PERMISSION UNTUK PPIC & CS ---
@@ -1853,7 +1864,7 @@ const displayElOverall = (header, detail) => {
       }
 
       toggleShow(btnEl.btnDownloadBarcode, true);
-      toggleShow(btnEl.btnExactSlip, true);
+      // toggleShow(btnEl.btnExactSlip, true);
 
       toggleShow(btnEl.btnChangeStatus, true);
       // if (isOrderActive) {
