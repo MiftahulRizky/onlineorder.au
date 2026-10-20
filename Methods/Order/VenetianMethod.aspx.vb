@@ -101,10 +101,19 @@ Partial Class Methods_Order_VenetianMethod
         Try
             Dim query As String = ""
             Dim resultList As New List(Of Dictionary(Of String, String))()
+            Dim RoleName As String = HttpContext.Current.Session("RoleName")
+
+            Dim EnvBlind As String = ""
+            If rolename = "Customer" Then
+                EnvBlind = "AND Description = 'Environment : Production'"
+            End If
+            If InArray(rolename, "PPIC & DE", "Manager", "Customer Service") Then
+                EnvBlind = "AND Description IN ('Environment : Production', 'Environment : Testing')"
+            End If
 
             Select Case data.field.ToLower()
                 Case "blindtype"
-                    query = String.Format("SELECT Id, Name FROM Blinds WHERE DesignId='{0}' AND Active=1 ORDER BY Name ASC", data.designid)
+                    query = String.Format("SELECT Id, Name FROM Blinds WHERE DesignId='{0}' {1} AND Active=1 ORDER BY Name ASC", data.designid, EnvBlind)
                     Return GetFormattedData(query, "Id", "Name")
 
                 Case "tubetype"
