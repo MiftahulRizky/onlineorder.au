@@ -1864,7 +1864,7 @@ const displayElOverall = (header, detail) => {
       }
 
       toggleShow(btnEl.btnDownloadBarcode, true);
-      // toggleShow(btnEl.btnExactSlip, true);
+      toggleShow(btnEl.btnExactSlip, true);
 
       toggleShow(btnEl.btnChangeStatus, true);
       // if (isOrderActive) {
