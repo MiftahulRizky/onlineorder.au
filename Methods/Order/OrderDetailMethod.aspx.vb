@@ -1226,7 +1226,17 @@ Partial Class Methods_Order_OrderDetailMethod
             End If
 
         Catch ex As Exception
-            Return New With { .error = true, .message = String.Format("SendOrderGlobal: {0}", ex.Message)}
+             Dim errorMessage As String = ex.Message
+
+            If ex.InnerException IsNot Nothing Then
+                errorMessage &= " | Inner: " & ex.InnerException.Message
+
+                If ex.InnerException.InnerException IsNot Nothing Then
+                    errorMessage &= " | Inner2: " & ex.InnerException.InnerException.Message
+                End If
+            End If
+
+            Return New With { .error = true, .message = String.Format("SendOrderGlobal: {0}", errorMessage)}
         End Try
     End Function
 
