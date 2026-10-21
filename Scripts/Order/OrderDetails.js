@@ -1416,6 +1416,7 @@ const handlerExactSlip = async () => {
         headerid: HEADERID,
         ordertype: ORDERTYPE,
         rolename: ROLENAME,
+        loginid: LOGINID,
       }),
     });
 

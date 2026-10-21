@@ -2811,7 +2811,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function ExactSlip(ByVal headerid As String, ByVal ordertype As String, ByVal rolename As String) As Object
+    Public Shared Function ExactSlip(ByVal headerid As String, ByVal ordertype As String, ByVal rolename As String, ByVal loginid As String) As Object
         Try
             Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id='{0}' AND OrderType='{1}'", headerid, ordertype))
             If HeaderData.Tables(0).Rows.Count < 1 Then
@@ -2832,6 +2832,9 @@ Partial Class Methods_Order_OrderDetailMethod
             ' If Not Res = "200" Then Throw New Exception(Res)
             exactCfg.CreateXMLB(headerid, FileName, FilePath)
             exactCfg.Connect(PathCombine)
+
+            Dim dataLog As Object() = {headerid, "", ordertype, loginid, "Exact Slip"}
+            orderCfg.Log_Orders(dataLog)
             
             Return New With {.success = true, .message = "The Exact Slip was successfully sent."}
         Catch ex As Exception
