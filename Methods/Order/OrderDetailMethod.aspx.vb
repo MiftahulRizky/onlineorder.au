@@ -818,7 +818,7 @@ Partial Class Methods_Order_OrderDetailMethod
     
             End If
     
-            If InArray(DesignName, "Veri Shades", "Vertical Blinds", "Global Vertical Blinds") Then
+            If InArray(DesignName, "Veri Shades", "Soft Shades", "Vertical Blinds", "Global Vertical Blinds") Then
                 Product = String.Format("{0} #{1} {2}", KitName, FabricType, Size)
                 If BlindName = "Slat Only" Then
                     Product = String.Format("{0} #{1} (Drop : {2}mm)", KitName, FabricType, Drop)
@@ -1218,7 +1218,8 @@ Partial Class Methods_Order_OrderDetailMethod
                 Dim client As New HttpClient()
                 client.DefaultRequestHeaders.Add("X-API-KEY", "hidupjokowi")
                 Dim content As New StringContent(json, Encoding.UTF8, "application/json")
-                Dim response = client.PostAsync("http://10.0.209.65:2302/handler/Sunlight.ashx", content).Result
+                Dim response = client.PostAsync("https://www.ordersblindonline.com/handler/Sunlight.ashx", content).Result
+                ' Dim response = client.PostAsync("http://10.0.209.65:2302/handler/Sunlight.ashx", content).Result
                 ' Dim response = client.PostAsync("https://fvq6m64blm.rbmock.dev", content).Result
 
                 Return New With { .error = false, .message = response.StatusCode.ToString()}
