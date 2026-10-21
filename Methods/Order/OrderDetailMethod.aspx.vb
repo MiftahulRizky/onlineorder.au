@@ -1067,9 +1067,9 @@ Partial Class Methods_Order_OrderDetailMethod
             
             Dim StatusAdditional As string = ""
             Dim CahshSale As String = publicCfg.GetItemData(String.Format("SELECT CashSale FROM Customers WHERE Id='{0}'", customerid))
-            If CahshSale = "1" Then
-                StatusAdditional = "Waiting for Deposit"
-            End If
+            ' If CahshSale = "1" Then
+            '     StatusAdditional = "Waiting for Deposit"
+            ' End If
             Using thisConn As New SqlConnection(myConn)
                 Using myCmd As New SqlCommand("UPDATE OrderHeaders SET Status='New Order', StatusAdditional=@StatusAdditional,  SubmittedDate=GETDATE() WHERE Id=@Id")
                     myCmd.Parameters.AddWithValue("@Id", headerid)
