@@ -591,6 +591,41 @@
         </div>
     </div>
 
+     <!-- modalSendMailDeposit -->
+    <div class="modal fade" id="modalSendMailDeposit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalSendMailDepositLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title " id="modalSendMailDepositLabel">Email Deposit Request</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-12 col-md-12 mb-3">
+                            <label for="from" class="form-label text-uppercase required">from</label>
+                            <input type="text" name="from" id="from" class="form-control" readonly>
+                            <input type="text" name="id" id="id" class="form-control"  hidden>
+                        </div>
+                        <div class="col-12 col-lg-12 col-md-12 mb-3">
+                            <label for="mailto" class="form-label text-uppercase required">to</label>
+                            <input type="text" name="mailto" id="mailto" class="form-control" >
+                            <small class="form-hint">This is taken from customers primary contact email address if available.</small>
+                        </div>
+                        <div class="col-12 col-lg-12 col-md-12 mb-3">
+                            <label for="cc" class="form-label text-uppercase required">cc</label>
+                            <input type="text" name="cc" id="cc" class="form-control" >
+                            <small class="form-hint">Will be cc'ed to <b>Customer Service</b> and <b>Accounts</b> by default.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSend">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- modalAddStatus -->
     <div class="modal fade" id="modalAddStatus" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalAddStatusLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -636,41 +671,6 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="btnSave">Save Changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- modalSendMailDeposit -->
-    <div class="modal fade" id="modalSendMailDeposit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalSendMailDepositLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title " id="modalSendMailDepositLabel">Email Deposit Request</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-12 col-lg-12 col-md-12 mb-3">
-                            <label for="from" class="form-label text-uppercase required">from</label>
-                            <input type="text" name="from" id="from" class="form-control" readonly>
-                            <input type="text" name="id" id="id" class="form-control"  hidden>
-                        </div>
-                        <div class="col-12 col-lg-12 col-md-12 mb-3">
-                            <label for="mailto" class="form-label text-uppercase required">to</label>
-                            <input type="text" name="mailto" id="mailto" class="form-control" >
-                            <small class="form-hint">This is taken from customers primary contact email address if available.</small>
-                        </div>
-                        <div class="col-12 col-lg-12 col-md-12 mb-3">
-                            <label for="cc" class="form-label text-uppercase required">cc</label>
-                            <input type="text" name="cc" id="cc" class="form-control" >
-                            <small class="form-hint">Will be cc'ed to <b>Customer Service</b> and <b>Accounts</b> by default.</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="btnSendMailDeposit">Send</button>
                 </div>
             </div>
         </div>
@@ -784,7 +784,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.21"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.23"></script>
 
 
 </asp:Content>

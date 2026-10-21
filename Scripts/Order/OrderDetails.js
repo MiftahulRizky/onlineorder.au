@@ -425,6 +425,57 @@ const modalEvents = {
     },
   },
 
+  modalSendMailDeposit: {
+    init: (modal) => {},
+
+    events: (modal) => {
+      modal.addEventListener("input", (e) => {
+        e.target.classList.remove("is-invalid");
+      });
+
+      modal.addEventListener("click", (e) => {
+        if (e.target.id === "btnSend") {
+          // submitSendMailQuote();
+          alert("test");
+        }
+      });
+    },
+  },
+
+  modalAddStatus: {
+    init: (modal) => {},
+
+    events: (modal) => {
+      modal.addEventListener("input", (e) => {
+        e.target.classList.remove("is-invalid");
+      });
+
+      modal.addEventListener("click", (e) => {
+        if (e.target.id === "btnSave") {
+          // submitSendMailQuote();
+          alert("test");
+        }
+      });
+    },
+  },
+
+  modalInternalNote: {
+    init: (modal) => {},
+
+    events: (modal) => {
+      modal.addEventListener("input", (e) => {
+        e.target.classList.remove("is-invalid");
+      });
+
+      modal.addEventListener("click", (e) => {
+        if (e.target.id === "btnSave") {
+          // submitSendMailQuote();
+          alert("test");
+        }
+      });
+    },
+  },
+
   modalQuoteDisc: {
     init: (modal) => {},
 
@@ -1864,7 +1915,7 @@ const displayElOverall = (header, detail) => {
       }
 
       toggleShow(btnEl.btnDownloadBarcode, true);
-      toggleShow(btnEl.btnExactSlip, true);
+      // toggleShow(btnEl.btnExactSlip, true);
 
       toggleShow(btnEl.btnChangeStatus, true);
       // if (isOrderActive) {
