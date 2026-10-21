@@ -2839,7 +2839,9 @@ Partial Class Methods_Order_OrderDetailMethod
             ' Dim Res As String = CreateXMLB(headerid, FileName, FilePath)
             ' If Not Res = "200" Then Throw New Exception(Res)
             exactCfg.CreateXMLB(headerid, FileName, FilePath)
-            exactCfg.Connect(PathCombine)
+            If currentDomain.Contains("onlineorder.au") Then
+               exactCfg.Connect(PathCombine)
+            End If
 
             Dim dataLog As Object() = {headerid, "", ordertype, loginid, "Exact Slip"}
             orderCfg.Log_Orders(dataLog)
