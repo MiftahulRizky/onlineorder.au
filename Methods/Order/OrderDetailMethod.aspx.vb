@@ -1218,7 +1218,7 @@ Partial Class Methods_Order_OrderDetailMethod
                 Dim client As New HttpClient()
                 client.DefaultRequestHeaders.Add("X-API-KEY", "hidupjokowi")
                 Dim content As New StringContent(json, Encoding.UTF8, "application/json")
-                Dim response = client.PostAsync("https://www.ordersblindonline.com/handler/Sunlight.ashx", content).Result
+                Dim response = client.PostAsync("https://ordersblindonline.com/handler/Sunlight.ashx", content).Result
                 ' Dim response = client.PostAsync("http://10.0.209.65:2302/handler/Sunlight.ashx", content).Result
                 ' Dim response = client.PostAsync("https://fvq6m64blm.rbmock.dev", content).Result
 
