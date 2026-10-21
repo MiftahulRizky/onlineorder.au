@@ -2823,9 +2823,17 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim FileName As String = String.Format("-SPOD-Order-Blinds-{0}.xml", OrderId)
             Dim FilePath As String = HttpContext.Current.Server.MapPath("~/file/inv/")
             Dim PathCombine As String = Path.Combine(FilePath, FileName)
+            Dim currentDomain As String = HttpContext.Current.Request.Url.Host.ToLower()
+            
 
             If Not Status = "In Production" AND Not rolename = "Administrator" Then
                 Return New With {.warning = true, .message = "This order is not in production."}
+            End If
+
+            If currentDomain.Contains("onlineorder.au") Then
+               Throw New Exception("is live server")
+            Else
+                Throw New Exception("is dev server")
             End If
 
             ' Dim Res As String = CreateXMLB(headerid, FileName, FilePath)
