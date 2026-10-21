@@ -1,6 +1,6 @@
 ﻿document.addEventListener("DOMContentLoaded", () => {
   if (ROLENAME === "Administrator" || ROLENAME === "PPIC & DE") {
-    console.log("Softshades.js loaded successfully");
+    console.log("SoftShades.js loaded successfully");
     console.log("ROLENAME: " + ROLENAME);
     console.log("LEVELNAME: " + LEVELNAME);
     console.log("ITEMACTION: " + ITEMACTION);
@@ -9,14 +9,8 @@
     console.log("ORDERTYPE: " + ORDERTYPE);
     console.log("URIMETHOD: " + URIMETHOD);
   }
-  softshadesPageLoaded();
+  softShadesPageLoaded();
 });
-
-// ==========================================================INITIALIZATION=====================================================================
-const getById = (id) => document.getElementById(id);
-const getByClass = (cls) => document.getElementsByClassName(cls);
-const selectorEl = (el) => document.querySelector(el);
-const selectorElAll = (el) => document.querySelectorAll(el);
 
 // ===============================================================EVENTS========================================================================
 document.querySelectorAll(".form-control, .form-select").forEach((el) => {
@@ -26,43 +20,36 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     if (e.target.id === "blindtype") {
       const blindtype = e.target.value;
       const blindname = e.target.selectedOptions[0].dataset.name;
-      await handlerElementVisibility(blindname);
+      await handlerElementVisibility(blindtype);
       await bindTubes(DESIGNID, blindtype);
     }
 
-    if (e.target.id === "tubetype") {
-      const blinds = document.getElementById("blindtype");
-      const blindtype = blinds.value;
-      const blindname = blinds.selectedOptions[0].dataset.name;
-      const tubetype = e.target.value;
-      await handlerElementVisibility(blindname, tubetype);
-      await bindControls(DESIGNID, blindtype, tubetype);
+    if (e.target.id === "fabrictype") {
+      const fabrictype = e.target.value;
+      await bindFabricColours(DESIGNID, fabrictype);
     }
 
-    if (e.target.id === "controltype") {
-      const blind = document.getElementById("blindtype");
-      const blindtype = blind.value;
-      const blindname = blind.selectedOptions[0].dataset.name;
-      const tubetype = document.getElementById("tubetype").value;
-      const controltype = e.target.value;
-      const controlname = e.target.selectedOptions[0].dataset.name;
-      await bindFabrics(DESIGNID);
-      await Promise.all([
-        bindSizeType(),
-        bindMounting(),
-        bindDropFloor(),
-        bindSlatSize(),
-        bindTrackColour(tubetype),
-        bindStackPosition(),
-        bindControlPosition(),
-        bindChains(),
-        bindWandLength(),
-        bindBracketType(),
-        bindBracketColour(tubetype),
-        bindHanger(blindname, tubetype),
-        bindBottom(),
-      ]);
-      await handlerElementVisibility(blindname, tubetype, controlname);
+    if (e.target.id === "fabriccolour") {
+      const fabriccolour = e.target.value;
+      await bindTape();
+    }
+
+    if (e.target.id === "tracktype") {
+      const tracktype = e.target.value;
+      document.getElementById("trackcolour").innerHTML = "";
+      document.getElementById("bracket").innerHTML = "";
+      await Promise.all([bindTrackColour(tracktype), bindBracket(tracktype)]);
+    }
+
+    if (e.target.id === "wandsize") {
+      const wandsize = e.target.value;
+      const divWandCustomSize = document.getElementById("divWandCustomSize");
+      document.getElementById("wandcolour").innerHTML = "";
+      divWandCustomSize.classList.add("d-none");
+      if (["Custom"].includes(wandsize)) {
+        divWandCustomSize.classList.remove("d-none");
+      }
+      bindWandColour(wandsize);
     }
 
     if (e.target.id === "sizetype") {
@@ -77,41 +64,15 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     }
 
     if (e.target.id === "mounting") {
-      const sizetype = getById("sizetype").value;
+      const sizetype = document.getElementById("sizetype").value;
       const mounting = e.target.value;
 
-      const divDropFloor = getById("divDropFloor");
+      const divDropFloor = document.getElementById("divDropFloor");
       divDropFloor.classList.add("d-none");
       if (sizetype == "Opening Size" && mounting == "Face Fit") {
         divDropFloor.classList.remove("d-none");
       }
       bindDropFloor();
-    }
-
-    if (e.target.id === "fabrictype") {
-      const fabrictype = e.target.value;
-      const tubetype = getById("tubetype").value;
-      getById("fabriclength").innerHTML = "";
-      getById("fabriccolour").innerHTML = "";
-      await bindFabricLength(DESIGNID, tubetype, fabrictype);
-    }
-
-    if (e.target.id === "fabriclength") {
-      const fabrictype = selectorEl("#fabrictype").value;
-      const fabriclength = e.target.value;
-      getById("fabriccolour").innerHTML = "";
-      await bindFabricColours(DESIGNID, fabrictype, fabriclength);
-    }
-
-    if (e.target.id === "wandlength") {
-      const tubetype = getById("tubetype").value;
-      const divWandCustomLength = selectorEl("#divWandCustomLength");
-      const wandlength = e.target.value;
-      divWandCustomLength.classList.add("d-none");
-      if (wandlength === "custom") {
-        divWandCustomLength.classList.remove("d-none");
-      }
-      bindWandColour(wandlength);
     }
   });
   el.addEventListener("input", (e) => {
@@ -126,31 +87,19 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   });
 });
 
-document.querySelectorAll(".btn-information").forEach((el) => {
-  el.addEventListener("click", async (e) => {
-    const id = e.currentTarget.id;
-    let msg = "";
+document.querySelectorAll(".form-check-input").forEach((el) => {
+  el.addEventListener("click", (e) => {
+    e.target.classList.remove("is-invalid");
 
-    switch (id) {
-      case "btnInfoQty":
-        msg =
-          "Please pay attention to the quantity you want to order, because the quantity you enter will be processed automatically.";
-        break;
-      case "btnInfoWD":
-        msg =
-          "Very long tracks are not recommended. Butting shorter tracks will work more effectively.";
-        break;
-      case "btnInfoSlatQty":
-        msg = "If left blank, the system will calculate it.";
-        break;
-      case "btnInfoCustomLength":
-        msg =
-          "Custom wand length is available in white color only with maximum length 3000mm.";
-        break;
-    }
+    if (e.target.id.endsWith("override")) {
+      const targetId = e.target.id.replace("override", "");
+      document.getElementById(targetId).value = "";
 
-    if (msg) {
-      isInfo(msg);
+      if (e.target.checked) {
+        document.getElementById(targetId).removeAttribute("readonly", true);
+      } else {
+        document.getElementById(targetId).setAttribute("readonly", true);
+      }
     }
   });
 });
@@ -169,153 +118,103 @@ document.querySelector("#btnSubmit").addEventListener("click", (e) => {
 document.querySelector("#btnCancel").addEventListener("click", (e) => {
   window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
 });
-// =============================================================FUNCTIONS========================================================================
 
+// ============================================================FUNCTIONS========================================================================
 // ----------------------------------------------|| Binding Functions ||---------------------------------------
-const bindFormAggregate = async () => {
+const bindDesigns = async (designid) => {
   try {
-    const response = await fetch(`${URIMETHOD}/BindFormAggregate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({
-        data: {
-          headerid: HEADERID,
-          ordertype: ORDERTYPE,
-          designid: DESIGNID,
-          itemid: ITEMID,
-          itemaction: ITEMACTION,
-        },
-      }),
-    });
+    const Name = await getItemData(
+      `SELECT Name FROM Designs WHERE Id = '${designid}'`,
+    );
 
-    if (!response.ok) {
-      throw new Error(`${response.status} - ${response.statusText}`);
-    }
-
-    const { d: data } = await response.json();
-
-    if (!data) {
-      throw new Error("No data");
-    }
-
-    if (data.error) {
-      throw new Error(data.message);
-    }
-
-    console.log(data);
-
-    bindPageTitle(data.DesignName);
-    bindHeaderInfo(data.HeaderData);
-    bindActionInfo(ITEMACTION);
-    bindSelect({
-      data: data.Blinds,
-      elementId: "blindtype",
-      withDefaultOption: true,
-      lengthDefaultOption: 0,
-    });
-  } catch (error) {
-    const msg = `bindFormAggregate: ${error.message}`;
-    catchMessages(msg);
-  }
-};
-
-const bindPageTitle = (name) => {
-  try {
-    document.getElementById("pageTitle").innerHTML = name;
+    document.getElementById("pageTitle").innerHTML = Name;
     document.getElementById("pageAction").innerHTML = ITEMACTION;
   } catch (error) {
-    const msg = `bindPageTitle: ${error.message}`;
-    catchMessages(msg);
+    console.error(error.message);
   }
 };
 
-const bindHeaderInfo = (header) => {
+const bindHeaders = async (headerid) => {
   try {
+    const OrderId = await getItemData(
+      `SELECT OrderId FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = '${headerid}'`,
+    );
+    const OrderNumber = await getItemData(
+      `SELECT OrderNumber FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = '${headerid}'`,
+    );
+    const OrderName = await getItemData(
+      `SELECT OrderName FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = '${headerid}'`,
+    );
+
     const lblOrder = document.getElementById("lblOrder");
     const lblItemId = document.getElementById("lblItemId");
     const lblOrderNumber = document.getElementById("lblOrderNumber");
     const lblOrderName = document.getElementById("lblOrderName");
 
-    lblOrder.innerHTML = header.OrderId;
+    lblOrder.innerHTML = OrderId;
     lblOrder.classList.add("fw-bold");
 
     lblItemId.innerHTML = ITEMID;
     lblItemId.classList.add("fw-bold");
 
-    lblOrderNumber.innerHTML = header.OrderNumber;
+    lblOrderNumber.innerHTML = OrderNumber;
     lblOrderNumber.classList.add("fw-bold");
 
-    lblOrderName.innerHTML = header.OrderName;
+    lblOrderName.innerHTML = OrderName;
     lblOrderName.classList.add("fw-bold");
   } catch (error) {
-    const msg = `bindHeaderInfo: ${error.message}`;
-    catchMessages(msg);
+    console.error(error.message);
   }
 };
 
-const bindActionInfo = (itemaction) => {
-  try {
-    const cardTitle = document.getElementById("cardTitle");
-    const actionMap = {
-      AddItem: "ADD ITEM",
-      NextItem: "NEXT ITEM",
-      EditItem: "EDIT ITEM ID: " + ITEMID,
-      ViewItem: "VIEW ITEM ID: " + ITEMID,
-      CopyItem: "COPY ITEM",
-    };
-    cardTitle.innerText = actionMap[itemaction] || "";
-  } catch (error) {
-    const msg = `bindActionInfo: ${error.message}`;
-    catchMessages(msg);
-  }
+const bindFormAction = (itemaction, id) => {
+  const cardTitle = document.getElementById("cardTitle");
+  const actionMap = {
+    AddItem: "ADD ITEM",
+    NextItem: "NEXT ITEM",
+    EditItem: "EDIT ITEM ID: " + id,
+    ViewItem: "VIEW ITEM ID: " + id,
+    CopyItem: "COPY ITEM",
+  };
+  cardTitle.innerText = actionMap[itemaction] || "";
+};
+
+const bindBlinds = async (designid) => {
+  if (!designid) return;
+
+  await bindSelect({
+    elementId: "blindtype",
+    field: "blindtype",
+    params: { designid },
+    withDefaultOption: true,
+  });
 };
 
 const bindTubes = async (designid, blindtype) => {
   if (!designid || !blindtype) return;
 
-  await bindListData({
+  await bindSelect({
     elementId: "tubetype",
     field: "tubetype",
     params: { designid, blindtype },
-    withDefaultOption: true,
-    lengthDefaultOption: 0,
-  });
-};
+    withDefaultOption: false,
 
-const bindControls = async (designid, blindtype, tubetype) => {
-  if (!designid || !blindtype || !tubetype) return;
-
-  await bindListData({
-    elementId: "controltype",
-    field: "controltype",
-    params: { designid, blindtype, tubetype },
-    withDefaultOption: true,
-    lengthDefaultOption: 1,
     onSingle: async (item, select) => {
-      const blind = document.getElementById("blindtype");
-      const blindname = blind.selectedOptions[0].dataset.name;
-      const controltype = item.value;
-      const controlname = item.text;
-
-      await bindFabrics(designid);
+      const blindname = await getItemData(
+        `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
+      );
+      const tubetype = item.value;
+      const fabriccolour = document.getElementById("fabriccolour").value;
+      await handlerElementVisibility(blindtype, tubetype);
+      await bindFabrics(DESIGNID);
+      await bindTape();
       await Promise.all([
         bindSizeType(),
-        bindMounting(),
         bindDropFloor(),
-        bindSlatSize(),
-        bindTrackColour(tubetype),
-        bindStackPosition(),
-        bindControlPosition(),
-        bindChains(),
-        bindWandLength(),
-        bindBracketType(),
-        bindBracketColour(tubetype),
-        bindHanger(blindname, tubetype),
-        bindBottom(),
+        bindStack(),
+        bindTrackType(),
+        bindWandSize(),
       ]);
-      await handlerElementVisibility(blindname, tubetype, controlname);
     },
   });
 };
@@ -324,488 +223,272 @@ const bindSizeType = () => {
   generateOption("sizetype", ["Opening Size", "Make Size"]);
 };
 
-const bindMounting = () => {
-  generateOption("mounting", ["Face Fit", "Reveal Fit"]);
-};
-
 const bindDropFloor = () => {
   generateOption("dropfloor", ["No", "Yes"]);
 };
 
 const bindFabrics = async (designid) => {
   if (!designid) return;
-  getById("fabriclength").innerHTML = "";
-  getById("fabriccolour").innerHTML = "";
-  await bindListData({
+
+  await bindSelect({
     elementId: "fabrictype",
     field: "fabrictype",
     params: { designid },
     withDefaultOption: true,
-    lengthDefaultOption: 1,
-  });
-};
 
-const bindFabricLength = async (designid, tubetype, fabrictype) => {
-  if (!designid || !tubetype || !fabrictype) return;
-
-  await bindListData({
-    elementId: "fabriclength",
-    field: "fabriclength",
-    params: { designid, tubetype, fabrictype },
-    withDefaultOption: true,
-    lengthDefaultOption: 1,
     onSingle: async (item, select) => {
-      const fabriclength = item.value;
-      await bindFabricColours(designid, fabrictype, fabriclength);
+      const fabrictype = item.value;
+
+      // await handlerElementVisibility(fabrictype, tubetype);
+      // await bindControls(designid, fabrictype, tubetype);
     },
   });
 };
 
-const bindFabricColours = async (designid, fabrictype, fabriclength) => {
-  if (!designid || !fabrictype || !fabriclength) return;
+const bindFabricColours = async (designid, fabrictype) => {
+  if (!designid || !fabrictype) return;
 
-  await bindListData({
+  await bindSelect({
     elementId: "fabriccolour",
     field: "fabriccolour",
-    params: { designid, fabrictype, fabriclength },
+    params: { designid, fabrictype },
     withDefaultOption: true,
-    lengthDefaultOption: 1,
   });
 };
 
-const bindSlatSize = () => {
-  generateOption("slatsize", ["127mm", "100mm", "89mm", "63mm"]);
+const bindStack = () => {
+  let list = [];
+  list.push("Left", "Right", "Centre Stack", "Centre Split");
+  generateOption("stack", list);
 };
 
-const bindTrackColour = (tubetype) => {
-  if (!tubetype) return;
+const bindTrackType = () => {
   let list = [];
-  if (["Louvolite"].includes(tubetype)) {
-    list.push("Black", "White");
-  }
+  list.push("Shade");
+  generateOption("tracktype", list, 1);
+};
 
-  if (["Standard"].includes(tubetype)) {
-    list.push("Beige", "Black", "Ivory", "Silver Anodised", "White");
-  }
+const bindTrackColour = (type) => {
+  if (!type) return;
+  let list = [];
+  list.push("Birch", "Black", "White");
   generateOption("trackcolour", list);
 };
 
-const bindStackPosition = () => {
-  generateOption("stackposition", [
-    "Fix",
-    "Left",
-    "Right",
-    "Center",
-    "Split / Centre Open",
-  ]);
+const bindWandSize = () => {
+  let list = [];
+  list.push("Custom", "500", "750", "1100", "1500", "2000");
+  generateOption("wandsize", list);
 };
 
-const bindControlPosition = () => {
-  generateOption("controlposition", [
-    "Tilt Only",
-    "Left",
-    "Right",
-    "Twin Wand",
-  ]);
-};
-
-const bindChains = () => {
-  generateOption("chaincolour", [
-    "Beige",
-    "Birch White",
-    "Black",
-    "Grey",
-    "Stainless Steel",
-    "White",
-  ]);
-};
-
-const bindWandLength = () => {
-  getById("wandcolour").innerHTML = "";
-  generateOption("wandlength", [
-    "custom",
-    "500",
-    "750",
-    "800",
-    "1000",
-    "1100",
-    "1250",
-    "1500",
-    "2000",
-  ]);
-};
-
-const bindWandColour = (wandlength) => {
-  if (!wandlength) return;
-  let list = ["White"];
-  if (wandlength !== "custom") {
-    list.push("Black", "White Birch");
+const bindWandColour = (size) => {
+  if (!size) return;
+  let list = [];
+  list.push("White");
+  if (!["Custom"].includes(size)) {
+    list.push("Clear Anodize", "Black");
   }
-  generateOption("wandcolour", list, 1);
+  generateOption("wandcolour", list);
 };
 
-const bindBracketType = () => {
-  generateOption("bracket", [
-    "127mm F/Fit",
-    "100mm F/Fit",
-    "89mm F/Fit",
-    "C/Fit",
-    "Ext F/Fit",
-    "Ext C/Fit",
-    "Ext",
-  ]);
-};
-
-const bindBracketColour = (tubetype) => {
-  if (!tubetype) return;
+const bindBracket = (track) => {
+  if (!track) return;
   let list = [];
 
-  if (["Louvolite"].includes(tubetype)) {
-    list.push("Birch White", "Black", "White", "Grey");
-  } else {
-    list.push("Birch White", "Black", "White", "Grey", "Silver");
+  switch (track) {
+    case "Cube":
+    case "Standard":
+    case "Shade":
+      list.push("Ceiling clip", "Ext Face", "Ext Rev", "L Bkt w Clip ff");
+      break;
+    case "Decorative (Flat)":
+    case "Decorative (Round)":
+      list.push("Deco Ceiling", "Deco Face fit");
+      break;
   }
 
-  generateOption("bracketcolour", list);
+  generateOption("bracket", list);
 };
 
-const bindHanger = (blindname, tubetype) => {
-  if (!blindname || !tubetype) return;
-  let list = [];
+const bindTape = async () => {
+  let list = ["White", "Grey"];
 
-  if (["Slat Only"].includes(blindname)) {
-    list.push("Standard", "Peghook", "Tiltrack 28mm");
-  }
-
-  if (["Complete", "Track Only"].includes(blindname)) {
-    if (["Louvolite"].includes(tubetype)) {
-      list.push("Opaque", "White");
-    }
-    if (["Standard"].includes(tubetype)) {
-      list.push("Standard");
-    }
-  }
-
-  generateOption("hangertype", list, 1);
+  generateOption("tape", list);
 };
 
-const bindBottom = () => {
-  generateOption("bottom", [
-    "Chained (White)",
-    "Fully Sewn In",
-    "Plastic Chainless",
-    "Plastic Chainless (White)",
-    "Top Hanger Only",
-  ]);
-};
-
-const bindSelect = ({
-  data,
-  elementId,
-  withDefaultOption = true,
-  lengthDefaultOption = 0,
-  onSingle = null,
-  afterRender = null,
-}) => {
-  const select = document.getElementById(elementId);
-  select.innerHTML = "";
-
+const bindItemOrders = async (itemid) => {
   try {
-    // default option
-    if (withDefaultOption && data.length > lengthDefaultOption) {
-      const opt = document.createElement("option");
-      opt.value = "";
-      opt.text = "";
-      select.add(opt);
-    }
+    if (!itemid) return;
 
-    // render options
-    data.forEach((item) => {
-      const option = document.createElement("option");
-      option.value = item.value;
-      option.text = item.text.toUpperCase();
-      option.setAttribute("data-name", item.text);
-      select.add(option);
-    });
-
-    select.classList.add("fw-bold");
-
-    // callback setelah render
-    if (afterRender) {
-      afterRender(data, select);
-    }
-
-    // kalau cuma 1 data
-    if (data.length === 1 && onSingle) {
-      select.selectedIndex = 0;
-      onSingle(data[0], select);
-    }
-  } catch (err) {
-    const msg = `bindSelect: ${err.message}`;
-    catchMessages(msg);
-  }
-};
-
-const bindListData = async ({
-  elementId,
-  field,
-  params = {},
-  withDefaultOption = true,
-  lengthDefaultOption = 0,
-  onSingle = null,
-  afterRender = null,
-}) => {
-  try {
-    const response = await fetch(`${URIMETHOD}/BindListData`, {
+    const res = await fetch(`${URIMETHOD}/BindItemOrder`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({
-        data: {
-          field,
-          ...params,
-        },
-      }),
+      body: JSON.stringify({ itemid }),
     });
 
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`${response.status}\n${text}`);
+    if (!res.ok) {
+      const msg =
+        ROLENAME === "Administrator"
+          ? `${res.status} - ${res.statusText}`
+          : "Please contact our IT team at support@onlineorder.au";
+      throw isError(msg);
     }
 
-    const result = await response.json();
-    const data = result.d.list;
+    const response = await res.json();
+    const data = response.d;
 
-    if (!Array.isArray(data)) {
-      throw new Error(`No data returned from server : ${field}`);
+    if (!data || data.length === 0) {
+      throw isError("No data returned from server : bindItemOrders");
     }
 
-    bindSelect({
-      data,
-      elementId,
-      withDefaultOption,
-      lengthDefaultOption,
-      onSingle,
-      afterRender,
-    });
-  } catch (err) {
-    const msg = `bindListData: ${err.message}`;
-    catchMessages(msg);
-  }
-};
+    for (const item of data) {
+      await bindBlinds(item.DesignId);
+      await bindTubes(item.DesignId, item.BlindId);
+      await bindFabrics(item.DesignId);
+      await bindFabricColours(item.DesignId, item.FabricType);
+      await bindTape();
+      await handlerElementVisibility(item.BlindId, item.TubeType, item);
+      await Promise.all([
+        bindSizeType(),
+        bindDropFloor(),
+        bindStack(),
+        bindTrackType(),
+        bindTrackColour(item.TrackType),
+        bindBracket(item.TrackType),
+        bindWandSize(),
+        bindWandColour(item.WandLength),
+      ]);
+      await Promise.all([handlerSetElementValues(item)]);
+    }
 
-const bindSelectPayload = (data, el, def = true, leng = 0) => {
-  try {
-    bindSelect({
-      data: data,
-      elementId: el,
-      withDefaultOption: def,
-      lengthDefaultOption: leng,
-    });
+    return true; // ✅ success
   } catch (error) {
-    const msg = `bindSelectPayload: ${error.message}`;
-    catchMessages(msg);
+    console.error("bindItemOrder error:", error);
+    throw error;
   }
 };
 
-const bindItemOrders = async () => {
-  try {
-    const response = await fetch(`${URIMETHOD}/BindItemOrder`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({
-        data: {
-          headerid: HEADERID,
-          ordertype: ORDERTYPE,
-          designid: DESIGNID,
-          itemid: ITEMID,
-          itemaction: ITEMACTION,
-        },
-      }),
-    });
-
-    const { d: data } = await response.json();
-
-    if (!data) {
-      throw new Error("No data");
-    }
-
-    if (data.error) {
-      throw new Error(data.message);
-    }
-
-    bindSelectPayload(data.Tubes, "tubetype", true, 1);
-    bindSelectPayload(data.Controls, "controltype", true, 1);
-    bindSelectPayload(data.Fabrics, "fabrictype", true, 1);
-    bindSelectPayload(data.FabricLength, "fabriclength", true, 1);
-    bindSelectPayload(data.FabricColour, "fabriccolour", true, 1);
-
-    console.log(data.DetailData);
-
-    bindSizeType();
-    bindDropFloor();
-    bindMounting();
-    bindDropFloor();
-    bindSlatSize();
-    bindTrackColour(data.DetailData.TubeType);
-    bindStackPosition();
-    bindControlPosition();
-    bindChains();
-    bindWandLength();
-    bindWandColour(data.DetailData.WandLength);
-    bindBracketType();
-    bindBracketColour(data.DetailData.TubeType);
-    bindHanger(data.DetailData.BlindName, data.DetailData.TubeType);
-    bindBottom();
-    handlerSetElementValues(data.DetailData);
-    handlerElementVisibility(
-      data.DetailData.BlindName,
-      data.DetailData.TubeType,
-      data.DetailData.ControlType,
-      data.DetailData,
-    );
-
-    console.log(data);
-  } catch (err) {
-    const msg = `bindItemOrders: ${err.message}`;
-    catchMessages(msg);
-  }
-};
-
-// ----------------------------------------------|| Hanlder Functions ||---------------------------------------
-const handlerElementVisibility = (blindname, tubetype, controlname, item) => {
+// ----------------------------------------------|| Handler Functions ||---------------------------------------
+const handlerElementVisibility = async (blindtype, tubetype, item) => {
   try {
     const lblItemId = document.getElementById("lblItemId");
     const divTubeType = document.getElementById("divTubeType");
-    const divControlType = document.getElementById("divControlType");
-
     const divFormDetail = document.getElementById("divFormDetail");
     const divSizeType = document.getElementById("divSizeType");
     const divDropFloor = document.getElementById("divDropFloor");
-    const divMounting = document.getElementById("divMounting");
     const lblWd = document.getElementById("lblWd");
     const divWidth = document.getElementById("divWidth");
     const divDrop = document.getElementById("divDrop");
-    const divInfoWD = document.getElementById("divInfoWD");
-    const divSlatSize = document.getElementById("divSlatSize");
-    const divSlatQty = document.getElementById("divSlatQty");
     const divFabric = document.getElementById("divFabric");
-    const divTrackColour = document.getElementById("divTrackColour");
-    const divStackPosition = document.getElementById("divStackPosition");
-    const divControlPosition = document.getElementById("divControlPosition");
-    const divChain = document.getElementById("divChain");
+    const divBlindSize = document.getElementById("divBlindSize");
+    const divStack = document.getElementById("divStack");
+    const divTrack = document.getElementById("divTrack");
     const divWand = document.getElementById("divWand");
-    const divWandCustomLength = document.getElementById("divWandCustomLength");
-    const divBrackets = document.getElementById("divBrackets");
-    const divHangerType = document.getElementById("divHangerType");
-    const divBottom = document.getElementById("divBottom");
-    const divInsertInTrack = document.getElementById("divInsertInTrack");
-    const divSloper = document.getElementById("divSloper");
+    const divWandCustomSize = document.getElementById("divWandCustomSize");
+    const divBracket = document.getElementById("divBracket");
+    const divTape = document.getElementById("divTape");
+    const divCarriers = document.getElementById("divCarriers");
+    const divSpacer = document.getElementById("divSpacer");
+    const divSlat = document.getElementById("divSlat");
+    const divSlatQty = document.getElementById("divSlatQty");
+    const divEndSlat = document.getElementById("divEndSlat");
+    const divTotalSlat = document.getElementById("divTotalSlat");
+    const divFabricQty = document.getElementById("divFabricQty");
     const divMarkUp = document.getElementById("divMarkUp");
-
     const btnSubmit = document.querySelector("#btnSubmit");
     // return;
+    lblItemId.classList.add("d-none");
     divTubeType.classList.add("d-none");
-    divControlType.classList.add("d-none");
-
     divFormDetail.classList.add("d-none");
     divSizeType.classList.add("d-none");
     divDropFloor.classList.add("d-none");
-    divMounting.classList.add("d-none");
     lblWd.innerHTML = "width x drop";
     divWidth.classList.add("d-none");
     divDrop.classList.add("d-none");
-    divInfoWD.classList.add("d-none");
-    divSlatSize.classList.add("d-none");
-    divSlatQty.classList.add("d-none");
     divFabric.classList.add("d-none");
-    divTrackColour.classList.add("d-none");
-    divStackPosition.classList.add("d-none");
-    divControlPosition.classList.add("d-none");
-    divChain.classList.add("d-none");
+    divBlindSize.classList.add("d-none");
+    divStack.classList.add("d-none");
+    divTrack.classList.add("d-none");
     divWand.classList.add("d-none");
-    divWandCustomLength.classList.add("d-none");
-    divBrackets.classList.add("d-none");
-    divHangerType.classList.add("d-none");
-    divBottom.classList.add("d-none");
-    divInsertInTrack.classList.add("d-none");
-    divSloper.classList.add("d-none");
+    divWandCustomSize.classList.add("d-none");
+    divBracket.classList.add("d-none");
+    divTape.classList.add("d-none");
+    divCarriers.classList.add("d-none");
+    divSpacer.classList.add("d-none");
+    divSlat.classList.add("d-none");
+    divSlatQty.classList.add("d-none");
+    divEndSlat.classList.add("d-none");
+    divTotalSlat.classList.add("d-none");
+    divFabricQty.classList.add("d-none");
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
 
-    if (!blindname) return;
-    divTubeType.classList.remove("d-none");
+    document.querySelectorAll(".form-check-input").forEach((el) => {
+      el.checked = false;
+
+      if (el.id.endsWith("override")) {
+        const Id = el.id.replace("override", "");
+        document.getElementById(Id).setAttribute("readonly", true);
+      }
+    });
+
+    if (!blindtype) return;
+    const blindname = await getItemData(
+      `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
+    );
 
     if (!tubetype) return;
-    if (["Complete", "Track Only"].includes(blindname)) {
-      divControlType.classList.remove("d-none");
-    }
-
-    if (!controlname) return;
     divFormDetail.classList.remove("d-none");
 
-    if (blindname === "Complete") {
+    if (["Single"].includes(blindname)) {
+      lblWd.innerHTML = "width x drop";
       // divSizeType.classList.remove("d-none");
-      divMounting.classList.remove("d-none");
       divWidth.classList.remove("d-none");
       divDrop.classList.remove("d-none");
       divFabric.classList.remove("d-none");
-      divTrackColour.classList.remove("d-none");
-      divStackPosition.classList.remove("d-none");
-      divControlPosition.classList.remove("d-none");
-      divBrackets.classList.remove("d-none");
-      divHangerType.classList.remove("d-none");
-      divBottom.classList.remove("d-none");
-      divSloper.classList.remove("d-none");
-
-      if (tubetype === "Fairline") {
-        divInsertInTrack.classList.remove("d-none");
-      }
-      if (controlname === "Chain") {
-        divChain.classList.remove("d-none");
-      }
-      if (controlname === "Wand") {
-        divWand.classList.remove("d-none");
-      }
-    }
-
-    if (blindname === "Slat Only") {
-      lblWd.innerHTML = "drop exact";
-      divDrop.classList.remove("d-none");
+      divStack.classList.remove("d-none");
+      divTrack.classList.remove("d-none");
+      divWand.classList.remove("d-none");
+      divBracket.classList.remove("d-none");
+      divTape.classList.remove("d-none");
+      divCarriers.classList.remove("d-none");
+      divSpacer.classList.remove("d-none");
+      divSlat.classList.remove("d-none");
       divSlatQty.classList.remove("d-none");
-      divFabric.classList.remove("d-none");
-      divHangerType.classList.remove("d-none");
-      divBottom.classList.remove("d-none");
+      divEndSlat.classList.remove("d-none");
+      divTotalSlat.classList.remove("d-none");
+      divFabricQty.classList.remove("d-none");
     }
 
-    if (blindname === "Track Only") {
+    if (["Slat Only"].includes(blindname)) {
+      lblWd.innerHTML = "drop";
+      divDrop.classList.remove("d-none");
+      divFabric.classList.remove("d-none");
+      divBlindSize.classList.remove("d-none");
+      divStack.classList.remove("d-none");
+      divTrack.classList.remove("d-none");
+      divTape.classList.remove("d-none");
+      divCarriers.classList.remove("d-none");
+      divSpacer.classList.remove("d-none");
+      divSlat.classList.remove("d-none");
+      divSlatQty.classList.remove("d-none");
+      divEndSlat.classList.remove("d-none");
+      divTotalSlat.classList.remove("d-none");
+      divFabricQty.classList.remove("d-none");
+    }
+
+    if (["Track Only"].includes(blindname)) {
       lblWd.innerHTML = "width";
-      divMounting.classList.remove("d-none");
       divWidth.classList.remove("d-none");
-      divInfoWD.classList.remove("d-none");
-      divSlatSize.classList.remove("d-none");
-      // divSlatQty.classList.remove("d-none");
-      divTrackColour.classList.remove("d-none");
-      divStackPosition.classList.remove("d-none");
-      divControlPosition.classList.remove("d-none");
-      // divChain.classList.remove("d-none");
-      divBrackets.classList.remove("d-none");
-      divHangerType.classList.remove("d-none");
-      divSloper.classList.remove("d-none");
-
-      if (tubetype === "Fairline") {
-        divInsertInTrack.classList.remove("d-none");
-      }
-
-      if (controlname === "Chain") {
-        divChain.classList.remove("d-none");
-      }
-      if (controlname === "Wand") {
-        divWand.classList.remove("d-none");
-      }
+      divStack.classList.remove("d-none");
+      divTrack.classList.remove("d-none");
+      divWand.classList.remove("d-none");
+      divBracket.classList.remove("d-none");
+      divTape.classList.remove("d-none");
+      divCarriers.classList.remove("d-none");
+      divSpacer.classList.remove("d-none");
     }
 
     if (item) {
@@ -813,12 +496,8 @@ const handlerElementVisibility = (blindname, tubetype, controlname, item) => {
         divDropFloor.classList.remove("d-none");
       }
 
-      const WandLengthKey = ["", "500", "750", "1100", "1250", "1500", "2000"];
-      const WandLengthVal = item.WandLength;
-      if (!WandLengthKey.includes(WandLengthVal)) {
-        divWandCustomLength.classList.remove("d-none");
-      } else {
-        divWandCustomLength.classList.add("d-none");
+      if (!["500", "750", "1100", "1500", "2000"].includes(item.WandLength)) {
+        divWandCustomSize.classList.remove("d-none");
       }
     }
 
@@ -828,15 +507,14 @@ const handlerElementVisibility = (blindname, tubetype, controlname, item) => {
       btnSubmit.classList.remove("d-none");
     } else if (ITEMACTION === "ViewItem") {
       btnSubmit.classList.remove("d-none");
-      if (
-        !["Administrator", "PPIC & DE", "Customer Service"].includes(ROLENAME)
-      ) {
-        btnSubmit.classList.add("d-none");
-      }
+      if (ROLENAME !== "Administrator") btnSubmit.classList.add("d-none");
     }
   } catch (error) {
-    const msg = `handlerElementVisibility: ${error.message}`;
-    catchMessages(msg);
+    const msg =
+      ROLENAME === "Administrator"
+        ? error.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
   }
 };
 
@@ -848,7 +526,6 @@ const handlerSubmit = async (button) => {
     const fields = [
       "blindtype",
       "tubetype",
-      "controltype",
       "qty",
       "room",
       "sizetype",
@@ -856,25 +533,30 @@ const handlerSubmit = async (button) => {
       "mounting",
       "width",
       "drop",
-      "slatsize",
-      "slatqty",
       "fabrictype",
-      "fabriclength",
       "fabriccolour",
+      "blindsize",
+      "stack",
+      "tracktype",
       "trackcolour",
-      "stackposition",
-      "controlposition",
-      "chaincolour",
-      "chainlength",
-      "wandlength",
+      "wandsize",
       "wandcolour",
-      "wandcustomlength",
+      "customsize",
       "bracket",
-      "bracketcolour",
-      "hangertype",
-      "bottom",
-      "inserttrack",
-      "sloper",
+      "tape",
+      "carrier",
+      "carrieroverride",
+      "spacer",
+      "spaceroverride",
+      "slat",
+      "slatoverride",
+      "slatqty",
+      "slatqtyoverride",
+      "endslats",
+      "endslatsoverride",
+      "totalslats",
+      "fabricqty",
+      "fabricqtyoverride",
       "notes",
       "markup",
     ];
@@ -889,9 +571,16 @@ const handlerSubmit = async (button) => {
     };
 
     fields.forEach((field) => {
-      formData[field] = document.getElementById(field).value;
+      const el = document.getElementById(field);
+
+      if (el.type === "checkbox") {
+        formData[field] = el.checked; // true / false
+      } else {
+        formData[field] = el.value;
+      }
     });
 
+    // Swal.close();
     // return console.table(formData);
 
     const response = await fetch(URIMETHOD + "/Submit", {
@@ -907,121 +596,132 @@ const handlerSubmit = async (button) => {
       throw new Error(`${response.status}\n${errorText}`);
     }
 
-    const data = await response.json();
-    const res = data.d || data;
+    const result = await response.json();
+    const dataResult = result.d || result;
 
-    if (res.error) {
-      throw new Error(res.message);
-    } else if (res.warning) {
-      await isWarning(res.message?.toUpperCase());
-      const field = document.getElementById(res.field);
+    if (dataResult.error) {
+      await isWarning(dataResult.error.message?.toUpperCase());
+      const field = document.getElementById(dataResult.error.field);
       if (field) {
         // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
         // field.focus();
         field.classList.add("is-invalid");
       }
-    } else if (res.success) {
-      await isSuccess(res.message);
+    } else {
+      await isSuccess(dataResult.success);
       window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
     }
   } catch (error) {
-    const msg = `handlerSubmit: ${error.message}`;
-    catchMessages(msg);
+    var msg = error.message;
+    if (ROLENAME !== "Administrator") {
+      msg = "Please contact our IT team at support@onlineorder.au";
+    }
+    isError(msg);
   } finally {
     document.getElementById(button).innerHTML = "Save Changes";
   }
 };
 
 const handlerSetElementValues = (itemData) => {
-  try {
-    const mapping = {
-      blindtype: "BlindId",
-      tubetype: "TubeType",
-      controltype: "KitId",
-      qty: "Qty",
-      room: "Location",
-      sizetype: "LouvreSize",
-      dropfloor: "LouvrePosition",
-      mounting: "Mounting",
-      width: "Width",
-      drop: "Drop",
-      slatsize: "SlatSize",
-      slatqty: "SlatQty",
-      fabrictype: "FabricType",
-      fabriclength: "FabricWidth",
-      fabriccolour: "FabricId",
-      trackcolour: "TrackColour",
-      stackposition: "StackPosition",
-      controlposition: "ControlPosition",
-      chaincolour: "ChainColour",
-      chainlength: "ChainLength",
-      wandcolour: "WandColour",
-      wandlength: "WandLength",
-      wandcustomlength: "WandLength",
-      bracket: "BracketOption",
-      bracketcolour: "BracketColour",
-      hangertype: "HangerType",
-      bottom: "BottomHoldDown",
-      inserttrack: "InsertInTrack",
-      sloper: "Sloper",
-      notes: "Notes",
-      markup: "MarkUp",
-    };
+  const mapping = {
+    blindtype: "BlindId",
+    tubetype: "KitId",
+    qty: "Qty",
+    room: "Location",
+    sizetype: "LouvreSize",
+    dropfloor: "LouvrePosition",
+    mounting: "Mounting",
+    widthinput: "Width",
+    width: "Width",
+    drop: "Drop",
+    fabrictype: "FabricType",
+    fabriccolour: "FabricId",
+    blindsize: "BlindSize",
+    stack: "StackPosition",
+    tracktype: "TrackType",
+    trackcolour: "TrackColour",
+    wandsize: "WandLength",
+    wandcolour: "WandColour",
+    customsize: "WandLength",
+    bracket: "BracketOption",
+    tape: "BracketColour",
+    totalslats: "SlatQty",
+    notes: "Notes",
+    markup: "MarkUp",
+  };
 
-    // console.log("itemData: ", itemData);
-    // Set nilai ke input sesuai mapping
-    Object.entries(mapping).forEach(([id, key]) => {
-      const el = document.getElementById(id);
-      if (!el) {
-        console.warn(`Elemen '${id}' tidak ditemukan.`);
-        return;
-      }
+  const jsonFields = [
+    {
+      inputId: "carrier",
+      checkboxId: "carrieroverride",
+      dataKey: "FrameType",
+    },
+    {
+      inputId: "spacer",
+      checkboxId: "spaceroverride",
+      dataKey: "FrameLeft",
+    },
+    {
+      inputId: "slat",
+      checkboxId: "slatoverride",
+      dataKey: "Layout",
+    },
+    {
+      inputId: "slatqty",
+      checkboxId: "slatqtyoverride",
+      dataKey: "LayoutSpecial",
+    },
+    {
+      inputId: "endslats",
+      checkboxId: "endslatsoverride",
+      dataKey: "SlatSize",
+    },
+    {
+      inputId: "fabricqty",
+      checkboxId: "fabricqtyoverride",
+      dataKey: "TubeSize",
+    },
+    // tinggal tambah di sini nanti
+  ];
 
-      let value = itemData[key];
-      if (id === "markup" && value === 0) value = "";
+  //Normal fields
+  Object.entries(mapping).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
 
-      el.value = value ?? ""; // fallback ke string kosong
+    let value = itemData[key];
 
-      const WandLengthKey = ["", "500", "750", "1100", "1250", "1500", "2000"];
-      const WandLengthVal = itemData["WandLength"];
-      if (!WandLengthKey.includes(WandLengthVal)) {
-        if (id === "wandlength") {
-          el.value = "custom";
-        }
-        if (id === "wandcustomlength") {
-          el.value = WandLengthVal;
-        }
-      } else {
-        if (id === "wandlength") {
-          el.value = WandLengthVal;
-        }
-      }
+    if (id === "markup" && value === 0) value = "";
 
-      if (["inserttrack", "sloper"].includes(id)) {
-        if (["0", "False"].includes(value)) {
-          el.value = "0";
-        } else {
-          el.value = "1";
-        }
-      }
-
-      // jika nilainya "0" → kosong
-      if (el.value === "0") el.value = "";
-    });
-
-    const maxLength = 1000;
-    const notesLength = (itemData["Notes"] || "").length;
-    const notesCountEl = document.getElementById("notescount");
-    if (notesCountEl) {
-      notesCountEl.textContent = `${notesLength}/${maxLength}`;
+    if (
+      ["wandsize"].includes(id) &&
+      !["500", "750", "1100", "1500", "2000"].includes(value)
+    ) {
+      value = "Custom";
     }
-  } catch (error) {
-    const msg = `handlerSetElementValues: ${error.message}`;
-    catchMessages(msg);
+
+    el.value = value ?? "";
+    if (el.value === "0") el.value = "";
+  });
+
+  // JSON fields (reusable)
+  jsonFields.forEach(({ inputId, checkboxId, dataKey }) => {
+    setJsonField({
+      inputId,
+      checkboxId,
+      rawValue: itemData[dataKey],
+    });
+  });
+
+  const maxLength = 1000;
+  const notesLength = (itemData["Notes"] || "").length;
+  const notesCountEl = document.getElementById("notescount");
+  if (notesCountEl) {
+    notesCountEl.textContent = `${notesLength}/${maxLength}`;
   }
 };
 // ----------------------------------------------|| Other Functions ||---------------------------------------
-const softshadesPageLoaded = async () => {
+const softShadesPageLoaded = async () => {
   if (!HEADERID) {
     window.location.href = "/order";
     return;
@@ -1042,13 +742,110 @@ const softshadesPageLoaded = async () => {
     return;
   }
 
-  await bindFormAggregate();
+  await bindDesigns(DESIGNID);
+  await bindHeaders(HEADERID);
+  bindFormAction(ITEMACTION, ITEMID);
+
   if (ITEMACTION === "AddItem") {
-    await handlerElementVisibility();
+    await bindBlinds(DESIGNID);
+    handlerElementVisibility();
     loaderFadeOut();
   } else if (["EditItem", "ViewItem", "CopyItem"].includes(ITEMACTION)) {
-    await bindItemOrders();
+    await bindItemOrders(ITEMID);
     loaderFadeOut();
+  }
+};
+
+const getItemData = async (query) => {
+  try {
+    const response = await fetch(`${URIMETHOD}/GetItemData`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: query }), // ✅ FIX
+    });
+
+    const json = await response.json();
+    return json.d;
+  } catch (err) {
+    console.error(err);
+    isError(err);
+  }
+};
+
+const bindSelect = async ({
+  elementId,
+  field,
+  params = {},
+  withDefaultOption = true,
+  onSingle = null,
+  afterRender = null,
+}) => {
+  const select = document.getElementById(elementId);
+  select.innerHTML = "";
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindListData`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        data: {
+          field,
+          ...params,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`${response.status}\n${text}`);
+    }
+
+    const result = await response.json();
+    const data = result.d;
+
+    if (!Array.isArray(data)) {
+      throw new Error(`No data returned from server : ${field}`);
+    }
+
+    select.innerHTML = "";
+
+    // default option
+    if (withDefaultOption && data.length > 0) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.text = "";
+      select.add(opt);
+    }
+
+    // render options
+    data.forEach((item) => {
+      const option = document.createElement("option");
+      option.value = item.value;
+      option.text = item.text.toUpperCase();
+      option.setAttribute("data-name", item.text);
+      select.add(option);
+    });
+
+    select.classList.add("fw-bold");
+
+    // callback setelah render
+    if (afterRender) {
+      await afterRender(data, select);
+    }
+
+    // kalau cuma 1 data
+    if (data.length === 1 && onSingle) {
+      select.selectedIndex = 0;
+      await onSingle(data[0], select);
+    }
+  } catch (err) {
+    const msg =
+      ROLENAME === "Administrator"
+        ? err.message
+        : "Please contact our IT team at support@onlineorder.au";
+    isError(msg);
   }
 };
 
@@ -1058,9 +855,7 @@ const generateOption = (elementId, list = [], lengthDefaultOption = 0) => {
   sel.innerHTML = ""; // reset
 
   // Short A-Z
-  if (!["wandlength"].includes(elementId)) {
-    list.sort();
-  }
+  list.sort();
 
   // default option kalau lebih dari 1 data
   if (list.length > lengthDefaultOption) {
@@ -1075,9 +870,26 @@ const generateOption = (elementId, list = [], lengthDefaultOption = 0) => {
   });
 };
 
-const catchMessages = (msg) => {
-  if (!["Administrator"].includes(ROLENAME))
-    msg = "Please contact our IT team at support@onlineorder.au";
-  isError(msg);
-  console.error(msg);
+const setJsonField = ({ inputId, checkboxId, rawValue }) => {
+  const inputEl = document.getElementById(inputId);
+  const checkboxEl = document.getElementById(checkboxId);
+
+  if (!inputEl || !checkboxEl || !rawValue) return;
+
+  try {
+    const parsed = JSON.parse(rawValue);
+
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const { value, checked } = parsed[0];
+
+      inputEl.value = value ?? "";
+      checkboxEl.checked = checked ?? false;
+
+      if (checked) {
+        inputEl.removeAttribute("readonly", true);
+      }
+    }
+  } catch (err) {
+    console.error(`JSON parse error (${inputId})`, err);
+  }
 };
