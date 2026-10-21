@@ -1216,7 +1216,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
                 Dim json As String = JsonConvert.SerializeObject(order)
                 Dim client As New HttpClient()
-                ' client.DefaultRequestHeaders.Add("X-API-KEY", "hidupjokowi")
+                client.DefaultRequestHeaders.Add("X-API-KEY", "hidupjokowi")
                 Dim content As New StringContent(json, Encoding.UTF8, "application/json")
                 Dim response = client.PostAsync("https://ordersblindonline.com/handler/Sunlight.ashx", content).Result
                 ' Dim response = client.PostAsync("http://10.0.209.65:2302/handler/Sunlight.ashx", content).Result
