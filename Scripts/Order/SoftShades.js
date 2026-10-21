@@ -265,7 +265,7 @@ const bindStack = () => {
 const bindTrackType = () => {
   let list = [];
   list.push("Shade");
-  generateOption("tracktype", list, 1);
+  generateOption("tracktype", list);
 };
 
 const bindTrackColour = (type) => {
