@@ -1211,15 +1211,15 @@ Partial Class Methods_Order_OrderDetailMethod
                     })
                 Next
 
-                Dim Res As Object = UpdateOrderSending(headerid, "BIG", True)
-                If Res.error Then Throw New Exception(Res.message)
+                ' Dim Res As Object = UpdateOrderSending(headerid, "BIG", True)
+                ' If Res.error Then Throw New Exception(Res.message)
 
                 Dim json As String = JsonConvert.SerializeObject(order)
                 Dim client As New HttpClient()
-                ' client.DefaultRequestHeaders.Add("X-API-KEY", "hidupjokowi")
+                client.DefaultRequestHeaders.Add("X-API-KEY", "hidupjokowi")
                 Dim content As New StringContent(json, Encoding.UTF8, "application/json")
-                ' Dim response = client.PostAsync("http://10.0.209.65:2302/handler/Sunlight.ashx", content).Result
-                Dim response = client.PostAsync("https://fvq6m64blm.rbmock.dev", content).Result
+                Dim response = client.PostAsync("http://10.0.209.65:2302/handler/Sunlight.ashx", content).Result
+                ' Dim response = client.PostAsync("https://fvq6m64blm.rbmock.dev", content).Result
 
                 Return New With { .error = false, .message = response.StatusCode.ToString()}
             End If
