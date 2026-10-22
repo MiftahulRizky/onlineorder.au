@@ -30,8 +30,9 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     }
 
     if (e.target.id === "fabriccolour") {
-      const fabriccolour = e.target.value;
-      await bindTape();
+      const fabricid = e.target.value;
+      const fabriccolour = e.target.selectedOptions[0].dataset.name;
+      await bindTape(fabriccolour);
     }
 
     if (e.target.id === "tracktype") {
@@ -204,10 +205,11 @@ const bindTubes = async (designid, blindtype) => {
         `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
       );
       const tubetype = item.value;
-      const fabriccolour = document.getElementById("fabriccolour").value;
+      const fabriccolour = document.getElementById("fabriccolour");
+      const fcolour = fabriccolour.selectedOptions[0]?.dataset.name;
       await handlerElementVisibility(blindtype, tubetype);
-      await bindFabrics(DESIGNID);
-      await bindTape();
+      await bindFabrics(designid);
+      await bindTape(fcolour);
       await Promise.all([
         bindSizeType(),
         bindDropFloor(),
@@ -310,10 +312,18 @@ const bindBracket = (track) => {
   generateOption("bracket", list);
 };
 
-const bindTape = async () => {
-  let list = ["White", "Grey"];
+const bindTape = async (fabriccolour) => {
+  let list = [];
 
-  generateOption("tape", list);
+  if (["White", "Soft White", "Ivory"].includes(fabriccolour)) {
+    list.push("White");
+  }
+
+  if (["Slate", "Black"].includes(fabriccolour)) {
+    list.push("Grey");
+  }
+
+  generateOption("tape", list, 1);
 };
 
 const bindItemOrders = async (itemid) => {
@@ -348,7 +358,7 @@ const bindItemOrders = async (itemid) => {
       await bindTubes(item.DesignId, item.BlindId);
       await bindFabrics(item.DesignId);
       await bindFabricColours(item.DesignId, item.FabricType);
-      await bindTape();
+      await bindTape(item.FabricColour);
       await handlerElementVisibility(item.BlindId, item.TubeType, item);
       await Promise.all([
         bindSizeType(),

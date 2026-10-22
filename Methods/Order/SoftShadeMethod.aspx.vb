@@ -131,7 +131,7 @@ Partial Class Methods_SoftShadeMethod
 
                 Case "fabriccolour"
                     ' data.designid ="28AF4887-5E18-4434-A6A0-08319672D7AA"
-                    query = String.Format("SELECT Id, UPPER(Colour) AS Colour FROM Fabrics WHERE DesignId='{0}' AND Active='1' AND Type='{1}' ORDER BY Name ASC", data.designid, data.fabrictype)
+                    query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId='{0}' AND Active='1' AND Type='{1}' ORDER BY Name ASC", data.designid, data.fabrictype)
                     Return GetFormattedData(query, "Id", "Colour")
 
                 Case Else
