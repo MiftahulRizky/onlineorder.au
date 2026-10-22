@@ -288,7 +288,7 @@ const bindWandColour = (size) => {
   let list = [];
   list.push("White");
   if (!["Custom"].includes(size)) {
-    list.push("Clear Anodize", "Black");
+    list.push("Silver", "Black");
   }
   generateOption("wandcolour", list);
 };
@@ -452,7 +452,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
     if (!tubetype) return;
     divFormDetail.classList.remove("d-none");
 
-    if (["Single"].includes(blindname)) {
+    if (["Single", "Complete Blind"].includes(blindname)) {
       lblWd.innerHTML = "width x drop";
       // divSizeType.classList.remove("d-none");
       divWidth.classList.remove("d-none");
@@ -469,7 +469,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       divSlatQty.classList.remove("d-none");
       divEndSlat.classList.remove("d-none");
       divTotalSlat.classList.remove("d-none");
-      divFabricQty.classList.remove("d-none");
+      // divFabricQty.classList.remove("d-none");
     }
 
     if (["Slat Only"].includes(blindname)) {
@@ -486,7 +486,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       divSlatQty.classList.remove("d-none");
       divEndSlat.classList.remove("d-none");
       divTotalSlat.classList.remove("d-none");
-      divFabricQty.classList.remove("d-none");
+      // divFabricQty.classList.remove("d-none");
     }
 
     if (["Track Only"].includes(blindname)) {

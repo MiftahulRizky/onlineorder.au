@@ -212,7 +212,7 @@ Partial Class Methods_SoftShadeMethod
                 End If
             End If
 
-            ' If InArray(BlindName, "Single") Then
+            ' If InArray(BlindName, "Complete Blind") Then
             '     If String.IsNullOrEmpty(data.sizetype) Then
             '         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "size type is required !", .field = "sizetype"}}
             '     End If
@@ -230,7 +230,7 @@ Partial Class Methods_SoftShadeMethod
 
             Dim width As Integer
             Dim drop As Integer
-            If InArray(BlindName, "Single", "Track Only") Then
+            If InArray(BlindName, "Complete Blind", "Track Only") Then
                 If String.IsNullOrEmpty(data.width) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width is required !",.field = "width"}}
                 End If
@@ -245,7 +245,7 @@ Partial Class Methods_SoftShadeMethod
                 End If
             End If
 
-            If InArray(BlindName, "Single", "Slat Only") Then
+            If InArray(BlindName, "Complete Blind", "Slat Only") Then
                 If String.IsNullOrEmpty(data.drop) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop is required !",.field = "drop"}}
                 End If
@@ -260,7 +260,7 @@ Partial Class Methods_SoftShadeMethod
                 End If
             End If
 
-            If InArray(BlindName, "Single", "Slat Only") Then
+            If InArray(BlindName, "Complete Blind", "Slat Only") Then
                 If String.IsNullOrEmpty(data.fabrictype) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
                 End If
@@ -282,7 +282,7 @@ Partial Class Methods_SoftShadeMethod
             End If
 
             Dim customsize As Integer
-            If InArray(BlindName, "Single", "Track Only") Then
+            If InArray(BlindName, "Complete Blind", "Track Only") Then
                 If String.IsNullOrEmpty(data.wandsize) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "wand size is required !",.field = "wandsize"}}
                 End If
@@ -393,7 +393,7 @@ Partial Class Methods_SoftShadeMethod
 
             Dim PriceGroupName As String = BlindName
             Dim FabricGroup As String = publicCfg.GetFabricGroup(data.fabriccolour)
-            ' If BlindName = "Single" Then
+            ' If BlindName = "Complete Blind" Then
             '     PriceGroupName = String.Format("{0} - {1}", DesignName, FabricGroup)
             ' End If
             ' If BlindName = "Slat Only" Then
@@ -540,7 +540,7 @@ Partial Class Methods_SoftShadeMethod
                 data.fabricqty = Newtonsoft.Json.JsonConvert.SerializeObject({CreateJSON})
             End If
 
-            If BlindName = "Single" Then
+            If BlindName = "Complete Blind" Then
                 data.blindsize = ""
             End If
 
@@ -878,7 +878,7 @@ Partial Class Methods_SoftShadeMethod
             Dim TrackType As String = CStr(ListParam(2))
             Dim Drop As Integer = CInt(ListParam(3))
 
-            If InArray (BlindName, "Single", "Track Only", "Slat Only") Then
+            If InArray (BlindName, "Complete Blind", "Track Only", "Slat Only") Then
                 If Mounting = "Face Fit" Then
                     Select Case TrackType
                         Case "Cube", "Standard"
@@ -914,7 +914,7 @@ Partial Class Methods_SoftShadeMethod
             Dim Carrier As Integer = CInt(ListParam(3))
             Dim CarrierOverride As Boolean = CBool(ListParam(4))
 
-            If BlindName ="Single" Then
+            If BlindName ="Complete Blind" Then
                 Select Case Stacking
                     Case "Centre Split"
                         SlatQty = Carrier - 2
@@ -1038,7 +1038,7 @@ Partial Class Methods_SoftShadeMethod
             ' Dim SlatQtyOverride As Boolean = CBool(ListParam(4))
             ' Dim EndSlatsOverride As Boolean = CBool(ListParam(4))
 
-            If BlindName = "Single" Then
+            If BlindName = "Complete Blind" Then
                 Result = Math.Round(((TotalSlats * Drop) + 100) / 1000, 2)
             End If
 
