@@ -4881,8 +4881,8 @@ Partial Class Methods_Order_JobSheetMethod
         Dim result As String = String.Empty
         
         Select Case currentData("BlindName").ToString()
-            Case "Soft Shades Single"
-                result += PrintSoftShadesSingle(currentData)
+            Case "Soft Shades Complete Blind"
+                result += PrintSoftShadesComplete(currentData)
             Case "Soft Shades Slat Only"
                 result += PrintSoftShadesSlat(currentData)
             Case "Soft Shades Track Only"
@@ -5096,7 +5096,7 @@ Partial Class Methods_Order_JobSheetMethod
         For i As Integer = 0 To shadeList.Tables(0).Rows.Count - 1
             Dim blindName As String = shadeList.Tables(0).Rows(i).Item("BlindName").ToString()
             Select Case blindName
-                Case "Soft Shades Single"
+                Case "Soft Shades Complete Blind"
                     goWithList.Add("SS")
                 Case "Soft Shades Slat Only"
                     goWithList.Add("SSs")
@@ -5352,7 +5352,7 @@ Partial Class Methods_Order_JobSheetMethod
                 ReportType = "Soft Shades"
 
                 Select Case  currentData("BlindName").ToString()
-                    Case "Soft Shades Single"
+                    Case "Soft Shades Complete Blind"
                         ReportType = "Soft Shades"
                         ReportIcon = "SS"
 
@@ -19145,7 +19145,7 @@ Partial Class Methods_Order_JobSheetMethod
     End Function
 
     '#------------------------------------------|| Print Detail - Vertical||------------------------------------------#
-    Private Shared Function PrintSoftShadesSingle(currentData As DataRow) As String
+    Private Shared Function PrintSoftShadesComplete(currentData As DataRow) As String
         Dim result As String = String.Empty
 
         Dim initBlindType As String() = {
@@ -19159,7 +19159,7 @@ Partial Class Methods_Order_JobSheetMethod
 
         Dim initBlindName As String() = CType(initBlindType.Clone(), String())
 
-        If currentData("BlindName").ToString() = "Soft Shades Single" Then
+        If currentData("BlindName").ToString() = "Soft Shades Complete Blind" Then
             For i As Integer = 0 To initBlindType.Length - 1
                 If Not String.IsNullOrEmpty(initBlindType(i)) Then
                     initBlindType(i) = "Complete Blind"
@@ -19238,6 +19238,7 @@ Partial Class Methods_Order_JobSheetMethod
         }
         For i As Integer = 0 To inFabricQty.Length - 1
             inFabricQty(i) = GetJsonValue(inFabricQty(i))
+            inFabricQty(i) = ""
         Next
 
         Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
@@ -19647,6 +19648,7 @@ Partial Class Methods_Order_JobSheetMethod
         }
         For i As Integer = 0 To inFabricQty.Length - 1
             inFabricQty(i) = GetJsonValue(inFabricQty(i))
+            inFabricQty(i) = ""
         Next
 
         Dim inBlindSize As String() = {

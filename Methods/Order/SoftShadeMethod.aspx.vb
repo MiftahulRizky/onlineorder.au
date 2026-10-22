@@ -885,6 +885,8 @@ Partial Class Methods_SoftShadeMethod
                             Result = Drop - 55
                         Case "Decorative (Flat)", "Decorative (Round)"
                             Result = Drop - 70
+                        Case "Shade"
+                            Result = Drop - 50
                     End Select
                 Else If Mounting = "Reveal Fit" Then
                     Select Case TrackType
@@ -892,6 +894,8 @@ Partial Class Methods_SoftShadeMethod
                             Result = Drop - 50
                         Case "Decorative (Flat)", "Decorative (Round)"
                             Result = Drop - 65
+                        Case "Shade"
+                            Result = Drop - 50
                     End Select
                 End If
             End If
