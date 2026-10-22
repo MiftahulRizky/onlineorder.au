@@ -852,6 +852,7 @@ const bindProduct = (data) => {
     const option = document.createElement("option");
     option.value = item.value;
     option.text = item.text.toUpperCase();
+    option.setAttribute("data-name", item.text);
     const dev = item.env.includes("Development");
     const test = item.env.includes("Testing");
     const prod = item.env.includes("Production");
