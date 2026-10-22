@@ -165,9 +165,13 @@ selectorEl("#tableOrders").addEventListener("click", async (e) => {
     if (key === "btnDetailOrder") {
       const id = e.target.dataset.id;
       const type = e.target.dataset.type;
-      const isSp = ["Blinds", "Door", "Window", "Door and Window"].includes(
-        type,
-      );
+      const isSp = [
+        "Blinds",
+        "Door",
+        "Window",
+        "Door and Window",
+        "Furnishings",
+      ].includes(type);
       const isShutters = ["Panorama", "Evolve"].includes(type);
       let page = "/order";
 

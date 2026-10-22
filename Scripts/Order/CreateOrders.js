@@ -48,7 +48,7 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
       if (e.target.id === "ordertype") {
         const ordertype = e.target.value;
         await bindCustomers(ordertype);
-        if (["Panorama", "Evolve"].includes(ordertype)) {
+        if (["Panorama", "Evolve", "Shutters"].includes(ordertype)) {
           await bindUsers();
         }
         getById("createtype").value = "Create New";
@@ -85,9 +85,11 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
 
       if (e.target.id === "delivery") {
         const delivery = e.target.value;
+        const isAdministrator = ROLENAME === "Administrator";
+        const isDelivery = delivery === "Delivery";
         toggleShow(elForm.divDeliveryType, false);
 
-        if (delivery === "Delivery") {
+        if (isAdministrator && isDelivery) {
           toggleShow(elForm.divDeliveryType, true);
         }
       }
@@ -177,20 +179,31 @@ selectorElAll(".btn-information").forEach((el) => {
 selectorEl("#btn-cancel").addEventListener("click", (e) => {
   e.preventDefault();
 
-  if (ACTION == "add") {
-    window.location.href = "/order";
+  const isEdit = ACTION === "edit";
+  const isAdd = ACTION === "add";
+  const isFurnishing = [
+    "blinds",
+    "door",
+    "window",
+    "door and window",
+    "furnishings",
+  ].includes(ORDERTYPE);
+  const isShutters = ["panorama", "evolve", "shutters"].includes(ORDERTYPE);
+  let url = "/order";
+
+  if (isAdd) {
+    url;
   }
 
-  if (
-    ACTION == "edit" &&
-    ["blinds", "door", "window", "door and window"].includes(ORDERTYPE)
-  ) {
-    window.location.href = `/order/orderdetails?param=${ID}&ordertype=${ORDERTYPE.toLowerCase()}`;
+  if (isEdit && isFurnishing) {
+    url = `/order/orderdetails?param=${ID}&ordertype=${ORDERTYPE.toLowerCase()}`;
   }
 
-  if (ACTION == "edit" && ["panorama", "evolve"].includes(ORDERTYPE)) {
-    window.location.href = `/order/shutters/detail?param=${ID}&ordertype=${ORDERTYPE}`;
+  if (isEdit && isShutters) {
+    url = `/order/shutters/detail?param=${ID}&ordertype=${ORDERTYPE}`;
   }
+
+  window.location.href = url;
 });
 
 selectorEl("#btn-submit-order").addEventListener("click", (e) => {
@@ -289,11 +302,14 @@ const bindOrderAggregate = async () => {
     const isProduction = ["In Production", "Canceled", "Completed"].includes(
       header.Status,
     );
+    const isShutters = ["Panorama", "Evolve", "Shutters"].includes(
+      header.OrderType,
+    );
     setState("delivery_edit", header.Delivery);
     setState("status_edit", header.Status);
-    if (["Panorama", "Evolve"].includes(header.OrderType)) {
+    if (isShutters) {
       if (isCustomer && isProduction) {
-        window.location.href = `/order/shutters/detail?ultron=${header.Id}&infinity=panorama`;
+        window.location.href = `/order/shutters/detail?param=${header.Id}&ordertype=${header.OrderType}`;
         return;
       }
     }
@@ -660,7 +676,8 @@ const displayElOverall = async (ordertype) => {
     const isLeader = LEVELNAME === "Leader";
     const isBlinds = ordertype === "Blinds";
     const isDoorWindows = ordertype === "Door and Window";
-    const isShutters = ["Panorama", "Evolve"].includes(ordertype);
+    const isFurnishings = ordertype === "Furnishings";
+    const isShutters = ["Panorama", "Evolve", "Shutters"].includes(ordertype);
     const isEdit = ACTION === "edit";
     const isAdd = ACTION === "add";
 
@@ -674,7 +691,7 @@ const displayElOverall = async (ordertype) => {
       toggleShow(elForm.divCustomer, true);
     }
 
-    if (isBlinds) {
+    if (isBlinds || isFurnishings) {
       if (isAdd) {
         // toggleShow(elForm.divCreateType, true);
         const createtype = getById("createtype").value;
@@ -688,7 +705,7 @@ const displayElOverall = async (ordertype) => {
       }
     }
 
-    if (isDoorWindows) {
+    if (isDoorWindows || isFurnishings) {
       toggleShow(elForm.divOrderNumber, true);
       toggleShow(elForm.divOrderName, true);
     }
@@ -706,13 +723,13 @@ const displayElOverall = async (ordertype) => {
       ?.dataset.delivery;
     const isUpload = selectorEl("#formDetail #customer").selectedOptions[0]
       ?.dataset.upload;
-    if (!isDelivery && isBlinds) {
+    if (!isDelivery && (isBlinds || isFurnishings)) {
       getById("delivery").value = "";
       getById("deliverytype").value = "";
       toggleShow(elForm.divDelivery, true);
     }
 
-    if (isUpload === "True" && isBlinds) {
+    if (isUpload === "True" && (isBlinds || isFurnishings)) {
       if (isAdd) {
         getById("createtype").value = "Create New";
         toggleShow(elForm.divCreateType, true);
@@ -726,11 +743,11 @@ const displayElOverall = async (ordertype) => {
       toggleShow(elForm.divOrderId, true);
       getById("orderid").setAttribute("disabled", true);
 
-      if (isBlinds) {
+      if (isBlinds || isFurnishings) {
         toggleShow(elForm.divOrderNumber, true);
         toggleShow(elForm.divOrderName, true);
         toggleShow(elForm.divDelivery, true);
-        if (!isCustomer) {
+        if (isAdministrator) {
           isDelivery = getState("delivery_edit");
           if (isDelivery === "Delivery") {
             toggleShow(elForm.divDeliveryType, true);

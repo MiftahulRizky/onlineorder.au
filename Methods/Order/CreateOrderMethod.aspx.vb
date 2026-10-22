@@ -308,7 +308,7 @@ Partial Class Methods_Order_CreateOrderMethod
             Dim HeaderData As String = publicCfg.GetItemData(String.Format("SELECT Id FROM OrderHeaders WHERE OrderNo='{0}' AND OrderCust='{1}' AND Active = 1", csvOrderNumber.Trim(), csvOrderName.Trim()))
             Dim FinalDelivery As String = data.delivery
             Dim CustomerDelivery As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM Customers WHERE Id = '{0}'", data.customer))
-            If data.ordertype = "Blinds"Then
+            If InArray(data.ordertype, "Blinds", "Furnishings") Then
 
                 If String.IsNullOrEmpty(data.delivery) AND String.IsNullOrEmpty(CustomerDelivery) AND String.IsNullOrEmpty(HeaderData) Then
                     Return New With { .warning = true, .message = "delivery is required !", .field = "delivery"}
@@ -336,12 +336,14 @@ Partial Class Methods_Order_CreateOrderMethod
             If data.delivery = "Pick Up" Then
                 data.deliverytype = ""
             End If
-            
+
+
             Dim msg As String = "200"
             Dim url As String = "/"
             If data.action = "add" Then
-                If InArray(data.ordertype, "Blinds", "Door and Window")  Then
+                If InArray(data.ordertype, "Blinds", "Door and Window", "Furnishings")  Then
 
+                    
                     data.headerid = publicCfg.CreateOrderHeaderId()
                     Using thisConn As New SqlConnection(myConn)
                         thisConn.Open()
@@ -407,23 +409,24 @@ Partial Class Methods_Order_CreateOrderMethod
 
                         thisConn.Close()
                     End Using
-                    
-                    Using thisConn As New SqlConnection(myConn)
-                        Using myCmd As New SqlCommand("SELECT Id FROM OrderDetails WHERE HeaderId=@HeaderId", thisConn)
-                            myCmd.Parameters.AddWithValue("@HeaderId", data.headerid)
-                            myCmd.Connection = thisConn
-                            thisConn.Open()
-                            Dim reader As SqlDataReader = myCmd.ExecuteReader()
-                            While reader.Read()
-                                Dim itemId As Integer = reader.GetInt32(0)
-                                publicCfg.ResetPriceDetail(itemId)
-                                publicCfg.HitungHarga(data.headerid, itemId)
-                                publicCfg.HitungSurcharge(data.headerid, itemId)
-                            End While
-                            reader.Close()  
-                            thisConn.Close()
+                    If data.createtype = "Upload CSV" Then
+                        Using thisConn As New SqlConnection(myConn)
+                            Using myCmd As New SqlCommand("SELECT Id FROM OrderDetails WHERE HeaderId=@HeaderId", thisConn)
+                                myCmd.Parameters.AddWithValue("@HeaderId", data.headerid)
+                                myCmd.Connection = thisConn
+                                thisConn.Open()
+                                Dim reader As SqlDataReader = myCmd.ExecuteReader()
+                                While reader.Read()
+                                    Dim itemId As Integer = reader.GetInt32(0)
+                                    publicCfg.ResetPriceDetail(itemId)
+                                    publicCfg.HitungHarga(data.headerid, itemId)
+                                    publicCfg.HitungSurcharge(data.headerid, itemId)
+                                End While
+                                reader.Close()  
+                                thisConn.Close()
+                            End Using
                         End Using
-                    End Using
+                    End If
 
                     url = String.Format("/order/orderdetails?param={0}&ordertype={1}", data.headerid, data.ordertype.ToLower())
 
@@ -432,7 +435,7 @@ Partial Class Methods_Order_CreateOrderMethod
 
                 End If
 
-                If InArray(data.ordertype, "Panorama" ,"Evolve")  Then
+                If InArray(data.ordertype, "Panorama" ,"Evolve", "Shutters")  Then
                     Dim headerId As String = orderCfg.CreateOrderHeaderId()
                     Dim orderId As String = "SPP-" & headerId
 
@@ -470,7 +473,7 @@ Partial Class Methods_Order_CreateOrderMethod
             End If
 
             If data.action = "edit" Then
-                IF InArray(data.ordertype, "Blinds", "Door and Window") Then
+                IF InArray(data.ordertype, "Blinds", "Door and Window", "Furnishings") Then
                     Dim DeliveryOrder As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM OrderHeaders WHERE Id={0}", data.headerid))
                     Using thisConn As New SqlConnection(myConn)
                         Using myCmd As New SqlCommand("UPDATE OrderHeaders SET UserId=@UserId, StoreId=@StoreId, OrderNo=LTRIM(RTRIM(@OrderNo)), OrderCust=LTRIM(RTRIM(@OrderCust)), Delivery=@Delivery, DeliveryType=@DeliveryType, OrderSourceType=@OrderSourceType, Note=@Note, Active=1 WHERE Id=@Id", thisConn)
@@ -512,7 +515,7 @@ Partial Class Methods_Order_CreateOrderMethod
                     url = String.Format("/order/orderdetails?param={0}&ordertype={1}", data.headerid, data.ordertype.ToLower())
                 End If
 
-                If InArray(data.ordertype, "Panorama", "Evolve") Then
+                If InArray(data.ordertype, "Panorama", "Evolve", "Shutters") Then
                     Using thisConn As New SqlConnection(myConn)
                         Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders_Shutters SET OrderId=@OrderId, JobId=@JobId, JobDate=@JobDate, ShipmentId=@ShipmentId, CustomerId=@CustomerId, CreatedBy=@CreatedBy, OrderNumber=@OrderNumber, OrderName=@OrderName, OrderNote=@OrderNote WHERE Id=@Id")
                             myCmd.Parameters.AddWithValue("@Id", data.headerid)
@@ -541,6 +544,8 @@ Partial Class Methods_Order_CreateOrderMethod
                 orderCfg.Log_Orders(dataLog)
                 msg = "Data has been updated successfully."
             End If
+
+            ' Throw New Exception(data.ordertype)
 
             If msg = "200" Then Throw New Exception(msg)
 

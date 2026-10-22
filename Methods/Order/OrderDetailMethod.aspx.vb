@@ -586,14 +586,21 @@ Partial Class Methods_Order_OrderDetailMethod
                 Env = "AND Designs.Description IN ('Environment : Production', 'Environment : Testing')"
             End If
 
-            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Designs.Id, Designs.Name FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '{0}' AND Designs.Type <> 'Additional' AND Designs.Company = 'SP' AND Designs.Type = '{1}' {2} AND Designs.Active = 1 ORDER BY Designs.Name ASC", customerid, ordertype, Env))
+            Dim Type As String = String.Format("AND Designs.Type = '{0}'", ordertype)
+            If ordertype.ToLower() = "furnishings" Then
+                Type = "AND Designs.Type IN ('Blinds', 'Door and Window')"
+            End If
+
+
+            Dim datas As DataSet = publicCfg.GetListData(String.Format("SELECT Designs.Id, Designs.Name, Designs.Description FROM CustomerProductAccess CROSS APPLY STRING_SPLIT ( CustomerProductAccess.DesignId, ',' ) AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '{0}' AND Designs.Type <> 'Additional' AND Designs.Company = 'SP' {1} {2} AND Designs.Active = 1 ORDER BY Designs.Name ASC", customerid, Type, Env))
 
             Dim list As New List(Of Dictionary(Of String, String))()
             If datas IsNot Nothing AndAlso datas.Tables.Count > 0 Then
                 For Each row As DataRow In datas.Tables(0).Rows
                     Dim result As New Dictionary(Of String, String) From {
                         {"value", row("Id").ToString()},
-                        {"text", row("Name").ToString()}
+                        {"text", row("Name").ToString()},
+                        {"env", row("Description").ToString()}
                     }
                     list.Add(result)
                 Next

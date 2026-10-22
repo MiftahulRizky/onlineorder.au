@@ -839,6 +839,7 @@ const bindStatus = (params, statusNow) => {
 const bindProduct = (data) => {
   const sel = document.querySelector("#modalAddItem #designid");
   sel.innerHTML = ""; // reset
+  const isAdmin = ROLENAME === "Administrator";
 
   if (data.length > 0) {
     const defaultOption = document.createElement("option");
@@ -851,7 +852,16 @@ const bindProduct = (data) => {
     const option = document.createElement("option");
     option.value = item.value;
     option.text = item.text.toUpperCase();
-    option.setAttribute("data-name", item.text);
+    const dev = item.env.includes("Development");
+    const test = item.env.includes("Testing");
+    const prod = item.env.includes("Production");
+    if (isAdmin) {
+      if (dev) {
+        option.classList.add("text-danger");
+      } else if (test) {
+        option.classList.add("text-warning");
+      }
+    }
     sel.add(option);
   });
 };

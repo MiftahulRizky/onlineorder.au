@@ -90,7 +90,7 @@ Partial Class Methods_Order_PdfOrderMethod
                 Return New With { .warning = true, .message = "Please add item first !"}
             End If
 
-            Dim headerData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id='{0}' AND OrderType IN ('Blinds', 'Door and Window')", headerid))
+            Dim headerData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id='{0}' AND OrderType IN ('Blinds', 'Door and Window', 'Furnishings')", headerid))
             if headerData.Tables(0).Rows.Count < 1 Then
                 Throw New Exception("Order Header not found.")
             End If
@@ -176,7 +176,7 @@ Partial Class Methods_Order_PdfOrderMethod
             Return New With {.success = true, .message = msg, .url = url}
 
         Catch ex As Exception
-            Return New With {.error = true, .message = ex.Message}
+            Return New With {.error = true, .message = String.Format("CreatePDFOrder: {0}", ex.Message)}
         End Try
     End Function
 
