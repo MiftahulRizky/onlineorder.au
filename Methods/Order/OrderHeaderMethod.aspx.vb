@@ -341,8 +341,15 @@ Partial Class Methods_Order_OrderHeaderMethod
 
             Dim whereOrderType As String = " AND (@OrderType = 'ALL' OR OrderType = @OrderType) "
             If params.loginid = "admin" or params.username = "galih" Then
-                whereOrderType = " AND OrderType <> 'Blinds' "
+                whereOrderType = " AND OrderType IN ('Panorama', 'Evolve', 'Shutters') "
             End If
+            If params.ordertype = "Furnishings" Then
+                whereOrderType = " AND OrderType IN ('Blinds', 'Door and Window', 'Furnishings') "
+            End If
+            If params.ordertype = "Shutters" Then
+                whereOrderType = " AND OrderType IN ('Panorama', 'Evolve', 'Shutters') "
+            End If
+            
             
             Return New With {.error = false, .statusMerged = statusMerged, .whereRole = whereRole, .whereOrderType = whereOrderType}
         Catch ex As Exception

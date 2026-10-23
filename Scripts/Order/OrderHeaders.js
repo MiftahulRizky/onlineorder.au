@@ -172,7 +172,7 @@ selectorEl("#tableOrders").addEventListener("click", async (e) => {
         "Door and Window",
         "Furnishings",
       ].includes(type);
-      const isShutters = ["Panorama", "Evolve"].includes(type);
+      const isShutters = ["Panorama", "Evolve", "Shutters"].includes(type);
       let page = "/order";
 
       if (isSp) {

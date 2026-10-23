@@ -988,7 +988,9 @@ Partial Class Order_Method
                 Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Add Item Order"}
                 orderCfg.Log_Orders(dataLog)
 
-                orderCfg.UpdateProductType(data.headerid)
+                If Not ordertype = "Shutters" Then
+                    orderCfg.UpdateProductType(data.headerid)
+                End If
             Next
             Return "Success"
         End If
@@ -1070,7 +1072,9 @@ Partial Class Order_Method
             Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Edit Item Order"}
             orderCfg.Log_Orders(dataLog)
 
-            orderCfg.UpdateProductType(data.headerid)
+            If Not ordertype = "Shutters" Then
+                orderCfg.UpdateProductType(data.headerid)
+            End If
 
             Return "Success"
         End If
@@ -1309,7 +1313,9 @@ Partial Class Order_Method
             Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Add Item Order"}
             orderCfg.Log_Orders(dataLog)
 
-            orderCfg.UpdateProductType(data.headerid)
+            If Not ordertype = "Shutters" Then
+                orderCfg.UpdateProductType(data.headerid)
+            End If
 
             Return "Success"
         End If
@@ -1350,7 +1356,9 @@ Partial Class Order_Method
             Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Edit Item Order"}
             orderCfg.Log_Orders(dataLog)
 
-            orderCfg.UpdateProductType(data.headerid)
+            If Not ordertype = "Shutters" Then
+                orderCfg.UpdateProductType(data.headerid)
+            End If                
 
             ' Return "itemId :" & itemId
             Return "Success"
@@ -2121,7 +2129,9 @@ Partial Class Order_Method
                 Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Add Item Order"}
                 orderCfg.Log_Orders(dataLog)
 
-                orderCfg.UpdateProductType(data.headerid)
+                If Not ordertype = "Shutters" Then
+                    orderCfg.UpdateProductType(data.headerid)
+                End If
 
                 orderCfg.ReloadAllCost(data.headerid)
             Next
@@ -2212,7 +2222,9 @@ Partial Class Order_Method
 
             orderCfg.ResetAuthorization(data.headerid, itemId)
 
-            orderCfg.UpdateProductType(data.headerid)
+            If Not ordertype = "Shutters" Then
+                orderCfg.UpdateProductType(data.headerid)
+            End If
 
             Dim Res As String = orderCfg.ReloadAllCost(data.headerid)
             If Not Res = "200" Then Return Res

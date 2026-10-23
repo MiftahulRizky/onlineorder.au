@@ -1716,15 +1716,24 @@ Partial Class Order_Detail
             If Not lblCustomerId.Text = "" Then
                 Dim ordertype As String = Request.QueryString("ordertype")
                 Dim types As String = StrConv(ordertype, VbStrConv.ProperCase)
+                Dim wheretype As String = String.Format("AND Designs.Type = '{0}'", types)
+                If types = "Shutters" Then
+                    wheretype = "AND Designs.Type IN ('Panorama', 'Evolve', 'Shutters')"
+                End If
 
-                Dim thisQuery As String = "SELECT Designs.Id, UPPER(Designs.Name) AS NameText FROM CustomerProductAccess CROSS APPLY STRING_SPLIT(CustomerProductAccess.DesignId, ',') AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '" + Session("CustomerId").ToString() + "' AND Designs.Type <> 'Additional' AND Designs.Type = '" +  types + "' AND Designs.Active = 1 ORDER BY Designs.Name ASC"
+                Dim thisQuery As String = String.Format("SELECT Designs.Id, UPPER(Designs.Name) AS NameText FROM CustomerProductAccess CROSS APPLY STRING_SPLIT(CustomerProductAccess.DesignId, ',') AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '{0}' AND Designs.Type <> 'Additional' {1} AND Designs.Active = 1 ORDER BY Designs.Name ASC", Session("CustomerId").ToString(), wheretype)
 
 
 
                 If gvList.Rows.Count > 0 Then
-                    Dim type As String = orderCfg.GetItemData("SELECT TOP 1 Designs.Type FROM OrderDetails_Shutters INNER JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id INNER JOIN Designs ON Products.DesignId = Designs.Id WHERE OrderDetails_Shutters.HeaderId = '" + lblHeaderId.Text + "' AND OrderDetails_Shutters.Active = 1 ORDER BY OrderDetails_Shutters.Id ASC")
+                    Dim type As String = orderCfg.GetItemData(String.Format("SELECT TOP 1 Designs.Type FROM OrderDetails_Shutters INNER JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id INNER JOIN Designs ON Products.DesignId = Designs.Id WHERE OrderDetails_Shutters.HeaderId = '{0}' AND OrderDetails_Shutters.Active = 1 ORDER BY OrderDetails_Shutters.Id ASC", lblHeaderId.Text))
 
-                    thisQuery = "SELECT Designs.Id, UPPER(Designs.Name) AS NameText FROM CustomerProductAccess CROSS APPLY STRING_SPLIT(CustomerProductAccess.DesignId, ',') AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '" + Session("CustomerId").ToString() + "' AND Designs.Type <> 'Additional' AND Type = '" + type + "' AND Designs.Active = 1 ORDER BY Designs.Name ASC"
+                    wheretype = String.Format(" AND Type = '{0}'", type)
+                    If types = "Shutters" Then
+                        wheretype = "AND Type IN ('Panorama', 'Evolve', 'Shutters')"
+                    End If
+
+                    thisQuery = String.Format("SELECT Designs.Id, UPPER(Designs.Name) AS NameText FROM CustomerProductAccess CROSS APPLY STRING_SPLIT(CustomerProductAccess.DesignId, ',') AS designArray INNER JOIN Designs ON designArray.VALUE = Designs.Id WHERE CustomerProductAccess.Id = '{0}' AND Designs.Type <> 'Additional' {1} AND Designs.Active = 1 ORDER BY Designs.Name ASC", Session("CustomerId").ToString(), wheretype)
 
                     If lblCustomerId.Text = "LS-A195" Or lblCustomerId.Text = "LS-A307" Then
                         Dim production As String = orderCfg.GetItemData("SELECT TOP 1 Production FROM OrderDetails_Shutters WHERE HeaderId = '" + lblHeaderId.Text + "' AND Active=1 ORDER BY Id ASC")
