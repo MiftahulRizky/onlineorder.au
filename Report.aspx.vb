@@ -29,7 +29,7 @@ Partial Class Report
         MessageError(False, String.Empty)
         Try
             If ddlReportType.SelectedValue = "" Then
-                MessageError(True, "DATE TO IS REQUIRED !")
+                MessageError(True, "REPORT TYPE IS REQUIRED !")
                 ddlReportType.Focus()
                 Exit Sub
             End If
