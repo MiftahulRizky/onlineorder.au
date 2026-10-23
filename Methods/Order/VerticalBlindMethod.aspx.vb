@@ -308,7 +308,7 @@ Partial Class Methods_Order_VerticalBlindMethod
             Dim drop As Integer
             If BlindName = "Complete" Or BlindName = "Track Only" Then
                 Dim MaxWidth As Integer = 6000
-                If BlindName = "Track Only" AND TubeName = "Javaline" Then
+                If InArray(BlindName, "Track Only", "Complete")  AND TubeName = "Javaline" Then
                     MaxWidth = 4000
                 End If
 
