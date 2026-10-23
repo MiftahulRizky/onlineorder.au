@@ -425,9 +425,9 @@ Partial Class Report
 
     Private Sub MessageError(Show As Boolean, Msg As String)
         Dim RoleName As String = Session("RoleName").ToString
-        If Not RoleName = "Administrator" Then
-            Msg = "Please contact our IT team at support@onlineorder.au"
-        End If
+        ' If Not RoleName = "Administrator" Then
+        '     Msg = "Please contact our IT team at support@onlineorder.au"
+        ' End If
         divError.Visible = Show : msgError.InnerText = Msg
     End Sub
 End Class
