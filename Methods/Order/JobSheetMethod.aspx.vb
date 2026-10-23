@@ -284,6 +284,8 @@ Partial Class Methods_Order_JobSheetMethod
                     Dim TubeSkinSize As Integer = 0
                     Dim NumBoldNuts As Integer = 0
                     Dim LinkBlind As String = String.Empty
+                    Dim MotorStyle As String = row("MotorStyle").ToString()
+                    Dim ControlPosition As String = row("ControlPosition").ToString()
                     Dim DesignName As String = row("DesignName").ToString()
                     Dim BlindName As String = row("BlindName").ToString()
                     Dim KitName As String = row("KitName").ToString()
@@ -298,6 +300,10 @@ Partial Class Methods_Order_JobSheetMethod
                     If DesignName = "Global Roller Blinds" Then
                         TubeSkinSize = 0
                         NumBoldNuts = 0
+                    End If
+
+                    If String.IsNullOrEmpty(ControlPosition) Then
+                        MotorStyle = ""
                     End If
 
                     If DesignName = "Soft Shades" Then
@@ -482,7 +488,7 @@ Partial Class Methods_Order_JobSheetMethod
                         insertCmd.Parameters.AddWithValue("@ControlLength", row("ControlLength"))
                         insertCmd.Parameters.AddWithValue("@ChainLength", row("ChainLength"))
                         insertCmd.Parameters.AddWithValue("@MaterialChain", row("MaterialChain"))
-                        insertCmd.Parameters.AddWithValue("@MotorStyle", row("MotorStyle"))
+                        insertCmd.Parameters.AddWithValue("@MotorStyle", MotorStyle)
                         insertCmd.Parameters.AddWithValue("@MotorRemote", row("MotorRemote"))
                         insertCmd.Parameters.AddWithValue("@MotorRequired", row("MotorRequired"))
                         insertCmd.Parameters.AddWithValue("@MotorBattery", row("MotorBattery"))
