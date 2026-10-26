@@ -689,6 +689,14 @@ const bindOrderAggregate = async (headerid, ordertype) => {
       throw new Error("No data");
     }
 
+    if (data.warning) {
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      throw new Error(data.message);
+    }
+
     if (data.error) {
       throw new Error(data.message);
     }

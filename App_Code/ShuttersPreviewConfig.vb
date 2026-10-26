@@ -62,7 +62,7 @@ Public Class ShuttersPreviewConfig
         Return result
     End Function
 
-    Public Sub BindContent(Id As String, FilePath As String)
+    Public Sub BindContent(Id As String, FilePath As String, Optional OrderType As String = "", Optional ProductType As String = "")
         Dim pdfFilePath As String = FilePath
         Using fs As New FileStream(pdfFilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite)
             Dim headerData As DataSet = GetListData("SELECT * FROM OrderHeaders_Shutters WHERE Id = '" + Id + "'")
@@ -117,420 +117,428 @@ Public Class ShuttersPreviewConfig
 
             doc.Open()
 
-            ' START PANORAMA PVC PARTS
-            Try
-                Dim panoramaPartsData As DataSet = GetListData("SELECT OrderDetails_Shutters.* FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id LEFT JOIN Designs ON Products.DesignId = Designs.Id WHERE OrderDetails_Shutters.HeaderId = '" + Id + "' AND Designs.Name = 'Panorama PVC Parts' AND OrderDetails_Shutters.Active = 1 ORDER BY OrderDetails_Shutters.Number ASC")
-                If Not panoramaPartsData.Tables(0).Rows.Count = 0 Then
-                    pageEvent.PageTitle = "PANORAMA PVC PARTS"
-                    Dim table As New PdfPTable(5)
-                    table.WidthPercentage = 100
 
-                    Dim dt As DataTable = panoramaPartsData.Tables(0)
-                    Dim items(7, dt.Rows.Count - 1) As String
+            If String.IsNullOrEmpty(OrderType) OR (OrderType = "Shutters" AND ProductType = "Panorama") Then
+                ' START PANORAMA PVC PARTS
+                Try
+                    Dim panoramaPartsData As DataSet = GetListData("SELECT OrderDetails_Shutters.* FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id LEFT JOIN Designs ON Products.DesignId = Designs.Id WHERE OrderDetails_Shutters.HeaderId = '" + Id + "' AND Designs.Name = 'Panorama PVC Parts' AND OrderDetails_Shutters.Active = 1 ORDER BY OrderDetails_Shutters.Number ASC")
+                    If Not panoramaPartsData.Tables(0).Rows.Count = 0 Then
+                        pageEvent.PageTitle = "PANORAMA PVC PARTS"
+                        Dim table As New PdfPTable(5)
+                        table.WidthPercentage = 100
 
-                    For i As Integer = 0 To dt.Rows.Count - 1
-                        Dim number As Integer = i + 1
+                        Dim dt As DataTable = panoramaPartsData.Tables(0)
+                        Dim items(7, dt.Rows.Count - 1) As String
 
-                        Dim length As String = String.Empty
-                        If dt.Rows(i)("PartLength") > 0 Then
-                            length = dt.Rows(i)("PartLength").ToString()
-                        End If
+                        For i As Integer = 0 To dt.Rows.Count - 1
+                            Dim number As Integer = i + 1
 
-                        items(0, i) = "Item : " & number
-                        items(1, i) = dt.Rows(i)("Qty").ToString()
-                        items(2, i) = dt.Rows(i)("PartCategory").ToString()
-                        items(3, i) = dt.Rows(i)("PartComponent").ToString()
-                        items(4, i) = dt.Rows(i)("PartColour").ToString()
-                        items(5, i) = length
-                        items(6, i) = dt.Rows(i)("Notes").ToString()
-                    Next
+                            Dim length As String = String.Empty
+                            If dt.Rows(i)("PartLength") > 0 Then
+                                length = dt.Rows(i)("PartLength").ToString()
+                            End If
 
-                    For i As Integer = 0 To items.GetLength(1) - 1 Step 4
-                        If i > 0 Then doc.NewPage()
-
-                        Dim fontHeader As New Font(Font.FontFamily.TIMES_ROMAN, 9, Font.BOLD)
-                        Dim fontContent As New Font(Font.FontFamily.TIMES_ROMAN, 9)
-
-                        Dim headers As String() = {"", "Qty", "Category", "Component", "Colour", "Length", "Notes"}
-
-                        For row As Integer = 0 To headers.Length - 1
-                            Dim cellHeader As New PdfPCell(New Phrase(headers(row), fontHeader))
-                            cellHeader.HorizontalAlignment = Element.ALIGN_RIGHT
-                            cellHeader.VerticalAlignment = Element.ALIGN_MIDDLE
-                            cellHeader.BackgroundColor = New BaseColor(200, 200, 200)
-                            cellHeader.MinimumHeight = 22
-                            table.AddCell(cellHeader)
-
-                            For col As Integer = i To Math.Min(i + 3, items.GetLength(1) - 1)
-                                Dim cellContent As New PdfPCell(New Phrase(items(row, col), fontContent))
-                                cellContent.HorizontalAlignment = Element.ALIGN_CENTER
-                                cellContent.VerticalAlignment = Element.ALIGN_MIDDLE
-                                cellContent.MinimumHeight = 22
-                                table.AddCell(cellContent)
-                            Next
-
-                            For col As Integer = items.GetLength(1) To i + 3
-                                Dim emptyCell As New PdfPCell(New Phrase("", fontContent))
-                                emptyCell.HorizontalAlignment = Element.ALIGN_CENTER
-                                emptyCell.VerticalAlignment = Element.ALIGN_MIDDLE
-                                emptyCell.MinimumHeight = 22
-                                table.AddCell(emptyCell)
-                            Next
+                            items(0, i) = "Item : " & number
+                            items(1, i) = dt.Rows(i)("Qty").ToString()
+                            items(2, i) = dt.Rows(i)("PartCategory").ToString()
+                            items(3, i) = dt.Rows(i)("PartComponent").ToString()
+                            items(4, i) = dt.Rows(i)("PartColour").ToString()
+                            items(5, i) = length
+                            items(6, i) = dt.Rows(i)("Notes").ToString()
                         Next
-                        doc.Add(table)
-                        table.DeleteBodyRows()
-                        doc.NewPage()
-                    Next
-                End If
-            Catch ex As Exception
-            End Try
-            ' END PANORAMA PVC PARTS
 
-            ' START EVOLVE PARTS
-            Try
-                Dim evolvePartsData As DataSet = GetListData("SELECT OrderDetails_Shutters.* FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id LEFT JOIN Designs ON Products.DesignId = Designs.Id WHERE OrderDetails_Shutters.HeaderId = '" + Id + "' AND Designs.Name = 'Evolve Parts' AND OrderDetails_Shutters.Active = 1 ORDER BY OrderDetails_Shutters.Number ASC")
-                If Not evolvePartsData.Tables(0).Rows.Count = 0 Then
-                    pageEvent.PageTitle = "EVOLVE PARTS"
-                    Dim table As New PdfPTable(5)
-                    table.WidthPercentage = 100
+                        For i As Integer = 0 To items.GetLength(1) - 1 Step 4
+                            If i > 0 Then doc.NewPage()
 
-                    Dim dt As DataTable = evolvePartsData.Tables(0)
-                    Dim items(7, dt.Rows.Count - 1) As String
+                            Dim fontHeader As New Font(Font.FontFamily.TIMES_ROMAN, 9, Font.BOLD)
+                            Dim fontContent As New Font(Font.FontFamily.TIMES_ROMAN, 9)
 
-                    For i As Integer = 0 To dt.Rows.Count - 1
-                        Dim number As Integer = i + 1
+                            Dim headers As String() = {"", "Qty", "Category", "Component", "Colour", "Length", "Notes"}
 
-                        Dim length As String = String.Empty
-                        If dt.Rows(i)("PartLength") > 0 Then
-                            length = dt.Rows(i)("PartLength").ToString()
-                        End If
+                            For row As Integer = 0 To headers.Length - 1
+                                Dim cellHeader As New PdfPCell(New Phrase(headers(row), fontHeader))
+                                cellHeader.HorizontalAlignment = Element.ALIGN_RIGHT
+                                cellHeader.VerticalAlignment = Element.ALIGN_MIDDLE
+                                cellHeader.BackgroundColor = New BaseColor(200, 200, 200)
+                                cellHeader.MinimumHeight = 22
+                                table.AddCell(cellHeader)
 
-                        items(0, i) = "Item : " & number
-                        items(1, i) = dt.Rows(i)("Qty").ToString()
-                        items(2, i) = dt.Rows(i)("PartCategory").ToString()
-                        items(3, i) = dt.Rows(i)("PartComponent").ToString()
-                        items(4, i) = dt.Rows(i)("PartColour").ToString()
-                        items(5, i) = length
-                        items(6, i) = dt.Rows(i)("Notes").ToString()
-                    Next
+                                For col As Integer = i To Math.Min(i + 3, items.GetLength(1) - 1)
+                                    Dim cellContent As New PdfPCell(New Phrase(items(row, col), fontContent))
+                                    cellContent.HorizontalAlignment = Element.ALIGN_CENTER
+                                    cellContent.VerticalAlignment = Element.ALIGN_MIDDLE
+                                    cellContent.MinimumHeight = 22
+                                    table.AddCell(cellContent)
+                                Next
 
-                    For i As Integer = 0 To items.GetLength(1) - 1 Step 4
-                        If i > 0 Then doc.NewPage()
-
-                        Dim fontHeader As New Font(Font.FontFamily.TIMES_ROMAN, 9, Font.BOLD)
-                        Dim fontContent As New Font(Font.FontFamily.TIMES_ROMAN, 9)
-
-                        Dim headers As String() = {"", "Qty", "Category", "Component", "Colour", "Length", "Notes"}
-
-                        For row As Integer = 0 To headers.Length - 1
-                            Dim cellHeader As New PdfPCell(New Phrase(headers(row), fontHeader))
-                            cellHeader.HorizontalAlignment = Element.ALIGN_RIGHT
-                            cellHeader.VerticalAlignment = Element.ALIGN_MIDDLE
-                            cellHeader.BackgroundColor = New BaseColor(200, 200, 200)
-                            cellHeader.MinimumHeight = 22
-                            table.AddCell(cellHeader)
-
-                            For col As Integer = i To Math.Min(i + 3, items.GetLength(1) - 1)
-                                Dim cellContent As New PdfPCell(New Phrase(items(row, col), fontContent))
-                                cellContent.HorizontalAlignment = Element.ALIGN_CENTER
-                                cellContent.VerticalAlignment = Element.ALIGN_MIDDLE
-                                cellContent.MinimumHeight = 22
-                                table.AddCell(cellContent)
+                                For col As Integer = items.GetLength(1) To i + 3
+                                    Dim emptyCell As New PdfPCell(New Phrase("", fontContent))
+                                    emptyCell.HorizontalAlignment = Element.ALIGN_CENTER
+                                    emptyCell.VerticalAlignment = Element.ALIGN_MIDDLE
+                                    emptyCell.MinimumHeight = 22
+                                    table.AddCell(emptyCell)
+                                Next
                             Next
-
-                            For col As Integer = items.GetLength(1) To i + 3
-                                Dim emptyCell As New PdfPCell(New Phrase("", fontContent))
-                                emptyCell.HorizontalAlignment = Element.ALIGN_CENTER
-                                emptyCell.VerticalAlignment = Element.ALIGN_MIDDLE
-                                emptyCell.MinimumHeight = 22
-                                table.AddCell(emptyCell)
-                            Next
+                            doc.Add(table)
+                            table.DeleteBodyRows()
+                            doc.NewPage()
                         Next
-                        doc.Add(table)
-                        table.DeleteBodyRows()
-                        doc.NewPage()
-                    Next
-                End If
-            Catch ex As Exception
-            End Try
-            ' END EVOLVE PARTS
+                    End If
+                Catch ex As Exception
+                End Try
+                ' END PANORAMA PVC PARTS
 
-            ' START PANORAMA PVC SHUTTERS
-            Try
-                Dim panoramaData As DataSet = GetListData("SELECT OrderDetails_Shutters.*, Products.ColourType AS ColourType, Blinds.Name AS BlindName FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id LEFT JOIN Designs ON Products.DesignId = Designs.Id LEFT JOIN Blinds ON Products.BlindId = Blinds.Id WHERE OrderDetails_Shutters.HeaderId = '" + Id + "' AND Designs.Name = 'Panorama PVC Shutters' AND OrderDetails_Shutters.Active = 1 ORDER BY OrderDetails_Shutters.Number ASC")
+            
+                ' START PANORAMA PVC SHUTTERS
+                Try
+                    Dim panoramaData As DataSet = GetListData("SELECT OrderDetails_Shutters.*, Products.ColourType AS ColourType, Blinds.Name AS BlindName FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id LEFT JOIN Designs ON Products.DesignId = Designs.Id LEFT JOIN Blinds ON Products.BlindId = Blinds.Id WHERE OrderDetails_Shutters.HeaderId = '" + Id + "' AND Designs.Name = 'Panorama PVC Shutters' AND OrderDetails_Shutters.Active = 1 ORDER BY OrderDetails_Shutters.Number ASC")
 
-                If Not panoramaData.Tables(0).Rows.Count = 0 Then
-                    pageEvent.PageTitle = "Panorama PVC"
-                    pageEvent.PageTitle2 = "Shutters"
-                    Dim table As New PdfPTable(5)
-                    table.WidthPercentage = 100
+                    If Not panoramaData.Tables(0).Rows.Count = 0 Then
+                        pageEvent.PageTitle = "Panorama PVC"
+                        pageEvent.PageTitle2 = "Shutters"
+                        Dim table As New PdfPTable(5)
+                        table.WidthPercentage = 100
 
-                    Dim dt As DataTable = panoramaData.Tables(0)
-                    Dim items(41, dt.Rows.Count - 1) As String
+                        Dim dt As DataTable = panoramaData.Tables(0)
+                        Dim items(41, dt.Rows.Count - 1) As String
 
-                    For i As Integer = 0 To dt.Rows.Count - 1
-                        Dim layoutCode As String = If(dt.Rows(i)("Layout").ToString() = "Other", dt.Rows(i)("LayoutSpecial").ToString(), dt.Rows(i)("Layout").ToString())
+                        For i As Integer = 0 To dt.Rows.Count - 1
+                            Dim layoutCode As String = If(dt.Rows(i)("Layout").ToString() = "Other", dt.Rows(i)("LayoutSpecial").ToString(), dt.Rows(i)("Layout").ToString())
 
-                        Dim gapList As New List(Of String)
+                            Dim gapList As New List(Of String)
 
-                        Dim midrailList As New List(Of String)
+                            Dim midrailList As New List(Of String)
 
-                        Dim midrailHeight1 As Integer = dt.Rows(i)("MidrailHeight1")
-                        Dim midrailHeight2 As Integer = dt.Rows(i)("MidrailHeight2")
+                            Dim midrailHeight1 As Integer = dt.Rows(i)("MidrailHeight1")
+                            Dim midrailHeight2 As Integer = dt.Rows(i)("MidrailHeight2")
 
-                        If midrailHeight1 > 0 Then midrailList.Add("1 : " & midrailHeight1)
-                        If midrailHeight2 > 0 Then midrailList.Add("2 : " & midrailHeight2)
+                            If midrailHeight1 > 0 Then midrailList.Add("1 : " & midrailHeight1)
+                            If midrailHeight2 > 0 Then midrailList.Add("2 : " & midrailHeight2)
 
-                        Dim midrailHeight As String = String.Join(", ", midrailList)
+                            Dim midrailHeight As String = String.Join(", ", midrailList)
 
-                        Dim gap1 As Integer = dt.Rows(i)("LocationTPost1")
-                        Dim gap2 As Integer = dt.Rows(i)("LocationTPost2")
-                        Dim gap3 As Integer = dt.Rows(i)("LocationTPost3")
-                        Dim gap4 As Integer = dt.Rows(i)("LocationTPost4")
-                        Dim gap5 As Integer = dt.Rows(i)("LocationTPost5")
+                            Dim gap1 As Integer = dt.Rows(i)("LocationTPost1")
+                            Dim gap2 As Integer = dt.Rows(i)("LocationTPost2")
+                            Dim gap3 As Integer = dt.Rows(i)("LocationTPost3")
+                            Dim gap4 As Integer = dt.Rows(i)("LocationTPost4")
+                            Dim gap5 As Integer = dt.Rows(i)("LocationTPost5")
 
-                        If gap1 > 0 Then gapList.Add("Gap 1 : " & gap1)
-                        If gap2 > 0 Then gapList.Add("Gap 2 : " & gap2)
-                        If gap3 > 0 Then gapList.Add("Gap 3 : " & gap3)
-                        If gap4 > 0 Then gapList.Add("Gap 4 : " & gap4)
-                        If gap5 > 0 Then gapList.Add("Gap 5 : " & gap5)
+                            If gap1 > 0 Then gapList.Add("Gap 1 : " & gap1)
+                            If gap2 > 0 Then gapList.Add("Gap 2 : " & gap2)
+                            If gap3 > 0 Then gapList.Add("Gap 3 : " & gap3)
+                            If gap4 > 0 Then gapList.Add("Gap 4 : " & gap4)
+                            If gap5 > 0 Then gapList.Add("Gap 5 : " & gap5)
 
-                        Dim gapPosition As String = String.Join(", ", gapList)
+                            Dim gapPosition As String = String.Join(", ", gapList)
 
-                        Dim split1 As Integer = dt.Rows(i)("SplitHeight1")
-                        Dim split2 As Integer = dt.Rows(i)("SplitHeight2")
-                        Dim splitHeigth As String = "Height 1 : " & split1 & ", " & "Height 2 : " & split2
+                            Dim split1 As Integer = dt.Rows(i)("SplitHeight1")
+                            Dim split2 As Integer = dt.Rows(i)("SplitHeight2")
+                            Dim splitHeigth As String = "Height 1 : " & split1 & ", " & "Height 2 : " & split2
 
-                        Dim horizontalHeight As String = String.Empty
-                        If dt.Rows(i)("HorizontalTPostHeight") > 0 Then
-                            horizontalHeight = dt.Rows(i)("HorizontalTPostHeight").ToString()
-                        End If
+                            Dim horizontalHeight As String = String.Empty
+                            If dt.Rows(i)("HorizontalTPostHeight") > 0 Then
+                                horizontalHeight = dt.Rows(i)("HorizontalTPostHeight").ToString()
+                            End If
 
-                        Dim bottomTrack As String = dt.Rows(i)("BottomTrackType").ToString()
-                        If dt.Rows(i)("BottomTrackRecess").ToString() = "Yes" Then
-                            bottomTrack = dt.Rows(i)("BottomTrackType").ToString() & " | Recess: Yes"
-                        End If
-                        Dim number As Integer = i + 1
+                            Dim bottomTrack As String = dt.Rows(i)("BottomTrackType").ToString()
+                            If dt.Rows(i)("BottomTrackRecess").ToString() = "Yes" Then
+                                bottomTrack = dt.Rows(i)("BottomTrackType").ToString() & " | Recess: Yes"
+                            End If
+                            Dim number As Integer = i + 1
 
-                        items(0, i) = "Item : " & number
-                        items(1, i) = dt.Rows(i)("Room").ToString()
-                        items(2, i) = dt.Rows(i)("Width").ToString()
-                        items(3, i) = dt.Rows(i)("Drop").ToString()
-                        items(4, i) = dt.Rows(i)("Mounting").ToString()
-                        items(5, i) = dt.Rows(i)("ColourType").ToString()
-                        items(6, i) = dt.Rows(i)("LouvreSize").ToString()
-                        items(7, i) = dt.Rows(i)("LouvrePosition").ToString()
-                        items(8, i) = midrailHeight
-                        items(9, i) = dt.Rows(i)("MidrailCritical").ToString()
-                        items(10, i) = dt.Rows(i)("HingeColour").ToString()
-                        items(11, i) = dt.Rows(i)("BlindName").ToString()
-                        items(12, i) = dt.Rows(i)("SemiInsideMount").ToString()
-                        items(13, i) = dt.Rows(i)("PanelQty").ToString()
-                        items(14, i) = dt.Rows(i)("CustomHeaderLength").ToString()
-                        items(15, i) = dt.Rows(i)("JoinedPanels").ToString()
-                        items(16, i) = layoutCode
-                        items(17, i) = dt.Rows(i)("FrameType").ToString()
-                        items(18, i) = dt.Rows(i)("FrameLeft").ToString()
-                        items(19, i) = dt.Rows(i)("FrameRight").ToString()
-                        items(20, i) = dt.Rows(i)("FrameTop").ToString()
-                        items(21, i) = dt.Rows(i)("FrameBottom").ToString()
-                        items(22, i) = bottomTrack
-                        items(23, i) = dt.Rows(i)("Buildout").ToString()
-                        items(24, i) = dt.Rows(i)("BuildoutPosition").ToString()
-                        items(25, i) = dt.Rows(i)("PanelSize").ToString()
-                        items(26, i) = gapPosition
-                        items(27, i) = horizontalHeight
-                        items(28, i) = dt.Rows(i)("HorizontalTPost").ToString()
-                        items(29, i) = dt.Rows(i)("TiltrodType").ToString()
-                        items(30, i) = dt.Rows(i)("TiltrodSplit").ToString()
-                        items(31, i) = splitHeigth
-                        items(32, i) = dt.Rows(i)("ReverseHinged").ToString()
-                        items(33, i) = dt.Rows(i)("PelmetFlat").ToString()
-                        items(34, i) = dt.Rows(i)("ExtraFascia").ToString()
-                        items(35, i) = dt.Rows(i)("HingesLoose").ToString()
-                        items(36, i) = dt.Rows(i)("DoorCutOut").ToString()
-                        items(37, i) = dt.Rows(i)("SpecialShape").ToString()
-                        items(38, i) = dt.Rows(i)("TemplateProvided").ToString()
-                        items(39, i) = FormatNumber(dt.Rows(i)("SquareMetre"), 2)
-                        items(40, i) = dt.Rows(i)("Notes").ToString()
-                    Next
-
-                    For i As Integer = 0 To items.GetLength(1) - 1 Step 4
-                        If i > 0 Then doc.NewPage()
-
-                        Dim fontHeader As New Font(Font.FontFamily.TIMES_ROMAN, 7, Font.BOLD)
-                        Dim fontContent As New Font(Font.FontFamily.TIMES_ROMAN, 7)
-
-                        Dim headers As String() = {"", "Room / Location", "Width (mm)", "Height (mm)", "Mounting", "Colour", "Louvre Size", "Sliding Louvre Position", "Midrail Height (mm)", "Critical Midrail", "Hinge Colour", "Installation Method", "Semi Inside Mount", "Panel Qty", "Custom Header Length (mm)", "Co-joined Panels", "Layout Code", "Frame Type", "Left Frame", "Right Frame", "Top Frame", "Bottom Frame", "Bottom Track", "Buildout", "Buildout Position", "Same Size Panel", "Gap / T-Post (mm)", "Hor T-Post Height (mm)", "Hor T-Post Required", "Tiltrod Type", "Split Tiltrod Rotation", "Split Height (mm)", "Reverse Hinged", "Pelmet Flat Packed", "Extra Fascia", "Hinges Loose", "French Door Cut-Out", "Special Shape", "Template Provided", "M2", "Notes"}
-
-                        For row As Integer = 0 To headers.Length - 1
-                            Dim cellHeader As New PdfPCell(New Phrase(headers(row), fontHeader))
-                            cellHeader.HorizontalAlignment = Element.ALIGN_RIGHT
-                            cellHeader.VerticalAlignment = Element.ALIGN_CENTER
-                            cellHeader.BackgroundColor = New BaseColor(200, 200, 200)
-                            cellHeader.MinimumHeight = 16
-                            table.AddCell(cellHeader)
-
-                            For col As Integer = i To Math.Min(i + 3, items.GetLength(1) - 1)
-                                Dim cellContent As New PdfPCell(New Phrase(items(row, col), fontContent))
-                                cellContent.HorizontalAlignment = Element.ALIGN_CENTER
-                                cellContent.VerticalAlignment = Element.ALIGN_CENTER
-                                cellContent.MinimumHeight = 16
-                                table.AddCell(cellContent)
-                            Next
-
-                            For col As Integer = items.GetLength(1) To i + 3
-                                Dim emptyCell As New PdfPCell(New Phrase("", fontContent))
-                                emptyCell.HorizontalAlignment = Element.ALIGN_CENTER
-                                emptyCell.VerticalAlignment = Element.ALIGN_CENTER
-                                emptyCell.MinimumHeight = 16
-                                table.AddCell(emptyCell)
-                            Next
+                            items(0, i) = "Item : " & number
+                            items(1, i) = dt.Rows(i)("Room").ToString()
+                            items(2, i) = dt.Rows(i)("Width").ToString()
+                            items(3, i) = dt.Rows(i)("Drop").ToString()
+                            items(4, i) = dt.Rows(i)("Mounting").ToString()
+                            items(5, i) = dt.Rows(i)("ColourType").ToString()
+                            items(6, i) = dt.Rows(i)("LouvreSize").ToString()
+                            items(7, i) = dt.Rows(i)("LouvrePosition").ToString()
+                            items(8, i) = midrailHeight
+                            items(9, i) = dt.Rows(i)("MidrailCritical").ToString()
+                            items(10, i) = dt.Rows(i)("HingeColour").ToString()
+                            items(11, i) = dt.Rows(i)("BlindName").ToString()
+                            items(12, i) = dt.Rows(i)("SemiInsideMount").ToString()
+                            items(13, i) = dt.Rows(i)("PanelQty").ToString()
+                            items(14, i) = dt.Rows(i)("CustomHeaderLength").ToString()
+                            items(15, i) = dt.Rows(i)("JoinedPanels").ToString()
+                            items(16, i) = layoutCode
+                            items(17, i) = dt.Rows(i)("FrameType").ToString()
+                            items(18, i) = dt.Rows(i)("FrameLeft").ToString()
+                            items(19, i) = dt.Rows(i)("FrameRight").ToString()
+                            items(20, i) = dt.Rows(i)("FrameTop").ToString()
+                            items(21, i) = dt.Rows(i)("FrameBottom").ToString()
+                            items(22, i) = bottomTrack
+                            items(23, i) = dt.Rows(i)("Buildout").ToString()
+                            items(24, i) = dt.Rows(i)("BuildoutPosition").ToString()
+                            items(25, i) = dt.Rows(i)("PanelSize").ToString()
+                            items(26, i) = gapPosition
+                            items(27, i) = horizontalHeight
+                            items(28, i) = dt.Rows(i)("HorizontalTPost").ToString()
+                            items(29, i) = dt.Rows(i)("TiltrodType").ToString()
+                            items(30, i) = dt.Rows(i)("TiltrodSplit").ToString()
+                            items(31, i) = splitHeigth
+                            items(32, i) = dt.Rows(i)("ReverseHinged").ToString()
+                            items(33, i) = dt.Rows(i)("PelmetFlat").ToString()
+                            items(34, i) = dt.Rows(i)("ExtraFascia").ToString()
+                            items(35, i) = dt.Rows(i)("HingesLoose").ToString()
+                            items(36, i) = dt.Rows(i)("DoorCutOut").ToString()
+                            items(37, i) = dt.Rows(i)("SpecialShape").ToString()
+                            items(38, i) = dt.Rows(i)("TemplateProvided").ToString()
+                            items(39, i) = FormatNumber(dt.Rows(i)("SquareMetre"), 2)
+                            items(40, i) = dt.Rows(i)("Notes").ToString()
                         Next
-                        doc.Add(table)
-                        table.DeleteBodyRows()
-                        doc.NewPage()
-                    Next
-                End If
-            Catch ex As Exception
-            End Try
-            ' END PANORAMA PVC SHUTTERS
 
-            ' START EVOLVE SHUTTERS
-            Try
-                Dim evolveData As DataSet = GetListData("SELECT OrderDetails_Shutters.*, Products.ColourType AS ColourType, Blinds.Name AS BlindName FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id LEFT JOIN Designs ON Products.DesignId = Designs.Id LEFT JOIN Blinds ON Products.BlindId = Blinds.Id WHERE OrderDetails_Shutters.HeaderId = '" + Id + "' AND Designs.Name = 'Evolve Shutters' AND OrderDetails_Shutters.Active = 1 ORDER BY OrderDetails_Shutters.Number ASC")
+                        For i As Integer = 0 To items.GetLength(1) - 1 Step 4
+                            If i > 0 Then doc.NewPage()
 
-                If Not evolveData.Tables(0).Rows.Count = 0 Then
-                    pageEvent.PageTitle = "Evolve"
-                    pageEvent.PageTitle2 = "Shutters"
-                    Dim table As New PdfPTable(5)
-                    table.WidthPercentage = 100
+                            Dim fontHeader As New Font(Font.FontFamily.TIMES_ROMAN, 7, Font.BOLD)
+                            Dim fontContent As New Font(Font.FontFamily.TIMES_ROMAN, 7)
 
-                    Dim dt As DataTable = evolveData.Tables(0)
-                    Dim items(37, dt.Rows.Count - 1) As String
+                            Dim headers As String() = {"", "Room / Location", "Width (mm)", "Height (mm)", "Mounting", "Colour", "Louvre Size", "Sliding Louvre Position", "Midrail Height (mm)", "Critical Midrail", "Hinge Colour", "Installation Method", "Semi Inside Mount", "Panel Qty", "Custom Header Length (mm)", "Co-joined Panels", "Layout Code", "Frame Type", "Left Frame", "Right Frame", "Top Frame", "Bottom Frame", "Bottom Track", "Buildout", "Buildout Position", "Same Size Panel", "Gap / T-Post (mm)", "Hor T-Post Height (mm)", "Hor T-Post Required", "Tiltrod Type", "Split Tiltrod Rotation", "Split Height (mm)", "Reverse Hinged", "Pelmet Flat Packed", "Extra Fascia", "Hinges Loose", "French Door Cut-Out", "Special Shape", "Template Provided", "M2", "Notes"}
 
-                    For i As Integer = 0 To dt.Rows.Count - 1
-                        Dim layoutCode As String = If(dt.Rows(i)("Layout").ToString() = "Other", dt.Rows(i)("LayoutSpecial").ToString(), dt.Rows(i)("Layout").ToString())
+                            For row As Integer = 0 To headers.Length - 1
+                                Dim cellHeader As New PdfPCell(New Phrase(headers(row), fontHeader))
+                                cellHeader.HorizontalAlignment = Element.ALIGN_RIGHT
+                                cellHeader.VerticalAlignment = Element.ALIGN_CENTER
+                                cellHeader.BackgroundColor = New BaseColor(200, 200, 200)
+                                cellHeader.MinimumHeight = 16
+                                table.AddCell(cellHeader)
 
-                        Dim gapList As New List(Of String)
+                                For col As Integer = i To Math.Min(i + 3, items.GetLength(1) - 1)
+                                    Dim cellContent As New PdfPCell(New Phrase(items(row, col), fontContent))
+                                    cellContent.HorizontalAlignment = Element.ALIGN_CENTER
+                                    cellContent.VerticalAlignment = Element.ALIGN_CENTER
+                                    cellContent.MinimumHeight = 16
+                                    table.AddCell(cellContent)
+                                Next
 
-                        Dim midrailList As New List(Of String)
-
-                        Dim midrailHeight1 As Integer = dt.Rows(i)("MidrailHeight1")
-                        Dim midrailHeight2 As Integer = dt.Rows(i)("MidrailHeight2")
-
-                        If midrailHeight1 > 0 Then midrailList.Add("1 : " & midrailHeight1)
-                        If midrailHeight2 > 0 Then midrailList.Add("2 : " & midrailHeight2)
-
-                        Dim midrailHeight As String = String.Join(", ", midrailList)
-
-                        Dim gap1 As Integer = dt.Rows(i)("LocationTPost1")
-                        Dim gap2 As Integer = dt.Rows(i)("LocationTPost2")
-                        Dim gap3 As Integer = dt.Rows(i)("LocationTPost3")
-                        Dim gap4 As Integer = dt.Rows(i)("LocationTPost4")
-                        Dim gap5 As Integer = dt.Rows(i)("LocationTPost5")
-
-                        If gap1 > 0 Then gapList.Add("Gap 1 : " & gap1)
-                        If gap2 > 0 Then gapList.Add("Gap 2 : " & gap2)
-                        If gap3 > 0 Then gapList.Add("Gap 3 : " & gap3)
-                        If gap4 > 0 Then gapList.Add("Gap 4 : " & gap4)
-                        If gap5 > 0 Then gapList.Add("Gap 5 : " & gap5)
-
-                        Dim gapPosition As String = String.Join(", ", gapList)
-
-                        Dim split1 As Integer = dt.Rows(i)("SplitHeight1")
-                        Dim split2 As Integer = dt.Rows(i)("SplitHeight2")
-                        Dim splitHeigth As String = "Height 1 : " & split1 & ", " & "Height 2 : " & split2
-
-                        Dim bottomTrack As String = dt.Rows(i)("BottomTrackType").ToString()
-                        If dt.Rows(i)("BottomTrackRecess").ToString() = "Yes" Then
-                            bottomTrack = dt.Rows(i)("BottomTrackType").ToString() & " | Recess: Yes"
-                        End If
-
-                        Dim customHeaderLength As String = dt.Rows(i)("CustomHeaderLength").ToString()
-                        If customHeaderLength = "" Or customHeaderLength = "0" Then customHeaderLength = String.Empty
-
-                        Dim number As Integer = i + 1
-
-                        items(0, i) = "Item : " & number
-                        items(1, i) = dt.Rows(i)("Room").ToString()
-                        items(2, i) = dt.Rows(i)("Width").ToString()
-                        items(3, i) = dt.Rows(i)("Drop").ToString()
-                        items(4, i) = dt.Rows(i)("Mounting").ToString()
-                        items(5, i) = dt.Rows(i)("SemiInsideMount").ToString()
-                        items(6, i) = dt.Rows(i)("ColourType").ToString()
-                        items(7, i) = dt.Rows(i)("LouvreSize").ToString()
-                        items(8, i) = dt.Rows(i)("LouvrePosition").ToString()
-                        items(9, i) = midrailHeight
-                        items(10, i) = dt.Rows(i)("MidrailCritical").ToString()
-                        items(11, i) = dt.Rows(i)("HingeColour").ToString()
-                        items(12, i) = dt.Rows(i)("BlindName").ToString()
-                        items(13, i) = dt.Rows(i)("PanelQty").ToString()
-                        items(14, i) = customHeaderLength
-                        items(15, i) = dt.Rows(i)("JoinedPanels").ToString()
-                        items(16, i) = layoutCode
-                        items(17, i) = dt.Rows(i)("FrameType").ToString()
-                        items(18, i) = dt.Rows(i)("FrameLeft").ToString()
-                        items(19, i) = dt.Rows(i)("FrameRight").ToString()
-                        items(20, i) = dt.Rows(i)("FrameTop").ToString()
-                        items(21, i) = dt.Rows(i)("FrameBottom").ToString()
-                        items(22, i) = bottomTrack
-                        items(23, i) = dt.Rows(i)("Buildout").ToString()
-                        items(24, i) = dt.Rows(i)("PanelSize").ToString()
-                        items(25, i) = gapPosition
-                        items(26, i) = dt.Rows(i)("HorizontalTPostHeight").ToString()
-                        items(27, i) = dt.Rows(i)("HorizontalTPost").ToString()
-                        items(28, i) = dt.Rows(i)("TiltrodType").ToString()
-                        items(29, i) = dt.Rows(i)("TiltrodSplit").ToString()
-                        items(30, i) = splitHeigth
-                        items(31, i) = dt.Rows(i)("ReverseHinged").ToString()
-                        items(32, i) = dt.Rows(i)("PelmetFlat").ToString()
-                        items(33, i) = dt.Rows(i)("ExtraFascia").ToString()
-                        items(34, i) = dt.Rows(i)("HingesLoose").ToString()
-                        items(35, i) = FormatNumber(dt.Rows(i)("SquareMetre"), 2)
-                        items(36, i) = dt.Rows(i)("Notes").ToString()
-                    Next
-
-                    For i As Integer = 0 To items.GetLength(1) - 1 Step 4
-                        If i > 0 Then doc.NewPage()
-
-                        Dim fontHeader As New Font(Font.FontFamily.TIMES_ROMAN, 8, Font.BOLD)
-                        Dim fontContent As New Font(Font.FontFamily.TIMES_ROMAN, 8)
-
-                        Dim headers As String() = {"", "Location", "Width (mm)", "Height (mm)", "Mounting", "Semi Inside Mount", "Colour", "Louvre Size", "Sliding Louvre Position", "Midrail Height (mm)", "Critical Midrail", "Hinge Colour", "Installation Method", "Panel Qty", "Custom Header Length (mm)", "Co-joined Panels", "Layout Code", "Frame Type", "Left Frame", "Right Frame", "Top Frame", "Bottom Frame", "Bottom Track", "Buildout", "Same Size Panel", "Gap / T-Post (mm)", "Hor T-Post Height (mm)", "Hor T-Post Required", "Tiltrod Type", "Split Tiltrod", "Split Height (mm)", "Reverse Hinged", "Pelmet Flat Packed", "Extra Fascia", "Hinges Loose", "M2", "Notes"}
-
-                        For row As Integer = 0 To headers.Length - 1
-                            Dim cellHeader As New PdfPCell(New Phrase(headers(row), fontHeader))
-                            cellHeader.HorizontalAlignment = Element.ALIGN_RIGHT
-                            cellHeader.VerticalAlignment = Element.ALIGN_CENTER
-                            cellHeader.BackgroundColor = New BaseColor(200, 200, 200)
-                            cellHeader.MinimumHeight = 16
-                            table.AddCell(cellHeader)
-
-                            For col As Integer = i To Math.Min(i + 3, items.GetLength(1) - 1)
-                                Dim cellContent As New PdfPCell(New Phrase(items(row, col), fontContent))
-                                cellContent.HorizontalAlignment = Element.ALIGN_CENTER
-                                cellContent.VerticalAlignment = Element.ALIGN_CENTER
-                                cellContent.MinimumHeight = 16
-                                table.AddCell(cellContent)
+                                For col As Integer = items.GetLength(1) To i + 3
+                                    Dim emptyCell As New PdfPCell(New Phrase("", fontContent))
+                                    emptyCell.HorizontalAlignment = Element.ALIGN_CENTER
+                                    emptyCell.VerticalAlignment = Element.ALIGN_CENTER
+                                    emptyCell.MinimumHeight = 16
+                                    table.AddCell(emptyCell)
+                                Next
                             Next
-
-                            For col As Integer = items.GetLength(1) To i + 3
-                                Dim emptyCell As New PdfPCell(New Phrase("", fontContent))
-                                emptyCell.HorizontalAlignment = Element.ALIGN_CENTER
-                                emptyCell.VerticalAlignment = Element.ALIGN_CENTER
-                                emptyCell.MinimumHeight = 16
-                                table.AddCell(emptyCell)
-                            Next
+                            doc.Add(table)
+                            table.DeleteBodyRows()
+                            doc.NewPage()
                         Next
-                        doc.Add(table)
-                        table.DeleteBodyRows()
-                        doc.NewPage()
-                    Next
-                End If
-            Catch ex As Exception
-            End Try
-            ' END EVOLVE SHUTTERS
+                    End If
+                Catch ex As Exception
+                End Try
+                ' END PANORAMA PVC SHUTTERS
+            End If
+
+
+            If String.IsNullOrEmpty(OrderType) OR (OrderType = "Shutters" AND ProductType = "Evolve") Then
+                ' START EVOLVE PARTS
+                Try
+                    Dim evolvePartsData As DataSet = GetListData("SELECT OrderDetails_Shutters.* FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id LEFT JOIN Designs ON Products.DesignId = Designs.Id WHERE OrderDetails_Shutters.HeaderId = '" + Id + "' AND Designs.Name = 'Evolve Parts' AND OrderDetails_Shutters.Active = 1 ORDER BY OrderDetails_Shutters.Number ASC")
+                    If Not evolvePartsData.Tables(0).Rows.Count = 0 Then
+                        pageEvent.PageTitle = "EVOLVE PARTS"
+                        Dim table As New PdfPTable(5)
+                        table.WidthPercentage = 100
+
+                        Dim dt As DataTable = evolvePartsData.Tables(0)
+                        Dim items(7, dt.Rows.Count - 1) As String
+
+                        For i As Integer = 0 To dt.Rows.Count - 1
+                            Dim number As Integer = i + 1
+
+                            Dim length As String = String.Empty
+                            If dt.Rows(i)("PartLength") > 0 Then
+                                length = dt.Rows(i)("PartLength").ToString()
+                            End If
+
+                            items(0, i) = "Item : " & number
+                            items(1, i) = dt.Rows(i)("Qty").ToString()
+                            items(2, i) = dt.Rows(i)("PartCategory").ToString()
+                            items(3, i) = dt.Rows(i)("PartComponent").ToString()
+                            items(4, i) = dt.Rows(i)("PartColour").ToString()
+                            items(5, i) = length
+                            items(6, i) = dt.Rows(i)("Notes").ToString()
+                        Next
+
+                        For i As Integer = 0 To items.GetLength(1) - 1 Step 4
+                            If i > 0 Then doc.NewPage()
+
+                            Dim fontHeader As New Font(Font.FontFamily.TIMES_ROMAN, 9, Font.BOLD)
+                            Dim fontContent As New Font(Font.FontFamily.TIMES_ROMAN, 9)
+
+                            Dim headers As String() = {"", "Qty", "Category", "Component", "Colour", "Length", "Notes"}
+
+                            For row As Integer = 0 To headers.Length - 1
+                                Dim cellHeader As New PdfPCell(New Phrase(headers(row), fontHeader))
+                                cellHeader.HorizontalAlignment = Element.ALIGN_RIGHT
+                                cellHeader.VerticalAlignment = Element.ALIGN_MIDDLE
+                                cellHeader.BackgroundColor = New BaseColor(200, 200, 200)
+                                cellHeader.MinimumHeight = 22
+                                table.AddCell(cellHeader)
+
+                                For col As Integer = i To Math.Min(i + 3, items.GetLength(1) - 1)
+                                    Dim cellContent As New PdfPCell(New Phrase(items(row, col), fontContent))
+                                    cellContent.HorizontalAlignment = Element.ALIGN_CENTER
+                                    cellContent.VerticalAlignment = Element.ALIGN_MIDDLE
+                                    cellContent.MinimumHeight = 22
+                                    table.AddCell(cellContent)
+                                Next
+
+                                For col As Integer = items.GetLength(1) To i + 3
+                                    Dim emptyCell As New PdfPCell(New Phrase("", fontContent))
+                                    emptyCell.HorizontalAlignment = Element.ALIGN_CENTER
+                                    emptyCell.VerticalAlignment = Element.ALIGN_MIDDLE
+                                    emptyCell.MinimumHeight = 22
+                                    table.AddCell(emptyCell)
+                                Next
+                            Next
+                            doc.Add(table)
+                            table.DeleteBodyRows()
+                            doc.NewPage()
+                        Next
+                    End If
+                Catch ex As Exception
+                End Try
+                ' END EVOLVE PARTS
+
+
+                ' START EVOLVE SHUTTERS
+                Try
+                    Dim evolveData As DataSet = GetListData("SELECT OrderDetails_Shutters.*, Products.ColourType AS ColourType, Blinds.Name AS BlindName FROM OrderDetails_Shutters LEFT JOIN Products ON OrderDetails_Shutters.ProductId = Products.Id LEFT JOIN Designs ON Products.DesignId = Designs.Id LEFT JOIN Blinds ON Products.BlindId = Blinds.Id WHERE OrderDetails_Shutters.HeaderId = '" + Id + "' AND Designs.Name = 'Evolve Shutters' AND OrderDetails_Shutters.Active = 1 ORDER BY OrderDetails_Shutters.Number ASC")
+
+                    If Not evolveData.Tables(0).Rows.Count = 0 Then
+                        pageEvent.PageTitle = "Evolve"
+                        pageEvent.PageTitle2 = "Shutters"
+                        Dim table As New PdfPTable(5)
+                        table.WidthPercentage = 100
+
+                        Dim dt As DataTable = evolveData.Tables(0)
+                        Dim items(37, dt.Rows.Count - 1) As String
+
+                        For i As Integer = 0 To dt.Rows.Count - 1
+                            Dim layoutCode As String = If(dt.Rows(i)("Layout").ToString() = "Other", dt.Rows(i)("LayoutSpecial").ToString(), dt.Rows(i)("Layout").ToString())
+
+                            Dim gapList As New List(Of String)
+
+                            Dim midrailList As New List(Of String)
+
+                            Dim midrailHeight1 As Integer = dt.Rows(i)("MidrailHeight1")
+                            Dim midrailHeight2 As Integer = dt.Rows(i)("MidrailHeight2")
+
+                            If midrailHeight1 > 0 Then midrailList.Add("1 : " & midrailHeight1)
+                            If midrailHeight2 > 0 Then midrailList.Add("2 : " & midrailHeight2)
+
+                            Dim midrailHeight As String = String.Join(", ", midrailList)
+
+                            Dim gap1 As Integer = dt.Rows(i)("LocationTPost1")
+                            Dim gap2 As Integer = dt.Rows(i)("LocationTPost2")
+                            Dim gap3 As Integer = dt.Rows(i)("LocationTPost3")
+                            Dim gap4 As Integer = dt.Rows(i)("LocationTPost4")
+                            Dim gap5 As Integer = dt.Rows(i)("LocationTPost5")
+
+                            If gap1 > 0 Then gapList.Add("Gap 1 : " & gap1)
+                            If gap2 > 0 Then gapList.Add("Gap 2 : " & gap2)
+                            If gap3 > 0 Then gapList.Add("Gap 3 : " & gap3)
+                            If gap4 > 0 Then gapList.Add("Gap 4 : " & gap4)
+                            If gap5 > 0 Then gapList.Add("Gap 5 : " & gap5)
+
+                            Dim gapPosition As String = String.Join(", ", gapList)
+
+                            Dim split1 As Integer = dt.Rows(i)("SplitHeight1")
+                            Dim split2 As Integer = dt.Rows(i)("SplitHeight2")
+                            Dim splitHeigth As String = "Height 1 : " & split1 & ", " & "Height 2 : " & split2
+
+                            Dim bottomTrack As String = dt.Rows(i)("BottomTrackType").ToString()
+                            If dt.Rows(i)("BottomTrackRecess").ToString() = "Yes" Then
+                                bottomTrack = dt.Rows(i)("BottomTrackType").ToString() & " | Recess: Yes"
+                            End If
+
+                            Dim customHeaderLength As String = dt.Rows(i)("CustomHeaderLength").ToString()
+                            If customHeaderLength = "" Or customHeaderLength = "0" Then customHeaderLength = String.Empty
+
+                            Dim number As Integer = i + 1
+
+                            items(0, i) = "Item : " & number
+                            items(1, i) = dt.Rows(i)("Room").ToString()
+                            items(2, i) = dt.Rows(i)("Width").ToString()
+                            items(3, i) = dt.Rows(i)("Drop").ToString()
+                            items(4, i) = dt.Rows(i)("Mounting").ToString()
+                            items(5, i) = dt.Rows(i)("SemiInsideMount").ToString()
+                            items(6, i) = dt.Rows(i)("ColourType").ToString()
+                            items(7, i) = dt.Rows(i)("LouvreSize").ToString()
+                            items(8, i) = dt.Rows(i)("LouvrePosition").ToString()
+                            items(9, i) = midrailHeight
+                            items(10, i) = dt.Rows(i)("MidrailCritical").ToString()
+                            items(11, i) = dt.Rows(i)("HingeColour").ToString()
+                            items(12, i) = dt.Rows(i)("BlindName").ToString()
+                            items(13, i) = dt.Rows(i)("PanelQty").ToString()
+                            items(14, i) = customHeaderLength
+                            items(15, i) = dt.Rows(i)("JoinedPanels").ToString()
+                            items(16, i) = layoutCode
+                            items(17, i) = dt.Rows(i)("FrameType").ToString()
+                            items(18, i) = dt.Rows(i)("FrameLeft").ToString()
+                            items(19, i) = dt.Rows(i)("FrameRight").ToString()
+                            items(20, i) = dt.Rows(i)("FrameTop").ToString()
+                            items(21, i) = dt.Rows(i)("FrameBottom").ToString()
+                            items(22, i) = bottomTrack
+                            items(23, i) = dt.Rows(i)("Buildout").ToString()
+                            items(24, i) = dt.Rows(i)("PanelSize").ToString()
+                            items(25, i) = gapPosition
+                            items(26, i) = dt.Rows(i)("HorizontalTPostHeight").ToString()
+                            items(27, i) = dt.Rows(i)("HorizontalTPost").ToString()
+                            items(28, i) = dt.Rows(i)("TiltrodType").ToString()
+                            items(29, i) = dt.Rows(i)("TiltrodSplit").ToString()
+                            items(30, i) = splitHeigth
+                            items(31, i) = dt.Rows(i)("ReverseHinged").ToString()
+                            items(32, i) = dt.Rows(i)("PelmetFlat").ToString()
+                            items(33, i) = dt.Rows(i)("ExtraFascia").ToString()
+                            items(34, i) = dt.Rows(i)("HingesLoose").ToString()
+                            items(35, i) = FormatNumber(dt.Rows(i)("SquareMetre"), 2)
+                            items(36, i) = dt.Rows(i)("Notes").ToString()
+                        Next
+
+                        For i As Integer = 0 To items.GetLength(1) - 1 Step 4
+                            If i > 0 Then doc.NewPage()
+
+                            Dim fontHeader As New Font(Font.FontFamily.TIMES_ROMAN, 8, Font.BOLD)
+                            Dim fontContent As New Font(Font.FontFamily.TIMES_ROMAN, 8)
+
+                            Dim headers As String() = {"", "Location", "Width (mm)", "Height (mm)", "Mounting", "Semi Inside Mount", "Colour", "Louvre Size", "Sliding Louvre Position", "Midrail Height (mm)", "Critical Midrail", "Hinge Colour", "Installation Method", "Panel Qty", "Custom Header Length (mm)", "Co-joined Panels", "Layout Code", "Frame Type", "Left Frame", "Right Frame", "Top Frame", "Bottom Frame", "Bottom Track", "Buildout", "Same Size Panel", "Gap / T-Post (mm)", "Hor T-Post Height (mm)", "Hor T-Post Required", "Tiltrod Type", "Split Tiltrod", "Split Height (mm)", "Reverse Hinged", "Pelmet Flat Packed", "Extra Fascia", "Hinges Loose", "M2", "Notes"}
+
+                            For row As Integer = 0 To headers.Length - 1
+                                Dim cellHeader As New PdfPCell(New Phrase(headers(row), fontHeader))
+                                cellHeader.HorizontalAlignment = Element.ALIGN_RIGHT
+                                cellHeader.VerticalAlignment = Element.ALIGN_CENTER
+                                cellHeader.BackgroundColor = New BaseColor(200, 200, 200)
+                                cellHeader.MinimumHeight = 16
+                                table.AddCell(cellHeader)
+
+                                For col As Integer = i To Math.Min(i + 3, items.GetLength(1) - 1)
+                                    Dim cellContent As New PdfPCell(New Phrase(items(row, col), fontContent))
+                                    cellContent.HorizontalAlignment = Element.ALIGN_CENTER
+                                    cellContent.VerticalAlignment = Element.ALIGN_CENTER
+                                    cellContent.MinimumHeight = 16
+                                    table.AddCell(cellContent)
+                                Next
+
+                                For col As Integer = items.GetLength(1) To i + 3
+                                    Dim emptyCell As New PdfPCell(New Phrase("", fontContent))
+                                    emptyCell.HorizontalAlignment = Element.ALIGN_CENTER
+                                    emptyCell.VerticalAlignment = Element.ALIGN_CENTER
+                                    emptyCell.MinimumHeight = 16
+                                    table.AddCell(emptyCell)
+                                Next
+                            Next
+                            doc.Add(table)
+                            table.DeleteBodyRows()
+                            doc.NewPage()
+                        Next
+                    End If
+                Catch ex As Exception
+                End Try
+                ' END EVOLVE SHUTTERS
+            End If
             doc.Close()
             writer.Close()
         End Using

@@ -87,7 +87,7 @@ Public Class MailConfig
             Dim appId As String = GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE Id = '" + UCase(createdBy).ToString() + "'")
 
             Dim queryMailings As String =
-            If(orderType = "Panorama" OrElse orderType = "Evolve",
+            If(orderType = "Panorama" OrElse orderType = "Evolve" OrElse orderType = "Shutters",
                "SELECT * FROM Mailings WHERE ApplicationId = '" + UCase(appId).ToString() + "' AND Name = 'New Order Shutters' AND Active = 1",
                "SELECT * FROM Mailings WHERE ApplicationId = '" + UCase(appId).ToString() + "' AND Name = 'New Order' AND Active = 1")
 

@@ -45,7 +45,7 @@ Public Class Evolve
 
     Private Function GetHeader(headerId As String) As Dictionary(Of String, Object)
         Using con As New SqlConnection(myConn)
-            Using cmd As New SqlCommand("SELECT Customers.Name AS CustomerName, OrderHeaders_Shutters.OrderId AS OrderId, OrderHeaders_Shutters.OrderNumber AS OrderNumber, OrderHeaders_Shutters.OrderName AS OrderName, OrderHeaders_Shutters.OrderNote AS OrderNote, OrderHeaders_Shutters.JobDate AS JobDate FROM OrderHeaders_Shutters LEFT JOIN Customers ON OrderHeaders_Shutters.CustomerId=Customers.Id WHERE OrderHeaders_Shutters.Id=@HeaderId AND OrderHeaders_Shutters.Status='In Production' AND OrderHeaders_Shutters.OrderType='Evolve'", con)
+            Using cmd As New SqlCommand("SELECT Customers.Name AS CustomerName, OrderHeaders_Shutters.OrderId AS OrderId, OrderHeaders_Shutters.OrderNumber AS OrderNumber, OrderHeaders_Shutters.OrderName AS OrderName, OrderHeaders_Shutters.OrderNote AS OrderNote, OrderHeaders_Shutters.JobDate AS JobDate FROM OrderHeaders_Shutters LEFT JOIN Customers ON OrderHeaders_Shutters.CustomerId=Customers.Id WHERE OrderHeaders_Shutters.Id=@HeaderId AND OrderHeaders_Shutters.Status='In Production' AND OrderHeaders_Shutters.OrderType IN ('Evolve', 'Shutters')", con)
                 cmd.Parameters.AddWithValue("@HeaderId", headerId)
                 con.Open()
 
@@ -75,7 +75,7 @@ Public Class Evolve
                 Using dr = cmd.ExecuteReader()
                     While dr.Read()
                         Dim thisLayout As String = dr("Layout").ToString()
-                        If dr("Layout") = "Other" Then
+                        If thisLayout = "Other" Then
                             thisLayout = dr("LayoutSpecial").ToString()
                         End If
                     

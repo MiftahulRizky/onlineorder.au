@@ -152,6 +152,7 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindOrderAggregate(ByVal data As ParamBindOrderAggregate) As Object
         Try
+           
             Dim HeaderData As Object
             Dim DetailData As New List(Of Object)()
             Dim OtherData As Object
@@ -252,6 +253,9 @@ Partial Class Methods_Order_OrderDetailMethod
                 End Using
             End Using
 
+            If HeaderData Is Nothing Then
+                Return New With { .warning = True, .message = "header not found", .url="/order"}
+            End If
 
             Dim QueryDetails As String = <sql>
                 SELECT
@@ -438,6 +442,7 @@ Partial Class Methods_Order_OrderDetailMethod
             Return New With {.error = True, .message = String.Format("BindOrderAggregate: {0}", ex.Message)}
         End Try
     End Function
+
 
     Private Shared Function CekOrder(ByVal headerid As String, ByVal status As String, ByVal loginid As String, ByVal rolename As String) As Object
         Try

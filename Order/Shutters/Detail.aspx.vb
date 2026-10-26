@@ -124,11 +124,14 @@ Partial Class Order_Detail
                 End Using
             End Using
 
-            orderCfg.UpdateProductType(lblHeaderId.Text)
+            If NOT lblOrderType.Text = "Shutters" Then
+                orderCfg.UpdateProductType(lblHeaderId.Text)
+            End If
 
+            
             Dim dataLog As Object() = {lblHeaderId.Text, "", lblOrderType.Text, Session("LoginId").ToString(), "Submit Order"}
             orderCfg.Log_Orders(dataLog)
-
+            
             Dim deposit As String = "1"
             If lblCashSale.Text = True Then deposit = "0"
 
@@ -204,7 +207,7 @@ Partial Class Order_Detail
                 previewCfg.BindContent(lblHeaderId.Text, finalFilePath)
             End If
 
-            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                 Dim previewCfg As New ShuttersPreviewConfig
                 previewCfg.BindContent(lblHeaderId.Text, finalFilePath)
             End If
@@ -444,6 +447,36 @@ Partial Class Order_Detail
                 Response.Redirect(Request.RawUrl)
                 Exit Sub
             End If
+
+            If lblOrderType.Text = "Shutters" Then
+                Dim previewCfg As New ShuttersPreviewConfig
+                Dim publicCfg As New PublicConfig
+
+                Dim Details As DataSet = publicCfg.GetListData(String.Format("SELECT DesignType FROM viewDetails WHERE HeaderId='{0}' AND Active='1' GROUP BY DesignType", lblHeaderId.Text))
+                Dim DetailCount As Integer = Details.Tables(0).Rows.Count
+                For i As Integer = 0 To DetailCount - 1
+                    Dim fileName As String = String.Format("Job Order {0}.pdf", spanOrderId.InnerText)
+                    Dim filePath As String = Server.MapPath("~/file/order/")
+                    Dim finalPath As String = Path.Combine(filePath, fileName)
+                    Dim designType As String = Details.Tables(0).Rows(i).Item("DesignType").ToString()
+
+                    If designType = "Panorama" Then
+                        previewCfg.BindContent(lblHeaderId.Text, finalPath, lblOrderType.Text, designType)
+                        mailCfg.MailSuplierShutters(lblHeaderId.Text, finalPath)
+                    End If
+
+                    If designType = "Evolve" Then
+                        previewCfg.BindContent(lblHeaderId.Text, finalPath, lblOrderType.Text, designType)
+                        mailCfg.MailSuplierEvolve(lblHeaderId.Text, finalPath)
+                    End If
+                Next
+
+                Threading.Thread.Sleep(3000)
+
+                Response.Redirect(Request.RawUrl)
+                Exit Sub
+            End If
+
 
            Response.Redirect(Request.RawUrl)
         Catch ex As Exception
@@ -1354,7 +1387,9 @@ Partial Class Order_Detail
                 End Using
             End Using
 
-            orderCfg.UpdateProductType(lblHeaderId.Text)
+            If NOT lblOrderType.Text = "Shutters" Then
+                orderCfg.UpdateProductType(lblHeaderId.Text)
+            End If
 
             Response.Redirect(Request.RawUrl)
         Catch ex As Exception
