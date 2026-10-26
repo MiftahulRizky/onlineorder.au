@@ -449,15 +449,15 @@ Partial Class Order_Detail
             End If
 
             If lblOrderType.Text = "Shutters" Then
+                Dim fileName As String = String.Format("Job Order {0}.pdf", spanOrderId.InnerText)
+                Dim filePath As String = Server.MapPath("~/file/order/")
+                Dim finalPath As String = Path.Combine(filePath, fileName)
                 Dim previewCfg As New ShuttersPreviewConfig
                 Dim publicCfg As New PublicConfig
 
                 Dim Details As DataSet = publicCfg.GetListData(String.Format("SELECT DesignType FROM viewDetails WHERE HeaderId='{0}' AND Active='1' GROUP BY DesignType", lblHeaderId.Text))
                 Dim DetailCount As Integer = Details.Tables(0).Rows.Count
                 For i As Integer = 0 To DetailCount - 1
-                    Dim fileName As String = String.Format("Job Order {0}.pdf", spanOrderId.InnerText)
-                    Dim filePath As String = Server.MapPath("~/file/order/")
-                    Dim finalPath As String = Path.Combine(filePath, fileName)
                     Dim designType As String = Details.Tables(0).Rows(i).Item("DesignType").ToString()
 
                     If designType = "Panorama" Then
