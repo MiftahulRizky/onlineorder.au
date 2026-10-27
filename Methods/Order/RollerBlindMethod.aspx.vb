@@ -1018,6 +1018,10 @@ Partial Class Methods_Order_RollerBlindMethod
             '     data.accessory = ""
             ' End If
 
+            If data.brackettype = "Double" Then
+                data.bracketext = ""
+            End If
+
             
             
             ' Return New ErrorResponse With {.error = New ErrorDetail With {.message = data.uniqueid, .field = ""}}
