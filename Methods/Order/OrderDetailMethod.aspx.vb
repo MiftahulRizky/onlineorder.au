@@ -2842,11 +2842,11 @@ Partial Class Methods_Order_OrderDetailMethod
                 Return New With {.warning = true, .message = "This order is not in production."}
             End If
 
-            If currentDomain.Contains("onlineorder.au") Then
-               Throw New Exception("is live server")
-            Else
-                Throw New Exception("is dev server")
-            End If
+            ' If currentDomain.Contains("onlineorder.au") Then
+            '    Throw New Exception("is live server")
+            ' Else
+            '     Throw New Exception("is dev server")
+            ' End If
 
             ' Dim Res As String = CreateXMLB(headerid, FileName, FilePath)
             ' If Not Res = "200" Then Throw New Exception(Res)
