@@ -138,7 +138,7 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
           bindSizeType(),
           bindMounting(),
           bindDropFloor(),
-          bindRoll(),
+          bindRoll(brackettype),
           bindControlPosition(),
           bindChains(),
           bindTrims(blindname, brackettype, tubetype),
@@ -388,7 +388,7 @@ const bindFormAggregate = async () => {
       throw new Error(data.message);
     }
 
-    // console.log(data);
+    console.log(data);
 
     bindPageTitle(data.DesignName);
     bindHeaderInfo(data.HeaderData);
@@ -564,7 +564,7 @@ const bindColours = async (
         bindSizeType(),
         bindMounting(),
         bindDropFloor(),
-        bindRoll(),
+        bindRoll(brackettype),
         bindControlPosition(),
         bindChains(),
         bindTrims(blindname, brackettype, tubetype),
@@ -656,8 +656,12 @@ const bindFabricColours = async (designid, fabrictype) => {
   });
 };
 
-const bindRoll = () => {
-  generateOption("roll", ["Reverse Roll", "Standard"]);
+const bindRoll = (brackettype) => {
+  let list = ["Standard"];
+  if (brackettype == "Headbox Only") {
+    list.push("Reverse Roll");
+  }
+  generateOption("roll", list, 1);
 };
 
 const bindControlPosition = () => {
@@ -1117,7 +1121,7 @@ const bindItemOrders = async () => {
       bindSizeType(),
       bindMounting(),
       bindDropFloor(),
-      bindRoll(),
+      bindRoll(detail.BracketType),
       bindControlPosition(),
       bindChains(detail.DesignId),
       bindTrims(detail.BlindName, detail.BracketType, detail.TubeType),

@@ -266,6 +266,7 @@ Partial Class Methods_Order_JobSheetMethod
             Dim dt As New DataTable()
             Using thisConn As SqlConnection = New SqlConnection(myConn)
                 Dim selectQuery As String = "SELECT * FROM view_details WHERE HeaderId = @HeaderId AND Active = @Active AND DesignName NOT IN ('Surcharge', 'Additional') ORDER BY Id ASC"
+                ' Dim selectQuery As String = "SELECT * FROM view_details WHERE HeaderId = @HeaderId AND Active = @Active AND DesignName NOT IN ('Surcharge', 'Additional') ORDER BY Qty, BlindNo ASC"
                 Using da As New SqlDataAdapter(selectQuery, thisConn)
                     da.SelectCommand.Parameters.AddWithValue("@HeaderId", HeaderId)
                     da.SelectCommand.Parameters.AddWithValue("@Active", 1)
@@ -4382,7 +4383,9 @@ Partial Class Methods_Order_JobSheetMethod
             Dim IsJobDateValid As Boolean = DateTime.TryParse(JobDateStr, JobDate)
 
             ' Ambil data JobDetails
-            Dim JobDetailData As DataSet = publicCfg.GetListData("SELECT * FROM JobDetails WHERE JobId='" & JobId & "' ORDER BY BlindName, DesignName, Id")
+            Dim qJobDetail As String = String.Format("SELECT * FROM JobDetails WHERE JobId='{0}' ORDER BY BlindName, DesignName, Qty, BlindNo", JobId)
+            ' Dim JobDetailData As DataSet = publicCfg.GetListData("SELECT * FROM JobDetails WHERE JobId='" & JobId & "' ORDER BY BlindName, DesignName, Id")
+            Dim JobDetailData As DataSet = publicCfg.GetListData(qJobDetail)
             Dim allDetails As DataTable = JobDetailData.Tables(0)
 
             If allDetails.Rows.Count = 0 Then
