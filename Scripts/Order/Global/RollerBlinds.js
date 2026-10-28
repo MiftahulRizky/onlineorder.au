@@ -365,7 +365,7 @@ const bindFormAggregate = async () => {
       throw new Error(data.message);
     }
 
-    // console.log(data);
+    console.log(data);
 
     bindPageTitle(data.DesignName);
     bindHeaderInfo(data.HeaderData);

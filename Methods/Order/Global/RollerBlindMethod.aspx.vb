@@ -102,7 +102,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
             Dim HeaderData As Object
             Using conn As New SqlConnection(myConn)
-                Using cmd As New SqlCommand("SELECT OrderId, OrderNumber, OrderName FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window') AND Id = @Id", conn)
+                Using cmd As New SqlCommand("SELECT OrderId, OrderNumber, OrderName FROM view_order_headers WHERE OrderType IN ('Blinds', 'Door and Window', 'Furnishings') AND Id = @Id", conn)
                     cmd.Parameters.AddWithValue("@Id", data.headerid)
                     ' cmd.Parameters.AddWithValue("@OrderType", data.ordertype)
 

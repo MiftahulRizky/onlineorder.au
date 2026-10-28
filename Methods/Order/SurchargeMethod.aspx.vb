@@ -227,7 +227,7 @@ Partial Class Methods_Order_SurchargeMethod
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "please check delivery/pick up !", .field = "#modalAddService #id"}}
                 End If
 
-                If TubeName = "Roller" Then
+                If InArray(TubeName, "Roller", "Soft Shade") Then
                     Dim CustomerId As String = publicCfg.GetItemData(String.Format("SELECT StoreId FROM OrderHeaders WHERE Id='{0}'", data.headerid))
                     Dim CustomerStates As String = publicCfg.GetItemData(String.Format("SELECT States FROM CustomerAddress WHERE CustomerId='{0}' AND [Primary]=1", CustomerId))
                     If String.IsNullOrEmpty(CustomerStates) Then
