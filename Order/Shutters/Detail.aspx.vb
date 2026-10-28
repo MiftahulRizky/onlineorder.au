@@ -487,13 +487,23 @@ Partial Class Order_Detail
     Protected Sub btnSubmitHuake_Click(sender As Object, e As EventArgs)
         MessageError(False, String.Empty)
         Try
+            If Not InArray(lblOrderType.Text, "Shutters", "Panorama") Then
+                Exit Sub
+            End If
+
             Dim fileName As String = "Job Order " & spanOrderId.InnerText & ".pdf"
             Dim filePath As String = Server.MapPath("~/file/order/")
 
             Dim finalPath As String = Path.Combine(filePath, fileName)
 
             Dim previewCfg As New ShuttersPreviewConfig
-            previewCfg.BindContent(lblHeaderId.Text, finalPath)
+            If lblOrderType.Text = "Panorama" Then
+                previewCfg.BindContent(lblHeaderId.Text, finalPath)
+            End If
+            
+            If lblOrderType.Text = "Shutters" Then
+                previewCfg.BindContent(lblHeaderId.Text, finalPath, "Shutters", "Panorama")
+            End If
 
             mailCfg.MailSuplierShutters(lblHeaderId.Text, finalPath)
         Catch ex As Exception
@@ -3156,6 +3166,10 @@ Partial Class Order_Detail
     Private Sub MessageError_Log(Show As Boolean, Msg As String)
         divErrorLog.Visible = Show : msgErrorLog.InnerText = Msg
     End Sub
+
+    Private Function InArray(value As String, ParamArray list() As String) As Boolean
+        Return list.Contains(value)
+    End Function
 
     Protected Function VisibleDetail(ProductId As String) As Boolean
         Dim result As Boolean = False
