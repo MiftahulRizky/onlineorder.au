@@ -658,7 +658,7 @@ const bindFabricColours = async (designid, fabrictype) => {
 
 const bindRoll = (brackettype) => {
   let list = ["Standard"];
-  if (brackettype == "Headbox Only") {
+  if (brackettype !== "Headbox & Side Channels") {
     list.push("Reverse Roll");
   }
   generateOption("roll", list, 1);
