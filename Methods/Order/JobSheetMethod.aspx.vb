@@ -4383,7 +4383,7 @@ Partial Class Methods_Order_JobSheetMethod
             Dim IsJobDateValid As Boolean = DateTime.TryParse(JobDateStr, JobDate)
 
             ' Ambil data JobDetails
-            Dim qJobDetail As String = String.Format("SELECT * FROM JobDetails WHERE JobId='{0}' ORDER BY BlindName, DesignName, Qty, BlindNo", JobId)
+            Dim qJobDetail As String = String.Format("SELECT * FROM JobDetails WHERE JobId='{0}' ORDER BY BlindName, DesignName, Qty", JobId)
             ' Dim JobDetailData As DataSet = publicCfg.GetListData("SELECT * FROM JobDetails WHERE JobId='" & JobId & "' ORDER BY BlindName, DesignName, Id")
             Dim JobDetailData As DataSet = publicCfg.GetListData(qJobDetail)
             Dim allDetails As DataTable = JobDetailData.Tables(0)
