@@ -886,7 +886,10 @@ const bindWandColour = (tubetype, wandlength) => {
     data.push({ value: "White", text: "White" });
   } else {
     if (tubetype === "Phoenixline") {
-      data.push({ value: "Clear", text: "Clear" });
+      data.push(
+        { value: "Clear", text: "Clear" },
+        { value: "White", text: "White" },
+      );
     } else {
       data.push(
         { value: "Birch", text: "Birch" },
