@@ -1154,6 +1154,10 @@ const handlerSubmit = async (button, isConfirmed = false) => {
     }
 
     if (res.error) {
+      throw new Error(res.message);
+    }
+
+    if (res.warning) {
       await isWarning(res.message?.toUpperCase());
       const field = getById(res.field);
       if (field) {
