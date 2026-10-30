@@ -15902,24 +15902,24 @@ Partial Class Methods_Order_JobSheetMethod
         End If
 
         Dim inCarrier As String() = {
-            currentData("LouvreSize1").ToString(),
-            currentData("LouvreSize2").ToString(),
-            currentData("LouvreSize3").ToString(),
-            currentData("LouvreSize4").ToString(),
-            currentData("LouvreSize5").ToString(),
-            currentData("LouvreSize6").ToString()
+            currentData("FrameType1").ToString(),
+            currentData("FrameType2").ToString(),
+            currentData("FrameType3").ToString(),
+            currentData("FrameType4").ToString(),
+            currentData("FrameType5").ToString(),
+            currentData("FrameType6").ToString()
         }
         For i As Integer = 0 To inCarrier.Length - 1
             inCarrier(i) = GetJsonValue(inCarrier(i))
         Next
 
         Dim inSpacer As String() = {
-            currentData("LouvrePosition1").ToString(),
-            currentData("LouvrePosition2").ToString(),
-            currentData("LouvrePosition3").ToString(),
-            currentData("LouvrePosition4").ToString(),
-            currentData("LouvrePosition5").ToString(),
-            currentData("LouvrePosition6").ToString()
+            currentData("FrameLeft1").ToString(),
+            currentData("FrameLeft2").ToString(),
+            currentData("FrameLeft3").ToString(),
+            currentData("FrameLeft4").ToString(),
+            currentData("FrameLeft5").ToString(),
+            currentData("FrameLeft6").ToString()
         }
         For i As Integer = 0 To inSpacer.Length - 1
             inSpacer(i) = GetJsonValue(inSpacer(i))
@@ -16242,24 +16242,24 @@ Partial Class Methods_Order_JobSheetMethod
         End If
 
          Dim inCarrier As String() = {
-            currentData("LouvreSize1").ToString(),
-            currentData("LouvreSize2").ToString(),
-            currentData("LouvreSize3").ToString(),
-            currentData("LouvreSize4").ToString(),
-            currentData("LouvreSize5").ToString(),
-            currentData("LouvreSize6").ToString()
+            currentData("FrameType1").ToString(),
+            currentData("FrameType2").ToString(),
+            currentData("FrameType3").ToString(),
+            currentData("FrameType4").ToString(),
+            currentData("FrameType5").ToString(),
+            currentData("FrameType6").ToString()
         }
         For i As Integer = 0 To inCarrier.Length - 1
             inCarrier(i) = GetJsonValue(inCarrier(i))
         Next
 
         Dim inSpacer As String() = {
-            currentData("LouvrePosition1").ToString(),
-            currentData("LouvrePosition2").ToString(),
-            currentData("LouvrePosition3").ToString(),
-            currentData("LouvrePosition4").ToString(),
-            currentData("LouvrePosition5").ToString(),
-            currentData("LouvrePosition6").ToString()
+            currentData("FrameLeft1").ToString(),
+            currentData("FrameLeft2").ToString(),
+            currentData("FrameLeft3").ToString(),
+            currentData("FrameLeft4").ToString(),
+            currentData("FrameLeft5").ToString(),
+            currentData("FrameLeft6").ToString()
         }
         For i As Integer = 0 To inSpacer.Length - 1
             inSpacer(i) = GetJsonValue(inSpacer(i))
