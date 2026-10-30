@@ -8,6 +8,7 @@ Imports System.Security.Cryptography
 Public Class PublicConfig
 
     Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
+    Dim urlEnc As New UrlEncryptor()
 
     ' VARIABLE PRINT
 
@@ -2006,6 +2007,28 @@ Public Class PublicConfig
             count += input.Split(substring).Length - 1
         Next
         Return count
+    End Function
+
+    Public Function MyCancel(headerid As String, ordertype As String) As String
+        Try
+            Dim msg As String = "200"
+            Dim url As String = "/order"
+            Dim domain As String = "http://10.0.209.168:8888/"
+            Dim currentDomain As String = HttpContext.Current.Request.Url.Host.ToLower()
+            If currentDomain.Contains("onlineorder.au") Then
+                domain = "https://onlineorder.au/"
+            End If
+
+            headerid = urlEnc.Encrypt(headerid)
+            ordertype = urlEnc.Encrypt(ordertype)
+
+
+            url = String.Format("{0}order/orderdetails?param={1}&ordertype={2}", domain,  HttpUtility.UrlEncode(headerid), HttpUtility.UrlEncode(ordertype))
+
+            Return url
+        Catch ex As Exception
+            Return ex.Message
+        End Try
     End Function
 
 

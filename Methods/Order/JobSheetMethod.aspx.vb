@@ -9288,6 +9288,28 @@ Partial Class Methods_Order_JobSheetMethod
                 result+= tdDetRight & currentData("Trim6").ToString() & tdDetEnd
             result+= trDetEnd
 
+            '#BottomRailShape
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "BRail Shape" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomType5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("BottomType6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#BottomRailColour
+            result+= trDetStart
+                result+= tdTitleStart & boldStart & "BRail Colour" & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour1").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour2").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour3").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour4").ToString() & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & currentData("BottomColour5").ToString() & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & currentData("BottomColour6").ToString() & boldEnd & tdDetEnd
+            result+= trDetEnd
+
             '#ControllType
             result+= trDetStart
                 result+= tdTitleStart & boldStart & "Control Type" & boldEnd & tdDetEnd
