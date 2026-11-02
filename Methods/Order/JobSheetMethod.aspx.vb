@@ -292,6 +292,7 @@ Partial Class Methods_Order_JobSheetMethod
                     Dim KitName As String = row("KitName").ToString()
                     Dim BracketType As String = row("BracketType").ToString()
                     Dim ControlType As String = row("ControlType").ToString()
+                    Dim Qty As Integer = row("Qty").ToString()
                     If BracketType.Contains("Linked") Then
                         LinkBlind = "Linked"
                     End If
@@ -584,7 +585,7 @@ Partial Class Methods_Order_JobSheetMethod
                         insertCmd.ExecuteNonQuery()
                     End Using
 
-                    counter += 1
+                    counter += Qty
                 Next
 
                 thisConn.Close()
@@ -4383,7 +4384,7 @@ Partial Class Methods_Order_JobSheetMethod
             Dim IsJobDateValid As Boolean = DateTime.TryParse(JobDateStr, JobDate)
 
             ' Ambil data JobDetails
-            Dim qJobDetail As String = String.Format("SELECT * FROM JobDetails WHERE JobId='{0}' ORDER BY BlindName, DesignName, Qty, Line ASC", JobId)
+            Dim qJobDetail As String = String.Format("SELECT * FROM JobDetails WHERE JobId='{0}' ORDER BY BlindName, DesignName, Id", JobId)
             ' Dim JobDetailData As DataSet = publicCfg.GetListData("SELECT * FROM JobDetails WHERE JobId='" & JobId & "' ORDER BY BlindName, DesignName, Id")
             Dim JobDetailData As DataSet = publicCfg.GetListData(qJobDetail)
             Dim allDetails As DataTable = JobDetailData.Tables(0)
