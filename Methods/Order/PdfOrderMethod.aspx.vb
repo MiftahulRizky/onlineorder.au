@@ -141,7 +141,7 @@ Partial Class Methods_Order_PdfOrderMethod
             End If
 
 
-            If (action = "mail" Or action = "submit") And isCustomer == False Then
+            If (action = "mail" Or action = "submit") And isCustomer = False Then
             ' If action = "mail" Or action = "submit"Then
                 fileDirectory = HttpContext.Current.Server.MapPath("~/file/order/mail")
                 
