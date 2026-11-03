@@ -27,8 +27,11 @@
                                     order type
                                 </label>
                                 <div class="col-lg-4">
-                                    <select name="ordertype" id="ordertype" class="form-select "></select>
-                                    <input type="text" name="headerid" id="headerid" class="form-control" readonly hidden>
+                                    <div class="input-group">
+                                        <select name="ordertype" id="ordertype" class="form-select "></select>
+                                        <input type="text" name="headerid" id="headerid" class="form-control" readonly hidden>
+                                        <button class="btn btn-information btn-info" type="button" id="btnInfoOrderType">?</button>
+                                    </div>
                                 </div>
                             </div>
                             <div id="formDetail">
@@ -82,7 +85,7 @@
                                     <div class="col-lg-6">
                                         <div class="input-group">
                                             <input type="text" class="form-control " id="ordernumber" name="ordernumber" placeholder="Order Number ...">
-                                            <button class="btn btn-information" type="button" id="btnInfoOrderNumber">?</button>
+                                            <button class="btn btn-information btn-info" type="button" id="btnInfoOrderNumber">?</button>
                                         </div>
                                     </div>
                                 </div>
@@ -91,7 +94,7 @@
                                     <div class="col-lg-8">
                                         <div class="input-group">
                                             <input type="text" class="form-control " id="ordername" name="ordername" placeholder="Order Name ...">
-                                            <button class="btn btn-information" type="button" id="btnInfoOrderName">?</button>
+                                            <button class="btn btn-information btn-info" type="button" id="btnInfoOrderName">?</button>
                                         </div>
                                     </div>
                                 </div>
@@ -107,7 +110,7 @@
                                                 <option value="INT-FIS">INT-FIS</option>
                                                 <option value="INT-PU">INT-PU</option>
                                             </select>
-                                            <button class="btn btn-information" type="button" id="btnInfoDelivery">?</button>
+                                            <button class="btn btn-information btn-info" type="button" id="btnInfoDelivery">?</button>
                                         </div>
                                     </div>
                                 </div>
@@ -121,7 +124,7 @@
                                                 <option value="By Van">BY VAN</option>
                                                 <option value="Third Party">THIRD PARTY</option>
                                             </select>
-                                            <button class="btn btn-information" type="button" id="btnInfoDeliveryType">?</button>
+                                            <button class="btn btn-information btn-info" type="button" id="btnInfoDeliveryType">?</button>
                                         </div>
                                     </div>
                                 </div>
@@ -135,7 +138,7 @@
                                                 <option value="New">NEW</option>
                                                 <option value="Remake">REMAKE</option>
                                             </select>
-                                            <button class="btn btn-information" type="button" id="btnInfoSourceType">?</button>
+                                            <button class="btn btn-information btn-info" type="button" id="btnInfoSourceType">?</button>
                                         </div>
                                     </div>
                                 </div>
@@ -268,7 +271,7 @@
         let LOGINID = '<%= Session("LoginId") %>';
         let URIMETHOD = '/Methods/Order/CreateOrderMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/CreateOrders.js?v=1.0.6"></script>
+    <script src="/Scripts/Order/CreateOrders.js?v=1.0.7"></script>
 
 </asp:Content>
 

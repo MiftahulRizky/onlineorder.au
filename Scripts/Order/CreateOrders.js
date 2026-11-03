@@ -139,6 +139,11 @@ selectorElAll(".btn-information").forEach((el) => {
     let msg = "Oops!";
 
     switch (id) {
+      case "btnInfoOrderType":
+        msg = "Furnishings is a combination of Blinds and Door & Window.";
+        msg += "<br/> Shutters is a combination of Evolve and Panorama.";
+        break;
+
       case "btnInfoOrderNumber":
         msg = "Please do not use the following characters:";
         msg += '<br/> [ / ], [  ], [ & ], [ # ], [ ` ], [ , ], AND [ " ]';
