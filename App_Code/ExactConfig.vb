@@ -231,7 +231,7 @@ Public Class ExactConfig
         settings.OmitXmlDeclaration = True
         settings.Encoding = New UTF8Encoding(False)
 
-        Dim headerData As DataSet = GetListData("SELECT * FROM view_order_headers WHERE Id = '" + Id + "' AND OrderType = 'Blinds'")
+        Dim headerData As DataSet = GetListData("SELECT * FROM view_order_headers WHERE Id = '" + Id + "' AND OrderType IN ('Blinds', 'Door and Window', 'Furnishings')")
         If headerData.Tables(0).Rows.Count < 0 Then Exit Sub
 
         For h As Integer = 0 To headerData.Tables(0).Rows.Count - 1
