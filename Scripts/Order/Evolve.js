@@ -1566,6 +1566,7 @@ function proccess() {
       //   toggleButtonState(false, "Submit");
       // }
       const result = response.d;
+      console.log(result);
       if (result.success === true) {
         setTimeout(() => {
           $("#modalSuccess").modal("show");

@@ -32,11 +32,11 @@ $(document).ready(function () {
     handlerCancel(id);
   });
 
-  $("#vieworder").on(
-    "click",
-    () =>
-      (window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`),
-  );
+  // $("#vieworder").on(
+  //   "click",
+  //   () =>
+  //     (window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`),
+  // );
 
   $("#blindtype").on("change", function () {
     const blindType = $(this).val();
@@ -518,6 +518,7 @@ function toggleButtonState(disabled, text) {
 function startCountdown(seconds, url) {
   let countdown = seconds;
   const button = $("#vieworder");
+  button.on("click", () => (window.location.href = url));
 
   function updateButton() {
     button.text(`View Order (${countdown}s)`);
