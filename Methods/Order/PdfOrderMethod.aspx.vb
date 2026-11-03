@@ -27,6 +27,7 @@ Partial Class Methods_Order_PdfOrderMethod
     Shared printCfg As New PrintConfig()
     Shared jobsheet As New HalperJobSheetRenderer()
     Shared enUS As CultureInfo = New CultureInfo("en-US")
+    Shared urlEnc As New UrlEncryptor()
     Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
     Public Class ErrorDetail
@@ -81,6 +82,7 @@ Partial Class Methods_Order_PdfOrderMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function CreatePDFOrder(ByVal headerid As String, ByVal action As String, ByVal loginid As String) As Object
         Try
+            headerid = urlEnc.Decrypt(headerid)
             Dim msg As String = ""
             Dim url As String = ""
             Dim fileDirectory As String = ""
@@ -182,7 +184,7 @@ Partial Class Methods_Order_PdfOrderMethod
 
     Private Shared Function MailSubmitOrder(headerid As String, loginid As String, directory As String) As String
         Try
-            Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType IN ('Blinds', 'Door and Window') ", headerid))
+            Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType IN ('Blinds', 'Door and Window', 'Furnishings') ", headerid))
             If OrderData.Tables(0).Rows.Count = 0 Then Return "invalid orders"
 
             Dim CustomerId As String = OrderData.Tables(0).Rows(0).Item("CustomerId").ToString()
@@ -3572,6 +3574,7 @@ Partial Class Methods_Order_PdfOrderMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function CreatePDFCustomerQuote(ByVal headerid As String, ByVal username As String, ByVal action As String) As Object
         Try
+            headerid = urlEnc.Decrypt(headerid)
             Dim msg As String = ""
             Dim url As String = ""
             Dim fileDirectory As String = ""
@@ -3596,7 +3599,7 @@ Partial Class Methods_Order_PdfOrderMethod
             If action = "reprint" or action = "preview" Then
                 HttpContext.Current.Session("Reprint") = fileName
                 HttpContext.Current.Session("KeyReprint") = Key
-                msg = "Print page is successfully prepared. <br> Click <b>OK</b> to open it."
+                msg = "Print Quote is successfully prepared. <br> Click <b>OK</b> to open it."
                 url = "/order/printquote"
             End If
 
@@ -3610,7 +3613,7 @@ Partial Class Methods_Order_PdfOrderMethod
             Return New With {.success = true, .message = msg, .url = url}
 
         Catch ex As Exception
-            Return New With { .error = true, .message = ex.Message}
+            Return New With { .error = true, .message = String.Format("CreatePDFCustomerQuote: {0}", ex.Message)}
         End Try
     End Function
 
@@ -3618,6 +3621,7 @@ Partial Class Methods_Order_PdfOrderMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function CreatePDFQuote(ByVal headerid As String, ByVal action As String, ByVal username As String) As Object
         Try
+            headerid = urlEnc.Decrypt(headerid)
             Dim msg As String = "Barcode has been downloaded."
             Dim url As String = ""
             Dim rolename As String = HttpContext.Current.Session("rolename").ToString()
