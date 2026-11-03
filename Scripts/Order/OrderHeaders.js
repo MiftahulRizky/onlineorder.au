@@ -777,7 +777,9 @@ const displayElOverall = (api) => {
       const isDraft = ["Draft", "Unsubmitted"].includes(rowData.StatusVal);
       const isFinish = ["Completed", "Canceled"].includes(rowData.StatusVal);
       const isActive = ["1", "True"].includes(rowData.Active);
-      const isShutters = ["Panorama", "Evolve"].includes(rowData.OrderType);
+      const isShutters = ["Panorama", "Evolve", "Shutters"].includes(
+        rowData.OrderType,
+      );
 
       toggleShow(liDetailOrder, true);
 

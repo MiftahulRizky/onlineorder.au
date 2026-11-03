@@ -652,7 +652,7 @@ Partial Class Methods_Order_OrderHeaderMethod
                 End If
 
                 Dim tableTo As String = "OrderHeaders"
-                If type = "Panorama" Or type = "Evolve" Then
+                If type = "Panorama" Or type = "Evolve" Or type = "Shutters" Then
                     tableTo = "OrderHeaders_Shutters"
                 End If
 
