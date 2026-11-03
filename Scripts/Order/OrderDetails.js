@@ -641,7 +641,7 @@ document.querySelector("#tableAjax").addEventListener("click", async (e) => {
   if (e.target.id === "btnNextItem") {
     const itemid = e.target.dataset.id;
     const designid = e.target.dataset.designid;
-    const headerid = e.target.dataset.headerid;
+    const headerid = HEADERID;
     const ordertype = ORDERTYPE;
     const production = e.target.dataset.production;
     const msgbody = e.target.dataset.next;
