@@ -248,7 +248,7 @@
 
                         </div>
 
-                        <div class="card-footer text-end">
+                        <div class="card-footer text-center">
                             <button type="button" id="btnSubmit" class="btn btn-primary ">Save Changes</button>
                             <a href="javascript:void(0);" id="btnCancel"  class="btn btn-danger " >Cancel
                             </a>

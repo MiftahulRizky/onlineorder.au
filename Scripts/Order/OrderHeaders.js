@@ -164,7 +164,9 @@ selectorEl("#tableOrders").addEventListener("click", async (e) => {
     const key = e.target.id;
     if (key === "btnDetailOrder") {
       const id = e.target.dataset.id;
+      const idenc = e.target.dataset.idenc;
       const type = e.target.dataset.type;
+      const typeenc = e.target.dataset.typeenc;
       const isSp = [
         "Blinds",
         "Door",
@@ -176,15 +178,14 @@ selectorEl("#tableOrders").addEventListener("click", async (e) => {
       let page = "/order";
 
       if (isSp) {
-        page = `/order/detail`;
+        page = `/order/orderdetails`;
       }
       if (isShutters) {
         page = `/order/shutters/detail`;
       }
 
-      const live = `${page}?param=${id}&ordertype=${type.toLowerCase()}`;
-      const dev = `/order/orderdetails?param=${id}&ordertype=${type.toLowerCase()}`;
-      window.location.href = live;
+      const url = `${page}?param=${idenc}&ordertype=${typeenc}`;
+      window.location.href = url;
     }
 
     if (key === "btnChangeStatus") {
@@ -490,7 +491,7 @@ const bindOrders = async (status, ordertype, active, storetype, params) => {
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
 
                 <li class="liDetailOrder">
-                  <a class="dropdown-item" href="javascript:void(0)" id="btnDetailOrder" data-id="${row.Id}" data-type="${row.OrderType}">
+                  <a class="dropdown-item" href="javascript:void(0)" id="btnDetailOrder" data-id="${row.Id}" data-idenc="${row.IdEnc}" data-type="${row.OrderType}" data-typeenc="${row.OrderTypeEnc}">
                   <i class="ti ti-info-square-rounded me-1 fs-2 opacity-50"></i>Detail
                   </a>
                 </li>

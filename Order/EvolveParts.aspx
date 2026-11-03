@@ -341,6 +341,7 @@ Inherits="Order_EvolveParts" MasterPageFile="~/Site.Master" Title="Evolve Parts"
     let designId = '<%= Session("designId") %>';
     let itemId = '<%= Session("itemId") %>';
     let loginId = '<%= Session("LoginId") %>';
+    let ROLENAME = '<%= Session("RoleName") %>';
   </script>
   <script
     src="../Scripts/Order/EvolveParts.js?v=<%= DateTime.Now.Ticks %>"

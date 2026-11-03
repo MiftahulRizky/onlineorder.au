@@ -13,6 +13,7 @@ Partial Class Methods_Order_CreateOrderMethod
 
     Shared publicCfg As New PublicConfig()
     Shared orderCfg As New OrderConfig()
+    Shared urlEnc As New UrlEncryptor()
     Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
     Public Class ParamListData
@@ -337,7 +338,6 @@ Partial Class Methods_Order_CreateOrderMethod
                 data.deliverytype = ""
             End If
 
-
             Dim msg As String = "200"
             Dim url As String = "/"
             If data.action = "add" Then
@@ -428,7 +428,7 @@ Partial Class Methods_Order_CreateOrderMethod
                         End Using
                     End If
 
-                    url = String.Format("/order/orderdetails?param={0}&ordertype={1}", data.headerid, data.ordertype.ToLower())
+                    ' url = String.Format("/order/orderdetails?param={0}&ordertype={1}", data.headerid, data.ordertype.ToLower())
 
                     Dim dataLog As Object() = {data.headerid, "", data.ordertype, data.loginid, "Create Order"}
                     orderCfg.Log_Orders(dataLog)
@@ -437,6 +437,7 @@ Partial Class Methods_Order_CreateOrderMethod
 
                 If InArray(data.ordertype, "Panorama" ,"Evolve", "Shutters")  Then
                     Dim headerId As String = orderCfg.CreateOrderHeaderId()
+                    data.headerid = headerId
                     Dim orderId As String = "SPP-" & headerId
 
                     Dim createdBy As String = UCase(data.createdby).ToString()
@@ -462,7 +463,7 @@ Partial Class Methods_Order_CreateOrderMethod
                             thisConn.Close()
                         End Using
                     End Using
-                    url = String.Format("/order/shutters/detail?param={0}&ordertype={1}", headerId, data.ordertype.ToLower())
+                    ' url = String.Format("/order/shutters/detail?param={0}&ordertype={1}", headerId, data.ordertype.ToLower())
 
                     Dim dataLog As Object() = {headerId, "", data.ordertype, data.loginid, "Create Order"}
                     orderCfg.Log_Orders(dataLog)
@@ -512,7 +513,7 @@ Partial Class Methods_Order_CreateOrderMethod
                         End Using
                     End If
                     
-                    url = String.Format("/order/orderdetails?param={0}&ordertype={1}", data.headerid, data.ordertype.ToLower())
+                    ' url = String.Format("/order/orderdetails?param={0}&ordertype={1}", data.headerid, data.ordertype.ToLower())
                 End If
 
                 If InArray(data.ordertype, "Panorama", "Evolve", "Shutters") Then
@@ -536,7 +537,7 @@ Partial Class Methods_Order_CreateOrderMethod
                             thisConn.Close()
                         End Using
                     End Using
-                    url = String.Format("/order/shutters/detail?param={0}&ordertype={1}", data.headerid, data.ordertype.ToLower())
+                    ' url = String.Format("/order/shutters/detail?param={0}&ordertype={1}", data.headerid, data.ordertype.ToLower())
 
                 End If
 
@@ -545,13 +546,26 @@ Partial Class Methods_Order_CreateOrderMethod
                 msg = "Data has been updated successfully."
             End If
 
-            ' Throw New Exception(data.ordertype)
-
+            
             If msg = "200" Then Throw New Exception(msg)
-
+            
+            url = publicCfg.MyCancel(data.headerid, data.ordertype)
+            ' Throw New Exception(url)
             Return New With {.success = true, .message = msg, .url = url}
         Catch ex As Exception
             Return New With { .error = true, .message = String.Format("Save: {0}", ex.Message)}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function Cancel(ByVal headerid As String, ByVal ordertype As String, ByVal rolename As String ) As Object
+        Try
+            Dim msg As String = "200"
+            Dim url As String = publicCfg.MyCancel(headerid, ordertype)
+            Return New With {.success = true, .message = msg, .url = url}
+        Catch ex As Exception
+            Return New With { .error = true, .message = String.Format("Cancel: {0}", ex.Message)}
         End Try
     End Function
 
@@ -630,7 +644,29 @@ Partial Class Methods_Order_CreateOrderMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindOrderAggregate(ByVal data As ParamBindOrderAggregate) As Object
         Try
-            Dim HeaderData As Object = FindHeaderData(data)
+            Try
+                data.headerid = urlEnc.Decrypt(data.headerid)
+            Catch ex As Exception
+                If data.rolename = "Administrator" Then
+                    Throw New Exception("failed to decrypt headerid")
+                Else
+                    Return New With { .warning = true, .url = "/order/orderheaders"}
+                End If
+            End Try
+
+            Try
+                data.ordertype = urlEnc.Decrypt(data.ordertype)
+            Catch ex As Exception
+                If data.rolename = "Administrator" Then
+                    Throw New Exception("failed to decrypt ordertype")
+                Else
+                    Return New With { .warning = true, .url = "/order/orderheaders"}
+                End If
+            End Try
+
+            ' Throw New Exception("HeaderId: " & data.headerid & ", OrderType: " & data.ordertype)
+
+            Dim HeaderData As Object = FindHeaderData(data.headerid, data.ordertype)
             If HeaderData.error Then
                 Throw New Exception(HeaderData.message)
             End If
@@ -5511,13 +5547,31 @@ Partial Class Methods_Order_CreateOrderMethod
         New SpacerInfo With {.MaxWidth = 5511, .Spacer1Type = "79", .CarriersQty = 74}
     }
     
-    Private Shared Function FindHeaderData(ByVal data As ParamBindOrderAggregate) As Object
+    Private Shared Function FindHeaderData(headerid As String, ordertype As String) As Object
         Try
+            ' Try
+            '     data.headerid = urlEnc.Decrypt(data.headerid)
+            ' Catch ex As Exception
+            '     If data.rolename = "Administrator" Then
+            '         Throw New Exception("failed to decrypt headerid")
+            '     End If
+            ' End Try
+
+            ' Try
+            '     data.ordertype = urlEnc.Decrypt(data.ordertype)
+            ' Catch ex As Exception
+            '     If data.rolename = "Administrator" Then
+            '         Throw New Exception("failed to decrypt ordertype")
+            '     End If
+            ' End Try
+
+            ' Throw New Exception("HeaderId: " & data.headerid & ", OrderType: " & data.ordertype)
+
             Dim HeaderData As New Dictionary(Of String, Object)()
             Using conn As New SqlConnection(myConn)
                 Using cmd As New SqlCommand("SELECT * FROM view_order_headers WHERE OrderType=@OrderType AND Id = @Id", conn)
-                    cmd.Parameters.AddWithValue("@Id", data.headerid)
-                    cmd.Parameters.AddWithValue("@OrderType", data.ordertype)
+                    cmd.Parameters.AddWithValue("@Id", headerid)
+                    cmd.Parameters.AddWithValue("@OrderType", ordertype)
 
                     conn.Open()
                     Using reader As SqlDataReader = cmd.ExecuteReader()

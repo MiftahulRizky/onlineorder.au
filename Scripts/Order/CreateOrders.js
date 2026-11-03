@@ -178,32 +178,16 @@ selectorElAll(".btn-information").forEach((el) => {
 
 selectorEl("#btn-cancel").addEventListener("click", (e) => {
   e.preventDefault();
-
+  const id = e.target.id;
   const isEdit = ACTION === "edit";
   const isAdd = ACTION === "add";
-  const isFurnishing = [
-    "blinds",
-    "door",
-    "window",
-    "door and window",
-    "furnishings",
-  ].includes(ORDERTYPE);
-  const isShutters = ["panorama", "evolve", "shutters"].includes(ORDERTYPE);
-  let url = "/order";
+  if (isEdit) {
+    handlerCancel(id);
+  }
 
   if (isAdd) {
-    url;
+    window.location.href = "/order/orderheaders";
   }
-
-  if (isEdit && isFurnishing) {
-    url = `/order/orderdetails?param=${ID}&ordertype=${ORDERTYPE.toLowerCase()}`;
-  }
-
-  if (isEdit && isShutters) {
-    url = `/order/shutters/detail?param=${ID}&ordertype=${ORDERTYPE}`;
-  }
-
-  window.location.href = url;
 });
 
 selectorEl("#btn-submit-order").addEventListener("click", (e) => {
@@ -587,6 +571,9 @@ const saveData = async (button) => {
     catchMessages(msg);
   } finally {
     getById(button).innerHTML = "Next";
+    if (ACTION == "edit") {
+      getById(button).innerHTML = "Save Changes";
+    }
   }
 };
 
@@ -661,6 +648,55 @@ const saveDataShipping = async (button) => {
     catchMessages(msg);
   } finally {
     button.innerHTML = "Save Changes";
+  }
+};
+
+const handlerCancel = async (button) => {
+  try {
+    // return alert(button);
+    getById(button).innerHTML = "Waiting...";
+
+    const response = await fetch(URIMETHOD + "/Cancel", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        headerid: getById("headerid").value,
+        ordertype: getById("ordertype").value,
+        rolename: ROLENAME,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    }
+
+    if (res.warning) {
+      await isWarning(res.message?.toUpperCase());
+      const field = getById(res.field);
+      if (field) {
+        field.classList.add("is-invalid");
+      }
+    }
+
+    if (res.success) {
+      // await isSuccess(res.message);
+      window.location.href = res.url;
+    }
+  } catch (error) {
+    const msg = `handlerCancel: ${error.message}`;
+    catchMessages(msg);
+  } finally {
+    getById(button).innerHTML = "Cancel";
   }
 };
 // ----------------------------------------------|| Display Functions ||---------------------------------------
@@ -908,7 +944,7 @@ const createOrderPageLoaded = async () => {
     setState("delivery_edit", "");
     setState("status_edit", "");
     getById("titleCard").textContent = "Create New Order";
-    await displayElOverall();
+    displayElOverall();
     await loaderFadeOut();
   } else if (ACTION === "edit" && ID && ORDERTYPE) {
     getById("titleCard").textContent = "Edit Order";

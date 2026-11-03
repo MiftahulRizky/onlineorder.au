@@ -15,6 +15,7 @@ Partial Class Methods_Order_OrderHeaderMethod
     Shared publicCfg As New PublicConfig()
     Shared mailCfg As New MailConfig()
     Shared orderCfg As New OrderConfig()
+    Shared urlEnc As New UrlEncryptor()
     Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
     Public Class ParamBindOrderHeaderAggregate
@@ -84,6 +85,7 @@ Partial Class Methods_Order_OrderHeaderMethod
     Public Class OrdersMatrixReturnRow
         Public Property No As String 
         Public Property Id As String 
+        Public Property IdEnc As String 
         Public Property OrderId As String 
         Public Property CustomerId As String 
         Public Property JoNumber As String 
@@ -91,6 +93,7 @@ Partial Class Methods_Order_OrderHeaderMethod
         Public Property OrderNumber As String 
         Public Property OrderName As String 
         Public Property OrderType As String 
+        Public Property OrderTypeEnc As String 
         Public Property Delivery As String 
         Public Property Status As String 
         Public Property StatusVal As String 
@@ -262,6 +265,7 @@ Partial Class Methods_Order_OrderHeaderMethod
                         Dim row As New OrdersMatrixReturnRow With {
                             .No = noCounter.ToString(),
                             .Id = reader("Id").ToString(),
+                            .IdEnc = urlEnc.Encrypt(reader("Id").ToString()),
                             .OrderId = reader("OrderId").ToString(),
                             .CustomerId = reader("CustomerId").ToString(),
                             .JoNumber = reader("JoNumberId").ToString(),
@@ -269,6 +273,7 @@ Partial Class Methods_Order_OrderHeaderMethod
                             .OrderNumber = reader("OrderNumber").ToString(),
                             .OrderName = reader("OrderName").ToString(),
                             .OrderType = reader("OrderType").ToString(),
+                            .OrderTypeEnc = urlEnc.Encrypt(reader("OrderType").ToString()),
                             .Delivery = Delivery.value,
                             .Status = Status.value,
                             .StatusVal = reader("Status").ToString(),

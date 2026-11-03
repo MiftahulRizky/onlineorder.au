@@ -2014,16 +2014,27 @@ Public Class PublicConfig
             Dim msg As String = "200"
             Dim url As String = "/order"
             Dim domain As String = "http://10.0.209.168:8888/"
+            Dim page As String = "order"
             Dim currentDomain As String = HttpContext.Current.Request.Url.Host.ToLower()
             If currentDomain.Contains("onlineorder.au") Then
                 domain = "https://onlineorder.au/"
             End If
 
+            If InArray(ordertype.ToLower(), "blinds", "door", "window", "door and window","furnishings") Then
+                page = "order/orderdetails"
+            End IF
+
+            If InArray(ordertype.ToLower(), "panorama", "evolve", "shutters") Then
+                page = "order/shutters/detail"
+            End IF
+
+
+
             headerid = urlEnc.Encrypt(headerid)
             ordertype = urlEnc.Encrypt(ordertype)
 
 
-            url = String.Format("{0}order/orderdetails?param={1}&ordertype={2}", domain,  HttpUtility.UrlEncode(headerid), HttpUtility.UrlEncode(ordertype))
+            url = String.Format("{0}{1}?param={2}&ordertype={3}", domain, page,  HttpUtility.UrlEncode(headerid), HttpUtility.UrlEncode(ordertype))
 
             Return url
         Catch ex As Exception

@@ -5,6 +5,8 @@ Imports System.Web.Services
 Partial Class Order_Method
     Inherits Page
 
+    Shared publicCfg As New PublicConfig()
+
     <WebMethod()>
     Public Shared Function StringData(type As String, dataId As String) As String
         Dim orderCfg As New OrderConfig
@@ -283,7 +285,7 @@ Partial Class Order_Method
     End Function
 
     <WebMethod()>
-    Public Shared Function EvolveProccess(data As ShutterData) As String
+    Public Shared Function EvolveProccess(data As ShutterData) As Object
         Dim orderCfg As New OrderConfig
 
         Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
@@ -909,6 +911,7 @@ Partial Class Order_Method
         Dim linearMetre As Decimal = Math.Round(width / 1000, 4)
 
         If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
+            Dim ordertype As String = orderCfg.GetItemData("SELECT OrderType FROM OrderHeaders_Shutters WHERE Id =" & data.headerid)
             For i As Integer = 1 To qty
                 Dim itemId As String = orderCfg.CreateOrderItemId()
 
@@ -984,7 +987,7 @@ Partial Class Order_Method
                 orderCfg.UpdateFinalCost(itemId)
                 orderCfg.ResetAuthorization(data.headerid, itemId)
 
-                Dim ordertype As String = orderCfg.GetItemData("SELECT OrderType FROM OrderHeaders_Shutters WHERE Id =" & data.headerid)
+                
                 Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Add Item Order"}
                 orderCfg.Log_Orders(dataLog)
 
@@ -992,7 +995,9 @@ Partial Class Order_Method
                     orderCfg.UpdateProductType(data.headerid)
                 End If
             Next
-            Return "Success"
+            ' Return "Success"
+            Dim url As String = publicCfg.MyCancel(data.headerid, ordertype)
+            Return New With {.success = true, .message = "Success", .url = url}
         End If
 
         If data.itemaction = "EditItem" Or data.itemaction = "ViewItem" Then
@@ -1076,14 +1081,17 @@ Partial Class Order_Method
                 orderCfg.UpdateProductType(data.headerid)
             End If
 
-            Return "Success"
+            ' Return "Success"
+            Dim url As String = publicCfg.MyCancel(data.headerid, ordertype)
+            Return New With {.success = true, .message = "Success", .url = url}
         End If
 
-        Return "Please contact Customer Service at customerservice@sunlight.com.au"
+        ' Return "Please contact Customer Service at customerservice@sunlight.com.au"
+        Return New With {.error = true, .message = "Please contact Customer Service at customerservice@sunlight.com.au"}
     End Function
 
     <WebMethod()>
-    Public Shared Function PartsProccess(data As ProcessData) As String
+    Public Shared Function PartsProccess(data As ProcessData) As Object
         Dim orderCfg As New OrderConfig
 
         Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
@@ -1317,7 +1325,9 @@ Partial Class Order_Method
                 orderCfg.UpdateProductType(data.headerid)
             End If
 
-            Return "Success"
+            ' Return "Success"
+            Dim url As String = publicCfg.MyCancel(data.headerid, ordertype)
+            Return New With {.success = true, .message = "Success", .url = url}
         End If
 
         If data.itemaction = "EditItem" Or data.itemaction = "ViewItem" Then
@@ -1361,14 +1371,18 @@ Partial Class Order_Method
             End If                
 
             ' Return "itemId :" & itemId
-            Return "Success"
+            ' Return "Success"
+            Dim url As String = publicCfg.MyCancel(data.headerid, ordertype)
+            Return New With {.success = true, .message = "Success", .url = url}
+
         End If
 
-        Return "Please contact Customer Service at customerservice@sunlight.com.au"
+        ' Return "Please contact Customer Service at customerservice@sunlight.com.au"
+        Return New With {.error = true, .message = "Please contact Customer Service at customerservice@sunlight.com.au"}
     End Function
 
     <WebMethod()>
-    Public Shared Function PanoramaProccess(data As ShutterData) As String
+    Public Shared Function PanoramaProccess(data As ShutterData) As Object
         Dim orderCfg As New OrderConfig
 
         If String.IsNullOrEmpty(data.blindtype) Then Return "SHUTTER TYPE IS REQUIRED !"
@@ -2044,6 +2058,7 @@ Partial Class Order_Method
         Dim linearMetre As Decimal = Math.Round(width / 1000, 4)
 
         If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
+            Dim ordertype As String = orderCfg.GetItemData("SELECT OrderType FROM OrderHeaders_Shutters WHERE Id =" & data.headerid)
             For i As Integer = 1 To qty
                 Dim itemId As String = orderCfg.CreateOrderItemId()
 
@@ -2125,7 +2140,7 @@ Partial Class Order_Method
                 orderCfg.UpdateFinalCost(itemId)
                 orderCfg.ResetAuthorization(data.headerid, itemId)
 
-                Dim ordertype As String = orderCfg.GetItemData("SELECT OrderType FROM OrderHeaders_Shutters WHERE Id =" & data.headerid)
+                
                 Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Add Item Order"}
                 orderCfg.Log_Orders(dataLog)
 
@@ -2135,7 +2150,9 @@ Partial Class Order_Method
 
                 orderCfg.ReloadAllCost(data.headerid)
             Next
-            Return "Success"
+            ' Return "Success"
+            Dim url As String = publicCfg.MyCancel(data.headerid, ordertype)
+            Return New With {.success = true, .message = "Success", .url = url}
         End If
 
         If data.itemaction = "EditItem" Or data.itemaction = "ViewItem" Then
@@ -2228,15 +2245,18 @@ Partial Class Order_Method
 
             Dim Res As String = orderCfg.ReloadAllCost(data.headerid)
             If Not Res = "200" Then Return Res
+            ' Return "Success"
 
-            Return "Success"
+            Dim url As String = publicCfg.MyCancel(data.headerid, ordertype)
+            Return New With {.success = true, .message = "Success", .url = url}
         End If
-
-        Return "Please contact Customer Service at customerservice@sunlight.com.au"
+        
+        ' Return "Please contact Customer Service at customerservice@sunlight.com.au"
+        Return New With {.error = true, .message = "Please contact Customer Service at customerservice@sunlight.com.au"}
     End Function
 
     <WebMethod()>
-    Public Shared Function AdditionalProccess(data As AdditionalData) As String
+    Public Shared Function AdditionalProccess(data As AdditionalData) As Object
         Dim orderCfg As New OrderConfig
 
         If String.IsNullOrEmpty(data.blindtype) Then Return "CATEGORY IS REQUIRED !"
@@ -2334,7 +2354,9 @@ Partial Class Order_Method
             Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Add Item Order"}
             orderCfg.Log_Orders(dataLog)
 
-            Return "Success"
+            ' Return "Success"
+            Dim url As String = publicCfg.MyCancel(data.headerid, ordertype)
+            Return New With {.success = true, .message = "Success", .url = url}
         End If
 
         If data.itemaction = "EditItem" Or data.itemaction = "ViewItem" Then
@@ -2369,10 +2391,13 @@ Partial Class Order_Method
             Dim dataLog As Object() = {data.headerid, itemId, ordertype, data.loginid, "Edit Item Order"}
             orderCfg.Log_Orders(dataLog)
 
-            Return "Success"
+            ' Return "Success"
+            Dim url As String = publicCfg.MyCancel(data.headerid, ordertype)
+            Return New With {.success = true, .message = "Success", .url = url}
         End If
 
-        Return "Please contact IT Support at reza@bigblinds.co.id"
+        ' Return "Please contact IT Support at reza@bigblinds.co.id"
+        Return New With {.error = true, .message = "Please contact Customer Service at customerservice@sunlight.com.au"}
     End Function
 
     <WebMethod()>
@@ -2668,6 +2693,19 @@ Partial Class Order_Method
 
         Return resultData
     End Function
+
+    <WebMethod()>
+    Public Shared Function Cancel(ByVal headerid As String, ByVal ordertype As String, ByVal rolename As String ) As Object
+        Try
+            Dim publicCfg As New PublicConfig()
+            Dim msg As String = "200"
+            Dim url As String = publicCfg.MyCancel(headerid, ordertype)
+            Return New With {.success = true, .message = msg, .url = url}
+        Catch ex As Exception
+            Return New With { .error = true, .message = String.Format("Cancel: {0}", ex.Message)}
+        End Try
+    End Function
+
 End Class
 
 Public Class JSONList

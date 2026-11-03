@@ -213,6 +213,7 @@
         let designId = '<%= Session("designId") %>';
         let itemId = '<%= Session("itemId") %>';
         let loginId = '<%= Session("LoginId") %>';
+        let ROLENAME = '<%= Session("RoleName") %>';
     </script>
     <script src="../Scripts/Order/PanoramaParts.js?v=<%= DateTime.Now.Ticks %>"></script>
 </asp:Content>

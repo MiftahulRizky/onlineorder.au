@@ -173,7 +173,7 @@ Object.values(btnEl).forEach((el) => {
       }
 
       if (id === "btnEditHeader") {
-        window.location.href = `/order/header?action=edit&param=${HEADERID}&ordertype=${ORDERTYPE}`;
+        window.location.href = `/order/createorders?action=edit&param=${HEADERID}&ordertype=${ORDERTYPE}`;
       }
 
       if (id === "btnDeleteHeader") {
@@ -576,7 +576,7 @@ document.querySelector("#tableAjax").addEventListener("click", async (e) => {
     const itemid = e.target.dataset.id;
     const designid = e.target.dataset.designid;
     const production = e.target.dataset.production;
-    const headerid = e.target.dataset.headerid;
+    const headerid = HEADERID;
     const ordertype = ORDERTYPE;
     handlerFindProductForm(
       itemid,
@@ -592,7 +592,7 @@ document.querySelector("#tableAjax").addEventListener("click", async (e) => {
     const itemid = e.target.dataset.id;
     const designid = e.target.dataset.designid;
     const production = e.target.dataset.production;
-    const headerid = e.target.dataset.headerid;
+    const headerid = HEADERID;
     const ordertype = ORDERTYPE;
     handlerFindProductForm(
       itemid,

@@ -12,20 +12,30 @@ document
     document.body.focus();
   });
 
+const getById = (id) => document.getElementById(id);
+const getByClass = (cls) => document.getElementsByClassName(cls);
+const selectorEl = (el) => document.querySelector(el);
+const selectorElAll = (el) => document.querySelectorAll(el);
+
 $(document).ready(function () {
   checkSession();
 
   $("#submit").on("click", proccess);
-  $("#cancel").on(
-    "click",
-    () =>
-      (window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`)
-  );
-  $("#vieworder").on(
-    "click",
-    () =>
-      (window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`)
-  );
+  // $("#cancel").on(
+  //   "click",
+  //   () =>
+  //     (window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`)
+  // );
+
+  document.querySelector("#cancel").addEventListener("click", (e) => {
+    const id = e.target.id;
+    handlerCancel(id);
+  });
+  // $("#vieworder").on(
+  //   "click",
+  //   () =>
+  //     (window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`),
+  // );
 
   $("#category").on("change", function () {
     const ddlCategory = $(this).val();
@@ -85,7 +95,7 @@ async function checkSession() {
       controlForm(
         itemAction === "ViewItem",
         itemAction === "EditItem",
-        itemAction === "CopyItem"
+        itemAction === "CopyItem",
       );
       await loaderFadeOut();
     }
@@ -515,14 +525,25 @@ function proccess() {
     contentType: "application/json; charset=utf-8",
     dataType: "json",
     success: function (response) {
-      const result = response.d.trim();
-      if (result === "Success") {
+      // const result = response.d.trim();
+      // if (result === "Success") {
+      //   setTimeout(() => {
+      //     $("#modalSuccess").modal("show");
+      //     startCountdown(3);
+      //   }, 1000);
+      // } else {
+      //   isErrors(result);
+      //   toggleButtonState(false, "Submit");
+      // }
+
+      const result = response.d;
+      if (result.success === true) {
         setTimeout(() => {
           $("#modalSuccess").modal("show");
-          startCountdown(3);
+          startCountdown(3, result.url);
         }, 1000);
       } else {
-        isErrors(result);
+        isErrors(result.message);
         toggleButtonState(false, "Submit");
       }
     },
@@ -533,6 +554,55 @@ function proccess() {
     },
   });
 }
+
+const handlerCancel = async (button) => {
+  try {
+    // return alert(button);
+    getById(button).innerHTML = "Waiting...";
+
+    const response = await fetch("Method.aspx/Cancel", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        headerid: headerId,
+        ordertype: orderType,
+        rolename: ROLENAME,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    }
+
+    if (res.warning) {
+      await isWarning(res.message?.toUpperCase());
+      const field = getById(res.field);
+      if (field) {
+        field.classList.add("is-invalid");
+      }
+    }
+
+    if (res.success) {
+      // await isSuccess(res.message);
+      window.location.href = res.url;
+    }
+  } catch (error) {
+    const msg = `handlerCancel: ${error.message}`;
+    catchMessages(msg);
+  } finally {
+    getById(button).innerHTML = "Cancel";
+  }
+};
 
 function toggleButtonState(disabled, text) {
   $("#submit")
@@ -545,9 +615,10 @@ function toggleButtonState(disabled, text) {
     .css("pointer-events", disabled ? "none" : "auto");
 }
 
-function startCountdown(seconds) {
+function startCountdown(seconds, url) {
   let countdown = seconds;
   const button = $("#vieworder");
+  button.on("click", () => (window.location.href = url));
 
   function updateButton() {
     button.text(`View Order (${countdown}s)`);
@@ -556,7 +627,8 @@ function startCountdown(seconds) {
     if (countdown >= 0) {
       setTimeout(updateButton, 1000);
     } else {
-      window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`;
+      // window.location.href = `/order/shutters/detail?param=${headerId}&ordertype=${orderType}`;
+      window.location.href = url;
     }
   }
   updateButton();
@@ -680,3 +752,10 @@ function controlForm(status, isEditItem, isCopyItem) {
     }
   });
 }
+
+const catchMessages = (msg) => {
+  if (!["Administrator"].includes(ROLENAME))
+    msg = "Please contact our IT team at support@onlineorder.au";
+  isError(msg);
+  console.error(msg);
+};

@@ -629,6 +629,7 @@
         let designId = '<%= Session("designId") %>';
         let itemId = '<%= Session("itemId") %>';
         let loginId = '<%= Session("LoginId") %>';
+        let ROLENAME = '<%= Session("RoleName") %>';
 
     </script>
     <script src="../Scripts/Order/Panorama.js?v=<%= DateTime.Now.Ticks %>"></script>

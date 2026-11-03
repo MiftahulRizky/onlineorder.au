@@ -41,6 +41,7 @@ Partial Class Methods_Order_PelmetMethod
         
 
         Public Property headerid As String
+        Public Property ordertype As String
         Public Property itemaction As String
         Public Property itemid As String
         Public Property designid As String
@@ -382,10 +383,23 @@ Partial Class Methods_Order_PelmetMethod
                 msg = "Item updated successfully !"
             End If
 
-            Return New SuccessResponse With {.success = msg}
+            Dim url As String = publicCfg.MyCancel(data.headerid, data.ordertype)
+            Return New With {.success = true, .message = msg, .url = url}
 
         Catch ex As Exception
             Return New ErrorResponse With { .error = New ErrorDetail With { .message = ex.Message, .field = ""}}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function Cancel(ByVal headerid As String, ByVal ordertype As String, ByVal rolename As String ) As Object
+        Try
+            Dim msg As String = "200"
+            Dim url As String = publicCfg.MyCancel(headerid, ordertype)
+            Return New With {.success = true, .message = msg, .url = url}
+        Catch ex As Exception
+            Return New With { .error = true, .message = String.Format("Cancel: {0}", ex.Message)}
         End Try
     End Function
 

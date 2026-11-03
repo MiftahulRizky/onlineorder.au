@@ -8,6 +8,8 @@ Partial Class Order_Detail
 
     Dim orderCfg As New OrderConfig
     Dim mailCfg As New MailConfig
+    Dim publicCfg As New PublicConfig
+    Dim urlEnc As New UrlEncryptor
 
     Dim myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
@@ -16,18 +18,23 @@ Partial Class Order_Detail
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         Dim headerid As String = Request.QueryString("param")
         Dim ordertype As String = Request.QueryString("ordertype")
+
+        headerid = urlEnc.Decrypt(headerid)
+        ordertype = urlEnc.Decrypt(ordertype)
+
         lblOrderType.Text = StrConv(ordertype, VbStrConv.ProperCase)
-        If headerid = "" Then
-            Response.Redirect("~/order/", False)
-            Exit Sub
-        End If
-
-        If ordertype = "" Then
-            Response.Redirect("~/order/", False)
-            Exit Sub
-        End If
-
         lblHeaderId.Text = headerid
+
+        If lblHeaderId.Text = "" Then
+            Response.Redirect("~/order/", False)
+            Exit Sub
+        End If
+        
+        If lblOrderType.Text = "" Then
+            Response.Redirect("~/order/", False)
+            Exit Sub
+        End If
+       
         If Not IsPostBack Then
             AllMessageError(False, String.Empty)
             BindDataOrder(lblHeaderId.Text)
@@ -101,7 +108,8 @@ Partial Class Order_Detail
         ' Session("headerAction") = "EditHeader"
         ' Session("headerId") = lblHeaderId.Text
         Dim ordertype As String = Request.QueryString("ordertype")
-        Response.Redirect("~/order/header?action=edit&param="+lblHeaderId.Text+"&ordertype=" + ordertype, False)
+        Dim headerid As String = Request.QueryString("param")
+        Response.Redirect(String.Format("~/order/createorders?action=edit&param={0}&ordertype={1}", headerid, ordertype), False)
     End Sub
 
     Protected Sub btnSubmitOrder_Click(sender As Object, e As EventArgs)
@@ -112,6 +120,9 @@ Partial Class Order_Detail
                 Exit Sub
             End If
 
+            ' MessageError(True, lblOrderType.Text)
+            ' Exit Sub
+            
             Using thisConn As New SqlConnection(myConn)
                 Using myCmd As SqlCommand = New SqlCommand("UPDATE OrderHeaders_Shutters SET Status='New Order', SubmittedDate=GETDATE(), SubmittedBy=@SubmittedBy WHERE Id=@Id")
                     myCmd.Parameters.AddWithValue("@Id", lblHeaderId.Text)
@@ -1203,7 +1214,7 @@ Partial Class Order_Detail
             Session("headerId") = lblHeaderId.Text
             Session("itemAction") = "AddItem"
             Session("designId") = UCase(ddlDesign.SelectedValue).ToString()
-            Session("orderType") = Request.QueryString("ordertype")
+            Session("orderType") = lblOrderType.Text 'Request.QueryString("ordertype")
 
             Dim page As String = orderCfg.GetItemData("SELECT Page FROM Designs WHERE Id='" + UCase(ddlDesign.SelectedValue).ToString() + "'")
             Dim name As String = orderCfg.GetItemData("SELECT Name FROM Designs WHERE Id='" + UCase(ddlDesign.SelectedValue).ToString() + "'")
@@ -1480,7 +1491,7 @@ Partial Class Order_Detail
                     Session("itemId") = ItemId
                     Session("designId") = designId
                     Session("itemAction") = "ViewItem"
-                    Session("orderType") = Request.QueryString("ordertype")
+                    Session("orderType") = lblOrderType.Text
 
                     Dim production As String = orderCfg.GetItemData("SELECT TOP 1 Production FROM OrderDetails_Shutters WHERE HeaderId = '" + lblHeaderId.Text + "' AND Active=1 ORDER BY Id ASC")
                     Session("itemProduction") = production
@@ -1540,7 +1551,7 @@ Partial Class Order_Detail
                     Session("designId") = designId
                     Session("itemId") = ItemId
                     Session("itemAction") = "CopyItem"
-                    Session("orderType") = Request.QueryString("ordertype")
+                    Session("orderType") = lblOrderType.Text
 
                     Response.Redirect(page, False)
                     Exit Sub
@@ -1759,7 +1770,7 @@ Partial Class Order_Detail
         ddlDesign.Items.Clear()
         Try
             If Not lblCustomerId.Text = "" Then
-                Dim ordertype As String = Request.QueryString("ordertype")
+                Dim ordertype As String = lblOrderType.Text 'Request.QueryString("ordertype")
                 Dim types As String = StrConv(ordertype, VbStrConv.ProperCase)
                 Dim wheretype As String = String.Format("AND Designs.Type = '{0}'", types)
                 If types = "Shutters" Then

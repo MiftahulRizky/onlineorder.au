@@ -56,6 +56,7 @@ Partial Class Methods_Order_VerticalBlindMethod
 
         '#aditional param
         Public Property headerid As String
+        Public Property ordertype As String
         Public Property itemaction As String
         Public Property itemid As String
         Public Property designid As String
@@ -813,13 +814,26 @@ Partial Class Methods_Order_VerticalBlindMethod
                 If ChangeSlat.error Then Throw New Exception(ChangeSlat.message)
             End If
 
-            Return New SuccessResponse With {.success = msg}
+            Dim url As String = publicCfg.MyCancel(data.headerid, data.ordertype)
+            Return New With {.success = true, .message = msg, .url = url}
         Catch ex As Exception
             Dim msg As String = "Please contact our IT team at support@onlineorder.au"
             If data.rolename = "Administrator" Then msg = ex.Message
             Return New ErrorResponse With { .error = New ErrorDetail With { .message = msg, .field = ""}}
         End Try
     End Function  
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function Cancel(ByVal headerid As String, ByVal ordertype As String, ByVal rolename As String ) As Object
+        Try
+            Dim msg As String = "200"
+            Dim url As String = publicCfg.MyCancel(headerid, ordertype)
+            Return New With {.success = true, .message = msg, .url = url}
+        Catch ex As Exception
+            Return New With { .error = true, .message = String.Format("Cancel: {0}", ex.Message)}
+        End Try
+    End Function
 
     Private Shared Function FindBasePriceVerticalSlat(ByVal headerid As String) As Object
         Try

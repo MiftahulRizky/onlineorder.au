@@ -28,6 +28,7 @@ Partial Class Methods_Order_JobSheetMethod
     Shared printCfg As New PrintConfig()
     Shared jobsheet As New HalperJobSheetRenderer()
     Shared enUS As CultureInfo = New CultureInfo("en-US")
+    Shared urlEnc As New UrlEncryptor()
     Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
     Public Class JsonField
@@ -69,6 +70,7 @@ Partial Class Methods_Order_JobSheetMethod
     Public Shared Function CreateJOBOrder(ByVal headerid As String, ByVal action As String) As Object
         Try
             ' Dim rolename As String = HttpContext.Current.Session("rolename").ToString()
+            headerid = urlEnc.Decrypt(headerid)
             Dim msg As String = ""
             Dim url As String = ""
             Dim JobId As String = String.Empty
@@ -163,7 +165,7 @@ Partial Class Methods_Order_JobSheetMethod
 
             Return New With {.success = true, .message = msg, .url = url}
         Catch ex As Exception
-            Return New With {.error = true, .message = String.Format("CreateJobSheet: {0}", ex.Message)}
+            Return New With {.error = true, .message = String.Format("CreateJOBOrder: {0}", ex.Message)}
         End Try
     End Function
 
@@ -16242,7 +16244,7 @@ Partial Class Methods_Order_JobSheetMethod
             Next
         End If
 
-         Dim inCarrier As String() = {
+        Dim inCarrier As String() = {
             currentData("FrameType1").ToString(),
             currentData("FrameType2").ToString(),
             currentData("FrameType3").ToString(),

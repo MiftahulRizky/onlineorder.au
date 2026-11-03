@@ -28,6 +28,7 @@ Partial Class Methods_Order_OrderDetailMethod
     Shared publicCfg As New PublicConfig()
     Shared printCfg As New PrintConfig()
     Shared jobsheet As New HalperJobSheetRenderer()
+    Shared urlEnc As New UrlEncryptor()
     Shared enUS As CultureInfo = New CultureInfo("en-US")
     Public Shared myConn As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
 
@@ -152,7 +153,26 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindOrderAggregate(ByVal data As ParamBindOrderAggregate) As Object
         Try
-           
+            Try
+                data.headerid = urlEnc.Decrypt(data.headerid)
+            Catch ex As Exception
+                If data.rolename = "Administrator" Then
+                    Throw New Exception("failed to decrypt headerid")
+                Else
+                    Return New With { .warning = true, .url = "/order/orderheaders"}
+                End If
+            End Try
+
+            Try
+                data.ordertype = urlEnc.Decrypt(data.ordertype)
+            Catch ex As Exception
+                If data.rolename = "Administrator" Then
+                    Throw New Exception("failed to decrypt ordertype")
+                Else
+                    Return New With { .warning = true, .url = "/order/orderheaders"}
+                End If
+            End Try
+
             Dim HeaderData As Object
             Dim DetailData As New List(Of Object)()
             Dim OtherData As Object
@@ -378,6 +398,7 @@ Partial Class Methods_Order_OrderDetailMethod
                             DetailData.Add(New With {
                                 .Id = Id,
                                 .HeaderId = HeaderId,
+                                .OrderType = data.ordertype,
                                 .CustomerContactId = data.customercontactid,
                                 .StatusHeader = HeaderData.Status,
                                 .DesignId = DesignId,
@@ -1055,6 +1076,8 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function SubmitOrder(ByVal headerid As String, ByVal customerid As String, ByVal loginid As String, ByVal rolename As String) As Object
         Try
+            headerid = urlEnc.Decrypt(headerid)
+
             If String.IsNullOrEmpty(headerid) Then
                 Throw New Exception("headerid is null or empty !")
             End If
@@ -1102,7 +1125,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
             Return New With { .success = true, .message = "Order has been submitted successfully."}
         Catch ex As Exception
-           Return New With { .error = true, .message = ex.Message}
+           Return New With { .error = true, .message = String.Format("SubmitOrder: {0}", ex.Message)}
         End Try
     End Function
 
@@ -1184,9 +1207,12 @@ Partial Class Methods_Order_OrderDetailMethod
                         .ControlLift = ControlLift,
                         .ControlTilt = ControlTilt,
                         .TilterPosition = dr("TilterPosition").ToString(),
+                        .RollDirection = dr("RollDirection").ToString(),
                         .ChainLength = If(IsDBNull(dr("ChainLength")), 0, CInt(dr("ChainLength"))),
                         .MaterialChain = dr("MaterialChain").ToString(),
                         .ChainColour = dr("ChainColour").ToString(),
+                        .BottomType = dr("BottomType").ToString(),
+                        .BottomColour = dr("BottomColour").ToString(),
                         .TrackType = dr("TrackType").ToString(),
                         .TrackColour = dr("TrackColour").ToString(),
                         .NumOfWand = If(IsDBNull(dr("NumOfWand")), 0, CInt(dr("NumOfWand"))),
@@ -1229,11 +1255,11 @@ Partial Class Methods_Order_OrderDetailMethod
                 Dim json As String = JsonConvert.SerializeObject(order)
                 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12
                 Dim client As New HttpClient()
-                client.DefaultRequestHeaders.Add("X-API-KEY", "hidupjokowi")
+                ' client.DefaultRequestHeaders.Add("X-API-KEY", "hidupjokowi")
                 Dim content As New StringContent(json, Encoding.UTF8, "application/json")
-                Dim response = client.PostAsync("https://ordersblindonline.com/handler/Sunlight.ashx", content).Result
+                ' Dim response = client.PostAsync("https://ordersblindonline.com/handler/Sunlight.ashx", content).Result
                 ' Dim response = client.PostAsync("http://10.0.209.65:2302/handler/Sunlight.ashx", content).Result
-                ' Dim response = client.PostAsync("https://fvq6m64blm.rbmock.dev", content).Result
+                Dim response = client.PostAsync("https://fvq6m64blm.rbmock.dev", content).Result
 
                 Return New With { .error = false, .message = response.StatusCode.ToString()}
             End If
@@ -1384,6 +1410,7 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function ReloadPricing(ByVal headerid As String) As Object
         Try
+            headerid = urlEnc.Decrypt(headerid)
             Dim msg As String = "Reload pricing."
             Dim url As String = ""
             Dim rolename As String = HttpContext.Current.Session("rolename").ToString()
@@ -1881,6 +1908,7 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function DownloadBarcode(ByVal headerid As String, ByVal itemid As String) As Object
         Try
+            headerid = urlEnc.Decrypt(headerid)
             Dim msg As String = "Barcode has been downloaded."
             Dim url As String = ""
             Dim rolename As String = HttpContext.Current.Session("rolename").ToString()
@@ -2015,8 +2043,8 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function SubmitOverrideDisc(data As ParamSubmitOverrideDisc) As Object
         Try
+            data.headerid = urlEnc.Decrypt(data.headerid)
             Dim msg As String = "200"
-
             Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE OrderType='Blinds' AND Id='" & data.headerid & "'")
             If HeaderData.Tables(0).Rows.Count < 1 Then
                Throw New Exception("This order is missing !")
@@ -2094,8 +2122,9 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function SubmitSendMailQuote(data As ParamSubmitSendMailQuote) As Object
         Try
-            Dim msg As String = "Mail has been sent successfully."
+            data.headerid = urlEnc.Decrypt(data.headerid)
 
+            Dim msg As String = "Mail has been sent successfully."
             Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE OrderType='Blinds' AND Id='" & data.headerid & "'")
             If HeaderData.Tables(0).Rows.Count < 1 Then
                 Throw New Exception("This order is missing !")
@@ -2148,7 +2177,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
             Return New With {.success = true, .message = msg}
         Catch ex As Exception
-            Return New With {.error = True, .message = ex.Message}
+            Return New With {.error = True, .message = String.Format("SubmitSendMailQuote: {0}", ex.Message)}
         End Try
     End Function
 
@@ -2262,6 +2291,7 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function SendToBig(ByVal headerid As String, ByVal status As String) As Object
         Try
+            headerid = urlEnc.Decrypt(headerid)
             If String.IsNullOrEmpty(headerid) Then
                 Throw new Exception("id is null or empty !")
             End If  
@@ -2376,6 +2406,8 @@ Partial Class Methods_Order_OrderDetailMethod
             
             ' Throw New Exception("page: " & page)
 
+            data.headerid = urlEnc.Decrypt(data.headerid)
+            data.ordertype = urlEnc.Decrypt(data.ordertype)
             HttpContext.Current.Session("headerId") = data.headerid 
             HttpContext.Current.Session("itemAction") = data.action
             HttpContext.Current.Session("orderType") = data.ordertype
@@ -2825,6 +2857,9 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function ExactSlip(ByVal headerid As String, ByVal ordertype As String, ByVal rolename As String, ByVal loginid As String) As Object
         Try
+            headerid = urlEnc.Decrypt(headerid)
+            ordertype = urlEnc.Decrypt(ordertype)
+
             Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id='{0}' AND OrderType='{1}'", headerid, ordertype))
             If HeaderData.Tables(0).Rows.Count < 1 Then
                 Throw New Exception("Order Header not found.")

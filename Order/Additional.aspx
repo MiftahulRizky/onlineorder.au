@@ -300,6 +300,7 @@ Inherits="Order_Additional" MasterPageFile="~/Site.Master" Title="Additional" %>
     let designId = '<%= Session("designId") %>';
     let itemId = '<%= Session("itemId") %>';
     let loginId = '<%= Session("LoginId") %>';
+    let ROLENAME = '<%= Session("RoleName") %>';
   </script>
   <script
     src="../Scripts/Order/Additional.js?v=<%= DateTime.Now.Ticks %>"

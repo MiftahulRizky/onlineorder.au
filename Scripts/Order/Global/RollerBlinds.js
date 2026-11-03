@@ -329,7 +329,9 @@ if (btnInfo) {
 
 // button cancel
 selectorEl("#btnCancel").addEventListener("click", (e) => {
-  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+  // window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+  const id = e.target.id;
+  handlerCancel(id);
 });
 // ==========================================================FUNCTIONS==================================================================
 // ----------------------------------------------|| Binding Functions ||---------------------------------------
@@ -1116,6 +1118,7 @@ const handlerSubmit = async (button, isConfirmed = false) => {
 
     const formData = {
       headerid: HEADERID,
+      ordertype: ORDERTYPE,
       itemaction: ITEMACTION,
       itemid: ITEMID,
       designid: DESIGNID,
@@ -1167,13 +1170,62 @@ const handlerSubmit = async (button, isConfirmed = false) => {
 
     if (res.success) {
       await isSuccess(res.message);
-      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+      window.location.href = res.url;
     }
   } catch (error) {
     const msg = `handlerSubmit: ${error.message}`;
     catchMessages(msg);
   } finally {
     getById(button).innerHTML = "Save Changes";
+  }
+};
+
+const handlerCancel = async (button) => {
+  try {
+    // return alert(button);
+    getById(button).innerHTML = "Waiting...";
+
+    const response = await fetch(URIMETHOD + "/Cancel", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        headerid: HEADERID,
+        ordertype: ORDERTYPE,
+        rolename: ROLENAME,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    }
+
+    if (res.warning) {
+      await isWarning(res.message?.toUpperCase());
+      const field = getById(res.field);
+      if (field) {
+        field.classList.add("is-invalid");
+      }
+    }
+
+    if (res.success) {
+      // await isSuccess(res.message);
+      window.location.href = res.url;
+    }
+  } catch (error) {
+    const msg = `handlerCancel: ${error.message}`;
+    catchMessages(msg);
+  } finally {
+    getById(button).innerHTML = "Cancel";
   }
 };
 

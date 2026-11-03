@@ -11,6 +11,13 @@
   }
   curtainPageLoaded();
 });
+
+// ==========================================================INITIALIZATION=============================================================
+const getById = (id) => document.getElementById(id);
+const getByClass = (cls) => document.getElementsByClassName(cls);
+const selectorEl = (el) => document.querySelector(el);
+const selectorElAll = (el) => document.querySelectorAll(el);
+
 // =================================================EVENTS==================================================
 document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   el.addEventListener("change", async (e) => {
@@ -89,7 +96,9 @@ document.querySelector("#btnSubmit").addEventListener("click", (e) => {
 });
 
 document.querySelector("#btnCancel").addEventListener("click", (e) => {
-  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+  // window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+  const id = e.target.id;
+  handlerCancel(id);
 });
 // ================================================FUNCTIONS=================================================
 // ----------------------------------------------------------- || Binding Funtions ||------------------------------------------------------------
@@ -818,6 +827,7 @@ const handlerSubmit = async (button) => {
 
     const formData = {
       headerid: HEADERID,
+      ordertype: ORDERTYPE,
       itemaction: ITEMACTION,
       itemid: ITEMID,
       designid: DESIGNID,
@@ -844,19 +854,19 @@ const handlerSubmit = async (button) => {
     }
 
     const result = await response.json();
-    const dataResult = result.d || result;
+    const res = result.d || result;
 
-    if (dataResult.error) {
-      await isWarning(dataResult.error.message?.toUpperCase());
-      const field = document.getElementById(dataResult.error.field);
+    if (res.error) {
+      await isWarning(res.error.message?.toUpperCase());
+      const field = document.getElementById(res.error.field);
       if (field) {
-        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
-        // field.focus();
         field.classList.add("is-invalid");
       }
-    } else {
-      await isSuccess(dataResult.success);
-      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
+
+    if (res.success) {
+      await isSuccess(res.message);
+      window.location.href = res.url;
     }
   } catch (error) {
     var msg = error.message;
@@ -866,6 +876,55 @@ const handlerSubmit = async (button) => {
     isError(msg);
   } finally {
     document.getElementById(button).innerHTML = "Save Changes";
+  }
+};
+
+const handlerCancel = async (button) => {
+  try {
+    // return alert(button);
+    getById(button).innerHTML = "Waiting...";
+
+    const response = await fetch(URIMETHOD + "/Cancel", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        headerid: HEADERID,
+        ordertype: ORDERTYPE,
+        rolename: ROLENAME,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    }
+
+    if (res.warning) {
+      await isWarning(res.message?.toUpperCase());
+      const field = getById(res.field);
+      if (field) {
+        field.classList.add("is-invalid");
+      }
+    }
+
+    if (res.success) {
+      // await isSuccess(res.message);
+      window.location.href = res.url;
+    }
+  } catch (error) {
+    const msg = `handlerCancel: ${error.message}`;
+    catchMessages(msg);
+  } finally {
+    getById(button).innerHTML = "Cancel";
   }
 };
 
@@ -967,4 +1026,11 @@ const getItemData = async (query) => {
     console.error(err);
     isError(err);
   }
+};
+
+const catchMessages = (msg) => {
+  if (!["Administrator"].includes(ROLENAME))
+    msg = "Please contact our IT team at support@onlineorder.au";
+  isError(msg);
+  console.error(msg);
 };

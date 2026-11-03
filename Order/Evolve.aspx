@@ -917,6 +917,7 @@ Inherits="Order_Evolve" MasterPageFile="~/Site.Master" Title="Evolve Shutters"
     let designId = '<%= Session("designId") %>';
     let itemId = '<%= Session("itemId") %>';
     let loginId = '<%= Session("LoginId") %>';
+    let ROLENAME = '<%= Session("RoleName") %>';
   </script>
   <script src="../Scripts/Order/Evolve.js?v=<%= DateTime.Now.Ticks %>"></script>
 </asp:Content>
