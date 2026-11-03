@@ -617,7 +617,7 @@ const handlerElementVisibility = async (blindtype, tubetype, item) => {
       divTrack.classList.remove("d-none");
       divWand.classList.remove("d-none");
       divBracket.classList.remove("d-none");
-      divTape.classList.remove("d-none");
+      // divTape.classList.remove("d-none"); yudi's request 2026-11-03
       divCarriers.classList.remove("d-none");
       divSpacer.classList.remove("d-none");
     }

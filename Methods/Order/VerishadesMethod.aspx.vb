@@ -303,7 +303,7 @@ Partial Class Methods_VerishadesMethod
             End If
             End If
 
-            If String.IsNullOrEmpty(data.tape) Then
+            If String.IsNullOrEmpty(data.tape) And BlindName = "Single" Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "tape colour is required !",.field = "tape"}}
             End If
 
