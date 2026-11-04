@@ -81,6 +81,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
         Public Property rolename As String
         Public Property headerid As String
+        Public Property ordertype As String
         Public Property loginid As String
     End Class
 
@@ -473,7 +474,7 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim textSwall As String = String.Empty
             Dim CustomerContactId As String = If(HttpContext.Current.Session("CustomerContactId") IsNot Nothing, HttpContext.Current.Session("CustomerContactId").ToString(), String.Empty)
 
-            Dim detailData As DataSet = publicCfg.GetListData("SELECT Id, UniqueId, DesignName, BracketType, FabricGroups FROM view_details WHERE HeaderId='" + headerid + "' AND Active=1 ORDER BY Id ASC")
+            Dim detailData As DataSet = publicCfg.GetListData("SELECT Id, UniqueId, DesignName, BracketType, CustomerId, FabricGroups FROM view_details WHERE HeaderId='" + headerid + "' AND Active=1 ORDER BY Id ASC")
             If detailData.Tables(0).Rows.Count < 1  Then Return New With {.error = false, .Action = Action, .Message = "order details not found"}
 
             For i As Integer = 0 To detailData.Tables(0).Rows.Count - 1
@@ -481,6 +482,7 @@ Partial Class Methods_Order_OrderDetailMethod
                 Dim UniqueId As String = detailData.Tables(0).Rows(i).Item("UniqueId").ToString()
                 Dim DesignName As String = detailData.Tables(0).Rows(i).Item("DesignName").ToString()
                 Dim BracketType As String = detailData.Tables(0).Rows(i).Item("BracketType").ToString()
+                Dim CustomerId As String = detailData.Tables(0).Rows(i).Item("CustomerId").ToString()
                 Dim FabricGroups As String = detailData.Tables(0).Rows(i).Item("FabricGroups").ToString()
 
                 If FabricGroups = "POA" Then
@@ -2043,11 +2045,22 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function SubmitOverrideDisc(data As ParamSubmitOverrideDisc) As Object
         Try
-            data.headerid = urlEnc.Decrypt(data.headerid)
+            Try
+                data.headerid = urlEnc.Decrypt(data.headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
+            Try
+                data.ordertype = urlEnc.Decrypt(data.ordertype)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt ordertype")
+            End Try
+
             Dim msg As String = "200"
-            Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE OrderType='Blinds' AND Id='" & data.headerid & "'")
-            If HeaderData.Tables(0).Rows.Count < 1 Then
-               Throw New Exception("This order is missing !")
+            Dim HeaderData As Integer = publicCfg.GetItemData(String.Format("SELECT COUNT(Id) FROM view_order_headers WHERE OrderType='{0}' AND Id='{1}'", data.ordertype, data.headerid))
+            If HeaderData < 1 Then
+               Return New With {.warning = true, .message = "please add item first !", .field = "#modalQuoteDisc #discount"}
             End If
 
             If String.IsNullOrEmpty(data.discount) Then
@@ -2074,7 +2087,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
             Return New With {.success = true, .message = "Discount has been applied successfully."}
         Catch ex As Exception
-           Return New With {.error = true, .message = ex.Message}
+           Return New With {.error = true, .message = String.Format("SubmitOverrideDisc: {0}", ex.Message)}
         End Try
     End Function
 

@@ -2268,6 +2268,7 @@ const submitOverrideDisc = async (button) => {
 
     const formData = {
       headerid: HEADERID,
+      ordertype: ORDERTYPE,
       loginid: LOGINID,
       rolename: ROLENAME,
     };
@@ -2297,11 +2298,17 @@ const submitOverrideDisc = async (button) => {
     const data = await response.json();
     const res = data.d || data;
 
+    console.log(res);
+
     if (res.error) {
       throw new Error(res.message);
-    } else if (res.warning) {
+    }
+
+    if (res.warning) {
       await isWarning(res.message?.toUpperCase());
-    } else if (res.success) {
+    }
+
+    if (res.success) {
       let msg = res.message;
       msg += `<br/> <br/> Do you want to reload the pricing?`;
       const statusOrder = spanEl.statusOrder.innerHTML;
@@ -2329,6 +2336,7 @@ const submitOverrideDisc = async (button) => {
     }
   } catch (error) {
     const msg = `submitOverrideDisc: ${error.message}`;
+    catchMessages(msg);
   } finally {
     document.getElementById(button).innerHTML = "Save Changes";
   }
