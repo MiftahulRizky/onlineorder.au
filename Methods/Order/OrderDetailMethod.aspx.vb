@@ -2659,6 +2659,12 @@ Partial Class Methods_Order_OrderDetailMethod
                Throw New Exception("Data is null or empty !")
             End If
 
+            Try
+                data.headerid = urlEnc.Decrypt(data.headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
             Dim updatedCount As Integer = 0
             Dim OrderType As String = publicCfg.GetItemData(String.Format("SELECT OrderType FROM OrderHeaders where Id={0}", data.headerid))
             Dim DetailData As Dataset = publicCfg.GetListData(String.Format("SELECT DesignId, BlindId, FabricType FROM view_details WHERE Id='{0}'", data.itemid))
