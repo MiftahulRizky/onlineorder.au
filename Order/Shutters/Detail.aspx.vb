@@ -94,7 +94,7 @@ Partial Class Order_Detail
                 MessageError_Preview(True, "Please contact IT Support at reza@bigblinds.co.id")
                 If Session("RoleName") = "Customer" Then
                     MessageError_Preview(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                         MessageError_Preview(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                     End If
                 End If
@@ -302,7 +302,7 @@ Partial Class Order_Detail
                 MessageError(True, "Please contact IT Support at reza@bigblinds.co.id")
                 If Session("RoleName") = "Customer" Then
                     MessageError(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                         MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                     End If
                 End If
@@ -842,7 +842,7 @@ Partial Class Order_Detail
                 MessageError_QuoteDetail(True, "Please contact IT Support at reza@bigblinds.co.id")
                 If Session("RoleName") = "Customer" Then
                     MessageError_QuoteDetail(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                         MessageError_QuoteDetail(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                     End If
                 End If
@@ -876,7 +876,7 @@ Partial Class Order_Detail
                 MessageError(True, "Please contact IT Support at reza@bigblinds.co.id")
                 If Session("RoleName") = "Customer" Then
                     MessageError(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                         MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                     End If
                 End If
@@ -1091,7 +1091,7 @@ Partial Class Order_Detail
                 MessageError(True, "Please contact IT Support at reza@bigblinds.co.id")
                 If Session("RoleName") = "Customer" Then
                     MessageError(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                         MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                     End If
                 End If
@@ -1143,7 +1143,7 @@ Partial Class Order_Detail
                     previewCfg.BindContent(lblHeaderId.Text, previewFilePath)
                 End If
 
-                If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                     Dim previewCfg As New ShuttersPreviewConfig
                     previewCfg.BindContent(lblHeaderId.Text, previewFilePath)
                 End If
@@ -1238,7 +1238,7 @@ Partial Class Order_Detail
                 MessageError(True, "Please contact IT Support at reza@bigblinds.co.id")
                 If Session("RoleName") = "Customer" Then
                     MessageError(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                    If lblOrderType.Text = "" Or lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                    If lblOrderType.Text = "" Or lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                         MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                     End If
                 End If
@@ -1419,7 +1419,7 @@ Partial Class Order_Detail
                 MessageError(True, "Please contact IT Support at reza@bigblinds.co.id")
                 If Session("RoleName") = "Customer" Then
                     MessageError(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                         MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                     End If
                 End If
@@ -1467,7 +1467,7 @@ Partial Class Order_Detail
                 MessageError(True, "Please contact IT Support at reza@bigblinds.co.id")
                 If Session("RoleName") = "Customer" Then
                     MessageError(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                    If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                         MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                     End If
                 End If
@@ -1533,7 +1533,7 @@ Partial Class Order_Detail
                         MessageError(True, "Please contact IT Support at reza@bigblinds.co.id")
                         If Session("RoleName") = "Customer" Then
                             MessageError(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                                 MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                             End If
                         End If
@@ -1561,7 +1561,7 @@ Partial Class Order_Detail
                         MessageError(True, "Please contact IT at reza@bigblinds.co.id")
                         If Session("RoleName") = "Customer" Then
                             MessageError(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                                 MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                             End If
                         End If
@@ -1588,7 +1588,7 @@ Partial Class Order_Detail
                         MessageError_Pricing(True, "Please contact IT Support at reza@bigblinds.co.id")
                         If Session("RoleName") = "Customer" Then
                             MessageError_Pricing(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                                 MessageError_Pricing(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                             End If
                         End If
@@ -1646,7 +1646,7 @@ Partial Class Order_Detail
                         MessageError_Log(True, "Please contact IT Support at reza@bigblinds.co.id")
                         If Session("RoleName") = "Customer" Then
                             MessageError_Log(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                                 MessageError_Log(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                             End If
                         End If
@@ -1814,7 +1814,7 @@ Partial Class Order_Detail
                 MessageError(True, "Please contact IT Support at reza@bigblinds.co.id")
                 If Session("RoleName") = "Customer" Then
                     MessageError(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                    If lblOrderType.Text = "" Or lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                    If lblOrderType.Text = "" Or lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                         MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                     End If
                 End If
@@ -1904,12 +1904,12 @@ Partial Class Order_Detail
             BindDataCosting(gvList.Rows.Count, headerId)
 
             Dim mailServerDeposit As String = orderCfg.GetItemData("SELECT Mailings.Server FROM Mailings LEFT JOIN CustomerLogins ON Mailings.ApplicationId = CustomerLogins.ApplicationId WHERE CustomerLogins.Id = '" + lblCreatedBy.Text + "' AND Mailings.Name = 'Deposit Request' AND Mailings.Active = 1")
-            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                 mailServerDeposit = orderCfg.GetItemData("SELECT Mailings.Server FROM Mailings LEFT JOIN CustomerLogins ON Mailings.ApplicationId = CustomerLogins.ApplicationId WHERE CustomerLogins.Id = '" + lblCreatedBy.Text + "' AND Mailings.Name = 'Deposit Request Shutters' AND Mailings.Active = 1")
             End If
 
             Dim mailServerQuote As String = orderCfg.GetItemData("SELECT Mailings.Server FROM Mailings LEFT JOIN CustomerLogins ON Mailings.ApplicationId = CustomerLogins.ApplicationId WHERE CustomerLogins.Id = '" + lblCreatedBy.Text + "' AND Mailings.Name = 'Quote Order' AND Mailings.Active = 1")
-            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                 mailServerQuote = orderCfg.GetItemData("SELECT Mailings.Server FROM Mailings LEFT JOIN CustomerLogins ON Mailings.ApplicationId = CustomerLogins.ApplicationId WHERE CustomerLogins.Id = '" + lblCreatedBy.Text + "' AND Mailings.Name = 'Quote Order Shutters' AND Mailings.Active = 1")
             End If
 
@@ -2279,7 +2279,7 @@ Partial Class Order_Detail
                         aAddItem.Visible = True
                         aDeleteOrder.Visible = True
 
-                        If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+                        If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                             btnQuoteAction.Visible = True
                             aQuoteDetail.Visible = True
                             btnQuoteDownload.Visible = True
@@ -2374,7 +2374,7 @@ Partial Class Order_Detail
                 MessageError(True, "Please contact IT Support at reza@bigblinds.co.id")
                 If Session("RoleName") = "Customer" Then
                     MessageError(True, "Please contact Customer Service at customerservice@lifestyleshutters.com.au")
-                    If lblOrderType.Text = "" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Panorama" Then
+                    If lblOrderType.Text = "" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Shutters" Then
                         MessageError(True, "Please contact Customer Service at customerservice@sunlight.com.au")
                     End If
                 End If
@@ -3202,7 +3202,7 @@ Partial Class Order_Detail
                 If designType = "Additional" Then
                     result = False
                 End If
-                If designType = "Evolve" Or designType = "Panorama" Then
+                If designType = "Evolve" Or designType = "Panorama" or designType = "Shutters" Then
                     result = True
                 End If
             End If
@@ -3220,7 +3220,7 @@ Partial Class Order_Detail
 
             If spanStatusOrder.InnerText = "Unsubmitted" Then
                 If Session("RoleName") = "Customer" Or Session("RoleName") = "Representative"  Or Session("RoleName") = "Data Entry" Then
-                    If designType = "Evolve" Or designType = "Panorama" Then
+                    If designType = "Evolve" Or designType = "Panorama" or designType = "Shutters" Then
                         result = True
                     End If
                 End If
