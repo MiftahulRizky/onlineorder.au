@@ -319,7 +319,7 @@ Partial Class Methods_Order_VenetianMethod
                 End If
 
                 If Not String.IsNullOrEmpty(data.pelmetwidth) Then
-                    If Not Integer.TryParse(data.pelmetwidth, pelmetwidth) OrElse pelmetwidth <= 0 Then
+                    If (Not Integer.TryParse(data.pelmetwidth, pelmetwidth) OrElse pelmetwidth <= 0) AND InStr(data.pelmettype, "Common") = 0 Then
                         Return New ErrorResponse With {.error = New ErrorDetail With {.message = "pelmet width must be a positive integer !",.field = "pelmetwidth"}}
                     End If
                 End If
@@ -515,7 +515,7 @@ Partial Class Methods_Order_VenetianMethod
                 CutOut_RightBottom = 1
             End If
 
-            If NOT InStr(BlindName, "Aluminium") > 0 AND (data.pelmetwidth = "" Or data.pelmetwidth = "0") Then
+            If NOT InStr(BlindName, "Aluminium") > 0 AND data.pelmetwidth = "" Then
                 If InStr(data.mounting, "Face Fit") > 0 Then
                     pelmetwidth = width + 20
                     If InStr(BlindName, "Timber") > 0 Then
@@ -527,6 +527,10 @@ Partial Class Methods_Order_VenetianMethod
                     If InStr(BlindName, "Timber") > 0 Then
                         pelmetwidth = width + 8
                     End If
+                End If
+
+                If InStr(data.pelmettype, "Common") > 0 AND data.pelmetwidth = "0" Then
+                    pelmetwidth = 0
                 End If
             End If
 

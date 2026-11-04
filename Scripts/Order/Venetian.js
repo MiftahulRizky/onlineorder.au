@@ -458,7 +458,7 @@ const bindPelmetType = (blindname, mounting) => {
 };
 
 const bindPelmetSize = () => {
-  generateOption("pelmetsize", ["63mm", "90mm"]);
+  generateOption("pelmetsize", ["90mm"]);
 };
 
 const bindItemOrders = async (itemid) => {
