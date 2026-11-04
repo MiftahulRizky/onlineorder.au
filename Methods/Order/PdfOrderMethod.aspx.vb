@@ -82,7 +82,12 @@ Partial Class Methods_Order_PdfOrderMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function CreatePDFOrder(ByVal headerid As String, ByVal action As String, ByVal loginid As String) As Object
         Try
-            headerid = urlEnc.Decrypt(headerid)
+            Try
+                headerid = urlEnc.Decrypt(headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
             Dim msg As String = ""
             Dim url As String = ""
             Dim fileDirectory As String = ""
@@ -3574,7 +3579,12 @@ Partial Class Methods_Order_PdfOrderMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function CreatePDFCustomerQuote(ByVal headerid As String, ByVal username As String, ByVal action As String) As Object
         Try
-            headerid = urlEnc.Decrypt(headerid)
+            Try
+                headerid = urlEnc.Decrypt(headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
             Dim msg As String = ""
             Dim url As String = ""
             Dim fileDirectory As String = ""
@@ -3621,7 +3631,12 @@ Partial Class Methods_Order_PdfOrderMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function CreatePDFQuote(ByVal headerid As String, ByVal action As String, ByVal username As String) As Object
         Try
-            headerid = urlEnc.Decrypt(headerid)
+            Try
+                headerid = urlEnc.Decrypt(headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
             Dim msg As String = "Barcode has been downloaded."
             Dim url As String = ""
             Dim rolename As String = HttpContext.Current.Session("rolename").ToString()

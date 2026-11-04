@@ -246,7 +246,7 @@ Public Class MailConfig
             Dim appId As String = GetItemData("SELECT ApplicationId FROM CustomerLogins WHERE Id = '" & UCase(createdBy) & "'")
 
             Dim queryMailings As String = "SELECT * FROM Mailings WHERE ApplicationId = '" & UCase(appId) & "' AND Name = 'Deposit Request' AND Active = 1"
-            If orderType = "Panorama" OrElse orderType = "Evolve" Then
+            If orderType = "Panorama" OrElse orderType = "Evolve" OrElse orderType = "Shutters" Then
                 queryMailings = "SELECT * FROM Mailings WHERE ApplicationId = '" & UCase(appId) & "' AND Name = 'Deposit Request Shutters' AND Active = 1"
             End If
 

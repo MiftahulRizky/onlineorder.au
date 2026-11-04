@@ -261,6 +261,7 @@ Partial Class Methods_Order_OrderHeaderMethod
                         If Dates.error Then
                             Throw New Exception(Dates.message)
                         End If
+                        
 
                         Dim row As New OrdersMatrixReturnRow With {
                             .No = noCounter.ToString(),
@@ -426,9 +427,9 @@ Partial Class Methods_Order_OrderHeaderMethod
            
             Dim icon As String = String.Empty
             Dim addStat As String = String.Empty
-            If InArray(ordertype, "Panorama", "Evolve") Then
-                addStat = String.Format("<br> <span class='text-secondary'>{0}</span>", statusadd)
-            End If
+            addStat = String.Format("<br> <span class='text-secondary'>{0}</span>", statusadd)
+            ' If InArray(ordertype, "Panorama", "Evolve", "Shutters", "Furnishings") Then
+            ' End If
 
             Select Case status
                 Case "Draft", "Unsubmitted", "Pending Price Approval"
