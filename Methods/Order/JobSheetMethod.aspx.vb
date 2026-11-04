@@ -9217,6 +9217,8 @@ Partial Class Methods_Order_JobSheetMethod
             End If
         Next
 
+        Dim widthinfo As String = fs10Start & "<b>exact skin width</b>" & fsEnd
+        Dim dropinfo As String = fs10Start & "<b>exact skin drop</b>" & fsEnd
         Dim skinInfo As String = fs10Start & "<b>skin comes with top splin and bottom spline only (pocket if 1P trim) </b>" & fsEnd
 
         Dim TotalBlind As Integer = If(IsDBNull(currentData("Qty1")), 0, Convert.ToInt32(currentData("Qty1"))) + If(IsDBNull(currentData("Qty2")), 0, Convert.ToInt32(currentData("Qty2"))) + If(IsDBNull(currentData("Qty3")), 0, Convert.ToInt32(currentData("Qty3"))) + If(IsDBNull(currentData("Qty4")), 0, Convert.ToInt32(currentData("Qty4"))) + If(IsDBNull(currentData("Qty5")), 0, Convert.ToInt32(currentData("Qty5"))) + If(IsDBNull(currentData("Qty6")), 0, Convert.ToInt32(currentData("Qty6")))
@@ -9260,7 +9262,7 @@ Partial Class Methods_Order_JobSheetMethod
 
             '#Width
             result+= trDetStart
-                result+= tdTitleStart & "Width (mm)" & tdDetEnd
+                result+= tdTitleStart & "Width (mm)<br></br>" & widthinfo & tdDetEnd
                 result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width1").ToString()), "0", currentData("Width1").ToString()) & tdDetEnd
                 result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width2").ToString()), "0", currentData("Width2").ToString()) & tdDetEnd
                 result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Width3").ToString()), "0", currentData("Width3").ToString()) & tdDetEnd
@@ -9271,7 +9273,7 @@ Partial Class Methods_Order_JobSheetMethod
 
             '#Drop
             result+= trDetStart
-                result+= tdTitleStart & "Drop (mm)" & tdDetEnd
+                result+= tdTitleStart & "Drop (mm)<br></br>" & dropinfo & tdDetEnd
                 result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop1").ToString()), "0", currentData("Drop1").ToString()) & tdDetEnd
                 result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop2").ToString()), "0", currentData("Drop2").ToString()) & tdDetEnd
                 result+= tdDetStart & If(String.IsNullOrEmpty(currentData("Drop3").ToString()), "0", currentData("Drop3").ToString()) & tdDetEnd
