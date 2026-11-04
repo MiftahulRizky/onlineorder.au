@@ -67,7 +67,7 @@ Partial Class Order_Detail
                 Exit Sub
             End If
 
-            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Then
+            If lblOrderType.Text = "Panorama" Or lblOrderType.Text = "Evolve" Or lblOrderType.Text = "Shutters" Then
                 Dim previewCfg As New ShuttersPreviewConfig
                 Dim filePath As String = "~/File/Order/"
                 Dim fileName As String = "Preview" & "-" & spanOrderId.InnerText & ".pdf"
