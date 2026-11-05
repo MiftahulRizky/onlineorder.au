@@ -790,14 +790,22 @@ Partial Class Methods_Order_CreateOrderMethod
 
                 If data.action = "edit" Then
                     Dim OrderNumber As String = number.Trim()
-                    Dim FindOrderNumberAllCust As String = publicCfg.GetItemData(String.Format("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '{0}' AND CustomerId <> '{1}' AND Active = 1", OrderNumber, data.customer))
+                    ' Dim FindOrderNumberAllCust As String = publicCfg.GetItemData(String.Format("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '{0}' AND CustomerId <> '{1}' AND Active = 1", OrderNumber, data.customer))
+                    Dim FindOrderNumberAllCust As String = publicCfg.GetItemData(String.Format("SELECT LTRIM(RTRIM(OrderNumber)) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '{0}' AND Active = 1", OrderNumber, data.customer))
                     Dim OtherCustomerId As String = publicCfg.GetItemData(String.Format("SELECT CustomerId FROM view_order_headers WHERE OrderNumber = '{0}'", FindOrderNumberAllCust))
+                    Dim CountOrderNunber As Integer = publicCfg.GetItemData(String.Format("SELECT COUNT(*) FROM view_order_headers WHERE LTRIM(RTRIM(OrderNumber)) = '{0}' AND Active = 1", OrderNumber))
 
-                    Dim OrderNumberSame As boolean = String.Equals(OrderNumber.Trim(), FindOrderNumberAllCust, StringComparison.OrdinalIgnoreCase)
+                    ' Dim OrderNumberSame As boolean = String.Equals(OrderNumber.Trim(), FindOrderNumberAllCust, StringComparison.OrdinalIgnoreCase)
                     Dim CustomerOldSame As boolean = String.Equals(data.customerold, OtherCustomerId, StringComparison.OrdinalIgnoreCase)
-                    If OrderNumberSame And CustomerOldSame = False Then
+
+
+                    If CustomerOldSame = False And CountOrderNunber > 0 Then
+                        Return New With { .warning = true, .message = "order number already exist !", .field = "ordernumber"}
+                    Else if CustomerOldSame = True And CountOrderNunber > 1 Then
                         Return New With { .warning = true, .message = "order number already exist !", .field = "ordernumber"}
                     End If
+
+                    ' Throw New Exception("Debug :" & CountOrderNunber)
                 End If
 
             End If
