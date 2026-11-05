@@ -562,6 +562,13 @@ Partial Class Methods_Order_VenetianMethod
                 End If
             End If
 
+            If Not String.IsNullOrEmpty(data.returnleft) Then
+                returnleft = CInt(data.returnleft) 
+            End If
+            If Not String.IsNullOrEmpty(data.returnright) Then 
+                returnright = CInt(data.returnright)
+            End If
+
             If data.pelmettype = "Single Right Return" Then
                 If InStr(data.mounting, "Face Fit") > 0 Then
                     returnleft = 0 : returnright = 77
