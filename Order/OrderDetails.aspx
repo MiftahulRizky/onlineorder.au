@@ -274,14 +274,19 @@
                                 </div>
                             </div>
                             <div class="row mb-4">
-                                 <div class="col-lg-6">
+                                <div class="col-lg-4">
                                     <span style="font-size:larger;">Job Number :</span>
                                     <br />
                                     <div  id="spanJoNumber" style="font-size: larger; cursor: pointer;"></div>
                                     <div  id="spanJoNumberMsg"  class="fst-italic text-secondary">Copied</div>
                                 </div>
-                                 <div class="col-lg-6">
-                                    <span style="font-size:larger;">Order Product Type :</span>
+                                <div class="col-lg-4" id="divOrderSending">
+                                    <span style="font-size:larger;">Order Sending :</span>
+                                    <br />
+                                    <div  id="spanOrderSending" style="font-size: larger;font-weight: bold;" ></div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <span style="font-size:larger;">Product Type :</span>
                                     <br />
                                     <div  id="spanOrderProductType" style="font-size: larger;font-weight: bold;" ></div>
                                 </div>
@@ -784,7 +789,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.18"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.20"></script>
 
 
 </asp:Content>

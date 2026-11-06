@@ -264,6 +264,11 @@ Partial Class Methods_Order_OrderDetailMethod
                             Dim gst As Decimal = sumPrice * 0.1D
                             Dim finalTotal As Decimal = sumPrice + gst
 
+                            Dim OrderSending As Object = FindOrderSending(data.headerid)
+                            If OrderSending.error Then
+                                Throw New Exception(OrderSending.message)
+                            End If
+
                             HeaderData = New With {
                                 .Id = reader("Id").ToString(),
                                 .CustomerName = reader("CustomerName").ToString(),
@@ -488,6 +493,13 @@ Partial Class Methods_Order_OrderDetailMethod
         End Try
     End Function
 
+    Private Shared Function FindOrderSending(ByVal headerid As String) As Object
+        Try
+            Return New With {.success = True, .error = False, .value =""}
+        Catch ex As Exception
+            Return New With {.error = True, .message = String.Format("FindOrderSending: {0}", ex.Message)}
+        End Try
+    End Function
 
     Private Shared Function CekOrder(ByVal headerid As String, ByVal status As String, ByVal loginid As String, ByVal rolename As String) As Object
         Try
@@ -578,18 +590,18 @@ Partial Class Methods_Order_OrderDetailMethod
             End If
 
             If status = "New Order" Then
-                If Deposit = False And String.IsNullOrEmpty(StatusAdditional) Then
-                    StatusAdditional = "Waiting for Deposit"
-                    Using thisConn As New SqlConnection(myConn)
-                        Using myCmd As New SqlCommand("UPDATE OrderHeaders SET StatusAdditional='Waiting for Deposit' WHERE Id=@Id")
-                            myCmd.Parameters.AddWithValue("@Id", headerid)
-                            myCmd.Connection = thisConn
-                            thisConn.Open()
-                            myCmd.ExecuteNonQuery()
-                            thisConn.Close()
-                        End Using
-                    End Using
-                End If
+                ' If Deposit = False And String.IsNullOrEmpty(StatusAdditional) Then
+                '     StatusAdditional = "Waiting for Deposit"
+                '     Using thisConn As New SqlConnection(myConn)
+                '         Using myCmd As New SqlCommand("UPDATE OrderHeaders SET StatusAdditional='Waiting for Deposit' WHERE Id=@Id")
+                '             myCmd.Parameters.AddWithValue("@Id", headerid)
+                '             myCmd.Connection = thisConn
+                '             thisConn.Open()
+                '             myCmd.ExecuteNonQuery()
+                '             thisConn.Close()
+                '         End Using
+                '     End Using
+                ' End If
             End If
             
 
@@ -635,7 +647,12 @@ Partial Class Methods_Order_OrderDetailMethod
 
     Private Shared Function FindLogs(ByVal headerid As String, ByVal ordertype As String) As Object
         Try
-            Dim Logs As DataSet = publicCfg.GetListData(String.Format("SELECT CustomerLogins.FullName, Log_Orders.ItemId, Log_Orders.ActionDate, Log_Orders.Description FROM Log_Orders INNER JOIN CustomerLogins ON Log_Orders.ActionBy=CustomerLogins.Id WHERE Log_Orders.HeaderId='{0}' AND Log_Orders.Type='{1}'  ORDER BY ActionDate DESC", headerid, ordertype))
+            Dim byOrderType As String = String.Format("AND Log_Orders.Type='{0}'", orderType)
+            If ordertype = "Furnishings" Then
+                byOrderType = "AND Log_Orders.Type IN ('Furnishings', 'Blinds', 'Door and Window')"
+            End If
+
+            Dim Logs As DataSet = publicCfg.GetListData(String.Format("SELECT CustomerLogins.FullName, Log_Orders.ItemId, Log_Orders.ActionDate, Log_Orders.Description FROM Log_Orders INNER JOIN CustomerLogins ON Log_Orders.ActionBy=CustomerLogins.Id WHERE Log_Orders.HeaderId='{0}' {1} ORDER BY ActionDate DESC", headerid, byOrderType))
 
             Dim LogsData As List(Of Dictionary(Of String, Object)) = New List(Of Dictionary(Of String, Object))()
             For Each row As DataRow In Logs.Tables(0).Rows
@@ -1165,8 +1182,6 @@ Partial Class Methods_Order_OrderDetailMethod
                 End Using
             End Using
 
-            
-
 
 
             Dim dataLog As Object() = {headerid, "", "Blinds", loginid, "Submit Order"}
@@ -1181,7 +1196,7 @@ Partial Class Methods_Order_OrderDetailMethod
     Private Shared Function SendOrderGlobal(headerid As String) As Object
         Try
             '#HeaderData sudah fix ada tidak perlu validasi
-            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT OrderId, OrderNumber, OrderName, OrderNote FROM view_order_headers WHERE Id = '{0}' AND OrderType IN ('Blinds', 'Door and Window', 'Furnishings)", headerid))
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT OrderId, OrderNumber, OrderName, OrderNote FROM view_order_headers WHERE Id = '{0}' AND OrderType IN ('Blinds', 'Door and Window', 'Furnishings')", headerid))
             Dim Rows As DataRow = HeaderData.Tables(0).Rows(0)
 
             Dim order As New Dictionary(Of String, Object) From {
@@ -3084,18 +3099,13 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim currentDomain As String = HttpContext.Current.Request.Url.Host.ToLower()
             
 
-            If Not Status = "In Production" AND Not rolename = "Administrator" Then
+            If Not Status = "In Production" Then
                 Return New With {.warning = true, .message = "This order is not in production."}
             End If
 
-            ' If currentDomain.Contains("onlineorder.au") Then
-            '    Throw New Exception("is live server")
-            ' Else
-            '     Throw New Exception("is dev server")
-            ' End If
-
-            ' Dim Res As String = CreateXMLB(headerid, FileName, FilePath)
-            ' If Not Res = "200" Then Throw New Exception(Res)
+            Dim Res As Object = UpdateOrderSending(headerid, "Exact", True)
+            If Res.error Then Throw New Exception(Res.message)
+            
             exactCfg.CreateXMLB(headerid, FileName, FilePath)
             If currentDomain.Contains("onlineorder.au") Then
                exactCfg.Connect(PathCombine)

@@ -67,6 +67,7 @@ const spanEl = {
   joNumber: getById("spanJoNumber"),
   joNumberMsg: getById("spanJoNumberMsg"),
   orderType: getById("spanOrderProductType"),
+  orderSending: getById("spanOrderSending"),
   orderNo: getById("spanOrderNo"),
   orderCust: getById("spanOrderCust"),
   createdDate: getById("spanCreatedDate"),
@@ -86,6 +87,7 @@ const spanEl = {
 };
 const divEl = {
   divInternalNote: getById("divInternalNote"),
+  divOrderSending: getById("divOrderSending"),
 };
 const liEl = {
   liDetailItem: getByClass("liDetailItem"),
@@ -334,7 +336,8 @@ Object.values(spanEl).forEach((el) => {
 
       if (id === "spanProductionDate") {
         const raw = e.currentTarget.dataset.date;
-        console.log(raw);
+        // console.log(raw);
+        if (!raw) return;
 
         if (["Customer"].includes(ROLENAME)) return;
 
@@ -1918,6 +1921,7 @@ const displayElOverall = (header, detail) => {
       toggleShow(btnEl.dividerLogs, true);
       toggleShow(btnEl.btnLogs, true);
       toggleShow(divEl.divInternalNote, true);
+      toggleShow(divEl.divOrderSending, true);
     }
 
     // --- LOGIKA PERMISSION UNTUK PPIC & CS ---
