@@ -213,6 +213,7 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
         const blindname =
           blindtype.options[blindtype.selectedIndex].dataset.name;
         const brackettype = getById("brackettype").value;
+        const tubetype = getById("tubetype").value;
         const trim = e.target.value;
         await bindRailType(brackettype, trim);
 
@@ -224,7 +225,9 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
           trim == "1F"
         ) {
           toggleShow(elForm.divBottomRail, true);
-          toggleShow(elForm.divAccessory, true);
+          if (tubetype == "Spring Operated") {
+            toggleShow(elForm.divAccessory, true);
+          }
         }
       }
 
@@ -1274,7 +1277,7 @@ const handlerElementVisibility = async (
           toggleShow(elForm.divCableExitPoint, true);
         }
 
-        toggleShow(elForm.divAccessory, true);
+        // toggleShow(elForm.divAccessory, true); yudi's request 2026-11-06
         toggleShow(elForm.divExtras, true);
       }
 
@@ -1282,7 +1285,7 @@ const handlerElementVisibility = async (
         toggleShow(elForm.divChain, true);
         toggleShow(elForm.divTubeSize, true);
         toggleShow(elForm.divChildSafe, true);
-        toggleShow(elForm.divAccessory, true);
+        // toggleShow(elForm.divAccessory, true); yudi's request 2026-11-06
       }
 
       toggleShow(elForm.divRoll, true);
@@ -1331,7 +1334,11 @@ const handlerElementVisibility = async (
       }
       toggleShow(elForm.divTubeSize, true);
       toggleShow(elForm.divChildSafe, true);
-      toggleShow(elForm.divAccessory, true);
+
+      // toggleShow(elForm.divAccessory, true); yudi's request 2026-11-06
+      if (tubetype == "Spring Operated") {
+        toggleShow(elForm.divAccessory, true);
+      }
     }
 
     if (item) {
