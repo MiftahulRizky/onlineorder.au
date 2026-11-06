@@ -193,11 +193,11 @@
         let USERNAME = '<%= Session("UserName") %>';
         let LOGINID = '<%= Session("LoginId") %>';
         let ROLENAME = '<%= Session("RoleName") %>';  
-        let FULLNAME = '<%= Session("FullName") %>';
-        let CUSTOMERCOMPANY = '<%= Session("CustomerCompany") %>';
+        let FULLNAME = `<%= Session("FullName") %>`;
+        let CUSTOMERCOMPANY = `<%= Session("CustomerCompany") %>`;
         let LEVELNAME = '<%= Session("LevelName") %>';
         let URIMETHOD = '/Methods/Order/OrderHeaderMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderHeaders.js?v=1.0.9"></script>
+    <script src="/Scripts/Order/OrderHeaders.js?v=1.0.12"></script>
 </asp:Content>
 
