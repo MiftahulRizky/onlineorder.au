@@ -198,6 +198,6 @@
         let LEVELNAME = '<%= Session("LevelName") %>';
         let URIMETHOD = '/Methods/Order/OrderHeaderMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderHeaders.js?v=1.0.12"></script>
+    <script src="/Scripts/Order/OrderHeaders.js?v=1.0.13"></script>
 </asp:Content>
 
