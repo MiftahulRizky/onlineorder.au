@@ -3513,6 +3513,7 @@ Partial Class Methods_Order_PdfOrderMethod
         Dim totalCellular As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Cellular Blinds' AND Active=1")
         Dim totalLumen As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Lumen' AND Active=1")
         Dim totalPG As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Panel Glides' AND Active=1")
+        Dim totalPGGlobal As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Global Panel Glides' AND Active=1")
         Dim totalVenetian As String = publicCfg.GetItemData(String.Format("SELECT SUM(Qty) FROM view_details WHERE HeaderId='{0}' AND DesignName = 'Venetian Blinds' AND Active=1", HeaderId))
         Dim totalRoller As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Roller Blinds' AND Active=1")
         Dim totalGlobalRoller As String = publicCfg.GetItemData("SELECT SUM(Qty) FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName = 'Global Roller Blinds' AND Active=1")
@@ -3528,6 +3529,7 @@ Partial Class Methods_Order_PdfOrderMethod
         If totalCellular = "" Then : totalCellular = "-" : End If
         If totalLumen = "" Then : totalLumen = "-" : End If
         If totalPG = "" Then : totalPG = "-" : End If
+        If totalPGGlobal = "" Then : totalPGGlobal = "-" : End If
         If totalVenetian = "" Then : totalVenetian = "-" : End If
         If totalRoller = "" Then : totalRoller = "-" : End If
         If totalGlobalRoller = "" Then : totalGlobalRoller = "-" : End If
@@ -3543,6 +3545,7 @@ Partial Class Methods_Order_PdfOrderMethod
         Dim celloraBlinds As String = "<b>Cellular Blinds: " & totalCellular & "</b>"
         Dim lumen As String = "<b>Lumen : " & totalLumen & "</b>"
         Dim panelGlides As String = "<b>Panel Glides: " & totalPG & "</b>"
+        Dim panelGlobalGlides As String = "<b>Global Panel Glides: " & totalPGGlobal & "</b>"
         Dim venetianblinds As String = "<b>Venetian Blinds:  " & totalVenetian & "</b>"
         Dim rollerblinds As String = "<b>Roller Blinds: " & totalRoller & "</b>"
         Dim rollerglobalblinds As String = "<b>Global Roller Blinds: " & totalGlobalRoller & "</b>"
@@ -3561,6 +3564,7 @@ Partial Class Methods_Order_PdfOrderMethod
             celloraBlinds,
             lumen,
             panelGlides,
+            panelGlobalGlides,
             venetianblinds,
             rollerblinds,
             rollerglobalblinds,

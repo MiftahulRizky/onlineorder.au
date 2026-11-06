@@ -59,7 +59,7 @@
                                 </div>
 
                                 <div class="mb-3 row" id="divColourType">
-                                    <label for="colourtype" class="col-lg-3 text-uppercase fw-bold">colour</label>
+                                    <label for="colourtype" class="col-lg-3 text-uppercase fw-bold">track & wand colour</label>
                                     <div class="col-lg-5">
                                         <select type="text" name="colourtype" id="colourtype" class="form-control "></select>
                                     </div>  
@@ -94,7 +94,9 @@
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="width" id="width" class="form-control " autocomplete="off" placeholder="Width ...." />
-                                                <span class="input-group-text ">mm</span>
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoWidth">
+                                                    <i class="ti ti-info-square-rounded fs-2"></i>
+                                                </button>
                                             </div>
                                             <small class="form-hint">* Width</small>
                                         </div>
@@ -134,7 +136,12 @@
                                     <div class="mb-3 row" id="divNoPanel">
                                         <label for="nopanel" class="col-lg-3 text-uppercase fw-bold">no of panel</label>
                                         <div class="col-lg-4">
-                                            <select name="nopanel" id="nopanel" class="form-control "></select>
+                                            <div class="input-group">
+                                                <select name="nopanel" id="nopanel" class="form-control "></select>
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoNoPanel">
+                                                    <i class="ti ti-info-square-rounded fs-2"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -158,15 +165,17 @@
                                     </div>
 
                                     <div class="mb-3 row" id="divWand">
-                                        <label for="wandlength" class="col-lg-3 text-uppercase fw-bold">wand length x colour</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <label for="wandlength" class="col-lg-3 text-uppercase fw-bold">wand length</label>
+                                        <div class="col-lg-4 col-md-12 col-sm-12" >
                                             <div class="input-group">
-                                                <input type="number" min="0" name="wandlength" id="wandlength" class="form-control " autocomplete="off">
-                                                <span class="input-group-text ">mm</span>
+                                                <select name="wandlength" id="wandlength" class="form-control "></select>
+                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoWandLength">
+                                                    <i class="ti ti-info-square-rounded fs-2"></i>
+                                                </button>
                                             </div>
-                                            <small class="form-hint">* Length</small>
+                                            <small class="form-hint" hidden>* Length</small>
                                         </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="col-lg-4 col-md-12 col-sm-12" id="divWandColour">
                                             <select name="wandcolour" id="wandcolour" class="form-control "></select>
                                             <small class="form-hint">* Colour</small>
                                         </div>
@@ -264,7 +273,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <img src="\Content\static\product\pg-sg\layoutcode.png" alt="">
+                    <img src="\Content\static\product\pg-sg\layoutcode2.png" alt="">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

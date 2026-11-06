@@ -30,20 +30,23 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     }
 
     if (e.target.id === "colourtype") {
-      const blindtype = document.getElementById("blindtype").value;
+      const blinds = document.getElementById("blindtype");
+      const blindtype = blinds.value;
+      const blindname = blinds.selectedOptions[0].dataset.name;
       const colourtype = e.target.value;
       await handlerElementVisibility(blindtype, colourtype);
       await bindFabrics(DESIGNID, blindtype);
       await Promise.all([
         bindMounting(),
         bindLayoutCode(),
-        bindNoPanel(),
+        // bindNoPanel(),
         bindTrackType(),
         bindTrackColour(),
         bindWandPosition(),
+        bindWandLength(),
         bindWandColour(),
         bindBottomRail(),
-        bindBatten(),
+        bindBattenColour(blindname),
         bindFitting(),
       ]);
     }
@@ -59,18 +62,23 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       await bindTrackColour(tracktype);
     }
 
-    if (e.target.id === "batten") {
-      const blinds = document.getElementById("blindtype");
-      const blindname = blinds.selectedOptions[0].dataset.name;
-      const batten = e.target.value;
-      const divBattenColour = document.getElementById("divBattenColour");
-      divBattenColour.classList.add("d-none");
-      document.getElementById("battencolour").value = "";
-      if (batten == "Yes") {
-        divBattenColour.classList.remove("d-none");
-      }
+    // if (e.target.id === "batten") {
+    //   const blinds = document.getElementById("blindtype");
+    //   const blindname = blinds.selectedOptions[0].dataset.name;
+    //   const batten = e.target.value;
+    //   const divBattenColour = document.getElementById("divBattenColour");
+    //   divBattenColour.classList.add("d-none");
+    //   document.getElementById("battencolour").value = "";
+    //   if (batten == "Yes") {
+    //     divBattenColour.classList.remove("d-none");
+    //   }
 
-      await bindBattenColour(blindname, batten);
+    //   await bindBattenColour(blindname, batten);
+    // }
+
+    if (e.target.id === "layoutcode") {
+      const layout = e.target.value;
+      bindNoPanel(layout);
     }
   });
   el.addEventListener("input", (e) => {
@@ -113,6 +121,20 @@ if (btnInfo) {
         switch (id) {
           case "btnInfoLayout":
             text = "Layout";
+            break;
+
+          case "btnInfoWidth":
+            text =
+              "Tracks over 3 meters will be supplied in two pieces with a joiner.";
+            break;
+
+          case "btnInfoNoPanel":
+            text = "Recommended width per panel is 450–900mm.";
+            break;
+
+          case "btnInfoWandLength":
+            text =
+              "Default wand length is 1000mm. Shorter lengths (≤1000mm) available upon special request. Lengths over 1000mm are not available.";
             break;
         }
 
@@ -247,11 +269,19 @@ const bindLayoutCode = () => {
   generateOption("layoutcode", ["A", "B", "C", "D", "E", "F"]);
 };
 
-const bindNoPanel = () => {
+const bindNoPanel = (layout) => {
   let list = [];
 
-  for (let i = 2; i <= 9; i++) {
-    list.push(i.toString());
+  // for (let i = 2; i <= 9; i++) {
+  //   list.push(i.toString());
+  // }
+
+  if (["A", "B", "C", "D"].includes(layout)) {
+    list.push("2", "3", "4", "5");
+  }
+
+  if (["E", "F"].includes(layout)) {
+    list.push("3", "5", "7", "9");
   }
 
   generateOption("nopanel", list);
@@ -276,6 +306,10 @@ const bindWandPosition = () => {
   generateOption("wandposition", ["Back", "Front"]);
 };
 
+const bindWandLength = () => {
+  generateOption("wandlength", ["1000"]);
+};
+
 const bindWandColour = () => {
   generateOption("wandcolour", ["Black", "Grey", "White"]);
 };
@@ -291,8 +325,8 @@ const bindBatten = () => {
   generateOption("batten", ["No", "Yes"]);
 };
 
-const bindBattenColour = (blindname, bantten) => {
-  if (!blindname || !bantten) return;
+const bindBattenColour = (blindname) => {
+  if (!blindname) return;
   let list = [];
 
   if (["Plantation"].includes(blindname)) {
@@ -324,16 +358,24 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     const lblItemId = document.getElementById("lblItemId");
     const divColourType = document.getElementById("divColourType");
     const divFormDetail = document.getElementById("divFormDetail");
+    const divTrack = document.getElementById("divTrack");
+    const divWandPosition = document.getElementById("divWandPosition");
+    const divWandColour = document.getElementById("divWandColour");
     const divBatten = document.getElementById("divBatten");
     const divBattenColour = document.getElementById("divBattenColour");
+    const divFitting = document.getElementById("divFitting");
     const divMarkUp = document.getElementById("divMarkUp");
     const btnSubmit = document.querySelector("#btnSubmit");
     // return;
     lblItemId.classList.add("d-none");
     divColourType.classList.add("d-none");
     divFormDetail.classList.add("d-none");
+    divTrack.classList.add("d-none");
+    divWandPosition.classList.add("d-none");
+    divWandColour.classList.add("d-none");
     divBatten.classList.add("d-none");
     divBattenColour.classList.add("d-none");
+    divFitting.classList.add("d-none");
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
 
@@ -347,11 +389,17 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
     divFormDetail.classList.remove("d-none");
 
     if (["Plantation", "Sewless"].includes(blindname)) {
-      divBatten.classList.remove("d-none");
+      // divBatten.classList.remove("d-none");
+      divBattenColour.classList.remove("d-none");
     }
 
     if (item) {
-      if (item.Batten == "Yes") {
+      // if (item.Batten == "Yes") {
+      //   divBattenColour.classList.remove("d-none");
+      // }
+
+      if (["Plantation", "Sewless"].includes(blindname)) {
+        // divBatten.classList.remove("d-none");
         divBattenColour.classList.remove("d-none");
       }
     }
@@ -591,14 +639,15 @@ const bindItemOrders = async (itemid) => {
       await Promise.all([
         bindMounting(),
         bindLayoutCode(),
-        bindNoPanel(),
+        bindNoPanel(item.Layout),
         bindTrackType(),
         bindTrackColour(item.TrackType),
         bindWandPosition(),
+        bindWandLength(),
         bindWandColour(),
         bindBottomRail(),
         bindBatten(),
-        bindBattenColour(item.BlindName, item.Batten),
+        bindBattenColour(item.BlindName),
         bindFitting(),
       ]);
       await Promise.all([handlerSetElementValues(item)]);

@@ -212,9 +212,11 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
             If Not Integer.TryParse(data.width, width) OrElse width <= 0 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be a positive integer !",.field = "width"}}
             End If
-            If width > 6000 Then
-                Return New ErrorResponse With {
-                    .error = New ErrorDetail With {.message = "width must be less than or equal to 6000 !",.field = "width"}}
+            If width < 610 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be greater than or equal to 610 !",.field = "width"}}
+            End If
+            If width > 5410 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 5410 !",.field = "width"}}
             End If
 
 
@@ -226,8 +228,11 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be a positive integer !", .field = "drop"}}
             End If
 
-            If drop > 3000 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3000 !",.field = "drop"}}
+            If drop < 600 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 600 !",.field = "drop"}}
+            End If
+            If drop > 3200 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3200 !",.field = "drop"}}
             End If
 
             If String.IsNullOrEmpty(data.fabrictype) Then
@@ -256,11 +261,11 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
             '     }
             ' End If
 
-            If Not String.IsNullOrEmpty(data.tracktype) Then
-                If String.IsNullOrEmpty(data.trackcolour) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "track colour is required !", .field = "trackcolour" }}
-                End If
-            End If
+            ' If Not String.IsNullOrEmpty(data.tracktype) Then
+            '     If String.IsNullOrEmpty(data.trackcolour) Then
+            '         Return New ErrorResponse With { .error = New ErrorDetail With { .message = "track colour is required !", .field = "trackcolour" }}
+            '     End If
+            ' End If
 
             ' If String.IsNullOrEmpty(data.wandposition) Then
             '     Return New ErrorResponse With {
@@ -279,9 +284,9 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 Return New ErrorResponse With { .error = New ErrorDetail With { .message = "wand length must be a positive integer !", .field = "wandlength"}}
             End If
 
-            If String.IsNullOrEmpty(data.wandcolour) Then
-                Return New ErrorResponse With { .error = New ErrorDetail With { .message = "wand colour is required !", .field = "wandcolour" }}
-            End If
+            ' If String.IsNullOrEmpty(data.wandcolour) Then
+            '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "wand colour is required !", .field = "wandcolour" }}
+            ' End If
 
             ' '#-----------------------|| bottomrail ||-----------------------#
             ' If String.IsNullOrEmpty(data.bottomrail) Then
@@ -416,9 +421,9 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 Dim dataLog As Object() = {data.headerid, itemId, "Blinds", data.loginid, "Add Item Order"}
                 orderCfg.Log_Orders(dataLog)
 
-                Return New SuccessResponse With {
-                    .success = "Data has been saved successfully."
-                }
+                ' Return New SuccessResponse With {
+                '     .success = "Data has been saved successfully."
+                ' }
             End If
 
 
@@ -468,9 +473,11 @@ Partial Class Methods_OrderFormPage_PanelGlides_PanelGlideMethod
                 orderCfg.Log_Orders(dataLog)
 
 
-                Dim url As String = publicCfg.MyCancel(data.headerid, data.ordertype)
-                Return New With {.success = true, .message = "Data has been updated successfully.", .url = url}
             End If
+
+
+            Dim url As String = publicCfg.MyCancel(data.headerid, data.ordertype)
+            Return New With {.success = true, .message = "Data has been updated successfully.", .url = url}
         Catch ex As Exception
             ' Return sebagai objek error agar bisa ditangani di sisi client
             Return New ErrorResponse With {
