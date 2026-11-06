@@ -102,6 +102,39 @@ document.querySelector("#btnCancel").addEventListener("click", (e) => {
   handlerCancel(id);
 });
 
+const btnInfo = selectorElAll(".btn-information");
+if (btnInfo) {
+  btnInfo.forEach((el) => {
+    el.addEventListener("click", (e) => {
+      try {
+        let text = "";
+        let id = e.currentTarget.id;
+
+        switch (id) {
+          case "btnInfoLayout":
+            text = "Layout";
+            break;
+        }
+
+        if (text && !["Layout"].includes(text)) {
+          isInfo(text);
+        }
+
+        switch (text) {
+          case "Layout":
+            handlerShowBSModal("modalInfoLayout");
+            break;
+
+          default:
+            break;
+        }
+      } catch (error) {
+        catchMessages(error.message);
+      }
+    });
+  });
+}
+
 // ============================================================FUNCTIONS========================================================================
 // ----------------------------------------------|| Binding Functions ||---------------------------------------
 const bindDesigns = async (designid) => {
@@ -248,7 +281,10 @@ const bindWandColour = () => {
 };
 
 const bindBottomRail = () => {
-  generateOption("bottomrail", ["Standard (Plain Pocket)", "Fabric Covered"]);
+  generateOption("bottomrail", [
+    "Standard (Plain Pocket)",
+    "Fabric Wrap on Front Only",
+  ]);
 };
 
 const bindBatten = () => {
@@ -739,4 +775,25 @@ const catchMessages = (msg) => {
     msg = "Please contact our IT team at support@onlineorder.au";
   isError(msg);
   console.error(msg);
+};
+
+const handlerHideBSModal = (id) => {
+  var modalEl = document.getElementById(id);
+  var modalInstance = bootstrap.Modal.getInstance(modalEl);
+
+  if (modalInstance) {
+    modalInstance.hide();
+  } else {
+    // Jika modal belum pernah di-show dan belum punya instance, buat dan langsung hide
+    modalInstance = new bootstrap.Modal(modalEl);
+    modalInstance.hide();
+  }
+};
+
+// HANDLER SHOW BOOTSTRAP MODAL
+const handlerShowBSModal = (params) => {
+  var myModal = new bootstrap.Modal(document.getElementById(params), {
+    keyboard: false,
+  });
+  myModal.show();
 };

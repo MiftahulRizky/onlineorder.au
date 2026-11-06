@@ -469,7 +469,7 @@ Partial Class Methods_Order_OrderHeaderMethod
                 .CompletedDate = Completed
             }
         Catch ex As Exception
-            Return New With {.error = true, .message = String.Format("FindStatus: {0}", ex.Message)}
+            Return New With {.error = true, .message = String.Format("FindDates: {0}", ex.Message)}
         End Try
     End Function
 

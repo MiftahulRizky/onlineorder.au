@@ -122,7 +122,12 @@
                                     <div class="mb-3 row" id="divLayoutCode">
                                         <label for="layoutcode" class="col-lg-3 text-uppercase fw-bold">layout code</label>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <select name="layoutcode" id="layoutcode" class="form-control "></select>
+                                            <div class="input-group">
+                                                <select name="layoutcode" id="layoutcode" class="form-control "></select>
+                                                 <button class="btn btn-primary btn-information" type="button" id="btnInfoLayout">
+                                                    <i class="ti ti-info-square-rounded fs-2"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -245,6 +250,25 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Infro Trim -->
+    <div class="modal fade" id="modalInfoLayout" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalInfoLayoutLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="modalInfoLayoutLabel">Information</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="\Content\static\product\pg-sg\layoutcode.png" alt="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>

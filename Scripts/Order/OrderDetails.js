@@ -435,8 +435,7 @@ const modalEvents = {
 
       modal.addEventListener("click", (e) => {
         if (e.target.id === "btnSend") {
-          // submitSendMailQuote();
-          alert("test");
+          submitSendMailDeposit();
         }
       });
     },
@@ -452,8 +451,7 @@ const modalEvents = {
 
       modal.addEventListener("click", (e) => {
         if (e.target.id === "btnSave") {
-          // submitSendMailQuote();
-          alert("test");
+          submitAddStatus();
         }
       });
     },
@@ -1002,8 +1000,7 @@ const handlerHeaderInfo = (item) => {
     setText(spanEl.statusNote, item.StatusDescription);
     setText(spanEl.internalNote, item.InternalNote);
     let status = item.Status;
-    if (item.StatusAdditional)
-      status += `<br><span class="text-secondary">${item.StatusAdditional}</span>`;
+    status += `<br><span class="text-secondary">${item.StatusAdditional}</span>`;
     setText(spanEl.statusOrder, status);
     setText(spanEl.delivery, item.Delivery);
 
@@ -1853,9 +1850,11 @@ const displayElOverall = (header, detail) => {
     const isPpicCs = ["PPIC & DE", "Customer Service"].includes(ROLENAME);
     const isCustomer = ROLENAME === "Customer";
 
-    const isDraftOrPending = ["Draft", "Pending Price Approval"].includes(
-      header.Status,
-    );
+    const isDraft = header.Status === "Draft";
+    const isWaitingForDeposit =
+      header.StatusAdditional == "Waiting for Deposit";
+    const isPandingPriceApproval =
+      header.StatusAdditional === "On Hold - Pending Price Approval";
     const isNotCompleted = header.Status !== "Completed";
     const isNotCanceled = header.Status !== "Canceled";
     const isOrderActive = [
@@ -1869,8 +1868,10 @@ const displayElOverall = (header, detail) => {
     if (isAdmin) {
       toggleShow(btnEl.btnJobSheet, true);
 
-      if (isDraftOrPending) {
-        toggleShow(btnEl.btnSubmit, true);
+      if (isDraft) {
+        if (!isPandingPriceApproval) {
+          toggleShow(btnEl.btnSubmit, true);
+        }
         // toggleShow(btnEl.btnEditHeader, true);
         toggleShow(btnEl.btnDeleteHeader, true);
         toggleShow(btnEl.btnAddItem, true);
@@ -1891,7 +1892,10 @@ const displayElOverall = (header, detail) => {
       toggleShow(btnEl.btnQuoteDetail, true);
       toggleShow(btnEl.btnDownloadQuote, true);
 
-      toggleShow(btnEl.btnChangeStatus, true);
+      if (!isWaitingForDeposit && !isPandingPriceApproval) {
+        toggleShow(btnEl.btnChangeStatus, true);
+      }
+
       if (isOrderActive) {
         toggleShow(btnEl.btnSendOrderMail, true);
         toggleShow(btnEl.btnAddItem, true);
@@ -1899,7 +1903,9 @@ const displayElOverall = (header, detail) => {
 
       toggleShow(btnEl.btnMoreAction, true);
       toggleShow(btnEl.dividerEmailDeposit, true);
-      toggleShow(btnEl.btnEmailDeposit, true);
+      if (isWaitingForDeposit) {
+        toggleShow(btnEl.btnEmailDeposit, true);
+      }
       toggleShow(btnEl.btnAddStatus, true);
       toggleShow(btnEl.btnInternalNote, true);
       toggleShow(btnEl.dividerSendToBig, true);
@@ -1918,8 +1924,10 @@ const displayElOverall = (header, detail) => {
     if (isPpicCs) {
       toggleShow(btnEl.btnJobSheet, true);
 
-      if (isDraftOrPending) {
-        toggleShow(btnEl.btnSubmit, true);
+      if (isDraft) {
+        if (!isPandingPriceApproval) {
+          toggleShow(btnEl.btnSubmit, true);
+        }
         // toggleShow(btnEl.btnEditHeader, true);
         toggleShow(btnEl.btnDeleteHeader, true);
         toggleShow(btnEl.btnAddItem, true);
@@ -1937,9 +1945,9 @@ const displayElOverall = (header, detail) => {
       toggleShow(btnEl.btnDownloadBarcode, true);
       // toggleShow(btnEl.btnExactSlip, true);
 
-      toggleShow(btnEl.btnChangeStatus, true);
-      // if (isOrderActive) {
-      // }
+      if (!isWaitingForDeposit && !isPandingPriceApproval) {
+        toggleShow(btnEl.btnChangeStatus, true);
+      }
 
       toggleShow(btnEl.btnMoreAction, true);
 
@@ -1950,8 +1958,10 @@ const displayElOverall = (header, detail) => {
 
     // --- LOGIKA PERMISSION UNTUK CUSTOMER ---
     if (isCustomer) {
-      if (isDraftOrPending) {
-        toggleShow(btnEl.btnSubmit, true);
+      if (isDraft) {
+        if (!isPandingPriceApproval) {
+          toggleShow(btnEl.btnSubmit, true);
+        }
         toggleShow(btnEl.btnEditHeader, true);
         toggleShow(btnEl.btnDeleteHeader, true);
         toggleShow(btnEl.btnAddItem, true);
@@ -1985,7 +1995,7 @@ const displayElOverall = (header, detail) => {
     // Default visibilitas item detail
     toggleShowList(["liDetailItem"], true);
 
-    if (isDraftOrPending) {
+    if (isDraft) {
       toggleShowList(["liEditItem", "liCopyItem", "liDeleteItem"], true);
       toggleShowList(["liDetailItem"], false);
 
@@ -2416,6 +2426,7 @@ const submitSendMailQuote = async () => {
   const additionalParams = {
     username: USERNAME,
     headerid: HEADERID,
+    ordertype: ORDERTYPE,
     loginid: LOGINID,
   };
 
@@ -2465,6 +2476,150 @@ const submitSendMailQuote = async () => {
   } finally {
     btnSubmit.removeAttribute("disabled");
     btnSubmit.innerHTML = `Send`;
+  }
+
+  return false;
+};
+
+const submitSendMailDeposit = async () => {
+  // Hapus semua tanda invalid di awal
+  document
+    .querySelectorAll(
+      "#modalSendMailDeposit .form-control, #modalSendMailDeposit .form-select",
+    )
+    .forEach((e) => e.classList.remove("is-invalid"));
+
+  const btnSubmit = document.querySelector("#modalSendMailDeposit #btnSend");
+
+  const fields = ["id", "from", "mailto", "cc"];
+
+  const additionalParams = {
+    username: USERNAME,
+    headerid: HEADERID,
+    ordertype: ORDERTYPE,
+    loginid: LOGINID,
+  };
+
+  fields.forEach((field) => {
+    const el = document.querySelector(`#modalSendMailDeposit #${field}`);
+    additionalParams[field] = el ? el.value : "";
+  });
+
+  try {
+    // === Sebelum request ===
+    btnSubmit.setAttribute("disabled", "disabled");
+    btnSubmit.innerHTML = '<i class="fa fa-spin fa-spinner"></i>';
+    swalLoadingShow("Please wait a moment");
+
+    // === Kirim request ===
+    const response = await fetch(`${URIMETHOD}/SubmitSendMailDeposit`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: additionalParams }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    } else if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+      const fieldElement = document.querySelector(res.field);
+      if (fieldElement) {
+        fieldElement.focus();
+        fieldElement.classList.add("is-invalid");
+      }
+    } else if (res.success) {
+      hideBSModal("modalSendMailDeposit");
+      await isSuccess(res.message);
+    }
+  } catch (error) {
+    const msg = `submitSendMailDeposit: ${error.message}`;
+    catchMessages(msg);
+  } finally {
+    btnSubmit.removeAttribute("disabled");
+    btnSubmit.innerHTML = `Send`;
+  }
+
+  return false;
+};
+
+const submitAddStatus = async () => {
+  // Hapus semua tanda invalid di awal
+  document
+    .querySelectorAll(
+      "#modalAddStatus .form-control, #modalAddStatus .form-select",
+    )
+    .forEach((e) => e.classList.remove("is-invalid"));
+
+  const btnSubmit = document.querySelector("#modalAddStatus #btnSave");
+
+  const fields = ["id", "addstatus"];
+
+  const additionalParams = {
+    username: USERNAME,
+    headerid: HEADERID,
+    loginid: LOGINID,
+  };
+
+  fields.forEach((field) => {
+    const el = document.querySelector(`#modalAddStatus #${field}`);
+    additionalParams[field] = el ? el.value : "";
+  });
+
+  try {
+    // === Sebelum request ===
+    btnSubmit.setAttribute("disabled", "disabled");
+    btnSubmit.innerHTML = '<i class="fa fa-spin fa-spinner"></i>';
+    swalLoadingShow("Please wait a moment");
+
+    // === Kirim request ===
+    const response = await fetch(`${URIMETHOD}/SubmitAddStatus`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: additionalParams }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    }
+
+    if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+      const fieldElement = document.querySelector(res.field);
+      if (fieldElement) {
+        fieldElement.focus();
+        fieldElement.classList.add("is-invalid");
+      }
+    }
+
+    if (res.success) {
+      hideBSModal("modalAddStatus");
+      await isSuccess(res.message);
+      location.reload();
+    }
+  } catch (error) {
+    const msg = `submitAddStatus: ${error.message}`;
+    catchMessages(msg);
+  } finally {
+    btnSubmit.removeAttribute("disabled");
+    btnSubmit.innerHTML = `Save Changes`;
   }
 
   return false;

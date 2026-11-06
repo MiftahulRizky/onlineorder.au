@@ -101,6 +101,28 @@ Partial Class Methods_Order_OrderDetailMethod
 
         Public Property username As String
         Public Property headerid As String
+        Public Property ordertype As String
+        Public Property loginid As String
+    End Class
+
+    Public Class ParamSubmitSendMailDeposit
+        Public Property id  As String
+        Public Property from As String
+        Public Property mailto As String
+        Public Property cc As String
+
+        Public Property username As String
+        Public Property headerid As String
+        Public Property ordertype As String
+        Public Property loginid As String
+    End Class
+
+    Public Class ParamSubmitAddStatus
+        Public Property id  As String
+        Public Property addstatus As String
+
+        Public Property username As String
+        Public Property headerid As String
         Public Property loginid As String
     End Class
 
@@ -425,6 +447,7 @@ Partial Class Methods_Order_OrderDetailMethod
             If ResCheckOrder.error Then
                 Throw New Exception(ResCheckOrder.message)
             End If
+            HeaderData.StatusAdditional = ResCheckOrder.StatusAdditional
             
             Dim SendMailQuote As Object = FindMailQuote(data.applicationid, HeaderData.CustomerId)
             If SendMailQuote.error Then 
@@ -474,78 +497,103 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim textSwall As String = String.Empty
             Dim CustomerContactId As String = If(HttpContext.Current.Session("CustomerContactId") IsNot Nothing, HttpContext.Current.Session("CustomerContactId").ToString(), String.Empty)
 
-            Dim detailData As DataSet = publicCfg.GetListData("SELECT Id, UniqueId, DesignName, BracketType, CustomerId, FabricGroups FROM view_details WHERE HeaderId='" + headerid + "' AND Active=1 ORDER BY Id ASC")
-            If detailData.Tables(0).Rows.Count < 1  Then Return New With {.error = false, .Action = Action, .Message = "order details not found"}
+            
+            
+            Dim Deposit As Boolean = IsOrderSendingActive(headerid, "Deposit")
+            Dim StatusAdditional As String = publicCfg.GetItemData(String.Format("SELECT StatusAdditional FROM OrderHeaders WHERE Id={0}", headerid))
+            
+            Dim detailData As DataSet = publicCfg.GetListData(String.Format("SELECT Id, UniqueId, DesignName, BracketType, CustomerId, FabricGroups FROM view_details WHERE HeaderId='{0}' AND Active=1 ORDER BY Id ASC", headerid))
+            If detailData.Tables(0).Rows.Count > 0  Then
+                For i As Integer = 0 To detailData.Tables(0).Rows.Count - 1
+                    Dim Id As String = detailData.Tables(0).Rows(i).Item("Id").ToString()
+                    Dim UniqueId As String = detailData.Tables(0).Rows(i).Item("UniqueId").ToString()
+                    Dim DesignName As String = detailData.Tables(0).Rows(i).Item("DesignName").ToString()
+                    Dim BracketType As String = detailData.Tables(0).Rows(i).Item("BracketType").ToString()
+                    Dim CustomerId As String = detailData.Tables(0).Rows(i).Item("CustomerId").ToString()
+                    Dim FabricGroups As String = detailData.Tables(0).Rows(i).Item("FabricGroups").ToString()
 
-            For i As Integer = 0 To detailData.Tables(0).Rows.Count - 1
-                Dim Id As String = detailData.Tables(0).Rows(i).Item("Id").ToString()
-                Dim UniqueId As String = detailData.Tables(0).Rows(i).Item("UniqueId").ToString()
-                Dim DesignName As String = detailData.Tables(0).Rows(i).Item("DesignName").ToString()
-                Dim BracketType As String = detailData.Tables(0).Rows(i).Item("BracketType").ToString()
-                Dim CustomerId As String = detailData.Tables(0).Rows(i).Item("CustomerId").ToString()
-                Dim FabricGroups As String = detailData.Tables(0).Rows(i).Item("FabricGroups").ToString()
-
-                If FabricGroups = "POA" Then
-                    Dim Poa As Integer = publicCfg.GetItemData(String.Format("SELECT Poa FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, Id))
-                    If Poa = 0 Then
-                        Using thisConn As New SqlConnection(myConn)
-                            Using myCmd As New SqlCommand("UPDATE OrderHeaders SET StatusAdditional='On Hold - Pending Price Approval' WHERE Id = @Id")
-                                myCmd.Parameters.AddWithValue("@Id", headerid)
-                                myCmd.Connection = thisConn
-                                thisConn.Open()
-                                myCmd.ExecuteNonQuery()
-                                thisConn.Close()
+                    If FabricGroups = "POA" Then
+                        Dim Poa As Integer = publicCfg.GetItemData(String.Format("SELECT Poa FROM OrderDetailsPrice where HeaderId={0} AND ItemId={1}", headerid, Id))
+                        If Poa = 0 Then
+                            StatusAdditional = "On Hold - Pending Price Approval"
+                            Using thisConn As New SqlConnection(myConn)
+                                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET StatusAdditional=@StatusAdditional WHERE Id = @Id")
+                                    myCmd.Parameters.AddWithValue("@Id", headerid)
+                                    myCmd.Parameters.AddWithValue("@StatusAdditional", StatusAdditional)
+                                    myCmd.Connection = thisConn
+                                    thisConn.Open()
+                                    myCmd.ExecuteNonQuery()
+                                    thisConn.Close()
+                                End Using
                             End Using
-                        End Using
-                    End If
-                    If Poa > 0  Then
-                        Using thisConn As New SqlConnection(myConn)
-                            Using myCmd As New SqlCommand("UPDATE OrderHeaders SET StatusAdditional='' WHERE Id = @Id")
-                                myCmd.Parameters.AddWithValue("@Id", headerid)
-                                myCmd.Connection = thisConn
-                                thisConn.Open()
-                                myCmd.ExecuteNonQuery()
-                                thisConn.Close()
+                        End If
+                        If Poa > 0  Then
+                            StatusAdditional = ""
+                            Using thisConn As New SqlConnection(myConn)
+                                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET StatusAdditional=@StatusAdditional WHERE Id = @Id")
+                                    myCmd.Parameters.AddWithValue("@Id", headerid)
+                                    myCmd.Parameters.AddWithValue("@StatusAdditional", StatusAdditional)
+                                    myCmd.Connection = thisConn
+                                    thisConn.Open()
+                                    myCmd.ExecuteNonQuery()
+                                    thisConn.Close()
+                                End Using
                             End Using
+                        End If
+                    End If
+
+                    Dim TotalBlind As Integer = publicCfg.GetItemData("SELECT COUNT(*) FROM view_details WHERE UniqueId = '" + UniqueId + "' AND Active = 1")
+                    If DesignName = "Roller Blinds" or DesignName = "Global Roller Blinds" Then
+
+                        If BracketType = "Double" Or BracketType = "Linked 2 Blinds (Dep)" Or BracketType = "Linked 2 Blinds (Ind)" Then
+                            If TotalBlind < 2 Then
+                                Action = "Yes"
+                                msg += "<b> " & Id & "</b>,"
+                            End If
+                        End If
+
+                        If BracketType = "Linked 3 Blinds (Dep)" Or BracketType = "Linked 3 Blinds (Ind)" Then
+                            If TotalBlind < 3 Then
+                                Action = "Yes"
+                                msg += "<b> " & Id & "</b>,"
+                            End If
+                        End If
+
+                        If BracketType = "Double and Link System Dep" Or BracketType = "Double and Link System Ind" Then
+                            If TotalBlind < 4 Then
+                                Action = "Yes"
+                                msg += "<b> " & Id & "</b>,"
+                            End If
+                        End If
+
+                    End If
+
+                    If Not status = "Draft" Then
+                        Action = "No"
+                    End If
+
+                    textSwall = "You have an incomplete roller blinds order, which is on the ITEM ID "+ msg +" <br /><br />If you want to complete it, please click the <b>Next Item</b> button on the order line ID."
+                    
+                Next
+            End If
+
+            If status = "New Order" Then
+                If Deposit = False And String.IsNullOrEmpty(StatusAdditional) Then
+                    StatusAdditional = "Waiting for Deposit"
+                    Using thisConn As New SqlConnection(myConn)
+                        Using myCmd As New SqlCommand("UPDATE OrderHeaders SET StatusAdditional='Waiting for Deposit' WHERE Id=@Id")
+                            myCmd.Parameters.AddWithValue("@Id", headerid)
+                            myCmd.Connection = thisConn
+                            thisConn.Open()
+                            myCmd.ExecuteNonQuery()
+                            thisConn.Close()
                         End Using
-                    End If
+                    End Using
                 End If
+            End If
+            
 
-                Dim TotalBlind As Integer = publicCfg.GetItemData("SELECT COUNT(*) FROM view_details WHERE UniqueId = '" + UniqueId + "' AND Active = 1")
-                If DesignName = "Roller Blinds" or DesignName = "Global Roller Blinds" Then
-
-                    If BracketType = "Double" Or BracketType = "Linked 2 Blinds (Dep)" Or BracketType = "Linked 2 Blinds (Ind)" Then
-                        If TotalBlind < 2 Then
-                            Action = "Yes"
-                            msg += "<b> " & Id & "</b>,"
-                        End If
-                    End If
-
-                    If BracketType = "Linked 3 Blinds (Dep)" Or BracketType = "Linked 3 Blinds (Ind)" Then
-                        If TotalBlind < 3 Then
-                            Action = "Yes"
-                            msg += "<b> " & Id & "</b>,"
-                        End If
-                    End If
-
-                    If BracketType = "Double and Link System Dep" Or BracketType = "Double and Link System Ind" Then
-                        If TotalBlind < 4 Then
-                            Action = "Yes"
-                            msg += "<b> " & Id & "</b>,"
-                        End If
-                    End If
-
-                End If
-
-                If Not status = "Draft" Then
-                    Action = "No"
-                End If
-
-                textSwall = "You have an incomplete roller blinds order, which is on the ITEM ID "+ msg +" <br /><br />If you want to complete it, please click the <b>Next Item</b> button on the order line ID."
-                
-            Next
-
-            Return New With {.error = false, .Action = Action, .Message = textSwall}
+            Return New With {.error = false, .Action = Action, .Message = textSwall, .StatusAdditional = StatusAdditional}
         Catch ex As Exception
             Return New With {.error = true, .message = String.Format("CekOrder: {0}", ex.Message)}
         End Try
@@ -1078,13 +1126,18 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function SubmitOrder(ByVal headerid As String, ByVal customerid As String, ByVal loginid As String, ByVal rolename As String) As Object
         Try
-            headerid = urlEnc.Decrypt(headerid)
+            Try
+                headerid = urlEnc.Decrypt(headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid")
+            End Try
 
             If String.IsNullOrEmpty(headerid) Then
                 Throw New Exception("headerid is null or empty !")
             End If
-            Dim detailData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + headerid + "' AND Active='1'")
-            If detailData.Tables(0).Rows.Count < 1 Then
+
+            Dim detailData As Integer = publicCfg.GetItemData(String.Format("SELECT Count(Id) FROM view_details WHERE HeaderId='{0}' AND Active='1'", headerid))
+            If detailData < 1 Then
                 Return New With { .warning = true, .message = "Please add item first."}
             End If
 
@@ -1093,24 +1146,18 @@ Partial Class Methods_Order_OrderDetailMethod
             End If
 
             
-
-            ' If rolename = "Administrator" Then
-            '     Dim ResApi As Object = SendOrderGlobal(headerid)
-            '     If ResApi.error Then
-            '         Throw New Exception(ResApi.message)
-            '     End If
-            '     Throw New Exception("API Success")
-            ' End If
-            
-            Dim StatusAdditional As string = ""
+            Dim Deposit As Boolean = True
             Dim CahshSale As String = publicCfg.GetItemData(String.Format("SELECT CashSale FROM Customers WHERE Id='{0}'", customerid))
-            ' If CahshSale = "1" Then
-            '     StatusAdditional = "Waiting for Deposit"
-            ' End If
+            If CahshSale = "1" Then
+                Deposit = False
+            End If
+
+            ' Dim Res As Object = UpdateOrderSending(headerid, "Deposit", Deposit)
+            ' If Res.error Then Throw New Exception(Res.message)
+            
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET Status='New Order', StatusAdditional=@StatusAdditional,  SubmittedDate=GETDATE() WHERE Id=@Id")
+                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET Status='New Order', SubmittedDate=GETDATE() WHERE Id=@Id")
                     myCmd.Parameters.AddWithValue("@Id", headerid)
-                    myCmd.Parameters.AddWithValue("@StatusAdditional", StatusAdditional)
                     myCmd.Connection = thisConn
                     thisConn.Open()
                     myCmd.ExecuteNonQuery()
@@ -1134,7 +1181,7 @@ Partial Class Methods_Order_OrderDetailMethod
     Private Shared Function SendOrderGlobal(headerid As String) As Object
         Try
             '#HeaderData sudah fix ada tidak perlu validasi
-            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT OrderId, OrderNumber, OrderName, OrderNote FROM view_order_headers WHERE Id = '{0}' AND OrderType='Blinds'", headerid))
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT OrderId, OrderNumber, OrderName, OrderNote FROM view_order_headers WHERE Id = '{0}' AND OrderType IN ('Blinds', 'Door and Window', 'Furnishings)", headerid))
             Dim Rows As DataRow = HeaderData.Tables(0).Rows(0)
 
             Dim order As New Dictionary(Of String, Object) From {
@@ -1412,7 +1459,12 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function ReloadPricing(ByVal headerid As String) As Object
         Try
-            headerid = urlEnc.Decrypt(headerid)
+            Try
+                headerid = urlEnc.Decrypt(headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
             Dim msg As String = "Reload pricing."
             Dim url As String = ""
             Dim rolename As String = HttpContext.Current.Session("rolename").ToString()
@@ -1817,6 +1869,7 @@ Partial Class Methods_Order_OrderDetailMethod
             End If          
 
             Dim findDesc As String = data.description
+            Dim query As String = "UPDATE OrderHeaders SET Status='Draft', StatusDescription=@StatusDescription, StatusAdditional=Null,  SubmittedDate=NULL, JobDate=NULL, CanceledDate=NULL, CompletedDate=NULL WHERE Id=@Id"
             Select Case data.status
                 Case "Draft"
                     findDesc = "Status changed to draft by <b>" & data.username & "</b>"
@@ -1824,81 +1877,74 @@ Partial Class Methods_Order_OrderDetailMethod
                     findDesc += "Notes from the office:"
                     findDesc += "<br />"
                     findDesc += data.description
+                    
                 Case "New Order"
                     findDesc = "Status changed to new order by <b>" & data.username & "</b>"
                     findDesc += "<br />"
                     findDesc += "Notes from the office:"
                     findDesc += "<br />"
                     findDesc += data.description
+                    query = "UPDATE OrderHeaders SET Status='New Order', StatusDescription=@StatusDescription, SubmittedDate=@SubmittedDate WHERE Id=@Id"
+
                 Case "In Production"
                     findDesc = "Your order is currently in the production process"
                     findDesc += "<br />"
                     findDesc += "Notes from the office:"
                     findDesc += "<br />"
                     findDesc += data.description
+
+                    query = "UPDATE OrderHeaders SET Status='In Production', StatusDescription=@StatusDescription, JobDate=GETDATE() WHERE Id=@Id"
+                    If data.rolename = "Administrator" Then
+                        Dim ResApi As Object = SendOrderGlobal(data.id)
+                        If ResApi.error Then
+                            Throw New Exception(ResApi.message)
+                        End If
+                    End If
+
                 Case "On Hold"
                     findDesc = "Your order on hold by <b>" & data.username & "</b>"
                     findDesc += "<br />"
                     findDesc += "Notes from the office:"
                     findDesc += "<br />"
                     findDesc += data.description
+                    query = "UPDATE OrderHeaders SET Status='On Hold', StatusDescription=@StatusDescription WHERE Id=@Id"
+
                 Case "Completed"
                     findDesc += "Notes from the office:"
                     findDesc += "<br />"
                     findDesc += data.description
+                    query = "UPDATE OrderHeaders SET Status='Completed', StatusDescription=@StatusDescription, CompletedDate=@CompletedDate WHERE Id=@Id"
+
                 Case "Canceled"
                     findDesc = "Your order has been canceled by <b>" & data.username & "</b>"
                     findDesc += "<br />"
                     findDesc += "Notes from the office:"
                     findDesc += "<br />"
                     findDesc += data.description
+                    query = "UPDATE OrderHeaders SET Status='Canceled', StatusDescription=@StatusDescription, CanceledDate=@CanceledDate WHERE Id=@Id"
+
             End Select
 
-            If Not String.IsNullOrEmpty(data.id) Then
-                Dim query As String = "UPDATE OrderHeaders SET Status='Draft', StatusDescription=@StatusDescription, SubmittedDate=NULL, JobDate=NULL, CanceledDate=NULL, CompletedDate=NULL WHERE Id=@Id"
-                Select Case data.status
-                    Case "New Order"
-                        query = "UPDATE OrderHeaders SET Status='New Order', StatusDescription=@StatusDescription, SubmittedDate=@SubmittedDate WHERE Id=@Id"
-                    Case "In Production"
-                        query = "UPDATE OrderHeaders SET Status='In Production', StatusDescription=@StatusDescription, JobDate=GETDATE() WHERE Id=@Id"
-                        If data.rolename = "Administrator" Then
-                            ' Throw New Exception(data.rolename)
-                            Dim ResApi As Object = SendOrderGlobal(data.id)
-                            If ResApi.error Then
-                                Throw New Exception(ResApi.message)
-                            End If
-                            ' Throw New Exception("API Success")
-                        End If
-                        
-                    Case "On Hold"
-                        query = "UPDATE OrderHeaders SET Status='On Hold', StatusDescription=@StatusDescription WHERE Id=@Id"
-                    Case "Completed"
-                        query = "UPDATE OrderHeaders SET Status='Completed', StatusDescription=@StatusDescription, CompletedDate=@CompletedDate WHERE Id=@Id"
-                    Case "Canceled"
-                        query = "UPDATE OrderHeaders SET Status='Canceled', StatusDescription=@StatusDescription, CanceledDate=@CanceledDate WHERE Id=@Id"
-                End Select
-
-
-                Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand(query, thisConn)
-                        myCmd.Parameters.AddWithValue("@Id", data.id)
-                        myCmd.Parameters.AddWithValue("@Status", data.status)
-                        myCmd.Parameters.AddWithValue("@StatusDescription", findDesc)
-                        myCmd.Parameters.AddWithValue("@SubmittedDate", data.submitteddate)
-                        myCmd.Parameters.AddWithValue("@CompletedDate", data.completeddate)
-                        myCmd.Parameters.AddWithValue("@CanceledDate", data.canceleddate)
-                        myCmd.Connection = thisConn
-                        thisConn.Open()
-                        myCmd.ExecuteNonQuery()
-                        thisConn.Close()
-                    End Using
+                
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand(query, thisConn)
+                    myCmd.Parameters.AddWithValue("@Id", data.id)
+                    myCmd.Parameters.AddWithValue("@Status", data.status)
+                    myCmd.Parameters.AddWithValue("@StatusDescription", findDesc)
+                    myCmd.Parameters.AddWithValue("@SubmittedDate", data.submitteddate)
+                    myCmd.Parameters.AddWithValue("@CompletedDate", data.completeddate)
+                    myCmd.Parameters.AddWithValue("@CanceledDate", data.canceleddate)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
                 End Using
+            End Using
 
-                Dim dataLog As Object() = {data.id, "", "Blinds", data.loginid, "Update Status Order"}
-                orderCfg.Log_Orders(dataLog)
+            Dim dataLog As Object() = {data.id, "", "Blinds", data.loginid, "Update Status Order"}
+            orderCfg.Log_Orders(dataLog)
 
-                msg = "Status has been updated successfully."
-             End If
+            msg = "Status has been updated successfully."
 
             Return New With {.success = true, .message = msg}
         Catch ex As Exception
@@ -1910,7 +1956,12 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function DownloadBarcode(ByVal headerid As String, ByVal itemid As String) As Object
         Try
-            headerid = urlEnc.Decrypt(headerid)
+            Try
+                headerid = urlEnc.Decrypt(headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
             Dim msg As String = "Barcode has been downloaded."
             Dim url As String = ""
             Dim rolename As String = HttpContext.Current.Session("rolename").ToString()
@@ -2095,11 +2146,11 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function SubmitChangeProductionDate(data As ParamSubmitChangeProductionDate) As Object
         Try
-
-            Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE OrderType='Blinds' AND Id='" & data.headerid & "'")
-            If HeaderData.Tables(0).Rows.Count < 1 Then
-                Throw New Exception("order is missing !")
-            End If
+            Try
+                data.headerid = urlEnc.Decrypt(data.headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
 
             If String.IsNullOrEmpty(data.productiondate) Then
                 Return New With {.warning = true, .message = "date is required !", .field = "#modalQuoteDisc #productiondate"}
@@ -2135,10 +2186,20 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function SubmitSendMailQuote(data As ParamSubmitSendMailQuote) As Object
         Try
-            data.headerid = urlEnc.Decrypt(data.headerid)
+            Try
+                data.headerid = urlEnc.Decrypt(data.headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
+              Try
+                data.ordertype = urlEnc.Decrypt(data.ordertype)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt ordertype") 
+            End Try
 
             Dim msg As String = "Mail has been sent successfully."
-            Dim HeaderData As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE OrderType='Blinds' AND Id='" & data.headerid & "'")
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE OrderType='{0}' AND Id='{1}'", data.ordertype, data.headerid))
             If HeaderData.Tables(0).Rows.Count < 1 Then
                 Throw New Exception("This order is missing !")
             End If
@@ -2180,7 +2241,7 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim fullPath As String = Path.Combine(dirPath, FileName)
             printCfg.CreatePDFQuote(data.headerid, data.username, dirPath, FileName, "Origin")
 
-            Dim Res As String = MailOriginQuote(data.headerid, dirPath, data.id, data.mailto)
+            Dim Res As String = MailOriginQuote(data.headerid, data.ordertype, dirPath, data.id, data.mailto)
             If Not Res = "200" Then
                 throw New Exception(Res)
             End If
@@ -2194,9 +2255,114 @@ Partial Class Methods_Order_OrderDetailMethod
         End Try
     End Function
 
-    Private Shared Function MailOriginQuote(headerid As String, directory As String, mailingid As String, customermail As String) As String
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function SubmitSendMailDeposit(data As ParamSubmitSendMailDeposit) As Object
         Try
-            Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType = 'Blinds' ", headerid))
+            Try
+                data.headerid = urlEnc.Decrypt(data.headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
+            Try
+                data.ordertype = urlEnc.Decrypt(data.ordertype)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt ordertype") 
+            End Try
+
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE OrderType='{0}' AND Id='{1}'", data.ordertype, data.headerid))
+            If HeaderData.Tables(0).Rows.Count < 1 Then
+                Return New With {.warning = true, .message = "please add item first !", .field = "#modalSendMailDeposit #id"}
+            End If
+
+            If String.IsNullOrEmpty(data.id) Then
+                Throw New Exception("id is missing !")
+            End If
+
+            If String.IsNullOrEmpty(data.from) Then
+                Return New With {.warning = true, .message = "please check mail from !", .field = "#modalSendMailDeposit #from"}
+            End If
+
+            If String.IsNullOrEmpty(data.mailto) Then
+                Return New With {.warning = true, .message = "please check mail to !", .field = "#modalSendMailDeposit #mailto"}
+            End If
+            If Not String.IsNullOrEmpty(data.mailto) Then
+                If Not Regex.IsMatch(data.mailto, "^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$") Then
+                    Return New With {.warning = true, .message = "please check mail to format !",.field = "#modalSendMailDeposit #mailto"}
+                End If
+            End If
+
+           
+            If Not String.IsNullOrEmpty(data.cc) Then
+                If Not Regex.IsMatch(data.cc, "^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$") Then
+                    Return New With {.warning = true, .message = "please check mail to format !", .field = "#modalSendMailDeposit #cc"}
+                End If
+            End If
+
+            Dim OrderId As String = HeaderData.Tables(0).Rows(0).Item("OrderId").ToString()
+            Dim FileName As String = (String.Format("Deposit-Request-{0}.pdf", OrderId)).Replace(" ", "")
+
+            Dim dirPath As String = HttpContext.Current.Server.MapPath("~/File/Order/")
+            If Not Directory.Exists(dirPath) Then
+                Directory.CreateDirectory(dirPath)
+            End If
+
+            Dim fullPath As String = Path.Combine(dirPath, FileName)
+            ' printCfg.CreatePDFQuote(data.headerid, data.username, dirPath, FileName, "Origin")
+
+            ' Dim Res As String = MailOriginQuote(data.headerid, dirPath, data.id, data.mailto)
+            ' If Not Res = "200" Then
+            '     throw New Exception(Res)
+            ' End If
+
+            
+
+
+            Return New With {.success = true, .message = "Deposit mail has been sent."}
+        Catch ex As Exception
+            Return New With {.error = True, .message = String.Format("SubmitSendMailQuote: {0}", ex.Message)}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function SubmitAddStatus(data As ParamSubmitAddStatus) As Object
+        Try
+            Try
+                data.headerid = urlEnc.Decrypt(data.headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
+            Dim value As Boolean = False
+            If String.IsNullOrEmpty(data.addstatus) Then
+                value = True
+            End If
+
+            Dim Res As Object = UpdateOrderSending(data.headerid, "Deposit", value)
+            If Res.error Then Throw New Exception(Res.message)
+
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET StatusAdditional=@StatusAdditional WHERE Id=@Id")
+                    myCmd.Parameters.AddWithValue("@Id", data.headerid)
+                    myCmd.Parameters.AddWithValue("@StatusAdditional", If(String.IsNullOrEmpty(data.addstatus), DBNull.Value, data.addstatus))
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return New With {.success = true, .message = "Status has been saved successfully."}
+        Catch ex As Exception
+            Return New With {.error = True, .message = String.Format("SubmitAddStatus: {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared Function MailOriginQuote(headerid As String, ordertype As String, directory As String, mailingid As String, customermail As String) As String
+        Try
+            Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType = '{1}' ", headerid, ordertype))
             If OrderData.Tables(0).Rows.Count = 0 Then Return "invalid orders"
 
             Dim OrderId As String = OrderData.Tables(0).Rows(0).Item("OrderId").ToString()
@@ -2304,7 +2470,13 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function SendToBig(ByVal headerid As String, ByVal status As String) As Object
         Try
-            headerid = urlEnc.Decrypt(headerid)
+            Try
+                headerid = urlEnc.Decrypt(headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
+
             If String.IsNullOrEmpty(headerid) Then
                 Throw new Exception("id is null or empty !")
             End If  
@@ -2419,8 +2591,18 @@ Partial Class Methods_Order_OrderDetailMethod
             
             ' Throw New Exception("page: " & page)
 
-            data.headerid = urlEnc.Decrypt(data.headerid)
-            data.ordertype = urlEnc.Decrypt(data.ordertype)
+            Try
+                data.headerid = urlEnc.Decrypt(data.headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
+            Try
+                data.ordertype = urlEnc.Decrypt(data.ordertype)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt ordertype") 
+            End Try
+
             HttpContext.Current.Session("headerId") = data.headerid 
             HttpContext.Current.Session("itemAction") = data.action
             HttpContext.Current.Session("orderType") = data.ordertype
@@ -2876,8 +3058,18 @@ Partial Class Methods_Order_OrderDetailMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function ExactSlip(ByVal headerid As String, ByVal ordertype As String, ByVal rolename As String, ByVal loginid As String) As Object
         Try
-            headerid = urlEnc.Decrypt(headerid)
-            ordertype = urlEnc.Decrypt(ordertype)
+            Try
+                headerid = urlEnc.Decrypt(headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
+            Try
+                ordertype = urlEnc.Decrypt(ordertype)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt ordertype") 
+            End Try
+
 
             Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id='{0}' AND OrderType='{1}'", headerid, ordertype))
             If HeaderData.Tables(0).Rows.Count < 1 Then
@@ -2915,143 +3107,6 @@ Partial Class Methods_Order_OrderDetailMethod
             Return New With {.success = true, .message = "The Exact Slip was successfully sent."}
         Catch ex As Exception
             Return New With {.error = true, .message = String.Format("ExactSlip : {0}", ex.Message)}
-        End Try
-    End Function
-
-    Private Shared Function CreateXMLB(Id As String, fileName As String, folderPath As String) As String
-        Try
-            Dim sb As New StringBuilder()
-            sb.AppendLine("<?xml version=""1.0""?>")
-
-            Dim settings As New XmlWriterSettings()
-            settings.Indent = True
-            settings.OmitXmlDeclaration = True
-            settings.Encoding = New UTF8Encoding(False)
-
-            Dim headerData As DataSet = publicCfg.GetListData("SELECT * FROM view_order_headers WHERE Id = '" + Id + "' AND OrderType = 'Blinds'")
-            If headerData.Tables(0).Rows.Count < 0 Then Throw New Exception("Order Header not found.")
-
-            For h As Integer = 0 To headerData.Tables(0).Rows.Count - 1
-                Dim orderId As String = headerData.Tables(0).Rows(h).Item("OrderId").ToString()
-                Dim orderNumber As String = headerData.Tables(0).Rows(h).Item("OrderNumber").ToString()
-                Dim orderName As String = headerData.Tables(0).Rows(h).Item("OrderName").ToString()
-                Dim customerId As String = headerData.Tables(0).Rows(h).Item("CustomerId").ToString()
-                Dim jobDate As String = Convert.ToDateTime(headerData.Tables(0).Rows(h).Item("JobDate")).ToString("yyyy-MM-dd")
-                Dim shipmentId As String = headerData.Tables(0).Rows(h).Item("ShipmentId").ToString()
-
-                Dim customerAccount As String = publicCfg.GetItemData("SELECT Account FROM Customers WHERE Id = '" + customerId + "'")
-
-                Dim exactCustomer As String = String.Empty
-                If customerAccount = "Master" Or customerAccount = "Regular" Or customerAccount = "REGULAR" Then
-                    exactCustomer = publicCfg.GetItemData("SELECT ExactId FROM Customers WHERE Id='" + customerId + "'")
-                End If
-
-                If customerAccount = "Sub" Then
-                    Dim masterId As String = publicCfg.GetItemData("SELECT MasterId FROM Customers WHERE Id='" + customerId + "'")
-                    exactCustomer = publicCfg.GetItemData("SELECT ExactId FROM Customers WHERE Id='" + masterId + "'")
-                End If
-
-                Dim etaCustomer As String = String.Empty
-                If Not String.IsNullOrEmpty(shipmentId) Then
-                    Dim shipmentData As DataSet = publicCfg.GetListData("SELECT * FROM OrderShipments WHERE Id='" + shipmentId + "'")
-                    etaCustomer = Convert.ToDateTime(shipmentData.Tables(0).Rows(0).Item("ETACustomer")).ToString("yyyy-MM-dd")
-                End If
-
-                Using stringWriter As New StringWriter(sb)
-                    Using writer As XmlWriter = XmlWriter.Create(stringWriter, settings)
-                        writer.WriteStartDocument()
-                        writer.WriteStartElement("eExact")
-                        writer.WriteAttributeString("xmlns", "xsi", Nothing, "http://www.w3.org/2001/XMLSchema-instance")
-                        writer.WriteAttributeString("xsi", "noNamespaceSchemaLocation", "http://www.w3.org/2001/XMLSchema-instance", "eExact-Schema.xsd")
-
-                        writer.WriteStartElement("Orders")
-                        writer.WriteStartElement("Order")
-                        writer.WriteAttributeString("type", "V")
-
-                        writer.WriteElementString("YourRef", Id)
-                        writer.WriteElementString("Description", orderId & " - " & orderNumber & " - " & orderName)
-
-                        writer.WriteStartElement("Resource")
-                        writer.WriteAttributeString("number", "99")
-                        writer.WriteString("")
-                        writer.WriteEndElement()
-
-                        writer.WriteStartElement("OrderedBy")
-                        writer.WriteStartElement("Debtor")
-                        writer.WriteAttributeString("code", exactCustomer)
-                        writer.WriteString("")
-                        writer.WriteEndElement()
-                        writer.WriteElementString("Date", jobDate)
-                        writer.WriteEndElement()
-
-                        Dim detailData As DataSet = publicCfg.GetListData("SELECT * FROM OrderDetails WHERE HeaderId = '" & Id & "' AND Active = 1 ORDER BY Id ASC")
-
-                        For i As Integer = 0 To detailData.Tables(0).Rows.Count - 1
-                            Dim itemId As String = detailData.Tables(0).Rows(i).Item("Id").ToString()
-                            Dim kitId As String = detailData.Tables(0).Rows(i).Item("KitId").ToString()
-                            Dim totalMatrix As Decimal = detailData.Tables(0).Rows(i).Item("TotalMatrix").ToString()
-                            Dim totalCharge As Decimal = detailData.Tables(0).Rows(i).Item("TotalCharge").ToString()
-                            Dim finalCost As Decimal = totalMatrix + totalCharge
-                            Dim finalCostString As String = finalCost.ToString(CultureInfo.InvariantCulture)
-
-                            Dim exactProduct As String = detailData.Tables(0).Rows(i).Item("ExactId").ToString()
-                            If String.IsNullOrEmpty(exactProduct) Then
-                                Dim designId As String = publicCfg.GetItemData("SELECT DesignId FROM HardwareKits WHERE Id='" + UCase(kitId) + "'")
-                                Dim blindId As String = publicCfg.GetItemData("SELECT BlindId FROM HardwareKits WHERE Id='" + UCase(kitId) + "'")
-                                Dim designName As String = publicCfg.GetItemData("SELECT Name FROM Designs WHERE Id = '" + designId + "'")
-                                Dim blindName As String = publicCfg.GetItemData("SELECT Name FROM Blinds WHERE Id = '" + blindId + "'")
-
-                                Dim exactName As String = designName & " - " & blindName
-                                exactProduct = publicCfg.GetItemData("SELECT ExactId FROM Exacts WHERE Name = '" + exactName + "'")
-                            End If
-
-                            Dim productName As String = publicCfg.GetItemData("SELECT Name FROM HardwareKits WHERE Id = '" & UCase(kitId) & "'")
-                            Dim width As String = detailData.Tables(0).Rows(i).Item("Width").ToString()
-                            Dim drop As String = detailData.Tables(0).Rows(i).Item("Drop").ToString()
-                            Dim itemDescription As String = productName & " " & width & "x" & drop
-
-                            writer.WriteStartElement("OrderLine")
-
-                            writer.WriteStartElement("Item")
-                            writer.WriteAttributeString("code", exactProduct)
-                            writer.WriteString("")
-                            writer.WriteEndElement()
-
-                            writer.WriteElementString("Quantity", "1")
-
-                            writer.WriteStartElement("Price")
-                            writer.WriteAttributeString("type", "S")
-
-                            writer.WriteStartElement("Currency")
-                            writer.WriteAttributeString("code", "AUD")
-                            writer.WriteString("")
-                            writer.WriteEndElement()
-
-                            writer.WriteElementString("Value", finalCostString)
-                            writer.WriteEndElement() ' Price
-
-                            writer.WriteStartElement("Delivery")
-                            writer.WriteElementString("Date", etaCustomer)
-                            writer.WriteEndElement()
-
-                            writer.WriteElementString("Text", itemDescription)
-                            writer.WriteEndElement() ' OrderLine
-                        Next
-
-                        writer.WriteEndElement() ' Order
-                        writer.WriteEndElement() ' Orders
-                        writer.WriteEndElement() ' eExact
-                        writer.WriteEndDocument()
-                    End Using
-                End Using
-            Next
-
-            Dim filePath As String = Path.Combine(folderPath, fileName)
-            Dim xmlFinal As String = sb.ToString().Replace(" />", "/>")
-            File.WriteAllText(filePath, xmlFinal, New UTF8Encoding(False))
-            Return "200"
-        Catch ex As Exception
-            Return String.Format("CreateXMLB: {0}", ex.Message)
         End Try
     End Function
 

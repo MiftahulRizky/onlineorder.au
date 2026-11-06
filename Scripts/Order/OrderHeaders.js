@@ -780,6 +780,10 @@ const displayElOverall = (api) => {
       const isShutters = ["Panorama", "Evolve", "Shutters"].includes(
         rowData.OrderType,
       );
+      const isDeposite = [
+        "Waiting for Deposit",
+        "On Hold - Pending Price Approval",
+      ].includes(rowData.StatusAdditional);
 
       toggleShow(liDetailOrder, true);
 
@@ -789,7 +793,7 @@ const displayElOverall = (api) => {
 
       if (isAdmin) {
         if (isSupAdmin) {
-          if (!isShutters && isActive) {
+          if (!isShutters && isActive && !isDeposite) {
             toggleShow(liDividerChangeStatus, true);
             toggleShow(liChangeStatus, true);
           }
@@ -803,7 +807,7 @@ const displayElOverall = (api) => {
       }
 
       if (isPpicCsDe) {
-        if (!isFinish && isActive && !isShutters) {
+        if (!isFinish && isActive && !isShutters && !isDeposite) {
           toggleShow(liDividerChangeStatus, true);
           toggleShow(liChangeStatus, true);
         }
