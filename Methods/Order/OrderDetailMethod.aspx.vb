@@ -93,6 +93,14 @@ Partial Class Methods_Order_OrderDetailMethod
         Public Property loginid As String
     End Class
 
+    Public Class ParamSubmitEnableSending
+        Public Property keyname  As String
+
+        Public Property rolename As String
+        Public Property headerid As String
+        Public Property loginid As String
+    End Class
+
     Public Class ParamSubmitSendMailQuote
         Public Property id  As String
         Public Property from As String
@@ -276,6 +284,7 @@ Partial Class Methods_Order_OrderDetailMethod
                                 .OrderId = reader("OrderId").ToString(),
                                 .JoNumberId = reader("JoNumberId").ToString(),
                                 .OrderType = reader("OrderType").ToString(),
+                                .OrderSending = OrderSending.value,
                                 .OrderNumber = reader("OrderNumber").ToString(),
                                 .OrderName = reader("OrderName").ToString(),
                                 .CreatedDate = reader("CreatedDate").ToString(),
@@ -448,7 +457,7 @@ Partial Class Methods_Order_OrderDetailMethod
                 End Using
             End Using
 
-            Dim ResCheckOrder As Object = CekOrder(HeaderData.Id, HeaderData.Status, data.loginid, data.rolename)
+            Dim ResCheckOrder As Object = CheckOrder(HeaderData.Id, HeaderData.Status, data.loginid, data.rolename)
             If ResCheckOrder.error Then
                 Throw New Exception(ResCheckOrder.message)
             End If
@@ -495,13 +504,25 @@ Partial Class Methods_Order_OrderDetailMethod
 
     Private Shared Function FindOrderSending(ByVal headerid As String) As Object
         Try
-            Return New With {.success = True, .error = False, .value =""}
+            Dim values As New List(Of String)
+
+            If IsOrderSendingActive(headerid, "Exact") Then
+                values.Add("Exact")
+            End If
+
+            If IsOrderSendingActive(headerid, "BIG") Then
+                values.Add("BIG")
+            End If
+
+            Dim value As String = String.Join(", ", values)
+
+            Return New With {.success = True, .error = False, .value = value}
         Catch ex As Exception
             Return New With {.error = True, .message = String.Format("FindOrderSending: {0}", ex.Message)}
         End Try
     End Function
 
-    Private Shared Function CekOrder(ByVal headerid As String, ByVal status As String, ByVal loginid As String, ByVal rolename As String) As Object
+    Private Shared Function CheckOrder(ByVal headerid As String, ByVal status As String, ByVal loginid As String, ByVal rolename As String) As Object
         Try
             Dim msg As String = String.Empty
             Dim url As String = String.Empty
@@ -607,7 +628,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
             Return New With {.error = false, .Action = Action, .Message = textSwall, .StatusAdditional = StatusAdditional}
         Catch ex As Exception
-            Return New With {.error = true, .message = String.Format("CekOrder: {0}", ex.Message)}
+            Return New With {.error = true, .message = String.Format("CheckOrder: {0}", ex.Message)}
         End Try
     End Function
 
@@ -1313,8 +1334,8 @@ Partial Class Methods_Order_OrderDetailMethod
                     })
                 Next
 
-                ' Dim Res As Object = UpdateOrderSending(headerid, "BIG", True)
-                ' If Res.error Then Throw New Exception(Res.message)
+                Dim Res As Object = UpdateOrderSending(headerid, "BIG", True)
+                If Res.error Then Throw New Exception(Res.message)
 
                 Dim json As String = JsonConvert.SerializeObject(order)
                 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12
@@ -1884,7 +1905,7 @@ Partial Class Methods_Order_OrderDetailMethod
             End If          
 
             Dim findDesc As String = data.description
-            Dim query As String = "UPDATE OrderHeaders SET Status='Draft', StatusDescription=@StatusDescription, StatusAdditional=Null,  SubmittedDate=NULL, JobDate=NULL, CanceledDate=NULL, CompletedDate=NULL WHERE Id=@Id"
+            Dim query As String = "UPDATE OrderHeaders SET Status='Draft', StatusDescription=@StatusDescription, StatusAdditional=Null, OrderSending=Null,  SubmittedDate=NULL, JobDate=NULL, CanceledDate=NULL, CompletedDate=NULL WHERE Id=@Id"
             Select Case data.status
                 Case "Draft"
                     findDesc = "Status changed to draft by <b>" & data.username & "</b>"
@@ -2199,6 +2220,35 @@ Partial Class Methods_Order_OrderDetailMethod
 
     <WebMethod()>
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function SubmitEnableSending(data As ParamSubmitEnableSending) As Object
+        Try
+            Try
+                data.headerid = urlEnc.Decrypt(data.headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
+            If String.IsNullOrEmpty(data.keyname) Then
+                Return New With {.warning = true, .message = "key name is required !", .field = "#modalEnableSending #keyname"}
+            End If
+
+            Dim Res As Object = UpdateOrderSending(data.headerid, data.keyname, False)
+            If Res.error Then Throw New Exception(Res.message)
+
+
+            Dim OrderType As String = publicCfg.GetItemData(String.Format("SELECT OrderType FROM OrderHeaders WHERE Id='{0}'", data.headerid))
+            Dim dataLog As Object() = {data.headerid, "", OrderType, data.loginid, String.Format("Enable Sending {0}", data.keyname)}
+            orderCfg.Log_Orders(dataLog)
+
+
+            Return New With {.success = true, .message = String.Format("Sending {0} has been enabled successfully.", data.keyname)}
+        Catch ex As Exception
+            Return New With { .error = true, .message = String.Format("SubmitEnableSending: {0}", ex.Message)}
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function SubmitSendMailQuote(data As ParamSubmitSendMailQuote) As Object
         Try
             Try
@@ -2497,8 +2547,12 @@ Partial Class Methods_Order_OrderDetailMethod
             End If  
 
             ' If NOT Status = "In Production" Then
-            '     Throw New Exception("Status is not In Production !")
+            '     Return New With {.warning = true, .message = "Only In Production can be sent to BIG Order."}
             ' End If
+
+            If IsOrderSendingActive(headerid, "BIG") Then
+                Return New With {.warning = true, .message = "This order is already sending."}
+            End If
 
             Dim ResApi As Object = SendOrderGlobal(headerid)
             If ResApi.error Then
@@ -3093,7 +3147,7 @@ Partial Class Methods_Order_OrderDetailMethod
             
             Dim OrderId As String = HeaderData.Tables(0).Rows(0).Item("OrderId").ToString()
             Dim Status As String = HeaderData.Tables(0).Rows(0).Item("Status").ToString()
-            Dim FileName As String = String.Format("-SPOD-Order-Blinds-{0}.xml", OrderId)
+            Dim FileName As String = String.Format("-SPOD-Order-Furnishings-{0}.xml", OrderId)
             Dim FilePath As String = HttpContext.Current.Server.MapPath("~/file/inv/")
             Dim PathCombine As String = Path.Combine(FilePath, FileName)
             Dim currentDomain As String = HttpContext.Current.Request.Url.Host.ToLower()
@@ -3101,6 +3155,10 @@ Partial Class Methods_Order_OrderDetailMethod
 
             If Not Status = "In Production" Then
                 Return New With {.warning = true, .message = "This order is not in production."}
+            End If
+
+            If IsOrderSendingActive(headerid, "Exact") Then
+                Return New With {.warning = true, .message = "This order is already sending."}
             End If
 
             Dim Res As Object = UpdateOrderSending(headerid, "Exact", True)

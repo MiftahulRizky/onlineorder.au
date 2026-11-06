@@ -104,6 +104,7 @@ const elModal = {
   modalChangeStatus: getById("modalChangeStatus"),
   modalQuoteDisc: getById("modalQuoteDisc"),
   modalProductionDate: getById("modalProductionDate"),
+  modalEnableSending: getById("modalEnableSending"),
   modalAddItem: getById("modalAddItem"),
   modalAddService: getById("modalAddService"),
   modalSendMailQuote: getById("modalSendMailQuote"),
@@ -327,6 +328,8 @@ Object.values(spanEl).forEach((el) => {
 
       if (id === "spanJoNumber") {
         const jonumber = e.currentTarget.dataset.number;
+        if (!jonumber) return;
+
         const success = await copyToClipboard(jonumber);
 
         if (success) {
@@ -360,6 +363,15 @@ Object.values(spanEl).forEach((el) => {
         elModal.modalProductionDate.querySelector("#productiondate").value =
           formatted;
         showBSModal("modalProductionDate");
+      }
+
+      if (id === "spanOrderSending") {
+        if (!["Administrator"].includes(ROLENAME)) return;
+
+        const raw = e.currentTarget.innerText;
+        const valueArray = raw.split(",").map((item) => item.trim());
+        generateOption("#modalEnableSending #keyname", valueArray);
+        showBSModal("modalEnableSending");
       }
     } catch (error) {
       const msg = `Event spanEl: ${error.message}`;
@@ -516,6 +528,27 @@ const modalEvents = {
             });
 
           submitChangeProductionDate(e.target.id);
+        }
+      });
+    },
+  },
+
+  modalEnableSending: {
+    init: (modal) => {},
+
+    events: (modal) => {
+      modal.addEventListener("change", (e) => {
+        e.target.classList.remove("is-invalid");
+      });
+
+      modal.addEventListener("click", (e) => {
+        if (e.target.id === "btnSave") {
+          modal
+            .querySelectorAll(".form-control, .form-select")
+            .forEach((el) => {
+              el.classList.remove("is-invalid");
+            });
+          submitEnableSending(e.target.id);
         }
       });
     },
@@ -1024,6 +1057,7 @@ const handlerHeaderInfo = (item) => {
     spanEl.joNumberMsg.classList.add("d-none");
 
     setText(spanEl.orderType, item.OrderType);
+    setText(spanEl.orderSending, item.OrderSending);
 
     spanEl.total.innerHTML = formatCurrency(item.SumPrice);
     spanEl.gst.innerHTML = formatCurrency(item.Gst);
@@ -1947,7 +1981,7 @@ const displayElOverall = (header, detail) => {
       }
 
       toggleShow(btnEl.btnDownloadBarcode, true);
-      // toggleShow(btnEl.btnExactSlip, true);
+      toggleShow(btnEl.btnExactSlip, true);
 
       if (!isWaitingForDeposit && !isPandingPriceApproval) {
         toggleShow(btnEl.btnChangeStatus, true);
@@ -1958,6 +1992,7 @@ const displayElOverall = (header, detail) => {
       if (isNotCanceled) {
         toggleShow(btnEl.btnReloadPricing, true);
       }
+      toggleShow(divEl.divOrderSending, true);
     }
 
     // --- LOGIKA PERMISSION UNTUK CUSTOMER ---
@@ -2258,8 +2293,8 @@ const submitChangeStatus = async () => {
         fieldElement.classList.add("is-invalid");
       }
     } else if (res.success) {
-      await isSuccess(res.message);
       hideBSModal("modalChangeStatus");
+      await isSuccess(res.message);
       location.reload();
     }
   } catch (error) {
@@ -2410,6 +2445,67 @@ const submitChangeProductionDate = async (button) => {
     catchMessages(msg);
   } finally {
     document.getElementById(button).innerHTML = "Save Changes";
+  }
+};
+
+const submitEnableSending = async (button) => {
+  try {
+    getById(button).innerHTML = "Processing...";
+    swalLoadingShow("Please wait while we save the data.");
+    const fields = ["keyname"];
+
+    const formData = {
+      headerid: HEADERID,
+      loginid: LOGINID,
+      rolename: ROLENAME,
+    };
+
+    fields.forEach((field) => {
+      formData[field] = document.querySelector(
+        `#modalEnableSending #${field}`,
+      ).value;
+    });
+
+    // swal.close();
+    // return console.table(formData);
+
+    const response = await fetch(URIMETHOD + "/SubmitEnableSending", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: formData }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    }
+
+    if (res.warning) {
+      await isWarning(res.message?.toUpperCase());
+      const field = getById(res.field);
+      if (field) {
+        field.classList.add("is-invalid");
+      }
+    }
+
+    if (res.success) {
+      await isSuccess(res.message);
+      location.reload();
+    }
+  } catch (error) {
+    const msg = `submitEnableSending: ${error.message}`;
+    catchMessages(msg);
+  } finally {
+    getById(button).innerHTML = "Save Changes";
   }
 };
 
@@ -2905,23 +3001,29 @@ const formatDate = (dateStr) => {
   const d = parseCustomDate(dateStr);
   if (!d || isNaN(d.getTime())) return "-";
 
-  return ROLENAME === "Administrator"
-    ? d
-        .toLocaleDateString("id-ID", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        })
-        .replace(/\./g, ":")
-    : d.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "2-digit",
-      });
+  // return ROLENAME === "Administrator"
+  //   ? d
+  //       .toLocaleDateString("id-ID", {
+  //         weekday: "long",
+  //         year: "numeric",
+  //         month: "long",
+  //         day: "2-digit",
+  //         hour: "2-digit",
+  //         minute: "2-digit",
+  //         hour12: false,
+  //       })
+  //       .replace(/\./g, ":")
+  //   : d.toLocaleDateString("en-US", {
+  //       year: "numeric",
+  //       month: "long",
+  //       day: "2-digit",
+  //     });
+
+  return d.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+  });
 };
 
 const formatCurrency = (num) => {

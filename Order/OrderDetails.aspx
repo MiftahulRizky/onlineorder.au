@@ -283,7 +283,7 @@
                                 <div class="col-lg-4" id="divOrderSending">
                                     <span style="font-size:larger;">Order Sending :</span>
                                     <br />
-                                    <div  id="spanOrderSending" style="font-size: larger;font-weight: bold;" ></div>
+                                    <div  id="spanOrderSending" style="font-size: larger;font-weight: bold; cursor: pointer;" ></div>
                                 </div>
                                 <div class="col-lg-4">
                                     <span style="font-size:larger;">Product Type :</span>
@@ -496,6 +496,28 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="btnSubmitProductionDate">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modalEnableSending -->
+    <div class="modal fade" id="modalEnableSending" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalEnableSendingLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="modalEnableSendingLabel">Enable Sending</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-12">
+                        <label for="keyname" class="form-label text-uppercase">Key Name</label>
+                        <select name="keyname" id="keyname" class="form-select"></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSave">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -789,7 +811,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.20"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.28"></script>
 
 
 </asp:Content>
