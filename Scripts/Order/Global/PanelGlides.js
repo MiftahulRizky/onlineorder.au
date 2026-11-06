@@ -332,7 +332,7 @@ const bindBattenColour = (blindname) => {
   if (["Plantation"].includes(blindname)) {
     list.push(
       "Timber - Alabaster",
-      "Timber - Batlic",
+      "Timber - Baltic",
       "Timber - Black",
       "Timber - Brown",
       "Timber - Cherry",
