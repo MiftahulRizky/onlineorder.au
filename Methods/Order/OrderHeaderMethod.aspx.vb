@@ -678,7 +678,14 @@ Partial Class Methods_Order_OrderHeaderMethod
     <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
     Public Shared Function BindLogs(ByVal headerid As String, ByVal ordertype As String) As Object
         Try
-            Dim Logs As DataSet = publicCfg.GetListData(String.Format("SELECT CustomerLogins.FullName, Log_Orders.ItemId, Log_Orders.ActionDate, Log_Orders.Description FROM Log_Orders INNER JOIN CustomerLogins ON Log_Orders.ActionBy=CustomerLogins.Id WHERE Log_Orders.HeaderId='{0}' AND Log_Orders.Type='{1}'  ORDER BY ActionDate DESC", headerid, ordertype))
+            Dim byType As String = String.Format("AND Log_Orders.Type='{0}'", ordertype)
+            If ordertype = "Furnishings" Then
+                byType = "AND Log_Orders.Type IN ('Furnishings', 'Blinds', 'Door and Window')"
+            End If
+            If ordertype = "Shutters" Then
+                byType = "AND Log_Orders.Type IN ('Shutters', 'Panorama', 'Evolve')"
+            End If
+            Dim Logs As DataSet = publicCfg.GetListData(String.Format("SELECT CustomerLogins.FullName, Log_Orders.ItemId, Log_Orders.ActionDate, Log_Orders.Description FROM Log_Orders INNER JOIN CustomerLogins ON Log_Orders.ActionBy=CustomerLogins.Id WHERE Log_Orders.HeaderId='{0}' {1} ORDER BY ActionDate DESC", headerid, byType))
 
             Dim LogsData As List(Of Dictionary(Of String, Object)) = New List(Of Dictionary(Of String, Object))()
             For Each row As DataRow In Logs.Tables(0).Rows
