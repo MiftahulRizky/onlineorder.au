@@ -482,8 +482,7 @@ const modalEvents = {
 
       modal.addEventListener("click", (e) => {
         if (e.target.id === "btnSave") {
-          // submitSendMailQuote();
-          alert("test");
+          submitInternalNote();
         }
       });
     },
@@ -2716,6 +2715,80 @@ const submitAddStatus = async () => {
     }
   } catch (error) {
     const msg = `submitAddStatus: ${error.message}`;
+    catchMessages(msg);
+  } finally {
+    btnSubmit.removeAttribute("disabled");
+    btnSubmit.innerHTML = `Save Changes`;
+  }
+
+  return false;
+};
+
+const submitInternalNote = async () => {
+  // Hapus semua tanda invalid di awal
+  document
+    .querySelectorAll(
+      "#modalInternalNote .form-control, #modalInternalNote .form-select",
+    )
+    .forEach((e) => e.classList.remove("is-invalid"));
+
+  const btnSubmit = document.querySelector("#modalInternalNote #btnSave");
+
+  const fields = ["id", "internalnote"];
+
+  const additionalParams = {
+    username: USERNAME,
+    headerid: HEADERID,
+    loginid: LOGINID,
+  };
+
+  fields.forEach((field) => {
+    const el = document.querySelector(`#modalInternalNote #${field}`);
+    additionalParams[field] = el ? el.value : "";
+  });
+
+  try {
+    // === Sebelum request ===
+    btnSubmit.setAttribute("disabled", "disabled");
+    btnSubmit.innerHTML = '<i class="fa fa-spin fa-spinner"></i>';
+    swalLoadingShow("Please wait a moment");
+
+    // === Kirim request ===
+    const response = await fetch(`${URIMETHOD}/SubmitInternalNote`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ data: additionalParams }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    }
+
+    if (res.warning) {
+      await isWarning(res.message.toUpperCase());
+      const fieldElement = document.querySelector(res.field);
+      if (fieldElement) {
+        fieldElement.focus();
+        fieldElement.classList.add("is-invalid");
+      }
+    }
+
+    if (res.success) {
+      hideBSModal("modalInternalNote");
+      await isSuccess(res.message);
+      location.reload();
+    }
+  } catch (error) {
+    const msg = `submitInternalNote: ${error.message}`;
     catchMessages(msg);
   } finally {
     btnSubmit.removeAttribute("disabled");

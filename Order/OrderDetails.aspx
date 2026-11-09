@@ -811,7 +811,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.28"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.29"></script>
 
 
 </asp:Content>

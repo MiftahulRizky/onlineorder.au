@@ -134,6 +134,15 @@ Partial Class Methods_Order_OrderDetailMethod
         Public Property loginid As String
     End Class
 
+    Public Class ParamSubmitInternalNote
+        Public Property id  As String
+        Public Property internalnote As String
+
+        Public Property username As String
+        Public Property headerid As String
+        Public Property loginid As String
+    End Class
+
     Public Class ParamFindProductForm
         Public Property id  As String
         Public Property rolename As String
@@ -2320,111 +2329,6 @@ Partial Class Methods_Order_OrderDetailMethod
         End Try
     End Function
 
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function SubmitSendMailDeposit(data As ParamSubmitSendMailDeposit) As Object
-        Try
-            Try
-                data.headerid = urlEnc.Decrypt(data.headerid)
-            Catch ex As Exception
-                Throw New Exception("failed to decrypt headerid") 
-            End Try
-
-            Try
-                data.ordertype = urlEnc.Decrypt(data.ordertype)
-            Catch ex As Exception
-                Throw New Exception("failed to decrypt ordertype") 
-            End Try
-
-            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE OrderType='{0}' AND Id='{1}'", data.ordertype, data.headerid))
-            If HeaderData.Tables(0).Rows.Count < 1 Then
-                Return New With {.warning = true, .message = "please add item first !", .field = "#modalSendMailDeposit #id"}
-            End If
-
-            If String.IsNullOrEmpty(data.id) Then
-                Throw New Exception("id is missing !")
-            End If
-
-            If String.IsNullOrEmpty(data.from) Then
-                Return New With {.warning = true, .message = "please check mail from !", .field = "#modalSendMailDeposit #from"}
-            End If
-
-            If String.IsNullOrEmpty(data.mailto) Then
-                Return New With {.warning = true, .message = "please check mail to !", .field = "#modalSendMailDeposit #mailto"}
-            End If
-            If Not String.IsNullOrEmpty(data.mailto) Then
-                If Not Regex.IsMatch(data.mailto, "^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$") Then
-                    Return New With {.warning = true, .message = "please check mail to format !",.field = "#modalSendMailDeposit #mailto"}
-                End If
-            End If
-
-           
-            If Not String.IsNullOrEmpty(data.cc) Then
-                If Not Regex.IsMatch(data.cc, "^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$") Then
-                    Return New With {.warning = true, .message = "please check mail to format !", .field = "#modalSendMailDeposit #cc"}
-                End If
-            End If
-
-            Dim OrderId As String = HeaderData.Tables(0).Rows(0).Item("OrderId").ToString()
-            Dim FileName As String = (String.Format("Deposit-Request-{0}.pdf", OrderId)).Replace(" ", "")
-
-            Dim dirPath As String = HttpContext.Current.Server.MapPath("~/File/Order/")
-            If Not Directory.Exists(dirPath) Then
-                Directory.CreateDirectory(dirPath)
-            End If
-
-            Dim fullPath As String = Path.Combine(dirPath, FileName)
-            ' printCfg.CreatePDFQuote(data.headerid, data.username, dirPath, FileName, "Origin")
-
-            ' Dim Res As String = MailOriginQuote(data.headerid, dirPath, data.id, data.mailto)
-            ' If Not Res = "200" Then
-            '     throw New Exception(Res)
-            ' End If
-
-            
-
-
-            Return New With {.success = true, .message = "Deposit mail has been sent."}
-        Catch ex As Exception
-            Return New With {.error = True, .message = String.Format("SubmitSendMailQuote: {0}", ex.Message)}
-        End Try
-    End Function
-
-    <WebMethod()>
-    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
-    Public Shared Function SubmitAddStatus(data As ParamSubmitAddStatus) As Object
-        Try
-            Try
-                data.headerid = urlEnc.Decrypt(data.headerid)
-            Catch ex As Exception
-                Throw New Exception("failed to decrypt headerid") 
-            End Try
-
-            Dim value As Boolean = False
-            If String.IsNullOrEmpty(data.addstatus) Then
-                value = True
-            End If
-
-            Dim Res As Object = UpdateOrderSending(data.headerid, "Deposit", value)
-            If Res.error Then Throw New Exception(Res.message)
-
-            Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET StatusAdditional=@StatusAdditional WHERE Id=@Id")
-                    myCmd.Parameters.AddWithValue("@Id", data.headerid)
-                    myCmd.Parameters.AddWithValue("@StatusAdditional", If(String.IsNullOrEmpty(data.addstatus), DBNull.Value, data.addstatus))
-                    myCmd.Connection = thisConn
-                    thisConn.Open()
-                    myCmd.ExecuteNonQuery()
-                    thisConn.Close()
-                End Using
-            End Using
-
-            Return New With {.success = true, .message = "Status has been saved successfully."}
-        Catch ex As Exception
-            Return New With {.error = True, .message = String.Format("SubmitAddStatus: {0}", ex.Message)}
-        End Try
-    End Function
-
     Private Shared Function MailOriginQuote(headerid As String, ordertype As String, directory As String, mailingid As String, customermail As String) As String
         Try
             Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType = '{1}' ", headerid, ordertype))
@@ -2528,6 +2432,247 @@ Partial Class Methods_Order_OrderDetailMethod
                 errorMessage &= " Inner Exception: " & ex.InnerException.Message
             End If
             Return errorMessage
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function SubmitSendMailDeposit(data As ParamSubmitSendMailDeposit) As Object
+        Try
+            Try
+                data.headerid = urlEnc.Decrypt(data.headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
+            Try
+                data.ordertype = urlEnc.Decrypt(data.ordertype)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt ordertype") 
+            End Try
+
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE OrderType='{0}' AND Id='{1}'", data.ordertype, data.headerid))
+            If HeaderData.Tables(0).Rows.Count < 1 Then
+                Return New With {.warning = true, .message = "please add item first !", .field = "#modalSendMailDeposit #id"}
+            End If
+
+            If String.IsNullOrEmpty(data.id) Then
+                Throw New Exception("id is missing !")
+            End If
+
+            If String.IsNullOrEmpty(data.from) Then
+                Return New With {.warning = true, .message = "please check mail from !", .field = "#modalSendMailDeposit #from"}
+            End If
+
+            If String.IsNullOrEmpty(data.mailto) Then
+                Return New With {.warning = true, .message = "please check mail to !", .field = "#modalSendMailDeposit #mailto"}
+            End If
+            If Not String.IsNullOrEmpty(data.mailto) Then
+                If Not Regex.IsMatch(data.mailto, "^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$") Then
+                    Return New With {.warning = true, .message = "please check mail to format !",.field = "#modalSendMailDeposit #mailto"}
+                End If
+            End If
+
+           
+            If Not String.IsNullOrEmpty(data.cc) Then
+                If Not Regex.IsMatch(data.cc, "^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$") Then
+                    Return New With {.warning = true, .message = "please check mail to format !", .field = "#modalSendMailDeposit #cc"}
+                End If
+            End If
+
+            Dim OrderId As String = HeaderData.Tables(0).Rows(0).Item("OrderId").ToString()
+            Dim FileName As String = (String.Format("Deposit-Request-{0}.pdf", OrderId)).Replace(" ", "")
+
+
+            Dim dirPath As String = HttpContext.Current.Server.MapPath("~/File/Order/")
+            If Not Directory.Exists(dirPath) Then
+                Directory.CreateDirectory(dirPath)
+            End If
+
+            Dim fullPath As String = Path.Combine(dirPath, FileName)
+            printCfg.CreatePDFDeposit(data.headerid, data.username, dirPath, FileName, "Origin")
+
+            Dim Res As String = MailDeposit(data.headerid, data.ordertype, dirPath, data.id, data.mailto)
+            If Not Res = "200" Then
+                throw New Exception(Res)
+            End If
+
+            
+
+
+            Return New With {.success = true, .message = "Deposit mail has been sent."}
+        Catch ex As Exception
+            Return New With {.error = True, .message = String.Format("SubmitSendMailDeposit: {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared Function MailDeposit(headerid As String, ordertype As String, directory As String, mailingid As String, customermail As String) As String
+        Try
+            Dim OrderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM view_order_headers WHERE Id = '{0}' AND OrderType = '{1}' ", headerid, ordertype))
+            If OrderData.Tables(0).Rows.Count = 0 Then Return "invalid orders"
+
+            Dim OrderId As String = OrderData.Tables(0).Rows(0).Item("OrderId").ToString()
+            Dim CustomerId As String = OrderData.Tables(0).Rows(0).Item("CustomerId").ToString()
+            Dim OrderNumber As String = OrderData.Tables(0).Rows(0).Item("OrderNumber").ToString()
+            Dim OrderName As String = OrderData.Tables(0).Rows(0).Item("OrderName").ToString()
+            Dim Delivery As String = OrderData.Tables(0).Rows(0).Item("Delivery").ToString()
+
+            Dim mailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM Mailings WHERE Id = '{0}' AND Active = '1' ", mailingid))
+            Dim mailDevelopment As DataSet = publicCfg.GetListData("SELECT * From MailConfiguration WHERE Id='FADBA62C-2072-4501-8901-5E071BBF5E67'")
+
+            If mailData.Tables(0).Rows.Count = 0 Then Return "invalid mailings"
+            Dim CustomerName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Customers WHERE Id = '{0}'", CustomerId))
+
+            Dim mailServer As String = mailData.Tables(0).Rows(0)("Server").ToString()
+            Dim mailHost As String = mailData.Tables(0).Rows(0)("Host").ToString()
+            Dim mailPort As Integer = CInt(mailData.Tables(0).Rows(0)("Port"))
+            Dim mailAccount As String = mailData.Tables(0).Rows(0)("Account").ToString()
+            Dim mailPassword As String = mailData.Tables(0).Rows(0)("Password").ToString()
+            Dim mailAlias As String = mailData.Tables(0).Rows(0)("Alias").ToString()
+            Dim mailTo As String = mailData.Tables(0).Rows(0)("To").ToString()
+            Dim mailCc As String = mailData.Tables(0).Rows(0)("Cc").ToString()
+            Dim mailBcc As String = mailData.Tables(0).Rows(0)("Bcc").ToString()
+            Dim mailNetworkCredentials As Boolean = CBool(mailData.Tables(0).Rows(0)("NetworkCredentials"))
+            Dim mailDefaultCredentials As Boolean = CBool(mailData.Tables(0).Rows(0)("DefaultCredentials"))
+            Dim mailEnableSSL As Boolean = CBool(mailData.Tables(0).Rows(0)("EnableSSL"))
+
+            Dim mailBody As String = "<span style='font-family: Lucida Sans Unicode, sans-serif; font-size: 14px;'>Hi <b>" & CustomerName & ",</b></span>"
+            mailBody &= "<br /><br />Thank you for your order, please see attached Deposit Request Information.<br />"
+            mailBody &= "A minimum deposit of 40% is required prior to your job starting production.<br /><br />"
+            mailBody &= "<span style='font-weight: bold;'>Kind Regards,<br /><br />Customer Service<br />Sunlight Products</span>"
+
+             Using myMail As New MailMessage()
+
+                Dim fileName As String = (String.Format("Deposit-Request-{0}.pdf", OrderId)).Replace(" ", "")
+                myMail.Subject = "Deposit Request - " & OrderId
+                myMail.From = New MailAddress(mailServer, mailAlias)
+                myMail.Body = mailBody
+                myMail.IsBodyHtml = True
+
+                If mailDevelopment.Tables.Count > 0 Then
+                    Dim mDev As String = mailDevelopment.Tables(0).Rows(0).Item("To").ToString()
+                    Dim activeDev As String = mailDevelopment.Tables(0).Rows(0).Item("Active").ToString()
+
+                    If activeDev = "True" Or activeDev = "1" Then
+                        myMail.To.Add(mdev)
+                    Else
+                        myMail.To.Add(customermail)
+                        If Not String.IsNullOrEmpty(mailTo) Then myMail.To.Add(mailTo)
+                        If Not String.IsNullOrEmpty(mailCc) Then myMail.CC.Add(mailCc)
+                        If Not String.IsNullOrEmpty(mailBcc) Then
+                            Dim BccList() As String = mailBcc.Split(";")
+                            Dim ThisMail As String = ""
+                            For Each ThisMail In BccList
+                                myMail.Bcc.Add(ThisMail)
+                            Next
+                        End If
+                    End If
+                Else
+                    myMail.To.Add(customermail)
+                    If Not String.IsNullOrEmpty(mailTo) Then myMail.To.Add(mailTo)
+                    If Not String.IsNullOrEmpty(mailCc) Then myMail.CC.Add(mailCc)
+                    If Not String.IsNullOrEmpty(mailBcc) Then
+                        Dim BccList() As String = mailBcc.Split(";")
+                        Dim ThisMail As String = ""
+                        For Each ThisMail In BccList
+                            myMail.Bcc.Add(ThisMail)
+                        Next
+                    End If
+                End If
+
+                Dim fullPath = Path.Combine(directory, fileName)
+                Using fs As New FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read)
+                Dim attach As New Attachment(fs, fileName)
+                myMail.Attachments.Add(attach)
+                    Using smtpClient As New SmtpClient(mailHost, mailPort)
+                        smtpClient.EnableSsl = mailEnableSSL
+                        smtpClient.UseDefaultCredentials = mailDefaultCredentials
+                        smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network
+
+                        If mailNetworkCredentials Then
+                            smtpClient.Credentials = New NetworkCredential(mailAccount, mailPassword)
+                        ElseIf mailDefaultCredentials Then
+                            smtpClient.UseDefaultCredentials = True
+                        Else
+                            smtpClient.Credentials = CredentialCache.DefaultNetworkCredentials
+                        End If
+
+                        smtpClient.Send(myMail)
+                    End Using
+                End Using
+            End Using
+
+
+            Return "200"
+        Catch ex As Exception
+            Dim errorMessage As String = "Failure sending mail. " & ex.Message
+            If ex.InnerException IsNot Nothing Then
+                errorMessage &= " Inner Exception: " & ex.InnerException.Message
+            End If
+            Return errorMessage
+        End Try
+    End Function
+
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function SubmitAddStatus(data As ParamSubmitAddStatus) As Object
+        Try
+            Try
+                data.headerid = urlEnc.Decrypt(data.headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
+            Dim value As Boolean = False
+            If String.IsNullOrEmpty(data.addstatus) Then
+                value = True
+            End If
+
+            Dim Res As Object = UpdateOrderSending(data.headerid, "Deposit", value)
+            If Res.error Then Throw New Exception(Res.message)
+
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET StatusAdditional=@StatusAdditional WHERE Id=@Id")
+                    myCmd.Parameters.AddWithValue("@Id", data.headerid)
+                    myCmd.Parameters.AddWithValue("@StatusAdditional", If(String.IsNullOrEmpty(data.addstatus), DBNull.Value, data.addstatus))
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return New With {.success = true, .message = "Status has been saved successfully."}
+        Catch ex As Exception
+            Return New With {.error = True, .message = String.Format("SubmitAddStatus: {0}", ex.Message)}
+        End Try
+    End Function
+    
+    <WebMethod()>
+    <ScriptMethod(ResponseFormat:=ResponseFormat.Json)>
+    Public Shared Function SubmitInternalNote(data As ParamSubmitInternalNote) As Object
+        Try
+            Try
+                data.headerid = urlEnc.Decrypt(data.headerid)
+            Catch ex As Exception
+                Throw New Exception("failed to decrypt headerid") 
+            End Try
+
+
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET InternalNote=@InternalNote WHERE Id=@Id")
+                    myCmd.Parameters.AddWithValue("@Id", data.headerid)
+                    myCmd.Parameters.AddWithValue("@InternalNote", If(String.IsNullOrEmpty(data.internalnote), DBNull.Value, data.internalnote))
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return New With {.success = true, .message = "Internal Note has been saved successfully."}
+        Catch ex As Exception
+            Return New With {.error = True, .message = String.Format("SubmitInternalNote : {0}", ex.Message)}
         End Try
     End Function
 

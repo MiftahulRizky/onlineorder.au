@@ -1807,7 +1807,7 @@ Public Class PrintConfig
     Public Sub CreatePDFQuote(Id As String, User As String, Dir As String, Name As String, Key As String)
         Dim build As String = String.Empty
 
-        Dim thisData As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Id = '" + Id + "'")
+        Dim thisData As DataSet = GetListData(String.Format("SELECT * FROM OrderHeaders WHERE Id = '{0}'", Id))
 
         Dim storeId As String = thisData.Tables(0).Rows(0).Item("StoreId").ToString
 
@@ -2225,6 +2225,433 @@ Public Class PrintConfig
 
     Protected Function BuildKitName(kitName As String, UniqueId As String, BlindNo As String) As String
         Dim result As String = kitName
+
+        Return result
+    End Function
+
+    Public Sub CreatePDFDeposit(Id As String, User As String, Dir As String, Name As String, Key As String)
+        Dim build As String = String.Empty
+
+        Dim thisData As DataSet = GetListData(String.Format("SELECT * FROM OrderHeaders WHERE Id = '{0}'", Id))
+
+        Dim storeId As String = thisData.Tables(0).Rows(0).Item("StoreId").ToString
+
+        build += BuildLogoDeposit(storeId, Key)
+        build += "<br /><br /><br />"
+        build += BuildHeaderDeposit(Id, User, Key)
+        build += BuildDescDeposit(Id, Key)
+        build += BuildTotalDeposit(Id)
+
+        ' build += "<hr />"
+
+        ' build += BuildFooterQuote(storeId, Key)
+        Dim Terms As String = GetItemData("SELECT Terms FROM CustomerQuotes WHERE Id = '" + storeId + "'")
+
+        If Key = "Origin" Then 
+            Terms = "• Quote valid for 30 days from date of issue." & vbCrLf & 
+            "• Quote is subject to Check Measure or finalised order." & vbCrLf & 
+            "• Clear access to windows is necessary prior to check measure (if applicable)." & vbCrLf & 
+            "• Additional charges may incur for removal of blinds and/or shutters before the installation of produdcts (if applicable)."
+        End If 
+
+        Dim html As String = build
+
+        Using stream As FileStream = New FileStream(Dir + "/" + Name, FileMode.Create)
+            Dim pdfDoc As Document = New Document(PageSize.A4)
+            Dim writer As PdfWriter = PdfWriter.GetInstance(pdfDoc, stream)
+            pdfDoc.Open()
+            Dim sr As StringReader = New StringReader(html)
+            XMLWorkerHelper.GetInstance().ParseXHtml(writer, pdfDoc, sr)
+
+            Dim cb As PdfContentByte = writer.DirectContent
+            Dim fontNormal As Font = FontFactory.GetFont(FontFactory.HELVETICA, 9)
+            Dim fontBold As Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9)
+
+            Dim leftX As Single = pdfDoc.LeftMargin
+            Dim bottomY As Single = pdfDoc.BottomMargin
+
+            Dim ct As New ColumnText(cb)
+            ct.SetSimpleColumn(leftX, 42, 600, 150)
+
+            ct.AddElement(New Paragraph("Terms & Conditions :", fontBold))
+            ct.AddElement(New Paragraph(Terms, fontNormal))
+
+            ct.Go()
+
+            pdfDoc.Close()
+            stream.Close()
+        End Using
+    End Sub
+
+    Public Function BuildLogoDeposit(CustomerId As String, Key As String) As String
+        Dim result As String = String.Empty
+        If Key = "Origin" Then
+            '#Sunlight Products Pty Ltd
+            CustomerId = "LS-A328"
+        End If
+
+        Dim Path As String = System.Web.HttpContext.Current.Server.MapPath("~/Content/static/customers/")
+        Dim fileName As String = GetItemData("SELECT Logo FROM CustomerQuotes WHERE Id = '" + CustomerId + "'")
+        
+        Dim src As String = Path & fileName
+        If String.IsNullOrEmpty(fileName) Then
+            src = System.Web.HttpContext.Current.Server.MapPath("~/Content/static/new-icon.png")
+        End If
+        If Key = "Origin" Then
+            src = System.Web.HttpContext.Current.Server.MapPath("~/Content/static/new-icon.png")
+        End If
+
+        Dim customerAddressData As DataSet = GetListData("SELECT * FROM CustomerAddress WHERE CustomerId='" + CustomerId + "' AND [Primary]=1")
+        Dim fullAddress As String = String.Empty
+        If customerAddressData.Tables(0).Rows.Count > 0 Then
+            Dim unitNumber As String = customerAddressData.Tables(0).Rows(0)("UnitNumber").ToString()
+            Dim street As String = customerAddressData.Tables(0).Rows(0)("Street").ToString()
+            Dim address As String = unitNumber & " " & street
+            If unitNumber = "" Then
+                address = street
+            End If
+
+            Dim suburb As String = customerAddressData.Tables(0).Rows(0)("Suburb").ToString()
+            Dim states As String = customerAddressData.Tables(0).Rows(0)("States").ToString()
+            Dim postCode As String = customerAddressData.Tables(0).Rows(0)("PostCode").ToString()
+
+            fullAddress = address & ", " & suburb & ", " & states & " " & postCode
+        End If 
+
+        Dim customerContactData As DataSet = GetListData("SELECT * FROM CustomerContacts WHERE CustomerId='" + CustomerId + "' AND [Primary]=1")
+       
+        Dim fullContact As String = ""
+        If customerContactData.Tables(0).Rows.Count > 0 Then
+            Dim email As String = customerContactData.Tables(0).Rows(0)("Email").ToString()
+            Dim phone As String = customerContactData.Tables(0).Rows(0)("Phone").ToString()
+            If email = "" Then : email = "-" : End If
+            If phone = "" Then : phone = "-" : End If
+
+            fullContact = "Email: " & email & " , " & "Phone: " & phone
+        End If
+
+        If Key = "Origin" Then
+            If customerContactData.Tables(0).Rows.Count > 0 Then
+                Dim phone As String = customerContactData.Tables(0).Rows(0)("Phone").ToString()
+                If phone = "" Then : phone = "-" : End If
+
+                fullContact = "Phone: " & phone
+            End If
+        End If
+
+        result += "<table style='width:100%;margin-bottom:25px;'>"
+        result += trStart
+        result += "<td valign='top' style='width:50%;'>"
+        result += String.Format("<img width='100px' src='{0}' />", src)
+        result += String.Format("<br /> <span style='font-size:small;'>{0}</span>", fullAddress)
+        result += String.Format("<br /> <span style='font-size:small;'>{0}</span>", fullContact)
+        result += tdEnd
+        result += "<td valign='bottom' style='width:50%;text-align:right;font-weight:bold;margin-right:20px;'>DEPOSIT REQUEST</td>"
+        result += trEnd
+        result += tableEnd
+        Return result
+    End Function
+
+    Public Function BuildHeaderDeposit(HeaderId As String, UserName As String, Key As String) As String
+        Dim result As String = String.Empty
+
+        Dim thisData As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Id = '" + HeaderId + "'")
+
+        Dim StoreId As String = thisData.Tables(0).Rows(0).Item("StoreId").ToString
+        Dim orderNo As String = thisData.Tables(0).Rows(0).Item("OrderNo").ToString
+        Dim orderCust As String = thisData.Tables(0).Rows(0).Item("OrderCust").ToString
+        Dim address As String = thisData.Tables(0).Rows(0).Item("Address").ToString
+        Dim suburb As String = thisData.Tables(0).Rows(0).Item("Suburb").ToString
+        Dim states As String = thisData.Tables(0).Rows(0).Item("States").ToString
+        Dim postCode As String = thisData.Tables(0).Rows(0).Item("PostCode").ToString
+        Dim phone As String = thisData.Tables(0).Rows(0).Item("Phone").ToString
+        Dim email As String = thisData.Tables(0).Rows(0).Item("Email").ToString
+        Dim CreatedDate As DateTime = Convert.ToDateTime(thisData.Tables(0).Rows(0).Item("CreatedDate"))
+        Dim orderId As String = "SP-" & HeaderId
+        Dim CustomerName As String = GetItemData("SELECT Name FROM Customers WHERE Id = '" + StoreId + "'")
+
+        Dim fullAddress As String = address & " " & suburb
+        fullAddress += "<br />" & states & " " & postCode
+
+        tableStart = "<table style='width:100%;'>"
+        Dim tdStartTitle1 As String = "<td valign='top' style='height:auto;width:25%;font-size:12px;padding-top:5px;padding-bottom:5px;'>"
+        Dim tdStartTitle2 As String = "<td valign='top' style='height:auto;width:auto;font-size:12px;padding-top:5px;padding-bottom:5px;'>"
+        Dim tdStartContent As String = "<td valign='top' style='height:auto;text-align:left;width:auto;font-size:12px;padding-top:5px;padding-bottom:5px;'>"
+
+        Dim Line1 As String = "To"
+        Dim Line2 As String = "Address"
+        Dim Line3 As String = "Email, Phone"
+        Dim Line4 As String = "Order Number"
+        Dim Line5 As String = "Date"
+        Dim Line1V As String = orderCust
+        Dim Line2V As String = fullAddress
+        Dim Line3V As String = email & ", " & phone
+        Dim Line4V As String = orderNo
+        Dim Line5V As String = CreatedDate.ToString("MMM dd, yyyy")
+
+        If Key = "Origin" Then
+            Line1 = "To"
+            Line2 = "Order Number"
+            Line3 = "Customer Name"
+            Line4 = "Order #"
+            Line5 = "Date"
+            Line1V = CustomerName
+            Line2V = orderNo
+            Line3V = orderCust
+            Line4V = orderId
+            Line5V = CreatedDate.ToString("MMM dd, yyyy")
+        End If
+
+        result += tableStart
+        result += trStart
+
+        ' START COLUMN 1
+        result += "<td valign='top' style='width:65%;'>"
+
+        result += tableStart
+
+        result += trStart
+        result += tdStartTitle1 & Line1 & tdEnd
+        result += tdStartContent & ": <b>" & Line1V & "</b>" & tdEnd
+        result += trEnd
+
+        result += trStart
+        result += tdStartTitle1 & Line2 & tdEnd
+        result += tdStartContent & ": " & Line2V & tdEnd
+        result += trEnd
+
+        result += trStart
+        result += tdStartTitle1 & Line3 & tdEnd
+        result += tdStartContent & ": " & Line3V & tdEnd
+        result += trEnd
+
+        ' result += trStart
+        ' result += tdStartTitle1 & "Email" & tdEnd
+        ' result += tdStartContent & ": " & email & tdEnd
+        ' result += trEnd
+
+        result += tableEnd
+
+        result += tdEnd
+        ' END COLUMN 1
+
+        ' START COLUMN 2
+        result += "<td valign='top' style='width:35%;'>"
+
+        result += tableStart
+
+        result += trStart
+        result += tdStartTitle2 & "ㅤ" & tdEnd
+        result += tdStartContent & "ㅤ" & tdEnd
+        result += trEnd
+
+        result += trStart
+        result += tdStartTitle2 & Line4 & tdEnd
+        result += tdStartContent & ": <b>" & Line4V & "</b>" & tdEnd
+        result += trEnd
+
+        result += trStart
+        result += tdStartTitle2 & Line5 & tdEnd
+        result += tdStartContent & ": <b>" & Line5V & "</b>" & tdEnd
+        result += trEnd
+
+        ' result += trStart
+        ' result += tdStartTitle2 & "Operator:" & tdEnd
+        ' result += tdStartContent & ": <b>" & UserName & "</b>" & tdEnd
+        ' result += trEnd
+
+        result += tableEnd
+
+        result += tdEnd
+        ' END COLUMN 2
+
+        result += trEnd
+        result += tableEnd
+        Return result
+    End Function
+
+    Public Function BuildDescDeposit(HeaderId As String, Key As String) As String
+        Dim result As String = String.Empty
+
+        Dim detailData As DataSet = GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND Active=1 ORDER BY Id ASC")
+
+        thStart = "<th style='color:white;background-color:#007ACC;width:{0};text-align:center;border:1px solid;height:26px;font-size:12px;'>"
+        tdStart = "<td style='height:auto;word-wrap:break-word;border:1px solid;font-size:12px;border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:10px;'>"
+
+        result += "<table style='margin-top:20px;width:100%;border-collapse: collapse;'>"
+
+        result += trStart
+        result += String.Format(thStart, "5%") & "Item" & thEnd
+        result += String.Format(thStart, "19%") & "Room" & thEnd
+        result += String.Format(thStart, "60%") & "Description" & thEnd
+        result += String.Format(thStart, "16%") & "Unit Price" & thEnd
+        result += trEnd
+
+        For i As Integer = 0 To detailData.Tables(0).Rows.Count - 1
+            Dim item As String = i + 1
+
+            Dim designName As String = detailData.Tables(0).Rows(i).Item("DesignName").ToString()
+            Dim blindName As String = detailData.Tables(0).Rows(i).Item("BlindName").ToString()
+
+            Dim kitName As String = detailData.Tables(0).Rows(i).Item("KitName").ToString()
+            Dim room As String = detailData.Tables(0).Rows(i).Item("Location").ToString()
+            Dim fabricType As String = detailData.Tables(0).Rows(i).Item("FabricType").ToString()
+
+            Dim cost As Decimal = detailData.Tables(0).Rows(i).Item("TotalMatrix") + detailData.Tables(0).Rows(i).Item("TotalCharge")
+            Dim markUp As Decimal = detailData.Tables(0).Rows(i).Item("MarkUp")
+            Dim unitPrice As Decimal = Math.Round(cost + (cost * markUp / 100), 2)
+            
+            If Key = "Origin" Then
+                unitPrice = Math.Round(cost, 2)
+            End If
+
+            Dim description As String = kitName
+
+            If designName = "Roller Blind" Then
+                description = kitName & " #" & fabricType
+            End If
+
+            If designName = "Veri Shades" Or designName = "Vertical Blind" Then
+                description = kitName & " #" & fabricType
+                If blindName = "Track Only" Then
+                    description = kitName
+                End If
+            End If
+
+            result += trStart
+            result += tdStart & item & tdEnd
+            result += tdStart & room & tdEnd
+            result += tdStart & description & tdEnd
+
+            result += tdStart
+            result += "$" & unitPrice.ToString("N2", enUS)
+            result += tdEnd
+
+            result += trEnd
+        Next
+        result += tableEnd
+        Return result
+    End Function
+
+    Public Function BuildTotalDeposit(HeaderId As String) As String
+        Dim result As String = String.Empty
+
+        Dim sumPrice As Decimal = GetItemData_Decimal("SELECT SUM(TotalMatrix + TotalCharge + ((TotalMatrix + TotalCharge) * MarkUp / 100)) AS Cost FROM OrderDetails WHERE HeaderId = '" + HeaderId + "' AND Active=1")
+
+        Dim dataQuote As DataSet = GetListData("SELECT * FROM OrderHeaders WHERE Id = '" + HeaderId + "'")
+        Dim discount As Decimal = dataQuote.Tables(0).Rows(0).Item("QuoteDisc")
+        Dim install As Decimal = If(dataQuote.Tables(0).Rows(0).Item("QuoteInstall").ToString() = "", 0, dataQuote.Tables(0).Rows(0).Item("QuoteInstall"))
+        Dim measure As Decimal = dataQuote.Tables(0).Rows(0).Item("QuoteMeasure")
+        Dim dataGst As String = dataQuote.Tables(0).Rows(0).Item("QuoteGST").ToString()
+
+        Dim minCharge As Decimal = 0.00
+        Dim gst As Decimal = sumPrice * 10 / 100'0.00
+        Dim total As Decimal = 0.00
+        Dim finalTotal As Decimal = 0.00
+        
+        total = sumPrice + gst + minCharge
+        
+        finalTotal = Math.Round(total - discount + measure + install, 2)
+        Dim Deposit As Decimal = finalTotal * 0.4
+
+        tdStart = "<td style='text-align:right;height:30px;width:80%;font-size:12px;'>"
+
+        Dim tdStartTitle As String = "<td style='text-align:right;height:30px;width:80%;font-size:12px;'>"
+        Dim tdStartContent As String = "<td style='text-align:center;height:30px;width:20%;font-size: 12px;'>"
+
+        result += "<table style='margin-top:40px;width:100%;'>"
+
+        result += trStart
+        result += tdStartTitle & "Sub Total : " & tdEnd
+        result += tdStartContent
+        result += "<b>$" & sumPrice.ToString("N2", enUS) & "</b>"
+        result += tdEnd
+        result += trEnd
+        If dataGst = "No" Or dataGst = "" Then
+            result += trStart
+            result += tdStartTitle & "<b>TOTAL EXCLUDE GST : </b>" & tdEnd
+            result += tdStartContent
+            result += "<b>$" & total.ToString("N2", enUS) & "</b>"
+            result += tdEnd
+            result += trEnd
+        End If
+
+        If dataGst = "Yes" Then
+            result += trStart
+            result += tdStartTitle & "GST (10%) : " & tdEnd
+            result += tdStartContent
+            result += "<b>$" & gst.ToString("N2", enUS) & "</b>"
+            result += tdEnd
+            result += trEnd
+
+            result += trStart
+            result += tdStartTitle & "<b>TOTAL INCLUDE GST : </b>" & tdEnd
+            result += tdStartContent
+            result += "<b>$" & total.ToString("N2", enUS) & "</b>"
+            result += tdEnd
+            result += trEnd
+        End If
+
+        If discount > 0 Then
+            result += trStart
+            result += tdStartTitle & "Discount : " & tdEnd
+            result += tdStartContent
+            result += "<b>$" & discount.ToString("N2", enUS) & "</b>"
+            result += tdEnd
+            result += trEnd
+        End If
+
+        If install > 0 Then
+            result += trStart
+            result += tdStartTitle & "Installation : " & tdEnd
+            result += tdStartContent
+            result += "<b>$" & install.ToString("N2", enUS) & "</b>"
+            result += tdEnd
+            result += trEnd
+        End If
+
+        If measure > 0 Then
+            result += trStart
+            result += tdStartTitle & "Check Measure : " & tdEnd
+            result += tdStartContent
+            result += "<b>$" & measure.ToString("N2", enUS) & "</b>"
+            result += tdEnd
+            result += trEnd
+        End If
+
+        result += trStart
+        result += tdStartTitle & "<b>GRAND TOTAL : </b>" & tdEnd
+        result += tdStartContent
+        result += "<b>$" & finalTotal.ToString("N2", enUS) & "</b>"
+        result += tdEnd
+        result += trEnd
+
+        result += trStart
+        result += tdStartTitle & "<b>Deposit (40%) : </b>" & tdEnd
+        result += tdStartContent
+        result += "<b>$" & Deposit.ToString("N2", enUS) & "</b>"
+        result += tdEnd
+        result += trEnd
+
+        result += tableEnd
+        Return result
+    End Function
+
+    Public Function BuildFooterDeposit(CustomerId As String, Key As String) As String
+        Dim result As String = String.Empty
+
+        Dim Terms As String = GetItemData("SELECT Terms FROM CustomerQuotes WHERE Id = '" + CustomerId + "'")
+
+        If Key = "Origin" Then 
+            Terms = "• Quote valid for 30 days from date of issue."
+            Terms += "<br/>• Quote is subject to Check Measure or finalised order."
+            Terms += "<br/>• Clear access to windows is necessary prior to check measure (if applicable)."
+            Terms += "<br/>• Additional charges may incur for removal of blinds and/or shutters before the installation of produdcts (if applicable)."
+        End If  
+
+        result += "<p style='margin:0;'><b>Terms & Conditions :</b></p>"
+        result += "<p style='margin:0;'>" & Terms & "</p>"
+
 
         Return result
     End Function
