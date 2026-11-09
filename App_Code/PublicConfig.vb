@@ -887,18 +887,18 @@ Public Class PublicConfig
                 Discount = Convert.ToDecimal(dr("Discount"))
             End If
             
-            ' Timpa nilai Discount jika ada QuoteDisc dari header
-            Dim QuoteDisc As String = GetItemData(String.Format("SELECT QuoteDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
-            If Not String.IsNullOrEmpty(QuoteDisc) AndAlso QuoteDisc <> "0" AndAlso QuoteDisc <> "0.00" AndAlso QuoteDisc <> "0,00" Then
-                QuoteDisc = QuoteDisc.Replace(",", ".")
-                Discount = Decimal.Parse(QuoteDisc, System.Globalization.CultureInfo.InvariantCulture)
+            ' Timpa nilai Discount jika ada CustomerDisc dari header
+            Dim CustomerDisc As String = GetItemData(String.Format("SELECT CustomerDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
+            If Not String.IsNullOrEmpty(CustomerDisc) AndAlso CustomerDisc <> "0" AndAlso CustomerDisc <> "0.00" AndAlso CustomerDisc <> "0,00" Then
+                CustomerDisc = CustomerDisc.Replace(",", ".")
+                Discount = Decimal.Parse(CustomerDisc, System.Globalization.CultureInfo.InvariantCulture)
             End If
 
         Else
-            Dim QuoteDisc As String = GetItemData(String.Format("SELECT QuoteDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
-            If Not String.IsNullOrEmpty(QuoteDisc) AndAlso QuoteDisc <> "0" AndAlso QuoteDisc <> "0.00" AndAlso QuoteDisc <> "0,00" Then
-                QuoteDisc = QuoteDisc.Replace(",", ".")
-                Discount = Decimal.Parse(QuoteDisc, System.Globalization.CultureInfo.InvariantCulture)
+            Dim CustomerDisc As String = GetItemData(String.Format("SELECT CustomerDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
+            If Not String.IsNullOrEmpty(CustomerDisc) AndAlso CustomerDisc <> "0" AndAlso CustomerDisc <> "0.00" AndAlso CustomerDisc <> "0,00" Then
+                CustomerDisc = CustomerDisc.Replace(",", ".")
+                Discount = Decimal.Parse(CustomerDisc, System.Globalization.CultureInfo.InvariantCulture)
             End If
         End If
 

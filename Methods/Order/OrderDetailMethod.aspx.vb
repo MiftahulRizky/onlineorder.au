@@ -237,7 +237,7 @@ Partial Class Methods_Order_OrderDetailMethod
                     h.StatusAdditional,
                     h.InternalNote,
                     h.Delivery,
-                    h.QuoteDisc,
+                    h.CustomerDisc,
                     h.SubmittedDate,
                     h.JobDate,
                     h.CompletedDate,
@@ -263,7 +263,7 @@ Partial Class Methods_Order_OrderDetailMethod
                     h.OrderNote, h.Status,
                     h.StatusDescription,
                     h.StatusAdditional,
-                    h.InternalNote, h.Delivery, h.QuoteDisc,
+                    h.InternalNote, h.Delivery, h.CustomerDisc,
                     h.SubmittedDate, h.JobDate, h.CompletedDate, h.CanceledDate
             </sql>.Value
 
@@ -306,7 +306,7 @@ Partial Class Methods_Order_OrderDetailMethod
                                 .InternalNote = reader("InternalNote").ToString(),
                                 .Delivery = reader("Delivery").ToString(),
                                 .SubmittedDate = reader("SubmittedDate").ToString(),
-                                .QuoteDisc = reader("QuoteDisc").ToString(),
+                                .CustomerDisc = reader("CustomerDisc").ToString(),
                                 .JobDate = reader("JobDate").ToString(),
                                 .CompletedDate = reader("CompletedDate").ToString(),
                                 .CanceledDate = reader("CanceledDate").ToString(),
@@ -2156,18 +2156,18 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim msg As String = "200"
             Dim HeaderData As Integer = publicCfg.GetItemData(String.Format("SELECT COUNT(Id) FROM view_order_headers WHERE OrderType='{0}' AND Id='{1}'", data.ordertype, data.headerid))
             If HeaderData < 1 Then
-               Return New With {.warning = true, .message = "please add item first !", .field = "#modalQuoteDisc #discount"}
+               Return New With {.warning = true, .message = "please add item first !", .field = "#modalCustomerDisc #discount"}
             End If
 
             If String.IsNullOrEmpty(data.discount) Then
-                Return New With {.warning = true, .message = "discount is required !", .field = "#modalQuoteDisc #discount"}
+                Return New With {.warning = true, .message = "discount is required !", .field = "#modalCustomerDisc #discount"}
             End If
 
             
             Using thisConn As New SqlConnection(myConn)
-                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET QuoteDisc=@QuoteDisc WHERE Id=@Id", thisConn)
+                Using myCmd As New SqlCommand("UPDATE OrderHeaders SET CustomerDisc=@CustomerDisc WHERE Id=@Id", thisConn)
                     myCmd.Parameters.AddWithValue("@Id", data.headerid)
-                    myCmd.Parameters.AddWithValue("@QuoteDisc", data.discount)
+                    myCmd.Parameters.AddWithValue("@CustomerDisc", data.discount)
                     myCmd.Connection = thisConn
                     thisConn.Open()
                     myCmd.ExecuteNonQuery()
@@ -2198,7 +2198,7 @@ Partial Class Methods_Order_OrderDetailMethod
             End Try
 
             If String.IsNullOrEmpty(data.productiondate) Then
-                Return New With {.warning = true, .message = "date is required !", .field = "#modalQuoteDisc #productiondate"}
+                Return New With {.warning = true, .message = "date is required !", .field = "#modalProductionDate #productiondate"}
             End If
 
             

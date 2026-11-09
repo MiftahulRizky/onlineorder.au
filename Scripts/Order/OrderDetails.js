@@ -102,7 +102,7 @@ const liEl = {
 };
 const elModal = {
   modalChangeStatus: getById("modalChangeStatus"),
-  modalQuoteDisc: getById("modalQuoteDisc"),
+  modalCustomerDisc: getById("modalCustomerDisc"),
   modalProductionDate: getById("modalProductionDate"),
   modalEnableSending: getById("modalEnableSending"),
   modalAddItem: getById("modalAddItem"),
@@ -243,7 +243,7 @@ Object.values(btnEl).forEach((el) => {
       }
 
       if (id === "btnQuoteDisc") {
-        showBSModal("modalQuoteDisc");
+        showBSModal("modalCustomerDisc");
       }
 
       if (id === "btnPrintQuote") {
@@ -488,7 +488,7 @@ const modalEvents = {
     },
   },
 
-  modalQuoteDisc: {
+  modalCustomerDisc: {
     init: (modal) => {},
 
     events: (modal) => {
@@ -741,7 +741,7 @@ const bindOrderAggregate = async (headerid, ordertype) => {
     displayElOverall(data.header, data.detail);
     handlerCheckOrder(data.other.ResCheckOrder);
     handlerChangeStatus(data.header);
-    setValmodalQuoteDisc(data.header);
+    setValmodalCustomerDisc(data.header);
     setValmodalSendMailQuote(data.other.SendMailQuote);
     setValmodalSendMailDeposit(data.other.SendMailDeposit);
     handlerAdditionalStatus(data.header);
@@ -2181,9 +2181,9 @@ const setValmodalChangeStatus = (itemData) => {
   });
 };
 
-const setValmodalQuoteDisc = (header) => {
-  const disc = header.QuoteDisc.replace(",", ".");
-  elModal.modalQuoteDisc.querySelector("#discount").value = disc || 0;
+const setValmodalCustomerDisc = (header) => {
+  const disc = header.CustomerDisc.replace(",", ".");
+  elModal.modalCustomerDisc.querySelector("#discount").value = disc || 0;
 };
 
 const setValmodalSendMailQuote = (other) => {
@@ -2323,7 +2323,7 @@ const submitOverrideDisc = async (button) => {
 
     fields.forEach((field) => {
       formData[field] = document.querySelector(
-        `#modalQuoteDisc #${field}`,
+        `#modalCustomerDisc #${field}`,
       ).value;
     });
 
@@ -2379,7 +2379,7 @@ const submitOverrideDisc = async (button) => {
         } else {
           location.reload();
         }
-        hideBSModal("modalQuoteDisc");
+        hideBSModal("modalCustomerDisc");
       });
     }
   } catch (error) {

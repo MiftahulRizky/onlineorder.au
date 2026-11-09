@@ -452,11 +452,11 @@
     </div>
 
     <!-- Modal Override Discount-->
-    <div class="modal fade" id="modalQuoteDisc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalQuoteDiscLabel" aria-hidden="true">
+    <div class="modal fade" id="modalCustomerDisc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalCustomerDiscLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title" id="modalQuoteDiscLabel">Override Customer Discount (%)</h1>
+                    <h1 class="modal-title" id="modalCustomerDiscLabel">Override Customer Discount (%)</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -811,7 +811,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.29"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.30"></script>
 
 
 </asp:Content>
