@@ -69,15 +69,16 @@ Public Class ReportConfig
             Dim startDate As String = DateTime.Parse(Tanggal).ToString("yyyy-MM-01")
             Dim endDate As String = DateTime.Parse(Tanggal).ToString("yyyy-MM-dd")
 
-            Dim StatusAdditional As String = "AND OrderHeaders.StatusAdditional = 'Waiting for Deposit'"
+            Dim byStatus As String = "On Hold"
             If Status = "Production" Then
-                StatusAdditional = "AND OrderHeaders.StatusAdditional IS NULL"
+                byStatus = "In Production"
             End IF
-            Dim thisQuery As String = String.Format("SELECT OrderHeaders.StoreId AS CustomerId, Customers.Name AS CustomerName FROM OrderHeaders INNER JOIN Customers ON OrderHeaders.StoreId = Customers.Id LEFT JOIN OrderDetails ON OrderHeaders.Id = OrderDetails.HeaderId LEFT JOIN HardwareKits ON OrderDetails.KitId = HardwareKits.Id WHERE OrderHeaders.Active = 1 AND CONVERT ( DATE, OrderHeaders.SubmittedDate ) >= '{0}' AND CONVERT ( DATE, OrderHeaders.SubmittedDate ) <= '{1}' {2} GROUP BY OrderHeaders.StoreId, Customers.Name ORDER BY Customers.Name ASC", startDate, endDate, StatusAdditional)
+
+            Dim thisQuery As String = String.Format("SELECT OrderHeaders.StoreId AS CustomerId, Customers.Name AS CustomerName FROM OrderHeaders INNER JOIN Customers ON OrderHeaders.StoreId = Customers.Id LEFT JOIN OrderDetails ON OrderHeaders.Id = OrderDetails.HeaderId LEFT JOIN HardwareKits ON OrderDetails.KitId = HardwareKits.Id WHERE OrderHeaders.Active = 1 AND CONVERT ( DATE, OrderHeaders.JobDate ) >= '{0}' AND CONVERT ( DATE, OrderHeaders.JobDate ) <= '{1}' AND OrderHeaders.Status = '{2}' GROUP BY OrderHeaders.StoreId, Customers.Name ORDER BY Customers.Name ASC", startDate, endDate, byStatus)
             ' Throw New Exception(thisQuery)
             Dim thisData As DataSet = GetListData(thisQuery)
 
-            Dim Products As DataSet = GetListData("SELECT Id, Name FROM Designs WHERE Type ='Blinds' AND Description LIKE '%Production%' AND Active = 1 ORDER BY Name ASC")
+            Dim Products As DataSet = GetListData("SELECT Id, Name FROM Designs WHERE Type IN ('Blinds', 'Door & Window', 'Furnishings') AND Description LIKE '%Production%' AND Active = 1 ORDER BY Name ASC")
 
             Dim doc As New Document(PageSize.A4.Rotate(), 36, 36, 80, 72)
             Dim pdfFilePath As String = Files
@@ -187,15 +188,16 @@ Public Class ReportConfig
             Dim startDate As String = DateTime.Parse(Tanggal).ToString("yyyy-MM-01")
             Dim endDate As String = DateTime.Parse(Tanggal).ToString("yyyy-MM-dd")
 
-            Dim StatusAdditional As String = "AND OrderHeaders.StatusAdditional = 'Waiting for Deposit'"
+            Dim byStatus As String = "On Hold"
             If Status = "Production" Then
-                StatusAdditional = "AND OrderHeaders.StatusAdditional IS NULL"
+                byStatus = "In Production"
             End IF
-            Dim thisQuery As String = String.Format("SELECT OrderHeaders.StoreId AS CustomerId, Customers.Name AS CustomerName FROM OrderHeaders INNER JOIN Customers ON OrderHeaders.StoreId = Customers.Id LEFT JOIN OrderDetails ON OrderHeaders.Id = OrderDetails.HeaderId LEFT JOIN HardwareKits ON OrderDetails.KitId = HardwareKits.Id WHERE OrderHeaders.Active = 1 AND CONVERT ( DATE, OrderHeaders.SubmittedDate ) >= '{0}' AND CONVERT ( DATE, OrderHeaders.SubmittedDate ) <= '{1}' {2} GROUP BY OrderHeaders.StoreId, Customers.Name ORDER BY Customers.Name ASC", startDate, endDate, StatusAdditional)
+            
+            Dim thisQuery As String = String.Format("SELECT OrderHeaders.StoreId AS CustomerId, Customers.Name AS CustomerName FROM OrderHeaders INNER JOIN Customers ON OrderHeaders.StoreId = Customers.Id LEFT JOIN OrderDetails ON OrderHeaders.Id = OrderDetails.HeaderId LEFT JOIN HardwareKits ON OrderDetails.KitId = HardwareKits.Id WHERE OrderHeaders.Active = 1 AND CONVERT ( DATE, OrderHeaders.JobDate ) >= '{0}' AND CONVERT ( DATE, OrderHeaders.JobDate ) <= '{1}' AND OrderHeaders.Status = '{2}' GROUP BY OrderHeaders.StoreId, Customers.Name ORDER BY Customers.Name ASC", startDate, endDate, byStatus)
 
             Dim thisData As DataSet = GetListData(thisQuery)
 
-            Dim Products As DataSet = GetListData("SELECT Id, Name FROM Designs WHERE Type ='Blinds' AND Description LIKE '%Production%' AND Active = 1 ORDER BY Name ASC")
+            Dim Products As DataSet = GetListData("SELECT Id, Name FROM Designs WHERE Type IN ('Blinds', 'Door & Window', 'Furnishings') AND Description LIKE '%Production%' AND Active = 1 ORDER BY Name ASC")
 
 
             If Products Is Nothing OrElse Products.Tables.Count = 0 OrElse Products.Tables(0).Rows.Count = 0 Then
@@ -364,11 +366,11 @@ Public Class ReportConfig
             Dim startDateStr As String = StartDate.ToString("yyyy-MM-dd")
             Dim endDateStr As String = EndDate.ToString("yyyy-MM-dd")
 
-            Dim StatusAdditional As String = "AND StatusAdditional = 'Waiting for Deposit'"
+             Dim byeStatus As String = "On Hold"
             If Status = "Production" Then
-                StatusAdditional = "AND StatusAdditional IS NULL"
+                byeStatus = "In Production"
             End IF
-            Dim thisQuery As String = String.Format("SELECT Id, HeaderId, Qty, Width, [Drop], SubmittedDate, JobDate, CustomerName, OrderNumber, OrderName, DesignName, KitName, FabricName, FabricType, FabricColour, Notes FROM view_details WHERE Active = 1 AND HeaderActive = 1 AND CONVERT ( DATE, SubmittedDate ) >= '{0}' AND CONVERT ( DATE, SubmittedDate ) <= '{1}' AND Status IN ( 'New Order', 'In Production', 'Completed' ) {2} ORDER BY HeaderId ASC", startDateStr, endDateStr, StatusAdditional)
+            Dim thisQuery As String = String.Format("SELECT Id, HeaderId, Qty, Width, [Drop], SubmittedDate, JobDate, CustomerName, OrderNumber, OrderName, DesignName, KitName, FabricName, FabricType, FabricColour, Notes FROM view_details WHERE Active = 1 AND HeaderActive = 1 AND CONVERT ( DATE, JobDate ) >= '{0}' AND CONVERT ( DATE, JobDate ) <= '{1}' AND Status='{2}' ORDER BY HeaderId, Id ASC", startDateStr, endDateStr, byeStatus)
 
             Dim thisData As DataSet = GetListData(thisQuery)
 
@@ -466,12 +468,12 @@ Public Class ReportConfig
             Dim startDateStr As String = StartDate.ToString("yyyy-MM-dd")
             Dim endDateStr As String = EndDate.ToString("yyyy-MM-dd")
 
-            Dim StatusAdditional As String = "AND StatusAdditional = 'Waiting for Deposit'"
-
+            Dim byStatus As String = "On Hold"
             If Status = "Production" Then
-                StatusAdditional = "AND StatusAdditional IS NULL"
-            End If
-            Dim thisQuery As String = String.Format("SELECT Id, HeaderId, Qty, Width, [Drop], SubmittedDate, JobDate, CustomerName, OrderNumber, OrderName, DesignName, KitName, FabricName, FabricType, FabricColour, Notes FROM view_details WHERE Active = 1 AND HeaderActive = 1 AND CONVERT ( DATE, SubmittedDate ) >= '{0}' AND CONVERT ( DATE, SubmittedDate ) <= '{1}' AND Status IN ( 'New Order', 'In Production', 'Completed' ) {2} ORDER BY HeaderId ASC", startDateStr, endDateStr, StatusAdditional)
+                byStatus = "In Production"
+            End IF
+
+            Dim thisQuery As String = String.Format("SELECT Id, HeaderId, Qty, Width, [Drop], SubmittedDate, JobDate, CustomerName, OrderNumber, OrderName, DesignName, KitName, FabricName, FabricType, FabricColour, Notes FROM view_details WHERE Active = 1 AND HeaderActive = 1 AND CONVERT ( DATE, JobDate ) >= '{0}' AND CONVERT ( DATE, JobDate ) <= '{1}' AND Status='{2}' ORDER BY HeaderId, Id ASC", startDateStr, endDateStr, byStatus)
             Dim thisData As DataSet =GetListData(thisQuery)
 
 
@@ -588,123 +590,6 @@ Public Class ReportConfig
 
         End Try
 
-    End Sub
-
-    Public Sub BlindsOrdersExcels(Files As String, Status As String, StartDate As DateTime, EndDate As DateTime)
-        Try
-            Dim startDateStr As String = StartDate.ToString("yyyy-MM-dd")
-            Dim endDateStr As String = EndDate.ToString("yyyy-MM-dd")
-
-            Dim StatusAdditional As String = "AND StatusAdditional = 'Waiting for Deposit'"
-            If Status = "Production" Then
-                StatusAdditional = "AND StatusAdditional IS NULL"
-            End IF
-            Dim thisQuery As String = String.Format("SELECT Id, HeaderId, Qty, Width, [Drop], SubmittedDate, JobDate, CustomerName, OrderNumber, OrderName, DesignName, KitName, FabricName, FabricType, FabricColour, Notes FROM view_details WHERE Active = 1 AND HeaderActive = 1 AND CONVERT ( DATE, SubmittedDate ) >= '{0}' AND CONVERT ( DATE, SubmittedDate ) <= '{1}' AND Status IN ( 'New Order', 'In Production', 'Completed' ) {2} ORDER BY HeaderId ASC", startDateStr, endDateStr, StatusAdditional)
-
-            Dim thisData As DataSet = GetListData(thisQuery)
-
-            ' If thisData Is Nothing OrElse thisData.Tables.Count = 0 OrElse thisData.Tables(0).Rows.Count = 0 Then
-            '     Return
-            ' End If
-
-            Using package As New OfficeOpenXml.ExcelPackage()
-                Dim worksheet As OfficeOpenXml.ExcelWorksheet = package.Workbook.Worksheets.Add("Blinds Orders")
-
-                worksheet.Cells(1, 1).Value = "ID"
-                worksheet.Cells(1, 2).Value = "Received"
-                worksheet.Cells(1, 3).Value = "Ship Date"
-                worksheet.Cells(1, 4).Value = "Store Name"
-                worksheet.Cells(1, 5).Value = "Store Order No"
-                worksheet.Cells(1, 6).Value = "Store Customer"
-                worksheet.Cells(1, 7).Value = "Description"
-                worksheet.Cells(1, 8).Value = "Fabric"
-                worksheet.Cells(1, 9).Value = "Reason for hold"
-
-
-                Using headerRange As OfficeOpenXml.ExcelRange = worksheet.Cells(1, 1, 1, 9)
-
-                    headerRange.Style.Font.Bold = True
-                    headerRange.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center
-                    headerRange.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center
-                    headerRange.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
-                    headerRange.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
-                    headerRange.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
-                    headerRange.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
-
-                End Using
-
-                Dim rowIndex As Integer = 2
-                For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
-
-                    Dim Id As String = thisData.Tables(0).Rows(i).Item("Id").ToString()
-                    Dim HeaderId As String = thisData.Tables(0).Rows(i).Item("HeaderId").ToString()
-                    Dim SubmittedDate As String = thisData.Tables(0).Rows(i).Item("SubmittedDate").ToString()
-                    Dim JobDate As String = thisData.Tables(0).Rows(i).Item("JobDate").ToString()
-                    Dim CustomerName As String = thisData.Tables(0).Rows(i).Item("CustomerName").ToString()
-                    Dim OrderNumber As String = thisData.Tables(0).Rows(i).Item("OrderNumber").ToString()
-                    Dim OrderName As String = thisData.Tables(0).Rows(i).Item("OrderName").ToString()
-                    Dim FabricName As String = thisData.Tables(0).Rows(i).Item("FabricName").ToString()
-                    Dim Notes As String = thisData.Tables(0).Rows(i).Item("Notes").ToString()
-
-                    worksheet.Cells(rowIndex, 1).Value = HeaderId
-                    worksheet.Cells(rowIndex, 2).Value = SubmittedDate
-                    worksheet.Cells(rowIndex, 3).Value = JobDate
-                    worksheet.Cells(rowIndex, 4).Value = CustomerName
-                    worksheet.Cells(rowIndex, 5).Value = OrderNumber
-                    worksheet.Cells(rowIndex, 6).Value = OrderName
-                    worksheet.Cells(rowIndex, 7).Value = FindDescription(Id)
-                    worksheet.Cells(rowIndex, 8).Value = FabricName
-                    worksheet.Cells(rowIndex, 9).Value = Notes
-
-                    rowIndex += 1
-
-                Next
-
-                If rowIndex > 2 Then
-
-                    Using dataRange As OfficeOpenXml.ExcelRange = worksheet.Cells(1, 1, rowIndex - 1, 9)
-
-                        dataRange.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
-                        dataRange.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
-                        dataRange.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
-                        dataRange.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin
-                        dataRange.Style.VerticalAlignment =OfficeOpenXml.Style.ExcelVerticalAlignment.Top
-
-                    End Using
-
-                End If
-
-                worksheet.Column(1).Width = 10
-                worksheet.Column(2).Width = 18
-                worksheet.Column(3).Width = 18
-                worksheet.Column(4).Width = 25
-                worksheet.Column(5).Width = 20
-                worksheet.Column(6).Width = 25
-                worksheet.Column(7).Width = 50
-                worksheet.Column(8).Width = 25
-                worksheet.Column(9).Width = 35
-
-                worksheet.Cells(1, 1, rowIndex - 1, 9).Style.WrapText = True
-
-                worksheet.View.FreezePanes(2, 1)
-
-
-                If rowIndex > 2 Then
-                    worksheet.Cells(1, 1, rowIndex - 1, 9).AutoFilter = True
-                End If
-
-
-                Dim excelFilePath As String = Files
-
-                Dim fileInfo As New System.IO.FileInfo(excelFilePath)
-
-                package.SaveAs(fileInfo)
-
-            End Using
-
-        Catch ex As Exception
-            Throw
-        End Try
     End Sub
 
     Private Function FindDescription(id As String) As string
