@@ -405,12 +405,12 @@ Partial Class Methods_Order_VerticalBlindMethod
             End If
 
             If BlindName = "Complete" Or BlindName = "Track Only" Then
-                If String.IsNullOrEmpty(data.bracket) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bracket is required !",.field = "bracket"}}
-                End If
-                If String.IsNullOrEmpty(data.bracketcolour) Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bracket colour is required !",.field = "bracketcolour"}}
-                End If
+                ' If String.IsNullOrEmpty(data.bracket) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bracket is required !",.field = "bracket"}}
+                ' End If
+                ' If String.IsNullOrEmpty(data.bracketcolour) Then
+                '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "bracket colour is required !",.field = "bracketcolour"}}
+                ' End If
             End If
             
             If String.IsNullOrEmpty(data.hangertype) Then
