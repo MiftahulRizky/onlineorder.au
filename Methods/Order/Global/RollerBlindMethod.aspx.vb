@@ -816,7 +816,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     Return New With {.warning = true, .message = "trim 1f is not allowed for spring operated !",.field = "trim"}
                 End If
 
-                If Not String.IsNullOrEmpty(data.trim) AND (data.trim = "Bottom Rail" OR data.trim = "Decorative") Then
+                If Not String.IsNullOrEmpty(data.trim) AND (data.trim = "Bottom Rail" OR data.trim = "Decorative – Fancy Trim") Then
                     If String.IsNullOrEmpty(data.railtype) Then
                         Return New With {.warning = true, .message = String.Format("{0} type is required !", data.trim),.field = "railtype"}
                     End If

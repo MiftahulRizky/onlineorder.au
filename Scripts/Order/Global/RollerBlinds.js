@@ -166,7 +166,7 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
       await bindRailType(brackettype, trim);
       if (
         ["Gear Reduction"].includes(blindname) &&
-        ["Bottom Rail", "Decorative"].includes(trim)
+        ["Bottom Rail", "Decorative – Fancy Trim"].includes(trim)
       ) {
         toggleShow(elForm.divBottomRail, true);
         toggleShow(elForm.lblBotomRail, true);
@@ -175,7 +175,7 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
           elForm.lblBotomRail.innerHTML = "bottom rail type x colour";
           toggleShow(elForm.divRailColour, true);
         }
-        if (trim == "Decorative") {
+        if (trim == "Decorative – Fancy Trim") {
           toggleShow(elForm.btnInfoTrim, true);
           // divRailColour.classList.remove("d-none");
         }
@@ -728,7 +728,7 @@ const bindChains = () => {
 };
 
 const bindTrims = () => {
-  generateOption("trim", ["Plain", "Bottom Rail", "Decorative"]);
+  generateOption("trim", ["Plain", "Bottom Rail", "Decorative – Fancy Trim"]);
 };
 
 const bindRailType = async (brackettype, trim) => {
@@ -1047,7 +1047,7 @@ const handlerElementVisibility = async (
       toggleShow(elForm.lblNextDesc, item.NextDescVisible);
       elForm.lblNextDesc.innerHTML = item.NextDescText;
 
-      if (["Bottom Rail", "Decorative"].includes(item.Trim)) {
+      if (["Bottom Rail", "Decorative – Fancy Trim"].includes(item.Trim)) {
         elForm.lblBotomRail.innerHTML = item.Trim;
         toggleShow(elForm.lblBotomRail, true);
         toggleShow(elForm.divBottomRail, true);
@@ -1055,7 +1055,7 @@ const handlerElementVisibility = async (
           elForm.lblBotomRail.innerHTML = "bottom rail type x colour";
           toggleShow(elForm.divRailColour, true);
         }
-        if (item.Trim == "Decorative") {
+        if (item.Trim == "Decorative – Fancy Trim") {
           toggleShow(elForm.btnInfoTrim, true);
         }
       }
