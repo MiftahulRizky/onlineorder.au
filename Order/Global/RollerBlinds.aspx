@@ -67,7 +67,7 @@
                                 </div>
 
                                 <div class="mb-3 row" id="divTubeType">
-                                    <label for="tubetype" class="col-lg-3 text-uppercase fw-bold" id="lblTubeType">mechanism type</label>
+                                    <label for="tubetype" class="col-lg-3 text-uppercase fw-bold" id="lblTubeType">tube size</label>
                                     <div class="col-lg-4">
                                         <div class="input-group">
                                             <select type="text" name="tubetype" id="tubetype" class="form-select"></select>
