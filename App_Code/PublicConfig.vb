@@ -892,19 +892,34 @@ Public Class PublicConfig
             If Not String.IsNullOrEmpty(CustomerDisc) AndAlso CustomerDisc <> "0" AndAlso CustomerDisc <> "0.00" AndAlso CustomerDisc <> "0,00" Then
                 CustomerDisc = CustomerDisc.Replace(",", ".")
                 Discount = Decimal.Parse(CustomerDisc, System.Globalization.CultureInfo.InvariantCulture)
+            Else
+                If InStr(FabricType, "Builder") > 0 Then
+                    If InStr(FabricType, "49+ Blinds") > 0 Then
+                        Discount = 5 'Builder BO (49+ Blinds)
+                    Else
+                        Discount = 0
+                    End If
+                End If
             End If
+
 
         Else
             Dim CustomerDisc As String = GetItemData(String.Format("SELECT CustomerDisc FROM OrderHeaders WHERE Id='{0}'", HeaderId))
             If Not String.IsNullOrEmpty(CustomerDisc) AndAlso CustomerDisc <> "0" AndAlso CustomerDisc <> "0.00" AndAlso CustomerDisc <> "0,00" Then
                 CustomerDisc = CustomerDisc.Replace(",", ".")
                 Discount = Decimal.Parse(CustomerDisc, System.Globalization.CultureInfo.InvariantCulture)
+            Else
+                If InStr(FabricType, "Builder") > 0 Then
+                    If InStr(FabricType, "49+ Blinds") > 0 Then
+                        Discount = 5 'Builder BO (49+ Blinds)
+                    Else
+                        Discount = 0
+                    End If
+                End If
             End If
         End If
 
-        If InStr(FabricType, "Builder") > 0 Then
-            Discount = 0
-        End If
+      
 
         If Not InArray(DesignName, "Surcharge", "Additional") Then
             result = Matrix * (Discount / 100.0D)

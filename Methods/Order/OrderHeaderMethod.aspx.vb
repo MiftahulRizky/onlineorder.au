@@ -427,7 +427,10 @@ Partial Class Methods_Order_OrderHeaderMethod
            
             Dim icon As String = String.Empty
             Dim addStat As String = String.Empty
-            addStat = String.Format("<br> <span class='text-secondary'>{0}</span>", statusadd)
+
+            If Not String.IsNullOrEmpty(statusadd) Then
+                addStat = String.Format("<br> <span class='text-secondary'>{0}</span>", statusadd)
+            End If
             ' If InArray(ordertype, "Panorama", "Evolve", "Shutters", "Furnishings") Then
             ' End If
 
