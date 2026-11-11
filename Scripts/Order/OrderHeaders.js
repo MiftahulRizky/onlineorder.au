@@ -162,30 +162,21 @@ Object.values(mainEl).forEach((el) => {
 selectorEl("#tableOrders").addEventListener("click", async (e) => {
   try {
     const key = e.target.id;
-    if (key === "btnDetailOrder") {
-      const id = e.target.dataset.id;
-      const idenc = e.target.dataset.idenc;
-      const type = e.target.dataset.type;
-      const typeenc = e.target.dataset.typeenc;
-      const isSp = [
-        "Blinds",
-        "Door",
-        "Window",
-        "Door and Window",
-        "Furnishings",
-      ].includes(type);
-      const isShutters = ["Panorama", "Evolve", "Shutters"].includes(type);
-      let page = "/order";
+    const detailButton = e.target.closest("#btnDetailOrder");
 
-      if (isSp) {
-        page = `/order/orderdetails`;
-      }
-      if (isShutters) {
-        page = `/order/shutters/detail`;
-      }
+    if (detailButton) {
+      openDetailOrder(detailButton);
+      return;
+    }
 
-      const url = `${page}?param=${idenc}&ordertype=${typeenc}`;
-      window.location.href = url;
+    const row = e.target.closest("tbody tr");
+    if (row) {
+      if (e.target.closest(".dropdown")) return;
+      const btnDetailOrder = row.querySelector("#btnDetailOrder");
+
+      if (btnDetailOrder) {
+        openDetailOrder(btnDetailOrder);
+      }
     }
 
     if (key === "btnChangeStatus") {
@@ -231,6 +222,23 @@ selectorEl("#tableOrders").addEventListener("click", async (e) => {
     catchMessages(msg);
   }
 });
+
+// selectorEl("#tableOrders").addEventListener("dblclick", async (e) => {
+//   try {
+//     const row = e.target.closest("tbody tr");
+//     if (row) {
+//       if (e.target.closest(".dropdown")) return;
+//       const btnDetailOrder = row.querySelector("#btnDetailOrder");
+
+//       if (btnDetailOrder) {
+//         openDetailOrder(btnDetailOrder);
+//       }
+//     }
+//   } catch (error) {
+//     const msg = `DataTableOrders dblClick: ${error.message}`;
+//     catchMessages(msg);
+//   }
+// });
 
 const modalHandlers = {
   modalChangeStatus: {
@@ -407,6 +415,7 @@ const bindOrders = async (status, ordertype, active, storetype, params) => {
       drawCallback: function (settings) {
         const api = this.api();
         displayElOverall(api);
+        api.rows().nodes().to$().css("cursor", "pointer");
       },
 
       ajax: async (data, callback) => {
@@ -1167,6 +1176,36 @@ const handlerShowBSModal = (params) => {
     keyboard: false,
   });
   myModal.show();
+};
+
+const openDetailOrder = (element) => {
+  const id = element.dataset.id;
+  const idenc = element.dataset.idenc;
+  const type = element.dataset.type;
+  const typeenc = element.dataset.typeenc;
+
+  const isSp = [
+    "Blinds",
+    "Door",
+    "Window",
+    "Door and Window",
+    "Furnishings",
+  ].includes(type);
+
+  const isShutters = ["Panorama", "Evolve", "Shutters"].includes(type);
+
+  let page = "/order";
+
+  if (isSp) {
+    page = "/order/orderdetails";
+  }
+
+  if (isShutters) {
+    page = "/order/shutters/detail";
+  }
+
+  const url = `${page}?param=${idenc}&ordertype=${typeenc}`;
+  window.location.href = url;
 };
 
 const catchMessages = (msg) => {
