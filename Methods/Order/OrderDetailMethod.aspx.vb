@@ -1476,6 +1476,11 @@ Partial Class Methods_Order_OrderDetailMethod
     Public Shared Function DeleteOrderHeader(ByVal id As String) As Object
         Try
          
+        Try
+            id = urlEnc.Decrypt(id)
+        Catch ex As Exception
+            Throw New Exception("failed to decrypt headerid") 
+        End Try
 
         '#DELETE
         If String.IsNullOrEmpty(id) Then
