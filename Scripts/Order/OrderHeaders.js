@@ -161,61 +161,59 @@ Object.values(mainEl).forEach((el) => {
 
 selectorEl("#tableOrders").addEventListener("click", async (e) => {
   try {
-    const key = e.target.id;
     const detailButton = e.target.closest("#btnDetailOrder");
-
     if (detailButton) {
       openDetailOrder(detailButton);
       return;
     }
 
-    const row = e.target.closest("tbody tr");
-    if (row) {
-      if (e.target.closest(".dropdown")) return;
-      const btnDetailOrder = row.querySelector("#btnDetailOrder");
-
-      if (btnDetailOrder) {
-        openDetailOrder(btnDetailOrder);
-      }
-    }
-
-    if (key === "btnChangeStatus") {
+    const changeStatusButton = e.target.closest("#btnChangeStatus");
+    if (changeStatusButton) {
       selectorElAll(
         "#modalChangeStatus .form-control, #modalChangeStatus .form-select",
       ).forEach((el) => {
         el.classList.remove("is-invalid");
       });
 
-      const id = e.target.dataset.id;
-      const type = e.target.dataset.type;
+      const id = changeStatusButton.dataset.id;
+      const type = changeStatusButton.dataset.type;
+
       handlerChangeStatus(id, type);
+      return;
     }
 
-    if (key === "btnDeleteOrder") {
-      const id = e.target.dataset.id;
-      const name = e.target.dataset.name;
-      const order = e.target.dataset.order;
-      const ref = e.target.dataset.ref;
-      const del = e.target.dataset.del;
-      const type = e.target.dataset.type;
+    const deleteButton = e.target.closest("#btnDeleteOrder");
+    if (deleteButton) {
+      const { id, name, order, ref, del, type } = deleteButton.dataset;
+
       handlerSwitch(id, name, order, ref, del, type, "delete");
+      return;
     }
 
-    if (key === "btnRestoreOrder") {
-      const id = e.target.dataset.id;
-      const name = e.target.dataset.name;
-      const order = e.target.dataset.order;
-      const ref = e.target.dataset.ref;
-      const del = e.target.dataset.del;
-      const type = e.target.dataset.type;
+    const restoreButton = e.target.closest("#btnRestoreOrder");
+    if (restoreButton) {
+      const { id, name, order, ref, del, type } = restoreButton.dataset;
       handlerSwitch(id, name, order, ref, del, type, "restore");
+      return;
     }
 
-    if (key === "btnLogs") {
-      const id = e.target.dataset.id;
-      const ordertype = e.target.dataset.type;
+    const logsButton = e.target.closest("#btnLogs");
+    if (logsButton) {
+      const id = logsButton.dataset.id;
+      const ordertype = logsButton.dataset.type;
+
       await bindlogs(id, ordertype);
       handlerShowBSModal("modalLogs");
+      return;
+    }
+
+    const row = e.target.closest("tbody tr");
+    if (row && !e.target.closest(".dropdown")) {
+      const btnDetailOrder = row.querySelector("#btnDetailOrder");
+
+      if (btnDetailOrder) {
+        openDetailOrder(btnDetailOrder);
+      }
     }
   } catch (error) {
     const msg = `DataTableOrders Click: ${error.message}`;
