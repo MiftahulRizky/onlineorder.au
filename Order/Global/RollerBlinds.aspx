@@ -71,7 +71,7 @@
                                     <div class="col-lg-4">
                                         <div class="input-group">
                                             <select type="text" name="tubetype" id="tubetype" class="form-select"></select>
-                                            <button class="btn btn-primary btn-information" type="button" id="btnInfoTubeSize">
+                                            <button class="btn btn-info btn-information" type="button" id="btnInfoTubeSize">
                                                 <i class="ti ti-info-square-rounded fs-2"></i>
                                             </button>
                                         </div>  
@@ -83,7 +83,7 @@
                                     <div class="col-lg-4">
                                         <div class="input-group">
                                             <select type="text" name="controltype" id="controltype" class="form-select"></select>
-                                            <button class="btn btn-primary btn-information" type="button" id="btnInfoControlType">
+                                            <button class="btn btn-info btn-information" type="button" id="btnInfoControlType">
                                                 <i class="ti ti-info-square-rounded fs-2"></i>
                                             </button>
                                         </div>
@@ -123,7 +123,7 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <input type="number" min="1" value="1" name="qty" id="qty" class="form-control">
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoQty">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoQty">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -179,7 +179,7 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <select type="text" name="motorstyle" id="motorstyle" class="form-select"></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoMotorStyle">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoMotorStyle">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -191,7 +191,7 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <select type="text" name="motorremote" id="motorremote" class="form-select"></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoMotorRemote">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoMotorRemote">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -239,7 +239,7 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <select type="text" name="controlposition" id="controlposition" class="form-select"></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoControlPosition">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoControlPosition">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -256,7 +256,7 @@
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="chainlength" id="chainlength" class="form-control ">
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoChain">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoChain">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -276,7 +276,7 @@
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
                                                 <select name="railtype" id="railtype" class="form-select "></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoTrim">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoTrim">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>

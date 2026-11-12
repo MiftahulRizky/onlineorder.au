@@ -74,7 +74,7 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <input type="number" min="1" value="1" name="qty" id="qty" class="form-control">
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoQty">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoQty">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>

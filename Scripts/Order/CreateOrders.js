@@ -55,6 +55,8 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
         getById("files").value = "";
 
         displayElOverall(ordertype);
+        const customer = getById("customer").value;
+        bindDelivery(customer);
       }
 
       if (e.target.id === "customer") {
@@ -63,6 +65,7 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
         getById("createtype").value = "Create New";
         getById("files").value = "";
         displayElOverall(ordertype);
+        bindDelivery(customer);
       }
 
       if (e.target.id === "createtype") {
@@ -305,6 +308,7 @@ const bindOrderAggregate = async () => {
     bindSelectPayload(data.Customers, "customer", true, 1);
     bindSelectPayload(data.Users, "createdby", true, 1);
     bindSelectPayload(data.Shipment, "shipmentid", true, 1);
+    bindDelivery(header.CustomerId);
 
     displayElOverall(header.OrderType);
     setValHeader(header);
@@ -424,6 +428,31 @@ const bindSelectPayload = (data, el, def = true, leng = 0) => {
     });
   } catch (error) {
     const msg = `bindSelectPayload: ${error.message}`;
+    catchMessages(msg);
+  }
+};
+
+const bindDelivery = (customer) => {
+  try {
+    let list = [];
+    const jpm = customer === "LS-A224";
+    const sbsacc = ["LS-A333", "LS-A012"].includes(customer);
+
+    if (!jpm && !sbsacc) {
+      list.push("Delivery", "Pick Up");
+    }
+
+    if (jpm) {
+      list.push("INT-FIS", "INT-PU");
+    }
+
+    if (sbsacc) {
+      list.push("INT-PU");
+    }
+
+    generateOption("delivery", list, 1);
+  } catch (error) {
+    const msg = `bindDelivery: ${error.message}`;
     catchMessages(msg);
   }
 };

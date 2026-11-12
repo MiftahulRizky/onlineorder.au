@@ -140,7 +140,7 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="controllength" id="controllength" class="form-control  " autocomplete="off"/>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoControlLength">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoControlLength">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -223,7 +223,7 @@
                                             <div class="col-lg-3">
                                                 <div class="input-group">
                                                     <input type="number" min="1" name="pelmetwidth" id="pelmetwidth" class="form-control  " autocomplete="off"/>
-                                                    <button class="btn btn-primary btn-information" type="button" id="btnInfoPelmetWidth">
+                                                    <button class="btn btn-info btn-information" type="button" id="btnInfoPelmetWidth">
                                                         <i class="ti ti-info-square-rounded fs-2"></i>
                                                     </button>
                                                 </div>
@@ -249,7 +249,7 @@
                                             <small class="form-hint">* Right</small> 
                                         </div>
                                         <div class="col-lg-2">
-                                            <button class="btn btn-primary btn-information" type="button" id="btnInfoReturnLength">
+                                            <button class="btn btn-info btn-information" type="button" id="btnInfoReturnLength">
                                                 <i class="ti ti-info-square-rounded fs-2"></i>
                                             </button>
                                         </div>

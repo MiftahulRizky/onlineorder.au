@@ -225,7 +225,8 @@ Partial Class Methods_Order_OrderHeaderMethod
                 If params.order IsNot Nothing AndAlso params.order.Count > 0 Then
                     Dim columnMap As New Dictionary(Of Integer, String) From { _
                         {0, "No"}, _
-                        {1, "Id"} _
+                        {1, "Id"}, _
+                        {10, "SubmittedDate"} _
                     }
                     Dim orderColumnIndex As Integer = params.order(0).column
                     Dim orderDirection As String = params.order(0).dir.ToUpper()

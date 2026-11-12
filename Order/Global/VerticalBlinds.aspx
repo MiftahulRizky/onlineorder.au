@@ -80,7 +80,7 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <input type="number" min="1" value="1" name="qty" id="qty" class="form-control">
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoQty">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoQty">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -122,7 +122,7 @@
                                             <small class="form-hint">* Drop</small>
                                         </div>
                                         <div class="col-lg-2 col-md-12 col-sm-12" id="divInfoWD">
-                                            <button class="btn btn-primary btn-information" type="button" id="btnInfoWD">
+                                            <button class="btn btn-info btn-information" type="button" id="btnInfoWD">
                                                 <i class="ti ti-info-square-rounded fs-2"></i>
                                             </button>
                                         </div>
@@ -139,7 +139,7 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="slatqty" id="slatqty" class="form-control  " autocomplete="off" />
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoSlatQty">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoSlatQty">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -217,7 +217,7 @@
                                             <div class="input-group">
                                                 <input type="number" min="1" name="wandcustomlength" id="wandcustomlength" class="form-control ">
                                                 <!-- <span class="input-group-text ">mm</span> -->
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoCustomLength">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoCustomLength">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>

@@ -94,7 +94,7 @@
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="width" id="width" class="form-control " autocomplete="off" placeholder="Width ...." />
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoWidth">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoWidth">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -126,7 +126,7 @@
                                         <div class="col-lg-4 col-md-12 col-sm-12">
                                             <div class="input-group">
                                                 <select name="layoutcode" id="layoutcode" class="form-control "></select>
-                                                 <button class="btn btn-primary btn-information" type="button" id="btnInfoLayout">
+                                                 <button class="btn btn-info btn-information" type="button" id="btnInfoLayout">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -138,7 +138,7 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <select name="nopanel" id="nopanel" class="form-control "></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoNoPanel">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoNoPanel">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>
@@ -169,7 +169,7 @@
                                         <div class="col-lg-4 col-md-12 col-sm-12" >
                                             <div class="input-group">
                                                 <select name="wandlength" id="wandlength" class="form-control "></select>
-                                                <button class="btn btn-primary btn-information" type="button" id="btnInfoWandLength">
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoWandLength">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
                                             </div>

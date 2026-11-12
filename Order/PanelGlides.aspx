@@ -142,7 +142,7 @@
                                     <div class="col-lg-3 col-md-12 col-sm-12">
                                         <div class="input-group">
                                             <select name="layoutcode" id="layoutcode" class="form-control "></select>
-                                            <button class="btn btn-primary btn-information" type="button" id="btnInfoLayout">
+                                            <button class="btn btn-info btn-information" type="button" id="btnInfoLayout">
                                                 <i class="ti ti-info-square-rounded fs-2"></i>
                                             </button>
                                         </div>

@@ -30,7 +30,9 @@
                                     <div class="input-group">
                                         <select name="ordertype" id="ordertype" class="form-select "></select>
                                         <input type="text" name="headerid" id="headerid" class="form-control" readonly hidden>
-                                        <button class="btn btn-information btn-info" type="button" id="btnInfoOrderType">?</button>
+                                        <button class="btn btn-information btn-info" type="button" id="btnInfoOrderType">
+                                            <i class="ti ti-info-square-rounded fs-2"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -85,7 +87,9 @@
                                     <div class="col-lg-6">
                                         <div class="input-group">
                                             <input type="text" class="form-control " id="ordernumber" name="ordernumber" placeholder="Order Number ...">
-                                            <button class="btn btn-information btn-info" type="button" id="btnInfoOrderNumber">?</button>
+                                            <button class="btn btn-information btn-info" type="button" id="btnInfoOrderNumber">
+                                                <i class="ti ti-info-square-rounded fs-2"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -94,7 +98,9 @@
                                     <div class="col-lg-8">
                                         <div class="input-group">
                                             <input type="text" class="form-control " id="ordername" name="ordername" placeholder="Order Name ...">
-                                            <button class="btn btn-information btn-info" type="button" id="btnInfoOrderName">?</button>
+                                            <button class="btn btn-information btn-info" type="button" id="btnInfoOrderName">
+                                                <i class="ti ti-info-square-rounded fs-2"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -103,14 +109,10 @@
                                     <label for="delivery" class="col-lg-4 form-label text-uppercase required">delivery / pick up</label>
                                     <div class="col-lg-4">
                                         <div class="input-group">
-                                            <select name="delivery" id="delivery" class="form-select ">
-                                                <option value=""></option>
-                                                <option value="Delivery">DELIVERY</option>
-                                                <option value="Pick Up">PICK UP</option>
-                                                <option value="INT-FIS">INT-FIS</option>
-                                                <option value="INT-PU">INT-PU</option>
-                                            </select>
-                                            <button class="btn btn-information btn-info" type="button" id="btnInfoDelivery">?</button>
+                                            <select name="delivery" id="delivery" class="form-select "></select>
+                                            <button class="btn btn-information btn-info" type="button" id="btnInfoDelivery">
+                                                <i class="ti ti-info-square-rounded fs-2"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -124,7 +126,9 @@
                                                 <option value="By Van">BY VAN</option>
                                                 <option value="Third Party">THIRD PARTY</option>
                                             </select>
-                                            <button class="btn btn-information btn-info" type="button" id="btnInfoDeliveryType">?</button>
+                                            <button class="btn btn-information btn-info" type="button" id="btnInfoDeliveryType">
+                                                <i class="ti ti-info-square-rounded fs-2"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -138,7 +142,9 @@
                                                 <option value="New">NEW</option>
                                                 <option value="Remake">REMAKE</option>
                                             </select>
-                                            <button class="btn btn-information btn-info" type="button" id="btnInfoSourceType">?</button>
+                                            <button class="btn btn-information btn-info" type="button" id="btnInfoSourceType">
+                                                <i class="ti ti-info-square-rounded fs-2"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -271,7 +277,7 @@
         let LOGINID = '<%= Session("LoginId") %>';
         let URIMETHOD = '/Methods/Order/CreateOrderMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/CreateOrders.js?v=1.0.7"></script>
+    <script src="/Scripts/Order/CreateOrders.js?v=1.0.11"></script>
 
 </asp:Content>
 

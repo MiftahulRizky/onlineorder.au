@@ -483,7 +483,7 @@ const bindOrders = async (status, ordertype, active, storetype, params) => {
         { width: "10%", data: "Delivery", orderable: false },
         { width: "12%", data: "Status", orderable: false },
         { width: "5%", data: "CreatedDate", orderable: false },
-        { width: "5%", data: "SubmittedDate", orderable: false },
+        { width: "5%", data: "SubmittedDate", orderable: true },
         {
           width: "3%",
           data: null,
