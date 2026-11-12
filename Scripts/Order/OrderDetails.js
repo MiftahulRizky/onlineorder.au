@@ -1971,6 +1971,7 @@ const displayElOverall = (header, detail) => {
       }
 
       if (isNotCompleted || isNotCanceled) {
+        toggleShow(btnEl.btnSendOrderMail, true);
         toggleShow(btnEl.btnEditHeader, true);
       }
 
