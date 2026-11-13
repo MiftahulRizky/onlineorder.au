@@ -49,7 +49,7 @@ Partial Class Console_ReminderDE
     Public Function SendReminderMail() As Object
         Try
             Dim Appid As String = "B0165D5B-5B57-499C-8400-63720E216C44" '#Application Sunlight Product
-            Dim Mail As String = "wijayayudi@jpm-trading.com;deslina@springfordtrading.com;bayu@jpm-trading.com;pijen@springfordtrading.com;de3@rimbabr.com;miftah@bigblinds.co.id"
+            Dim Mail As String = "wijayayudi@jpm-trading.com,deslina@springfordtrading.com,bayu@jpm-trading.com,pijen@springfordtrading.com,de3@rimbabr.com,miftah@bigblinds.co.id"
             ' Mail = "miftah@bigblinds.co.id"
 
             Dim mailData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM Mailings WHERE ApplicationId = '{0}' AND Name = 'Reminder Order Draft/Unsubmitted' AND Active=1", Appid))
