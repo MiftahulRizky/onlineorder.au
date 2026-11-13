@@ -1893,6 +1893,7 @@ const displayElOverall = (header, detail) => {
       header.StatusAdditional === "On Hold - Pending Price Approval";
     const isNotCompleted = header.Status !== "Completed";
     const isNotCanceled = header.Status !== "Canceled";
+    const isInProduction = header.Status === "In Production";
     const isOrderActive = [
       "New Order",
       "In Production",
@@ -1971,8 +1972,11 @@ const displayElOverall = (header, detail) => {
       }
 
       if (isNotCompleted || isNotCanceled) {
-        toggleShow(btnEl.btnSendOrderMail, true);
         toggleShow(btnEl.btnEditHeader, true);
+      }
+
+      if (isOrderActive) {
+        toggleShow(btnEl.btnSendOrderMail, true);
       }
 
       if (isNotCompleted) {
@@ -1981,7 +1985,9 @@ const displayElOverall = (header, detail) => {
       }
 
       toggleShow(btnEl.btnDownloadBarcode, true);
-      toggleShow(btnEl.btnExactSlip, true);
+      if (isInProduction) {
+        toggleShow(btnEl.btnExactSlip, true);
+      }
 
       if (!isWaitingForDeposit && !isPandingPriceApproval) {
         toggleShow(btnEl.btnChangeStatus, true);

@@ -139,7 +139,7 @@ Partial Class Methods_Order_PdfOrderMethod
                 ' If currentDomain.Contains("onlineorder.au") Then
                 '     printCfg.CreatePDFOrder(headerid, fileDirectory, fileName)
                 ' Else
-                    Dim ResPDF As String = ThisCreatePDFOrder(headerid, fileDirectory, fileName)
+                    Dim ResPDF As String = ThisCreatePDFOrder(headerid, fileDirectory, fileName, action)
                     If Not ResPDF = "200" Then
                         Throw New Exception(ResPDF)
                     End If
@@ -162,7 +162,7 @@ Partial Class Methods_Order_PdfOrderMethod
 
                 Dim currentDomain As String = HttpContext.Current.Request.Url.Host.ToLower()
 
-                Dim ResPDF As String = ThisCreatePDFOrder(headerid, fileDirectory, fileName)
+                Dim ResPDF As String = ThisCreatePDFOrder(headerid, fileDirectory, fileName, action)
                 If Not ResPDF = "200" Then
                     Throw New Exception(ResPDF)
                 End If
@@ -318,11 +318,11 @@ Partial Class Methods_Order_PdfOrderMethod
         End Try
     End Function
     
-    Private Shared Function ThisCreatePDFOrder(headerid As String, directory As String, filename As String) As String
+    Private Shared Function ThisCreatePDFOrder(headerid As String, directory As String, filename As String, action As String) As String
         Try
             
             Dim result As String = String.Empty
-            result = Print_HeaderTemplate(headerid)
+            result = Print_HeaderTemplate(headerid, action)
 
             'ALUMINIUM
             result += Print_AluminiumBlinds(headerid)
@@ -406,7 +406,7 @@ Partial Class Methods_Order_PdfOrderMethod
         End Try
     End Function
 
-    Private Shared Function Print_HeaderTemplate(HeaderId As String) As String
+    Private Shared Function Print_HeaderTemplate(HeaderId As String, Action As String) As String
         Dim result As String = String.Empty
 
         Dim headerData As DataSet = publicCfg.GetListData("SELECT * FROM view_headers WHERE Id = '" + HeaderId + "'")
@@ -425,6 +425,10 @@ Partial Class Methods_Order_PdfOrderMethod
         Dim baseUrl As String = request.Url.Scheme & "://" & request.Url.Authority & request.ApplicationPath.TrimEnd("/"c)
 
         Dim Path As String = System.Web.HttpContext.Current.Server.MapPath("~/Content/static/new-icon.png")
+
+        If Action = "submit" Then
+            status = "New Order"
+        End If
 
         result += "<table style='width:100%;margin-bottom:10px;margin-top:25px;font-size:smaller;'>"
         result += trStart
