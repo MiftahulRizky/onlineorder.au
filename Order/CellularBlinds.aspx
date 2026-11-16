@@ -164,15 +164,15 @@
                                         </div>
                                     </div>
     
-                                    <div class="mb-3 row">
+                                    <div class="mb-3 row" id="divControlPosition">
                                         <label for="controlposition" class="col-lg-3 text-uppercase fw-bold">control side</label>
                                         <div class="col-lg-4">
                                             <select name="controlposition" id="controlposition" class="form-control "></select>
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row">
-                                        <label for="qty" class="col-lg-3 text-uppercase fw-bold">chain length</label>
+                                    <div class="mb-3 row" id="divChainLength">
+                                        <label for="qty" class="col-lg-3 text-uppercase fw-bold" id="lblChainLength">chain length</label>
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <input type="number" min="1" name="chainlength" id="chainlength" class="form-control  " autocomplete="off" />
@@ -203,7 +203,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row">
+                                    <div class="mb-3 row" id="divCutout">
                                         <label for="cutout" class="col-lg-3 text-uppercase fw-bold">cut out</label>
                                         <div class="col-lg-4">
                                             <select name="cutout" id="cutout" class="form-control "></select>
@@ -283,7 +283,7 @@
         let URIMETHOD = "/Methods/Order/CellularBlindMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/CellularBlinds.js?v=1.0.3"></script>
+    <script type="text/javascript" src="/Scripts/Order/CellularBlinds.js?v=1.0.16"></script>
 
 </asp:Content>
 

@@ -39,9 +39,10 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     if (e.target.id === "controltype") {
       const blinds = document.getElementById("blindtype");
       const blindtype = blinds.value;
-      const blindname = blinds.options[blinds.selectedIndex].text;
+      const blindname = blinds.selectedOptions[0].dataset.name;
       const brackettype = document.getElementById("brackettype").value;
       const controltype = e.target.value;
+      const controlname = e.target.selectedOptions[0].dataset.name;
       await handlerElementVisibility(blindtype, brackettype, controltype);
       await bindFabrics(DESIGNID, blindtype, brackettype, controltype);
       await bindFabrics2(DESIGNID, blindtype, brackettype, controltype);
@@ -51,7 +52,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindDropFloor(),
         bindMounting(blindname),
         bindCordType(),
-        bindControlPosition(),
+        bindControlPosition(blindname, controlname),
         bindMotorType(),
         bindMotorExtra(),
         bindHoldDown(),
@@ -84,13 +85,15 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     // }
 
     if (e.target.id === "fabrictype") {
+      const blindtype = document.getElementById("blindtype").value;
       const fabrictype = e.target.value;
-      await bindFabricColours(DESIGNID, fabrictype);
+      await bindFabricColours(DESIGNID, blindtype, fabrictype);
     }
 
     if (e.target.id === "fabrictype2") {
+      const blindtype = document.getElementById("blindtype").value;
       const fabrictype = e.target.value;
-      await bindFabricColours2(DESIGNID, fabrictype);
+      await bindFabricColours2(DESIGNID, blindtype, fabrictype);
     }
 
     if (e.target.id === "controlsystem") {
@@ -292,15 +295,15 @@ const bindFabrics2 = async (designid, blindtype, brackettype, controltype) => {
   });
 };
 
-const bindFabricColours = async (designid, fabrictype) => {
+const bindFabricColours = async (designid, blindtype, fabrictype) => {
   if (!designid || !fabrictype) return;
 
   await bindSelect({
     elementId: "fabriccolour",
     field: "fabriccolour",
-    params: { designid, fabrictype },
+    params: { designid, blindtype, fabrictype },
     withDefaultOption: true,
-    lengthDefaultOption: 0,
+    lengthDefaultOption: 1,
 
     // onSingle: async (item, select) => {
     //   const fabriccolour = item.value;
@@ -309,15 +312,15 @@ const bindFabricColours = async (designid, fabrictype) => {
   });
 };
 
-const bindFabricColours2 = async (designid, fabrictype) => {
+const bindFabricColours2 = async (designid, blindtype, fabrictype) => {
   if (!designid || !fabrictype) return;
 
   await bindSelect({
     elementId: "fabriccolour2",
     field: "fabriccolour2",
-    params: { designid, fabrictype },
+    params: { designid, blindtype, fabrictype },
     withDefaultOption: true,
-    lengthDefaultOption: 0,
+    lengthDefaultOption: 1,
 
     // onSingle: async (item, select) => {
     //   const fabriccolour2 = item.value;
@@ -354,8 +357,22 @@ const bindCordType = () => {
   generateOption("cordtype", ["Standard Cord", "Continous Cord"]);
 };
 
-const bindControlPosition = () => {
-  generateOption("controlposition", ["L", "R", "LR"]);
+const bindControlPosition = (blindtype, controltype) => {
+  let list = [];
+  // alert(`blindtype: ${blindtype}, controltype: ${controltype}`);
+  if (["Cellora"].includes(blindtype)) {
+    if (["Corded"].includes(controltype)) {
+      list.push("L", "R");
+    }
+
+    if (["DN Corded", "TDBU Corded"].includes(controltype)) {
+      list.push("LR");
+    }
+  } else {
+    list.push("L", "R", "LR");
+  }
+
+  generateOption("controlposition", list, 1);
 };
 
 const bindMotorType = () => {
@@ -450,21 +467,21 @@ const bindItemOrders = async (itemid) => {
         item.BracketType,
         item.KitId,
       );
-      await bindFabricColours(item.DesignId, item.FabricType);
+      await bindFabricColours(item.DesignId, item.BlindId, item.FabricType);
       await bindFabrics2(
         item.DesignId,
         item.BlindId,
         item.BracketType,
         item.KitId,
       );
-      await bindFabricColours2(item.DesignId, item.FabricTypeB);
+      await bindFabricColours2(item.DesignId, item.BlindId, item.FabricTypeB);
       await bindControlSystem(item.KitId);
       await Promise.all([
         bindSizeType(),
         bindDropFloor(),
         bindMounting(item.BlindName),
         bindCordType(),
-        bindControlPosition(),
+        bindControlPosition(item.BlindName, item.ControlType),
         bindMotorType(),
         bindMotorExtra(),
         bindHoldDown(),
@@ -492,6 +509,7 @@ const handlerElementVisibility = async (
     const divBracketType = document.getElementById("divBracketType");
     const lblBracketType = document.getElementById("lblBracketType");
     const divControlType = document.getElementById("divControlType");
+    const lblControlType = document.getElementById("lblControlType");
     const divFormDetail = document.getElementById("divFormDetail");
     const divSizeType = document.getElementById("divSizeType");
     const divDropFloor = document.getElementById("divDropFloor");
@@ -501,6 +519,10 @@ const handlerElementVisibility = async (
     const lblFabricNight = document.getElementById("lblFabricNight");
     const divControlSystem = document.getElementById("divControlSystem");
     const divCordType = document.getElementById("divCordType");
+    const divControlPosition = document.getElementById("divControlPosition");
+    const divChainLength = document.getElementById("divChainLength");
+    const lblChainLength = document.getElementById("lblChainLength");
+    const divCutout = document.getElementById("divCutout");
     const divMotor = document.getElementById("divMotor");
     const divAdditional = document.getElementById("divAdditional");
 
@@ -521,6 +543,10 @@ const handlerElementVisibility = async (
     lblFabricNight.innerHTML = "fabric type x colour";
     divControlSystem.classList.add("d-none");
     divCordType.classList.add("d-none");
+    divControlPosition.classList.add("d-none");
+    divChainLength.classList.add("d-none");
+    lblChainLength.innerHTML = "chain length";
+    divCutout.classList.add("d-none");
     divMotor.classList.add("d-none");
     divAdditional.classList.add("d-none");
     divMarkUp.classList.add("d-none");
@@ -551,6 +577,16 @@ const handlerElementVisibility = async (
     if (["Cellora"].includes(blindname)) {
       // divSizeType.classList.remove("d-none");
       divFabricDay.classList.remove("d-none");
+      if (controlname.includes("Corded")) {
+        divControlPosition.classList.remove("d-none");
+        divChainLength.classList.remove("d-none");
+      }
+      if (controlname.includes("DN")) {
+        divFabricNight.classList.remove("d-none");
+        lblFabricDay.innerHTML = "fabric day";
+        lblFabricNight.innerHTML = "fabric night";
+      }
+      lblChainLength.innerHTML = "cord length";
     }
 
     if (["Galaxy"].includes(blindname)) {
@@ -565,12 +601,18 @@ const handlerElementVisibility = async (
       if (controlname.includes("Corded")) {
         divCordType.classList.remove("d-none");
       }
+      divControlPosition.classList.remove("d-none");
+      divChainLength.classList.remove("d-none");
+      divCutout.classList.remove("d-none");
     }
 
     if (["Potrait"].includes(blindname)) {
       divFabricDay.classList.remove("d-none");
       divControlSystem.classList.remove("d-none");
       divAdditional.classList.remove("d-none");
+      divControlPosition.classList.remove("d-none");
+      divChainLength.classList.remove("d-none");
+      divCutout.classList.remove("d-none");
     }
 
     if (item) {
@@ -759,7 +801,7 @@ const handlerSetElementValues = (itemData) => {
     drop: "Drop",
     cordtype: "MaterialCord",
     controlposition: "ControlPosition",
-    chainlength: "ChainLength",
+    chainlength: "CordLength",
     motortype: "MotorStyle",
     motorextra: "AdditionalMotor",
     holddown: "BottomHoldDown",

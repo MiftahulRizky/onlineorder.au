@@ -4433,7 +4433,7 @@ Partial Class Methods_Order_JobSheetMethod
                                 tableName = "JobSheet_Aluminium"
 
                             Case "Cellular Blinds"
-                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "DoorCutOut", "ControlPosition", "ChainLength", "MotorStyle", "AdditionalMotor", "MaterialCord", "Accessory", "BottomHoldDown", "HangerType", "Notes", "KitName", "VenetianType", "BracketType", "ControlType", "TubeSkinSize", "NumBoldNuts", "FabricName","FabricType","FabricColour","FabricWidth", "FabricGroups", "FabricNameB","FabricTypeB","FabricColourB","FabricWidthB", "FabricGroupsB" })
+                                fieldsToProcess.AddRange({"Line", "Qty", "Location", "Mounting", "Width", "Drop", "DoorCutOut", "ControlPosition", "CordLength", "MotorStyle", "AdditionalMotor", "MaterialCord", "Accessory", "BottomHoldDown", "HangerType", "Notes", "KitName", "VenetianType", "BracketType", "ControlType", "TubeSkinSize", "NumBoldNuts", "FabricName","FabricType","FabricColour","FabricWidth", "FabricGroups", "FabricNameB","FabricTypeB","FabricColourB","FabricWidthB", "FabricGroupsB" })
 
                                 tableName = "JobSheet_Cellular"
 
@@ -5863,7 +5863,7 @@ Partial Class Methods_Order_JobSheetMethod
 
             '#FabricType
             result+= trDetStart
-                result+= tdTitleStart & "Fabric Material" & tdDetEnd
+                result+= tdTitleStart & "Fabric Material Day" & tdDetEnd
                 result+= tdDetStart & boldStart & fs12Start & currentData("FabricType1").ToString() & fsEnd & boldEnd & tdDetEnd
                 result+= tdDetStart & boldStart & fs12Start & currentData("FabricType2").ToString() & fsEnd & boldEnd & tdDetEnd
                 result+= tdDetStart & boldStart & fs12Start & currentData("FabricType3").ToString() & fsEnd & boldEnd & tdDetEnd
@@ -5873,13 +5873,34 @@ Partial Class Methods_Order_JobSheetMethod
             result+= trDetEnd
             '#FabricType
             result+= trDetStart
-                result+= tdTitleStart & "Fabric Colour" & tdDetEnd
+                result+= tdTitleStart & "Fabric Colour Night" & tdDetEnd
                 result+= tdDetStart & boldStart & fs12Start & currentData("FabricColour1").ToString() & fsEnd & boldEnd & tdDetEnd
                 result+= tdDetStart & boldStart & fs12Start & currentData("FabricColour2").ToString() & fsEnd & boldEnd & tdDetEnd
                 result+= tdDetStart & boldStart & fs12Start & currentData("FabricColour3").ToString() & fsEnd & boldEnd & tdDetEnd
                 result+= tdDetStart & boldStart & fs12Start & currentData("FabricColour4").ToString() & fsEnd & boldEnd & tdDetEnd
                 result+= tdDetStart & boldStart & fs12Start & currentData("FabricColour5").ToString() & fsEnd & boldEnd & tdDetEnd
                 result+= tdDetRight & boldStart & fs12Start & currentData("FabricColour6").ToString() & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
+
+            '#FabricTypeB
+            result+= trDetStart
+                result+= tdTitleStart & fs10Start & "Fabric Material Night" & fsEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("FabricTypeB1").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("FabricTypeB2").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("FabricTypeB3").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("FabricTypeB4").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("FabricTypeB5").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs12Start & currentData("FabricTypeB6").ToString() & fsEnd & boldEnd & tdDetEnd
+            result+= trDetEnd
+            '#FabricColourB
+            result+= trDetStart
+                result+= tdTitleStart & fs10Start & "Fabric Colour Night" & fsEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("FabricColourB1").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("FabricColourB2").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("FabricColourB3").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("FabricColourB4").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetStart & boldStart & fs12Start & currentData("FabricColourB5").ToString() & fsEnd & boldEnd & tdDetEnd
+                result+= tdDetRight & boldStart & fs12Start & currentData("FabricColourB6").ToString() & fsEnd & boldEnd & tdDetEnd
             result+= trDetEnd
 
             '#Width
@@ -5941,12 +5962,12 @@ Partial Class Methods_Order_JobSheetMethod
             '#WandLength
             result+= trDetStart
                 result+= tdTitleStart & "Cord Length" & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("ChainLength6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("CordLength6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#BottomHoldDown
@@ -6003,7 +6024,7 @@ Partial Class Methods_Order_JobSheetMethod
         '     result+= trDetEnd
 
         '     '#Line Blank
-            result+= BlankLineEachRow(17)
+            result+= BlankLineEachRow(15)
 
         result+= tableDetEnd
 
@@ -6224,12 +6245,12 @@ Partial Class Methods_Order_JobSheetMethod
             '#WandLength
             result+= trDetStart
                 result+= tdTitleStart & "Cord Length" & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("ChainLength6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("CordLength6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#BottomHoldDown
@@ -6496,12 +6517,12 @@ Partial Class Methods_Order_JobSheetMethod
             '#WandLength
             result+= trDetStart
                 result+= tdTitleStart & "Cord Length" & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength1").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength2").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength3").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength4").ToString() & tdDetEnd
-                result+= tdDetStart & currentData("ChainLength5").ToString() & tdDetEnd
-                result+= tdDetRight & currentData("ChainLength6").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("CordLength5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("CordLength6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#MotorStyle

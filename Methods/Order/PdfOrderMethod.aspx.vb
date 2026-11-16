@@ -667,10 +667,11 @@ Partial Class Methods_Order_PdfOrderMethod
                 result += thStart & "Width" & thEnd
                 result += thStart & "Drop" & thEnd
                 result += thStart & "Fabric" & thEnd
+                result += thStart & "Fabric B" & thEnd
                 result += thStart & "Side" & thEnd
-                result += thStart & "Chain Length" & thEnd
+                result += thStart & "Cord Length" & thEnd
                 result += thStart & "Hold Down Bracket" & thEnd
-                result += thStart & "Cut Out" & thEnd
+                ' result += thStart & "Cut Out" & thEnd
                 result += trEnd
 
 
@@ -685,10 +686,11 @@ Partial Class Methods_Order_PdfOrderMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricNameB").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("ChainLength").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("CordLength").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("DoorCutOut").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("DoorCutOut").ToString() & tdEnd
                     result += trEnd
 
                     If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
@@ -752,7 +754,7 @@ Partial Class Methods_Order_PdfOrderMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("FabricNameB").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("MaterialCord").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("ChainLength").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("CordLength").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("DoorCutOut").ToString() & tdEnd
                     result += trEnd
@@ -821,7 +823,7 @@ Partial Class Methods_Order_PdfOrderMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("HangerType").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("MotorStyle").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("AdditionalMotor").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("ChainLength").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("CordLength").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Accessory").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("DoorCutOut").ToString() & tdEnd

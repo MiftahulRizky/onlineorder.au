@@ -126,11 +126,27 @@ Partial Class Methods_Order_CellularBlindMethod
                     If BlindName = "Potrait" Then
                         AditionalQueries = String.Format("Description LIKE '%{0}%' AND", data.brackettype)
                     End If
+
+                    If BlindName = "Galaxy" Then
+                        AditionalQueries = "Type <> 'Sheer' AND Description NOT LIKE '%Potrait%' AND"
+                    End If
+
                     query = String.Format("SELECT Type FROM Fabrics WHERE DesignId='{0}' AND {1} Active='1' GROUP BY Type ORDER BY Type ASC", data.designid, AditionalQueries)
                     Return GetFormattedData(query, "Type", "Type")
 
                 Case "fabriccolour", "fabriccolour2"
-                    query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId='{0}' AND Active='1' AND Type='{1}' ORDER BY Name ASC", data.designid, data.fabrictype)
+                    Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id='{0}'", UCase(data.blindtype).ToString()))
+                    
+                    Dim AditionalQueries As String = ""
+                    If BlindName = "Galaxy" Then
+                        AditionalQueries = "Type <> 'Sheer' AND Description NOT LIKE '%Potrait%' AND"
+                    End If
+
+                    If BlindName = "Cellora" Then
+                        AditionalQueries = "Description NOT LIKE '%Potrait%' AND"
+                    End If
+
+                    query = String.Format("SELECT Id, Colour FROM Fabrics WHERE DesignId='{0}' AND Active='1' AND {1} Type='{2}' ORDER BY Name ASC", data.designid, AditionalQueries, data.fabrictype)
                     Return GetFormattedData(query, "Id", "Colour")
 
                 Case "controlsystem"
@@ -235,33 +251,122 @@ Partial Class Methods_Order_CellularBlindMethod
             End If
 
             Dim width As Integer
+            Dim minwidth As Integer = 0
+            Dim maxwidth As Integer = 3000
             If String.IsNullOrEmpty(data.width) Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width is required !",.field = "width"}}
             End If
             If Not Integer.TryParse(data.width, width) OrElse width <= 0 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be a positive integer !",.field = "width"}}
             End If
-            If width > 6000 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 6000 !",.field = "width"}}
+
+            If BlindName = "Cellora" Then
+                Select Case ControlName
+                    Case "Corded"
+                        minwidth = 200
+                        maxwidth = 3000
+
+                    Case "TDBU Corded"
+                        minwidth = 400
+                        maxwidth = 3000
+
+                    Case "DN Corded"
+                        minwidth = 450
+                        maxwidth = 3000
+
+                    Case "Cordless"
+                        minwidth = 400
+                        maxwidth = 2400
+
+                    Case "TDBU Cordless", "DN Cordless"
+                        minwidth = 700
+                        maxwidth = 2400
+                End Select
+
+                If minwidth = 0 OR maxwidth = 0 Then
+                    Throw New Exception("Invalid width range")
+                End If
+            End If
+
+            If width < minwidth Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = String.Format("width must be greater than or equal to {0} !", minwidth), .field = "width"}}
+            End If
+            If width > maxwidth Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = String.Format("width must be less than or equal to {0} !", maxwidth), .field = "width"}}
             End If
 
             Dim drop As Integer
+            Dim mindrop As Integer = 0
+            Dim maxdrop As Integer = 3000
             If String.IsNullOrEmpty(data.drop) Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop is required !",.field = "drop"}}
             End If
             If Not Integer.TryParse(data.drop, drop) OrElse drop <= 0 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be a positive integer !",.field = "drop"}}
             End If
-            If drop > 3000 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3000 !",.field = "drop"}}
+
+            If BlindName = "Cellora" Then
+                Select Case ControlName
+                    Case "Corded"
+                        mindrop = 300
+                        maxdrop = 3600
+
+                    Case "TDBU Corded"
+                        mindrop = 400
+                        maxdrop = 3600
+
+                    Case "DN Corded"
+                        mindrop = 750
+                        maxdrop = 3600
+
+                    Case "Cordless"
+                        mindrop = 400
+                        maxdrop = 2100
+
+                    Case "TDBU Cordless"
+                        mindrop = 450
+                        maxdrop = 2100
+
+                    Case "DN Cordless"
+                        mindrop = 750
+                        maxdrop = 2100
+                End Select
+
+                If mindrop = 0 OR maxdrop = 0 Then
+                    Throw New Exception("Invalid drop range")
+                End If
             End If
 
+            If drop < mindrop Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = String.Format("drop must be greater than or equal to {0} !", mindrop), .field = "drop"}}
+            End If
+            If drop > maxdrop Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = String.Format("drop must be less than or equal to {0} !", maxdrop), .field = "drop"}}
+            End If
+
+            Dim isGalaxyFabrics As Boolean = BlindName = "Galaxy" And ControlName.Contains("DN")
+            Dim isCelloraFabrics As Boolean = BlindName = "Cellora" And ControlName.Contains("DN")
+            Dim addsFabric As string = ""
+            If isGalaxyFabrics Or isCelloraFabrics Then
+                addsFabric = "(day)"
+            End If
+            
             If String.IsNullOrEmpty(data.fabrictype) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type is required !",.field = "fabrictype"}}
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = String.Format("fabric type {0} is required !", addsFabric), .field = "fabrictype"}}
             End If
 
             If String.IsNullOrEmpty(data.fabriccolour) Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = String.Format("fabric colour {0} is required !", addsFabric), .field = "fabriccolour"}}
+            End If
+
+            If isGalaxyFabrics Or isCelloraFabrics Then
+                If String.IsNullOrEmpty(data.fabrictype2) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric type (night) is required !",.field = "fabrictype2"}}
+                End If
+
+                If String.IsNullOrEmpty(data.fabriccolour2) Then
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour (night) is required !",.field = "fabriccolour2"}}
+                End If
             End If
 
             If BlindName =  "Potrait" AND (data.controlsystem Is Nothing OrElse data.controlsystem.Count = 0) Then
@@ -274,7 +379,11 @@ Partial Class Methods_Order_CellularBlindMethod
                 End If
             End IF
 
-            If data.controlsystem IsNot Nothing AndAlso Not data.controlsystem.Contains("Cordless") Then
+           
+            Dim isPotraitControls As Boolean = BlindName = "Potrait" AndAlso data.controlsystem IsNot Nothing AndAlso Not data.controlsystem.Contains("Cordless")
+            Dim isGalaxyControls As Boolean = BlindName = "Galaxy"
+            Dim isCelloraControls As Boolean = BlindName = "Cellora" And ControlName.Contains("Corded")
+            If isPotraitControls Or isGalaxyControls Or isCelloraControls Then
                 If String.IsNullOrEmpty(data.controlposition) Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "control side is required !",.field = "controlposition"}}
                 End If
@@ -322,7 +431,9 @@ Partial Class Methods_Order_CellularBlindMethod
             End If
 
             Dim PriceGroupId2 As String = ""
-            If BlindName = "Galaxy" And (ControlName = "DN Corded" Or ControlName = "DN Cordless") Then
+            Dim isGalaxyPrices As Boolean = BlindName = "Galaxy" And ControlName.Contains("DN")
+            Dim isCelloraPrices As Boolean = BlindName = "Cellora" And ControlName.Contains("DN")
+            If isGalaxyPrices Or isCelloraPrices Then
                 PriceGroupId2 = GetPriceGroupId(data.fabriccolour2, BlindName, data.brackettype, ControlName, data.designid)
                 If PriceGroupId2 = "300" Then
                     Throw New Exception("Price group 2 not found !")
@@ -372,6 +483,11 @@ Partial Class Methods_Order_CellularBlindMethod
             data.sizetype = ""
             data.dropfloor = ""
 
+            If ControlName.Contains("Cordless") Then
+                data.chainlength = "0"
+                data.controlposition = ""
+            End If
+
 
 
             If data.itemaction = "AddItem" OrElse data.itemaction = "CopyItem" Then
@@ -379,7 +495,7 @@ Partial Class Methods_Order_CellularBlindMethod
 
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, ExactId, FabricId, FabricIdB, PriceGroupId, PriceGroupIdB, BlindNo, Qty, Location, LouvreSize, LouvrePosition, Mounting, Width, [Drop], MaterialCord, HangerType, ControlPosition, ChainLength, MotorStyle, AdditionalMotor, BottomHoldDown, DoorCutOut, Accessory, SquareMetre, LinearMetre, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @ExactId, @FabricId, @FabricIdB, @PriceGroupId, @PriceGroupIdB, 'Blind 1', @Qty, @Location, @LouvreSize, @LouvrePosition, @Mounting, @Width, @Drop, @MaterialCord, @HangerType, @ControlPosition, @ChainLength, @MotorStyle, @AdditionalMotor, @BottomHoldDown, @DoorCutOut, @Accessory, @SquareMetre, @LinearMetre, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, ExactId, FabricId, FabricIdB, PriceGroupId, PriceGroupIdB, BlindNo, Qty, Location, LouvreSize, LouvrePosition, Mounting, Width, [Drop], MaterialCord, HangerType, ControlPosition, CordLength, MotorStyle, AdditionalMotor, BottomHoldDown, DoorCutOut, Accessory, SquareMetre, LinearMetre, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @ExactId, @FabricId, @FabricIdB, @PriceGroupId, @PriceGroupIdB, 'Blind 1', @Qty, @Location, @LouvreSize, @LouvrePosition, @Mounting, @Width, @Drop, @MaterialCord, @HangerType, @ControlPosition, @CordLength, @MotorStyle, @AdditionalMotor, @BottomHoldDown, @DoorCutOut, @Accessory, @SquareMetre, @LinearMetre, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
@@ -399,7 +515,7 @@ Partial Class Methods_Order_CellularBlindMethod
                         myCmd.Parameters.AddWithValue("@MaterialCord", data.cordtype)
                         myCmd.Parameters.AddWithValue("@HangerType", controlSystemValue)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
-                        myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
+                        myCmd.Parameters.AddWithValue("@CordLength", data.chainlength)
                         myCmd.Parameters.AddWithValue("@MotorStyle", data.motortype)
                         myCmd.Parameters.AddWithValue("@AdditionalMotor", data.motorextra)
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.holddown)
@@ -432,7 +548,7 @@ Partial Class Methods_Order_CellularBlindMethod
 
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId = @KitId, SoeKitId = @SoeKitId, ExactId = @ExactId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, LouvreSize = @LouvreSize, LouvrePosition = @LouvrePosition, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, MaterialCord = @MaterialCord, HangerType = @HangerType, ControlPosition = @ControlPosition, ChainLength = @ChainLength,  MotorStyle = @MotorStyle, AdditionalMotor = @AdditionalMotor, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, Accessory = @Accessory, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId = @KitId, SoeKitId = @SoeKitId, ExactId = @ExactId, FabricId = @FabricId, FabricIdB = @FabricIdB, PriceGroupId = @PriceGroupId, PriceGroupIdB = @PriceGroupIdB, BlindNo = 'Blind 1', Qty = @Qty, Location = @Location, LouvreSize = @LouvreSize, LouvrePosition = @LouvrePosition, Mounting = @Mounting, Width = @Width, [Drop] = @Drop, MaterialCord = @MaterialCord, HangerType = @HangerType, ControlPosition = @ControlPosition, CordLength = @CordLength,  MotorStyle = @MotorStyle, AdditionalMotor = @AdditionalMotor, BottomHoldDown = @BottomHoldDown, DoorCutOut = @DoorCutOut, Accessory = @Accessory, SquareMetre=@SquareMetre, LinearMetre=@LinearMetre, Notes = @Notes, MarkUp = @MarkUp WHERE Id = @Id")
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", UCase(data.controltype).ToString())
@@ -452,7 +568,7 @@ Partial Class Methods_Order_CellularBlindMethod
                         myCmd.Parameters.AddWithValue("@MaterialCord", data.cordtype)
                         myCmd.Parameters.AddWithValue("@HangerType", controlSystemValue)
                         myCmd.Parameters.AddWithValue("@ControlPosition", data.controlposition)
-                        myCmd.Parameters.AddWithValue("@ChainLength", data.chainlength)
+                        myCmd.Parameters.AddWithValue("@CordLength", data.chainlength)
                         myCmd.Parameters.AddWithValue("@MotorStyle", data.motortype)
                         myCmd.Parameters.AddWithValue("@AdditionalMotor", data.motorextra)
                         myCmd.Parameters.AddWithValue("@BottomHoldDown", data.holddown)
