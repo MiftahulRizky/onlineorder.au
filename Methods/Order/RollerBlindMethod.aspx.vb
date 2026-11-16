@@ -309,9 +309,10 @@ Partial Class Methods_Order_RollerBlindMethod
             If (BlindName = "Cassette" AND data.tubetype = "Motorised") OR BlindName = "Motorised" Then
 
                 If Not InArray(data.brackettype, "Linked 2 Blinds (Dep)", "Linked 3 Blinds (Dep)") Then
-                    If String.IsNullOrEmpty(data.motorstyle) Then
-                        Return New With {.warning = true, .message = "motor style is required !",.field = "motorstyle"}
-                    End If
+                    '#Deslina's request - 16/11/2026
+                    ' If String.IsNullOrEmpty(data.motorstyle) Then
+                    '     Return New With {.warning = true, .message = "motor style is required !",.field = "motorstyle"}
+                    ' End If
                 End If
                 ' If String.IsNullOrEmpty(data.motorremote) Then
                 '     Return New With {.warning = true, .message = "motor remote is required !",.field = "motorremote"}
