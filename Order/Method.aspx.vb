@@ -3118,6 +3118,13 @@ Partial Class Order_Method
         If midrailHeight2 >= drop Then
             Return New With {.error = true, .message = "THE HEIGHT OF MIDRAIL 2 SHOULD NOT BE EQUAL TO OR MORE THAN YOUR ORDER HEIGHT"}
         End If
+        If drop > 1500 Then
+            If midrailHeight1 = 0 Then 
+                Return New With {.error = true, .message = "MIDRAIL HEIGHT IS REQUIRED. <br /> MAXIMUM ONE SECTION IS 1500MM !"}
+            End If
+        End If
+
+
         
 
         If blindName = "Hinged" Or blindName = "Hinged Bi-fold" Or blindName = "Track Bi-fold" Then
