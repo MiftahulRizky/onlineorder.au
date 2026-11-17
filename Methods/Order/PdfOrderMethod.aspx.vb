@@ -509,7 +509,7 @@ Partial Class Methods_Order_PdfOrderMethod
             result += trEnd
 
             result += trStart
-            result += tdStart & note & tdEnd
+            result += String.Format("{0}<h2 style='margin:0;padding:0;color:red;font-weight:bold;'>{1}</h2>{2}",tdStart, note, tdEnd)
             result += trEnd
 
             result += tableEnd
