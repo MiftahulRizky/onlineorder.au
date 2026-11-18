@@ -1170,10 +1170,12 @@ const handlerElementVisibility = async (
     const isSkinOnly = blindname === "Skin Only";
     const isTubeBottom = brackettype === "With Tube & Bottom Included";
     const isTubes = brackettype === "With Tube Included";
+    const isSingle = brackettype === "Single";
     const isLinked2Ind = brackettype === "Linked 2 Blinds (Ind)";
     const isLinked2Dep = brackettype === "Linked 2 Blinds (Dep)";
     const isLinked3Ind = brackettype === "Linked 3 Blinds (Ind)";
     const isLinked3Dep = brackettype === "Linked 3 Blinds (Dep)";
+    const isLinking = brackettype?.includes("Linked");
     const isBlind1 = elForm.lblBlindNo.innerHTML === "Blind 1";
     const isBlind2 = elForm.lblBlindNo.innerHTML === "Blind 2";
     const isBlind3 = elForm.lblBlindNo.innerHTML === "Blind 3";
@@ -1293,9 +1295,9 @@ const handlerElementVisibility = async (
       toggleShow(elForm.lblControlPosition, true);
       elForm.lblControlPosition.innerHTML = "control side";
       toggleShow(elForm.divBracketCover, true);
-      if (["Single"].includes(brackettype)) {
-        toggleShow(elForm.divBracketExt, true);
-      }
+      // if (["Single", "Linked"].includes(brackettype)) {
+      //   toggleShow(elForm.divBracketExt, true);
+      // }
     }
 
     if (isMotorised) {
@@ -1315,7 +1317,7 @@ const handlerElementVisibility = async (
       elForm.lblControlPosition.innerHTML = "motor side";
       toggleShow(elForm.divExtras, true);
       toggleShow(elForm.divBracketCover, true);
-      if (["Single"].includes(brackettype)) {
+      if (isSingle) {
         toggleShow(elForm.divBracketExt, true);
       }
     }
@@ -1328,7 +1330,7 @@ const handlerElementVisibility = async (
         toggleShow(elForm.lblControlPosition, true);
         toggleShow(elForm.divChain, true);
         toggleShow(elForm.divBracketCover, true);
-        if (["Single"].includes(brackettype)) {
+        if (isSingle || isLinking) {
           toggleShow(elForm.divBracketExt, true);
         }
       }

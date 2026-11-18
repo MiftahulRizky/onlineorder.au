@@ -243,7 +243,7 @@ Partial Class Methods_Order_RollerBlindMethod
             Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.blindtype))
             Dim qty As Integer
             If String.IsNullOrEmpty(data.qty) Then
-                Return New With { .warning = true, .message = "qty type is required !", .field = "qty"}
+                Return New With { .warning = true, .message = "qty is required !", .field = "qty"}
             End If
             If Not Integer.TryParse(data.qty, qty) OrElse qty <= 0 Then
                 Return New With { .warning = true, .message = "please check your qty !", .field = "qty"}
@@ -1022,7 +1022,7 @@ Partial Class Methods_Order_RollerBlindMethod
             '     data.accessory = ""
             ' End If
 
-            If data.brackettype = "Double" Then
+            If BlindName = "Cassette" OR (BlindName = "Motorised" And Not data.brackettype = "Single") OR (BlindName = "Standard" And Not InArray(data.brackettype, "Single", "Linked")) Then
                 data.bracketext = ""
             End If
 
