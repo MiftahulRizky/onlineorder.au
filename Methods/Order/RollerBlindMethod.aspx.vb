@@ -241,6 +241,14 @@ Partial Class Methods_Order_RollerBlindMethod
     Public Shared Function Submit(ByVal data As ParamSubmit) As Object
         Try
             Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.blindtype))
+            Dim isStandard As Boolean = BlindName = "Standard"
+            Dim isMotorised As Boolean = BlindName = "Motorised"
+            Dim isCassette As Boolean = BlindName = "Cassette"
+            Dim isSkin As Boolean = BlindName = "Skin Only"
+            Dim isLinking As Boolean = data.brackettype.Contains("Linked")
+            Dim isSingle As Boolean = data.brackettype = "Single"
+
+
             Dim qty As Integer
             If String.IsNullOrEmpty(data.qty) Then
                 Return New With { .warning = true, .message = "qty is required !", .field = "qty"}
@@ -1022,9 +1030,20 @@ Partial Class Methods_Order_RollerBlindMethod
             '     data.accessory = ""
             ' End If
 
-            If BlindName = "Cassette" OR (BlindName = "Motorised" And Not data.brackettype = "Single") OR (BlindName = "Standard" And Not InArray(data.brackettype, "Single", "Linked")) Then
-                data.bracketext = ""
-            End If
+            ' If isCassette Then
+            '     data.bracketext = ""
+            ' End If
+
+            ' If isMotorised And isSingle = False Then
+            '     data.bracketext = ""
+            ' End If
+
+            ' If isStandard And (isSingle = False Or isLinking = False) Then
+            '     data.bracketext = ""
+            ' End If
+
+            
+
 
             
             
