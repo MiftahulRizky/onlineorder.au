@@ -3271,7 +3271,7 @@ const showCopyMessage = () => {
 
   setTimeout(() => {
     el.classList.add("d-none"); // sembunyikan lagi
-  }, 1500); // 1.5 detik
+  }, 3000); // 1.5 detik
 };
 
 const toggleShow = (el, show) => {

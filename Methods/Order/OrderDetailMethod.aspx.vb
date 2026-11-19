@@ -16,6 +16,7 @@ Imports iTextSharp.text.pdf
 Imports iTextSharp.tool.xml
 Imports Microsoft.VisualBasic
 Imports Newtonsoft.Json
+Imports Newtonsoft.Json.Linq
 Imports System.Net
 Imports System.Net.Mail
 Imports System.Net.Http
@@ -1259,11 +1260,24 @@ Partial Class Methods_Order_OrderDetailMethod
                 For Each dr As DataRow In DetailData.Tables(0).Rows
                     Dim DesignName As String = dr("DesignName").ToString()
                     Dim BlindName As String = dr("BlindName").ToString()
+                    Dim ControlType As String = dr("BlindName").ToString()
                     Dim ControlPosition As String = dr("ControlPosition").ToString()
+                    Dim MaterialChain As String = dr("MaterialChain").ToString()
+                    Dim MaterialWand As String = dr("MaterialCord").ToString()
+                    Dim ChainLength As Integer = If(IsDBNull(dr("ChainLength")), 0, CInt(dr("ChainLength")))
+                    Dim ChainLengthText As String = ""
+                    Dim WandLength As Integer = If(IsDBNull(dr("WandLength")), 0, CInt(dr("WandLength")))
+                    Dim WandLengthText As String = ""
+                    Dim isChain As Boolean = ControlType = "Chain"
+                    Dim isWand As Boolean = ControlType = "Wand"
+                    Dim Cleat As String = dr("Cleat").ToString()
+                    Dim Sloping As String = dr("Cleat").ToString()
+                    Dim BottomHoldDown As String = dr("BottomHoldDown").ToString()
+                    Dim InsertInTrack As String = dr("InsertInTrack").ToString()
                     
 
-                    Dim Parts As String() = ControlPosition.Split("|"c)
                     Dim ControlLift As String = ""
+                    Dim Parts As String() = ControlPosition.Split("|"c)
                     Dim ControlTilt As String = ""
 
                     If Parts.Length >= 2 Then
@@ -1279,6 +1293,47 @@ Partial Class Methods_Order_OrderDetailMethod
                         DesignName = "Aluminium Blinds"
                     End If
 
+                    If DesignName = "Global Vertical Blinds" Then
+                        If Not String.IsNullOrWhiteSpace(MaterialChain) Then
+                            Dim materialJson = JObject.Parse(MaterialChain)
+
+                            If materialJson("name") IsNot Nothing Then
+                                ChainLengthText = materialJson("name").ToString()
+                            End If
+
+                            If materialJson("value") IsNot Nothing Then
+                                ChainLength = CInt(materialJson("value").ToString())
+                            End If
+                        End If
+
+                        If Not String.IsNullOrWhiteSpace(MaterialWand) Then
+                            Dim materialJson = JObject.Parse(MaterialWand)
+
+                            If materialJson("name") IsNot Nothing Then
+                                WandLengthText = materialJson("name").ToString()
+                            End If
+
+                            If materialJson("value") IsNot Nothing Then
+                                WandLength = CInt(materialJson("value").ToString())
+                            End If
+
+                        End If
+
+                        If InsertInTrack = "1" Or InsertInTrack.ToLower() = "true" Then
+                            InsertInTrack = "Yes"
+                        Else
+                            InsertInTrack = "No"
+                        End If
+
+                        Cleat = ""
+                        BottomHoldDown = ""
+                        MaterialChain = ""
+                    End If
+
+                    If DesignName = "Global Roman Blinds" Then
+                        Sloping = ""
+                    End If
+
                     CType(order("Details"), List(Of Object)).Add(New With {
                         .KitName = dr("KitName").ToString(),
                         .BracketType = dr("BracketType").ToString(),
@@ -1287,6 +1342,7 @@ Partial Class Methods_Order_OrderDetailMethod
                         .ColourType = dr("ColourType").ToString(),
                         .DesignName = DesignName,
                         .BlindName = dr("BlindName").ToString(),
+                        .FabricInsert = InsertInTrack,
                         .FabricType = dr("FabricType").ToString(),
                         .FabricTypeB = dr("FabricTypeB").ToString(),
                         .FabricColour = dr("FabricColour").ToString(),
@@ -1294,6 +1350,7 @@ Partial Class Methods_Order_OrderDetailMethod
                         .UniqueId = dr("UniqueId").ToString(),
                         .BlindNo = dr("BlindNo").ToString(),
                         .Qty = If(IsDBNull(dr("Qty")), 0, CInt(dr("Qty"))),
+                        .BlindQuantity = If(IsDBNull(dr("SlatQty")), 0, CInt(dr("SlatQty"))),
                         .Room = dr("Location").ToString(),
                         .Mounting = dr("Mounting").ToString(),
                         .Width = If(IsDBNull(dr("Width")), 0, CInt(dr("Width"))),
@@ -1301,14 +1358,16 @@ Partial Class Methods_Order_OrderDetailMethod
                         .Layout = dr("Layout").ToString(),
                         .NumOfPanel = If(IsDBNull(dr("NumOfPanel")), 0, CInt(dr("NumOfPanel"))),
                         .TwoOnOneHeadreal = dr("DoorCutOut").ToString(),
+                        .StackPosition = dr("StackPosition").ToString(),
                         .ControlPosition = ControlPosition,
                         .ControlLength = If(IsDBNull(dr("ControlLength")), 0, CInt(dr("ControlLength"))),
                         .ControlLift = ControlLift,
                         .ControlTilt = ControlTilt,
                         .TilterPosition = dr("TilterPosition").ToString(),
                         .RollDirection = dr("RollDirection").ToString(),
-                        .ChainLength = If(IsDBNull(dr("ChainLength")), 0, CInt(dr("ChainLength"))),
-                        .MaterialChain = dr("MaterialChain").ToString(),
+                        .ChainLength = ChainLength,
+                        .ChainLengthText = ChainLengthText,
+                        .MaterialChain = MaterialChain,
                         .ChainColour = dr("ChainColour").ToString(),
                         .BottomType = dr("BottomType").ToString(),
                         .BottomColour = dr("BottomColour").ToString(),
@@ -1317,17 +1376,22 @@ Partial Class Methods_Order_OrderDetailMethod
                         .NumOfWand = If(IsDBNull(dr("NumOfWand")), 0, CInt(dr("NumOfWand"))),
                         .WandPosition = dr("WandPosition").ToString(),
                         .WandColour = dr("WandColour").ToString(),
-                        .WandLength = If(IsDBNull(dr("WandLength")), 0, CInt(dr("WandLength"))),
+                        .WandLength = WandLength,
+                        .WandLengthText = WandLengthText,
                         .CordColour = dr("CordColour").ToString(),
                         .CordLength = If(IsDBNull(dr("CordLength")), 0, CInt(dr("CordLength"))),
                         .AcornPlasticColour = dr("AcornPlasticColour").ToString(),
                         .Batten = dr("Batten").ToString(),
                         .BattenColour = dr("BattenColour").ToString(),
+                        .ExtensionBracket = dr("BracketExtension").ToString(),
                         .BracketOption = dr("BracketOption").ToString(),
                         .BracketColour = dr("BracketColour").ToString(),
+                        .CoverValance = dr("BracketCover").ToString(),
                         .Fitting = dr("Fitting").ToString(),
-                        .Cleat = dr("Cleat").ToString(),
-                        .BottomHoldDown = dr("BottomHoldDown").ToString(),
+                        .Sloping = Sloping,
+                        .Cleat = Cleat,
+                        .BottomJoining = dr("BottomHoldDown").ToString(),
+                        .BottomHoldDown = BottomHoldDown,
                         .PelmetType = dr("PelmetType").ToString(),
                         .PelmetWidth = If(IsDBNull(dr("PelmetWidth")), 0, CInt(dr("PelmetWidth"))),
                         .PelmetReturnLeft = If(IsDBNull(dr("PelmetReturnSize")), 0, CInt(dr("PelmetReturnSize"))),
@@ -1348,8 +1412,8 @@ Partial Class Methods_Order_OrderDetailMethod
                     })
                 Next
 
-                Dim Res As Object = UpdateOrderSending(headerid, "BIG", True)
-                If Res.error Then Throw New Exception(Res.message)
+                ' Dim Res As Object = UpdateOrderSending(headerid, "BIG", True)
+                ' If Res.error Then Throw New Exception(Res.message)
 
                 Dim json As String = JsonConvert.SerializeObject(order)
                 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12

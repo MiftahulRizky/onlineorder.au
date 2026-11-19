@@ -278,7 +278,7 @@
                                     <span style="font-size:larger;">Job Number :</span>
                                     <br />
                                     <div  id="spanJoNumber" style="font-size: larger; cursor: pointer;"></div>
-                                    <div  id="spanJoNumberMsg"  class="fst-italic text-secondary">Copied</div>
+                                    <span  id="spanJoNumberMsg"  class="badge bg-green-lt mt-1"><i class="ti ti-check"></i> Copied!</>
                                 </div>
                                 <div class="col-lg-4" id="divOrderSending">
                                     <span style="font-size:larger;">Order Sending :</span>
@@ -811,7 +811,7 @@
         let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.34"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.35"></script>
 
 
 </asp:Content>
