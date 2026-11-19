@@ -34,6 +34,7 @@ Partial Class Methods_Order_RomanBlindMethod
         Public Property plasticcolour As String
         Public Property cleat As String
         Public Property battencolour As String
+        Public Property covervalance As String
         Public Property notes As String
         Public Property markup As String
         
@@ -101,30 +102,30 @@ Partial Class Methods_Order_RomanBlindMethod
                 Case "fabrictype"
                     Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id='{0}'", UCase(data.blindtype).ToString()))
                     Dim ControlName As String = publicCfg.GetItemData(String.Format("SELECT ControlType FROM HardwareKits WHERE Id='{0}'", UCase(data.controltype).ToString()))
-                    Dim des As String = ""
-                    Select Case BlindName
-                        Case "Classic"
-                            If ControlName = "Cord" Then
-                                des = "Cord Classic"
-                            End If
-                            If ControlName = "Chain" Then
-                                des = "Chain Classic"
-                            End If
-                        Case "Plantation"
-                            If ControlName = "Chain" Then
-                                des = "Chain Plantation"
-                            End If
-                            If ControlName = "Cord" Then
-                                des = "Cord Plantation"
-                            End If
-                        Case "Sewless"
-                            If ControlName = "Chain" Then
-                                des = "Chain Sewless"
-                            End If
-                            If ControlName = "Cord" Then
-                                des = "Cord Sewless"
-                            End If
-                    End Select
+                    Dim des As String = BlindName
+                    ' Select Case BlindName
+                    '     Case "Classic"
+                    '         If ControlName = "Cord" Then
+                    '             des = "Cord Classic"
+                    '         End If
+                    '         If ControlName = "Chain" Then
+                    '             des = "Chain Classic"
+                    '         End If
+                    '     Case "Plantation"
+                    '         If ControlName = "Chain" Then
+                    '             des = "Chain Plantation"
+                    '         End If
+                    '         If ControlName = "Cord" Then
+                    '             des = "Cord Plantation"
+                    '         End If
+                    '     Case "Sewless"
+                    '         If ControlName = "Chain" Then
+                    '             des = "Chain Sewless"
+                    '         End If
+                    '         If ControlName = "Cord" Then
+                    '             des = "Cord Sewless"
+                    '         End If
+                    ' End Select
                     query = String.Format("SELECT Type FROM Fabrics WHERE DesignId='{0}' AND Description LIKE '%{1}%'AND Active='1' GROUP BY Type ORDER BY Type ASC", data.designid, des)
                     Return GetFormattedData(query, "Type", "Type")
 
@@ -308,6 +309,10 @@ Partial Class Methods_Order_RomanBlindMethod
                 End If
             End If
 
+            If String.IsNullOrEmpty(data.covervalance) Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "cover valance is required !",.field = "covervalance"}}
+            End If
+
             If Not String.IsNullOrEmpty(data.notes) Then
                 If InStr(data.notes, "&") > 0 Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "notes must not contain [&] character !",.field = "notes"}}
@@ -381,7 +386,7 @@ Partial Class Methods_Order_RomanBlindMethod
                 Dim itemId As String = publicCfg.CreateOrderItemId()
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, BlindNo, Qty, Location, Mounting, Width, [Drop], ControlPosition, MaterialChain, ChainLength, CordColour, CordLength, BattenColour,  AcornPlasticColour, Cleat, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @MaterialChain, @ChainLength, @CordColour, @CordLength, @BattenColour, @AcornPlasticColour, @Cleat, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
+                    Using myCmd As New SqlCommand("INSERT INTO OrderDetails(Id, HeaderId, KitId, SoeKitId, ExactId, FabricId, ChainId, PriceGroupId, BlindNo, Qty, Location, Mounting, Width, [Drop], ControlPosition, MaterialChain, ChainLength, CordColour, CordLength, BattenColour,  AcornPlasticColour, Cleat, BracketCover, Notes, Matrix, Charge, Discount, TotalMatrix, TotalCharge, TotalDiscount, MarkUp, Active) VALUES (@Id, @HeaderId, @KitId, @SoeKitId, @ExactId, @FabricId, @ChainId, @PriceGroupId, 'Blind 1', @Qty, @Location, @Mounting, @Width, @Drop, @ControlPosition, @MaterialChain, @ChainLength, @CordColour, @CordLength, @BattenColour, @AcornPlasticColour, @Cleat, @BracketCover, @Notes, 0, 0, 0, 0, 0, 0, @MarkUp, 1)", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.controltype), DBNull.Value, UCase(data.controltype).ToString()))
@@ -403,6 +408,7 @@ Partial Class Methods_Order_RomanBlindMethod
                         myCmd.Parameters.AddWithValue("@BattenColour", data.battencolour)
                         myCmd.Parameters.AddWithValue("@AcornPlasticColour", data.plasticcolour)
                         myCmd.Parameters.AddWithValue("@Cleat", data.cleat)
+                        myCmd.Parameters.AddWithValue("@BracketCover", data.covervalance)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
                         myCmd.Connection = thisConn
@@ -427,7 +433,7 @@ Partial Class Methods_Order_RomanBlindMethod
                 Dim itemId As String = data.itemid
 
                 Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, BlindNo='Blind 1', Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, ControlPosition=@ControlPosition, MaterialChain=@MaterialChain, ChainLength=@ChainLength, CordColour=@CordColour, CordLength=@CordLength, BattenColour=@BattenColour, AcornPlasticColour=@AcornPlasticColour, Cleat=@Cleat, Notes=@Notes, Matrix=0, Charge=0, Discount=0, TotalMatrix=0, TotalCharge=0, TotalDiscount=0, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, BlindNo='Blind 1', Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, ControlPosition=@ControlPosition, MaterialChain=@MaterialChain, ChainLength=@ChainLength, CordColour=@CordColour, CordLength=@CordLength, BattenColour=@BattenColour, AcornPlasticColour=@AcornPlasticColour, Cleat=@Cleat, BracketCover=@BracketCover, Notes=@Notes, Matrix=0, Charge=0, Discount=0, TotalMatrix=0, TotalCharge=0, TotalDiscount=0, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
                         ' myCmd.Parameters.AddWithValue("@HeaderId", UCase(data.headerid).ToString())
                         myCmd.Parameters.AddWithValue("@KitId", If(String.IsNullOrEmpty(data.controltype), DBNull.Value, UCase(data.controltype).ToString()))
@@ -449,6 +455,7 @@ Partial Class Methods_Order_RomanBlindMethod
                         myCmd.Parameters.AddWithValue("@BattenColour", data.battencolour)
                         myCmd.Parameters.AddWithValue("@AcornPlasticColour", data.plasticcolour)
                         myCmd.Parameters.AddWithValue("@Cleat", data.cleat)
+                        myCmd.Parameters.AddWithValue("@BracketCover", data.covervalance)
                         myCmd.Parameters.AddWithValue("@Notes", data.notes)
                         myCmd.Parameters.AddWithValue("@MarkUp", markup)
                         myCmd.Connection = thisConn

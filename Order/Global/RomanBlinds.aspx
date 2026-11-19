@@ -193,6 +193,13 @@
                                         </div>
                                     </div>
 
+                                    <div class="mb-3 row" id="divCoverValance">
+                                        <label for="covervalance" class="col-lg-3 text-uppercase fw-bold">cover valance</label>
+                                        <div class="col-lg-4">
+                                            <select name="covervalance" id="covervalance" class="form-control "></select>
+                                        </div>
+                                    </div>
+
                                     <div class="mb-3 row" >
                                         <label for="notes" class="col-lg-3 text-uppercase fw-bold">special information</label>
                                         <div class="col-lg-8">

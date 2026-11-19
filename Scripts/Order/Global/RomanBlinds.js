@@ -33,6 +33,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
       const blindtype = blinds.value;
       const blindname = blinds.selectedOptions[0].dataset.name;
       const controltype = e.target.value;
+      const controlname = e.target.selectedOptions[0].dataset.name;
       await handlerElementVisibility(blindtype, controltype);
       await bindFabrics(DESIGNID, blindtype, controltype);
       await Promise.all([
@@ -43,6 +44,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindBattenColour(blindname),
         bindPlasticColour(),
         bindCleat(),
+        bindCoverValance(controlname),
       ]);
     }
 
@@ -166,10 +168,11 @@ const bindControls = async (designid, blindtype) => {
     lengthDefaultOption: 1,
 
     onSingle: async (item, select) => {
+      const blinds = getById("blindtype");
+      const blindname = blinds.selectedOptions[0].dataset.name;
       const controltype = item.value;
-      const blindname = await getItemData(
-        `SELECT Name FROM Blinds WHERE Id = '${blindtype}'`,
-      );
+      const controlname = item.dataset.name;
+
       await handlerElementVisibility(blindtype, controltype);
       await bindFabrics(designid, blindtype, controltype);
       await Promise.all([
@@ -180,13 +183,14 @@ const bindControls = async (designid, blindtype) => {
         bindBattenColour(blindname),
         bindPlasticColour(),
         bindCleat(),
+        bindCoverValance(controlname),
       ]);
     },
   });
 };
 
 const bindMounting = () => {
-  generateOption("mounting", ["Make Size", "Face Fit", "Reveal Fit"]);
+  generateOption("mounting", ["Face Fit"], 1);
 };
 
 const bindFabrics = async (designid, blindtype, controltype) => {
@@ -236,7 +240,7 @@ const bindChainColour = (materialchain) => {
   if (!materialchain) return;
   let list = [];
   if (materialchain == "Chrome") {
-    list.push("Chrome");
+    list.push("Nickel Plated");
   }
 
   if (materialchain == "Plastic") {
@@ -283,6 +287,24 @@ const bindCleat = () => {
   generateOption("cleat", ["Plastic"]);
 };
 
+const bindCoverValance = (controltype) => {
+  const isChain = controltype === "Chain";
+  const isCord = controltype === "Cord";
+  let list = [];
+
+  if (isChain) {
+    list.push("No Cover Valance");
+  }
+
+  if (isCord) {
+    list.push(
+      "Cover Valance & Cord at Front",
+      "No Cover Valance & Cord at Back",
+    );
+  }
+  generateOption("covervalance", list, 1);
+};
+
 const bindItemOrders = async (itemid) => {
   try {
     if (!itemid) return;
@@ -325,6 +347,7 @@ const bindItemOrders = async (itemid) => {
         bindBattenColour(item.BlindName),
         bindPlasticColour(),
         bindCleat(),
+        bindCoverValance(item.ControlType),
       ]);
       await Promise.all([handlerSetElementValues(item)]);
     }
@@ -346,6 +369,7 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
     const divBattenColour = document.getElementById("divBattenColour");
     const divPlasticColour = document.getElementById("divPlasticColour");
     const divCleat = document.getElementById("divCleat");
+    const divCoverValance = document.getElementById("divCoverValance");
 
     const divMarkUp = document.getElementById("divMarkUp");
     const btnSubmit = document.querySelector("#btnSubmit");
@@ -358,6 +382,7 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
     divBattenColour.classList.add("d-none");
     divPlasticColour.classList.add("d-none");
     divCleat.classList.add("d-none");
+    divCoverValance.classList.add("d-none");
 
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");
@@ -383,6 +408,7 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
       if (["Chain"].includes(controlname)) {
         divChained.classList.remove("d-none");
       }
+      divCoverValance.classList.remove("d-none");
     }
 
     if (["Plantation"].includes(blindname)) {
@@ -394,6 +420,7 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
       if (["Chain"].includes(controlname)) {
         divChained.classList.remove("d-none");
       }
+      divCoverValance.classList.remove("d-none");
       divBattenColour.classList.remove("d-none");
     }
 
@@ -407,6 +434,7 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
         divChained.classList.remove("d-none");
       }
       divBattenColour.classList.remove("d-none");
+      divCoverValance.classList.remove("d-none");
     }
 
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
@@ -450,6 +478,7 @@ const handlerSubmit = async (button) => {
       "battencolour", // as BattenColour
       "plasticcolour", // as New AcornPlasticColour
       "cleat", // as New Cleat
+      "covervalance",
       "notes", // as Notes
       "markup", // as Markup
     ];
@@ -578,6 +607,7 @@ const handlerSetElementValues = (itemData) => {
     battencolour: "BattenColour",
     plasticcolour: "AcornPlasticColour",
     cleat: "Cleat",
+    covervalance: "BracketCover",
     notes: "Notes",
     markup: "MarkUp",
   };

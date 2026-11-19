@@ -955,6 +955,9 @@ Partial Class Methods_Order_OrderDetailMethod
                 End If
                 If BlindName = "Track Only" Then
                     Product = String.Format("{0} (Width : {1}mm)", KitName, Width)
+                    If Not String.IsNullOrEmpty(FabricType) Then
+                        Product = String.Format("{0} #{1} (Width : {2}mm)", KitName, FabricType, Width)
+                    End If
                 End If
             End If
     
@@ -1237,7 +1240,7 @@ Partial Class Methods_Order_OrderDetailMethod
                 {"Details", New List(Of Object)()}
             }
 
-            Dim GlobalProduct As String = "AND (DesignName LIKE '%Global%' OR BlindName IN ('25mm Aluminium', '50mm Mockwood', '50mm Mockwood (Cordless)', '63mm Mockwood', '50mm Wooden', '63mm Wooden'))"
+            Dim GlobalProduct As String = "AND (DesignName LIKE '%Global%' OR BlindName IN ('25mm Aluminium', '50mm Mockwood', '50mm Mockwood (Cordless)', '63mm Mockwood', '50mm Wooden', '63mm Wooden', 'Cellora'))"
 
             Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT*FROM view_details WHERE HeaderId = '{0}' {1} AND Active=1 ORDER BY Id ASC", headerid, GlobalProduct))
             Dim DetailCount As Integer = DetailData.Tables(0).Rows.Count
@@ -1285,7 +1288,9 @@ Partial Class Methods_Order_OrderDetailMethod
                         .DesignName = DesignName,
                         .BlindName = dr("BlindName").ToString(),
                         .FabricType = dr("FabricType").ToString(),
+                        .FabricTypeB = dr("FabricTypeB").ToString(),
                         .FabricColour = dr("FabricColour").ToString(),
+                        .FabricColourB = dr("FabricColourB").ToString(),
                         .UniqueId = dr("UniqueId").ToString(),
                         .BlindNo = dr("BlindNo").ToString(),
                         .Qty = If(IsDBNull(dr("Qty")), 0, CInt(dr("Qty"))),

@@ -805,17 +805,20 @@ const bindTrims = (blindname, brackettype, tubetype) => {
   }
 
   if (blindname == "Skin Only") {
-    if (brackettype == "Excluded" || brackettype == "With Tube Included") {
+    if (
+      brackettype == "Skin Only" ||
+      brackettype == "Skin With Tube Included"
+    ) {
       list.push("1P", "Spline");
     }
 
-    if (brackettype == "Excluded") {
+    if (brackettype == "Skin Only") {
       list.push("Pocket", "1RS", "1OS", "Added Trim");
     }
 
     if (
-      brackettype == "With Tube & Bottom Included" ||
-      brackettype == "With Bottom Included"
+      brackettype == "Skin With Tube & Bottom Included" ||
+      brackettype == "Skin With Bottom Included"
     ) {
       list.push(
         "1P",
@@ -1168,8 +1171,8 @@ const handlerElementVisibility = async (
     const isMotorised = blindname === "Motorised";
     const isStandard = blindname === "Standard";
     const isSkinOnly = blindname === "Skin Only";
-    const isTubeBottom = brackettype === "With Tube & Bottom Included";
-    const isTubes = brackettype === "With Tube Included";
+    const isTubeBottom = brackettype === "Skin With Tube & Bottom Included";
+    const isTubes = brackettype === "Skin With Tube Included";
     const isSingle = brackettype === "Single";
     const isLinked2Ind = brackettype === "Linked 2 Blinds (Ind)";
     const isLinked2Dep = brackettype === "Linked 2 Blinds (Dep)";
@@ -1193,6 +1196,10 @@ const handlerElementVisibility = async (
     if (isCassette) {
       elForm.lblBracketType.innerHTML = "cassette type";
       elForm.lblColourType.innerHTML = "cassette colour";
+    }
+
+    if (isSkinOnly) {
+      elForm.lblBracketType.innerHTML = "skin type";
     }
 
     if (isMotorised || isStandard) {

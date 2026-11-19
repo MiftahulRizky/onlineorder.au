@@ -252,9 +252,22 @@ const bindDropFloor = () => {
 const bindMounting = (blindname) => {
   if (!blindname) return;
 
-  const list = ["Reveal Fit", "Face Fit"];
+  const list = [];
+
   if (["Potrait"].includes(blindname)) {
-    list.push("Make Size");
+    list.push("Reveal Fit", "Face Fit", "Make Size");
+  }
+
+  if (["Galaxy"].includes(blindname)) {
+    list.push("Reveal Fit", "Face Fit");
+  }
+  if (["Cellora"].includes(blindname)) {
+    list.push(
+      "Make Size Face Fit",
+      "Make Size Reveal Fit",
+      "Opening Size Face Fit",
+      "Opening Size Reveal Fit",
+    );
   }
   generateOption("mounting", list);
 };

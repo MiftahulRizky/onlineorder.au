@@ -40,7 +40,7 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
         bindMounting(),
         bindLayoutCode(),
         // bindNoPanel(),
-        bindTrackType(),
+        // bindTrackType(),
         bindTrackColour(),
         bindWandPosition(),
         bindWandLength(),
@@ -77,8 +77,15 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
     // }
 
     if (e.target.id === "layoutcode") {
-      const layout = e.target.value;
-      bindNoPanel(layout);
+      const layoutcode = e.target.value;
+      bindNoPanel(layoutcode);
+      getById("tracktype").innerHTML = "";
+    }
+
+    if (e.target.id === "nopanel") {
+      const layoutcode = getById("layoutcode").value;
+      const nopanel = e.target.value;
+      bindTrackType(layoutcode, nopanel);
     }
   });
   el.addEventListener("input", (e) => {
@@ -287,14 +294,52 @@ const bindNoPanel = (layout) => {
   generateOption("nopanel", list);
 };
 
-const bindTrackType = () => {
-  generateOption("tracktype", [
-    "2 Channel Track",
-    "3 Channel Track",
-    "4 Channel Track",
-    "5 Channel Track",
-    "6 Channel Track",
-  ]);
+const bindTrackType = (layout, nopanel) => {
+  let list = [];
+  const firstLayout = ["A", "B", "C", "D"].includes(layout);
+  const secondLayout = ["E", "F"].includes(layout);
+
+  if (firstLayout) {
+    switch (nopanel) {
+      case "2":
+        list.push("2 Channel Track");
+        break;
+      case "3":
+        list.push("3 Channel Track");
+        break;
+      case "4":
+        list.push("4 Channel Track");
+        break;
+      case "5":
+        list.push("5 Channel Track");
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  if (secondLayout) {
+    switch (nopanel) {
+      case "3":
+        list.push("2 Channel Track");
+        break;
+      case "5":
+        list.push("3 Channel Track");
+        break;
+      case "7":
+        list.push("4 Channel Track");
+        break;
+      case "9":
+        list.push("5 Channel Track");
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  generateOption("tracktype", list, 1);
 };
 
 const bindTrackColour = (tracktype) => {
@@ -387,6 +432,7 @@ const handlerElementVisibility = async (blindtype, colourtype, item) => {
 
     if (!colourtype) return;
     divFormDetail.classList.remove("d-none");
+    divTrack.classList.remove("d-none");
 
     if (["Plantation", "Sewless"].includes(blindname)) {
       // divBatten.classList.remove("d-none");
@@ -640,7 +686,7 @@ const bindItemOrders = async (itemid) => {
         bindMounting(),
         bindLayoutCode(),
         bindNoPanel(item.Layout),
-        bindTrackType(),
+        bindTrackType(item.Layout, item.NumOfPanel),
         bindTrackColour(item.TrackType),
         bindWandPosition(),
         bindWandLength(),
@@ -789,25 +835,16 @@ const bindSelect = async ({
   }
 };
 
-const generateOption = (elementId, list = []) => {
+const generateOption = (elementId, list = [], lengthDefaultOption = 0) => {
   const sel = document.getElementById(elementId);
   if (!sel) return;
   sel.innerHTML = ""; // reset
-
-  let validateLength = 1;
-  switch (elementId) {
-    case "trackless":
-    case "frametype":
-    case "handleheight":
-      validateLength = 0;
-      break;
-  }
 
   // Short A-Z
   list.sort();
 
   // default option kalau lebih dari 1 data
-  if (list.length > validateLength) {
+  if (list.length > lengthDefaultOption) {
     const defaultOption = new Option("", "");
     sel.add(defaultOption);
   }

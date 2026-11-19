@@ -16,6 +16,7 @@ Imports iTextSharp.text.pdf
 Imports iTextSharp.tool.xml
 Imports Microsoft.VisualBasic
 Imports Newtonsoft.Json
+Imports Newtonsoft.Json.Linq
 Imports System.Net
 Imports System.Net.Mail
 Imports System.Net.Http
@@ -1795,8 +1796,8 @@ Partial Class Methods_Order_PdfOrderMethod
                     result += tdStart & i + 1 & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("FabricWidth").ToString() & tdEnd
@@ -3129,21 +3130,23 @@ Partial Class Methods_Order_PdfOrderMethod
                 result += thStartRowSpan2 & "Drop" & thEnd
                 result += thStartRowSpan2 & "Layout" & thEnd
                 result += thStartRowSpan2 & "No Panel" & thEnd
-                result += thStartColSpan2 & "Track" & thEnd
-                result += thStartColSpan3 & "Wand" & thEnd
+                result += thStartRowSpan2 & "Track" & thEnd
+                result += thStartRowSpan2 & "Wand Length" & thEnd
+                ' result += thStartColSpan2 & "Track" & thEnd
+                ' result += thStartColSpan3 & "Wand" & thEnd
                 result += thStartRowSpan2 & "Bottom Rail" & thEnd
-                result += thStartRowSpan2 & "Batten" & thEnd
-                result += thStartRowSpan2 & "Batten Colour" & thEnd
-                result += thStartRowSpan2 & "Fitting" & thEnd
+                ' result += thStartRowSpan2 & "Batten" & thEnd
+                ' result += thStartRowSpan2 & "Batten Colour" & thEnd
+                ' result += thStartRowSpan2 & "Fitting" & thEnd
                 result += trEnd
 
-                result += trStart
-                result += thStart & "Type" & thEnd
-                result += thStart & "Colour" & thEnd
-                result += thStart & "Position" & thEnd
-                result += thStart & "Length" & thEnd
-                result += thStart & "Colour" & thEnd
-                result += trEnd
+                ' result += trStart
+                ' result += thStart & "Type" & thEnd
+                ' result += thStart & "Colour" & thEnd
+                ' result += thStart & "Position" & thEnd
+                ' result += thStart & "Length" & thEnd
+                ' result += thStart & "Colour" & thEnd
+                ' result += trEnd
 
 
                 For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
@@ -3160,14 +3163,14 @@ Partial Class Methods_Order_PdfOrderMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Layout").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("NumOfPanel").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("TrackType").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("TrackColour").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("WandPosition").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("TrackColour").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("WandPosition").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("WandLength").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("WandColour").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("WandColour").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("Batten").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("BattenColour").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("Fitting").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("Batten").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("BattenColour").ToString() & tdEnd
+                    ' result += tdStart & thisData.Tables(0).Rows(i).Item("Fitting").ToString() & tdEnd
                     result += trEnd
 
 
@@ -3215,6 +3218,7 @@ Partial Class Methods_Order_PdfOrderMethod
                 result += thStartRowSpan2 & "Batten Colour" & thEnd
                 result += thStartRowSpan2 & "Plastic Colour" & thEnd
                 result += thStartRowSpan2 & "Cleat" & thEnd
+                result += thStartRowSpan2 & "Cover Valance" & thEnd
                 result += trEnd
 
                 result += trStart
@@ -3246,6 +3250,7 @@ Partial Class Methods_Order_PdfOrderMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BattenColour").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("AcornPlasticColour").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Cleat").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BracketCover").ToString() & tdEnd
                     result += trEnd
 
                     If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
@@ -3269,10 +3274,10 @@ Partial Class Methods_Order_PdfOrderMethod
     Private Shared Function Print_GlobalVertical_Complete(HeaderId As String) As String
         Dim result As String = String.Empty
         Try
-            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Global Vertical Blinds' AND BlindName='Complete' AND Active=1 ORDER BY Id, BlindNo ASC")
+            Dim thisData As DataSet = publicCfg.GetListData("SELECT * FROM view_details WHERE HeaderId='" + HeaderId + "' AND DesignName='Global Vertical Blinds' AND BlindName='Complete Set' AND Active=1 ORDER BY Id, BlindNo ASC")
             If Not thisData.Tables(0).Rows.Count = 0 Then
                 Dim tdNotes As String = "<td colspan='21' style='margin-left:50px;word-wrap:break-word;height:auto;font-size:8px;border:1px solid black;border-collapse:collapse;padding-top:10px;padding-bottom:10px;'>"
-                result += spanStart & "GLOBAL VERTICAL COMPLETE" & spanEnd
+                result += spanStart & "GLOBAL VERTICAL COMPLETE SET" & spanEnd
                 result += tableStart
 
                 result += trStart
@@ -3284,38 +3289,72 @@ Partial Class Methods_Order_PdfOrderMethod
                 result += thStart & "Product" & thEnd
                 result += thStart & "Width" & thEnd
                 result += thStart & "Drop" & thEnd
+                result += thStart & "Fabric Insert" & thEnd
                 result += thStart & "Fabric" & thEnd
-                result += thStart & "Fabric/Slat Size" & thEnd
                 result += thStart & "Stack" & thEnd
-                result += thStart & "Control" & thEnd
-                result += thStart & "Chain/Wand Colour" & thEnd
+                result += thStart & "Control Position" & thEnd
+                result += thStart & "Control Colour" & thEnd
                 result += thStart & "Control Length" & thEnd
-                result += thStart & "Track" & thEnd
-                result += thStart & "Brackets" & thEnd
-                result += thStart & "Bracket Colour" & thEnd
-                result += thStart & "Hanger Type" & thEnd
-                result += thStart & "Bottom" & thEnd
-                result += thStart & "Insert In Track" & thEnd
-                result += thStart & "Sloper" & thEnd
+                result += thStart & "Extension Bracket " & thEnd
+                result += thStart & "Bottom Joining" & thEnd
+                result += thStart & "Sloping" & thEnd
                 result += trEnd
 
                 For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
-                    Dim controlType As String = thisData.Tables(0).Rows(i).Item("ControlType").ToString()
+                    Dim ControlType As String = thisData.Tables(0).Rows(i).Item("ControlType").ToString()
+                    Dim MaterialChain As String = thisData.Tables(0).Rows(i).Item("MaterialChain").ToString()
+                    Dim ChainColour As String = thisData.Tables(0).Rows(i).Item("ChainColour").ToString()
+                    Dim MaterialCord As String = thisData.Tables(0).Rows(i).Item("MaterialCord").ToString()
+                    Dim WandColour As String = thisData.Tables(0).Rows(i).Item("WandColour").ToString()
+                    Dim isChain As Boolean = ControlType = "Chain"
+                    Dim isWand As Boolean = ControlType = "Wand"
 
-                    Dim chainwandColour As String = thisData.Tables(0).Rows(i).Item("WandColour").ToString()
-                    Dim chainwandLength As String = thisData.Tables(0).Rows(i).Item("WandLength").ToString()
-                    If controlType = "Chain" Then
-                        chainwandColour = thisData.Tables(0).Rows(i).Item("ChainColour").ToString()
-                        chainwandLength = thisData.Tables(0).Rows(i).Item("ChainLength").ToString()
+                    Dim ControlLength As String = ""
+                    Dim ControlColour As String = ""
+                    If isChain Then
+                        If Not String.IsNullOrWhiteSpace(MaterialChain) Then
+                            Dim json = JObject.Parse(MaterialChain)
+                            Dim MaterialName As String = ""
+                            Dim MaterialValue As String = ""
+
+                            If json("name") IsNot Nothing Then
+                                MaterialName = json("name").ToString()
+                            End If
+
+                            If json("value") IsNot Nothing Then
+                                MaterialValue = json("value").ToString()
+                            End If
+
+                            ControlLength = String.Format("{0} - {1}", MaterialName, MaterialValue)
+                        End If
+
+                        ControlColour = ChainColour
                     End If
 
-                    Dim insertInTrack As String = "No"
-                    Dim sloper As String = "No"
-                    If thisData.Tables(0).Rows(i).Item("InsertInTrack").ToString() = "1" Then
-                        insertInTrack = "Yes"
+                    If isWand Then
+                        If Not String.IsNullOrWhiteSpace(MaterialCord) Then
+                            Dim json = JObject.Parse(MaterialCord)
+                            Dim MaterialName As String = ""
+                            Dim MaterialValue As String = ""
+
+                            If json("name") IsNot Nothing Then
+                                MaterialName = json("name").ToString()
+                            End If
+
+                            If json("value") IsNot Nothing Then
+                                MaterialValue = json("value").ToString()
+                            End If
+
+                            ControlLength = String.Format("{0} - {1}", MaterialName, MaterialValue)
+                        End If
+
+                        ControlColour = WandColour
                     End If
-                    If thisData.Tables(0).Rows(i).Item("Sloper").ToString() = "1" Then
-                        sloper = "Yes"
+
+                    Dim insertInTrack As String = thisData.Tables(0).Rows(i).Item("InsertInTrack").ToString()
+                    Dim FabricInsert As String = "No"
+                    If insertInTrack = "1" OR insertInTrack.ToLower() = "true" Then
+                        FabricInsert = "Yes"
                     End If
 
                     result += trStart
@@ -3327,19 +3366,15 @@ Partial Class Methods_Order_PdfOrderMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & FabricInsert & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("SlatSize").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("StackPosition").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
-                    result += tdStart & chainwandColour & tdEnd
-                    result += tdStart & chainwandLength & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("TrackColour").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("BracketOption").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("BracketColour").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("HangerType").ToString() & tdEnd
+                    result += tdStart & ControlColour & tdEnd
+                    result += tdStart & ControlLength & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BracketExtension").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
-                    result += tdStart & insertInTrack & tdEnd
-                    result += tdStart & sloper & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Cleat").ToString() & tdEnd
                     result += trEnd
 
                     If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
@@ -3377,43 +3412,74 @@ Partial Class Methods_Order_PdfOrderMethod
                 result += thStart & "Mounting" & thEnd
                 result += thStart & "Location" & thEnd
                 result += thStart & "Product" & thEnd
+                result += thStart & "Fabric Insert" & thEnd
+                result += thStart & "Fabric" & thEnd
+                result += thStart & "Blade Quantity" & thEnd
                 result += thStart & "Width" & thEnd
-                result += thStart & "Slat" & thEnd
-                result += thStart & "Stack" & thEnd
-                result += thStart & "Control" & thEnd
-                result += thStart & "Chain/Wand" & thEnd
-                result += thStart & "Length/Size" & thEnd
-                result += thStart & "Track" & thEnd
-                result += thStart & "Brackets" & thEnd
-                result += thStart & "Bracket Colour" & thEnd
-                result += thStart & "Hanger Type" & thEnd
-                result += thStart & "Bottom" & thEnd
-                result += thStart & "Insert In Track" & thEnd
-                result += thStart & "Sloper" & thEnd
+                result += thStart & "Stack Position" & thEnd
+                result += thStart & "Control Position" & thEnd
+                result += thStart & "Control Colour" & thEnd
+                result += thStart & "Control Length" & thEnd
+                result += thStart & "Extension Bracket" & thEnd
                 result += trEnd
 
                 For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
-                    Dim controlType As String = thisData.Tables(0).Rows(i).Item("ControlType").ToString()
+                    Dim ControlType As String = thisData.Tables(0).Rows(i).Item("ControlType").ToString()
+                    Dim MaterialChain As String = thisData.Tables(0).Rows(i).Item("MaterialChain").ToString()
+                    Dim ChainColour As String = thisData.Tables(0).Rows(i).Item("ChainColour").ToString()
+                    Dim MaterialCord As String = thisData.Tables(0).Rows(i).Item("MaterialCord").ToString()
+                    Dim WandColour As String = thisData.Tables(0).Rows(i).Item("WandColour").ToString()
+                    Dim isChain As Boolean = ControlType = "Chain"
+                    Dim isWand As Boolean = ControlType = "Wand"
 
-                    Dim chainwandColour As String = thisData.Tables(0).Rows(i).Item("WandColour").ToString()
-                    Dim chainwandLength As String = thisData.Tables(0).Rows(i).Item("WandLength").ToString()
-                    If controlType = "Chain" Then
-                        chainwandColour = thisData.Tables(0).Rows(i).Item("ChainColour").ToString()
-                        chainwandLength = thisData.Tables(0).Rows(i).Item("ChainLength").ToString()
+                    Dim ControlLength As String = ""
+                    Dim ControlColour As String = ""
+                    If isChain Then
+                        If Not String.IsNullOrWhiteSpace(MaterialChain) Then
+                            Dim json = JObject.Parse(MaterialChain)
+                            Dim MaterialName As String = ""
+                            Dim MaterialValue As String = ""
+
+                            If json("name") IsNot Nothing Then
+                                MaterialName = json("name").ToString()
+                            End If
+
+                            If json("value") IsNot Nothing Then
+                                MaterialValue = json("value").ToString()
+                            End If
+
+                            ControlLength = String.Format("{0} - {1}", MaterialName, MaterialValue)
+                        End If
+
+                        ControlColour = ChainColour
                     End If
 
-                    Dim insertInTrack As String = "No"
-                    Dim sloper As String = "No"
-                    If Not thisData.Tables(0).Rows(i).Item("InsertInTrack").ToString() = "False" OR thisData.Tables(0).Rows(i).Item("InsertInTrack").ToString() = "0" Then
-                        insertInTrack = "Yes"
-                    End If
-                    If Not thisData.Tables(0).Rows(i).Item("Sloper").ToString() = "False" OR thisData.Tables(0).Rows(i).Item("Sloper").ToString() = "0" Then
-                        sloper = "Yes"
+                    If isWand Then
+                        If Not String.IsNullOrWhiteSpace(MaterialCord) Then
+                            Dim json = JObject.Parse(MaterialCord)
+                            Dim MaterialName As String = ""
+                            Dim MaterialValue As String = ""
+
+                            If json("name") IsNot Nothing Then
+                                MaterialName = json("name").ToString()
+                            End If
+
+                            If json("value") IsNot Nothing Then
+                                MaterialValue = json("value").ToString()
+                            End If
+
+                            ControlLength = String.Format("{0} - {1}", MaterialName, MaterialValue)
+                        End If
+
+                        ControlColour = WandColour
                     End If
 
-                    Dim slat As String = thisData.Tables(0).Rows(i).Item("SlatSize").ToString()
-                    ' slat += " - "
-                    ' slat += thisData.Tables(0).Rows(i).Item("SlatQty").ToString()
+                    Dim insertInTrack As String = thisData.Tables(0).Rows(i).Item("InsertInTrack").ToString()
+                    Dim FabricInsert As String = "No"
+                    If insertInTrack = "1" OR insertInTrack.ToLower() = "true" Then
+                        FabricInsert = "Yes"
+                    End If
+
 
                     result += trStart
                     result += tdStart & i + 1 & tdEnd
@@ -3422,19 +3488,15 @@ Partial Class Methods_Order_PdfOrderMethod
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Mounting").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
+                    result += tdStart & FabricInsert & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("SlatQty").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Width").ToString() & tdEnd
-                    result += tdStart & slat & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("StackPosition").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("ControlPosition").ToString() & tdEnd
-                    result += tdStart & chainwandColour & tdEnd
-                    result += tdStart & chainwandLength & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("TrackColour").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("BracketOption").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("BracketColour").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("HangerType").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
-                    result += tdStart & insertInTrack & tdEnd
-                    result += tdStart & sloper & tdEnd
+                    result += tdStart & ControlColour & tdEnd
+                    result += tdStart & ControlLength & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("BracketExtension").ToString() & tdEnd
                     result += trEnd
 
                     If Not thisData.Tables(0).Rows(i).Item("Notes").ToString() = "" Then
@@ -3470,12 +3532,10 @@ Partial Class Methods_Order_PdfOrderMethod
                 result += thStart & "Qty" & thEnd
                 result += thStart & "Location" & thEnd
                 result += thStart & "Product" & thEnd
-                result += thStart & "Drop" & thEnd
                 result += thStart & "Fabric" & thEnd
-                result += thStart & "Slat Size" & thEnd
-                result += thStart & "Slat Qty" & thEnd
-                result += thStart & "Hanger Type" & thEnd
-                result += thStart & "Bottom" & thEnd
+                result += thStart & "Drop" & thEnd
+                result += thStart & "Blade Quantity" & thEnd
+                result += thStart & "Bottom Joining" & thEnd
                 result += trEnd
 
                 For i As Integer = 0 To thisData.Tables(0).Rows.Count - 1
@@ -3483,13 +3543,11 @@ Partial Class Methods_Order_PdfOrderMethod
                     result += tdStart & i + 1 & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Qty").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Location").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("KitName").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("FabricName").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("FabricWidth").ToString() & tdEnd
+                    result += tdStart & thisData.Tables(0).Rows(i).Item("Drop").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("SlatQty").ToString() & tdEnd
-                    result += tdStart & thisData.Tables(0).Rows(i).Item("HangerType").ToString() & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("BottomHoldDown").ToString() & tdEnd
                     result += trEnd
 

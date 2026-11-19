@@ -58,7 +58,7 @@
                                 </div>
 
                                 <div class="mb-3 row" id="divTubeType">
-                                    <label for="tubetype" class="col-lg-3 text-uppercase fw-bold" id="lblTubeType">vertical style</label>
+                                    <label for="tubetype" class="col-lg-3 text-uppercase fw-bold" id="lblTubeType">Slat Type</label>
                                     <div class="col-lg-4">
                                         <select type="text" name="tubetype" id="tubetype" class="form-select"></select>
                                     </div>  
@@ -71,6 +71,13 @@
                                     </div>  
                                 </div>
 
+                                <div class="mb-3 row" id="divColourType">
+                                    <label for="colourtype" class="col-lg-3 text-uppercase fw-bold">headrail colour</label>
+                                    <div class="col-lg-4">
+                                        <select type="text" name="colourtype" id="colourtype" class="form-select"></select>
+                                    </div>  
+                                </div>
+
 
                                 <div  id="divFormDetail">
                                     <hr/>
@@ -78,12 +85,7 @@
                                     <div class="mb-3 row" >
                                         <label for="qty" class="col-lg-3 text-uppercase fw-bold" >quantity</label>
                                         <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <input type="number" min="1" value="1" name="qty" id="qty" class="form-control">
-                                                <button class="btn btn-info btn-information" type="button" id="btnInfoQty">
-                                                    <i class="ti ti-info-square-rounded fs-2"></i>
-                                                </button>
-                                            </div>
+                                            <input type="number" min="1" value="1" name="qty" id="qty" class="form-control">
                                         </div>  
                                     </div>
 
@@ -97,13 +99,41 @@
                                     <div class="mb-3 row" id="divMounting">
                                         <label for="mounting" class="col-lg-3 text-uppercase fw-bold" >mounting</label>
                                         <div class="col-lg-4">
-                                            <select name="mounting" id="mounting" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Face Fit">FACE FIT</option>
-                                                <option value="Reveal Fit">REVEAL FIT</option>
-                                            </select>
+                                            <select name="mounting" id="mounting" class="form-select"></select>
                                         </div>  
                                     </div>
+
+                                    <div class="mb-3 row" id="divFabricInsert">
+                                        <label for="fabricinsert" class="col-lg-3 text-uppercase fw-bold">fabric insert</label>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <select type="text" name="fabricinsert" id="fabricinsert" class="form-select"></select>
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoFabricInsert">
+                                                    <i class="ti ti-info-square-rounded fs-2"></i>
+                                                </button>
+                                            </div>
+                                        </div>  
+                                    </div>
+
+                                    <div class="mb-3 row" id="divFabric">
+                                        <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">fabric type x colour</label>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <select name="fabrictype" id="fabrictype" class="form-select "></select>
+                                            <small class="form-hint">* Type</small>
+                                        </div>
+                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <select name="fabriccolour" id="fabriccolour" class="form-select " ></select>
+                                            <small class="form-hint">* Colour</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row" id="divBladeQty">
+                                        <label for="bladeqty" class="col-lg-3 text-uppercase fw-bold" >blade quantity</label>
+                                        <div class="col-lg-4">
+                                            <input type="number" name="bladeqty" id="bladeqty" class="form-control">
+                                        </div>  
+                                    </div>
+
 
                                     <div class="mb-3 row">
                                         <label for="width" class="col-lg-3 text-uppercase fw-bold" id="lblWd">width x drop</label>
@@ -121,52 +151,6 @@
                                             </div>
                                             <small class="form-hint">* Drop</small>
                                         </div>
-                                        <div class="col-lg-2 col-md-12 col-sm-12" id="divInfoWD">
-                                            <button class="btn btn-info btn-information" type="button" id="btnInfoWD">
-                                                <i class="ti ti-info-square-rounded fs-2"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3 row" id="divSlatSize">
-                                        <label for="slatsize" class="col-lg-3 text-uppercase fw-bold">slat size</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="slatsize" id="slatsize" class="form-select"></select>
-                                        </div>  
-                                    </div>
-                                    <div class="mb-3 row" id="divSlatQty">
-                                        <label for="slatqty" class="col-lg-3 text-uppercase fw-bold">slat qty</label>
-                                        <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <input type="number" min="1" name="slatqty" id="slatqty" class="form-control  " autocomplete="off" />
-                                                <button class="btn btn-info btn-information" type="button" id="btnInfoSlatQty">
-                                                    <i class="ti ti-info-square-rounded fs-2"></i>
-                                                </button>
-                                            </div>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divFabric">
-                                        <label for="fabrictype" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">fabric type x slat x colour</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <select name="fabrictype" id="fabrictype" class="form-select "></select>
-                                            <small class="form-hint">* Type</small>
-                                        </div>
-                                        <div class="col-lg-2 col-md-12 col-sm-12">
-                                            <select name="fabriclength" id="fabriclength" class="form-select "></select>
-                                            <small class="form-hint">* Slat</small>
-                                        </div>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="fabriccolour" id="fabriccolour" class="form-select " ></select>
-                                            <small class="form-hint">* Colour</small>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3 row" id="divTrackColour">
-                                        <label for="trackcolour" class="col-lg-3 text-uppercase fw-bold">track colour</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="trackcolour" id="trackcolour" class="form-select"></select>
-                                        </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divStackPosition">
@@ -179,97 +163,93 @@
                                     <div class="mb-3 row" id="divControlPosition">
                                         <label for="controlposition" class="col-lg-3 text-uppercase fw-bold" id="lblControlPosition">control position</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="controlposition" id="controlposition" class="form-select">
-                                                <option value=""></option>
-                                                <option value="Left">LEFT</option>
-                                                <option value="Right">RIGHT</option>
-                                                <option value="Twin Wand">TWIN WAND</option>
-                                            </select>
+                                            <select type="text" name="controlposition" id="controlposition" class="form-select"></select>
                                         </div>  
                                     </div>
 
                                     <div class="mb-3 row" id="divChain">
-                                        <label for="chaincolour" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">chain colour x length</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <label for="chaincolour" class="col-lg-3 text-uppercase fw-bold" id="">chain colour x length</label>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
                                             <select name="chaincolour" id="chaincolour" class="form-select "></select>
                                             <small class="form-hint">* Colour</small>
                                         </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
                                             <div class="input-group">
-                                                <input type="number" min="1" name="chainlength" id="chainlength" class="form-control ">
-                                                <span class="input-group-text ">mm</span>
+                                                <div class="input-group">
+                                                     <select name="chainlength" id="chainlength" class="form-select "></select>
+                                                    <button class="btn btn-info btn-information" type="button" id="btnInfoCustomChainLength">
+                                                        <i class="ti ti-info-square-rounded fs-2"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                             <small class="form-hint">* Length</small>
                                         </div>
-                                    </div>
-
-                                    <div class="mb-3 row" id="divWand">
-                                        <label for="wandlength" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">wand Length x colour</label>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="wandlength" id="wandlength" class="form-select "></select>
-                                            <small class="form-hint">* Length</small>
-                                        </div>
-                                        <div class="col-lg-3 col-md-12 col-sm-12">
-                                            <select name="wandcolour" id="wandcolour" class="form-select "></select>
-                                            <small class="form-hint">* Colour</small>
-                                        </div>
-                                        <div class="col-lg-3 col-md-12 col-sm-12" id="divWandCustomLength">
+                                        <div class="col-lg-3 col-md-12 col-sm-12" id="divCustomChainLength">
                                             <div class="input-group">
-                                                <input type="number" min="1" name="wandcustomlength" id="wandcustomlength" class="form-control ">
-                                                <!-- <span class="input-group-text ">mm</span> -->
-                                                <button class="btn btn-info btn-information" type="button" id="btnInfoCustomLength">
-                                                    <i class="ti ti-info-square-rounded fs-2"></i>
-                                                </button>
+                                                <input type="number" min="1" name="customchainlength" id="customchainlength" class="form-control ">
+                                                <span class="input-group-text ">mm</span>
                                             </div>
                                             <small class="form-hint">*Custom  Length</small>
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row" id="divBrackets">
-                                        <label for="bracket" class="col-lg-3 text-uppercase fw-bold" id="lblFabricDay">bracket type x colour</label>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <select name="bracket" id="bracket" class="form-select "></select>
+                                    <div class="mb-3 row" id="divWand">
+                                        <label for="wandlength" class="col-lg-3 text-uppercase fw-bold" id="">wand colour x length</label>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                            <select name="wandcolour" id="wandcolour" class="form-select "></select>
                                             <small class="form-hint">* Colour</small>
                                         </div>
-                                        <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <select name="bracketcolour" id="bracketcolour" class="form-select "></select>
-                                            <small class="form-hint">* Colour</small>
+                                        <div class="col-lg-3 col-md-12 col-sm-12">
+                                            <div class="input-group">
+                                                <select name="wandlength" id="wandlength" class="form-select "></select>
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoCustomWandLength">
+                                                    <i class="ti ti-info-square-rounded fs-2"></i>
+                                                </button>
+                                            </div>
+                                            <small class="form-hint">* Length</small>
+                                        </div>
+                                        <div class="col-lg-3 col-md-12 col-sm-12" id="divWandCustomLength">
+                                            <div class="input-group">
+                                                <input type="number" min="1" name="customwandlength" id="customwandlength" class="form-control ">
+                                                <span class="input-group-text ">mm</span>
+                                            </div>
+                                            <small class="form-hint">*Custom  Length</small>
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 row" id="divHangerType">
-                                        <label for="hangertype" class="col-lg-3 text-uppercase fw-bold">hanger type</label>
+                                    <div class="mb-3 row" id="divBottomJoining">
+                                        <label for="bottomjoining" class="col-lg-3 text-uppercase fw-bold">bottom joining</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="hangertype" id="hangertype" class="form-select"></select>
-                                        </div>  
-                                    </div>
-                                    <div class="mb-3 row" id="divBottom">
-                                        <label for="bottom" class="col-lg-3 text-uppercase fw-bold">bottom</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="bottom" id="bottom" class="form-select"></select>
-                                        </div>  
-                                    </div>
-
-                                    <div class="mb-3 row" id="divInsertInTrack">
-                                        <label for="inserttrack" class="col-lg-3 text-uppercase fw-bold" >insert in track</label>
-                                        <div class="col-lg-4">
-                                            <select type="text" name="inserttrack" id="inserttrack" class="form-select">
-                                                <option value=""></option>
-                                                <option value="1">YES</option>
-                                            </select>
+                                            <div class="input-group">
+                                                <select type="text" name="bottomjoining" id="bottomjoining" class="form-select"></select>
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoBottomJoining">
+                                                    <i class="ti ti-info-square-rounded fs-2"></i>
+                                                </button>
+                                            </div>
                                         </div>  
                                     </div>
 
-                                    <div class="mb-3 row" id="divSloper">
-                                        <label for="sloper" class="col-lg-3 text-uppercase fw-bold" >sloper</label>
+                                    <div class="mb-3 row" id="divExtBracket">
+                                        <label for="extbracket" class="col-lg-3 text-uppercase fw-bold">extension bracket</label>
                                         <div class="col-lg-4">
-                                            <select type="text" name="sloper" id="sloper" class="form-select">
-                                                <option value=""></option>
-                                                <option value="1">YES</option>
-                                            </select>
-                                             <small class="form-hint">* Blades will be Tilt Only - Track supplied First</small>
+                                            <div class="input-group">
+                                                <select type="text" name="extbracket" id="extbracket" class="form-select"></select>
+                                                <button class="btn btn-info btn-information" type="button" id="btnInfoExtBracket">
+                                                    <i class="ti ti-info-square-rounded fs-2"></i>
+                                                </button>
+                                            </div>
                                         </div>  
                                     </div>
+
+                                    <div class="mb-3 row" id="divSloping">
+                                        <label for="sloping" class="col-lg-3 text-uppercase fw-bold">sloping</label>
+                                        <div class="col-lg-4">
+                                            <select type="text" name="sloping" id="sloping" class="form-select"></select>
+                                        </div>  
+                                    </div>
+
+
+                                    
 
                                     <div class="mb-3 row" >
                                         <label for="notes" class="col-lg-3 text-uppercase fw-bold">special information</label>
@@ -288,7 +268,6 @@
                                             </div>
                                         </div>
                                     </div>
-
 
                                 </div>
 
@@ -311,7 +290,20 @@
         
                         <div class="card-body">
                             <div class="mb-3 row">
-                                <p runat="server" id="pNotes"></p>
+
+                                <p class="text-uppercase fw-bold">Limitations</p> <br>
+                                <p> 
+                                    - Minimum width : 300mm <br>
+                                    - Maximum width for 89mm Slat : 5511mm <br>
+                                    - Maximum width for 100mm Slat : 5477mm <br>
+                                    - Maximum width for 127mm Slat : 5477mm <br>
+                                    - Maximum drop : 3050mm
+                                </p>
+                                <div class="col-2 col-lg-2 col-sm-2">
+                                    <button type="button" class="btn btn-info" id="btnInfoGallery">
+                                        <i class="ti ti-info-square-rounded fs-2 me-1"></i> Detail Gallery
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -336,6 +328,6 @@
         let URIMETHOD = "/Methods/Order/Global/VerticalBlindMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/Global/VerticalBlinds.js?<%= DateTime.Now.Ticks %>"></script>
+    <script type="text/javascript" src="/Scripts/Order/Global/VerticalBlinds.js?v=1.0.47"></script>
 </asp:Content>
 
