@@ -2893,9 +2893,9 @@ Public Class OrderConfig
         End If
 
         Dim hitung As Integer = countL + countR + countF + countM + countB
-        If horizontalHeight > 0 Then
-            hitung = (countL + countR + countF + countM + countB) * 2
-        End If
+        ' If horizontalHeight > 0 Then
+        '     hitung = (countL + countR + countF + countM + countB) * 2
+        ' End If
 
         If blindName = "Panel Only" Then
             hitung = panelQty
