@@ -295,7 +295,7 @@ Partial Class Methods_Order_JobSheetMethod
                     Dim BracketType As String = row("BracketType").ToString()
                     Dim ControlType As String = row("ControlType").ToString()
                     Dim Qty As Integer = row("Qty").ToString()
-                    If BracketType.Contains("Linked") Then
+                    If BracketType.Contains("Linked") Or BracketType.Contains("Link") Then
                         LinkBlind = "Linked"
                     End If
                     '#--------------------------|| TubeSkinSize & NumBoldNuts ||--------------------------#
