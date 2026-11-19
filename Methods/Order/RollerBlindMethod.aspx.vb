@@ -199,8 +199,8 @@ Partial Class Methods_Order_RollerBlindMethod
                         FindBracket = "Headbox &amp; Side Channels"
                     End If
                     
-                    If data.brackettype = "With Tube & Bottom Included" Then
-                        FindBracket = "With Tube &amp; Bottom Included"
+                    If data.brackettype = "Skin With Tube & Bottom Included" Then
+                        FindBracket = "Skin With Tube &amp; Bottom Included"
                     End If
 
                     query = String.Format("SELECT Id, Colour FROM Bottoms CROSS APPLY STRING_SPLIT(BracketType, ',') WHERE VALUE = '{0}' AND Type='{1}' AND Company = 'SP' AND Trim ='{2}' AND Active ='1' ORDER BY Name ASC", FindBracket, data.railtype, data.trim)
