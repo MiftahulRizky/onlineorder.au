@@ -12,6 +12,12 @@
   surchargePageLoaded();
 });
 
+// ==========================================================INITIALIZATION=============================================================
+const getById = (id) => document.getElementById(id);
+const getByClass = (cls) => document.getElementsByClassName(cls);
+const selectorEl = (el) => document.querySelector(el);
+const selectorElAll = (el) => document.querySelectorAll(el);
+
 // ===============================================================EVENTS========================================================================
 document.querySelectorAll(".form-control, .form-select").forEach((el) => {
   el.addEventListener("change", async (e) => {
@@ -51,7 +57,9 @@ document.querySelector("#btnSubmit").addEventListener("click", (e) => {
 });
 
 document.querySelector("#btnCancel").addEventListener("click", (e) => {
-  window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+  // window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+  const id = e.target.id;
+  handlerCancel(id);
 });
 
 // ============================================================FUNCTIONS========================================================================
@@ -270,12 +278,13 @@ const handlerElementVisibility = async (
 const handlerSubmit = async (button) => {
   try {
     // return alert(button);
-    document.getElementById(button).innerHTML = "Processing...";
+    getById(button).innerHTML = "Processing...";
     swalLoadingShow("Please wait while we save the data.");
     const fields = ["blindtype", "tubetype", "controltype"];
 
     const formData = {
       headerid: HEADERID,
+      ordertype: ORDERTYPE,
       itemaction: ITEMACTION,
       itemid: ITEMID,
       designid: DESIGNID,
@@ -284,7 +293,7 @@ const handlerSubmit = async (button) => {
     };
 
     fields.forEach((field) => {
-      formData[field] = document.getElementById(field).value;
+      formData[field] = getById(field).value;
     });
 
     // return console.table(formData);
@@ -303,28 +312,74 @@ const handlerSubmit = async (button) => {
     }
 
     const result = await response.json();
-    const dataResult = result.d || result;
+    const res = result.d || result;
 
-    if (dataResult.error) {
-      await isWarning(dataResult.error.message?.toUpperCase());
-      const field = document.getElementById(dataResult.error.field);
+    if (res.error) {
+      await isWarning(res.error.message?.toUpperCase());
+      const field = getById(res.error.field);
       if (field) {
-        // field.closest("[aria-hidden='true']")?.removeAttribute("aria-hidden");
-        // field.focus();
         field.classList.add("is-invalid");
       }
-    } else {
-      await isSuccess(dataResult.success);
-      window.location.href = `/order/detail?param=${HEADERID}&ordertype=${ORDERTYPE}`;
+    }
+
+    if (res.success) {
+      await isSuccess(res.message);
+      window.location.href = url;
     }
   } catch (error) {
-    var msg = error.message;
-    if (ROLENAME !== "Administrator") {
-      msg = "Please contact our IT team at support@onlineorder.au";
-    }
-    isError(msg);
+    const msg = `handlerSubmit: ${error.message}`;
+    catchMessages(msg);
   } finally {
-    document.getElementById(button).innerHTML = "Save Changes";
+    getById(button).innerHTML = "Save Changes";
+  }
+};
+
+const handlerCancel = async (button) => {
+  try {
+    // return alert(button);
+    getById(button).innerHTML = "Waiting...";
+
+    const response = await fetch(URIMETHOD + "/Cancel", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        headerid: HEADERID,
+        ordertype: ORDERTYPE,
+        rolename: ROLENAME,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${response.status}\n${errorText}`);
+    }
+
+    const data = await response.json();
+    const res = data.d || data;
+
+    if (res.error) {
+      throw new Error(res.message);
+    }
+
+    if (res.warning) {
+      await isWarning(res.message?.toUpperCase());
+      const field = getById(res.field);
+      if (field) {
+        field.classList.add("is-invalid");
+      }
+    }
+
+    if (res.success) {
+      // await isSuccess(res.message);
+      window.location.href = res.url;
+    }
+  } catch (error) {
+    const msg = `handlerCancel: ${error.message}`;
+    catchMessages(msg);
+  } finally {
+    getById(button).innerHTML = "Cancel";
   }
 };
 
@@ -478,4 +533,11 @@ const bindSelect = async ({
         : "Please contact our IT team at support@onlineorder.au";
     isError(msg);
   }
+};
+
+const catchMessages = (msg) => {
+  if (!["Administrator"].includes(ROLENAME))
+    msg = "Please contact our IT team at support@onlineorder.au";
+  isError(msg);
+  console.error(msg);
 };
