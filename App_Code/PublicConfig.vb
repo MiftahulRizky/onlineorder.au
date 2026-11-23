@@ -1090,6 +1090,10 @@ Public Class PublicConfig
                     End If
                 End If
 
+                If storeId = "LS-A224" Then '#JPM Direct Pty Ltd
+                    delivery = "INT-PU"
+                End If
+
                 Dim ListParamCost As New List(Of Object) From {
                     priceGroupId,
                     delivery,

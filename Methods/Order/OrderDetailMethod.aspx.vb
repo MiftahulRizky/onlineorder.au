@@ -539,6 +539,8 @@ Partial Class Methods_Order_OrderDetailMethod
             Dim Action As String = String.Empty
             Dim textSwall As String = String.Empty
             Dim CustomerContactId As String = If(HttpContext.Current.Session("CustomerContactId") IsNot Nothing, HttpContext.Current.Session("CustomerContactId").ToString(), String.Empty)
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT * FROM OrderHeaders WHERE Id ='{0}'", headerid))
+            Dim HeaderDataCount As Integer = HeaderData.Tables(0).Rows.Count
 
             
             
@@ -634,6 +636,14 @@ Partial Class Methods_Order_OrderDetailMethod
                 '     End Using
                 ' End If
             End If
+
+            ' If HeaderDataCount > 0 Then
+            '     For j As Integer = 0 To HeaderDataCount - 1
+            '         Dim Rows As DataRow = HeaderData.Tables(0).Rows(j).Item()
+            '         Dim CustomerId As String = Rows("StoreId").ToString()
+            '         Dim Address As String = Rows("Address").ToString()
+            '     Next
+            ' End If
             
 
             Return New With {.error = false, .Action = Action, .Message = textSwall, .StatusAdditional = StatusAdditional}
@@ -1960,8 +1970,11 @@ Partial Class Methods_Order_OrderDetailMethod
             If String.IsNullOrEmpty(data.status) Then
                 Return New With { .warning = true, .message = "status is required !", .field = "#modalChangeStatus #status"}
             End If
-            If data.status = data.statusOld Then
-                Return New With { .warning = true, .message = "you don't choose different changes on status, don't do it with the same status!", .field = "#modalChangeStatus #status"}
+
+            If NOT data.status = "On Hold" Then
+                If data.status = data.statusOld Then
+                    Return New With { .warning = true, .message = "you don't choose different changes on status, don't do it with the same status!", .field = "#modalChangeStatus #status"}
+                End If
             End If
 
 

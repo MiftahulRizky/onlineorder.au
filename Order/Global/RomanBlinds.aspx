@@ -142,10 +142,16 @@
                                                 <select name="chaincolour" id="chaincolour" class="form-control "></select>
                                                 <small class="form-hint">* Colour</small>
                                             </div>
-                                            <div class="col-lg-4 col-md-12 col-sm-12">
+                                            <div class="col-lg-4 col-md-12 col-sm-12" id="divOtherChain">
                                                 <div class="input-group">
                                                     <input type="number" min="1" name="chainlength" id="chainlength" class="form-control  " autocomplete="off" />
                                                     <span class="input-group-text ">mm</span>
+                                                </div>
+                                                <small class="form-hint">* Length</small>
+                                            </div>
+                                            <div class="col-lg-4 col-md-12 col-sm-12" id="divPlasticChain">
+                                                <div class="input-group">
+                                                    <select name="chainlengthplastic" id="chainlengthplastic" class="form-control "></select>
                                                 </div>
                                                 <small class="form-hint">* Length</small>
                                             </div>
@@ -240,7 +246,20 @@
         
                         <div class="card-body">
                             <div class="mb-3 row">
-                                <p id="pNotes"></p>
+                                <p class="text-uppercase fw-bold">Limitations</p> <br>
+                                <p> 
+                                    - Minimum width for Chain and Reg Cord Lock : 360mm <br>
+                                    - Minimum width for motorised : 700mm <br>
+                                    - Maximum width for Reg Cord Lock : 2110mm <br>
+                                    - Maximum width : 2910mm <br>
+                                    - Minimum drop : 600mm <br>
+                                    - Maximum drop : 3200mm 
+                                </p>
+                                <div class="col-2 col-lg-2 col-sm-2">
+                                    <button type="button" class="btn btn-info" id="btnInfoGallery">
+                                        <i class="ti ti-info-square-rounded fs-2 me-1"></i> Detail Gallery
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

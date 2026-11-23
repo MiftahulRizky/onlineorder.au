@@ -29,6 +29,7 @@ Partial Class Methods_Order_RomanBlindMethod
         Public Property materialchain As String
         Public Property chaincolour As String
         Public Property chainlength As String
+        Public Property chainlengthplastic As String
         Public Property cordcolour As String
         Public Property cordlength As String
         Public Property plasticcolour As String
@@ -199,6 +200,8 @@ Partial Class Methods_Order_RomanBlindMethod
             Dim msg As String = "200"
             Dim BlindName As String = publicCfg.GetItemData(String.Format("SELECT Name FROM Blinds WHERE Id = '{0}'", data.blindtype))
             Dim ControlName As String = publicCfg.GetItemData(String.Format("SELECT ControlType FROM HardwareKits WHERE Id = '{0}'", data.controltype))
+            Dim isChain As Boolean = ControlName = "Chain"
+            Dim isCord As Boolean = ControlName = "Cord"
 
             Dim qty As Integer
             If String.IsNullOrEmpty(data.qty) Then
@@ -219,17 +222,26 @@ Partial Class Methods_Order_RomanBlindMethod
             End If
 
             Dim width As Integer
+            Dim maxwidth As Integer = 0
             If String.IsNullOrEmpty(data.width) Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width is required !",.field = "width"}}
             End If
             If Not Integer.TryParse(data.width, width) OrElse width <= 0 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be a positive integer !",.field = "width"}}
             End If
-            ' If width < 150 Then
-            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 150 !",.field = "width"}}
-            ' End If
-            If width > 3000 Then
-                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 3000 !",.field = "width"}}
+
+            If isCord Then
+                maxwidth = 2110
+            End If
+
+            If isChain Then
+                maxwidth = 2910
+            End If
+            If width < 360 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "width must be less than or equal to 360 !",.field = "width"}}
+            End If
+            If width > maxwidth Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = String.Format("width must be less than or equal to {0} !", maxwidth),.field = "width"}}
             End If
 
             
@@ -240,9 +252,9 @@ Partial Class Methods_Order_RomanBlindMethod
             If Not Integer.TryParse(data.drop, drop) OrElse drop <= 0 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be a positive integer !",.field = "drop"}}
             End If
-            ' If drop < 150 Then
-            '     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be greater than or equal to 150 !",.field = "drop"}}
-            ' End If
+            If drop < 600 Then
+                Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be greater than or equal to 600 !",.field = "drop"}}
+            End If
             If drop > 3200 Then
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 3200 !",.field = "drop"}}
             End If
@@ -337,18 +349,33 @@ Partial Class Methods_Order_RomanBlindMethod
 
             Dim ChainId As String
             Dim chaincolour As String = String.Format("({0})", data.chaincolour)
+            Dim isPlastic As Boolean = data.materialchain = "Plastic"
+            Dim isChrome As Boolean = data.materialchain = "Chrome"
+            Dim isStainless As Boolean = data.materialchain = "Stainless Steel"
             If ControlName = "Chain" Then
-                If String.IsNullOrEmpty(data.chainlength) Then
-                    chainlength = "500"
-                    If data.drop > 700 Then : chainlength = 600 : End If
-                    If data.drop > 800 Then : chainlength = 800 : End If
-                    If data.drop > 1100 Then : chainlength = 1000 : End If
-                    If data.drop > 1300 Then : chainlength = 1200 : End If
-                    If data.drop > 1600 Then : chainlength = 1500 : End If
-                    If data.drop > 2000 Then : chainlength = 1800 : End If
-                    If data.drop > 2400 Then : chainlength = 2000 : End If
-                    If data.drop > 2700 Then : chainlength = 2200 : End If
+                ' If String.IsNullOrEmpty(data.chainlength) Then
+                '     chainlength = "500"
+                '     If data.drop > 700 Then : chainlength = 600 : End If
+                '     If data.drop > 800 Then : chainlength = 800 : End If
+                '     If data.drop > 1100 Then : chainlength = 1000 : End If
+                '     If data.drop > 1300 Then : chainlength = 1200 : End If
+                '     If data.drop > 1600 Then : chainlength = 1500 : End If
+                '     If data.drop > 2000 Then : chainlength = 1800 : End If
+                '     If data.drop > 2400 Then : chainlength = 2000 : End If
+                '     If data.drop > 2700 Then : chainlength = 2200 : End If
+                ' End If
+                If Not String.IsNullOrEmpty(data.chainlengthplastic) Then
+                    If isPlastic Then
+                        chainlength = data.chainlengthplastic
+                    End If
+
+                    If isChrome OR isStainless Then
+                        chainlength = data.chainlength
+                    End If 
+                Else
+                    chainlength = 0
                 End If
+
 
                 Dim ChainName As String = String.Format("{0} Chain + Joiner {1}", chainlength, chaincolour)
                 ChainId = publicCfg.GetItemData(String.Format("SELECT Id FROM Chains WHERE Name = '{0}'", ChainName))
@@ -431,7 +458,7 @@ Partial Class Methods_Order_RomanBlindMethod
 
             If data.itemaction = "EditItem" OrElse data.itemaction = "ViewItem" Then
                 Dim itemId As String = data.itemid
-
+                
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId=@KitId, SoeKitId=@SoeKitId, ExactId=@ExactId, FabricId=@FabricId, ChainId=@ChainId, PriceGroupId=@PriceGroupId, BlindNo='Blind 1', Qty=@Qty, Location=@Location, Mounting=@Mounting, Width=@Width, [Drop]=@Drop, ControlPosition=@ControlPosition, MaterialChain=@MaterialChain, ChainLength=@ChainLength, CordColour=@CordColour, CordLength=@CordLength, BattenColour=@BattenColour, AcornPlasticColour=@AcornPlasticColour, Cleat=@Cleat, BracketCover=@BracketCover, Notes=@Notes, Matrix=0, Charge=0, Discount=0, TotalMatrix=0, TotalCharge=0, TotalDiscount=0, MarkUp=@MarkUp, Active=1 WHERE Id=@Id", thisConn)
                         myCmd.Parameters.AddWithValue("@Id", itemId)
@@ -471,7 +498,6 @@ Partial Class Methods_Order_RomanBlindMethod
 
                 Dim dataLog As Object() = {data.headerid, itemId, "Blinds", data.loginid, "Update Item Order"}
                 orderCfg.Log_Orders(dataLog)
-                
 
                 msg = "Item updated successfully !"
 

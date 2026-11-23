@@ -813,7 +813,7 @@ const displayElOverall = (api) => {
         }
       }
 
-      if (isPpicCsDe) {
+      if (isPpicCsDe || isManager) {
         if (!isFinish && isActive && !isShutters && !isDeposite) {
           toggleShow(liDividerChangeStatus, true);
           toggleShow(liChangeStatus, true);
@@ -826,7 +826,7 @@ const displayElOverall = (api) => {
       DataTableOrders.columns([1, 3, 6]).visible(true);
     }
 
-    if (isPpicCsDe) {
+    if (isPpicCsDe || isManager) {
       toggleShow(mainEl.status, true);
       toggleShow(mainEl.ordertype, true);
       toggleShow(mainEl.btnCreateNewOrder, true);

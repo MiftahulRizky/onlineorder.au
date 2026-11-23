@@ -39,6 +39,7 @@ Partial Class Methods_Order_CreateOrderMethod
         Public Property ordername As String
         Public Property delivery As String
         Public Property deliverytype As String
+        Public Property deliveryaddress As String
         Public Property sourcetype As String
         Public Property notes As String
         Public Property jobid As String
@@ -351,7 +352,7 @@ Partial Class Methods_Order_CreateOrderMethod
                         Using trans As SqlTransaction = thisConn.BeginTransaction()
                             Try
                                 If String.IsNullOrEmpty(HeaderData) Then
-                                    Using myCmd As New SqlCommand("INSERT INTO OrderHeaders (Id, UserId, StoreId, OrderNo, OrderCust, Delivery, DeliveryType, OrderType, OrderSourceType, CreateType, Note, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, CreatedDate, Active) VALUES (@Id, @UserId, @StoreId, LTRIM(RTRIM(@OrderNo)), LTRIM(RTRIM(@OrderCust)), @Delivery, @DeliveryType, @OrderType, @OrderSourceType, @CreateType, @Note, 'Yes', 0, 0, 0,  'Draft', GETDATE(), 1)", thisConn, trans)
+                                    Using myCmd As New SqlCommand("INSERT INTO OrderHeaders (Id, UserId, StoreId, OrderNo, OrderCust, Delivery, DeliveryType, Address, OrderType, OrderSourceType, CreateType, Note, QuoteGST, QuoteDisc, QuoteInstall, QuoteMeasure, Status, CreatedDate, Active) VALUES (@Id, @UserId, @StoreId, LTRIM(RTRIM(@OrderNo)), LTRIM(RTRIM(@OrderCust)), @Delivery, @DeliveryType, @Address, @OrderType, @OrderSourceType, @CreateType, @Note, 'Yes', 0, 0, 0,  'Draft', GETDATE(), 1)", thisConn, trans)
                                         myCmd.Parameters.AddWithValue("@Id", data.headerid)
                                         myCmd.Parameters.AddWithValue("@UserId", UCase(data.loginid).ToString())
                                         myCmd.Parameters.AddWithValue("@StoreId", UCase(data.customer).ToString())
@@ -359,6 +360,7 @@ Partial Class Methods_Order_CreateOrderMethod
                                         myCmd.Parameters.AddWithValue("@OrderCust", data.ordername)
                                         myCmd.Parameters.AddWithValue("@Delivery", FinalDelivery)
                                         myCmd.Parameters.AddWithValue("@DeliveryType", data.deliverytype)
+                                        myCmd.Parameters.AddWithValue("@Address", data.deliveryaddress)
                                         myCmd.Parameters.AddWithValue("@OrderType", data.ordertype)
                                         myCmd.Parameters.AddWithValue("@OrderSourceType", "New")
                                         myCmd.Parameters.AddWithValue("@CreateType", data.createtype)
@@ -477,7 +479,7 @@ Partial Class Methods_Order_CreateOrderMethod
                 IF InArray(data.ordertype, "Blinds", "Door and Window", "Furnishings") Then
                     Dim DeliveryOrder As String = publicCfg.GetItemData(String.Format("SELECT Delivery FROM OrderHeaders WHERE Id={0}", data.headerid))
                     Using thisConn As New SqlConnection(myConn)
-                        Using myCmd As New SqlCommand("UPDATE OrderHeaders SET UserId=@UserId, StoreId=@StoreId, OrderNo=LTRIM(RTRIM(@OrderNo)), OrderCust=LTRIM(RTRIM(@OrderCust)), Delivery=@Delivery, DeliveryType=@DeliveryType, OrderSourceType=@OrderSourceType, Note=@Note, Active=1 WHERE Id=@Id", thisConn)
+                        Using myCmd As New SqlCommand("UPDATE OrderHeaders SET UserId=@UserId, StoreId=@StoreId, OrderNo=LTRIM(RTRIM(@OrderNo)), OrderCust=LTRIM(RTRIM(@OrderCust)), Delivery=@Delivery, DeliveryType=@DeliveryType, Address=@Address, OrderSourceType=@OrderSourceType, Note=@Note, Active=1 WHERE Id=@Id", thisConn)
                             myCmd.Parameters.AddWithValue("@Id", data.headerid)
                             myCmd.Parameters.AddWithValue("@UserId", UCase(data.createdby).ToString())
                             myCmd.Parameters.AddWithValue("@StoreId", UCase(data.customer).ToString())
@@ -485,6 +487,7 @@ Partial Class Methods_Order_CreateOrderMethod
                             myCmd.Parameters.AddWithValue("@OrderCust", data.ordername)
                             myCmd.Parameters.AddWithValue("@Delivery", FinalDelivery)
                             myCmd.Parameters.AddWithValue("@DeliveryType", data.deliverytype)
+                            myCmd.Parameters.AddWithValue("@Address", data.deliveryaddress)
                             myCmd.Parameters.AddWithValue("@OrderSourceType", data.sourcetype)
                             myCmd.Parameters.AddWithValue("@Note", data.notes)
                             myCmd.Connection = thisConn

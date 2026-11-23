@@ -121,15 +121,18 @@
                                     <label for="deliverytype" class="col-lg-4 form-label text-uppercase">delivery type</label>
                                     <div class="col-lg-4">
                                         <div class="input-group">
-                                            <select name="deliverytype" id="deliverytype" class="form-select ">
-                                                <option value=""></option>
-                                                <option value="By Van">BY VAN</option>
-                                                <option value="Third Party">THIRD PARTY</option>
-                                            </select>
+                                            <select name="deliverytype" id="deliverytype" class="form-select "></select>
                                             <button class="btn btn-information btn-info" type="button" id="btnInfoDeliveryType">
                                                 <i class="ti ti-info-square-rounded fs-2"></i>
                                             </button>
                                         </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3" id="divDeliveryAddress">
+                                    <label for="deliveryaddress" class="col-lg-4 form-label text-uppercase">delivery address</label>
+                                    <div class="col-lg-8">
+                                        <textarea name="deliveryaddress" id="deliveryaddress" class="form-control" rows="4" cols="4" ></textarea>
                                     </div>
                                 </div>
 
@@ -148,7 +151,6 @@
                                         </div>
                                     </div>
                                 </div>
-
 
                                 <div class="row mb-3">
                                     <label for="notes" class="col-lg-4 form-label text-uppercase">notes</label>
@@ -277,7 +279,7 @@
         let LOGINID = '<%= Session("LoginId") %>';
         let URIMETHOD = '/Methods/Order/CreateOrderMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/CreateOrders.js?v=1.0.11"></script>
+    <script src="/Scripts/Order/CreateOrders.js?v=1.0.27"></script>
 
 </asp:Content>
 

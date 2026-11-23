@@ -1999,6 +1999,8 @@ const displayElOverall = (header, detail) => {
         toggleShow(btnEl.btnReloadPricing, true);
       }
       toggleShow(divEl.divOrderSending, true);
+      toggleShow(btnEl.btnInternalNote, true);
+      toggleShow(divEl.divInternalNote, true);
     }
 
     // --- LOGIKA PERMISSION UNTUK CUSTOMER ---
@@ -2934,7 +2936,7 @@ const orderDetailPageLoaded = async () => {
   try {
     if (!ULTRON || !ORDERTYPE) window.location.href = "/order";
 
-    if (CUSTOMERID == "LS-A224") window.location.href = "/order"; // JPM Direct
+    // if (CUSTOMERID == "LS-A224") window.location.href = "/order"; // JPM Direct
 
     if (CUSTOMERID == "DEFAULT" && USERNAME == "galih") {
       window.location.href = "/order";

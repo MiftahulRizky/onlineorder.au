@@ -22,13 +22,14 @@ const elForm = {
   divOrderNumber: getById("divOrderNumber"),
   divOrderName: getById("divOrderName"),
   divDeliveryType: getById("divDeliveryType"),
+  divDeliveryAddress: getById("divDeliveryAddress"),
   divDelivery: getById("divDelivery"),
   divSource: getById("divSource"),
   divJobId: getById("divJobId"),
   divJobDate: getById("divJobDate"),
   divShipmentId: getById("divShipmentId"),
   divShipping: getById("divShipping"),
-  // customer: getById("customer"),
+  // customer: selectorEl("#divCustomer #customer"),
   // createdby: getById("createdby"),
   // createddate: getById("createddate"),
   // orderid: getById("orderid"),
@@ -55,7 +56,7 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
         getById("files").value = "";
 
         displayElOverall(ordertype);
-        const customer = getById("customer").value;
+        const customer = selectorEl("#divCustomer #customer").value;
         bindDelivery(customer);
       }
 
@@ -89,11 +90,31 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
       if (e.target.id === "delivery") {
         const delivery = e.target.value;
         const isAdministrator = ROLENAME === "Administrator";
+        const isJPMD = selectorEl("#divCustomer #customer").value === "LS-A224";
+        const isPpicDeCs = [
+          "PPIC & DE",
+          "Data Entry",
+          "Customer Service",
+        ].includes(ROLENAME);
         const isDelivery = delivery === "Delivery";
         toggleShow(elForm.divDeliveryType, false);
+        toggleShow(elForm.divDeliveryAddress, false);
+        bindDeliveryType();
 
-        if (isAdministrator && isDelivery) {
-          toggleShow(elForm.divDeliveryType, true);
+        if (isDelivery) {
+          if (isAdministrator || isPpicDeCs) {
+            toggleShow(elForm.divDeliveryType, true);
+          }
+
+          if (isJPMD) {
+            if (isAdministrator || isPpicDeCs) {
+              toggleShow(elForm.divDeliveryAddress, true);
+              isWarning(
+                "Please enter the delivery address in the Notes section before submitting the order.",
+              );
+              getById("deliveryaddress").classList.add("is-invalid");
+            }
+          }
         }
       }
     });
@@ -246,7 +267,7 @@ const bindCustomers = async (ordertype) => {
     lengthDefaultOption: 0,
   });
 
-  getById("customer").value = CUSTOMERID;
+  selectorEl("#divCustomer #customer").value = CUSTOMERID;
 };
 
 const bindUsers = async () => {
@@ -299,6 +320,7 @@ const bindOrderAggregate = async () => {
     );
     setState("delivery_edit", header.Delivery);
     setState("status_edit", header.Status);
+    setState("customer_edit", header.CustomerId);
     if (isShutters) {
       if (isCustomer && isProduction) {
         window.location.href = `/order/shutters/detail?param=${header.Id}&ordertype=${header.OrderType}`;
@@ -309,6 +331,7 @@ const bindOrderAggregate = async () => {
     bindSelectPayload(data.Users, "createdby", true, 1);
     bindSelectPayload(data.Shipment, "shipmentid", true, 1);
     bindDelivery(header.CustomerId);
+    bindDeliveryType();
 
     displayElOverall(header.OrderType);
     setValHeader(header);
@@ -435,18 +458,14 @@ const bindSelectPayload = (data, el, def = true, leng = 0) => {
 const bindDelivery = (customer) => {
   try {
     let list = [];
-    const jpm = customer === "LS-A224";
-    const sbsacc = ["LS-A333", "LS-A012"].includes(customer);
+    const isJPMD = customer === "LS-A224";
+    const isSBSAccent = ["LS-A333", "LS-A012"].includes(customer);
 
-    if (!jpm && !sbsacc) {
+    if (!isSBSAccent) {
       list.push("Delivery", "Pick Up");
     }
 
-    if (jpm) {
-      list.push("INT-FIS", "INT-PU");
-    }
-
-    if (sbsacc) {
+    if (isSBSAccent) {
       list.push("INT-PU");
     }
 
@@ -455,6 +474,12 @@ const bindDelivery = (customer) => {
     const msg = `bindDelivery: ${error.message}`;
     catchMessages(msg);
   }
+};
+
+const bindDeliveryType = () => {
+  let list = ["By Van", "Third Party", "COD/GTA"];
+
+  generateOption("deliverytype", list);
 };
 
 // --------------------------------------------||Handle Functions ||----------------------------------------
@@ -487,6 +512,7 @@ const saveData = async (button) => {
       "ordername",
       "delivery",
       "deliverytype",
+      "deliveryaddress",
       "sourcetype",
       "notes",
       "jobid",
@@ -750,6 +776,7 @@ const displayElOverall = async (ordertype) => {
     const isShutters = ["Panorama", "Evolve", "Shutters"].includes(ordertype);
     const isEdit = ACTION === "edit";
     const isAdd = ACTION === "add";
+    const isJPMD = getState("customer_edit") === "LS-A224";
 
     getById("createddate").value = new Date().toLocaleDateString("en-CA");
     toggleShow(elForm.divOrderType, true);
@@ -817,11 +844,20 @@ const displayElOverall = async (ordertype) => {
         toggleShow(elForm.divOrderNumber, true);
         toggleShow(elForm.divOrderName, true);
         toggleShow(elForm.divDelivery, true);
-        if (isAdministrator) {
-          isDelivery = getState("delivery_edit");
-          if (isDelivery === "Delivery") {
+        isDelivery = getState("delivery_edit");
+        if (isDelivery === "Delivery") {
+          if (isAdministrator || isPpicDeCs) {
             toggleShow(elForm.divDeliveryType, true);
           }
+
+          if (isJPMD) {
+            if (isAdministrator || isPpicDeCs) {
+              toggleShow(elForm.divDeliveryAddress, true);
+            }
+          }
+        }
+
+        if (isAdministrator || isPpicDeCs) {
           toggleShow(elForm.divSource, true);
         }
       }
@@ -916,6 +952,7 @@ const setValHeader = (itemData) => {
       ordername: "OrderName",
       delivery: "Delivery",
       deliverytype: "DeliveryType",
+      deliveryaddress: "OrderAddress",
       sourcetype: "OrderSourceType",
       sourcetypeold: "OrderSourceType",
       notes: "OrderNote",
@@ -977,6 +1014,7 @@ const createOrderPageLoaded = async () => {
   if (ACTION === "add") {
     setState("delivery_edit", "");
     setState("status_edit", "");
+    setState("customer_edit", "");
     getById("titleCard").textContent = "Create New Order";
     displayElOverall();
     await loaderFadeOut();

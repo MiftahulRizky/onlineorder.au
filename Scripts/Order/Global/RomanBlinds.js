@@ -55,7 +55,25 @@ document.querySelectorAll(".form-control, .form-select").forEach((el) => {
 
     if (e.target.id === "materialchain") {
       const materialchain = e.target.value;
-      await bindChainColour(materialchain);
+      const isPlastic = materialchain === "Plastic";
+      const isChrome = materialchain === "Chrome";
+      const isStainless = materialchain === "Stainless Steel";
+      divPlasticChain.classList.add("d-none");
+      divOtherChain.classList.add("d-none");
+
+      bindChainColour(materialchain);
+
+      if (isPlastic) {
+        divPlasticChain.classList.remove("d-none");
+      }
+      if (isChrome || isStainless) {
+        divOtherChain.classList.remove("d-none");
+      }
+    }
+
+    if (e.target.id === "chaincolour") {
+      const chaincolour = e.target.value;
+      bindChainLength();
     }
   });
   el.addEventListener("input", (e) => {
@@ -253,6 +271,10 @@ const bindChainColour = (materialchain) => {
   generateOption("chaincolour", list, 1);
 };
 
+const bindChainLength = () => {
+  generateOption("chainlengthplastic", ["500", "750", "1000", "1200", "1500"]);
+};
+
 const bindCordColour = () => {
   generateOption("cordcolour", ["Alabaster", "Mahogany", "Teak", "White"]);
 };
@@ -343,6 +365,7 @@ const bindItemOrders = async (itemid) => {
         bindControlPosition(),
         bindMaterialChain(),
         bindChainColour(item.MaterialChain),
+        bindChainLength(),
         bindCordColour(),
         bindBattenColour(item.BlindName),
         bindPlasticColour(),
@@ -365,6 +388,8 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
     const divControlType = document.getElementById("divControlType");
     const divFormDetail = document.getElementById("divFormDetail");
     const divChained = document.getElementById("divChained");
+    const divOtherChain = document.getElementById("divOtherChain");
+    const divPlasticChain = document.getElementById("divPlasticChain");
     const divCordlock = document.getElementById("divCordlock");
     const divBattenColour = document.getElementById("divBattenColour");
     const divPlasticColour = document.getElementById("divPlasticColour");
@@ -373,11 +398,14 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
 
     const divMarkUp = document.getElementById("divMarkUp");
     const btnSubmit = document.querySelector("#btnSubmit");
+
     // return;
     lblItemId.classList.add("d-none");
     divControlType.classList.add("d-none");
     divFormDetail.classList.add("d-none");
     divChained.classList.add("d-none");
+    divOtherChain.classList.add("d-none");
+    divPlasticChain.classList.add("d-none");
     divCordlock.classList.add("d-none");
     divBattenColour.classList.add("d-none");
     divPlasticColour.classList.add("d-none");
@@ -437,6 +465,19 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
       divCoverValance.classList.remove("d-none");
     }
 
+    if (item) {
+      const isPlastic = item.MaterialChain === "Plastic";
+      const isChrome = item.MaterialChain === "Chrome";
+      const isStainless = item.MaterialChain === "Stainless Steel";
+
+      if (isPlastic) {
+        divPlasticChain.classList.remove("d-none");
+      }
+      if (isChrome || isStainless) {
+        divOtherChain.classList.remove("d-none");
+      }
+    }
+
     if (MARKUPACCESS === "True") divMarkUp.classList.remove("d-none");
 
     if (["AddItem", "EditItem", "CopyItem"].includes(ITEMACTION)) {
@@ -473,6 +514,7 @@ const handlerSubmit = async (button) => {
       "materialchain", // as New MaterialChain
       "chaincolour", // as ChainId
       "chainlength", // as ChainLength
+      "chainlengthplastic",
       "cordcolour", // as New CordColour
       "cordlength", // as New CordLength
       "battencolour", // as BattenColour
@@ -602,6 +644,7 @@ const handlerSetElementValues = (itemData) => {
     controlposition: "ControlPosition",
     chaincolour: "ChainColour",
     chainlength: "ChainLength",
+    chainlengthplastic: "ChainLength",
     cordcolour: "CordColour",
     cordlength: "CordLength",
     battencolour: "BattenColour",

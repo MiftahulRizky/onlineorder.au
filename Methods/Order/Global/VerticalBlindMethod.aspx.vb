@@ -424,6 +424,21 @@ Partial Class Methods_Order_VerticalBlindMethod
                 data.chaincolour = "" : data.chainlength = "" : chainlength = 0 : customchainlength = 0 : ChainId = ""
             End If
 
+            If isTrackOnly Then
+                If is127mm Then
+                    width = data.bladeqty * 115
+                    If data.bladeqty < 6 Then width = 472
+                End If
+                If is89mm Then
+                    width = data.bladeqty * 79
+                    If data.bladeqty < 5 Then width = 591
+                End If
+            End If
+
+            If isSlatOnly Then
+                width = 0
+            End If
+
             
 
 

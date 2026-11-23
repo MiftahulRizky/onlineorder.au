@@ -4927,6 +4927,7 @@ Partial Class Methods_Order_JobSheetMethod
         Dim GoWith As String = String.Empty
         Dim goWithList As New List(Of String)()
         Dim JobId As String = currentData("JobId").ToString()
+        Dim HeaderId As String = currentData("HeaderId").ToString()
 
         ' Dim BlindNameList As DataSet = Nothing
         '#-------------------------------|| Find Go With ||-------------------------------#
@@ -5409,6 +5410,7 @@ Partial Class Methods_Order_JobSheetMethod
 
         Dim OrderCreated As String = Convert.ToDateTime(currentData("OrderCreated")).ToString("dd/MM/yyyy")
         Dim JobCreated As String = Convert.ToDateTime(currentData("JobCreated")).ToString("dd/MM/yyyy")
+        Dim Zone As String = currentData("ZoneId").ToString()
         ' Dim ShipDate As String = Convert.ToDateTime(currentData("ShipDate")).ToString("dd MMM yy").ToUpper()
         Dim ShipDate As String = If(IsDBNull(currentData("ShipDate")), "", Convert.ToDateTime(currentData("ShipDate")).ToString("dd MMM yy").ToUpper())
         Dim Notes1 As String = currentData("Notes1").ToString()
@@ -5420,15 +5422,28 @@ Partial Class Methods_Order_JobSheetMethod
         Dim hightColumnNotes As String = "height: 30px;"
         If Not (String.IsNullOrEmpty(Notes1) Or String.IsNullOrEmpty(Notes2) Or String.IsNullOrEmpty(Notes3) Or String.IsNullOrEmpty(Notes4) Or String.IsNullOrEmpty(Notes5) Or String.IsNullOrEmpty(Notes6)) Then hightColumnNotes = ""
 
+        Dim ZoneType As String = publicCfg.GetItemData(String.Format("SELECT DeliveryType FROM OrderHeaders WHERE Id = '{0}'", HeaderId))
+        Dim CenterInfo As String = ""
+        Dim WidthCenterInfo As String = "auto"
+        Dim WidthHeaderLeft As String = "350px"
+        If Zone = "Delivery" AND ZoneType = "COD/GTA" Then
+            CenterInfo = "ACCOUNTS"
+            WidthCenterInfo = "150px"
+            WidthHeaderLeft = "200px"
+        End If
+
+        
+
         '#header
         result+= "<table style='width: 100%; border-collapse: collapse;'>"
             '#Go With, Icon, & Job No
             result+= "<tr>"
                 '#Heading Left
                 result+= "<th style=' text-align: left; width: 100px;font-size: 15px; padding-bottom: 5px;'>Go With</th>"
-                result+= "<th style=' text-align: left; width: 350px; font-size: 15px; padding-bottom: 5px;'>: "& GoWith &" /</th>"
+                result+= "<th style=' text-align: left; width: "& WidthHeaderLeft &"; font-size: 15px; padding-bottom: 5px;'>: "& GoWith &" /</th>"
 
                 '#Heading Center This Only
+                result+= String.Format("<th style='font-family: Inter, sans-serif; text-align: center; font-size: 23px; width: {0};' rowspan='6'>{1}</th>", WidthCenterInfo, CenterInfo)
                 result+= "<th style='font-family: Impact, sans-serif; text-align: center; font-size: 35px; width: auto;' rowspan='6'>" & ReportIcon & "</th>"
 
                 '#heading Right
@@ -5442,7 +5457,7 @@ Partial Class Methods_Order_JobSheetMethod
             result+="<tr>"   
                 '#Heading Left
                 result+= "<td style=' text-align: left; width: 100px; font-size: 12px; padding-bottom: 5px;'>Order/Job Date</td>"
-                result+= "<td style=' text-align: left; width: 350px; font-size: 12px; padding-bottom: 5px;'>: "& OrderCreated &" / "& JobCreated &"</td>"
+                result+= "<td style=' text-align: left; width: "& WidthHeaderLeft &"; font-size: 12px; padding-bottom: 5px;'>: "& OrderCreated &" / "& JobCreated &"</td>"
 
                 '#Heading Right
                 result+= "<th style=' text-align: left; width: 80px; font-size: 13px; padding-bottom: 5px;'>Reff</th>"
@@ -5453,7 +5468,7 @@ Partial Class Methods_Order_JobSheetMethod
             result+="<tr>"
                 '#Heading Left
                 result+= "<td style=' text-align: left; width: 100px;font-size: 13px; padding-bottom: 5px;'>ID Unique</td>"
-                result+= "<th style=' text-align: left; width: 350px; font-size: 13px; padding-bottom: 5px;'>: "& currentData("HeaderId").ToString() &"</th>"
+                result+= "<th style=' text-align: left; width: "& WidthHeaderLeft &"; font-size: 13px; padding-bottom: 5px;'>: "& currentData("HeaderId").ToString() &"</th>"
 
                 '#Heading Right
                 result+= "<td style=' text-align: left; width: 80px; font-size: 12px; padding-bottom: 5px;'>Design Type</td>"
@@ -5464,7 +5479,7 @@ Partial Class Methods_Order_JobSheetMethod
             result+="<tr>"
                 '#Heading Left
                 result+= "<th style=' text-align: left; width: 100px;font-size: 15px; padding-bottom: 5px;'>Store</th>"
-                result+= "<th style=' text-align: left; width: 350px;font-size: 15px; padding-bottom: 5px;'>: "& currentData("StoreName").ToString() &"</th>"
+                result+= "<th style=' text-align: left; width: "& WidthHeaderLeft &";font-size: 15px; padding-bottom: 5px;'>: "& currentData("StoreName").ToString() &"</th>"
 
                 '#Heading Right
                 result+= "<th style=' text-align: left; width: 80px; font-size: 15px; padding-bottom: 5px;'>Due date</th>"
@@ -5475,7 +5490,7 @@ Partial Class Methods_Order_JobSheetMethod
             result+="<tr>"
                 '#Heading Left
                 result+= "<th style=' text-align: left; width: 100px;font-size: 12px; padding-bottom: 5px;'>Order No</th>"
-                result+= "<th style=' text-align: left; width: 350px; font-size: 12px; padding-bottom: 5px;'>: "& currentData("OrderNo").ToString() &"</th>"
+                result+= "<th style=' text-align: left; width: "& WidthHeaderLeft &"; font-size: 12px; padding-bottom: 5px;'>: "& currentData("OrderNo").ToString() &"</th>"
 
                 '#Heading Right
                 result+= "<th style=' text-align: left; width: 80px; font-size: 15px; padding-bottom: 5px;'>Zone</th>"
@@ -5486,7 +5501,7 @@ Partial Class Methods_Order_JobSheetMethod
             result+="<tr>"
                 '#Heading Left
                 result+= "<td style=' text-align: left; width: 100px; font-size: 12px;'>Total Order Blind</td>"
-                result+= "<td style=' text-align: left; width: 350px;  font-size: 12px;'>: "& currentData("AmountBlind").ToString() &"</td>"
+                result+= "<td style=' text-align: left; width: "& WidthHeaderLeft &";  font-size: 12px;'>: "& currentData("AmountBlind").ToString() &"</td>"
 
                 '#Heading Right
                 result+= "<td style=' text-align: left; width: 80px; font-size: 12px; padding-bottom: 5px;'>Entered By</td>"
@@ -5495,7 +5510,7 @@ Partial Class Methods_Order_JobSheetMethod
             
             '#Information Notes
             result+="<tr>"
-                result+= "<td colspan='5' style='font-size: 14px; border-top:1px solid black; "& hightColumnNotes &" vertical-align: top; padding: 0;'>"
+                result+= "<td colspan='6' style='font-size: 14px; border-top:1px solid black; "& hightColumnNotes &" vertical-align: top; padding: 0;'>"
                     result+= Notes1 & Notes2 & Notes3 & Notes4 & Notes5 & Notes6
                 result+="</td>"
             result+="</tr>"
@@ -9366,7 +9381,7 @@ Partial Class Methods_Order_JobSheetMethod
             result+= trDetEnd
 
              '#line Blank
-            result += BlankLineEachRow(18)
+            result += BlankLineEachRow(15)
 
         result+= tableDetEnd
 
@@ -12388,7 +12403,7 @@ Partial Class Methods_Order_JobSheetMethod
            
 
             '#line Blank
-            result += BlankLineEachRow(15)
+            result += BlankLineEachRow(10)
 
         result+= tableDetEnd
 
@@ -12651,7 +12666,7 @@ Partial Class Methods_Order_JobSheetMethod
            
 
             '#line Blank
-            result += BlankLineEachRow(15)
+            result += BlankLineEachRow(10)
 
         result+= tableDetEnd
 
@@ -12925,7 +12940,7 @@ Partial Class Methods_Order_JobSheetMethod
            
 
             '#line Blank
-            result += BlankLineEachRow(15)
+            result += BlankLineEachRow(10)
 
         result+= tableDetEnd
 
@@ -13199,7 +13214,7 @@ Partial Class Methods_Order_JobSheetMethod
            
 
             '#line Blank
-            result += BlankLineEachRow(15)
+            result += BlankLineEachRow(10)
 
         result+= tableDetEnd
 
@@ -13473,7 +13488,7 @@ Partial Class Methods_Order_JobSheetMethod
            
 
             '#line Blank
-            result += BlankLineEachRow(15)
+            result += BlankLineEachRow(10)
 
         result+= tableDetEnd
 
@@ -13747,7 +13762,7 @@ Partial Class Methods_Order_JobSheetMethod
            
 
             '#line Blank
-            result += BlankLineEachRow(15)
+            result += BlankLineEachRow(10)
 
         result+= tableDetEnd
 
