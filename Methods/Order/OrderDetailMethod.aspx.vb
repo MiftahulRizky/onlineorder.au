@@ -959,16 +959,16 @@ Partial Class Methods_Order_OrderDetailMethod
                     End If
                 End If
     
-                If BracketType = "With Tube & Bottom Included" then
-                    Product = "Roller Skin Only (+Tube & Bottom Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
+                If BracketType = "Skin With Tube & Bottom Rail Included" then
+                    Product = "Roller Skin Only (+Tube & Bottom Rail Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
                 End If
     
     
-                If BracketType = "With Bottom Included" then
-                    Product = "Roller Skin Only (+Bottom Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
+                If BracketType = "Skin With Bottom Rail Included" then
+                    Product = "Roller Skin Only (+Bottom Rail Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
                 End If
     
-                If BracketType = "With Tube Included" then
+                If BracketType = "Skin With Tube Included" then
                     Product = "Roller Skin Only (+Tube Inc) #" & FabricType & " (" & Width & " x " & Drop & ")"
                 End If
     

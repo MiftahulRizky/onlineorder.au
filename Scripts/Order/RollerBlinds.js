@@ -817,8 +817,8 @@ const bindTrims = (blindname, brackettype, tubetype) => {
     }
 
     if (
-      brackettype == "Skin With Tube & Bottom Included" ||
-      brackettype == "Skin With Bottom Included"
+      brackettype == "Skin With Tube & Bottom Rail Included" ||
+      brackettype == "Skin With Bottom Rail Included"
     ) {
       list.push(
         "1P",
@@ -1171,7 +1171,8 @@ const handlerElementVisibility = async (
     const isMotorised = blindname === "Motorised";
     const isStandard = blindname === "Standard";
     const isSkinOnly = blindname === "Skin Only";
-    const isTubeBottom = brackettype === "Skin With Tube & Bottom Included";
+    const isTubeBottom =
+      brackettype === "Skin With Tube & Bottom Rail Included";
     const isTubes = brackettype === "Skin With Tube Included";
     const isSingle = brackettype === "Single";
     const isLinked2Ind = brackettype === "Linked 2 Blinds (Ind)";

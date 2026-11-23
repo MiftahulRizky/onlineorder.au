@@ -9273,10 +9273,20 @@ Partial Class Methods_Order_JobSheetMethod
             currentData("BracketType6").ToString()
         }
         For i As Integer = 0 To initSkinType.Length - 1
-            If Not String.IsNullOrEmpty(initSkinType(i).ToString()) Then
-                initSkinType(i) = initSkinType(i).ToString()
-            Else
-                initSkinType(i) = String.Empty
+            If initSkinType(i).ToString() = "Skin Only" Then
+                initSkinType(i) = "Skin Only"
+            End If
+
+            If initSkinType(i).ToString() = "Skin With Bottom Rail Included" Then
+                initSkinType(i) = "Skin+BR"
+            End If
+
+            If initSkinType(i).ToString() = "Skin With Tube & Bottom Rail Included" Then
+                initSkinType(i) = "Skin+BR+Tube"
+            End If
+
+            If initSkinType(i).ToString() = "Skin With Tube Included" Then
+                initSkinType(i) = "Skin+Tube"
             End If
         Next
 
@@ -9354,6 +9364,17 @@ Partial Class Methods_Order_JobSheetMethod
                 result+= tdDetStart & currentData("Trim4").ToString() & tdDetEnd
                 result+= tdDetStart & currentData("Trim5").ToString() & tdDetEnd
                 result+= tdDetRight & currentData("Trim6").ToString() & tdDetEnd
+            result+= trDetEnd
+
+            '#TubeSize
+            result+= trDetStart
+                result+= tdTitleStart & "Tube Size" & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TubeSize5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("TubeSize6").ToString() & tdDetEnd
             result+= trDetEnd
 
             '#BottomRailShape
