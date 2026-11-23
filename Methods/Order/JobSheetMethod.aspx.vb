@@ -4578,7 +4578,7 @@ Partial Class Methods_Order_JobSheetMethod
                                    If fieldName = "Notes" Then
                                         If i < chunk.Count Then
                                             If chunk(i).Table.Columns.Contains(fieldName) AndAlso Not IsDBNull(chunk(i)(fieldName)) AndAlso Not String.IsNullOrEmpty(CType(chunk(i)(fieldName), Object).ToString()) Then
-                                                value = "(Item " & globalLineNumber.ToString() & ") - " & CType(chunk(i)(fieldName), Object) & " |"
+                                                value = "(Item " & globalLineNumber.ToString() & ") - " & CType(chunk(i)(fieldName), Object)
                                             End If
                                         End If
                                     ElseIf fieldName = "CLength" Then
@@ -5423,6 +5423,7 @@ Partial Class Methods_Order_JobSheetMethod
         If Not (String.IsNullOrEmpty(Notes1) Or String.IsNullOrEmpty(Notes2) Or String.IsNullOrEmpty(Notes3) Or String.IsNullOrEmpty(Notes4) Or String.IsNullOrEmpty(Notes5) Or String.IsNullOrEmpty(Notes6)) Then hightColumnNotes = ""
 
         Dim ZoneType As String = publicCfg.GetItemData(String.Format("SELECT DeliveryType FROM OrderHeaders WHERE Id = '{0}'", HeaderId))
+        Dim Address As String = publicCfg.GetItemData(String.Format("SELECT Address FROM OrderHeaders WHERE Id = '{0}'", HeaderId))
         Dim CenterInfo As String = ""
         Dim WidthCenterInfo As String = "auto"
         Dim WidthHeaderLeft As String = "350px"
@@ -5432,7 +5433,15 @@ Partial Class Methods_Order_JobSheetMethod
             WidthHeaderLeft = "200px"
         End If
 
-        
+        Dim Information As String = String.Join(" | ", {
+            Address,
+            Notes1,
+            Notes2,
+            Notes3,
+            Notes4,
+            Notes5,
+            Notes6
+        }.Where(Function(x) Not String.IsNullOrWhiteSpace(x)))
 
         '#header
         result+= "<table style='width: 100%; border-collapse: collapse;'>"
@@ -5511,7 +5520,7 @@ Partial Class Methods_Order_JobSheetMethod
             '#Information Notes
             result+="<tr>"
                 result+= "<td colspan='6' style='font-size: 14px; border-top:1px solid black; "& hightColumnNotes &" vertical-align: top; padding: 0;'>"
-                    result+= Notes1 & Notes2 & Notes3 & Notes4 & Notes5 & Notes6
+                    result+= Information
                 result+="</td>"
             result+="</tr>"
         result+= "</table>"

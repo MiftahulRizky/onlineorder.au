@@ -618,7 +618,9 @@ Partial Class Methods_Order_OrderDetailMethod
                     End If
 
                     textSwall = "You have an incomplete roller blinds order, which is on the ITEM ID "+ msg +" <br /><br />If you want to complete it, please click the <b>Next Item</b> button on the order line ID."
-                    
+                    If String.IsNullOrEmpty(Action) Or Action = "No" Then
+                        textSwall =""
+                    End If
                 Next
             End If
 
@@ -637,13 +639,26 @@ Partial Class Methods_Order_OrderDetailMethod
                 ' End If
             End If
 
-            ' If HeaderDataCount > 0 Then
-            '     For j As Integer = 0 To HeaderDataCount - 1
-            '         Dim Rows As DataRow = HeaderData.Tables(0).Rows(j).Item()
-            '         Dim CustomerId As String = Rows("StoreId").ToString()
-            '         Dim Address As String = Rows("Address").ToString()
-            '     Next
-            ' End If
+            If HeaderDataCount > 0 Then
+                For j As Integer = 0 To HeaderDataCount - 1
+                    Dim Rows As DataRow = HeaderData.Tables(0).Rows(j)
+                    Dim CustomerId As String = Rows("StoreId").ToString()
+                    Dim Address As String = Rows("Address").ToString()
+                    Dim isJPM As Boolean = CustomerId = "LS-A224"
+                    Dim isAdmin As Boolean = rolename = "Administrator"
+                    Dim isPpicDeCs As Boolean =  InArray(rolename,   "PPIC & DE", "Data Entry", "Customer Service")
+
+                    If isJPM AND String.IsNullOrEmpty(Address) Then
+                        If isAdmin Or isPpicDeCs Then
+                            Action = "Yes"
+                            If Not String.IsNullOrEmpty(textSwall) Then
+                                textSwall += "<br /><br /> "
+                            End If
+                            textSwall += "Please enter the delivery address in the Notes section before submitting the order."
+                        End If
+                    End If
+                Next
+            End If
             
 
             Return New With {.error = false, .Action = Action, .Message = textSwall, .StatusAdditional = StatusAdditional}
