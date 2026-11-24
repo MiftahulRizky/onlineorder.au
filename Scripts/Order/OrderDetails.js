@@ -21,6 +21,42 @@ const getById = (id) => document.getElementById(id);
 const getByClass = (cls) => document.getElementsByClassName(cls);
 const selectorEl = (selector) => document.querySelector(selector);
 const selectorElAll = (selector) => document.querySelectorAll(selector);
+let ORDER_INITIAL_SNAPSHOT = null;
+let IS_CHECKING_ORDER = false;
+let ORDER_INTEGRITY_INTERVAL = null;
+let IS_ORDER_RELOADING = false;
+const IS_ADMIN = (ROLENAME = "Administrator");
+const IS_PPIC_DE_CS = ["PPIC & DE", "Customer Service"].includes(ROLENAME);
+const IS_CUSTOMER = ROLENAME === "Customer";
+const ORDER_INTEGRITY_FIELDS = [
+  "Id",
+  "CustomerName",
+  "CustomerId",
+  "OrderId",
+  "JoNumberId",
+  "OrderType",
+  "OrderSending",
+  "OrderNumber",
+  "OrderName",
+  "CreatedDate",
+  "CreatedByName",
+  "CreatedBy",
+  "OrderNote",
+  "Status",
+  "StatusDescription",
+  "StatusAdditional",
+  "InternalNote",
+  "Delivery",
+  "SubmittedDate",
+  "CustomerDisc",
+  "JobDate",
+  "CompletedDate",
+  "CanceledDate",
+  "SumPrice",
+  "Gst",
+  "FinalTotal",
+];
+
 const btnEl = {
   btnFinish: getById("btnFinish"),
   btnPreviewPrint: getById("btnPreviewPrint"),
@@ -734,7 +770,11 @@ const bindOrderAggregate = async (headerid, ordertype) => {
       throw new Error(data.message);
     }
 
-    console.log(data);
+    if (IS_ADMIN) {
+      console.log(data);
+    }
+
+    ORDER_INITIAL_SNAPSHOT = createOrderSnapshot(data.header);
 
     handlerHeaderInfo(data.header);
     bindDetails(data.detail);
@@ -748,6 +788,8 @@ const bindOrderAggregate = async (headerid, ordertype) => {
     handlerInternalNote(data.header);
     setValmodalLogs(data.other);
     bindProduct(data.other.Designs.list);
+
+    startOrderIntegrityMonitor();
   } catch (error) {
     let msg = `bindOrderAggregate: ${error.message}`;
     catchMessages(msg);
@@ -2931,6 +2973,111 @@ const submitEditPricing = async (button) => {
     button.innerHTML = "Save Changes";
   }
 };
+// ----------------------------------------------|| Snapshoot Functions ||---------------------------------------
+// Membuat snapshot data
+const createOrderSnapshot = (header) => {
+  if (!header) return null;
+
+  return Object.fromEntries(
+    ORDER_INTEGRITY_FIELDS.map((key) => [key, header[key] ?? null]),
+  );
+};
+
+// Membandingkan dua snapshot
+const hasOrderDataChanged = (oldData, newData) => {
+  if (!oldData || !newData) return false;
+
+  return ORDER_INTEGRITY_FIELDS.some((key) => {
+    return (oldData[key] ?? null) !== (newData[key] ?? null);
+  });
+};
+
+const checkOrderDataIntegrity = async () => {
+  if (!ORDER_INITIAL_SNAPSHOT) return;
+
+  if (IS_CHECKING_ORDER || IS_ORDER_RELOADING) return;
+
+  IS_CHECKING_ORDER = true;
+
+  try {
+    const response = await fetch(`${URIMETHOD}/BindOrderAggregate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      cache: "no-store",
+      body: JSON.stringify({
+        data: {
+          headerid: HEADERID,
+          ordertype: ORDERTYPE,
+          loginid: LOGINID,
+          rolename: ROLENAME,
+          customercontactid: CUSTOMERCONTACTID,
+          applicationid: APPLICATIONID,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`${response.status} - ${response.statusText}`);
+    }
+
+    const { d: data } = await response.json();
+
+    if (!data) {
+      throw new Error("Unable to retrieve latest order data.");
+    }
+
+    if (data.warning || data.error) {
+      throw new Error(data.message || "Order verification failed.");
+    }
+
+    // Snapshot data terbaru dari server
+    const latestSnapshot = createOrderSnapshot(data.header);
+
+    // Bandingkan dengan snapshot awal
+    const hasChanged = hasOrderDataChanged(
+      ORDER_INITIAL_SNAPSHOT,
+      latestSnapshot,
+    );
+
+    if (hasChanged) {
+      IS_ORDER_RELOADING = true;
+
+      console.warn("Order data has changed. Reloading page...");
+
+      window.location.reload();
+
+      return;
+    }
+
+    console.log("Order integrity check: OK");
+  } catch (error) {
+    console.error("checkOrderDataIntegrity:", error);
+
+    // Jangan izinkan aksi sensitif jika verifikasi gagal.
+    throw error;
+  } finally {
+    IS_CHECKING_ORDER = false;
+  }
+};
+
+const startOrderIntegrityMonitor = () => {
+  // Hapus interval sebelumnya jika ada
+  if (ORDER_INTEGRITY_INTERVAL) {
+    clearInterval(ORDER_INTEGRITY_INTERVAL);
+  }
+
+  // Jalankan pengecekan setiap 30 detik
+  ORDER_INTEGRITY_INTERVAL = setInterval(async () => {
+    try {
+      await checkOrderDataIntegrity();
+    } catch (error) {
+      console.error("Order integrity monitor:", error);
+    }
+  }, 3000);
+};
+
 // ----------------------------------------------|| Other Functions ||---------------------------------------
 const orderDetailPageLoaded = async () => {
   try {
