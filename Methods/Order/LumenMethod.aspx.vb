@@ -272,12 +272,12 @@ Partial Class Methods_Order_LumenMethod
                 Return New ErrorResponse With {.error = New ErrorDetail With {.message = "fabric colour is required !",.field = "fabriccolour"}}
             End If
 
-            If data.fabrictype = "Sonatine Fresh" Then
-                If drop > 2700 Then
+            If InArray(data.fabrictype, "Sonatine", "Fresh") Then
+                If drop > 2800 Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 2700 !",.field = "drop"}}
                 End If
             Else
-                If drop > 2600 Then
+                If drop > 2500 Then
                     Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 2600 !",.field = "drop"}}
                 End If
             End IF
