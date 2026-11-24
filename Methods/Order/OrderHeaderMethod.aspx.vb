@@ -537,7 +537,9 @@ Partial Class Methods_Order_OrderHeaderMethod
                 Return New With { .warning = true, .message = "status is required !", .field = "#modalChangeStatus #status"}
             End If
             If data.status = data.statusOld Then
-                Return New With { .warning = true, .message = "you don't choose different changes on status, don't do it with the same status!", .field = "#modalChangeStatus #status"}
+                If NOT data.status = "On Hold" Then
+                    Return New With { .warning = true, .message = "you don't choose different changes on status, don't do it with the same status!", .field = "#modalChangeStatus #status"}
+                End If
             End If
 
 

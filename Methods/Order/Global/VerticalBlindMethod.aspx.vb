@@ -406,7 +406,7 @@ Partial Class Methods_Order_VerticalBlindMethod
             Dim MaterialWand As String = ""
             If isWand Then
                 If data.wandlength = "Standard" Then
-                    wandlength = 2/3 * drop
+                    wandlength = Math.Round((2/3) * drop)
                     If wandlength > 1000 Then wandlength = 1000
                 End If
                 If data.wandlength = "Custom" Then

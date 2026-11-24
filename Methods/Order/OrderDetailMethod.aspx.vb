@@ -1437,8 +1437,8 @@ Partial Class Methods_Order_OrderDetailMethod
                     })
                 Next
 
-                ' Dim Res As Object = UpdateOrderSending(headerid, "BIG", True)
-                ' If Res.error Then Throw New Exception(Res.message)
+                Dim Res As Object = UpdateOrderSending(headerid, "BIG", True)
+                If Res.error Then Throw New Exception(Res.message)
 
                 Dim json As String = JsonConvert.SerializeObject(order)
                 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12
@@ -1986,8 +1986,8 @@ Partial Class Methods_Order_OrderDetailMethod
                 Return New With { .warning = true, .message = "status is required !", .field = "#modalChangeStatus #status"}
             End If
 
-            If NOT data.status = "On Hold" Then
-                If data.status = data.statusOld Then
+            If data.status = data.statusOld Then
+                If NOT data.status = "On Hold" Then
                     Return New With { .warning = true, .message = "you don't choose different changes on status, don't do it with the same status!", .field = "#modalChangeStatus #status"}
                 End If
             End If

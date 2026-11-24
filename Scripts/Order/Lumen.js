@@ -771,6 +771,8 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
     const lblChain = document.getElementById("lblChain");
     const divChain = document.getElementById("divChain");
     const divMotor = document.getElementById("divMotor");
+    const divHeadbox = document.getElementById("divHeadbox");
+    const divInsert = document.getElementById("divInsert");
     const divButtinge = document.getElementById("divButtinge");
     const divMarkUp = document.getElementById("divMarkUp");
 
@@ -794,6 +796,8 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
     lblChain.innerHTML = "chain colour x length";
     divChain.classList.add("d-none");
     divMotor.classList.add("d-none");
+    divHeadbox.classList.add("d-none");
+    divInsert.classList.add("d-none");
     // divButtinge.classList.add("d-none");
     divMarkUp.classList.add("d-none");
     btnSubmit.classList.add("d-none");

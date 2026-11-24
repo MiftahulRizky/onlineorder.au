@@ -254,11 +254,14 @@
                                             <small class="form-hint">* Colour</small>
                                         </div>
                                         <div class="col-lg-4 col-md-12 col-sm-12">
-                                            <div class="input-group">
+                                            <div class="input-group" id="divChainLengthInput">
                                                 <input type="number" min="1" name="chainlength" id="chainlength" class="form-control ">
                                                 <button class="btn btn-info btn-information" type="button" id="btnInfoChain">
                                                     <i class="ti ti-info-square-rounded fs-2"></i>
                                                 </button>
+                                            </div>
+                                            <div id="divChainLengthSelect">
+                                                <select name="chainlength2" id="chainlength2" class="form-select "></select>
                                             </div>
                                             <small class="form-hint">* Length</small>
                                         </div>
@@ -380,7 +383,14 @@
         
                         <div class="card-body">
                             <div class="mb-3 row">
-                                <p runat="server" id="pNotes"></p>
+                                <p class="text-uppercase fw-bold">Limitations</p> <br>
+                                <p> 
+                                    - Minimum width : 200mm <br>
+                                    - Minimum width for motorised : 700mm <br>
+                                    - Maximum width : 3000mm <br>
+                                    - Minimum drop : 600mm <br>
+                                    - Maximum drop : 3200mm
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -449,5 +459,5 @@
         let URIMETHOD = "/Methods/Order/Global/RollerBlindMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/Global/RollerBlinds.js?v=1.0.7"></script>
+    <script type="text/javascript" src="/Scripts/Order/Global/RollerBlinds.js?v=1.0.16"></script>
 </asp:Content>

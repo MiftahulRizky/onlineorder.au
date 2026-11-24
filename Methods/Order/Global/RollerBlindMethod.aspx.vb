@@ -37,6 +37,7 @@ Partial Class Methods_Order_RollerBlindMethod
         Public Property controlposition As String
         Public Property chaincolour As String
         Public Property chainlength As String
+        Public Property chainlength2 As String
         Public Property trim As String
         Public Property railtype As String
         Public Property railcolour As String
@@ -249,9 +250,9 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
             End If
 
-            ' If String.IsNullOrEmpty(data.mounting) Then
-            '     Return New With { .warning = true, .message = "mounting is required !", .field = "mounting"}
-            ' End If
+            If String.IsNullOrEmpty(data.mounting) Then
+                Return New With { .warning = true, .message = "mounting is required !", .field = "mounting"}
+            End If
 
             Dim width As Integer
             If String.IsNullOrEmpty(data.width) Then
@@ -260,11 +261,11 @@ Partial Class Methods_Order_RollerBlindMethod
             If Not Integer.TryParse(data.width, width) OrElse width <= 0 Then
                 Return New With {.warning = true,.message = "width must be a positive integer !",.field = "width"}
             End If
-            If width < 150 Then
-                Return New With {.warning = true,.message = "width must be less than or equal to 150 !",.field = "width"}
+            If width < 200 Then
+                Return New With {.warning = true,.message = "width must be less than or equal to 200 !",.field = "width"}
             End If
-            If width > 6000 Then
-                Return New With {.warning = true,.message = "width must be less than or equal to 6000 !",.field = "width"}
+            If width > 3000 Then
+                Return New With {.warning = true,.message = "width must be less than or equal to 3000 !",.field = "width"}
             End If
 
             Dim drop As Integer
@@ -274,8 +275,8 @@ Partial Class Methods_Order_RollerBlindMethod
             If Not Integer.TryParse(data.drop, drop) OrElse drop <= 0 Then
                 Return New With {.warning = true, .message = "drop must be a positive integer !",.field = "drop"}
             End If
-            If drop < 150 Then
-                Return New With {.warning = true, .message = "drop must be greater than or equal to 150 !",.field = "drop"}
+            If drop < 600 Then
+                Return New With {.warning = true, .message = "drop must be greater than or equal to 600 !",.field = "drop"}
             End If
             If drop > 3200 Then
                 Return New With {.warning = true, .message = "drop must be less than or equal to 3200 !",.field = "drop"}
@@ -284,6 +285,9 @@ Partial Class Methods_Order_RollerBlindMethod
             Dim blindarea As Integer = Math.Round(width * drop / 1000000, 0)
             If width > 1810 AND data.tubetype = "38"  Then
                 Return New With {.warning = true, .message = "cannot down grade to 38mm tube !",.field = "tubetype"}
+            End If
+            If data.tubetype = "45" AND blindarea > 6 Then
+                Return New With {.warning = true, .message = "please check your size for tube 45mm!",.field = "tubetype"}
             End If
 
             If String.IsNullOrEmpty(data.fabrictype) Then
@@ -308,6 +312,14 @@ Partial Class Methods_Order_RollerBlindMethod
                     If String.IsNullOrEmpty(data.roll) Then
                         Return New With {.warning = true, .message = "roll direction is required !",.field = "roll"}
                     End If
+
+                    If data.brackettype = "Double" AND InArray(data.itemaction, "EditItem", "NextItem") Then
+                        Dim OtherRoll As String = publicCfg.GetItemData(String.Format("SELECT RollDirection FROM OrderDetails WHERE Active = 1 AND UniqueId = '{0}' AND Id <> '{1}'", data.uniqueid, data.itemid))
+
+                        If data.roll = "Standard" AND OtherRoll = "Standard" then
+                            Return New With {.warning = true, .message = "Both Roll Direction options cannot be set to Standard. Please select a different Roll Direction option.",.field = "roll"}
+                        End If
+                    End If
                 End If
 
                 ' If InArray(data.brackettype, "Single", "Double", "Linked 2 Blinds (Ind)", "Headbox Only", "Headbox & Side Channels") Then
@@ -317,7 +329,14 @@ Partial Class Methods_Order_RollerBlindMethod
                 ' End If
             End IF
 
+            Dim isChromeSteel As Boolean = InArray(data.chaincolour, "Chrome", "Stainless Steel")
+            Dim fieldchainlength As String = "chainlength"
+            If isChromeSteel = False Then
+                data.chainlength = data.chainlength2
+                fieldchainlength = "chainlength2"
+            End If
             If data.controltype = "Chain" Then
+
                 If InArray(data.brackettype, "Single", "Double") Then
                     If String.IsNullOrEmpty(data.controlposition) Then
                         Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
@@ -329,7 +348,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     Dim chainlength As Integer
                     If Not String.IsNullOrEmpty(data.chainlength) Then
                         If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                            Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                            Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                         End If
                     End If
                 End If
@@ -345,7 +364,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     Dim chainlength As Integer
                     If Not String.IsNullOrEmpty(data.chainlength) Then
                         If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                            Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                            Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                         End If
                     End If
 
@@ -397,7 +416,7 @@ Partial Class Methods_Order_RollerBlindMethod
                                 Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                        Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                        Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                     End If
                                 End If
                             End If
@@ -422,7 +441,7 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                 End If
                             End If
                         End if
@@ -460,7 +479,7 @@ Partial Class Methods_Order_RollerBlindMethod
                                 Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                        Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                        Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                     End If
                                 End If
                             End If
@@ -475,7 +494,7 @@ Partial Class Methods_Order_RollerBlindMethod
                             Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
                         End If
                         If Not String.IsNullOrEmpty(data.chainlength) Then
-                            Return New With {.warning = true, .message = "chain length not required !",.field = "chainlength"}
+                            Return New With {.warning = true, .message = "chain length not required !",.field = fieldchainlength}
                         End If
                     End If
 
@@ -497,7 +516,7 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                 End If
                             End If
                         End if
@@ -516,7 +535,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         Dim chainlength As Integer
                         If Not String.IsNullOrEmpty(data.chainlength) Then
                             If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                             End If
                         End If
                     End If
@@ -552,7 +571,7 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                 End If
                             End If
                         End If
@@ -567,7 +586,7 @@ Partial Class Methods_Order_RollerBlindMethod
                                     Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
                                 End If
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
-                                    Return New With {.warning = true, .message = "chain length not required !",.field = "chainlength"}
+                                    Return New With {.warning = true, .message = "chain length not required !",.field = fieldchainlength}
                                 End If
                             End If
 
@@ -581,7 +600,7 @@ Partial Class Methods_Order_RollerBlindMethod
                                 Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                        Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                        Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                     End If
                                 End If
                             End If
@@ -599,7 +618,7 @@ Partial Class Methods_Order_RollerBlindMethod
                                 Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
                             End If
                             If Not String.IsNullOrEmpty(data.chainlength) Then
-                                Return New With {.warning = true, .message = "chain length not required !",.field = "chainlength"}
+                                Return New With {.warning = true, .message = "chain length not required !",.field = fieldchainlength}
                             End If
                         End If
 
@@ -613,7 +632,7 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                 End If
                             End If
                         End If
@@ -640,7 +659,7 @@ Partial Class Methods_Order_RollerBlindMethod
                                     Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
                                 End If
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
-                                    Return New With {.warning = true, .message = "chain length not required !",.field = "chainlength"}
+                                    Return New With {.warning = true, .message = "chain length not required !",.field = fieldchainlength}
                                 End If
                             End If
 
@@ -654,7 +673,7 @@ Partial Class Methods_Order_RollerBlindMethod
                                 Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                        Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                        Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                     End If
                                 End If
                             End If
@@ -672,7 +691,7 @@ Partial Class Methods_Order_RollerBlindMethod
                                 Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
                             End If
                             If Not String.IsNullOrEmpty(data.chainlength) Then
-                                Return New With {.warning = true, .message = "chain length not required !",.field = "chainlength"}
+                                Return New With {.warning = true, .message = "chain length not required !",.field = fieldchainlength}
                             End If
                         End If
 
@@ -686,7 +705,7 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                 End If
                             End If
                         End If
@@ -705,7 +724,7 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                 End If
                             End If
                         End If
@@ -722,7 +741,7 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                 End If
                             End If
                             If Not controlposition = "" Then
@@ -746,7 +765,7 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                 End If
                             End If
                             If Not controlposition = "" Then
@@ -770,7 +789,7 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                 End If
                             End If
                             If Not controlposition = "" Then
@@ -794,7 +813,7 @@ Partial Class Methods_Order_RollerBlindMethod
                             Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                 End If
                             End If
                             If Not controlposition = "" Then
@@ -853,8 +872,6 @@ Partial Class Methods_Order_RollerBlindMethod
                     Return New With {.warning = true, .message = "please check your markup !",.field = "markup"}
                 End If
             End If
-
-
 
             If String.IsNullOrEmpty(data.markup) Then
                 data.markup = "0"
@@ -917,7 +934,7 @@ Partial Class Methods_Order_RollerBlindMethod
                     ' Else
                     '     CLength = "500"
                     ' End If
-                    CLength = (Math.Round((3 / 4) * drop + 80)).ToString()
+                    CLength = 0'(Math.Round((3 / 4) * drop + 80)).ToString()
                 End If
 
                 If Not String.IsNullOrEmpty(data.chainlength) Then
@@ -1107,6 +1124,22 @@ Partial Class Methods_Order_RollerBlindMethod
                 End Using
 
                 If data.brackettype = "Double" Then
+                    Dim ListUpdateKit As New List(Of Object) From {
+                        data.uniqueid,
+                        data.brackettype,
+                        data.colourtype
+                    }
+                    Dim ResKit As Object = UpdateKit(ListUpdateKit)
+                    If ResKit.error Then Throw New Exception(ResKit.message) 
+
+                    Dim ListUpdateControlPos As New List(Of Object) From {
+                        data.uniqueid,
+                        data.brackettype,
+                        data.controlposition
+                    }
+                    Dim ResControlPos As Object = UpdateControlPos(ListUpdateControlPos)
+                    If ResControlPos.error Then Throw New Exception(ResControlPos.message) 
+
                     '#SdsNext
                     Dim ListNext As New List(Of Object) From {
                         data.uniqueid,
@@ -1456,6 +1489,22 @@ Partial Class Methods_Order_RollerBlindMethod
                 End Using
 
                 If data.brackettype = "Double" Then
+                    Dim ListUpdateKit As New List(Of Object) From {
+                        data.uniqueid,
+                        data.brackettype,
+                        data.colourtype
+                    }
+                    Dim ResKit As Object = UpdateKit(ListUpdateKit)
+                    If ResKit.error Then Throw New Exception(ResKit.message) 
+
+                    Dim ListUpdateControlPos As New List(Of Object) From {
+                        data.uniqueid,
+                        data.brackettype,
+                        data.controlposition
+                    }
+                    Dim ResControlPos As Object = UpdateControlPos(ListUpdateControlPos)
+                    If ResControlPos.error Then Throw New Exception(ResControlPos.message)
+
                     '#SdsNext
                     Dim ListNext As New List(Of Object) From {
                         data.uniqueid,
@@ -1717,6 +1766,60 @@ Partial Class Methods_Order_RollerBlindMethod
 
     Private Shared Function GenerateUniqueId() As String
         Return Guid.NewGuid().ToString("N") ' tanpa dash
+    End Function
+
+    Private Shared Function UpdateKit(ListParam As List(Of Object)) As Object
+        Try
+            Dim UniqueId As String = CStr(ListParam(0))
+            Dim Brackets As String = CStr(ListParam(1))
+            Dim KitId As String = CStr(ListParam(2))
+            Dim isDouble As Boolean = Brackets = "Double"
+
+            If isDouble Then
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId=@KitId WHERE UniqueId=@UniqueId AND Active=1", thisConn)
+                        myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
+                        myCmd.Parameters.AddWithValue("@KitId", KitId)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+            End If
+
+            Return New With {.error = false, .success = true, .message = "200"}
+
+        Catch ex As Exception
+            Return New With {.error = true, .message = ex.Message}
+        End Try
+    End Function
+
+    Private Shared Function UpdateControlPos(ListParam As List(Of Object)) As Object
+        Try
+            Dim UniqueId As String = CStr(ListParam(0))
+            Dim Brackets As String = CStr(ListParam(1))
+            Dim ControlPosition As String = CStr(ListParam(2))
+            Dim isDouble As Boolean = Brackets = "Double"
+
+            If isDouble Then
+                Using thisConn As New SqlConnection(myConn)
+                    Using myCmd As New SqlCommand("UPDATE OrderDetails SET ControlPosition=@ControlPosition WHERE UniqueId=@UniqueId AND Active=1", thisConn)
+                        myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
+                        myCmd.Parameters.AddWithValue("@ControlPosition", ControlPosition)
+                        myCmd.Connection = thisConn
+                        thisConn.Open()
+                        myCmd.ExecuteNonQuery()
+                        thisConn.Close()
+                    End Using
+                End Using
+            End If
+
+            Return New With {.error = false, .success = true, .message = "200"}
+
+        Catch ex As Exception
+            Return New With {.error = true, .message = ex.Message}
+        End Try
     End Function
 
     Private Shared Function SdsNext(ListParam As List(Of Object)) As String

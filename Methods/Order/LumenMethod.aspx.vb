@@ -308,12 +308,12 @@ Partial Class Methods_Order_LumenMethod
                 If String.IsNullOrEmpty(data.chargeroption) Then
                     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "charger option is required !", .field = "chargeroption"}}
                 End If
-                If String.IsNullOrEmpty(data.headboxtype) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "headbox type is required !", .field = "headboxtype"}}
-                End If
-                If String.IsNullOrEmpty(data.headboxcolour) Then
-                    Return New ErrorResponse With { .error = New ErrorDetail With { .message = "headbox colour is required !", .field = "headboxcolour"}}
-                End If
+                ' If String.IsNullOrEmpty(data.headboxtype) Then
+                '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "headbox type is required !", .field = "headboxtype"}}
+                ' End If
+                ' If String.IsNullOrEmpty(data.headboxcolour) Then
+                '     Return New ErrorResponse With { .error = New ErrorDetail With { .message = "headbox colour is required !", .field = "headboxcolour"}}
+                ' End If
             End IF
 
             If String.IsNullOrEmpty(data.railcolour) Then

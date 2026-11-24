@@ -45,6 +45,8 @@ const elForm = {
   btnInfoControlPosition: getById("btnInfoControlPosition"),
   lblIndBlind: getById("lblIndBlind"),
   divChain: getById("divChain"),
+  divChainLengthInput: getById("divChainLengthInput"),
+  divChainLengthSelect: getById("divChainLengthSelect"),
   divBottomRail: getById("divBottomRail"),
   lblBotomRail: getById("lblBotomRail"),
   btnInfoTrim: getById("btnInfoTrim"),
@@ -129,11 +131,12 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
         bindMounting(),
         bindRoll(),
         bindControlPosition(),
-        bindChains(),
+        bindChainColour(),
         bindTrims(),
         bindChildSafe(),
         bindAccessory(),
         bindBracketCover(),
+        bindBracketExt(),
       ]);
       await handlerElementVisibility(
         blindname,
@@ -147,6 +150,22 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
     if (e.target.id === "fabrictype") {
       const fabrictype = e.target.value;
       await bindFabricColours(DESIGNID, fabrictype);
+    }
+
+    if (e.target.id === "chaincolour") {
+      const chaincolour = e.target.value;
+      const isChromeSteel = ["Chrome", "Stainless Steel"].includes(chaincolour);
+      toggleShow(elForm.divChainLengthInput, false);
+      toggleShow(elForm.divChainLengthSelect, false);
+
+      if (isChromeSteel) {
+        toggleShow(elForm.divChainLengthInput, true);
+        getById("chainlength").value = "";
+      }
+      if (!isChromeSteel) {
+        toggleShow(elForm.divChainLengthSelect, true);
+        bindChainLength(chaincolour);
+      }
     }
 
     if (e.target.id === "trim") {
@@ -538,7 +557,7 @@ const bindColours = async (
       //   ]);
       // }
       // await Promise.all([
-      //   bindChains(designid),
+      //   bindChainColour(designid),
       //   bindTrims(blindname, brackettype, tubetype),
       //   bindTubeSize(blindname, tubetype, width, drop),
       //   bindChildSafe(),
@@ -556,7 +575,12 @@ const bindColours = async (
 };
 
 const bindMounting = () => {
-  generateOption("mounting", ["Face Fit", "Reveal Fit"]);
+  generateOption("mounting", [
+    "Make Size Face Fit",
+    "Make Size Reveal Fit",
+    "Opening Size Face Fit",
+    "Opening Size Reveal Fit",
+  ]);
 };
 
 const bindFabrics = async (designid) => {
@@ -716,7 +740,7 @@ const bindControlPosition = () => {
   generateOption("controlposition", ["Left", "Right"]);
 };
 
-const bindChains = () => {
+const bindChainColour = () => {
   generateOption("chaincolour", [
     "Chrome",
     "Birch White",
@@ -725,6 +749,17 @@ const bindChains = () => {
     "Stainless Steel",
     "White",
   ]);
+};
+
+const bindChainLength = (colour) => {
+  if (!colour) return;
+  let list = [];
+  const isChromeSteel = ["Chrome", "Stainless Steel"].includes(colour);
+
+  if (!isChromeSteel) {
+    list.push("500", "750", "1000", "1200", "1500");
+  }
+  generateOption("chainlength2", list);
 };
 
 const bindTrims = () => {
@@ -775,6 +810,9 @@ const bindAccessory = () => {
 
 const bindBracketCover = () => {
   generateOption("bracketcovers", ["Yes"]);
+};
+const bindBracketExt = () => {
+  generateOption("bracketext", ["Yes"]);
 };
 
 const bindSelect = ({
@@ -929,11 +967,13 @@ const bindItemOrders = async () => {
       bindMounting(),
       bindRoll(),
       bindControlPosition(),
-      bindChains(),
+      bindChainColour(),
+      bindChainLength(detail.ChainColour),
       bindTrims(),
       bindChildSafe(),
       bindAccessory(),
       bindBracketCover(),
+      bindBracketExt(),
       handlerSetElementValues(detail),
     ]);
 
@@ -963,11 +1003,13 @@ const handlerElementVisibility = async (
   try {
     Object.values(elForm).forEach((el) => toggleShow(el, false));
     const isGearReduction = blindname === "Gear Reduction";
+    const isSingle = brackettype === "Single";
     const isDouble = brackettype === "Double";
     const isLinked2Ind = brackettype === "Linked 2 Blinds (Ind)";
     const isLinked2Dep = brackettype === "Linked 2 Blinds (Dep)";
     const isLinked3Ind = brackettype === "Linked 3 Blinds (Ind)";
     const isLinked3Dep = brackettype === "Linked 3 Blinds (Dep)";
+    const isLinking = brackettype?.includes("Linked");
     const isBlind1 = elForm.lblBlindNo.innerHTML === "Blind 1";
     const isBlind2 = elForm.lblBlindNo.innerHTML === "Blind 2";
     const isBlind3 = elForm.lblBlindNo.innerHTML === "Blind 3";
@@ -1027,12 +1069,12 @@ const handlerElementVisibility = async (
       toggleShow(elForm.lblControlPosition, true);
       toggleShow(elForm.divControlPosition, true);
       toggleShow(elForm.divChain, true);
-      toggleShow(elForm.divBracketCover, true);
-      if (isDouble) {
-        toggleShow(elForm.divBracketExt, false);
+      // toggleShow(elForm.divBracketCover, true);
+      if (isSingle || isLinking) {
+        toggleShow(elForm.divBracketExt, true);
       }
       // divTubeSize.classList.remove("d-none");
-      toggleShow(elForm.divChildSafe, true);
+      // toggleShow(elForm.divChildSafe, true);
       // divAccessory.classList.remove("d-none");
 
       if (isLinked3Ind) {
@@ -1046,6 +1088,17 @@ const handlerElementVisibility = async (
       toggleShow(elForm.divAttention, item.NextDescVisible);
       toggleShow(elForm.lblNextDesc, item.NextDescVisible);
       elForm.lblNextDesc.innerHTML = item.NextDescText;
+
+      const isChromeSteel = ["Chrome", "Stainless Steel"].includes(
+        item.ChainColour,
+      );
+
+      if (isChromeSteel) {
+        toggleShow(elForm.divChainLengthInput, true);
+      }
+      if (!isChromeSteel) {
+        toggleShow(elForm.divChainLengthSelect, true);
+      }
 
       if (["Bottom Rail", "Decorative – Fancy Trim"].includes(item.Trim)) {
         elForm.lblBotomRail.innerHTML = item.Trim;
@@ -1103,6 +1156,7 @@ const handlerSubmit = async (button, isConfirmed = false) => {
       "controlposition",
       "chaincolour",
       "chainlength",
+      "chainlength2",
       "trim",
       "railtype",
       "railcolour",
@@ -1255,6 +1309,7 @@ const handlerSetElementValues = (itemData) => {
     controlposition: "ControlPosition",
     chaincolour: "ChainColour",
     chainlength: "ChainLength",
+    chainlength2: "ChainLength",
     trim: "Trim",
     railtype: "BottomType",
     railcolour: "BottomRailId",
