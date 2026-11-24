@@ -274,11 +274,11 @@ Partial Class Methods_Order_LumenMethod
 
             If InArray(data.fabrictype, "Sonatine", "Fresh") Then
                 If drop > 2800 Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 2700 !",.field = "drop"}}
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 2800 !",.field = "drop"}}
                 End If
             Else
                 If drop > 2500 Then
-                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 2600 !",.field = "drop"}}
+                    Return New ErrorResponse With {.error = New ErrorDetail With {.message = "drop must be less than or equal to 2500 !",.field = "drop"}}
                 End If
             End IF
 
