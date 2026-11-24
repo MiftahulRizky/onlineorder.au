@@ -801,8 +801,8 @@ const displayElOverall = (api) => {
       if (isAdmin) {
         if (isSupAdmin) {
           if (!isShutters && isActive && !isDeposite) {
-            // toggleShow(liDividerChangeStatus, true);
-            // toggleShow(liChangeStatus, true);
+            toggleShow(liDividerChangeStatus, true);
+            toggleShow(liChangeStatus, true);
           }
           toggleShow(liDividerLogs, true);
           toggleShow(liLogs, true);
@@ -815,8 +815,8 @@ const displayElOverall = (api) => {
 
       if (isPpicCsDe || isManager) {
         if (!isFinish && isActive && !isShutters && !isDeposite) {
-          // toggleShow(liDividerChangeStatus, true);
-          // toggleShow(liChangeStatus, true);
+          toggleShow(liDividerChangeStatus, true);
+          toggleShow(liChangeStatus, true);
         }
       }
     });
@@ -934,7 +934,11 @@ const submitChangeStatus = async () => {
     "description",
   ];
 
-  const paramsChangeStatus = { username: USERNAME, loginid: LOGINID };
+  const paramsChangeStatus = {
+    username: USERNAME,
+    rolename: ROLENAME,
+    loginid: LOGINID,
+  };
 
   fields.forEach((field) => {
     const el = document.querySelector(`#modalChangeStatus #${field}`);

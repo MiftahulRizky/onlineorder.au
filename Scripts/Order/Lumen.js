@@ -630,10 +630,10 @@ const bindHeadboxType = (controlname) => {
   if (!controlname) return;
 
   let data = [];
-  if (controlname === "Chain") {
-    data.push({ value: "Standard", text: "Standard" });
-  }
-  data.push({ value: "Large", text: "Large" });
+  // if (controlname === "Chain") {
+  //   data.push({ value: "Standard", text: "Standard" });
+  // }
+  // data.push({ value: "Large", text: "Large" });
   data.push({ value: "Flat", text: "Flat" });
 
   if (data.length > 1) {
@@ -682,7 +682,10 @@ const bindHeadboxColour = (headboxtype) => {
   }
 
   if (headboxtype === "Flat") {
-    data.push({ value: "White", text: "White" });
+    data.push(
+      { value: "White", text: "White" },
+      { value: "Black", text: "Black" },
+    );
   }
 
   if (data.length > 1) {
@@ -796,7 +799,7 @@ const handlerElementVisibility = async (blindtype, controltype, item) => {
     lblChain.innerHTML = "chain colour x length";
     divChain.classList.add("d-none");
     divMotor.classList.add("d-none");
-    divHeadbox.classList.add("d-none");
+    // divHeadbox.classList.add("d-none");
     divInsert.classList.add("d-none");
     // divButtinge.classList.add("d-none");
     divMarkUp.classList.add("d-none");

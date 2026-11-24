@@ -9,6 +9,9 @@ Imports System.Data.SqlClient
 Imports System.Guid
 Imports System.Collections.Generic
 Imports System.Configuration
+Imports Newtonsoft.Json
+Imports Newtonsoft.Json.Linq
+Imports System.Net.Http
 Partial Class Methods_Order_OrderHeaderMethod
     Inherits System.Web.UI.Page
 
@@ -115,7 +118,13 @@ Partial Class Methods_Order_OrderHeaderMethod
         Public Property description As String
 
         Public Property username As String
+        Public Property rolename As String
         Public Property loginid As String
+    End Class
+
+    Public Class OrderSendingItem
+        Public Property name As String
+        Public Property status As Boolean
     End Class
 
     Private Shared Function InArray(value As String, ParamArray list() As String) As Boolean
@@ -536,6 +545,7 @@ Partial Class Methods_Order_OrderHeaderMethod
             If String.IsNullOrEmpty(data.status) Then
                 Return New With { .warning = true, .message = "status is required !", .field = "#modalChangeStatus #status"}
             End If
+
             If data.status = data.statusOld Then
                 If NOT data.status = "On Hold" Then
                     Return New With { .warning = true, .message = "you don't choose different changes on status, don't do it with the same status!", .field = "#modalChangeStatus #status"}
@@ -566,6 +576,7 @@ Partial Class Methods_Order_OrderHeaderMethod
             End If          
 
             Dim findDesc As String = data.description
+            Dim query As String = "UPDATE OrderHeaders SET Status='Draft', StatusDescription=@StatusDescription, StatusAdditional=Null, OrderSending=Null,  SubmittedDate=NULL, JobDate=NULL, CanceledDate=NULL, CompletedDate=NULL WHERE Id=@Id"
             Select Case data.status
                 Case "Draft"
                     findDesc = "Status changed to draft by <b>" & data.username & "</b>"
@@ -573,76 +584,408 @@ Partial Class Methods_Order_OrderHeaderMethod
                     findDesc += "Notes from the office:"
                     findDesc += "<br />"
                     findDesc += data.description
+                    
                 Case "New Order"
                     findDesc = "Status changed to new order by <b>" & data.username & "</b>"
                     findDesc += "<br />"
                     findDesc += "Notes from the office:"
                     findDesc += "<br />"
                     findDesc += data.description
+                    query = "UPDATE OrderHeaders SET Status='New Order', StatusDescription=@StatusDescription, SubmittedDate=@SubmittedDate WHERE Id=@Id"
+
                 Case "In Production"
                     findDesc = "Your order is currently in the production process"
                     findDesc += "<br />"
                     findDesc += "Notes from the office:"
                     findDesc += "<br />"
                     findDesc += data.description
+
+                    query = "UPDATE OrderHeaders SET Status='In Production', StatusDescription=@StatusDescription, JobDate=GETDATE() WHERE Id=@Id"
+                    If data.rolename = "Administrator" Then
+                        Dim ResApi As Object = SendOrderGlobal(data.id)
+                        If ResApi.error Then
+                            Throw New Exception(ResApi.message)
+                        End If
+                    End If
+
                 Case "On Hold"
                     findDesc = "Your order on hold by <b>" & data.username & "</b>"
                     findDesc += "<br />"
                     findDesc += "Notes from the office:"
                     findDesc += "<br />"
                     findDesc += data.description
+                    query = "UPDATE OrderHeaders SET Status='On Hold', StatusDescription=@StatusDescription WHERE Id=@Id"
+
                 Case "Completed"
                     findDesc += "Notes from the office:"
                     findDesc += "<br />"
                     findDesc += data.description
+                    query = "UPDATE OrderHeaders SET Status='Completed', StatusDescription=@StatusDescription, CompletedDate=@CompletedDate WHERE Id=@Id"
+
                 Case "Canceled"
                     findDesc = "Your order has been canceled by <b>" & data.username & "</b>"
                     findDesc += "<br />"
                     findDesc += "Notes from the office:"
                     findDesc += "<br />"
                     findDesc += data.description
+                    query = "UPDATE OrderHeaders SET Status='Canceled', StatusDescription=@StatusDescription, CanceledDate=@CanceledDate WHERE Id=@Id"
+
             End Select
 
-            If Not String.IsNullOrEmpty(data.id) Then
-                Dim query As String = "UPDATE OrderHeaders SET Status='Draft', StatusDescription=@StatusDescription, SubmittedDate=NULL, JobDate=NULL, CanceledDate=NULL, CompletedDate=NULL WHERE Id=@Id"
-                Select Case data.status
-                    Case "New Order"
-                        query = "UPDATE OrderHeaders SET Status='New Order', StatusDescription=@StatusDescription, SubmittedDate=@SubmittedDate WHERE Id=@Id"
-                    Case "In Production"
-                        query = "UPDATE OrderHeaders SET Status='In Production', StatusDescription=@StatusDescription, JobDate=GETDATE() WHERE Id=@Id"
-                    Case "On Hold"
-                        query = "UPDATE OrderHeaders SET Status='On Hold', StatusDescription=@StatusDescription WHERE Id=@Id"
-                    Case "Completed"
-                        query = "UPDATE OrderHeaders SET Status='Completed', StatusDescription=@StatusDescription, CompletedDate=@CompletedDate WHERE Id=@Id"
-                    Case "Canceled"
-                        query = "UPDATE OrderHeaders SET Status='Canceled', StatusDescription=@StatusDescription, CanceledDate=@CanceledDate WHERE Id=@Id"
-                End Select
-
-                Using thisConn As New SqlConnection(myConn)
-                    Using myCmd As New SqlCommand(query, thisConn)
-                        myCmd.Parameters.AddWithValue("@Id", data.id)
-                        myCmd.Parameters.AddWithValue("@Status", data.status)
-                        myCmd.Parameters.AddWithValue("@StatusDescription", findDesc)
-                        myCmd.Parameters.AddWithValue("@SubmittedDate", data.submitteddate)
-                        myCmd.Parameters.AddWithValue("@CompletedDate", data.completeddate)
-                        myCmd.Parameters.AddWithValue("@CanceledDate", data.canceleddate)
-                        myCmd.Connection = thisConn
-                        thisConn.Open()
-                        myCmd.ExecuteNonQuery()
-                        thisConn.Close()
-                    End Using
+                
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand(query, thisConn)
+                    myCmd.Parameters.AddWithValue("@Id", data.id)
+                    myCmd.Parameters.AddWithValue("@Status", data.status)
+                    myCmd.Parameters.AddWithValue("@StatusDescription", findDesc)
+                    myCmd.Parameters.AddWithValue("@SubmittedDate", data.submitteddate)
+                    myCmd.Parameters.AddWithValue("@CompletedDate", data.completeddate)
+                    myCmd.Parameters.AddWithValue("@CanceledDate", data.canceleddate)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
                 End Using
+            End Using
 
-                Dim dataLog As Object() = {data.id, "", "Blinds", data.loginid, "Update Status Order"}
-                orderCfg.Log_Orders(dataLog)
+            Dim dataLog As Object() = {data.id, "", "Blinds", data.loginid, "Update Status Order"}
+            orderCfg.Log_Orders(dataLog)
 
-                msg = "Status has been updated successfully."
-             End If
+            msg = "Status has been updated successfully."
 
             Return New With {.success = true, .message = msg}
         Catch ex As Exception
             Return New With {.error = true, .message = ex.Message}
         End Try
+    End Function
+
+    Private Shared Function SendOrderGlobal(headerid As String) As Object
+        Try
+            '#HeaderData sudah fix ada tidak perlu validasi
+            Dim HeaderData As DataSet = publicCfg.GetListData(String.Format("SELECT OrderId, OrderNumber, OrderName, OrderNote FROM view_order_headers WHERE Id = '{0}' AND OrderType IN ('Blinds', 'Door and Window', 'Furnishings')", headerid))
+            Dim Rows As DataRow = HeaderData.Tables(0).Rows(0)
+
+            Dim order As New Dictionary(Of String, Object) From {
+                {"OrderId", Rows("OrderId").ToString()},
+                {"OrderNumber", Rows("OrderNumber").ToString()},
+                {"OrderName", Rows("OrderName").ToString()},
+                {"OrderNote", Rows("OrderNote").ToString()},
+                {"Details", New List(Of Object)()}
+            }
+
+            Dim GlobalProduct As String = "AND (DesignName LIKE '%Global%' OR BlindName IN ('25mm Aluminium', '50mm Mockwood', '50mm Mockwood (Cordless)', '63mm Mockwood', '50mm Wooden', '63mm Wooden', 'Cellora'))"
+
+            Dim DetailData As DataSet = publicCfg.GetListData(String.Format("SELECT*FROM view_details WHERE HeaderId = '{0}' {1} AND Active=1 ORDER BY Id ASC", headerid, GlobalProduct))
+            Dim DetailCount As Integer = DetailData.Tables(0).Rows.Count
+
+            If DetailCount = 0 Then
+                Return New With { .error = false, .message = "Ok"}
+            End If
+
+            If DetailCount > 0 Then
+
+                If IsOrderSendingActive(headerid, "BIG") Then
+                    Return New With { .error = false, .message = "Ok"}
+                End If
+
+
+                For Each dr As DataRow In DetailData.Tables(0).Rows
+                    Dim DesignName As String = dr("DesignName").ToString()
+                    Dim BlindName As String = dr("BlindName").ToString()
+                    Dim ControlType As String = dr("BlindName").ToString()
+                    Dim ControlPosition As String = dr("ControlPosition").ToString()
+                    Dim MaterialChain As String = dr("MaterialChain").ToString()
+                    Dim MaterialWand As String = dr("MaterialCord").ToString()
+                    Dim ChainLength As Integer = If(IsDBNull(dr("ChainLength")), 0, CInt(dr("ChainLength")))
+                    Dim ChainLengthText As String = ""
+                    Dim WandLength As Integer = If(IsDBNull(dr("WandLength")), 0, CInt(dr("WandLength")))
+                    Dim WandLengthText As String = ""
+                    Dim isChain As Boolean = ControlType = "Chain"
+                    Dim isWand As Boolean = ControlType = "Wand"
+                    Dim Cleat As String = dr("Cleat").ToString()
+                    Dim Trim As String = dr("Trim").ToString()
+                    Dim BottomType As String = dr("BottomType").ToString()
+                    Dim BottomColour As String = dr("BottomColour").ToString()
+                    Dim Sloping As String = dr("Cleat").ToString()
+                    Dim BottomHoldDown As String = dr("BottomHoldDown").ToString()
+                    Dim InsertInTrack As String = dr("InsertInTrack").ToString()
+                    
+
+                    Dim ControlLift As String = ""
+                    Dim Parts As String() = ControlPosition.Split("|"c)
+                    Dim ControlTilt As String = ""
+
+                    If Parts.Length >= 2 Then
+                        ControlLift = Parts(0).Trim()
+                        ControlTilt = Parts(1).Trim()
+                    End If
+                    
+                    If InArray(BlindName, "50mm Mockwood", "50mm Mockwood (Cordless)", "63mm Mockwood", "50mm Wooden", "63mm Wooden") Then
+                        ControlPosition = ""
+                    End If
+
+                    If BlindName = "25mm Aluminium" Then
+                        DesignName = "Aluminium Blinds"
+                    End If
+
+                    If DesignName = "Global Vertical Blinds" Then
+                        If Not String.IsNullOrWhiteSpace(MaterialChain) Then
+                            Dim materialJson = JObject.Parse(MaterialChain)
+
+                            If materialJson("name") IsNot Nothing Then
+                                ChainLengthText = materialJson("name").ToString()
+                            End If
+
+                            If materialJson("value") IsNot Nothing Then
+                                ChainLength = CInt(materialJson("value").ToString())
+                            End If
+                        End If
+
+                        If Not String.IsNullOrWhiteSpace(MaterialWand) Then
+                            Dim materialJson = JObject.Parse(MaterialWand)
+
+                            If materialJson("name") IsNot Nothing Then
+                                WandLengthText = materialJson("name").ToString()
+                            End If
+
+                            If materialJson("value") IsNot Nothing Then
+                                WandLength = CInt(materialJson("value").ToString())
+                            End If
+
+                        End If
+
+                        If InsertInTrack = "1" Or InsertInTrack.ToLower() = "true" Then
+                            InsertInTrack = "Yes"
+                        Else
+                            InsertInTrack = "No"
+                        End If
+
+                        Cleat = ""
+                        BottomHoldDown = ""
+                        MaterialChain = ""
+                    End If
+
+                    If DesignName = "Global Roman Blinds" Then
+                        Sloping = ""
+                    End If
+
+                    If DesignName = "Global Roller Blinds" Then
+                        If Trim = "Plain" Then
+                            BottomType = "Plain"
+                            BottomColour = "Plain Trim"
+                        End If
+
+                        If Trim = "Decorative – Fancy Trim" Then
+                            BottomColour = BottomType
+                            BottomType = "Trim"
+                        End If
+                    End If
+
+                    CType(order("Details"), List(Of Object)).Add(New With {
+                        .KitName = dr("KitName").ToString(),
+                        .BracketType = dr("BracketType").ToString(),
+                        .TubeType = dr("TubeType").ToString(), 
+                        .ControlType = dr("ControlType").ToString(),
+                        .ColourType = dr("ColourType").ToString(),
+                        .DesignName = DesignName,
+                        .BlindName = dr("BlindName").ToString(),
+                        .FabricInsert = InsertInTrack,
+                        .FabricType = dr("FabricType").ToString(),
+                        .FabricTypeB = dr("FabricTypeB").ToString(),
+                        .FabricColour = dr("FabricColour").ToString(),
+                        .FabricColourB = dr("FabricColourB").ToString(),
+                        .UniqueId = dr("UniqueId").ToString(),
+                        .BlindNo = dr("BlindNo").ToString(),
+                        .Qty = If(IsDBNull(dr("Qty")), 0, CInt(dr("Qty"))),
+                        .BlindQuantity = If(IsDBNull(dr("SlatQty")), 0, CInt(dr("SlatQty"))),
+                        .Room = dr("Location").ToString(),
+                        .Mounting = dr("Mounting").ToString(),
+                        .Width = If(IsDBNull(dr("Width")), 0, CInt(dr("Width"))),
+                        .Drop = If(IsDBNull(dr("Drop")), 0, CInt(dr("Drop"))),
+                        .Layout = dr("Layout").ToString(),
+                        .NumOfPanel = If(IsDBNull(dr("NumOfPanel")), 0, CInt(dr("NumOfPanel"))),
+                        .TwoOnOneHeadreal = dr("DoorCutOut").ToString(),
+                        .StackPosition = dr("StackPosition").ToString(),
+                        .ControlPosition = ControlPosition,
+                        .ControlLength = If(IsDBNull(dr("ControlLength")), 0, CInt(dr("ControlLength"))),
+                        .ControlLift = ControlLift,
+                        .ControlTilt = ControlTilt,
+                        .TilterPosition = dr("TilterPosition").ToString(),
+                        .RollDirection = dr("RollDirection").ToString(),
+                        .ChainLength = ChainLength,
+                        .ChainLengthText = ChainLengthText,
+                        .MaterialChain = MaterialChain,
+                        .ChainColour = dr("ChainColour").ToString(),
+                        .Trim = Trim,
+                        .BottomType = BottomType,
+                        .BottomColour = BottomColour,
+                        .TrackType = dr("TrackType").ToString(),
+                        .TrackColour = dr("TrackColour").ToString(),
+                        .NumOfWand = If(IsDBNull(dr("NumOfWand")), 0, CInt(dr("NumOfWand"))),
+                        .WandPosition = dr("WandPosition").ToString(),
+                        .WandColour = dr("WandColour").ToString(),
+                        .WandLength = WandLength,
+                        .WandLengthText = WandLengthText,
+                        .CordColour = dr("CordColour").ToString(),
+                        .CordLength = If(IsDBNull(dr("CordLength")), 0, CInt(dr("CordLength"))),
+                        .AcornPlasticColour = dr("AcornPlasticColour").ToString(),
+                        .Batten = dr("Batten").ToString(),
+                        .BattenColour = dr("BattenColour").ToString(),
+                        .ExtensionBracket = dr("BracketExtension").ToString(),
+                        .BracketOption = dr("BracketOption").ToString(),
+                        .BracketColour = dr("BracketColour").ToString(),
+                        .CoverValance = dr("BracketCover").ToString(),
+                        .Fitting = dr("Fitting").ToString(),
+                        .Sloping = Sloping,
+                        .Cleat = Cleat,
+                        .BottomJoining = dr("BottomHoldDown").ToString(),
+                        .BottomHoldDown = BottomHoldDown,
+                        .PelmetType = dr("PelmetType").ToString(),
+                        .PelmetWidth = If(IsDBNull(dr("PelmetWidth")), 0, CInt(dr("PelmetWidth"))),
+                        .PelmetReturnLeft = If(IsDBNull(dr("PelmetReturnSize")), 0, CInt(dr("PelmetReturnSize"))),
+                        .PelmetReturnRight = If(IsDBNull(dr("PelmetReturnSize2")), 0, CInt(dr("PelmetReturnSize2"))),
+                        .CutOut_LeftTop = If(IsDBNull(dr("CutOut_LeftTop")), 0, CInt(dr("CutOut_LeftTop"))),
+                        .CutOut_RightTop = If(IsDBNull(dr("CutOut_RightTop")), 0, CInt(dr("CutOut_RightTop"))),
+                        .CutOut_LeftBottom = If(IsDBNull(dr("CutOut_LeftBottom")), 0, CInt(dr("CutOut_LeftBottom"))),
+                        .CutOut_RightBottom = If(IsDBNull(dr("CutOut_RightBottom")), 0, CInt(dr("CutOut_RightBottom"))),
+                        .LHSWidth_Top = If(IsDBNull(dr("LHSWidth_Top")), 0, CInt(dr("LHSWidth_Top"))),
+                        .LHSHeight_Top = If(IsDBNull(dr("LHSHeight_Top")), 0, CInt(dr("LHSHeight_Top"))),
+                        .RHSWidth_Top = If(IsDBNull(dr("RHSWidth_Top")), 0, CInt(dr("RHSWidth_Top"))),
+                        .RHSHeight_Top = If(IsDBNull(dr("RHSHeight_Top")), 0, CInt(dr("RHSHeight_Top"))),
+                        .LHSWidth_Bottom = If(IsDBNull(dr("LHSWidth_Bottom")), 0, CInt(dr("LHSWidth_Bottom"))),
+                        .LHSHeight_Bottom = If(IsDBNull(dr("LHSHeight_Bottom")), 0, CInt(dr("LHSHeight_Bottom"))),
+                        .RHSWidth_Bottom = If(IsDBNull(dr("RHSWidth_Bottom")), 0, CInt(dr("RHSWidth_Bottom"))),
+                        .RHSHeight_Bottom = If(IsDBNull(dr("RHSHeight_Bottom")), 0, CInt(dr("RHSHeight_Bottom"))),
+                        .Notes = dr("Notes").ToString()
+                    })
+                Next
+
+                Dim Res As Object = UpdateOrderSending(headerid, "BIG", True)
+                If Res.error Then Throw New Exception(Res.message)
+
+                Dim json As String = JsonConvert.SerializeObject(order)
+                System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12
+                Dim client As New HttpClient()
+                ' client.DefaultRequestHeaders.Add("X-API-KEY", "hidupjokowi")
+                Dim content As New StringContent(json, Encoding.UTF8, "application/json")
+                ' Dim response = client.PostAsync("https://ordersblindonline.com/handler/Sunlight.ashx", content).Result
+                ' Dim response = client.PostAsync("http://10.0.209.65:2302/handler/Sunlight.ashx", content).Result
+                Dim response = client.PostAsync("https://fvq6m64blm.rbmock.dev", content).Result
+
+                Return New With { .error = false, .message = response.StatusCode.ToString()}
+            End If
+
+        Catch ex As Exception
+             Dim errorMessage As String = ex.Message
+
+            If ex.InnerException IsNot Nothing Then
+                errorMessage &= " | Inner: " & ex.InnerException.Message
+
+                If ex.InnerException.InnerException IsNot Nothing Then
+                    errorMessage &= " | Inner2: " & ex.InnerException.InnerException.Message
+                End If
+            End If
+
+            Return New With { .error = true, .message = String.Format("SendOrderGlobal: {0}", errorMessage)}
+        End Try
+    End Function
+
+    Private Shared Function UpdateOrderSending(id As String, name As String, status As Boolean) As Object
+        Try
+            Using thisConn As New SqlConnection(myConn)
+
+                Dim currentJson As String = Nothing
+
+                Using getCmd As New SqlCommand("SELECT OrderSending FROM OrderHeaders WHERE Id = @Id",thisConn)
+                    getCmd.Parameters.AddWithValue("@Id", id)
+                    thisConn.Open()
+
+                    Dim result = getCmd.ExecuteScalar()
+                    If result IsNot Nothing AndAlso result IsNot DBNull.Value Then
+                        currentJson = result.ToString()
+                    End If
+                End Using
+
+                '#Get Old data
+                Dim sendingList As New List(Of OrderSendingItem)
+                If Not String.IsNullOrWhiteSpace(currentJson) Then
+                    sendingList = JsonConvert.DeserializeObject(Of List(Of OrderSendingItem))(currentJson)
+                    If sendingList Is Nothing Then
+                        sendingList = New List(Of OrderSendingItem)
+                    End If
+                End If
+
+                '#Find By Name
+                Dim existingItem = sendingList.FirstOrDefault(
+                    Function(x) x.name.Equals(name, StringComparison.OrdinalIgnoreCase)
+                )
+
+                If existingItem IsNot Nothing Then
+                    '#Update
+                    existingItem.status = status
+                Else
+                    '#Insert
+                    sendingList.Add(New OrderSendingItem With {
+                        .name = name,
+                        .status = status
+                    })
+                End If
+
+                Dim newJson As String = JsonConvert.SerializeObject(sendingList)
+                Using updateCmd As New SqlCommand("UPDATE OrderHeaders SET OrderSending = @OrderSending WHERE Id = @Id",thisConn)
+                    updateCmd.Parameters.AddWithValue("@Id", id)
+                    updateCmd.Parameters.AddWithValue("@OrderSending", newJson)
+                    updateCmd.ExecuteNonQuery()
+                End Using
+
+                thisConn.Close()
+            End Using
+           
+            Return New With { .error = false, .message = "Order has been updated successfully."}
+        Catch ex As Exception
+            Return New With { .error = true, .message = String.Format("UpdateOrderSending: {0}", ex.Message)}
+        End Try
+    End Function
+
+    Private Shared Function IsOrderSendingActive(headerid As Integer, sendingName As String) As Boolean
+
+        Using conn As New SqlConnection(myConn)
+            Using cmd As New SqlCommand("SELECT OrderSending FROM OrderHeaders WHERE Id = @Id", conn)
+
+                cmd.Parameters.AddWithValue("@Id", headerid)
+                conn.Open()
+
+                Dim result = cmd.ExecuteScalar()
+
+                If result Is Nothing OrElse result Is DBNull.Value Then
+                    Return False
+                End If
+
+                Dim orderSending As String = result.ToString()
+
+                If String.IsNullOrWhiteSpace(orderSending) Then
+                    Return False
+                End If
+
+                Dim sendingList = JsonConvert.DeserializeObject(Of List(Of OrderSendingItem))(orderSending)
+
+                If sendingList Is Nothing Then
+                    Return False
+                End If
+
+                Dim item = sendingList.FirstOrDefault(
+                    Function(x) x.name.Equals(sendingName, StringComparison.OrdinalIgnoreCase)
+                )
+
+                If item Is Nothing Then
+                    Return False
+                End If
+
+                Return item.status
+
+            End Using
+        End Using
+
     End Function
 
     <WebMethod()>

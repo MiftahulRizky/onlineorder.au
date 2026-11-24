@@ -1296,6 +1296,9 @@ Partial Class Methods_Order_OrderDetailMethod
                     Dim isChain As Boolean = ControlType = "Chain"
                     Dim isWand As Boolean = ControlType = "Wand"
                     Dim Cleat As String = dr("Cleat").ToString()
+                    Dim Trim As String = dr("Trim").ToString()
+                    Dim BottomType As String = dr("BottomType").ToString()
+                    Dim BottomColour As String = dr("BottomColour").ToString()
                     Dim Sloping As String = dr("Cleat").ToString()
                     Dim BottomHoldDown As String = dr("BottomHoldDown").ToString()
                     Dim InsertInTrack As String = dr("InsertInTrack").ToString()
@@ -1359,6 +1362,18 @@ Partial Class Methods_Order_OrderDetailMethod
                         Sloping = ""
                     End If
 
+                    If DesignName = "Global Roller Blinds" Then
+                        If Trim = "Plain" Then
+                            BottomType = "Plain"
+                            BottomColour = "Plain Trim"
+                        End If
+
+                        If Trim = "Decorative – Fancy Trim" Then
+                            BottomColour = BottomType
+                            BottomType = "Trim"
+                        End If
+                    End If
+
                     CType(order("Details"), List(Of Object)).Add(New With {
                         .KitName = dr("KitName").ToString(),
                         .BracketType = dr("BracketType").ToString(),
@@ -1394,8 +1409,9 @@ Partial Class Methods_Order_OrderDetailMethod
                         .ChainLengthText = ChainLengthText,
                         .MaterialChain = MaterialChain,
                         .ChainColour = dr("ChainColour").ToString(),
-                        .BottomType = dr("BottomType").ToString(),
-                        .BottomColour = dr("BottomColour").ToString(),
+                        .Trim = Trim,
+                        .BottomType = BottomType,
+                        .BottomColour = BottomColour,
                         .TrackType = dr("TrackType").ToString(),
                         .TrackColour = dr("TrackColour").ToString(),
                         .NumOfWand = If(IsDBNull(dr("NumOfWand")), 0, CInt(dr("NumOfWand"))),

@@ -6837,27 +6837,27 @@ Partial Class Methods_Order_JobSheetMethod
                 result+= tdDetRight & currentData("ChainColour6").ToString() & tdDetEnd
             result+= trDetEnd
 
-            ' '#TrackType
-            ' result+= trDetStart
-            '     result+= tdTitleStart & "Headbox Type" & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackType1").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackType2").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackType3").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackType4").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackType5").ToString() & tdDetEnd
-            '     result+= tdDetRight & currentData("TrackType6").ToString() & tdDetEnd
-            ' result+= trDetEnd
+            '#TrackType
+            result+= trDetStart
+                result+= tdTitleStart & "Headbox Type" & tdDetEnd
+                result+= tdDetStart & currentData("TrackType1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("TrackType6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-            ' '#TrackColour
-            ' result+= trDetStart
-            '     result+= tdTitleStart & "Headbox Colour" & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackColour1").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackColour2").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackColour3").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackColour4").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackColour5").ToString() & tdDetEnd
-            '     result+= tdDetRight & currentData("TrackColour6").ToString() & tdDetEnd
-            ' result+= trDetEnd
+            '#TrackColour
+            result+= trDetStart
+                result+= tdTitleStart & "Headbox Colour" & tdDetEnd
+                result+= tdDetStart & currentData("TrackColour1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackColour2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackColour3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackColour4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackColour5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("TrackColour6").ToString() & tdDetEnd
+            result+= trDetEnd
 
             ' '#Fitting
             ' result+= trDetStart
@@ -7119,27 +7119,27 @@ Partial Class Methods_Order_JobSheetMethod
                 result+= tdDetRight & currentData("MotorCharger6").ToString() & tdDetEnd
             result+= trDetEnd
 
-            ' '#TrackType
-            ' result+= trDetStart
-            '     result+= tdTitleStart & "Headbox Type" & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackType1").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackType2").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackType3").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackType4").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackType5").ToString() & tdDetEnd
-            '     result+= tdDetRight & currentData("TrackType6").ToString() & tdDetEnd
-            ' result+= trDetEnd
+            '#TrackType
+            result+= trDetStart
+                result+= tdTitleStart & "Headbox Type" & tdDetEnd
+                result+= tdDetStart & currentData("TrackType1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackType5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("TrackType6").ToString() & tdDetEnd
+            result+= trDetEnd
 
-            ' '#TrackColour
-            ' result+= trDetStart
-            '     result+= tdTitleStart & "Headbox Colour" & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackColour1").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackColour2").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackColour3").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackColour4").ToString() & tdDetEnd
-            '     result+= tdDetStart & currentData("TrackColour5").ToString() & tdDetEnd
-            '     result+= tdDetRight & currentData("TrackColour6").ToString() & tdDetEnd
-            ' result+= trDetEnd
+            '#TrackColour
+            result+= trDetStart
+                result+= tdTitleStart & "Headbox Colour" & tdDetEnd
+                result+= tdDetStart & currentData("TrackColour1").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackColour2").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackColour3").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackColour4").ToString() & tdDetEnd
+                result+= tdDetStart & currentData("TrackColour5").ToString() & tdDetEnd
+                result+= tdDetRight & currentData("TrackColour6").ToString() & tdDetEnd
+            result+= trDetEnd
 
             ' '#Fitting
             ' result+= trDetStart
