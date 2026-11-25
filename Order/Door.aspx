@@ -65,7 +65,7 @@
                                 </div>
 
                                 <div class="mb-3 row" id="divControlType">
-                                    <label for="controltype" class="col-lg-3 text-uppercase fw-bold" id="">mechanism</label>
+                                    <label for="controltype" class="col-lg-3 text-uppercase fw-bold" id="">type</label>
                                     <div class="col-lg-4">
                                         <select type="text" name="controltype" id="controltype" class="form-select"></select>
                                     </div>  

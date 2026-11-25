@@ -394,13 +394,11 @@ Partial Class Methods_Order_RollerBlindMethod
 
                 If data.brackettype = "Linked 2 Blinds (Dep)" Then
                     If data.blindno = "Blind 1" Then
-                        If data.itemaction = "AddItem" Then
-                            If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
-                            End If
-                            If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
-                            End If
+                        If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
+                        End If
+                        If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                         End If
 
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then
@@ -457,13 +455,11 @@ Partial Class Methods_Order_RollerBlindMethod
                 
                 If data.brackettype = "Linked 3 Blinds (Dep)" Then
                     If data.blindno = "Blind 1" Then
-                        If data.itemaction = "AddItem" Then
-                            If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
-                            End If
-                            If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
-                            End If
+                        If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
+                        End If
+                        If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                         End If
 
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then

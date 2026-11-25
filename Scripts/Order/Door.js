@@ -822,7 +822,11 @@ const bindBugseal = (blindname, controlname, frametype) => {
 
   if (["Basic Door", "Safety Door", "Security Door"].includes(blindname)) {
     if (["Sliding Door", "Hinged Door"].includes(controlname)) {
-      data.push("No Bug Seal", "Bug Seal - Thin", "Bug Seal - Wide");
+      data.push(
+        "No Bug Seal",
+        "Bug Seal - Short (Thin)",
+        "Bug Seal - Long (Wide)",
+      );
     }
   }
   generateOption("bugseal", data);
@@ -1024,6 +1028,8 @@ const bindInterlock = (blindname, controlname, frametype) => {
 
 let extrasState = [];
 const extrasRef = { current: null };
+let uidCounter = 0;
+const nextUid = () => `ext_${++uidCounter}_${Date.now()}`;
 const bindExtras = (blindname, tubetype, controlname) => {
   if (!blindname) return;
   let list = [];
@@ -1062,10 +1068,10 @@ const bindExtras = (blindname, tubetype, controlname) => {
           { name: "Track - H Offset (ST4) - 28mm x 28mm", unit: "mm" },
           { name: "Jamb Adaptor - Standard Leg", unit: "mm" },
           { name: "Jamb Adaptor  - Long Leg", unit: "mm" },
-          { name: "Interlock Type 1", unit: "mm" },
-          { name: "Interlock Type 2", unit: "mm" },
-          { name: "Interlock Type 3", unit: "mm" },
-          { name: "Interlock Type F", unit: "mm" },
+          { name: "Interlock Type 1 (offset 3 mm)", unit: "mm" },
+          { name: "Interlock Type 2 (offset 5 mm)", unit: "mm" },
+          { name: "Interlock Type 3 (flat)", unit: "mm" },
+          { name: "Interlock Type 4 (F)", unit: "mm" },
           { name: "Angle 25 x 50mm", unit: "mm" },
           { name: "Angle 20 x 40mm", unit: "mm" },
           { name: "Angle 20 x 25mm", unit: "mm" },
@@ -1104,10 +1110,10 @@ const bindExtras = (blindname, tubetype, controlname) => {
           { name: "Track - H Offset (ST4) - 28mm x 28mm", unit: "mm" },
           { name: "Jamb Adaptor - Standard Leg", unit: "mm" },
           { name: "Jamb Adaptor  - Long Leg", unit: "mm" },
-          { name: "Interlock Type 1", unit: "mm" },
-          { name: "Interlock Type 2", unit: "mm" },
-          { name: "Interlock Type 3", unit: "mm" },
-          { name: "Interlock Type F", unit: "mm" },
+          { name: "Interlock Type 1 (offset 3 mm)", unit: "mm" },
+          { name: "Interlock Type 2 (offset 5 mm)", unit: "mm" },
+          { name: "Interlock Type 3 (flat)", unit: "mm" },
+          { name: "Interlock Type 4 (F)", unit: "mm" },
           { name: "Angle 25 x 50mm", unit: "mm" },
           { name: "Angle 20 x 40mm", unit: "mm" },
           { name: "Angle 20 x 25mm", unit: "mm" },
@@ -1233,6 +1239,7 @@ const handlerSetDefaultValues = () => {
     document.getElementById("meshtype").value = "Fibreglass Mesh";
   }
 };
+
 const handlerElementVisibility = async (
   blindtype,
   tubetype,
@@ -1515,7 +1522,25 @@ const handlerSubmit = async (button) => {
       "markup",
     ];
 
-    console.log("extrasState:", extrasState);
+    const container = getById("extrasContainer");
+    const rows = container ? container.querySelectorAll(".dynamic-row") : [];
+
+    const cleanExtras = Array.from(rows).map((row) => {
+      const uid = row.dataset.uid;
+      const nameInput = row.querySelector("input[readonly]");
+      const valInput = row.querySelector(".dynamic-value");
+      const unitSpan = row.querySelector(".input-group-text");
+
+      const stateItem = (extrasState || []).find((x) => x.uid === uid);
+
+      return {
+        name: stateItem?.name ?? nameInput?.value ?? "",
+        unit: stateItem?.unit ?? unitSpan?.textContent?.trim() ?? "Qty",
+        value: valInput ? valInput.value : (stateItem?.value ?? ""),
+      };
+    });
+
+    console.log("cleanExtras:", cleanExtras);
 
     const formData = {
       headerid: HEADERID,
@@ -1526,7 +1551,7 @@ const handlerSubmit = async (button) => {
       loginid: LOGINID,
     };
 
-    formData["extras"] = JSON.stringify(extrasState || []);
+    formData["extras"] = JSON.stringify(cleanExtras);
 
     fields.forEach((field) => {
       if (field === "extras") return; // skip
@@ -1678,54 +1703,97 @@ const handlerSetElementValues = (itemData) => {
 
   const applyDynamicFromData = ({
     jsonString,
+    getState,
     setState,
     selectId,
     containerId,
   }) => {
-    let data = [];
+    let rawData = [];
 
     try {
-      data = jsonString ? JSON.parse(jsonString) : [];
+      rawData = jsonString ? JSON.parse(jsonString) : [];
     } catch (e) {
       console.error("Invalid JSON", e);
-      data = [];
+      rawData = [];
     }
 
-    // set state
-    setState(data);
+    // Pastikan setiap item hasil load punya uid unik (dan pertahankan uid jika sudah ada)
+    const normalizedData = (Array.isArray(rawData) ? rawData : []).map(
+      (item) => ({
+        uid: item.uid || nextUid(),
+        name: item.name,
+        unit: item.unit || "Qty",
+        value: item.value ?? "",
+      }),
+    );
+
+    setState(normalizedData);
 
     const selectEl = document.getElementById(selectId);
-    if (selectEl && selectEl.tomselect) {
-      selectEl.tomselect.setValue(
-        data.map((x) => x.name),
-        true,
-      );
+    const ts = selectEl && selectEl.tomselect ? selectEl.tomselect : null;
+
+    if (ts) {
+      // Bersihkan item terpilih sebelumnya tanpa menghapus opsi master
+      const currentItems = [...ts.items];
+      currentItems.forEach((val) => {
+        ts.removeItem(val, true);
+        if (ts.options[val]?.isInstance) {
+          ts.removeOption(val);
+        }
+      });
+
+      // Daftarkan tiap baris sebagai chip ber-uid unik agar bisa dihapus satu per satu
+      normalizedData.forEach((item) => {
+        const cleanName = (item.name || "").trim();
+        if (!cleanName) return;
+
+        // Pastikan opsi master tetap ada jika belum terdaftar
+        if (!ts.options[cleanName]) {
+          ts.addOption({
+            value: cleanName,
+            text: cleanName.toUpperCase(),
+            realName: cleanName,
+            unit: item.unit,
+            isInstance: false,
+          });
+        }
+
+        ts.addOption({
+          value: item.uid,
+          text: cleanName.toUpperCase(),
+          realName: cleanName,
+          unit: item.unit,
+          isInstance: true,
+        });
+
+        ts.addItem(item.uid, true);
+      });
+
+      ts.refreshOptions(false);
     }
 
     renderDynamic({
       containerId: containerId,
-      state: data,
+      state: normalizedData,
+      getState,
+      setState,
     });
   };
 
   const dynamicFields = [
     {
       key: "AdditionalMotor",
+      getState: () => extrasState,
       setState: (val) => (extrasState = val),
       selectId: "extras",
       containerId: "extrasContainer",
     },
-    // {
-    //   key: "FlatType",
-    //   setState: (val) => (cutOutState = val),
-    //   selectId: "cutout",
-    //   containerId: "cutoutContainer",
-    // },
   ];
 
   dynamicFields.forEach((field) => {
     applyDynamicFromData({
       jsonString: itemData[field.key],
+      getState: field.getState,
       setState: field.setState,
       selectId: field.selectId,
       containerId: field.containerId,
@@ -1829,65 +1897,126 @@ const applyToSelect = ({
   render,
   instanceRef,
 }) => {
-  const data = list
-    .map((ls) => ({
-      value: ls.name,
-      text: ls.name,
-      unit: ls.unit,
-    }))
-    .sort((a, b) => a.text.localeCompare(b.text));
+  // Deduplicate master list berdasarkan name agar dropdown bersih
+  const uniqueMap = new Map();
+  list.forEach((ls) => {
+    const cleanName = ls.name.trim();
+    if (!uniqueMap.has(cleanName)) {
+      uniqueMap.set(cleanName, {
+        name: cleanName,
+        unit: ls.unit,
+      });
+    }
+  });
+
+  const masterOptions = Array.from(uniqueMap.values()).sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
 
   if (!instanceRef.current) {
-    instanceRef.current = new TomSelect(selector, {
+    const ts = new TomSelect(selector, {
       maxItems: null,
       create: false,
+      closeAfterSelect: false,
+      shouldLoad: () => false,
     });
 
-    instanceRef.current.on("change", (value) => {
-      const selected = value ? (Array.isArray(value) ? value : [value]) : [];
+    instanceRef.current = ts;
 
-      let currentState = getState();
+    // Saat user memilih opsi dari dropdown
+    let isTransforming = false;
 
-      let newState = currentState.filter((x) => selected.includes(x.name));
+    ts.on("item_add", (value) => {
+      if (isTransforming) return;
 
-      selected.forEach((name) => {
-        if (!newState.find((x) => x.name === name)) {
-          const option = instanceRef.current.options[name];
+      const currentState = getState();
+      if (currentState.some((item) => item.uid === value)) return;
 
-          newState.push({
-            name,
-            unit: option?.unit || "Qty",
-            value: "",
-          });
-        }
-      });
+      const opt = ts.options[value];
+      if (!opt) return;
 
-      setState(newState);
-      render(newState);
+      const actualName = opt.realName || opt.name || opt.text;
+      const actualUnit = opt.unit || "Qty";
+      const uid = nextUid();
+
+      isTransforming = true;
+      try {
+        // Hapus item mentah dari daftar terpilih, TAPI JANGAN panggil ts.removeOption(value)
+        // agar opsi master tetap tersedia untuk dipilih berkali-kali
+        ts.removeItem(value, true);
+
+        // Tambah option baru khusus untuk chip/item terpilih dengan key unik (uid)
+        ts.addOption({
+          value: uid,
+          text: actualName.toUpperCase(),
+          realName: actualName,
+          unit: actualUnit,
+          isInstance: true,
+        });
+
+        ts.addItem(uid, true);
+        ts.setTextboxValue("");
+      } finally {
+        isTransforming = false;
+      }
+
+      const updatedState = [
+        ...currentState,
+        {
+          uid,
+          name: actualName,
+          unit: actualUnit,
+          value: "",
+        },
+      ];
+
+      setState(updatedState);
+      render(updatedState);
+
+      // Refresh dropdown setelah flag selesai agar opsi master tetap bisa dipilih lagi
+      ts.refreshOptions(false);
+    });
+
+    // Saat user menghapus salah satu chip/item di TomSelect
+    ts.on("item_remove", (uid) => {
+      if (isTransforming) return;
+
+      const opt = ts.options[uid];
+      if (opt && opt.isInstance) {
+        ts.removeOption(uid);
+      }
+
+      const currentState = getState();
+      const updatedState = currentState.filter((item) => item.uid !== uid);
+
+      setState(updatedState);
+      render(updatedState);
     });
   }
 
   const ts = instanceRef.current;
 
-  ts.clear();
+  // Reset options & selected items saat list master berubah
+  ts.clear(true);
   ts.clearOptions();
 
-  data.forEach((item) => {
+  masterOptions.forEach((item) => {
     ts.addOption({
-      value: item.value,
-      text: item.text.toUpperCase(),
+      value: item.name,
+      text: item.name.toUpperCase(),
+      realName: item.name,
       unit: item.unit,
+      isSelectedInstance: false,
     });
   });
 
   ts.refreshOptions(false);
 
-  // reset
   setState([]);
   render([]);
 };
 
-const renderDynamic = ({ containerId, state, setState }) => {
+const renderDynamic = ({ containerId, state, getState, setState }) => {
   const container = document.getElementById(containerId);
   if (!container) return;
 
@@ -1895,7 +2024,7 @@ const renderDynamic = ({ containerId, state, setState }) => {
 
   state.forEach((item, index) => {
     container.innerHTML += `
-      <div class="row mb-2 dynamic-row">
+      <div class="row mb-2 dynamic-row" data-uid="${item.uid}">
 
         <div class="col-7">
           <input type="text"
@@ -1909,7 +2038,8 @@ const renderDynamic = ({ containerId, state, setState }) => {
             <input type="number"
                    class="form-control dynamic-value"
                    data-index="${index}"
-                   value="${item.value || ""}"
+                   data-uid="${item.uid}"
+                   value="${item.value ?? ""}"
                    placeholder="Enter ${item.unit}" />
             <span class="input-group-text">${item.unit}</span>
           </div>
@@ -1921,12 +2051,15 @@ const renderDynamic = ({ containerId, state, setState }) => {
 
   container.querySelectorAll(".dynamic-value").forEach((input) => {
     input.addEventListener("input", (e) => {
-      const index = e.target.dataset.index;
-      const value = e.target.value;
+      const uid = e.target.dataset.uid;
+      const val = e.target.value;
 
-      state[index].value = value;
+      const current = typeof getState === "function" ? getState() : state;
+      const updated = current.map((item) =>
+        item.uid === uid ? { ...item, value: val } : item,
+      );
 
-      setState([...state]); // trigger update
+      setState(updated);
     });
   });
 };
