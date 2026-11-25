@@ -400,6 +400,12 @@ Partial Class Methods_Order_RollerBlindMethod
                         If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
                             Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                         End If
+                        Dim chainlength As Integer
+                        If Not String.IsNullOrEmpty(data.chainlength) Then
+                            If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                                Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                            End If
+                        End If
 
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then
                             Dim ControlB2 As String = FindControlPosition(data.uniqueid, "Blind 2")
@@ -416,7 +422,6 @@ Partial Class Methods_Order_RollerBlindMethod
                                 If String.IsNullOrEmpty(data.chaincolour) Then
                                     Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                                 End If
-                                Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
                                         Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
@@ -461,6 +466,12 @@ Partial Class Methods_Order_RollerBlindMethod
                         If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
                             Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                         End If
+                        Dim chainlength As Integer
+                        If Not String.IsNullOrEmpty(data.chainlength) Then
+                            If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                                Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
+                            End If
+                        End If
 
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then
                             Dim ControlB3 As String = FindControlPosition(data.uniqueid, "Blind 3")
@@ -477,7 +488,6 @@ Partial Class Methods_Order_RollerBlindMethod
                                 If String.IsNullOrEmpty(data.chaincolour) Then
                                     Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                                 End If
-                                Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
                                         Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
