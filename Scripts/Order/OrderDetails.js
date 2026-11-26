@@ -775,7 +775,7 @@ const bindOrderAggregate = async (headerid, ordertype) => {
       console.log(data);
     }
 
-    // ORDER_INITIAL_SNAPSHOT = createOrderSnapshot(data.header);
+    ORDER_INITIAL_SNAPSHOT = createOrderSnapshot(data.header);
 
     handlerHeaderInfo(data.header);
     bindDetails(data.detail);
@@ -790,7 +790,7 @@ const bindOrderAggregate = async (headerid, ordertype) => {
     setValmodalLogs(data.other);
     bindProduct(data.other.Designs.list);
 
-    // startOrderIntegrityMonitor();
+    startOrderIntegrityMonitor();
   } catch (error) {
     let msg = `bindOrderAggregate: ${error.message}`;
     catchMessages(msg);

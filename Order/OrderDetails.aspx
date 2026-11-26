@@ -811,7 +811,7 @@
         const PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
         const JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.54"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.55"></script>
 
 
 </asp:Content>
