@@ -2921,6 +2921,83 @@ Partial Class Methods_Order_PdfOrderMethod
                         End If
                     End If
 
+                    If bracketType = "Double and Link System Dep" Or bracketType = "Double and Link System Ind" Then
+                        Dim blindNo As String = thisData.Tables(0).Rows(i).Item("BlindNo").ToString()
+                        Dim uniqueId As String = thisData.Tables(0).Rows(i).Item("UniqueId").ToString()
+
+                        If blindNo = "Blind 1" Then
+                            Dim getConnectedId2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId3 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId4 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            Dim id3 As String = String.Empty
+                            Dim id4 As String = String.Empty
+
+                            If Not getConnectedId3 = "" Then
+                                id3 = " item ID " & getConnectedId3
+                            End If
+                            If Not getConnectedId4 = "" Then
+                                id4 = " item ID " & getConnectedId4
+                            End If
+                            kitName += "<br />"
+                            kitName += "<span style='font-size:6px;color:red;'>" & "* LINKED WITH ITEM ID : " & getConnectedId2 & id3 & id4 & "</span>"
+                        End If
+
+                        If blindNo = "Blind 2" Then
+                            Dim getConnectedId As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId3 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId4 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            Dim id3 As String = String.Empty
+                            Dim id4 As String = String.Empty
+
+                            If Not getConnectedId3 = "" Then
+                                id3 = ", item ID " & getConnectedId3
+                            End If
+                            If Not getConnectedId4 = "" Then
+                                id4 = ", item ID " & getConnectedId4
+                            End If
+                            kitName += "<br />"
+                            kitName += "<span style='font-size:6px;color:red;'>" & "* LINKED WITH ITEM ID : " & getConnectedId & id3 & id4 & "</span>"
+                        End If
+
+                        If blindNo = "Blind 3" Then
+                            Dim getConnectedId As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId4 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            Dim id2 As String = String.Empty
+                            Dim id4 As String = String.Empty
+
+                            If Not getConnectedId2 = "" Then
+                                id2 = ", item ID " & getConnectedId2
+                            End If
+                            If Not getConnectedId4 = "" Then
+                                id4 = ", item ID " & getConnectedId4
+                            End If
+                            kitName += "<br />"
+                            kitName += "<span style='font-size:6px;color:red;'>" & "* LINKED WITH ITEM ID : " & getConnectedId & id2 & id4 & "</span>"
+                        End If
+
+                        If blindNo = "Blind 4" Then
+                            Dim getConnectedId As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId2 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+                            Dim getConnectedId3 As String = publicCfg.GetItemData("SELECT Id FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId = '" + uniqueId + "' AND Active = 1")
+
+                            Dim id2 As String = String.Empty
+                            Dim id3 As String = String.Empty
+
+                            If Not getConnectedId2 = "" Then
+                                id2 = ", item ID " & getConnectedId2
+                            End If
+                            If Not getConnectedId3 = "" Then
+                                id3 = ", item ID " & getConnectedId3
+                            End If
+                            kitName += "<br />"
+                            kitName += "<span style='font-size:6px;color:red;'>" & "* LINKED WITH ITEM ID : " & getConnectedId & id2 & id2 & "</span>"
+                        End If
+                    End If
+
                     result += trStart
                     result += tdStart & i + 1 & tdEnd
                     result += tdStart & thisData.Tables(0).Rows(i).Item("Id").ToString() & tdEnd

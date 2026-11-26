@@ -61,7 +61,7 @@
 
                                 <div class="mb-3 row" id="divBracketType">
                                     <label for="brackettype" class="col-lg-3 text-uppercase fw-bold" id="lblBracketType">bracket type</label>
-                                    <div class="col-lg-4">
+                                    <div class="col-lg-5">
                                         <select type="text" name="brackettype" id="brackettype" class="form-select"></select>
                                     </div>  
                                 </div>
@@ -459,5 +459,5 @@
         let URIMETHOD = "/Methods/Order/Global/RollerBlindMethod.aspx";
     </script>
 
-    <script type="text/javascript" src="/Scripts/Order/Global/RollerBlinds.js?v=1.0.16"></script>
+    <script type="text/javascript" src="/Scripts/Order/Global/RollerBlinds.js?v=1.0.24"></script>
 </asp:Content>

@@ -166,6 +166,11 @@ selectorElAll(".form-control, .form-select").forEach((el) => {
         toggleShow(elForm.divChainLengthSelect, true);
         bindChainLength(chaincolour);
       }
+
+      if (!chaincolour) {
+        getById("chainlength").value = "";
+        getById("chainlength2").innerHTML = "";
+      }
     }
 
     if (e.target.id === "trim") {
@@ -1128,11 +1133,17 @@ const handlerElementVisibility = async (
   }
 };
 
-const handlerSubmit = async (button, isConfirmed = false) => {
+const handlerSubmit = async (
+  button,
+  confirmState = { tube: false, control: false },
+) => {
   try {
     // return alert(button);
     getById(button).innerHTML = "Processing...";
     swalLoadingShow("Please wait while we save the data.");
+    selectorElAll(".form-control, .from-select").forEach((el) =>
+      el.classList.remove("is-invalid"),
+    );
     const fields = [
       "blindtype",
       "brackettype",
@@ -1177,7 +1188,8 @@ const handlerSubmit = async (button, isConfirmed = false) => {
       itemid: ITEMID,
       designid: DESIGNID,
       loginid: LOGINID,
-      isConfirmed: isConfirmed,
+      isConfirmedTube: Boolean(confirmState.tube),
+      isConfirmedControl: Boolean(confirmState.control),
       blindno: getById("lblBlindNo")?.innerHTML,
       uniqueid: getById("lblUniqueId")?.innerHTML,
     };
@@ -1205,9 +1217,24 @@ const handlerSubmit = async (button, isConfirmed = false) => {
     const res = data.d || data;
 
     if (res.confirm) {
+      if (typeof Swal !== "undefined" && Swal.isVisible()) {
+        Swal.close();
+      }
       const yes = await isConfirm(res.message?.toUpperCase());
-      if (yes) return handlerSubmit(button, true);
-      return;
+      if (!yes) {
+        if (res.field) {
+          getById(res.field)?.classList.add("is-invalid");
+        }
+        return;
+      }
+      const nextConfirmState = { ...confirmState };
+      if (res.confirmKey === "tube") {
+        nextConfirmState.tube = true;
+      } else if (res.confirmKey === "control") {
+        nextConfirmState.control = true;
+      }
+
+      return handlerSubmit(button, nextConfirmState);
     }
 
     if (res.error) {

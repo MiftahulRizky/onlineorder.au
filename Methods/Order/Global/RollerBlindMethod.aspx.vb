@@ -60,7 +60,8 @@ Partial Class Methods_Order_RollerBlindMethod
         Public Property loginid As String
         Public Property blindno As String
         Public Property uniqueid As String
-        Public Property isConfirmed As Boolean
+        Public Property isConfirmedTube As Boolean
+        Public Property isConfirmedControl As Boolean
     End Class
 
     Public Class ParamBindFormAggregate
@@ -284,7 +285,7 @@ Partial Class Methods_Order_RollerBlindMethod
 
             Dim blindarea As Integer = Math.Round(width * drop / 1000000, 0)
             If width > 1810 AND data.tubetype = "38"  Then
-                Return New With {.warning = true, .message = "cannot down grade to 38mm tube !",.field = "tubetype"}
+                Return New With {.warning = true, .message = "cannot down grade to 38mm tube, please check your width !",.field = "tubetype"}
             End If
             If data.tubetype = "45" AND blindarea > 6 Then
                 Return New With {.warning = true, .message = "please check your size for tube 45mm!",.field = "tubetype"}
@@ -313,11 +314,38 @@ Partial Class Methods_Order_RollerBlindMethod
                         Return New With {.warning = true, .message = "roll direction is required !",.field = "roll"}
                     End If
 
-                    If data.brackettype = "Double" AND InArray(data.itemaction, "EditItem", "NextItem") Then
-                        Dim OtherRoll As String = publicCfg.GetItemData(String.Format("SELECT RollDirection FROM OrderDetails WHERE Active = 1 AND UniqueId = '{0}' AND Id <> '{1}'", data.uniqueid, data.itemid))
+                    If InArray(data.itemaction, "EditItem", "NextItem") Then
+                        If data.brackettype = "Double" Then
+                            If data.blindno = "Blind 1" Then
+                                Dim RollB2 As String = FindRollDirection(data.uniqueid, "Blind 2")
+                                If data.roll = "Standard" AND RollB2 = "Standard" then
+                                    Return New With {.warning = true, .message = "For Double Blinds, Blind 1 and Blind 2 cannot both be set to Standard. Please select different options for each blind.",.field = "roll"}
+                                End If
+                            End If
 
-                        If data.roll = "Standard" AND OtherRoll = "Standard" then
-                            Return New With {.warning = true, .message = "Both Roll Direction options cannot be set to Standard. Please select a different Roll Direction option.",.field = "roll"}
+                            If data.blindno = "Blind 2" Then
+                                Dim RollB1 As String = FindRollDirection(data.uniqueid, "Blind 1")
+                                If data.roll = "Standard" AND RollB1 = "Standard" then
+                                    Return New With {.warning = true, .message = "For Double Blinds, Blind 1 and Blind 2 cannot both be set to Standard. Please select different options for each blind.",.field = "roll"}
+                                End If
+                            End If
+                        End If
+
+                        If InArray(data.brackettype, "Double and Link System Dep", "Double and Link System Ind") Then
+                            If InArray(data.blindno, "Blind 1", "Blind 2") Then
+                                Dim RollB3 As String = FindRollDirection(data.uniqueid, "Blind 3")
+                                If data.roll = "Standard" AND RollB3 = "Standard" then
+                                    Return New With {.warning = true, .message = "For Double and Link Systems, the linked sets (Blind 1 & Blind 2) and (Blind 3 & Blind 4) cannot both have the Roll Direction set to Standard. Please select a different Roll Direction for one of the sets.",.field = "roll"}
+                                End If
+                            End If
+                            If InArray(data.blindno, "Blind 3", "Blind 4") Then
+                                Dim RollB1 As String = FindRollDirection(data.uniqueid, "Blind 1")
+                                If data.roll = "Standard" AND RollB1 = "Standard" then
+                                    Return New With {.warning = true, .message = "For Double and Link Systems, the linked sets (Blind 1 & Blind 2) and (Blind 3 & Blind 4) cannot both have the Roll Direction set to Standard. Please select a different Roll Direction for one of the sets.",.field = "roll"}
+                                End If
+                            End If
+
+                            
                         End If
                     End If
                 End If
@@ -353,56 +381,37 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
                 End If
 
-                If data.brackettype = "Linked 2 Blinds (Ind)" Then
-                    If String.IsNullOrEmpty(data.controlposition) Then
-                        Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
-                    End If
-
-                    If String.IsNullOrEmpty(data.chaincolour) Then
-                        Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
-                    End If
-                    Dim chainlength As Integer
-                    If Not String.IsNullOrEmpty(data.chainlength) Then
-                        If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                            Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
-                        End If
-                    End If
-
-                    If data.blindno = "Blind 1" Then
-                        If InArray(data.itemaction, "EditItem", "ViewItem") Then
-                            Dim ControlB2 As String = FindControlPosition(data.uniqueid, "Blind 2")
-                            If data.controlposition = ControlB2 AndAlso Not data.isConfirmed Then
-                                Return New With { .confirm = true, .message = "For linked 2 blinds independent: <b>The control position cannot be the same as the second blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}
-                            End If
-                        End If
-                    End If
-
-                    If data.blindno = "Blind 2" Then
-                        If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
-                            Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
-                            If data.controlposition = ControlB1 AndAlso Not data.isConfirmed Then
-                                Return New With { .confirm = true, .message = "For linked 2 blinds independent: <b>The control position cannot be the same as the first blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}
-                            End If
-                        End If
-                    End If
-                End If
-
                 If data.brackettype = "Linked 2 Blinds (Dep)" Then
                     If data.blindno = "Blind 1" Then
-                        If data.itemaction = "AddItem" Then
-                            If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
-                            End If
-                            If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
+                        If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
+                        End If
+                        If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
+                        End If
+                        Dim chainlength As Integer
+                        If Not String.IsNullOrEmpty(data.chainlength) Then
+                            If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                                Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                             End If
                         End If
 
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then
+                            Dim TubeSizes As New List(Of String) From {
+                                FindTubeSize(data.uniqueid, "Blind 2")
+                            }
+
+                            For Each tubeSize As String In TubeSizes
+                                If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                    Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
+                                End If
+                            Next
+
+
                             Dim ControlB2 As String = FindControlPosition(data.uniqueid, "Blind 2")
                             IF Not String.IsNullOrEmpty(ControlB2) Then
-                                If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmed Then
-                                    Return New With { .confirm = true, .message = "For linked 2 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 must remain empty.<br/> Alternatively, Blind 2 may have a control side → then Blind 1 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
+                                If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmedControl Then
+                                    Return New With { .confirm = true, .confirmKey = "control",  .field = "controlposition", .message = "For linked 2 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 must remain empty.<br/> Alternatively, Blind 2 may have a control side → then Blind 1 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
                                 End If
                             End If
 
@@ -413,7 +422,6 @@ Partial Class Methods_Order_RollerBlindMethod
                                 If String.IsNullOrEmpty(data.chaincolour) Then
                                     Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                                 End If
-                                Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
                                         Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
@@ -424,10 +432,27 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
 
                     If data.blindno = "Blind 2" Then
+                        Dim TubeSizes As New List(Of String) From {
+                            FindTubeSize(data.uniqueid, "Blind 1")
+                        }
+
+                        For Each tubeSize As String In TubeSizes
+                            If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
+                            End If
+                        Next
+
+                        If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
+                        End If
+                        If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
+                        End If
+
                         Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
                         If Not String.IsNullOrEmpty(ControlB1) Then
-                            If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmed Then
-                                Return New With { .confirm = true, .message = "For linked 2 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 must remain empty.<br/> Alternatively, Blind 2 may have a control side → then Blind 1 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
+                            If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmedControl Then
+                                Return New With { .confirm = true, .confirmKey = "control",  .field = "controlposition", .message = "For linked 2 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 must remain empty.<br/> Alternatively, Blind 2 may have a control side → then Blind 1 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
                             End If
                         End If
 
@@ -449,23 +474,93 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
 
                 End If
+
+                If data.brackettype = "Linked 2 Blinds (Ind)" Then
+                    If String.IsNullOrEmpty(data.controlposition) Then
+                        Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
+                    End If
+
+                    
+                    If String.IsNullOrEmpty(data.chaincolour) Then
+                        Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
+                    End If
+                    Dim chainlength As Integer
+                    If Not String.IsNullOrEmpty(data.chainlength) Then
+                        If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                            Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
+                        End If
+                    End If
+
+                    If data.blindno = "Blind 1" Then
+                        If InArray(data.itemaction, "EditItem", "ViewItem") Then
+                            Dim TubeSizes As New List(Of String) From {
+                                FindTubeSize(data.uniqueid, "Blind 2")
+                            }
+
+                            For Each tubeSize As String In TubeSizes
+                                If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                    Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
+                                End If
+                            Next
+
+                            Dim ControlB2 As String = FindControlPosition(data.uniqueid, "Blind 2")
+                            If data.controlposition = ControlB2 AndAlso Not data.isConfirmedControl Then
+                                Return New With { .confirm = true, .confirmKey = "control",  .field = "controlposition", .message = "For linked 2 blinds independent: <b>The control position cannot be the same as the second blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}
+                            End If
+                        End If
+                    End If
+
+                    If data.blindno = "Blind 2" Then
+                        If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
+                            Dim TubeSizes As New List(Of String) From {
+                                FindTubeSize(data.uniqueid, "Blind 1")
+                            }
+
+                            For Each tubeSize As String In TubeSizes
+                                If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                    Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
+                                End If
+                            Next
+                            
+                            Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
+                            If data.controlposition = ControlB1 AndAlso Not data.isConfirmedControl Then
+                                Return New With { .confirm = true, .confirmKey = "control",  .field = "controlposition", .message = "For linked 2 blinds independent: <b>The control position cannot be the same as the first blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}
+                            End If
+                        End If
+                    End If
+                End If
                 
                 If data.brackettype = "Linked 3 Blinds (Dep)" Then
                     If data.blindno = "Blind 1" Then
-                        If data.itemaction = "AddItem" Then
-                            If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
-                            End If
-                            If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
+                        If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
+                        End If
+                        If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
+                        End If
+                        Dim chainlength As Integer
+                        If Not String.IsNullOrEmpty(data.chainlength) Then
+                            If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                                Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                             End If
                         End If
 
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then
+                            Dim TubeSizes As New List(Of String) From {
+                                FindTubeSize(data.uniqueid, "Blind 2"),
+                                FindTubeSize(data.uniqueid, "Blind 3")
+                            }
+
+                            For Each tubeSize As String In TubeSizes
+                                If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                    Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
+                                End If
+                            Next
+
                             Dim ControlB3 As String = FindControlPosition(data.uniqueid, "Blind 3")
                             IF Not String.IsNullOrEmpty(ControlB3) Then
-                                If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmed Then
-                                    Return New With { .confirm = true, .message = "For linked 3 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 and Blind 3 must remain empty.<br/> Alternatively, Blind 3 may have a control side → then Blind 1 and Blind 2 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
+                                If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmedControl Then
+                                    Return New With { .confirm = true, .confirmKey = "control",  .field = "controlposition", .message = "For linked 3 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 and Blind 3 must remain empty.<br/> Alternatively, Blind 3 may have a control side → then Blind 1 and Blind 2 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
                                 End If
                             End If
 
@@ -476,7 +571,6 @@ Partial Class Methods_Order_RollerBlindMethod
                                 If String.IsNullOrEmpty(data.chaincolour) Then
                                     Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                                 End If
-                                Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
                                         Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
@@ -487,6 +581,17 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
 
                     If data.blindno = "Blind 2" Then
+                        Dim TubeSizes As New List(Of String) From {
+                            FindTubeSize(data.uniqueid, "Blind 1"),
+                            FindTubeSize(data.uniqueid, "Blind 3")
+                        }
+
+                        For Each tubeSize As String In TubeSizes
+                            If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
+                            End If
+                        Next
+
                         If Not String.IsNullOrEmpty(data.controlposition) Then
                             Return New With {.warning = true, .message = "control position not required !",.field = "controlposition"}
                         End If
@@ -499,10 +604,21 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
 
                     If data.blindno = "Blind 3" Then
+                        Dim TubeSizes As New List(Of String) From {
+                            FindTubeSize(data.uniqueid, "Blind 1"),
+                            FindTubeSize(data.uniqueid, "Blind 2")
+                        }
+
+                        For Each tubeSize As String In TubeSizes
+                            If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
+                            End If
+                        Next
+
                         Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
                         If Not String.IsNullOrEmpty(ControlB1) Then
-                            If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmed Then
-                                Return New With { .confirm = true, .message = "For linked 3 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 and Blind 3 must remain empty.<br/> Alternatively, Blind 3 may have a control side → then Blind 1 and Blind 2 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
+                            If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmedControl Then
+                                Return New With { .confirm = true, .confirmKey = "control",  .field = "controlposition", .message = "For linked 3 blinds dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 and Blind 3 must remain empty.<br/> Alternatively, Blind 3 may have a control side → then Blind 1 and Blind 2 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
                             End If
                         End If
 
@@ -542,18 +658,59 @@ Partial Class Methods_Order_RollerBlindMethod
                     
                     If data.blindno = "Blind 1" Then
                         If InArray(data.itemaction, "EditItem", "ViewItem") Then
+                            Dim TubeSizes As New List(Of String) From {
+                                FindTubeSize(data.uniqueid, "Blind 2"),
+                                FindTubeSize(data.uniqueid, "Blind 3")
+                            }
+
+                            For Each tubeSize As String In TubeSizes
+                                If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                    Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
+                                End If
+                            Next
+
                             Dim ControlB3 As String = FindControlPosition(data.uniqueid, "Blind 3")
-                            If data.controlposition = ControlB3 AndAlso Not data.isConfirmed Then
-                                Return New With { .confirm = true, .message = "For linked 3 blinds independent: <b>The control position cannot be the same as the third blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}
+                            If data.controlposition = ControlB3 AndAlso Not data.isConfirmedControl Then
+                                Return New With { .confirm = true, .confirmKey = "control",  .field = "controlposition", .message = "For linked 3 blinds independent: <b>The control position cannot be the same as the third blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}
                             End If
+                        End If
+                    End If
+
+                    If data.blindno = "Blind 2" Then
+                        If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
+                            Dim TubeSizes As New List(Of String) From {
+                                FindTubeSize(data.uniqueid, "Blind 1"),
+                                FindTubeSize(data.uniqueid, "Blind 3")
+                            }
+
+                            For Each tubeSize As String In TubeSizes
+                                If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                    Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
+                                End If
+                            Next    
+
+                            If Not String.IsNullOrEmpty(data.chaincolour) Then
+                                Return New With {.warning = true, .message = "this is middle blind!, chain colour is not required !",.field = "chaincolour"}
+                            End If              
                         End If
                     End If
 
                     If data.blindno = "Blind 3" Then
                         If InArray(data.itemaction, "NextItem", "EditItem", "ViewItem") Then
+                            Dim TubeSizes As New List(Of String) From {
+                                FindTubeSize(data.uniqueid, "Blind 1"),
+                                FindTubeSize(data.uniqueid, "Blind 2")
+                            }
+
+                            For Each tubeSize As String In TubeSizes
+                                If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                    Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
+                                End If
+                            Next
+
                             Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
-                            If data.controlposition = ControlB1 AndAlso Not data.isConfirmed Then
-                                 Return New With { .confirm = true, .message = "For linked 3 blinds independent: <b>The control position cannot be the same as the first blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}
+                            If data.controlposition = ControlB1 AndAlso Not data.isConfirmedControl Then
+                                 Return New With { .confirm = true, .confirmKey = "control",  .field = "controlposition", .message = "For linked 3 blinds independent: <b>The control position cannot be the same as the first blind! </b> If this process continues, the controls will end up in opposing positions. Do you want to continue?"}
                             End If                    
                         End If
                     End If
@@ -561,43 +718,46 @@ Partial Class Methods_Order_RollerBlindMethod
 
                 If data.brackettype = "Double and Link System Dep" Then
                     If data.blindno = "Blind 1" Then
-                        If data.itemaction = "AddItem" Then
-                            If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
-                            End If
-                            If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
-                            End If
-                            Dim chainlength As Integer
-                            If Not String.IsNullOrEmpty(data.chainlength) Then
-                                If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
-                                    Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
-                                End If
+                        If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
+                        End If
+                        If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
+                        End If
+                        Dim chainlength As Integer
+                        If Not String.IsNullOrEmpty(data.chainlength) Then
+                            If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                                Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                             End If
                         End If
 
                         If data.itemaction = "EditItem" Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 2' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
-                            IF Not controlposition = "" Then
-                                If Not String.IsNullOrEmpty(data.controlposition) Then
-                                    Return New With {.warning = true, .message = "control position not required !",.field = "controlposition"}
+                            Dim TubeSizes As New List(Of String) From {
+                                FindTubeSize(data.uniqueid, "Blind 2"),
+                                FindTubeSize(data.uniqueid, "Blind 3"),
+                                FindTubeSize(data.uniqueid, "Blind 4")
+                            }
+
+                            For Each tubeSize As String In TubeSizes
+                                If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                    Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
                                 End If
-                                If Not String.IsNullOrEmpty(data.chaincolour) Then
-                                    Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
-                                End If
-                                If Not String.IsNullOrEmpty(data.chainlength) Then
-                                    Return New With {.warning = true, .message = "chain length not required !",.field = fieldchainlength}
+                            Next
+
+                            Dim ControlB2 As String = FindControlPosition(data.uniqueid, "Blind 2")
+                            IF Not String.IsNullOrEmpty(ControlB2) Then
+                                If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmedControl Then
+                                    Return New With { .confirm = true, .confirmKey = "control",  .field = "controlposition", .message = "Double and Link System Dependent: <br/><br/> Blind 1 may have a control side → then Blind 2 must remain empty.<br/> Alternatively, Blind 2 may have a control side → then Blind 1 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
                                 End If
                             End If
 
-                            If controlposition = "" Then
+                            IF String.IsNullOrEmpty(ControlB2) Then
                                 If String.IsNullOrEmpty(data.controlposition) Then
                                     Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                                 End If
                                 If String.IsNullOrEmpty(data.chaincolour) Then
                                     Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                                 End If
-                                Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
                                         Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
@@ -609,27 +769,45 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
 
                     If data.blindno = "Blind 2" Then
-                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 1' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
-                        If Not controlposition = "" Then
-                            If Not String.IsNullOrEmpty(data.controlposition) Then
-                                Return New With {.warning = true, .message = "control position not required !",.field = "controlposition"}
-                            End If
-                            If Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
-                            End If
-                            If Not String.IsNullOrEmpty(data.chainlength) Then
-                                Return New With {.warning = true, .message = "chain length not required !",.field = fieldchainlength}
+                        If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
+                        End If
+                        If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
+                        End If
+                        Dim chainlength As Integer
+                        If Not String.IsNullOrEmpty(data.chainlength) Then
+                            If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                                Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                             End If
                         End If
 
-                        If controlposition = "" Then
+                        Dim TubeSizes As New List(Of String) From {
+                            FindTubeSize(data.uniqueid, "Blind 1"),
+                            FindTubeSize(data.uniqueid, "Blind 3"),
+                            FindTubeSize(data.uniqueid, "Blind 4")
+                        }
+
+                        For Each tubeSize As String In TubeSizes
+                            If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
+                            End If
+                        Next
+
+                        Dim ControlB1 As String = FindControlPosition(data.uniqueid, "Blind 1")
+                        IF Not String.IsNullOrEmpty(ControlB1) Then
+                            If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmedControl Then
+                                Return New With { .confirm = true, .confirmKey = "control",  .field = "controlposition", .message = "Double and Link System Dependent: <br/><br/> Blind 2 may have a control side → then Blind 1 must remain empty.<br/> Alternatively, Blind 1 may have a control side → then Blind 2 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
+                            End If
+                        End If
+
+                        IF String.IsNullOrEmpty(ControlB1) Then
                             If String.IsNullOrEmpty(data.controlposition) Then
                                 Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If String.IsNullOrEmpty(data.chaincolour) Then
                                 Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
-                            Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
                                     Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
@@ -640,75 +818,102 @@ Partial Class Methods_Order_RollerBlindMethod
                     End If
 
                     If data.blindno = "Blind 3" Then
-                        If data.itemaction = "AddItem" Then
-                            If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
-                            End If
-                            If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
+                        If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
+                        End If
+                        If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
+                        End If
+                        Dim chainlength As Integer
+                        If Not String.IsNullOrEmpty(data.chainlength) Then
+                            If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                                Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                             End If
                         End If
 
                         IF data.itemaction = "EditItem" Then
-                            Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 4' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
-                            If Not controlposition = "" Then
-                                If Not String.IsNullOrEmpty(data.controlposition) Then
-                                    Return New With {.warning = true, .message = "control position not required !",.field = "controlposition"}
+                            Dim TubeSizes As New List(Of String) From {
+                                FindTubeSize(data.uniqueid, "Blind 1"),
+                                FindTubeSize(data.uniqueid, "Blind 2"),
+                                FindTubeSize(data.uniqueid, "Blind 4")
+                            }
+
+                            For Each tubeSize As String In TubeSizes
+                                If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                    Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
                                 End If
-                                If Not String.IsNullOrEmpty(data.chaincolour) Then
-                                    Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
-                                End If
-                                If Not String.IsNullOrEmpty(data.chainlength) Then
-                                    Return New With {.warning = true, .message = "chain length not required !",.field = fieldchainlength}
+                            Next
+
+                            Dim ControlB4 As String = FindControlPosition(data.uniqueid, "Blind 4")
+                            IF Not String.IsNullOrEmpty(ControlB4) Then
+                                If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmedControl Then
+                                    Return New With { .confirm = true, .confirmKey = "control",  .field = "controlposition", .message = "Double and Link System Dependent: <br/><br/> Blind 4 may have a control side → then Blind 3 must remain empty.<br/> Alternatively, Blind 3 may have a control side → then Blind 4 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
                                 End If
                             End If
 
-                            If controlposition = "" Then
+                            IF String.IsNullOrEmpty(ControlB4) Then
                                 If String.IsNullOrEmpty(data.controlposition) Then
                                     Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                                 End If
                                 If String.IsNullOrEmpty(data.chaincolour) Then
                                     Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                                 End If
-                                Dim chainlength As Integer
                                 If Not String.IsNullOrEmpty(data.chainlength) Then
                                     If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
                                         Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                     End If
                                 End If
                             End If
-
                         End If
                     End If 
 
                     If data.blindno = "Blind 4" Then
-                        Dim controlposition As String = publicCfg.GetItemData(String.Format("SELECT ControlPosition FROM OrderDetails WHERE BlindNo = 'Blind 3' AND UniqueId='{0}' AND Active = 1", data.uniqueid))
-                        If Not controlposition = "" Then
-                            If Not String.IsNullOrEmpty(data.controlposition) Then
-                                Return New With {.warning = true, .message = "control position not required !",.field = "controlposition"}
+                        Dim TubeSizes As New List(Of String) From {
+                            FindTubeSize(data.uniqueid, "Blind 1"),
+                            FindTubeSize(data.uniqueid, "Blind 2"),
+                            FindTubeSize(data.uniqueid, "Blind 3")
+                        }
+
+                        For Each tubeSize As String In TubeSizes
+                            If Not String.IsNullOrEmpty(tubeSize) AndAlso data.tubetype <> tubeSize AndAlso Not data.isConfirmedTube Then
+                                Return New With { .confirm = true, .confirmKey = "tube",  .field = "tubetype",  .message = "Tube size does not match the other Blind Sets. Please check your selection.<br/><br/>Are you sure you want to change the tube size? If you proceed, the tube size of all other Blind Sets will also be updated to match your selection."}
                             End If
-                            If Not String.IsNullOrEmpty(data.chaincolour) Then
-                                Return New With {.warning = true, .message = "chain colour not required !",.field = "chaincolour"}
-                            End If
-                            If Not String.IsNullOrEmpty(data.chainlength) Then
-                                Return New With {.warning = true, .message = "chain length not required !",.field = fieldchainlength}
+                        Next
+
+                        If String.IsNullOrEmpty(data.controlposition) AND Not String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
+                        End If
+                        If Not String.IsNullOrEmpty(data.controlposition) AND String.IsNullOrEmpty(data.chaincolour) Then
+                            Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
+                        End If
+                        Dim chainlength As Integer
+                        If Not String.IsNullOrEmpty(data.chainlength) Then
+                            If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
+                                Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = "chainlength"}
                             End If
                         End If
 
-                        If controlposition = "" Then
+                        Dim ControlB3 As String = FindControlPosition(data.uniqueid, "Blind 3")
+                        IF Not String.IsNullOrEmpty(ControlB3) Then
+                            If Not String.IsNullOrEmpty(data.controlposition) AndAlso Not data.isConfirmedControl Then
+                                Return New With { .confirm = true, .confirmKey = "control",  .field = "controlposition", .message = "Double and Link System Dependent: <br/><br/> Blind 3 may have a control side → then Blind 4 must remain empty.<br/> Alternatively, Blind 4 may have a control side → then Blind 3 must remain empty. Switching control is only allowed under these rules. Do you want to continue switching?"}
+                            End If
+                        End If
+
+                        IF String.IsNullOrEmpty(ControlB3) Then
                             If String.IsNullOrEmpty(data.controlposition) Then
                                 Return New With {.warning = true, .message = "control position is required !",.field = "controlposition"}
                             End If
                             If String.IsNullOrEmpty(data.chaincolour) Then
                                 Return New With {.warning = true, .message = "chain colour is required !",.field = "chaincolour"}
                             End If
-                            Dim chainlength As Integer
                             If Not String.IsNullOrEmpty(data.chainlength) Then
                                 If Not Integer.TryParse(data.chainlength, chainlength) OrElse chainlength <= 0 Then
                                     Return New With {.warning = true, .message = "chain length must be a positive integer !",.field = fieldchainlength}
                                 End If
                             End If
                         End If
+
                     End If
                 End If
 
@@ -1171,6 +1376,15 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
 
                 If InArray(data.brackettype, "Linked 2 Blinds (Dep)", "Linked 3 Blinds (Dep)") Then
+                    Dim ListUpdateKit As New List(Of Object) From {
+                        data.uniqueid,
+                        data.brackettype,
+                        data.colourtype
+                    }
+                    Dim ResKit As Object = UpdateKit(ListUpdateKit)
+                    If ResKit.error Then Throw New Exception(ResKit.message) 
+
+
                     '#SdsDrop
                     Dim ListDrop As New List(Of Object) From {
                         data.uniqueid,
@@ -1220,7 +1434,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         Throw New Exception(ResNext)
                     End If
 
-                    If data.brackettype = "Linked 2 Blinds (Dep)" AndAlso data.isConfirmed Then
+                    If data.brackettype = "Linked 2 Blinds (Dep)" AndAlso data.isConfirmedControl Then
                         '#SdsControlLink3Ind
                         Dim ListControl As New List(Of Object) From {
                             ItemId,
@@ -1234,7 +1448,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         End If
                     End If
 
-                    If data.brackettype = "Linked 3 Blinds (Dep)" AndAlso data.isConfirmed Then
+                    If data.brackettype = "Linked 3 Blinds (Dep)" AndAlso data.isConfirmedControl Then
                         '#SdsControlLink3Ind
                         Dim ListControl As New List(Of Object) From {
                             ItemId,
@@ -1251,6 +1465,14 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
 
                 If InArray(data.brackettype, "Linked 2 Blinds (Ind)", "Linked 3 Blinds (Ind)") Then
+                    Dim ListUpdateKit As New List(Of Object) From {
+                        data.uniqueid,
+                        data.brackettype,
+                        data.colourtype
+                    }
+                    Dim ResKit As Object = UpdateKit(ListUpdateKit)
+                    If ResKit.error Then Throw New Exception(ResKit.message) 
+
                     '#SdsNext
                     Dim ListNext As New List(Of Object) From {
                         data.uniqueid,
@@ -1269,6 +1491,15 @@ Partial Class Methods_Order_RollerBlindMethod
                         Throw New Exception(ResNext)
                     End If
 
+                    Dim ListDrop As New List(Of Object) From {
+                        data.uniqueid,
+                        drop
+                    }
+                    Dim ResDrop As String = SdsDrop(ListDrop)
+                    IF Not ResDrop = "200" Then
+                        Throw New Exception(ResDrop)
+                    End If
+
                     '#SdsFabric
                     Dim ListFabric As New List(Of Object) From {
                         data.uniqueid,
@@ -1280,7 +1511,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         Throw New Exception(ResFabric)
                     End If
 
-                    If data.brackettype = "Linked 2 Blinds (Ind)" AndAlso data.isConfirmed Then
+                    If data.brackettype = "Linked 2 Blinds (Ind)" AndAlso data.isConfirmedControl Then
                         '#SdsControlLink3Ind
                         Dim ListControl As New List(Of Object) From {
                             ItemId,
@@ -1294,7 +1525,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         End If
                     End If
 
-                    If data.brackettype = "Linked 3 Blinds (Ind)" AndAlso data.isConfirmed Then
+                    If data.brackettype = "Linked 3 Blinds (Ind)" AndAlso data.isConfirmedControl Then
                         '#SdsControlLink3Ind
                         Dim ListControl As New List(Of Object) From {
                             ItemId,
@@ -1311,6 +1542,27 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
 
                 If data.brackettype = "Double and Link System Dep" Then
+                    Dim ListUpdateKit As New List(Of Object) From {
+                        data.uniqueid,
+                        data.brackettype,
+                        data.colourtype
+                    }
+                    Dim ResKit As Object = UpdateKit(ListUpdateKit)
+                    If ResKit.error Then Throw New Exception(ResKit.message) 
+
+                    If data.isConfirmedControl Then
+                        Dim ListControl As New List(Of Object) From {
+                            ItemId,
+                            data.uniqueid,
+                            data.blindno
+                        }
+                        
+                        Dim ResControl As Object = UpdateControlDBLinkDep(ListControl)
+                        IF ResControl.error Then
+                            Throw New Exception(ResControl.message)
+                        End If
+                    End If
+                    
                     '#SdsDrop
                     Dim ListDrop As New List(Of Object) From {
                         data.uniqueid,
@@ -1333,6 +1585,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         IF Not ResDB2DepFirst = "200" Then
                             Throw New Exception(ResDB2DepFirst)
                         End If
+
                     End If
 
                     If data.blindno = "Blind 4" Then
@@ -1370,8 +1623,25 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
 
                 If data.brackettype = "Double and Link System Ind" Then
+                    Dim ListUpdateKit As New List(Of Object) From {
+                        data.uniqueid,
+                        data.brackettype,
+                        data.colourtype
+                    }
+                    Dim ResKit As Object = UpdateKit(ListUpdateKit)
+                    If ResKit.error Then Throw New Exception(ResKit.message) 
 
-                    If data.blindno = "Blind 2" Then
+                    '#SdsDrop
+                    Dim ListDrop As New List(Of Object) From {
+                        data.uniqueid,
+                        drop
+                    }
+                    Dim ResDrop As String = SdsDrop(ListDrop)
+                    IF Not ResDrop = "200" Then
+                        Throw New Exception(ResDrop)
+                    End If
+
+                    If InArray(data.blindno, "Blind1", "Blind 2") Then
                         '#SdsDB2IndFirst
                         Dim ListDB2IndFirst As New List(Of Object) From {
                             data.uniqueid,
@@ -1385,7 +1655,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         End If
                     End If
 
-                    If data.blindno = "Blind 4" Then
+                    If InArray(data.blindno, "Blind 3", "Blind 4") Then
                         '#SdsDB2DepSecond
                         Dim ListDB2DepSecond As New List(Of Object) From {
                             data.uniqueid,
@@ -1536,6 +1806,14 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
 
                 If InArray(data.brackettype, "Linked 2 Blinds (Dep)", "Linked 3 Blinds (Dep)") Then
+                    Dim ListUpdateKit As New List(Of Object) From {
+                        data.uniqueid,
+                        data.brackettype,
+                        data.colourtype
+                    }
+                    Dim ResKit As Object = UpdateKit(ListUpdateKit)
+                    If ResKit.error Then Throw New Exception(ResKit.message) 
+
                     '#SdsDrop
                     Dim ListDrop As New List(Of Object) From {
                         data.uniqueid,
@@ -1585,7 +1863,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         Throw New Exception(ResNext)
                     End If
 
-                    If data.brackettype = "Linked 2 Blinds (Dep)" AndAlso data.isConfirmed Then
+                    If data.brackettype = "Linked 2 Blinds (Dep)" AndAlso data.isConfirmedControl Then
                         '#SdsControlLink3Ind
                         Dim ListControl As New List(Of Object) From {
                             ItemId,
@@ -1599,7 +1877,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         End If
                     End If
 
-                    If data.brackettype = "Linked 3 Blinds (Dep)" AndAlso data.isConfirmed Then
+                    If data.brackettype = "Linked 3 Blinds (Dep)" AndAlso data.isConfirmedControl Then
                         '#SdsControlLink3Ind
                         Dim ListControl As New List(Of Object) From {
                             ItemId,
@@ -1616,6 +1894,14 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
 
                 If InArray(data.brackettype, "Linked 2 Blinds (Ind)", "Linked 3 Blinds (Ind)") Then
+                    Dim ListUpdateKit As New List(Of Object) From {
+                        data.uniqueid,
+                        data.brackettype,
+                        data.colourtype
+                    }
+                    Dim ResKit As Object = UpdateKit(ListUpdateKit)
+                    If ResKit.error Then Throw New Exception(ResKit.message) 
+
                     '#SdsNext
                     Dim ListNext As New List(Of Object) From {
                         data.uniqueid,
@@ -1632,6 +1918,15 @@ Partial Class Methods_Order_RollerBlindMethod
                     Dim ResNext As String = SdsNext(ListNext)
                     IF Not ResNext = "200" Then
                        Throw New Exception(ResNext)
+                    End If
+
+                    Dim ListDrop As New List(Of Object) From {
+                        data.uniqueid,
+                        drop
+                    }
+                    Dim ResDrop As String = SdsDrop(ListDrop)
+                    IF Not ResDrop = "200" Then
+                        Throw New Exception(ResDrop)
                     End If
 
                     '#SdsTubeSize
@@ -1655,7 +1950,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         Throw New Exception(ResFabric)
                     End If
 
-                    If data.brackettype = "Linked 2 Blinds (Ind)" AndAlso data.isConfirmed Then
+                    If data.brackettype = "Linked 2 Blinds (Ind)" AndAlso data.isConfirmedControl Then
                         '#SdsControlLink3Ind
                         Dim ListControl As New List(Of Object) From {
                             ItemId,
@@ -1669,7 +1964,7 @@ Partial Class Methods_Order_RollerBlindMethod
                         End If
                     End If
 
-                    If data.brackettype = "Linked 3 Blinds (Ind)" AndAlso data.isConfirmed Then
+                    If data.brackettype = "Linked 3 Blinds (Ind)" AndAlso data.isConfirmedControl Then
                         '#SdsControlLink3Ind
                         Dim ListControl As New List(Of Object) From {
                             ItemId,
@@ -1686,6 +1981,41 @@ Partial Class Methods_Order_RollerBlindMethod
                 End If
 
                 If data.brackettype = "Double and Link System Dep" Then
+                    '#Update HK (Tube, Control, Colour)
+                    Dim ListUpdateKit As New List(Of Object) From {
+                        data.uniqueid,
+                        data.brackettype,
+                        data.colourtype
+                    }
+                    Dim ResKit As Object = UpdateKit(ListUpdateKit)
+                    If ResKit.error Then Throw New Exception(ResKit.message) 
+
+                    If data.isConfirmedControl Then
+                        '#Update Control Pos, Chain Colour & Length
+                        Dim ListControl As New List(Of Object) From {
+                            ItemId,
+                            data.uniqueid,
+                            data.blindno
+                        }
+                        
+                        Dim ResControl As Object = UpdateControlDBLinkDep(ListControl)
+                        IF ResControl.error Then
+                            Throw New Exception(ResControl.message)
+                        End If
+                    End If
+
+                    '#Update Width 1 & 3 | 2 & 4
+                    Dim ListWidth As New List(Of Object) From {
+                        data.uniqueid,
+                        data.blindno,
+                        width
+                    }
+                    
+                    Dim ResWidth As Object = UpdateWidthDBLink(ListWidth)
+                    IF ResWidth.error Then
+                        Throw New Exception(ResWidth.message)
+                    End If
+
                     '#SdsDrop
                     Dim ListDrop As New List(Of Object) From {
                         data.uniqueid,
@@ -1722,6 +2052,73 @@ Partial Class Methods_Order_RollerBlindMethod
                         IF Not ResDB2DepSecond = "200" Then
                             Throw New Exception(ResDB2DepSecond)
                         End If
+                    End If
+
+                End If
+
+                If data.brackettype = "Double and Link System Ind" Then
+                    Dim ListUpdateKit As New List(Of Object) From {
+                        data.uniqueid,
+                        data.brackettype,
+                        data.colourtype
+                    }
+                    Dim ResKit As Object = UpdateKit(ListUpdateKit)
+                    If ResKit.error Then Throw New Exception(ResKit.message) 
+
+                    '#SdsDrop
+                    Dim ListDrop As New List(Of Object) From {
+                        data.uniqueid,
+                        drop
+                    }
+                    Dim ResDrop As String = SdsDrop(ListDrop)
+                    IF Not ResDrop = "200" Then
+                        Throw New Exception(ResDrop)
+                    End If
+
+                    If InArray(data.blindno, "Blind1", "Blind 2") Then
+                        '#SdsDB2IndFirst
+                        Dim ListDB2IndFirst As New List(Of Object) From {
+                            data.uniqueid,
+                            data.fabriccolour,
+                            PriceGroupId,
+                            data.roll
+                        }
+                        Dim ResDB2IndFirst As String = SdsDB2First(ListDB2IndFirst)
+                        IF Not ResDB2IndFirst = "200" Then
+                           Throw New Exception(ResDB2IndFirst)
+                        End If
+                    End If
+
+                    If InArray(data.blindno, "Blind 3", "Blind 4") Then
+                        '#SdsDB2DepSecond
+                        Dim ListDB2DepSecond As New List(Of Object) From {
+                            data.uniqueid,
+                            data.fabriccolour,
+                            PriceGroupId,
+                            data.roll
+                        }
+                        Dim ResDB2DepSecond As String = SdsDB2Second(ListDB2DepSecond)
+                        IF Not ResDB2DepSecond = "200" Then
+                            Throw New Exception(ResDB2DepSecond)
+                        End If
+                    End If
+                    
+                    '#SdsNext
+                    Dim ListNext As New List(Of Object) From {
+                        data.uniqueid,
+                        data.tubesize,
+                        data.mounting,
+                        data.room,
+                        data.childsafe,
+                        data.accessory,
+                        data.bracketcovers,
+                        data.bracketext,
+                        data.motorstyle,
+                        markup
+                    }
+                    Dim ResNext As String = SdsNext(ListNext)
+                    IF Not ResNext = "200" Then
+                        Throw New Exception(ResNext)
                     End If
 
                 End If
@@ -1774,8 +2171,14 @@ Partial Class Methods_Order_RollerBlindMethod
             Dim Brackets As String = CStr(ListParam(1))
             Dim KitId As String = CStr(ListParam(2))
             Dim isDouble As Boolean = Brackets = "Double"
+            Dim isL2Dep As Boolean = Brackets = "Linked 2 Blinds (Dep)"
+            Dim isL2Ind As Boolean = Brackets = "Linked 2 Blinds (Ind)"
+            Dim isL3Dep As Boolean = Brackets = "Linked 3 Blinds (Dep)"
+            Dim isL3Ind As Boolean = Brackets = "Linked 3 Blinds (Ind)"
+            Dim isDBLinkDep As Boolean = Brackets = "Double and Link System Dep"
+            Dim isDBLinkInd As Boolean = Brackets = "Double and Link System Ind"
 
-            If isDouble Then
+            If isDouble Or isL2Dep Or isL2Ind Or isL3Dep Or isDBLinkDep Or isDBLinkInd Then
                 Using thisConn As New SqlConnection(myConn)
                     Using myCmd As New SqlCommand("UPDATE OrderDetails SET KitId=@KitId WHERE UniqueId=@UniqueId AND Active=1", thisConn)
                         myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
@@ -1791,7 +2194,8 @@ Partial Class Methods_Order_RollerBlindMethod
             Return New With {.error = false, .success = true, .message = "200"}
 
         Catch ex As Exception
-            Return New With {.error = true, .message = ex.Message}
+            Dim Brackets As String = CStr(ListParam(1))
+            Return New With {.error = true, .message = String.Format("UpdateKit: {0} | Error: {1}", Brackets, ex.Message)}
         End Try
     End Function
 
@@ -1884,6 +2288,48 @@ Partial Class Methods_Order_RollerBlindMethod
         End Try
     End function
 
+
+    Private Shared Function UpdateWidthDBLink(ListParam As List(Of Object)) As Object
+        Try
+            Dim UniqueId As String = CStr(ListParam(0))
+            Dim BlindNo As String = CStr(ListParam(1))
+            Dim Width As String = CStr(ListParam(2))
+            Dim UpdatedBlindNo As String = ""
+            
+            If BlindNo = "Blind 1" Then
+                UpdatedBlindNo = "Blind 3"
+            End If
+
+            If BlindNo = "Blind 2" Then
+                UpdatedBlindNo = "Blind 4"
+            End If
+
+            If BlindNo = "Blind 3" Then
+                UpdatedBlindNo = "Blind 1"
+            End If
+
+            If BlindNo = "Blind 4" Then
+                UpdatedBlindNo = "Blind 2"
+            End If
+
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetails SET Width=@Width WHERE UniqueId=@UniqueId AND BlindNo=@BlindNo AND Active=1", thisConn)
+                    myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
+                    myCmd.Parameters.AddWithValue("@BlindNo", UpdatedBlindNo)
+                    myCmd.Parameters.AddWithValue("@Width", Width)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return New With {.error=false, .success=true, .message="200"}
+        Catch ex As Exception
+            Dim BlindNo As String = CStr(ListParam(1))
+            Return New With {.error=true, .message=String.Format("UpdateWidthDBLink : {0}", BlindNo, ex.Message)}
+        End Try
+    End function
 
     Private Shared Function SdsDrop(ListParam As List(Of Object)) As String
         Try
@@ -2198,6 +2644,114 @@ Partial Class Methods_Order_RollerBlindMethod
         End Try
     End function
 
+    Private Shared Function UpdateControlDBLinkDep(ListParam As List(Of Object)) As Object
+        Try
+            Dim ThisControl As String = ""
+            Dim ThisBlindNo As String = ""
+            Dim ThisChainId As String = ""
+            Dim ThisChainLength As String = ""
+            Dim ItemId As String = CStr(ListParam(0))
+            Dim UniqueId As String = CStr(ListParam(1))
+            Dim BlindNo As String = CStr(ListParam(2))
+            Dim ControlB1 As String = FindControlPosition(UniqueId, "Blind 1")
+            Dim ControlB2 As String = FindControlPosition(UniqueId, "Blind 2")
+            Dim ChainIdB1 As String = FindChainId(UniqueId, "Blind 1")
+            Dim ChainIdB2 As String = FindChainId(UniqueId, "Blind 2")
+            Dim ChainIdB3 As String = FindChainId(UniqueId, "Blind 3")
+            Dim ChainIdB4 As String = FindChainId(UniqueId, "Blind 4")
+            Dim ChainLengthB1 As String = FindChainLength(UniqueId, "Blind 1")
+            Dim ChainLengthB2 As String = FindChainLength(UniqueId, "Blind 2")
+            Dim ChainLengthB3 As String = FindChainLength(UniqueId, "Blind 3")
+            Dim ChainLengthB4 As String = FindChainLength(UniqueId, "Blind 4")
+
+           
+            If BlindNo = "Blind 1" Then
+                ThisBlindNo = "Blind 2"
+                ThisControl = ""
+                ThisChainId = ""
+                ThisChainLength = ""
+            End If
+
+            If BlindNo = "Blind 2" Then
+                ThisBlindNo = "Blind 1"
+                ThisControl = ""
+                ThisChainId = ""
+                ThisChainLength = ""
+            End If
+
+            If BlindNo = "Blind 3" Then
+                ThisBlindNo = "Blind 4"
+                ThisControl = ""
+                ThisChainId = ""
+                ThisChainLength = ""
+            End If
+
+            If BlindNo = "Blind 4" Then
+                ThisBlindNo = "Blind 3"
+                ThisControl = ""
+                ThisChainId = ""
+                ThisChainLength = ""
+            End If
+
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetails SET ControlPosition=@ControlPosition, ChainId=@ChainId, ChainLength=@ChainLength WHERE BlindNo=@BlindNo AND UniqueId=@UniqueId AND Active=1", thisConn)
+                    myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
+                    myCmd.Parameters.AddWithValue("@ControlPosition", ThisControl)
+                    myCmd.Parameters.AddWithValue("@ChainId", ThisChainId)
+                    myCmd.Parameters.AddWithValue("@ChainLength", if(ThisChainLength = "", DBNull.Value, ThisChainLength))
+                    myCmd.Parameters.AddWithValue("@BlindNo", ThisBlindNo)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            If BlindNo = "Blind 1" Then
+                ThisBlindNo = "Blind 1"
+                ThisChainId = ChainIdB2
+                ThisChainLength = ChainLengthB2
+            End If
+
+            If BlindNo = "Blind 2" Then
+                ThisBlindNo = "Blind 2"
+                ThisChainId = ChainIdB1
+                ThisChainLength = ChainLengthB1
+            End If
+
+            If BlindNo = "Blind 3" Then
+                ThisBlindNo = "Blind 3"
+                ThisChainId = ChainIdB4
+                ThisChainLength = ChainLengthB4
+            End If
+
+            If BlindNo = "Blind 4" Then
+                ThisBlindNo = "Blind 4"
+                ThisChainId = ChainIdB3
+                ThisChainLength = ChainLengthB3
+            End If
+
+            Using thisConn As New SqlConnection(myConn)
+                Using myCmd As New SqlCommand("UPDATE OrderDetails SET ChainId=@ChainId, ChainLength=@ChainLength WHERE BlindNo=@BlindNo AND UniqueId=@UniqueId AND Active=1", thisConn)
+                    myCmd.Parameters.AddWithValue("@UniqueId", UniqueId)
+                    myCmd.Parameters.AddWithValue("@ChainId", ThisChainId)
+                    myCmd.Parameters.AddWithValue("@ChainLength", ThisChainLength)
+                    myCmd.Parameters.AddWithValue("@BlindNo", ThisBlindNo)
+                    myCmd.Connection = thisConn
+                    thisConn.Open()
+                    myCmd.ExecuteNonQuery()
+                    thisConn.Close()
+                End Using
+            End Using
+
+            Return New With {.error = false, .success = true, .message = "200"}
+
+        Catch ex As Exception
+            Dim BlindNo As String = CStr(ListParam(2))
+            Return New With {.error = true, .message = String.Format("UpdateControlDBLinkDep : {0} | Error : {1}", BlindNo, ex.Message)}
+        End Try
+    End Function
+
     Private Shared Function SdsFabric(ListParam As List(Of Object)) As String
         Try
             Dim UniqueId As String = CStr(ListParam(0))
@@ -2325,6 +2879,24 @@ Partial Class Methods_Order_RollerBlindMethod
     '         Return "SdsFabric: " & ex.Message
     '     End Try
     ' End function
+
+    Private Shared Function FindTubeSize(uniqueid As String, blindno As String) As String
+        Try
+            Dim result As String = publicCfg.GetItemData(String.Format("SELECT TubeType FROM view_details WHERE BlindNo = '{0}' AND UniqueId='{1}' AND Active = 1",blindno, uniqueid))
+            Return result
+        Catch ex As Exception
+            Return ""
+        End Try
+    End Function
+
+    Private Shared Function FindRollDirection(uniqueid As String, blindno As String) As String
+        Try
+            Dim result As String = publicCfg.GetItemData(String.Format("SELECT RollDirection FROM OrderDetails WHERE BlindNo = '{0}' AND UniqueId='{1}' AND Active = 1",blindno, uniqueid))
+            Return result
+        Catch ex As Exception
+            Return ""
+        End Try
+    End Function
 
     Private Shared Function FindControlPosition(uniqueid As String, blindno As String) As String
         Try
