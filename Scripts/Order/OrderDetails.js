@@ -12,6 +12,7 @@
     console.log("REPRINT: " + REPRINT);
     console.log("URIMETHOD: " + URIMETHOD);
   }
+
   orderDetailPageLoaded();
 });
 
@@ -25,7 +26,7 @@ let ORDER_INITIAL_SNAPSHOT = null;
 let IS_CHECKING_ORDER = false;
 let ORDER_INTEGRITY_INTERVAL = null;
 let IS_ORDER_RELOADING = false;
-const IS_ADMIN = (ROLENAME = "Administrator");
+const IS_ADMIN = ROLENAME === "Administrator";
 const IS_PPIC_DE_CS = ["PPIC & DE", "Customer Service"].includes(ROLENAME);
 const IS_CUSTOMER = ROLENAME === "Customer";
 const ORDER_INTEGRITY_FIELDS = [
@@ -774,7 +775,7 @@ const bindOrderAggregate = async (headerid, ordertype) => {
       console.log(data);
     }
 
-    ORDER_INITIAL_SNAPSHOT = createOrderSnapshot(data.header);
+    // ORDER_INITIAL_SNAPSHOT = createOrderSnapshot(data.header);
 
     handlerHeaderInfo(data.header);
     bindDetails(data.detail);
@@ -789,7 +790,7 @@ const bindOrderAggregate = async (headerid, ordertype) => {
     setValmodalLogs(data.other);
     bindProduct(data.other.Designs.list);
 
-    startOrderIntegrityMonitor();
+    // startOrderIntegrityMonitor();
   } catch (error) {
     let msg = `bindOrderAggregate: ${error.message}`;
     catchMessages(msg);

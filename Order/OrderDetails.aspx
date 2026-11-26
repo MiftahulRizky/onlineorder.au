@@ -793,25 +793,25 @@
         const ULTRON = params.get("param"); // AS HeaderId
         const INFYNITY = params.get("ordertype"); // AS OrderType
 
-        let HEADERID = ULTRON;
-        let ORDERTYPE = INFYNITY;
-        let CUSTOMERID = '<%= Session("CustomerId") %>';
-        let CUSTOMERCOMPANY = '<%= Session("CustomerCompany") %>';
-        let CUSTOMERCONTACTID = '<%= Session("CustomerContactId") %>';
-        let USERID = '<%= Session("userId") %>';
-        let USERNAME = '<%= Session("UserName") %>';
-        let LOGINID = '<%= Session("LoginId") %>';
-        let APPLICATIONID = '<%= Session("ApplicationId") %>';
-        let ROLENAME = '<%= Session("RoleName") %>';  
-        let PRICEACCESS = '<%= Session("PriceAccess") %>';
-        let MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
-        let PREVIEWACCESS = '<%= Session("printPreview") %>';
-        let REPRINT = '<%= Session("Reprint") %>';
-        let URIMETHOD = '/Methods/Order/OrderDetailMethod.aspx';      
-        let PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
-        let JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
+        const HEADERID = ULTRON;
+        const ORDERTYPE = INFYNITY;
+        const CUSTOMERID = '<%= Session("CustomerId") %>';
+        const CUSTOMERCOMPANY = '<%= Session("CustomerCompany") %>';
+        const CUSTOMERCONTACTID = '<%= Session("CustomerContactId") %>';
+        const USERID = '<%= Session("userId") %>';
+        const USERNAME = '<%= Session("UserName") %>';
+        const LOGINID = '<%= Session("LoginId") %>';
+        const APPLICATIONID = '<%= Session("ApplicationId") %>';
+        const ROLENAME = '<%= Session("RoleName") %>';  
+        const PRICEACCESS = '<%= Session("PriceAccess") %>';
+        const MARKUPACCESS = '<%= Session("MarkUpAccess") %>';
+        const PREVIEWACCESS = '<%= Session("printPreview") %>';
+        const REPRINT = '<%= Session("Reprint") %>';
+        const URIMETHOD = '/Methods/Order/OrderDetailMethod.aspx';      
+        const PDFORDERMETHOD = '/Methods/Order/PdfOrderMethod.aspx';      
+        const JOBSHEETMETHOD = '/Methods/Order/JobSheetMethod.aspx';      
     </script>
-    <script src="/Scripts/Order/OrderDetails.js?v=1.0.44"></script>
+    <script src="/Scripts/Order/OrderDetails.js?v=1.0.54"></script>
 
 
 </asp:Content>
