@@ -255,7 +255,7 @@ Partial Class Methods_Order_OrderDetailMethod
 
                 WHERE h.Id = @Id 
                 AND h.OrderType = @OrderType 
-                AND h.Active = 1
+                
 
                 GROUP BY 
                     h.Id, h.CustomerName, h.CustomerId, h.OrderId,
