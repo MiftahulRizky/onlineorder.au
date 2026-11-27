@@ -1529,15 +1529,31 @@ const handlerSubmit = async (button) => {
       const uid = row.dataset.uid;
       const nameInput = row.querySelector("input[readonly]");
       const valInput = row.querySelector(".dynamic-value");
-      const unitSpan = row.querySelector(".input-group-text");
+      const unitSpan = row
+        .querySelector(".input-group")
+        ?.querySelector(".input-group-text");
 
       const stateItem = (extrasState || []).find((x) => x.uid === uid);
+      const itemName = stateItem?.name ?? nameInput?.value ?? "";
 
-      return {
-        name: stateItem?.name ?? nameInput?.value ?? "",
-        unit: stateItem?.unit ?? unitSpan?.textContent?.trim() ?? "Qty",
+      const payloadItem = {
+        name: itemName,
+        unit:
+          stateItem?.unit ??
+          unitSpan?.dataset?.unit ??
+          unitSpan?.textContent?.trim() ??
+          "Qty",
         value: valInput ? valInput.value : (stateItem?.value ?? ""),
       };
+
+      row.querySelectorAll(".dynamic-extra-field").forEach((el) => {
+        const key = el.dataset.field;
+        if (key) {
+          payloadItem[key] = el.value ?? "";
+        }
+      });
+
+      return payloadItem;
     });
 
     console.log("cleanExtras:", cleanExtras);
@@ -1720,6 +1736,7 @@ const handlerSetElementValues = (itemData) => {
     // Pastikan setiap item hasil load punya uid unik (dan pertahankan uid jika sudah ada)
     const normalizedData = (Array.isArray(rawData) ? rawData : []).map(
       (item) => ({
+        ...item,
         uid: item.uid || nextUid(),
         name: item.name,
         unit: item.unit || "Qty",
@@ -2023,46 +2040,163 @@ const renderDynamic = ({ containerId, state, getState, setState }) => {
   container.innerHTML = "";
 
   state.forEach((item, index) => {
-    container.innerHTML += `
-      <div class="row mb-2 dynamic-row" data-uid="${item.uid}">
+    const rule = getExtraFieldRule(item.name);
+    const extraFields = rule?.fields || [];
+    const mainAddonText = rule?.valueAddonLabel || item.unit;
 
-        <div class="col-7">
-          <input type="text"
-                 class="form-control"
-                 value="${item.name}"
-                 readonly />
-        </div>
+    const extraFieldsHtml = extraFields
+      .map((f) => {
+        const fieldVal = item[f.key] ?? "";
 
-        <div class="col-5">
-          <div class="input-group">
-            <input type="number"
-                   class="form-control dynamic-value"
+        if (f.type === "select") {
+          const optsHtml = (f.options || [])
+            .map(
+              (opt) =>
+                `<option value="${opt.value}" ${String(fieldVal) === String(opt.value) ? "selected" : ""}>${opt.label}</option>`,
+            )
+            .join("");
+
+          return `
+            <div class="input-group mt-1">
+              <select class="form-select dynamic-extra-field"
+                      data-index="${index}"
+                      data-uid="${item.uid}"
+                      data-field="${f.key}">
+                ${optsHtml}
+              </select>
+              <span class="input-group-text" data-unit="${item.unit}">${f.label}</span>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="input-group mt-1">
+            <input type="${f.type || "text"}"
+                   class="form-control dynamic-extra-field"
                    data-index="${index}"
                    data-uid="${item.uid}"
-                   value="${item.value ?? ""}"
-                   placeholder="Enter ${item.unit}" />
-            <span class="input-group-text">${item.unit}</span>
+                   data-field="${f.key}"
+                   value="${fieldVal}"
+                   placeholder="Enter ${f.label}" />
+            <span class="input-group-text" data-unit="${item.unit}">${f.label}</span>
           </div>
-        </div>
+        `;
+      })
+      .join("");
 
+    const row = document.createElement("div");
+    row.className = "row mb-2 dynamic-row";
+    row.dataset.uid = item.uid;
+
+    row.innerHTML = `
+      <div class="col-7">
+        <input type="text"
+               class="form-control"
+               value="${item.name}"
+               readonly />
+      </div>
+
+      <div class="col-5">
+        <div class="input-group">
+          <input type="number"
+                 class="form-control dynamic-value"
+                 data-index="${index}"
+                 data-uid="${item.uid}"
+                 value="${item.value ?? ""}"
+                 placeholder="Enter ${mainAddonText}" />
+          <span class="input-group-text" data-unit="${item.unit}">${mainAddonText}</span>
+        </div>
+        ${extraFieldsHtml}
       </div>
     `;
-  });
 
-  container.querySelectorAll(".dynamic-value").forEach((input) => {
-    input.addEventListener("input", (e) => {
+    const valInput = row.querySelector(".dynamic-value");
+    valInput.addEventListener("input", (e) => {
       const uid = e.target.dataset.uid;
       const val = e.target.value;
 
       const current = typeof getState === "function" ? getState() : state;
-      const updated = current.map((item) =>
-        item.uid === uid ? { ...item, value: val } : item,
+      const updated = current.map((x) =>
+        x.uid === uid ? { ...x, value: val } : x,
       );
-
       setState(updated);
     });
+
+    row.querySelectorAll(".dynamic-extra-field").forEach((el) => {
+      const eventName = el.tagName === "SELECT" ? "change" : "input";
+      el.addEventListener(eventName, (e) => {
+        const uid = e.target.dataset.uid;
+        const fieldKey = e.target.dataset.field;
+        const fieldVal = e.target.value;
+
+        const current = typeof getState === "function" ? getState() : state;
+        const updated = current.map((x) =>
+          x.uid === uid ? { ...x, [fieldKey]: fieldVal } : x,
+        );
+        setState(updated);
+      });
+    });
+
+    container.appendChild(row);
   });
 };
+
+const EXTRA_FIELD_RULES = [
+  {
+    match: (name) => (name || "").toLowerCase().includes("doggie door"),
+    fields: [
+      {
+        key: "position",
+        label: "Position",
+        type: "select",
+        required: true,
+        options: [
+          { value: "", label: "-- Select Position --" },
+          { value: "Handle Side", label: "Handle Side" },
+          { value: "Hinged Side", label: "Hinged Side" },
+          { value: "Middle of Door", label: "Middle of Door" },
+        ],
+      },
+    ],
+  },
+  {
+    match: (name) => (name || "").trim().toLowerCase() === "bead stop",
+    valueAddonLabel: "Drop 1",
+    fields: [
+      {
+        key: "drop2",
+        label: "Drop 2",
+        type: "number",
+      },
+      {
+        key: "topWidth",
+        label: "Top Width",
+        type: "number",
+      },
+    ],
+  },
+  {
+    match: (name) => (name || "").toLowerCase().includes("jamb adaptor"),
+    valueAddonLabel: "Left",
+    fields: [
+      {
+        key: "right",
+        label: "Right",
+        type: "number",
+      },
+      {
+        key: "topWidth",
+        label: "Top Width",
+        type: "number",
+      },
+    ],
+  },
+];
+
+const getExtraFieldRule = (itemName) => {
+  return EXTRA_FIELD_RULES.find((rule) => rule.match(itemName)) || null;
+};
+
 const catchMessages = (msg) => {
   if (!["Administrator"].includes(ROLENAME))
     msg = "Please contact our IT team at support@onlineorder.au";

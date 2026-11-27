@@ -72,6 +72,10 @@ Partial Class Methods_Order_DoorMethod
         Public Property name As String
         Public Property unit As String
         Public Property value As String
+        Public Property position As String
+        Public Property drop2 As String
+        Public Property topWidth As String
+        Public Property right As String
     End Class
 
     Public Class ParamListData
@@ -441,18 +445,39 @@ Partial Class Methods_Order_DoorMethod
                 End Try
 
                 For Each item In ExtrasList
-                    If String.IsNullOrEmpty(item.value) Then
+                    Dim DoggieDoor As Boolean = item.name.IndexOf("Doggie Door", StringComparison.OrdinalIgnoreCase) >= 0
+                    Dim BeadStop As Boolean = item.name.IndexOf("Bead Stop", StringComparison.OrdinalIgnoreCase) >= 0
+
+                    If String.IsNullOrEmpty(item.value) AndAlso BeadStop = False Then
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " (" & item.unit & ") is required", .field = "extras"}}
                     End If
 
-                    ' If item.unit = "mm" Then
-                    ' End If
                     Dim num As Decimal
-                    If Not Decimal.TryParse(item.value, num) Then
+                    If Not Decimal.TryParse(item.value, num) AndAlso BeadStop = False Then
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " must be numeric", .field = "extras"}}
                     End If
-                    If num < 1 Then
+                    If num < 1 AndAlso BeadStop = False Then
                         Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " must be greater than 0", .field = "extras"}}
+                    End If
+
+                    '#Doggie Door
+                    If Not String.IsNullOrEmpty(item.name) AndAlso DoggieDoor Then
+                        If String.IsNullOrWhiteSpace(item.position) Then
+                            Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " position is required", .field = "extras"}}
+                        End If
+                    End If
+
+                    '#Bead Stop
+                    If Not String.IsNullOrEmpty(item.name) AndAlso BeadStop Then
+                        If String.IsNullOrWhiteSpace(item.value) Then
+                            Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " Drop 1 is required", .field = "extras"}}
+                        End If
+                        If Not Decimal.TryParse(item.value, num) Then
+                            Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " Drop 1 must be numeric", .field = "extras"}}
+                        End If
+                        If num < 1 Then
+                            Return New ErrorResponse With { .error = New ErrorDetail With { .message = item.name & " Drop 1 must be greater than 0", .field = "extras"}}
+                        End If
                     End If
                 Next
             End If
